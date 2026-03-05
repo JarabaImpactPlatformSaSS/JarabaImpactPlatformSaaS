@@ -5,7 +5,7 @@
 .agent-execution {
   --ae-primary: var(--ej-color-corporate, #233D63);
   --ae-success: var(--ej-color-success, #27AE60);
-  --ae-bg: #f8fafc;
+  --ae-bg: var(--ej-bg-body, #f8fafc);
 
   padding: 1.5rem;
   background: var(--ae-bg);

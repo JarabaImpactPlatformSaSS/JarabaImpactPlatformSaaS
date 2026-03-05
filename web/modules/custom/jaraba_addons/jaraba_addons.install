@@ -287,3 +287,42 @@ function jaraba_addons_update_10003(): string {
 
   return implode(' ', $messages);
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_addons_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entity_types = ['addon', 'addon_subscription'];
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entity_types as $type_id) {
+    if (!$update_manager->getEntityType($type_id)) {
+      $missing[] = $type_id;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_addons_entities'] = [
+      'title' => t('Jaraba Addons: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_addons_entities'] = [
+      'title' => t('Jaraba Addons: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entity_types)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

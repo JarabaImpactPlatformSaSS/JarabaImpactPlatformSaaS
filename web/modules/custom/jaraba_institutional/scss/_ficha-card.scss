@@ -101,7 +101,7 @@
 
   &--rejected {
     background: color-mix(in srgb, #EF4444 12%, $institutional-color-bg);
-    color: #EF4444;
+    color: var(--ej-color-danger, #EF4444);
   }
 }
 

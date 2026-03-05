@@ -13,10 +13,10 @@
 // ---------------------------------------------------------------------------
 
 // Colores del dashboard oscuro (tema dark específico de FinOps)
-$finops-bg: #0f172a !default;
+$finops-bg: var(--ej-gray-900, #0f172a) !default;
 $finops-card-bg: rgba(30, 41, 59, 0.8) !default;
 $finops-border: var(--ej-border-color-light, rgba(148, 163, 184, 0.1));
-$finops-text: #e2e8f0 !default;
+$finops-text: var(--ej-gray-200, #e2e8f0) !default;
 $finops-text-muted: var(--ej-text-muted, #94a3b8);
 
 // Colores semánticos (usando variables CSS inyectables)
@@ -24,7 +24,7 @@ $finops-primary: var(--ej-color-primary, #{$ej-color-primary-fallback});
 $finops-success: var(--ej-color-success, #{$ej-color-success});
 $finops-warning: var(--ej-color-warning, #{$ej-color-warning});
 $finops-critical: var(--ej-color-error, #{$ej-color-error});
-$finops-gold: #fbbf24;
+$finops-gold: var(--ej-color-amber, #fbbf24);
 
 // ---------------------------------------------------------------------------
 // BASE LAYOUT
@@ -196,7 +196,7 @@ $finops-gold: #fbbf24;
     }
 
     &--tenants {
-        border-top: 3px solid #8b5cf6;
+        border-top: 3px solid var(--ej-color-violet, #8b5cf6);
     }
 
     &--revenue {
@@ -379,17 +379,17 @@ $finops-gold: #fbbf24;
 
     &--basic {
         background: rgba(148, 163, 184, 0.2);
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     &--professional {
         background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
+        color: var(--ej-color-blue-400, #60a5fa);
     }
 
     &--enterprise {
         background: rgba(139, 92, 246, 0.2);
-        color: #a78bfa;
+        color: var(--ej-color-purple, #a78bfa);
     }
 }
 
@@ -440,7 +440,7 @@ $finops-gold: #fbbf24;
     }
 
     &--storage {
-        border-left-color: #8b5cf6;
+        border-left-color: var(--ej-color-violet, #8b5cf6);
     }
 
     &--api {
@@ -517,7 +517,7 @@ $finops-gold: #fbbf24;
 
     &--external {
         background: rgba(139, 92, 246, 0.1);
-        color: #a78bfa;
+        color: var(--ej-color-purple, #a78bfa);
         border-color: rgba(139, 92, 246, 0.3);
     }
 

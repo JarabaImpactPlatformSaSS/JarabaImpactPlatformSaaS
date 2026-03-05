@@ -12,13 +12,13 @@
 // Phase Color System (Emerald tones for recruiter)
 // --------------------------------------------------------------------------
 $recruiter-phase-colors: (
-    1: #fbbf24,
+    1: var(--ej-color-amber, #fbbf24),
     // Starting - Amber
-    2: #f97316,
+    2: var(--ej-color-orange, #f97316),
     // Building - Orange
-    3: #22c55e,
+    3: var(--ej-color-green-500, #22c55e),
     // Growing - Green
-    4: #059669,
+    4: var(--ej-color-success-dark, #059669),
     // Competitive - Emerald
     5: #0d9488,
     // Talent Leader - Teal
@@ -98,13 +98,13 @@ $recruiter-phase-colors: (
                 margin: 0;
                 font-size: 1.5rem;
                 font-weight: 700;
-                color: #1f2937;
+                color: var(--ej-gray-800, #1f2937);
             }
 
             p {
                 margin: 0.25rem 0 0;
                 font-size: 0.875rem;
-                color: #6b7280;
+                color: var(--ej-gray-500, #6b7280);
             }
         }
     }
@@ -146,14 +146,14 @@ $recruiter-phase-colors: (
     .kpi-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #1f2937;
+        color: var(--ej-gray-800, #1f2937);
     }
 
     .kpi-label {
         font-size: 0.6875rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #6b7280;
+        color: var(--ej-gray-500, #6b7280);
     }
 
     &--highlight {
@@ -192,7 +192,7 @@ $recruiter-phase-colors: (
             align-items: center;
             justify-content: center;
             font-size: 1.75rem;
-            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            background: linear-gradient(135deg, var(--ej-color-success-dark, #059669) 0%, #0d9488 100%);
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
@@ -201,7 +201,7 @@ $recruiter-phase-colors: (
             font-size: 0.625rem;
             font-weight: 600;
             text-transform: uppercase;
-            color: #059669;
+            color: var(--ej-color-success-dark, #059669);
             background: rgba(5, 150, 105, 0.1);
             padding: 0.25rem 0.5rem;
             border-radius: 1rem;
@@ -215,7 +215,7 @@ $recruiter-phase-colors: (
     .assistant-message {
         font-size: 0.9375rem;
         line-height: 1.7;
-        color: #374151;
+        color: var(--ej-gray-700, #374151);
     }
 }
 
@@ -236,7 +236,7 @@ $recruiter-phase-colors: (
 }
 
 .path-card {
-    --ej-path-color: #059669;
+    --ej-path-color: var(--ej-color-success-dark, #059669);
     padding: 0;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -284,7 +284,7 @@ $recruiter-phase-colors: (
             align-items: flex-start;
             gap: 0.75rem;
             padding: 0.5rem 0;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid var(--ej-gray-50, #f3f4f6);
 
             &:last-child {
                 border-bottom: none;
@@ -306,7 +306,7 @@ $recruiter-phase-colors: (
 
             .step-text {
                 font-size: 0.8125rem;
-                color: #4b5563;
+                color: var(--ej-gray-650, #4b5563);
                 line-height: 1.5;
             }
         }
@@ -317,8 +317,8 @@ $recruiter-phase-colors: (
         align-items: center;
         gap: 0.5rem;
         padding: 0.875rem 1rem;
-        background: #f9fafb;
-        border-top: 1px solid #e5e7eb;
+        background: var(--ej-gray-25, #f9fafb);
+        border-top: 1px solid var(--ej-border-color, #e5e7eb);
         color: var(--ej-path-color);
         text-decoration: none;
         font-size: 0.8125rem;
@@ -395,13 +395,13 @@ $recruiter-phase-colors: (
             margin: 0 0 0.25rem;
             font-size: 0.9375rem;
             font-weight: 600;
-            color: #1f2937;
+            color: var(--ej-gray-800, #1f2937);
         }
 
         p {
             margin: 0 0 0.5rem;
             font-size: 0.8125rem;
-            color: #6b7280;
+            color: var(--ej-gray-500, #6b7280);
             line-height: 1.5;
         }
 

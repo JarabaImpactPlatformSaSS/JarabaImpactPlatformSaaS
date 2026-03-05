@@ -110,7 +110,7 @@
     background: linear-gradient(135deg, var(--ej-color-corporate, #233d63) 0%, #1a2d4a 100%);
     border-radius: var(--ej-radius-lg, 16px);
     padding: var(--ej-spacing-6, 2rem);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     display: flex;
     flex-direction: column;
     justify-content: center;

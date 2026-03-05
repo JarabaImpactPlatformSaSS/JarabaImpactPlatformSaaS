@@ -73,7 +73,7 @@
   &__search-btn {
     padding: 0.75rem 1rem;
     background: var(--ej-color-corporate, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: 2px solid var(--ej-color-corporate, #233D63);
     border-radius: 0 var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0;
     cursor: pointer;
@@ -96,7 +96,7 @@
   }
 
   &__stat-card {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-radius-lg, 12px);
     padding: var(--ej-spacing-lg, 1.5rem);
     text-align: center;
@@ -158,11 +158,11 @@
   &__category-item {
     &.is-active .integrations-dashboard__category-link {
       background: var(--ej-color-corporate, #233D63);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       .integrations-dashboard__category-count {
         background: rgba(255, 255, 255, 0.2);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
       }
     }
   }
@@ -220,7 +220,7 @@
 // CONNECTOR CARD - Tarjeta de conector en el grid
 // =============================================================================
 .integrations-card {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: var(--ej-radius-lg, 12px);
   border: 1px solid var(--ej-gray-200, #EEEEEE);
   padding: var(--ej-spacing-lg, 1.5rem);
@@ -502,7 +502,7 @@
   padding: var(--ej-spacing-lg, 2rem);
 
   &__card {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-radius-lg, 12px);
     box-shadow: var(--ej-shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.12));
     padding: var(--ej-spacing-xl, 2.5rem);
@@ -566,22 +566,22 @@
 
   &--success {
     background: color.adjust(#43A047, $lightness: 40%);
-    color: #2E7D32;
+    color: var(--ej-color-green-md, #2E7D32);
   }
 
   &--warning {
     background: color.adjust(#FFA000, $lightness: 35%);
-    color: #E65100;
+    color: var(--ej-color-orange-deep, #E65100);
   }
 
   &--error {
     background: color.adjust(#E53935, $lightness: 35%);
-    color: #B71C1C;
+    color: var(--ej-color-red-material-900, #B71C1C);
   }
 
   &--info {
     background: color.adjust(#1976D2, $lightness: 40%);
-    color: #0D47A1;
+    color: var(--ej-color-blue-material-900, #0D47A1);
   }
 
   &--sm {
@@ -619,7 +619,7 @@
 
   &--primary {
     background: var(--ej-color-primary, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-color: var(--ej-color-primary, #FF8C42);
 
     &:hover {
@@ -630,7 +630,7 @@
 
   &--secondary {
     background: var(--ej-color-corporate, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-color: var(--ej-color-corporate, #233D63);
 
     &:hover {
@@ -656,7 +656,7 @@
 
     &:hover {
       background: var(--ej-color-error, #E53935);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 

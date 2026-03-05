@@ -98,12 +98,12 @@
 
   &--active {
     background: var(--ej-addons-primary, #{$addons-color-primary-fallback});
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     border-color: var(--ej-addons-primary, #{$addons-color-primary-fallback});
 
     &:hover {
       background: var(--ej-addons-primary-hover, color-mix(in srgb, #{$addons-color-primary-fallback} 85%, black));
-      color: #FFFFFF;
+      color: var(--ej-bg-surface, #FFFFFF);
     }
   }
 

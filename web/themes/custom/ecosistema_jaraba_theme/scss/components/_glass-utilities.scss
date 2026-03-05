@@ -117,7 +117,7 @@
 }
 
 .text-gradient--light {
-    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    background: linear-gradient(135deg, var(--ej-bg-surface, #fff) 0%, var(--ej-gray-400, #94a3b8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -149,7 +149,7 @@
 // CARD PREMIUM - Tarjeta con efectos hover
 // =============================================
 .card--premium {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-border-radius, 12px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     overflow: hidden;

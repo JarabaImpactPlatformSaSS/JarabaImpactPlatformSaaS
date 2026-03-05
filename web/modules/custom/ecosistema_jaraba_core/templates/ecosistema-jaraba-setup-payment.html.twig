@@ -20,27 +20,11 @@
 #}
 
 <div class="ej-setup-payment-page">
-  {# Progress indicator #}
-  <div class="ej-onboarding-progress">
-    <div class="ej-onboarding-progress__container">
-      <div class="ej-progress-step ej-progress-step--completed">
-        <span class="ej-progress-step__number">1</span>
-        <span class="ej-progress-step__label">{{ 'Registro'|t }}</span>
-      </div>
-      <div class="ej-progress-step ej-progress-step--completed">
-        <span class="ej-progress-step__number">2</span>
-        <span class="ej-progress-step__label">{{ 'Seleccionar Plan'|t }}</span>
-      </div>
-      <div class="ej-progress-step ej-progress-step--active">
-        <span class="ej-progress-step__number">3</span>
-        <span class="ej-progress-step__label">{{ 'Configurar Pago'|t }}</span>
-      </div>
-      <div class="ej-progress-step">
-        <span class="ej-progress-step__number">4</span>
-        <span class="ej-progress-step__label">{{ '¡Listo!'|t }}</span>
-      </div>
-    </div>
-  </div>
+  {# P3-03: WCAG 2.1 AA — Skip navigation #}
+  <a href="#ej-payment-form" class="ej-skip-link">{% trans %}Saltar al formulario de pago{% endtrans %}</a>
+
+  {# P1-03: Barra de progreso unificada #}
+  {% include '@ecosistema_jaraba_core/partials/_onboarding-progress.html.twig' with { onboarding_step: 3 } %}
 
   <main class="ej-setup-payment-main">
     <div class="ej-setup-payment-container">
@@ -69,10 +53,11 @@
                 <label for="billing-name" class="ej-form-label">
                   {{ 'Nombre completo'|t }} <span class="required">*</span>
                 </label>
-                <input type="text" 
-                       id="billing-name" 
-                       name="billing_name" 
+                <input type="text"
+                       id="billing-name"
+                       name="billing_name"
                        class="ej-form-input"
+                       value="{{ prefill_name }}"
                        required>
               </div>
 
@@ -80,10 +65,11 @@
                 <label for="billing-email" class="ej-form-label">
                   {{ 'Email de facturación'|t }} <span class="required">*</span>
                 </label>
-                <input type="email" 
-                       id="billing-email" 
-                       name="billing_email" 
+                <input type="email"
+                       id="billing-email"
+                       name="billing_email"
                        class="ej-form-input"
+                       value="{{ prefill_email }}"
                        required>
               </div>
             </div>
@@ -120,7 +106,7 @@
                 {{ 'Periodo de facturación'|t }}
               </h3>
 
-              <div class="ej-billing-toggle">
+              <div class="ej-billing-toggle" role="radiogroup" aria-label="{% trans %}Periodo de facturación{% endtrans %}">
                 <label class="ej-billing-option" data-period="monthly">
                   <input type="radio" name="billing_period" value="monthly" checked>
                   <span class="ej-billing-option__content">
@@ -146,8 +132,8 @@
             </div>
 
             {# Mensajes de error y éxito #}
-            <div id="ej-payment-error" class="ej-alert ej-alert--error" style="display: none;"></div>
-            <div id="ej-payment-success" class="ej-alert ej-alert--success" style="display: none;"></div>
+            <div id="ej-payment-error" class="ej-alert ej-alert--error" style="display: none;" role="alert" aria-live="assertive"></div>
+            <div id="ej-payment-success" class="ej-alert ej-alert--success" style="display: none;" role="status" aria-live="polite"></div>
 
             {# Botón de envío #}
             <div class="ej-form-actions">
@@ -223,17 +209,8 @@
               </div>
             </div>
 
-            {# Indicadores de seguridad #}
-            <div class="ej-security-badges">
-              <div class="ej-security-badge">
-                <i class="bi bi-shield-lock-fill"></i>
-                <span>{{ 'Pago seguro SSL'|t }}</span>
-              </div>
-              <div class="ej-security-badge">
-                <i class="bi bi-stripe"></i>
-                <span>{{ 'Powered by Stripe'|t }}</span>
-              </div>
-            </div>
+            {# P2-07: Badges de seguridad reutilizables #}
+            {% include '@ecosistema_jaraba_core/partials/_security-badges.html.twig' %}
 
             {# Cambiar plan #}
             <a href="{{ path('ecosistema_jaraba_core.onboarding.select_plan') }}" class="ej-change-plan-link">

@@ -220,3 +220,256 @@ function jaraba_agroconecta_core_update_10004(): string {
 
   return 'Uninstalled fields from review_agro: ' . (empty($removed) ? 'none needed' : implode(', ', $removed));
 }
+
+/**
+ * P1-05: Add trazabilidad, multi-imagen, variaciones fields to product_agro.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New base fields require hook_update.
+ * UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId on each field.
+ * UPDATE-HOOK-CATCH-001: \Throwable, not \Exception.
+ */
+function jaraba_agroconecta_core_update_10005(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'product_agro';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return 'Entity type product_agro not found — skipping.';
+  }
+
+  $fields = [];
+
+  // Galería multi-imagen (hasta 5).
+  $fields['images'] = \Drupal\Core\Field\BaseFieldDefinition::create('image')
+    ->setLabel(t('Galería de imágenes'))
+    ->setCardinality(5)
+    ->setSetting('file_extensions', 'png jpg jpeg webp')
+    ->setSetting('file_directory', 'agro/products/gallery')
+    ->setName('images')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Número de lote.
+  $fields['lot_number'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    ->setLabel(t('Número de lote'))
+    ->setSetting('max_length', 64)
+    ->setName('lot_number')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Certificación.
+  $fields['certification'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Certificación'))
+    ->setSetting('allowed_values', [
+      'ecologico' => 'Ecológico',
+      'dop' => 'DOP',
+      'igp' => 'IGP',
+      'conversion' => 'En conversión ecológica',
+      'integrada' => 'Producción integrada',
+      'sin_certificar' => 'Sin certificar',
+    ])
+    ->setName('certification')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Origen geográfico.
+  $fields['geographic_origin'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    ->setLabel(t('Origen geográfico'))
+    ->setSetting('max_length', 255)
+    ->setName('geographic_origin')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Temporada de cosecha.
+  $fields['harvest_season'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Temporada de cosecha'))
+    ->setSetting('allowed_values', [
+      'primavera' => 'Primavera',
+      'verano' => 'Verano',
+      'otono' => 'Otoño',
+      'invierno' => 'Invierno',
+      'todo_ano' => 'Todo el año',
+    ])
+    ->setName('harvest_season')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Unidad de peso.
+  $fields['weight_unit'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Unidad de peso'))
+    ->setSetting('allowed_values', [
+      'kg' => 'kg',
+      'g' => 'g',
+      'unidad' => 'Unidad',
+      'caja' => 'Caja',
+      'saco' => 'Saco',
+      'litro' => 'L',
+      'docena' => 'Docena',
+    ])
+    ->setName('weight_unit')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // Peso por unidad.
+  $fields['weight_value'] = \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+    ->setLabel(t('Peso por unidad'))
+    ->setSetting('precision', 8)
+    ->setSetting('scale', 2)
+    ->setName('weight_value')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  // QR de trazabilidad.
+  $fields['qr_code_url'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    ->setLabel(t('QR de trazabilidad'))
+    ->setSetting('max_length', 512)
+    ->setName('qr_code_url')
+    ->setTargetEntityTypeId($entity_type_id);
+
+  $installed = [];
+  foreach ($fields as $field_name => $definition) {
+    try {
+      if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+        $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_agroconecta_core', $definition);
+        $installed[] = $field_name;
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_agroconecta_core')->error('P1-05: Error installing @field: @error', [
+        '@field' => $field_name,
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  return 'P1-05: Installed product_agro fields: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
+}
+
+/**
+ * Install entity types: agro_batch, agro_carrier_config, agro_category, agro_certification, agro_collection, agro_shipment, agro_shipping_rate, agro_shipping_zone, alert_rule_agro, copilot_conversation_agro, copilot_generated_content_agro, copilot_message_agro, coupon_agro, customer_preference_agro, document_download_log, integrity_proof_agro, notification_log_agro, notification_preference_agro, notification_template_agro, partner_relationship, product_document, promotion_agro, qr_code_agro, qr_lead_capture, qr_scan_event, sales_conversation_agro, sales_message_agro, shipping_method_agro, shipping_zone_agro, trace_event_agro.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function jaraba_agroconecta_core_update_10006(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'agro_batch',
+    'agro_carrier_config',
+    'agro_category',
+    'agro_certification',
+    'agro_collection',
+    'agro_shipment',
+    'agro_shipping_rate',
+    'agro_shipping_zone',
+    'alert_rule_agro',
+    'copilot_conversation_agro',
+    'copilot_generated_content_agro',
+    'copilot_message_agro',
+    'coupon_agro',
+    'customer_preference_agro',
+    'document_download_log',
+    'integrity_proof_agro',
+    'notification_log_agro',
+    'notification_preference_agro',
+    'notification_template_agro',
+    'partner_relationship',
+    'product_document',
+    'promotion_agro',
+    'qr_code_agro',
+    'qr_lead_capture',
+    'qr_scan_event',
+    'sales_conversation_agro',
+    'sales_message_agro',
+    'shipping_method_agro',
+    'shipping_zone_agro',
+    'trace_event_agro',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_agroconecta_core_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = [
+    'agro_batch',
+    'agro_carrier_config',
+    'agro_category',
+    'agro_certification',
+    'agro_collection',
+    'agro_shipment',
+    'agro_shipping_rate',
+    'agro_shipping_zone',
+    'alert_rule_agro',
+    'copilot_conversation_agro',
+    'copilot_generated_content_agro',
+    'copilot_message_agro',
+    'coupon_agro',
+    'customer_preference_agro',
+    'document_download_log',
+    'integrity_proof_agro',
+    'notification_log_agro',
+    'notification_preference_agro',
+    'notification_template_agro',
+    'partner_relationship',
+    'product_document',
+    'promotion_agro',
+    'qr_code_agro',
+    'qr_lead_capture',
+    'qr_scan_event',
+    'sales_conversation_agro',
+    'sales_message_agro',
+    'shipping_method_agro',
+    'shipping_zone_agro',
+    'trace_event_agro',
+  ];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_agroconecta_core_entities'] = [
+      'title' => t('Jaraba agroconecta core: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_agroconecta_core_entities'] = [
+      'title' => t('Jaraba agroconecta core: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

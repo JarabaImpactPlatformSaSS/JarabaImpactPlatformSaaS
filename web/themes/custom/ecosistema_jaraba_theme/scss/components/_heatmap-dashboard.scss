@@ -45,7 +45,7 @@ $ej-heatmap-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1)) !defa
     gap: 1rem;
     align-items: flex-end;
     padding: 1rem;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: $ej-heatmap-radius;
     box-shadow: $ej-heatmap-shadow;
 }
@@ -69,7 +69,7 @@ $ej-heatmap-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1)) !defa
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     color: $ej-heatmap-text;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border: 1px solid $ej-heatmap-border;
     border-radius: calc(#{$ej-heatmap-radius} / 2);
     cursor: pointer;
@@ -86,7 +86,7 @@ $ej-heatmap-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1)) !defa
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: $ej-heatmap-accent;
     border: none;
     border-radius: calc(#{$ej-heatmap-radius} / 2);
@@ -110,7 +110,7 @@ $ej-heatmap-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1)) !defa
     position: relative;
     overflow: auto;
     max-height: 600px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: $ej-heatmap-radius;
     box-shadow: $ej-heatmap-shadow;
 }
@@ -133,7 +133,7 @@ $ej-heatmap-shadow: var(--ej-heatmap-shadow, 0 2px 8px rgba(0, 0, 0, 0.1)) !defa
     color: $ej-heatmap-text;
     font-size: 1rem;
     text-align: center;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: $ej-heatmap-radius;
     border: 2px dashed $ej-heatmap-border;
 }

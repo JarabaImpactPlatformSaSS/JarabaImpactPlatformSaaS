@@ -172,7 +172,7 @@
     }
 
     &__salary {
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
         font-weight: 600;
         background: rgba(16, 185, 129, 0.08);
     }
@@ -185,7 +185,7 @@
         padding: $ej-spacing-sm $ej-spacing-md;
         border-radius: 12px;
         background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
         font-size: 0.75rem;
         font-weight: 600;
         flex-shrink: 0;
@@ -206,7 +206,7 @@
             padding: 10px 24px;
             border-radius: 10px;
             background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             font-weight: 600;
             font-size: 0.875rem;
             text-decoration: none;
@@ -310,31 +310,31 @@
 
     // Status accent colors
     &.status-applied {
-        border-left-color: #3b82f6;
+        border-left-color: var(--ej-color-blue, #3b82f6);
     }
 
     &.status-screening {
-        border-left-color: #f59e0b;
+        border-left-color: var(--ej-color-warning, #f59e0b);
     }
 
     &.status-shortlisted {
-        border-left-color: #8b5cf6;
+        border-left-color: var(--ej-color-violet, #8b5cf6);
     }
 
     &.status-interviewed {
-        border-left-color: #06b6d4;
+        border-left-color: var(--ej-color-cyan-light, #06b6d4);
     }
 
     &.status-offered {
-        border-left-color: #10b981;
+        border-left-color: var(--ej-color-success, #10b981);
     }
 
     &.status-hired {
-        border-left-color: #059669;
+        border-left-color: var(--ej-color-success-dark, #059669);
     }
 
     &.status-rejected {
-        border-left-color: #ef4444;
+        border-left-color: var(--ej-color-danger, #ef4444);
     }
 
     .application-header {
@@ -386,38 +386,38 @@
 
     &.status-applied {
         background: rgba(59, 130, 246, 0.1);
-        color: #2563eb;
+        color: var(--ej-color-blue-dark, #2563eb);
     }
 
     &.status-screening {
         background: rgba(245, 158, 11, 0.1);
-        color: #d97706;
+        color: var(--ej-color-warning-dark, #d97706);
     }
 
     &.status-shortlisted {
         background: rgba(139, 92, 246, 0.1);
-        color: #7c3aed;
+        color: var(--ej-color-violet-dark, #7c3aed);
     }
 
     &.status-interviewed {
         background: rgba(6, 182, 212, 0.1);
-        color: #0891b2;
+        color: var(--ej-color-cyan, #0891b2);
     }
 
     &.status-offered {
         background: rgba(16, 185, 129, 0.1);
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
     }
 
     &.status-hired {
         background: rgba(5, 150, 105, 0.15);
-        color: #047857;
+        color: var(--ej-color-green-700, #047857);
         font-weight: 700;
     }
 
     &.status-rejected {
         background: rgba(239, 68, 68, 0.08);
-        color: #dc2626;
+        color: var(--ej-color-danger-dark, #dc2626);
     }
 }
 
@@ -498,7 +498,7 @@
         padding: 14px 28px;
         border-radius: 14px;
         background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-family: var(--ej-font-family, 'Outfit', sans-serif);
         font-size: 0.9375rem;
         font-weight: 600;
@@ -557,7 +557,7 @@
 
         &.active {
             background: var(--ej-color-corporate, #233D63);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             border-color: transparent;
         }
 
@@ -658,7 +658,7 @@
     }
 
     &.completed {
-        border-left: 4px solid #10b981;
+        border-left: 4px solid var(--ej-color-success, #10b981);
     }
 
     &.enrolled {
@@ -697,13 +697,13 @@
     }
 
     .premium-badge {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: #fff;
+        background: linear-gradient(135deg, var(--ej-color-warning, #f59e0b) 0%, var(--ej-color-warning-dark, #d97706) 100%);
+        color: var(--ej-bg-surface, #fff);
     }
 
     .free-badge {
         background: rgba(16, 185, 129, 0.9);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     .course-content {
@@ -728,17 +728,17 @@
 
         &.difficulty-beginner {
             background: rgba(16, 185, 129, 0.1);
-            color: #059669;
+            color: var(--ej-color-success-dark, #059669);
         }
 
         &.difficulty-intermediate {
             background: rgba(245, 158, 11, 0.1);
-            color: #d97706;
+            color: var(--ej-color-warning-dark, #d97706);
         }
 
         &.difficulty-advanced {
             background: rgba(239, 68, 68, 0.08);
-            color: #dc2626;
+            color: var(--ej-color-danger-dark, #dc2626);
         }
     }
 
@@ -797,7 +797,7 @@
             color: var(--ej-color-headings, #1a202c);
 
             &.free {
-                color: #059669;
+                color: var(--ej-color-success-dark, #059669);
             }
         }
     }
@@ -833,7 +833,7 @@
         font-size: 0.75rem;
         font-weight: 600;
         background: rgba(16, 185, 129, 0.1);
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
     }
 }
 
@@ -965,18 +965,18 @@
 
     .btn-primary {
         background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         box-shadow: 0 4px 12px rgba(35, 61, 99, 0.2);
 
         &:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(35, 61, 99, 0.3);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
     .btn-secondary {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         color: var(--ej-color-corporate, #233D63);
         border: 1.5px solid var(--ej-border-color, #e2e8f0);
 

@@ -195,6 +195,14 @@
   border-top: 3px solid var(--ej-color-agro, #556B2F);
 }
 
+.admin-center-kpi--gmv_total {
+  border-top: 3px solid var(--ej-color-warning, #f59e0b);
+}
+
+.admin-center-kpi--fiscal_compliance {
+  border-top: 3px solid var(--ej-color-info, #1976D2);
+}
+
 /* ============================================================================
    Button Icon Alignment
    ============================================================================ */

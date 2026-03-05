@@ -2,33 +2,45 @@
  * @file
  * Tenant Dashboard Charts - Chart.js Integration
  *
- * Gestiona los gráficos de tendencias del dashboard del tenant
- * utilizando Chart.js para visualización de datos.
+ * P1-04: Renderiza gráficos de tendencias del dashboard del tenant
+ * usando datos inyectados via drupalSettings (ROUTE-LANGPREFIX-001).
+ *
+ * Datos esperados en drupalSettings.tenantDashboard.charts:
+ * - sales: {type, labels, datasets, summary}
+ * - mrr: {type, labels, datasets, summary}
+ * - customers: {type, labels, datasets}
  */
 
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  /**
-   * Comportamiento de gráficos del Tenant Dashboard.
-   */
   Drupal.behaviors.tenantDashboardCharts = {
-    attach: function (context, settings) {
+    attach: function (context) {
+      var charts = (drupalSettings.tenantDashboard || {}).charts;
+      if (!charts) {
+        return;
+      }
+
       once('tenant-dashboard-charts', '.tenant-chart-container', context).forEach(function (container) {
-        Drupal.tenantCharts.init(container);
+        var chartType = container.dataset.chartType;
+        var chartData = charts[chartType];
+
+        if (chartData) {
+          Drupal.tenantCharts.render(container, chartData);
+        }
+        else {
+          Drupal.tenantCharts.showEmpty(container);
+        }
       });
     }
   };
 
-  /**
-   * Namespace para gráficos del tenant.
-   */
   Drupal.tenantCharts = {
 
     /**
-     * Configuración por defecto de Chart.js.
+     * Opciones base de Chart.js.
      */
-    defaultOptions: {
+    baseOptions: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -38,51 +50,33 @@
           labels: {
             padding: 20,
             usePointStyle: true,
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12
-            }
+            font: { family: "'Inter', sans-serif", size: 12 }
           }
         },
         tooltip: {
           backgroundColor: 'rgba(30, 41, 59, 0.95)',
-          titleFont: {
-            family: "'Inter', sans-serif",
-            size: 14,
-            weight: 'bold'
-          },
-          bodyFont: {
-            family: "'Inter', sans-serif",
-            size: 12
-          },
+          titleFont: { family: "'Inter', sans-serif", size: 14, weight: 'bold' },
+          bodyFont: { family: "'Inter', sans-serif", size: 12 },
           padding: 12,
           cornerRadius: 8,
-          displayColors: true
+          displayColors: true,
+          callbacks: {}
         }
       },
       scales: {
         x: {
-          grid: {
-            display: false
-          },
+          grid: { display: false },
           ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 11
-            },
-            color: '#94a3b8'
+            font: { family: "'Inter', sans-serif", size: 11 },
+            color: '#94a3b8',
+            maxRotation: 45
           }
         },
         y: {
           beginAtZero: true,
-          grid: {
-            color: 'rgba(148, 163, 184, 0.1)'
-          },
+          grid: { color: 'rgba(148, 163, 184, 0.1)' },
           ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 11
-            },
+            font: { family: "'Inter', sans-serif", size: 11 },
             color: '#94a3b8'
           }
         }
@@ -90,122 +84,119 @@
     },
 
     /**
-     * Inicializa los gráficos.
+     * Renderiza un gráfico dentro de su contenedor.
      */
-    init: function (container) {
-      const chartType = container.dataset.chartType;
-      const chartId = container.dataset.chartId;
-      const canvas = container.querySelector('canvas');
-
+    render: function (container, chartData) {
+      var canvas = container.querySelector('canvas');
       if (!canvas) {
-        console.warn('No canvas found in chart container');
         return;
       }
 
-      // Cargar datos desde la API.
-      this.loadChartData(chartType, function (data) {
-        if (data && data.success) {
-          Drupal.tenantCharts.renderChart(canvas, data.chart, data.summary);
-        } else {
-          Drupal.tenantCharts.showError(container);
-        }
-      });
-    },
+      var ctx = canvas.getContext('2d');
+      var options = JSON.parse(JSON.stringify(this.baseOptions));
+      var locale = (drupalSettings.tenantDashboard || {}).locale || 'es-ES';
 
-    /**
-     * Carga datos desde la API.
-     */
-    loadChartData: function (chartType, callback) {
-      const endpoints = {
-        sales: '/api/v1/tenant/analytics/sales',
-        mrr: '/api/v1/tenant/analytics/mrr',
-        customers: '/api/v1/tenant/analytics/customers'
-      };
-
-      const url = endpoints[chartType];
-      if (!url) {
-        callback(null);
-        return;
-      }
-
-      fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      })
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          callback(data);
-        })
-        .catch(function (error) {
-          console.error('Error loading chart data:', error);
-          callback(null);
-        });
-    },
-
-    /**
-     * Renderiza el gráfico con Chart.js.
-     */
-    renderChart: function (canvas, chartConfig, summary) {
-      const ctx = canvas.getContext('2d');
-
-      // Configuración específica por tipo de gráfico.
-      let options = JSON.parse(JSON.stringify(this.defaultOptions));
-
-      if (chartConfig.type === 'line') {
-        options.elements = {
-          point: {
-            radius: 3,
-            hoverRadius: 6,
-            backgroundColor: '#3b82f6'
-          },
-          line: {
-            borderWidth: 2
+      // Callback de tooltip para formato moneda.
+      if (chartData.type === 'bar' || chartData.type === 'line') {
+        options.plugins.tooltip.callbacks = {
+          label: function (context) {
+            var label = context.dataset.label || '';
+            var value = context.parsed.y;
+            if (typeof value === 'number') {
+              value = value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            return label + ': ' + value + ' \u20AC';
           }
         };
       }
 
-      if (chartConfig.type === 'bar') {
-        options.plugins.legend.display = chartConfig.datasets.length > 1;
+      // Opciones específicas por tipo.
+      if (chartData.type === 'line') {
+        options.elements = {
+          point: { radius: 3, hoverRadius: 6 },
+          line: { borderWidth: 2 }
+        };
       }
 
-      // Crear el gráfico.
+      if (chartData.type === 'bar') {
+        options.plugins.legend.display = chartData.datasets.length > 1;
+      }
+
+      // Verificar si hay datos reales (no todos cero).
+      var hasData = false;
+      for (var d = 0; d < chartData.datasets.length; d++) {
+        var dataArr = chartData.datasets[d].data;
+        for (var i = 0; i < dataArr.length; i++) {
+          if (dataArr[i] > 0) {
+            hasData = true;
+            break;
+          }
+        }
+        if (hasData) {
+          break;
+        }
+      }
+
+      if (!hasData) {
+        this.showEmpty(container);
+        return;
+      }
+
       new Chart(ctx, {
-        type: chartConfig.type,
+        type: chartData.type,
         data: {
-          labels: chartConfig.labels,
-          datasets: chartConfig.datasets
+          labels: chartData.labels,
+          datasets: chartData.datasets
         },
         options: options
       });
 
-      // Mostrar resumen si existe.
-      if (summary) {
-        this.updateSummary(canvas.closest('.tenant-chart-container'), summary);
+      // Renderizar resumen si existe.
+      if (chartData.summary) {
+        this.renderSummary(container, chartData.summary, locale);
       }
     },
 
     /**
-     * Actualiza el resumen del gráfico.
+     * Renderiza el resumen debajo del gráfico.
      */
-    updateSummary: function (container, summary) {
-      const summaryEl = container.querySelector('.tenant-chart-summary');
-      if (!summaryEl) return;
+    renderSummary: function (container, summary, locale) {
+      var summaryEl = container.querySelector('.tenant-chart-summary');
+      if (!summaryEl) {
+        return;
+      }
 
-      let html = '';
-      for (const [key, value] of Object.entries(summary)) {
-        const label = this.formatLabel(key);
-        const formattedValue = typeof value === 'number' ? 
-          (key.includes('growth') ? value + '%' : '€' + value.toLocaleString('es-ES', { minimumFractionDigits: 2 })) : 
-          value;
-        
+      var labels = {
+        total: Drupal.t('Total'),
+        average: Drupal.t('Promedio'),
+        current: Drupal.t('Actual'),
+        growth: Drupal.t('Crecimiento')
+      };
+
+      var html = '';
+      for (var key in summary) {
+        if (!summary.hasOwnProperty(key)) {
+          continue;
+        }
+        var value = summary[key];
+        var label = labels[key] || key;
+        var formatted;
+
+        if (key === 'growth') {
+          var cls = value > 0 ? 'trend--up' : (value < 0 ? 'trend--down' : '');
+          var sign = value > 0 ? '+' : '';
+          formatted = '<span class="tenant-chart-summary__trend ' + cls + '">' + sign + value + '%</span>';
+        }
+        else if (typeof value === 'number') {
+          formatted = value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' \u20AC';
+        }
+        else {
+          formatted = Drupal.checkPlain(String(value));
+        }
+
         html += '<div class="tenant-chart-summary__item">';
-        html += '<span class="tenant-chart-summary__label">' + label + '</span>';
-        html += '<span class="tenant-chart-summary__value">' + formattedValue + '</span>';
+        html += '<span class="tenant-chart-summary__label">' + Drupal.checkPlain(label) + '</span>';
+        html += '<span class="tenant-chart-summary__value">' + formatted + '</span>';
         html += '</div>';
       }
 
@@ -213,27 +204,24 @@
     },
 
     /**
-     * Formatea etiquetas de resumen.
+     * Muestra estado vacío cuando no hay datos.
      */
-    formatLabel: function (key) {
-      const labels = {
-        total: 'Total',
-        average: 'Promedio',
-        current: 'Actual',
-        growth: 'Crecimiento'
-      };
-      return labels[key] || key;
-    },
-
-    /**
-     * Muestra error en el contenedor.
-     */
-    showError: function (container) {
-      container.innerHTML = '<div class="tenant-chart-error">' +
-        '<span class="tenant-chart-error__icon">⚠️</span>' +
-        '<span class="tenant-chart-error__text">No se pudieron cargar los datos</span>' +
-        '</div>';
+    showEmpty: function (container) {
+      var canvasWrapper = container.querySelector('.tenant-chart-canvas-wrapper');
+      if (canvasWrapper) {
+        canvasWrapper.innerHTML =
+          '<div class="tenant-chart-empty">' +
+          '<span class="tenant-chart-empty__icon" aria-hidden="true">' +
+          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-text-muted, #94a3b8)" stroke-width="1.5">' +
+          '<path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 6-6"/>' +
+          '</svg>' +
+          '</span>' +
+          '<span class="tenant-chart-empty__text">' + Drupal.t('A\u00fan no hay datos suficientes') + '</span>' +
+          '<span class="tenant-chart-empty__hint">' + Drupal.t('Los datos aparecer\u00e1n a medida que tu negocio genere actividad.') + '</span>' +
+          '</div>';
+      }
     }
+
   };
 
 })(Drupal, drupalSettings, once);

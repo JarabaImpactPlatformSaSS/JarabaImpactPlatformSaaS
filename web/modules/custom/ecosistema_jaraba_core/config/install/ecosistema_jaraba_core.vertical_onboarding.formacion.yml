@@ -1,0 +1,39 @@
+id: formacion
+label: 'Onboarding Formación'
+vertical_id: formacion
+headline: 'Crea y vende cursos online'
+subheadline: 'Plataforma LMS completa con vídeo, quizzes, certificados y gamificación.'
+benefits:
+  - icon_category: education
+    icon_name: graduation-cap
+    text: 'LMS completo con seguimiento de progreso'
+  - icon_category: media
+    icon_name: video
+    text: 'Soporte para vídeo, H5P y quizzes'
+  - icon_category: ui
+    icon_name: award
+    text: 'Certificados y Open Badges'
+  - icon_category: ui
+    icon_name: trophy
+    text: 'Gamificación y rankings'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Configura tu academia'
+    description: 'Personaliza el aspecto de tu plataforma de formación.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-building
+  - title: 'Crea tu primer curso'
+    description: 'Añade lecciones, vídeos y evaluaciones.'
+    route: 'entity.lms_course.add_form'
+    route_params: {}
+    icon: bi-book
+  - title: 'Invita a tus alumnos'
+    description: 'Comparte el enlace de inscripción con tus alumnos.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-people
+connect_required: false
+post_onboarding_route: 'jaraba_lms.instructor.courses'

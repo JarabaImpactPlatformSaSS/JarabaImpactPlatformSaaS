@@ -59,7 +59,7 @@
 
     &--active {
       background-color: var(--ej-color-corporate, $ej-color-corporate);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -76,12 +76,12 @@
   }
 
   &__stat-card {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: 12px;
     padding: $ej-spacing-lg;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--ej-gray-200, #e2e8f0);
 
     &--danger {
       border-color: color-mix(in srgb, var(--ej-color-danger, $ej-color-danger) 30%, transparent);
@@ -137,7 +137,7 @@
 
 // --- Heatmap ---
 .cs-heatmap {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 12px;
   padding: $ej-spacing-lg;
   margin-bottom: $ej-spacing-xl;
@@ -259,11 +259,11 @@
 
 // --- Risk Card ---
 .cs-risk-card {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 12px;
   padding: $ej-spacing-lg;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ej-gray-200, #e2e8f0);
   display: flex;
   flex-direction: column;
 
@@ -340,7 +340,7 @@
     gap: $ej-spacing-xs;
     padding: $ej-spacing-xs 0;
     font-size: 0.8rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--ej-gray-100, #f1f5f9);
 
     &:last-child {
       border-bottom: none;
@@ -354,13 +354,13 @@
   }
 
   &__signal-desc {
-    color: #475569;
+    color: var(--ej-gray-600, #475569);
   }
 
   &__footer {
     margin-top: auto;
     padding-top: $ej-spacing-sm;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--ej-gray-100, #f1f5f9);
   }
 
   &__link {
@@ -377,7 +377,7 @@
 
 // --- Playbook Timeline ---
 .cs-pb-timeline {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 12px;
   padding: $ej-spacing-lg;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -435,14 +435,14 @@
     &--cancelled,
     &--paused,
     &--pending {
-      background-color: #94a3b8;
+      background-color: var(--ej-gray-400, #94a3b8);
     }
   }
 
   &__line {
     width: 2px;
     flex: 1;
-    background-color: #e2e8f0;
+    background-color: var(--ej-gray-200, #e2e8f0);
     margin-top: 4px;
   }
 
@@ -488,14 +488,14 @@
 
     &--cancelled,
     &--paused {
-      background-color: #f1f5f9;
-      color: #64748b;
+      background-color: var(--ej-gray-100, #f1f5f9);
+      color: var(--ej-color-neutral, #64748b);
     }
   }
 
   &__tenant {
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--ej-color-neutral, #64748b);
   }
 
   &__progress {

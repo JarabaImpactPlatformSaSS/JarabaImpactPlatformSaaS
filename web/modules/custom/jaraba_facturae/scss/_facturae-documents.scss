@@ -80,7 +80,7 @@
   &__filter-apply {
     padding: 0.5rem 1.25rem;
     background: var(--ej-fiscal-face, #{$fiscal-face-fallback});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: var(--ej-radius-sm, 4px);
     font-size: 0.875rem;

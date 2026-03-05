@@ -103,7 +103,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-checkout',
     ],
-    // F6: Confirmacion de pedido
+    // F6 + P2-06: Confirmacion de pedido con recibo real
     'comercio_checkout_confirmation' => [
       'variables' => [
         'order' => NULL,
@@ -111,6 +111,14 @@ function jaraba_comercio_conecta_theme(): array {
         'total' => 0,
         'status' => '',
         'payment_status' => '',
+        'items' => [],
+        'subtotal' => 0,
+        'tax_amount' => 0,
+        'shipping_cost' => 0,
+        'discount_amount' => 0,
+        'merchant_name' => '',
+        'payment_method' => '',
+        'order_date' => '',
       ],
       'template' => 'comercio-checkout-confirmation',
     ],
@@ -197,6 +205,16 @@ function jaraba_comercio_conecta_theme(): array {
         'filters' => [],
       ],
       'template' => 'comercio-search',
+    ],
+    // P1-06: Importacion CSV de productos
+    'comercio_merchant_import' => [
+      'variables' => [
+        'merchant' => NULL,
+        'max_file_size' => '5MB',
+        'accepted_formats' => 'CSV',
+        'sample_url' => '',
+      ],
+      'template' => 'comercio-merchant-import',
     ],
   ];
 }

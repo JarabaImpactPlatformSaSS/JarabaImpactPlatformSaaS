@@ -1,41 +1,171 @@
 {#
- # Template: Confirmacion de pedido ComercioConecta.
- # Variables:
- #   - order: Entidad pedido.
- #   - order_number: Numero de pedido.
- #   - total: Importe total.
- #   - status: Estado del pedido.
- #   - payment_status: Estado del pago.
- #}
+/**
+ * @file
+ * P2-06: Checkout confirmation con recibo real.
+ *
+ * Variables:
+ * - order: Entidad pedido.
+ * - order_number: Numero de pedido.
+ * - total: Importe total.
+ * - status: Estado del pedido.
+ * - payment_status: Estado del pago.
+ * - items: Array de items [{name, quantity, unit_price, subtotal}].
+ * - subtotal: Subtotal sin impuestos.
+ * - tax_amount: Importe de impuestos.
+ * - shipping_cost: Coste de envio.
+ * - discount_amount: Descuento aplicado.
+ * - merchant_name: Nombre del comercio.
+ * - payment_method: Metodo de pago resumido.
+ * - order_date: Fecha del pedido formateada.
+ *
+ * CSS-VAR-ALL-COLORS-001: Colores via --ej-*.
+ * i18n: {% trans %} bloques.
+ * ROUTE-LANGPREFIX-001: URLs via {{ path() }}.
+ */
+#}
 
 <div class="comercio-confirmation">
+  {# Icono de exito #}
   <div class="comercio-confirmation__icon">
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="30" stroke="var(--ej-color-comercio, #FF8C42)" stroke-width="2"/>
-      <path d="M20 32l8 8 16-16" stroke="var(--ej-color-comercio, #FF8C42)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '64px' }) }}
   </div>
 
-  <h1 class="comercio-confirmation__title">{{ 'Pedido confirmado'|t }}</h1>
-  <p class="comercio-confirmation__number">{{ 'Numero de pedido'|t }}: <strong>{{ order_number }}</strong></p>
+  <h1 class="comercio-confirmation__title">{% trans %}¡Pedido confirmado!{% endtrans %}</h1>
+  <p class="comercio-confirmation__subtitle">
+    {% trans %}Gracias por tu compra. Hemos enviado un email de confirmación.{% endtrans %}
+  </p>
 
-  <div class="comercio-confirmation__details">
-    <div class="comercio-confirmation__detail">
-      <span class="comercio-confirmation__label">{{ 'Total'|t }}</span>
-      <span class="comercio-confirmation__value">{{ total|number_format(2, ',', '.') }} EUR</span>
+  {# Recibo del pedido #}
+  <div class="comercio-confirmation__receipt">
+    <div class="comercio-confirmation__receipt-header">
+      <div>
+        <span class="comercio-confirmation__receipt-label">{% trans %}Pedido{% endtrans %}</span>
+        <strong class="comercio-confirmation__receipt-number">#{{ order_number }}</strong>
+      </div>
+      {% if order_date %}
+      <div>
+        <span class="comercio-confirmation__receipt-label">{% trans %}Fecha{% endtrans %}</span>
+        <span>{{ order_date }}</span>
+      </div>
+      {% endif %}
+      {% if merchant_name %}
+      <div>
+        <span class="comercio-confirmation__receipt-label">{% trans %}Comercio{% endtrans %}</span>
+        <span>{{ merchant_name }}</span>
+      </div>
+      {% endif %}
     </div>
-    <div class="comercio-confirmation__detail">
-      <span class="comercio-confirmation__label">{{ 'Estado'|t }}</span>
-      <span class="comercio-confirmation__value comercio-confirmation__status--{{ status }}">
-        {% if status == 'confirmed' %}{{ 'Confirmado'|t }}
-        {% elseif status == 'pending' %}{{ 'Pendiente de pago'|t }}
-        {% else %}{{ status }}{% endif %}
-      </span>
+
+    {# Lineas del pedido #}
+    {% if items|length > 0 %}
+    <table class="comercio-confirmation__items">
+      <thead>
+        <tr>
+          <th>{% trans %}Producto{% endtrans %}</th>
+          <th class="text-center">{% trans %}Cant.{% endtrans %}</th>
+          <th class="text-right">{% trans %}Precio{% endtrans %}</th>
+          <th class="text-right">{% trans %}Subtotal{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td class="text-center">{{ item.quantity }}</td>
+          <td class="text-right">{{ item.unit_price|number_format(2, ',', '.') }} €</td>
+          <td class="text-right">{{ item.subtotal|number_format(2, ',', '.') }} €</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {# Desglose de importes #}
+    <div class="comercio-confirmation__totals">
+      {% if subtotal is defined and subtotal > 0 %}
+      <div class="comercio-confirmation__total-line">
+        <span>{% trans %}Subtotal{% endtrans %}</span>
+        <span>{{ subtotal|number_format(2, ',', '.') }} €</span>
+      </div>
+      {% endif %}
+
+      {% if discount_amount is defined and discount_amount > 0 %}
+      <div class="comercio-confirmation__total-line comercio-confirmation__total-line--discount">
+        <span>{% trans %}Descuento{% endtrans %}</span>
+        <span>-{{ discount_amount|number_format(2, ',', '.') }} €</span>
+      </div>
+      {% endif %}
+
+      {% if shipping_cost is defined and shipping_cost > 0 %}
+      <div class="comercio-confirmation__total-line">
+        <span>{% trans %}Envío{% endtrans %}</span>
+        <span>{{ shipping_cost|number_format(2, ',', '.') }} €</span>
+      </div>
+      {% endif %}
+
+      {% if tax_amount is defined and tax_amount > 0 %}
+      <div class="comercio-confirmation__total-line">
+        <span>{% trans %}IVA{% endtrans %}</span>
+        <span>{{ tax_amount|number_format(2, ',', '.') }} €</span>
+      </div>
+      {% endif %}
+
+      <div class="comercio-confirmation__total-line comercio-confirmation__total-line--total">
+        <span>{% trans %}Total{% endtrans %}</span>
+        <strong>{{ total|number_format(2, ',', '.') }} €</strong>
+      </div>
+    </div>
+
+    {# Estado y metodo de pago #}
+    <div class="comercio-confirmation__payment-info">
+      <div class="comercio-confirmation__status-row">
+        <span class="comercio-confirmation__receipt-label">{% trans %}Estado{% endtrans %}</span>
+        <span class="comercio-confirmation__status-badge comercio-confirmation__status-badge--{{ status }}">
+          {% if status == 'confirmed' %}
+            {% trans %}Confirmado{% endtrans %}
+          {% elseif status == 'pending' %}
+            {% trans %}Pendiente{% endtrans %}
+          {% elseif status == 'processing' %}
+            {% trans %}Procesando{% endtrans %}
+          {% else %}
+            {{ status }}
+          {% endif %}
+        </span>
+      </div>
+
+      {% if payment_method %}
+      <div class="comercio-confirmation__status-row">
+        <span class="comercio-confirmation__receipt-label">{% trans %}Método de pago{% endtrans %}</span>
+        <span>
+          {{ jaraba_icon('ui', 'credit-card', { variant: 'duotone', size: '16px' }) }}
+          {{ payment_method }}
+        </span>
+      </div>
+      {% endif %}
     </div>
   </div>
 
+  {# Badges de seguridad #}
+  <div class="comercio-confirmation__security">
+    <div class="comercio-confirmation__security-badge">
+      {{ jaraba_icon('ui', 'shield-check', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+      <span>{% trans %}Pago seguro con Stripe{% endtrans %}</span>
+    </div>
+    <div class="comercio-confirmation__security-badge">
+      {{ jaraba_icon('ui', 'lock', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+      <span>{% trans %}Datos cifrados SSL{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Acciones #}
   <div class="comercio-confirmation__actions">
-    <a href="/mis-pedidos" class="btn btn--primary">{{ 'Ver mis pedidos'|t }}</a>
-    <a href="/comercio-local" class="btn btn--secondary">{{ 'Seguir comprando'|t }}</a>
+    <a href="{{ path('jaraba_comercio_conecta.my_orders') }}" class="ej-btn ej-btn--primary ej-btn--lg">
+      {{ jaraba_icon('ui', 'clipboard', { variant: 'duotone', color: 'white', size: '16px' }) }}
+      {% trans %}Ver mis pedidos{% endtrans %}
+    </a>
+    <a href="{{ path('jaraba_comercio_conecta.marketplace') }}" class="ej-btn ej-btn--outline ej-btn--lg">
+      {{ jaraba_icon('ui', 'shopping-bag', { variant: 'duotone', size: '16px' }) }}
+      {% trans %}Seguir comprando{% endtrans %}
+    </a>
   </div>
 </div>

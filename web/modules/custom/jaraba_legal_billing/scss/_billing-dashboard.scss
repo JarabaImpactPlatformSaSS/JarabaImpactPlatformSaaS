@@ -49,7 +49,7 @@
   &.active,
   &:hover {
     background: var(--ej-billing-primary, #1565C0);
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     border-color: var(--ej-billing-primary, #1565C0);
   }
 }

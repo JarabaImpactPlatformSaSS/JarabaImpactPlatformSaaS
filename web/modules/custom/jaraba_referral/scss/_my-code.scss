@@ -103,7 +103,7 @@
   &__copy-btn {
     padding: $ref-space-sm $ref-space-lg;
     background: var(--ej-primary-color, $ref-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border: none;
     font-weight: 600;
     cursor: pointer;
@@ -147,8 +147,8 @@
 
     &:hover { transform: translateY(-2px); }
 
-    &--whatsapp { background: #25D366; color: #fff; }
-    &--telegram { background: #0088cc; color: #fff; }
+    &--whatsapp { background: #25D366; color: var(--ej-bg-surface, #fff); }
+    &--telegram { background: #0088cc; color: var(--ej-bg-surface, #fff); }
     &--email { background: var(--ej-surface-color, #e0e0e0); color: var(--ej-text-color, #424242); }
   }
 

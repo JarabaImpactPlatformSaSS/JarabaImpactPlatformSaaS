@@ -59,7 +59,7 @@
 
     &:hover:not(:disabled) {
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 

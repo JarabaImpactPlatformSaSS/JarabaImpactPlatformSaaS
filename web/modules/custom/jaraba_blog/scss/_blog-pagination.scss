@@ -37,7 +37,7 @@
 
     &--current {
       background: var(--ej-primary, #233D63);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       border-color: var(--ej-primary, #233D63);
       font-weight: var(--ej-font-weight-semibold, 600);
       cursor: default;

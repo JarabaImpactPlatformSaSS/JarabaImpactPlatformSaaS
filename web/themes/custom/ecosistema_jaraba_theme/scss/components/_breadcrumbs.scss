@@ -74,7 +74,7 @@
 
     .breadcrumb__current {
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border-color: transparent;
     }
 }

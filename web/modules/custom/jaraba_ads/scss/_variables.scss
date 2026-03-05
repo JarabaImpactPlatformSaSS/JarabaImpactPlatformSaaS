@@ -11,47 +11,47 @@
 // COLORES BASE (fallbacks para variables CSS inyectables)
 // ---------------------------------------------------------------------------
 
-$ads-color-primary-fallback: #2E7D32 !default;
-$ads-color-secondary-fallback: #1B5E20 !default;
-$ads-color-accent-fallback: #4CAF50 !default;
+$ads-color-primary-fallback: var(--ej-color-green-md, #2E7D32) !default;
+$ads-color-secondary-fallback: var(--ej-color-green-material-900, #1B5E20) !default;
+$ads-color-accent-fallback: var(--ej-color-green-material, #4CAF50) !default;
 
 // Colores semanticos
-$ads-color-success: #43A047 !default;
+$ads-color-success: var(--ej-color-green-material-dark, #43A047) !default;
 $ads-color-warning: #FFA000 !default;
-$ads-color-error: #E53935 !default;
-$ads-color-info: #1976D2 !default;
+$ads-color-error: var(--ej-color-red-material-dark, #E53935) !default;
+$ads-color-info: var(--ej-color-blue-md, #1976D2) !default;
 
 // Escala de grises
-$ads-gray-50: #FAFAFA !default;
-$ads-gray-100: #F5F5F5 !default;
-$ads-gray-200: #EEEEEE !default;
-$ads-gray-300: #E0E0E0 !default;
+$ads-gray-50: var(--ej-gray-lightest, #FAFAFA) !default;
+$ads-gray-100: var(--ej-gray-light, #F5F5F5) !default;
+$ads-gray-200: var(--ej-gray-lighter, #EEEEEE) !default;
+$ads-gray-300: var(--ej-gray-divider, #E0E0E0) !default;
 $ads-gray-400: #BDBDBD !default;
-$ads-gray-500: #9E9E9E !default;
-$ads-gray-600: #757575 !default;
-$ads-gray-700: #616161 !default;
-$ads-gray-800: #424242 !default;
-$ads-gray-900: #212121 !default;
+$ads-gray-500: var(--ej-gray-450, #9E9E9E) !default;
+$ads-gray-600: var(--ej-gray-550, #757575) !default;
+$ads-gray-700: var(--ej-gray-600-alt, #616161) !default;
+$ads-gray-800: var(--ej-gray-700-alt, #424242) !default;
+$ads-gray-900: var(--ej-gray-850, #212121) !default;
 
-$ads-white: #ffffff !default;
+$ads-white: var(--ej-bg-surface, #ffffff) !default;
 
 // ---------------------------------------------------------------------------
 // COLORES DE PLATAFORMA
 // ---------------------------------------------------------------------------
 
-$ads-color-google: #4285F4 !default;
-$ads-color-meta: #1877F2 !default;
-$ads-color-linkedin: #0A66C2 !default;
-$ads-color-tiktok: #000000 !default;
+$ads-color-google: var(--ej-brand-google-blue, #4285F4) !default;
+$ads-color-meta: var(--ej-brand-facebook, #1877F2) !default;
+$ads-color-linkedin: var(--ej-brand-linkedin-alt, #0A66C2) !default;
+$ads-color-tiktok: var(--ej-color-black, #000000) !default;
 
 // ---------------------------------------------------------------------------
 // COLORES DE ESTADO
 // ---------------------------------------------------------------------------
 
-$ads-status-active: #43A047 !default;
+$ads-status-active: var(--ej-color-green-material-dark, #43A047) !default;
 $ads-status-paused: #FFA000 !default;
-$ads-status-completed: #1976D2 !default;
-$ads-status-draft: #9E9E9E !default;
+$ads-status-completed: var(--ej-color-blue-md, #1976D2) !default;
+$ads-status-draft: var(--ej-gray-450, #9E9E9E) !default;
 
 // ---------------------------------------------------------------------------
 // TIPOGRAFIA

@@ -38,7 +38,7 @@
     border: 1px solid var(--ej-border-color, #e2e8f0);
     border-radius: legal.$legal-radius-sm;
     font-size: 0.8125rem;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -120,7 +120,7 @@
     padding: 0 0.5rem;
     border: 1px solid var(--ej-border-color, #e2e8f0);
     border-radius: legal.$legal-radius-sm;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     font-size: 0.8125rem;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -131,7 +131,7 @@
 
     &--active {
       background: var(--ej-color-primary, #{legal.$legal-primary});
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       border-color: var(--ej-color-primary, #{legal.$legal-primary});
     }
 

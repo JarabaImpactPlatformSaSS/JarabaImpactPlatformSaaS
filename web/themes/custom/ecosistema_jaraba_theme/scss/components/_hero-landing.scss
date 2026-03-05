@@ -227,7 +227,7 @@
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     line-height: 1.1;
     margin: 0 0 var(--ej-spacing-lg, 1.5rem);
     opacity: 0;
@@ -299,12 +299,12 @@
     }
 
     .intention-card__title {
-      color: var(--card-accent-color, #FFFFFF);
+      color: var(--card-accent-color, var(--ej-bg-surface, #FFFFFF));
     }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--card-accent-color, #FFFFFF);
+    outline: 2px solid var(--card-accent-color, var(--ej-bg-surface, #FFFFFF));
     outline-offset: 2px;
   }
 
@@ -361,7 +361,7 @@
     svg {
       width: 40px;
       height: 40px;
-      color: var(--card-accent-color, #FFFFFF);
+      color: var(--card-accent-color, var(--ej-bg-surface, #FFFFFF));
     }
   }
 
@@ -369,7 +369,7 @@
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
     font-size: 1.125rem;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     margin: 0 0 var(--ej-spacing-xs, 0.25rem);
     transition: color 0.3s ease;
   }
@@ -406,7 +406,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--ej-color-corporate, #233D63);
-  background: #FFFFFF;
+  background: var(--ej-bg-surface, #FFFFFF);
   border: none;
   border-radius: var(--ej-btn-radius, 8px);
   cursor: pointer;
@@ -443,7 +443,7 @@
   padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--ej-bg-surface, #FFFFFF);
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--ej-btn-radius, 8px);

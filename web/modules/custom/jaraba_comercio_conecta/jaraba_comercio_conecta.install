@@ -458,3 +458,52 @@ function jaraba_comercio_conecta_update_10007(): string {
     return 'Error: ' . $e->getMessage();
   }
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_comercio_conecta_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // CHECK 1: Commerce module present.
+  $module_handler = \Drupal::moduleHandler();
+  if (!$module_handler->moduleExists('commerce')) {
+    $requirements['jaraba_comercio_conecta_commerce'] = [
+      'title' => t('ComercioConecta: Commerce Module'),
+      'value' => t('Not installed'),
+      'description' => t('The commerce module is required for ComercioConecta marketplace features.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_comercio_conecta_commerce'] = [
+      'title' => t('ComercioConecta: Commerce Module'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  // CHECK 2: Stripe Connect keys for marketplace (SECRET-MGMT-001).
+  $stripe_secret = getenv('STRIPE_SECRET_KEY');
+  if (empty($stripe_secret)) {
+    $requirements['jaraba_comercio_conecta_stripe'] = [
+      'title' => t('ComercioConecta: Stripe Connect'),
+      'value' => t('Not configured'),
+      'description' => t('STRIPE_SECRET_KEY required for marketplace destination charges.'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+  else {
+    $requirements['jaraba_comercio_conecta_stripe'] = [
+      'title' => t('ComercioConecta: Stripe Connect'),
+      'value' => t('Configured'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

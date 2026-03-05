@@ -135,7 +135,7 @@
     font-family: var(--aei-font-headings);
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 800;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 0.75rem;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -152,19 +152,19 @@
 
     &--atencion {
       background: color-mix(in srgb, #F59E0B 20%, transparent);
-      color: #FDE68A;
+      color: var(--ej-color-yellow-200, #FDE68A);
       border: 1px solid color-mix(in srgb, #F59E0B 40%, transparent);
     }
 
     &--insercion {
       background: color-mix(in srgb, #10B981 20%, transparent);
-      color: #A7F3D0;
+      color: var(--ej-color-green-100, #A7F3D0);
       border: 1px solid color-mix(in srgb, #10B981 40%, transparent);
     }
 
     &--baja {
       background: color-mix(in srgb, #EF4444 20%, transparent);
-      color: #FECACA;
+      color: var(--ej-color-red-100, #FECACA);
       border: 1px solid color-mix(in srgb, #EF4444 40%, transparent);
     }
   }
@@ -187,22 +187,22 @@
     transition: stroke-dashoffset 1.5s cubic-bezier(0.65, 0, 0.35, 1);
 
     &--good {
-      stroke: #10B981;
+      stroke: var(--ej-color-success, #10B981);
     }
 
     &--medium {
-      stroke: #F59E0B;
+      stroke: var(--ej-color-warning, #F59E0B);
     }
 
     &--low {
-      stroke: #EF4444;
+      stroke: var(--ej-color-danger, #EF4444);
     }
   }
 
   &__gauge-value {
     font-size: 1.75rem;
     font-weight: 800;
-    fill: #fff;
+    fill: var(--ej-bg-surface, #fff);
     font-family: var(--aei-font-headings);
   }
 
@@ -245,7 +245,7 @@
   &__metric-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-family: var(--aei-font-headings);
   }
 
@@ -462,7 +462,7 @@
     transform: translateY(-50%);
     font-size: 0.65rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     white-space: nowrap;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
@@ -582,12 +582,12 @@
 
     &--complete {
       background: color-mix(in srgb, #10B981 14%, transparent);
-      color: #065F46;
+      color: var(--ej-color-green-deep, #065F46);
     }
 
     &--incomplete {
       background: color-mix(in srgb, var(--aei-primary) 14%, transparent);
-      color: #9A3412;
+      color: var(--ej-color-orange-800, #9A3412);
     }
   }
 
@@ -665,19 +665,19 @@
     }
 
     &--pending {
-      border-left: 3px solid #94A3B8;
+      border-left: 3px solid var(--ej-gray-400, #94A3B8);
     }
 
     &--reviewing {
-      border-left: 3px solid #3B82F6;
+      border-left: 3px solid var(--ej-color-blue, #3B82F6);
     }
 
     &--approved {
-      border-left: 3px solid #10B981;
+      border-left: 3px solid var(--ej-color-success, #10B981);
     }
 
     &--rejected {
-      border-left: 3px solid #EF4444;
+      border-left: 3px solid var(--ej-color-danger, #EF4444);
     }
 
     &--changes {
@@ -728,19 +728,19 @@
     white-space: nowrap;
 
     .aei-expediente__doc-card--pending & {
-      color: #64748B;
+      color: var(--ej-color-neutral, #64748B);
     }
 
     .aei-expediente__doc-card--reviewing & {
-      color: #3B82F6;
+      color: var(--ej-color-blue, #3B82F6);
     }
 
     .aei-expediente__doc-card--approved & {
-      color: #10B981;
+      color: var(--ej-color-success, #10B981);
     }
 
     .aei-expediente__doc-card--rejected & {
-      color: #EF4444;
+      color: var(--ej-color-danger, #EF4444);
     }
 
     .aei-expediente__doc-card--changes & {
@@ -783,7 +783,7 @@
   &__signed-badge {
     display: inline-flex;
     align-items: center;
-    color: #10B981;
+    color: var(--ej-color-success, #10B981);
   }
 
   &__empty {
@@ -1069,7 +1069,7 @@
     padding: 0 0.4rem;
     border-radius: 999px;
     background: var(--aei-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.7rem;
     font-weight: 700;
   }
@@ -1109,7 +1109,7 @@
     height: 36px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--aei-corporate), var(--aei-azul-profundo));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1159,7 +1159,7 @@
     padding: 0 0.35rem;
     border-radius: 999px;
     background: var(--aei-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.65rem;
     font-weight: 700;
     flex-shrink: 0;
@@ -1191,12 +1191,12 @@
     flex-shrink: 0;
 
     &--online {
-      background: #10B981;
+      background: var(--ej-color-success, #10B981);
       box-shadow: 0 0 0 3px color-mix(in srgb, #10B981 20%, transparent);
     }
 
     &--offline {
-      background: #94A3B8;
+      background: var(--ej-gray-400, #94A3B8);
     }
   }
 
@@ -1232,8 +1232,8 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.45rem 0.85rem;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 999px;
     font-size: 0.75rem;
@@ -1263,7 +1263,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
     border: none;
     cursor: pointer;
     display: flex;
@@ -1271,7 +1271,7 @@
     justify-content: center;
     box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 35%, transparent);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &::before {
       content: '';

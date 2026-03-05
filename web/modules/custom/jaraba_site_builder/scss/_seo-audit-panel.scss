@@ -102,7 +102,7 @@
     padding: 2px 8px;
     border-radius: var(--ej-radius-sm, 4px);
     background: var(--ej-primary, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: var(--ej-font-size-xs, 0.75rem);
     font-weight: var(--ej-font-weight-medium, 500);
   }

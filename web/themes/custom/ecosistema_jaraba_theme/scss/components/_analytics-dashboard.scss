@@ -74,7 +74,7 @@
     transition: color 0.2s ease;
 
     &:hover {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     svg {
@@ -116,7 +116,7 @@
 .analytics-dashboard__title {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0;
     font-family: $ej-font-headings;
 

@@ -77,7 +77,7 @@
 
     &--selected .support-csat__effort-value {
       background: var(--ej-color-corporate, #233D63);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       border-color: var(--ej-color-corporate, #233D63);
     }
   }

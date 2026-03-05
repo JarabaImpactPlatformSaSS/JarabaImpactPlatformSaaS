@@ -61,8 +61,8 @@
                 position: absolute;
                 top: -8px;
                 right: 12px;
-                background: #dbeafe;
-                color: #1e40af;
+                background: var(--ej-color-blue-50, #dbeafe);
+                color: var(--ej-color-blue-deep, #1e40af);
                 font-size: 0.7rem;
                 font-weight: 600;
                 padding: 2px 8px;
@@ -109,10 +109,10 @@
     &__free-threshold {
         margin-top: var(--ej-spacing-xs, 0.5rem);
         padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 0.75rem);
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        background: linear-gradient(135deg, #ecfdf5, var(--ej-color-green-50, #d1fae5));
         border-radius: var(--ej-radius-sm, 6px);
         font-size: var(--ej-font-size-sm, 0.875rem);
-        color: #065f46;
+        color: var(--ej-color-green-deep, #065f46);
         display: flex;
         align-items: center;
         gap: var(--ej-spacing-xs, 0.5rem);
@@ -161,23 +161,23 @@
         letter-spacing: 0.05em;
 
         &--pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--ej-color-amber-50, #fef3c7);
+            color: var(--ej-color-warning-deep, #92400e);
         }
 
         &--shipped {
-            background: #dbeafe;
-            color: #1e40af;
+            background: var(--ej-color-blue-50, #dbeafe);
+            color: var(--ej-color-blue-deep, #1e40af);
         }
 
         &--in-transit {
-            background: #e0e7ff;
+            background: var(--ej-color-indigo-50, #e0e7ff);
             color: #3730a3;
         }
 
         &--delivered {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--ej-color-green-50, #d1fae5);
+            color: var(--ej-color-green-deep, #065f46);
         }
     }
 
@@ -224,7 +224,7 @@
         }
 
         &--current::before {
-            background: #3b82f6;
+            background: var(--ej-color-blue, #3b82f6);
             box-shadow: 0 0 0 4px color-mix(in srgb, #3b82f6 20%, transparent);
             animation: agro-pulse 2s ease-in-out infinite;
         }
@@ -252,13 +252,13 @@
     &__eta {
         margin-top: var(--ej-spacing-md, 1rem);
         padding: var(--ej-spacing-sm, 0.75rem);
-        background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+        background: linear-gradient(135deg, var(--ej-color-green-25, #f0fdf4), var(--ej-color-green-50-alt, #ecfdf5));
         border-radius: var(--ej-radius-md, 8px);
         display: flex;
         align-items: center;
         gap: var(--ej-spacing-sm, 0.75rem);
         font-size: var(--ej-font-size-sm, 0.875rem);
-        color: #065f46;
+        color: var(--ej-color-green-deep, #065f46);
 
         strong {
             font-weight: 700;
@@ -304,8 +304,8 @@
         border-radius: 4px;
         font-size: var(--ej-font-size-xs, 0.75rem);
         font-weight: 500;
-        background: #f3f4f6;
-        color: #374151;
+        background: var(--ej-gray-50, #f3f4f6);
+        color: var(--ej-gray-700, #374151);
         margin-top: 4px;
     }
 

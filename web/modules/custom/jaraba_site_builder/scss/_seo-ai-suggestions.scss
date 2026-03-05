@@ -123,7 +123,7 @@
     font-weight: var(--ej-font-weight-bold, 700);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     .seo-ai-suggestions__improvement--high & { background: var(--ej-color-danger, #EF4444); }
     .seo-ai-suggestions__improvement--medium & { background: var(--ej-color-warning, #F59E0B); }

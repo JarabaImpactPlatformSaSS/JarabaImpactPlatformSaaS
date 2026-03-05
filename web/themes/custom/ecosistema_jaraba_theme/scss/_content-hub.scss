@@ -1610,7 +1610,7 @@
     .article-card {
         box-shadow: none !important;
         break-inside: avoid;
-        border: 1px solid #ddd;
+        border: 1px solid var(--ej-gray-border-light, #ddd);
         margin-bottom: 1rem;
     }
 
@@ -3243,7 +3243,7 @@
     height: 40px;
     padding: 0 $ej-spacing-md;
     background: var(--ej-bg-dark, $ej-bg-dark);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.75rem;
     flex-shrink: 0;
 }
@@ -3348,28 +3348,28 @@
     letter-spacing: 0.03em;
 
     &--draft {
-        background: #fef3c7;
-        color: #92400e;
+        background: var(--ej-color-amber-50, #fef3c7);
+        color: var(--ej-color-warning-deep, #92400e);
     }
 
     &--review {
-        background: #dbeafe;
-        color: #1e40af;
+        background: var(--ej-color-blue-50, #dbeafe);
+        color: var(--ej-color-blue-deep, #1e40af);
     }
 
     &--published {
-        background: #d1fae5;
-        color: #065f46;
+        background: var(--ej-color-green-50, #d1fae5);
+        color: var(--ej-color-green-deep, #065f46);
     }
 
     &--scheduled {
-        background: #e0e7ff;
+        background: var(--ej-color-indigo-50, #e0e7ff);
         color: #3730a3;
     }
 
     &--archived {
-        background: #f1f5f9;
-        color: #475569;
+        background: var(--ej-gray-100, #f1f5f9);
+        color: var(--ej-gray-600, #475569);
     }
 }
 
@@ -3457,7 +3457,7 @@
 
     &.is-active {
         background: var(--ej-color-primary, $ej-color-primary);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border-color: var(--ej-color-primary, $ej-color-primary);
     }
 }
@@ -3517,7 +3517,7 @@
 
     &--primary {
         background: var(--ej-color-primary, $ej-color-primary);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             opacity: $ej-hover-opacity;
@@ -3526,7 +3526,7 @@
 
     &--success {
         background: var(--ej-color-success, $ej-color-success);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             opacity: $ej-hover-opacity;
@@ -3613,7 +3613,7 @@
     gap: $ej-spacing-sm;
     padding: $ej-spacing-sm $ej-spacing-md;
     background: var(--ej-bg-dark, $ej-bg-dark);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: $ej-border-radius;
     box-shadow: $ej-shadow-lg;
     font-size: 0.8125rem;
@@ -3855,7 +3855,7 @@ body.page-article-canvas-editor {
 
         &:hover {
             background: var(--ej-color-primary, $ej-color-primary);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &:focus-visible {

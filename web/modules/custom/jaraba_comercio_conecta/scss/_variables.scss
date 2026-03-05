@@ -15,18 +15,18 @@
 // ---------------------------------------------------------------------------
 // Fallback values (solo se usan si --ej-* no están definidos por el tema)
 // ---------------------------------------------------------------------------
-$comercio-primary: #FF8C42;       // Naranja Impulso
+$comercio-primary: #FF8C42;       // Naranja Impulso — static for Sass compile-time functions
 $comercio-primary-light: color.scale($comercio-primary, $lightness: 85%);
 $comercio-primary-dark: color.scale($comercio-primary, $lightness: -25%);
 $comercio-secondary: #2D6A4F;     // Verde Confianza
 $comercio-cream: #FFF8F0;         // Crema fondo
-$comercio-text: #1A1A2E;          // Texto principal
-$comercio-text-muted: #6B7280;    // Texto secundario
-$comercio-border: #E5E7EB;        // Bordes suaves
-$comercio-surface: #FFFFFF;        // Fondo de cards
-$comercio-danger: #EF4444;         // Rojo peligro (Jaraba palette)
-$comercio-warning: #F59E0B;        // Amarillo alerta
-$comercio-success: #10B981;        // Verde éxito (Jaraba palette)
+$comercio-text: #1A1A2E;          // Texto principal — static for Sass compile-time functions
+$comercio-text-muted: #6B7280;    // Texto secundario — static for Sass compile-time functions
+$comercio-border: var(--ej-border-color, #E5E7EB);        // Bordes suaves
+$comercio-surface: var(--ej-bg-surface, #FFFFFF);        // Fondo de cards
+$comercio-danger: #EF4444;         // Rojo peligro — static for Sass compile-time functions
+$comercio-warning: #F59E0B;        // Amarillo alerta — static for Sass compile-time functions
+$comercio-success: #10B981;        // Verde éxito — static for Sass compile-time functions
 
 // ---------------------------------------------------------------------------
 // Spacing (scale 4px base, matching the theme)

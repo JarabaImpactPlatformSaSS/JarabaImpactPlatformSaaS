@@ -45,6 +45,11 @@
                 });
             }
 
+            // P2-01: Password strength indicator.
+            if (passwordField) {
+                Drupal.ecosistemaJarabaOnboarding.initPasswordStrength(passwordField);
+            }
+
             // Formatear dominio automáticamente (lowercase, sin espacios)
             if (domainInput) {
                 domainInput.addEventListener('input', function () {
@@ -228,6 +233,87 @@
         },
 
         /**
+         * P2-01: Password strength indicator visual.
+         *
+         * 4 niveles: debil (rojo), regular (naranja), fuerte (verde claro),
+         * muy fuerte (verde). Barra de progreso animada con CSS vars.
+         *
+         * @param {HTMLInputElement} passwordField - Campo de contraseña.
+         */
+        initPasswordStrength: function (passwordField) {
+            var formGroup = passwordField.closest('.ej-form-group');
+            if (!formGroup) return;
+
+            // Crear indicador visual.
+            var indicator = document.createElement('div');
+            indicator.className = 'ej-password-strength';
+            indicator.innerHTML =
+                '<div class="ej-password-strength__bar">' +
+                '<div class="ej-password-strength__fill"></div>' +
+                '</div>' +
+                '<span class="ej-password-strength__label"></span>';
+            indicator.style.display = 'none';
+
+            // Insertar después del campo.
+            var helpText = formGroup.querySelector('.ej-form-help');
+            if (helpText) {
+                helpText.parentNode.insertBefore(indicator, helpText.nextSibling);
+            } else {
+                formGroup.appendChild(indicator);
+            }
+
+            var fill = indicator.querySelector('.ej-password-strength__fill');
+            var label = indicator.querySelector('.ej-password-strength__label');
+
+            passwordField.addEventListener('input', function () {
+                var value = passwordField.value;
+                if (!value) {
+                    indicator.style.display = 'none';
+                    return;
+                }
+
+                indicator.style.display = 'block';
+                var strength = Drupal.ecosistemaJarabaOnboarding.calculatePasswordStrength(value);
+
+                var levels = [
+                    { min: 0, label: Drupal.t('Débil'), color: 'var(--ej-color-error, #dc2626)', width: '25%' },
+                    { min: 2, label: Drupal.t('Regular'), color: 'var(--ej-color-warning, #f59e0b)', width: '50%' },
+                    { min: 3, label: Drupal.t('Fuerte'), color: 'var(--ej-color-success-light, #34d399)', width: '75%' },
+                    { min: 4, label: Drupal.t('Muy fuerte'), color: 'var(--ej-color-success, #10b981)', width: '100%' }
+                ];
+
+                var level = levels[0];
+                for (var i = levels.length - 1; i >= 0; i--) {
+                    if (strength >= levels[i].min) {
+                        level = levels[i];
+                        break;
+                    }
+                }
+
+                fill.style.width = level.width;
+                fill.style.backgroundColor = level.color;
+                label.textContent = level.label;
+                label.style.color = level.color;
+            });
+        },
+
+        /**
+         * Calcula la fortaleza de una contraseña (0-5 puntos).
+         *
+         * @param {string} password - La contraseña a evaluar.
+         * @returns {number} - Puntuación de 0 a 5.
+         */
+        calculatePasswordStrength: function (password) {
+            var score = 0;
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            return score;
+        },
+
+        /**
          * Inicializa el toggle de precios mensual/anual.
          *
          * @param {HTMLElement} container - Contenedor de la página de planes.
@@ -270,6 +356,11 @@
          */
         initConfetti: function (container) {
             if (!container) return;
+
+            // P3-04: Respetar prefers-reduced-motion.
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
 
             // Crear partículas de confetti
             var colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];

@@ -162,7 +162,7 @@
 
   &:hover {
     background: var(--ej-color-primary, #{legal.$legal-primary});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &:disabled,

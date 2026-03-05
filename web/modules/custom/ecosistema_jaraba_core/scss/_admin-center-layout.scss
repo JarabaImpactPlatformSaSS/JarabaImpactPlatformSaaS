@@ -79,13 +79,13 @@ $sidebar-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
 
   &:hover {
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
   }
 }
@@ -177,13 +177,13 @@ $sidebar-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     background: rgba(255, 255, 255, 0.08);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
   }
 
   &.is-active {
     background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &::before {
       content: '';
@@ -309,7 +309,7 @@ $sidebar-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: space-between;
   min-height: $topbar-height;
   padding: 0 1.5rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-bottom: 1px solid var(--ej-gray-200, #EEEEEE);
   flex-shrink: 0;
 }
@@ -396,7 +396,7 @@ $sidebar-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0.0625rem 0.25rem;
   border: 1px solid var(--ej-gray-300, #E0E0E0);
   border-radius: 4px;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   color: var(--ej-text-secondary, #757575);
 }
 

@@ -84,7 +84,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, var(--ej-color-corporate, $azul-corporativo), color.scale($azul-corporativo, $lightness: 20%));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             font-family: $sc-font;
             font-size: 1.75rem;
             font-weight: 700;
@@ -175,7 +175,7 @@
         border-radius: 100px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: var(--ej-color-neutral, $ej-color-neutral);
         margin-bottom: 0.75rem;
 

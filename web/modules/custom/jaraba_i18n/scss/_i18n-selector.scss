@@ -208,19 +208,19 @@
 }
 
 .i18n-selector__flag--eu {
-    background: linear-gradient(180deg, #0f722b 33%, #fff 33%, #fff 66%, #ac1b1c 66%);
+    background: linear-gradient(180deg, #0f722b 33%, var(--ej-bg-surface, #fff) 33%, var(--ej-bg-surface, #fff) 66%, #ac1b1c 66%);
 }
 
 .i18n-selector__flag--fr {
-    background: linear-gradient(90deg, #002654 33%, #fff 33%, #fff 66%, #ce1126 66%);
+    background: linear-gradient(90deg, #002654 33%, var(--ej-bg-surface, #fff) 33%, var(--ej-bg-surface, #fff) 66%, #ce1126 66%);
 }
 
 .i18n-selector__flag--de {
-    background: linear-gradient(180deg, #000 33%, #dd0000 33%, #dd0000 66%, #ffcc00 66%);
+    background: linear-gradient(180deg, var(--ej-color-black, #000) 33%, #dd0000 33%, #dd0000 66%, #ffcc00 66%);
 }
 
 .i18n-selector__flag--pt {
-    background: linear-gradient(90deg, #006600 40%, #ff0000 40%);
+    background: linear-gradient(90deg, #006600 40%, var(--ej-color-red-pure, #ff0000) 40%);
 }
 
 // =============================================================================

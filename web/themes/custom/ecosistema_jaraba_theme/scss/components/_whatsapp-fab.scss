@@ -13,8 +13,8 @@
   align-items: center;
   gap: var(--ej-space-xs, 0.5rem);
   padding: 12px 16px;
-  background: #25d366;
-  color: #fff;
+  background: var(--ej-brand-whatsapp, #25d366);
+  color: var(--ej-bg-surface, #fff);
   border-radius: 50px;
   text-decoration: none;
   font-family: var(--ej-font-body, 'Inter', sans-serif);
@@ -27,7 +27,7 @@
   &:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &:active {

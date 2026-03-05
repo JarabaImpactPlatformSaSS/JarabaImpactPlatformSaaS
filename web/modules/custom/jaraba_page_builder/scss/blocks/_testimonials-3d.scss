@@ -26,10 +26,10 @@
 
     &--dark {
         background: var(--ej-bg-dark, #1A1A2E);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         .jaraba-block__title {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -38,10 +38,10 @@
             var(--ej-gradient-start, #0f172a) 0%,
             var(--ej-gradient-mid, #1e293b) 50%,
             var(--ej-gradient-end, #334155) 100%);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         .jaraba-block__title {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -102,7 +102,7 @@
 
         &:hover {
             background: var(--ej-color-primary, #FF8C42);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             border-color: transparent;
             transform: scale(1.1);
         }
@@ -251,7 +251,7 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
     }
 

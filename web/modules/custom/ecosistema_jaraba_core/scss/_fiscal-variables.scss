@@ -28,38 +28,38 @@ $fiscal-aeat-light-fallback: #EBF4FF !default;
 
 // FACe / B2G — Morado institucional de la Administracion Publica.
 $fiscal-face-fallback: #553C9A !default;
-$fiscal-face-light-fallback: #FAF5FF !default;
+$fiscal-face-light-fallback: var(--ej-color-purple-50, #FAF5FF) !default;
 
 // B2B / E-Factura — Verde de negocio entre empresas.
 $fiscal-b2b-fallback: #276749 !default;
 $fiscal-b2b-light-fallback: #F0FFF4 !default;
 
 // Estado: Aceptado por AEAT (success contextualizado fiscal).
-$fiscal-accepted-fallback: #10B981 !default;
+$fiscal-accepted-fallback: var(--ej-color-success, #10B981) !default;
 
 // Estado: Pendiente de envio o procesamiento.
-$fiscal-pending-fallback: #F59E0B !default;
+$fiscal-pending-fallback: var(--ej-color-warning, #F59E0B) !default;
 
 // Estado: Rechazado por AEAT, FACe o validacion fallida.
-$fiscal-rejected-fallback: #EF4444 !default;
+$fiscal-rejected-fallback: var(--ej-color-danger, #EF4444) !default;
 
 // Estado: Error de comunicacion o sistema.
-$fiscal-error-fallback: #DC2626 !default;
+$fiscal-error-fallback: var(--ej-color-danger-dark, #DC2626) !default;
 
 // Certificado: Proximo a expirar (warning especifico).
-$fiscal-cert-warning-fallback: #D97706 !default;
+$fiscal-cert-warning-fallback: var(--ej-color-warning-dark, #D97706) !default;
 
 // Certificado: Expirado (critical).
-$fiscal-cert-expired-fallback: #B91C1C !default;
+$fiscal-cert-expired-fallback: var(--ej-color-red-700, #B91C1C) !default;
 
 // Certificado: Valido.
-$fiscal-cert-valid-fallback: #059669 !default;
+$fiscal-cert-valid-fallback: var(--ej-color-success-dark, #059669) !default;
 
 // Hash chain: Integridad verificada.
-$fiscal-chain-valid-fallback: #0891B2 !default;
+$fiscal-chain-valid-fallback: var(--ej-color-cyan, #0891B2) !default;
 
 // Hash chain: Integridad comprometida.
-$fiscal-chain-broken-fallback: #DC2626 !default;
+$fiscal-chain-broken-fallback: var(--ej-color-danger-dark, #DC2626) !default;
 
 // ---------------------------------------------------------------------------
 // COLORES DERIVADOS (usando color-mix, NUNCA rgba())

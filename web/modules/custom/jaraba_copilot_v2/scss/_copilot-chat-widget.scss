@@ -72,7 +72,7 @@
   height: 56px;
   border-radius: var(--ej-radius-full, 50%);
   background: var(--ej-cc-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   border: none;
   cursor: pointer;
   display: flex;
@@ -100,7 +100,7 @@
   justify-content: space-between;
   padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
   background: var(--ej-cc-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   flex-shrink: 0;
 }
 
@@ -113,7 +113,7 @@
 .copilot-chat__header-close {
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   cursor: pointer;
   padding: var(--ej-spacing-xs, 4px);
   opacity: 0.8;
@@ -201,7 +201,7 @@
 
     .copilot-chat__message-content {
       background: var(--ej-cc-primary);
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
       border-radius: var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0 var(--ej-radius-md, 8px);
     }
   }
@@ -322,13 +322,13 @@
 
   &:hover {
     background: var(--ej-cc-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
   }
 
   // Variante enlace directo — fondo sólido, destaca como CTA.
   &--link {
     background: var(--ej-cc-primary, var(--ej-color-impulse, #FF8C42));
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border-color: var(--ej-cc-primary, var(--ej-color-impulse, #FF8C42));
     font-weight: 600;
 
@@ -417,7 +417,7 @@
   height: 40px;
   border-radius: var(--ej-radius-md, 8px);
   background: var(--ej-cc-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   border: none;
   cursor: pointer;
   display: flex;

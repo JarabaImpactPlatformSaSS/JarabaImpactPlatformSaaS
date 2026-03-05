@@ -1,0 +1,39 @@
+id: demo
+label: 'Onboarding Demo'
+vertical_id: demo
+headline: 'Explora la plataforma en modo demo'
+subheadline: 'Descubre todas las capacidades de Jaraba Impact Platform sin compromiso.'
+benefits:
+  - icon_category: ui
+    icon_name: globe
+    text: 'Acceso a todas las verticales'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto IA integrado'
+  - icon_category: ui
+    icon_name: palette
+    text: 'Personalización visual completa'
+  - icon_category: ui
+    icon_name: code
+    text: 'API REST y webhooks'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Explora el Page Builder'
+    description: 'Crea páginas con el editor visual GrapesJS.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-layout-text-window
+  - title: 'Prueba los agentes IA'
+    description: 'Interactúa con los 11 agentes de inteligencia artificial.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-robot
+  - title: 'Personaliza tu tema'
+    description: 'Cambia colores, tipografía y layout.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-palette
+connect_required: false
+post_onboarding_route: ''

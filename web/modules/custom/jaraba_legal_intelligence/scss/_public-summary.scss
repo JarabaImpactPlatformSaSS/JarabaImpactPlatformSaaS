@@ -231,7 +231,7 @@
     gap: 0.5rem;
     padding: 0.875rem 2rem;
     background: var(--ej-color-primary, #{legal.$legal-primary});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: legal.$legal-radius;
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
@@ -366,22 +366,22 @@
     max-width: 100%;
     padding: 0;
     font-size: 11pt;
-    color: #000;
+    color: var(--ej-color-black, #000);
 
     &__header {
-      border-bottom-color: #000;
+      border-bottom-color: var(--ej-color-black, #000);
     }
 
     &__title {
       font-size: 16pt;
-      color: #000;
+      color: var(--ej-color-black, #000);
     }
 
     &__meta-chip,
     &__meta-badge {
-      border: 1px solid #999;
+      border: 1px solid var(--ej-gray-mid, #999);
       background: none;
-      color: #333;
+      color: var(--ej-gray-dark, #333);
     }
 
     &__abstract {
@@ -390,15 +390,15 @@
     }
 
     &__holdings {
-      border-left-color: #333;
+      border-left-color: var(--ej-gray-dark, #333);
       background: none;
       page-break-inside: avoid;
     }
 
     &__topic-tag {
-      border: 1px solid #999;
+      border: 1px solid var(--ej-gray-mid, #999);
       background: none;
-      color: #333;
+      color: var(--ej-gray-dark, #333);
     }
 
     // Ocultar CTA en impresion — no relevante en papel.
@@ -407,23 +407,23 @@
     }
 
     &__footer {
-      border-top-color: #999;
+      border-top-color: var(--ej-gray-mid, #999);
     }
 
     &__source-attribution a {
-      color: #000;
+      color: var(--ej-color-black, #000);
 
       &::after {
         content: ' (' attr(href) ')';
         font-size: 9pt;
-        color: #555;
+        color: var(--ej-gray-dark-alt, #555);
       }
     }
 
     &__disclaimer {
       background: none;
-      border: 1px solid #ccc;
-      color: #555;
+      border: 1px solid var(--ej-gray-border, #ccc);
+      color: var(--ej-gray-dark-alt, #555);
     }
   }
 }

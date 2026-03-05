@@ -46,7 +46,7 @@
     background: linear-gradient(135deg,
             var(--ej-color-corporate, $azul-corporativo),
             color.scale($azul-corporativo, $lightness: 18%));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 .sc-detail__hero-bg {
@@ -92,7 +92,7 @@
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-family: $sc-font;
         font-size: 2.75rem;
         font-weight: 800;
@@ -104,7 +104,7 @@
     position: absolute;
     bottom: -4px;
     right: -4px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: 50%;
     width: 32px;
     height: 32px;
@@ -185,7 +185,7 @@
     font-weight: 600;
     padding: 0.3rem 0.75rem;
     border-radius: 100px;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(4px);
     letter-spacing: 0.03em;
@@ -295,7 +295,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.06),
         0 1px 4px rgba(0, 0, 0, 0.04);
@@ -406,7 +406,7 @@
     background: linear-gradient(135deg,
             var(--ej-color-corporate, $azul-corporativo),
             color.scale($azul-corporativo, $lightness: 15%));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 .sc-impact__header {
@@ -525,7 +525,7 @@
     align-items: center;
     justify-content: center;
     background: var(--ej-color-impulse, $naranja-impulso);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-family: $sc-font;
     font-size: 1rem;
     font-weight: 700;
@@ -606,7 +606,7 @@
     font-weight: 500;
     padding: 0.375rem 0.875rem;
     border-radius: 100px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border: 1px solid var(--ej-border-color, #e5e7eb);
     color: var(--ej-text-primary, #374151);
     transition: border-color 0.2s ease;
@@ -654,7 +654,7 @@
     transition: all 0.25s ease;
 
     &--primary {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: var(--ej-color-corporate, $azul-corporativo);
         border: 1px solid var(--ej-color-corporate, $azul-corporativo);
 
@@ -666,9 +666,9 @@
     }
 
     &--linkedin {
-        color: #0A66C2;
-        background: #fff;
-        border: 1px solid #0A66C2;
+        color: var(--ej-brand-linkedin-alt, #0A66C2);
+        background: var(--ej-bg-surface, #fff);
+        border: 1px solid var(--ej-brand-linkedin-alt, #0A66C2);
 
         &:hover {
             background: rgba(10, 102, 194, 0.06);
@@ -741,23 +741,23 @@
     }
 
     &--linkedin:hover {
-        background: #0077b5;
-        color: #fff;
+        background: var(--ej-brand-linkedin, #0077b5);
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--twitter:hover {
-        background: #1da1f2;
-        color: #fff;
+        background: var(--ej-brand-twitter, #1da1f2);
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--facebook:hover {
-        background: #1877f2;
-        color: #fff;
+        background: var(--ej-brand-facebook, #1877f2);
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--whatsapp:hover {
-        background: #25d366;
-        color: #fff;
+        background: var(--ej-brand-whatsapp, #25d366);
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -770,7 +770,7 @@
     background: linear-gradient(135deg, var(--ej-color-corporate, $azul-corporativo), color.scale($azul-corporativo, $lightness: -15%));
     padding: 3rem 2rem;
     text-align: center;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 .sc-cta__title {
@@ -807,7 +807,7 @@
     transition: all 0.2s ease;
 
     &--primary {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         color: var(--ej-color-corporate, $azul-corporativo);
 
         &:hover {
@@ -818,7 +818,7 @@
 
     &--secondary {
         background: rgba(255, 255, 255, 0.15);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: 1px solid rgba(255, 255, 255, 0.3);
 
         &:hover {
@@ -876,7 +876,7 @@
 
     .sc-detail__hero {
         background: none;
-        color: #000;
+        color: var(--ej-color-black, #000);
         padding: 1rem 0;
     }
 

@@ -81,7 +81,7 @@
         var(--ej-color-corporate, #{$ej-color-corporate}),
         color-mix(in srgb, var(--ej-color-corporate, #{$ej-color-corporate}) 70%, var(--ej-color-impulse, #{$ej-color-impulse}))
       );
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       padding: $ej-spacing-xl;
       border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
     }

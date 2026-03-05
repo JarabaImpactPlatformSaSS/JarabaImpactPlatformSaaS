@@ -1,0 +1,39 @@
+id: agroconecta
+label: 'Onboarding AgroConecta'
+vertical_id: agroconecta
+headline: 'La plataforma de trazabilidad más avanzada'
+subheadline: 'Gestiona tu producción agroalimentaria con trazabilidad, certificaciones y venta directa.'
+benefits:
+  - icon_category: agriculture
+    icon_name: seedling
+    text: 'Trazabilidad completa de lotes'
+  - icon_category: ui
+    icon_name: shield
+    text: 'Certificados con firma digital'
+  - icon_category: ui
+    icon_name: qr-code
+    text: 'Códigos QR verificables'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto IA para productores'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Completa tu perfil de productor'
+    description: 'Añade el logo y la información de tu organización.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-building
+  - title: 'Configura tus productos'
+    description: 'Crea tu catálogo de productos para trazabilidad.'
+    route: 'entity.product_agro.add_form'
+    route_params: {}
+    icon: bi-box-seam
+  - title: 'Conecta tu cuenta bancaria'
+    description: 'Configura Stripe para recibir pagos de tus clientes.'
+    route: 'ecosistema_jaraba_core.api.stripe.connect.onboard'
+    route_params: {}
+    icon: bi-credit-card
+connect_required: true
+post_onboarding_route: ''

@@ -105,12 +105,12 @@ body.experiments-dashboard-page {
     position: relative;
     padding: 3rem 2rem;
     overflow: hidden;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &--corporate {
         background: linear-gradient(135deg,
                 var(--ej-color-corporate, #233D63) 0%,
-                #1a2d4a 50%,
+                var(--ej-dark-accent, #1a2d4a) 50%,
                 var(--ej-color-corporate, #233D63) 100%);
     }
 
@@ -167,7 +167,7 @@ body.experiments-dashboard-page {
         font-family: var(--ej-font-headings, 'Outfit', sans-serif);
         font-size: clamp(1.75rem, 4vw, 2.25rem);
         font-weight: 700;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin: 0;
         line-height: 1.2;
     }
@@ -202,7 +202,7 @@ body.experiments-dashboard-page {
     align-items: center;
     gap: 1rem;
     padding: 1.5rem;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-border-radius, 12px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
@@ -251,19 +251,19 @@ body.experiments-dashboard-page {
     &--highlight {
         background: linear-gradient(135deg,
                 var(--ej-color-success, #10B981) 0%,
-                #059669 100%);
+                var(--ej-color-success-dark, #059669) 100%);
 
         .kpi-card__icon {
             background: rgba(255, 255, 255, 0.2);
 
             svg {
-                color: #fff;
+                color: var(--ej-bg-surface, #fff);
             }
         }
 
         .kpi-card__value,
         .kpi-card__label {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -340,7 +340,7 @@ body.experiments-dashboard-page {
 .experiment-card {
     display: flex;
     flex-direction: column;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-border-radius, 12px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     overflow: hidden;
@@ -489,7 +489,7 @@ body.experiments-dashboard-page {
     justify-content: center;
     text-align: center;
     padding: 4rem 2rem;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-border-radius, 12px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
@@ -531,7 +531,7 @@ body.experiments-dashboard-page {
     font-family: var(--ej-font-body, 'Inter', sans-serif);
     font-size: 0.875rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
     padding: 0.75rem 1.5rem;
     background: linear-gradient(135deg,
@@ -545,7 +545,7 @@ body.experiments-dashboard-page {
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 169, 165, 0.3);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &.btn--large {
@@ -585,7 +585,7 @@ body.experiments-dashboard-page {
 .btn--warning {
     background: linear-gradient(135deg,
             var(--ej-color-warning, #F59E0B) 0%,
-            #d97706 100%);
+            var(--ej-color-warning-dark, #d97706) 100%);
 
     &:hover {
         box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);

@@ -4,10 +4,10 @@
 // =============================================================================
 
 // --- Colores ---
-$ab-primary: #1976D2;
-$ab-success: #2E7D32;
-$ab-warning: #F57C00;
-$ab-error: #D32F2F;
+$ab-primary: var(--ej-color-blue-md, #1976D2);
+$ab-success: var(--ej-color-green-md, #2E7D32);
+$ab-warning: var(--ej-color-orange-material-dark, #F57C00);
+$ab-error: var(--ej-color-red-material-700, #D32F2F);
 $ab-info: #0288D1;
 
 // --- Tipografía ---

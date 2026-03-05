@@ -83,7 +83,7 @@
         var(--ej-color-corporate, #233D63) 0%,
         var(--ej-color-innovation, #00A9A5) 100%
     );
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     padding: 1rem;
     border-radius: var(--ej-radius-lg, 10px);
     border: none;

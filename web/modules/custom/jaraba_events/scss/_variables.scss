@@ -13,24 +13,24 @@
 // =============================================================================
 
 // --- Colores del módulo (fallbacks) ---
-$events-primary: #2E7D32;
-$events-primary-light: #4CAF50;
-$events-primary-dark: #1B5E20;
-$events-accent: #FF8C42;
-$events-corporate: #233D63;
+$events-primary: var(--ej-color-green-md, #2E7D32);
+$events-primary-light: var(--ej-color-green-material, #4CAF50);
+$events-primary-dark: var(--ej-color-green-material-900, #1B5E20);
+$events-accent: var(--ej-color-impulse, #FF8C42);
+$events-corporate: var(--ej-color-corporate, #233D63);
 
 // --- Colores de estado ---
-$events-success: #2E7D32;
-$events-warning: #F57C00;
-$events-error: #D32F2F;
-$events-info: #1976D2;
+$events-success: var(--ej-color-green-md, #2E7D32);
+$events-warning: var(--ej-color-orange-material-dark, #F57C00);
+$events-error: var(--ej-color-red-material-700, #D32F2F);
+$events-info: var(--ej-color-blue-md, #1976D2);
 
 // --- Colores de tipo de evento ---
-$events-type-webinar: #1976D2;
-$events-type-workshop: #7B1FA2;
-$events-type-conference: #233D63;
+$events-type-webinar: var(--ej-color-blue-md, #1976D2);
+$events-type-workshop: var(--ej-color-purple-material-dark, #7B1FA2);
+$events-type-conference: var(--ej-color-corporate, #233D63);
 $events-type-meetup: #00897B;
-$events-type-demo: #FF8C42;
+$events-type-demo: var(--ej-color-impulse, #FF8C42);
 $events-type-networking: #C2185B;
 
 // --- Tipografía ---
@@ -111,7 +111,7 @@ $events-z-countdown: 10;
   gap: $events-spacing-sm;
   padding: $events-spacing-sm $events-spacing-lg;
   background: var(--ej-primary-color, $events-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   font-family: $events-font-family;
   font-weight: 600;
   font-size: 0.9375rem;
@@ -144,7 +144,7 @@ $events-z-countdown: 10;
   align-items: center;
   padding: $events-spacing-xs $events-spacing-sm;
   background: $bg;
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;

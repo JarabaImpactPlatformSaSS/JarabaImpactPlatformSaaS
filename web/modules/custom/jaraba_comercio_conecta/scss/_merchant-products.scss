@@ -67,7 +67,7 @@
   &--active {
     background: var(--ej-color-primary, $comercio-primary);
     border-color: var(--ej-color-primary, $comercio-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -116,6 +116,6 @@
   &--active {
     background: var(--ej-color-primary, $comercio-primary);
     border-color: var(--ej-color-primary, $comercio-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }

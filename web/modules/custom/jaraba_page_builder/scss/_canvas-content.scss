@@ -16,8 +16,8 @@
 $_max-width-content: 1200px;
 $_spacing-page-x: 1.5rem;
 $_spacing-page-x-mobile: 1rem;
-$_text-inverse: #ffffff;
-$_color-corporate: #233D63;
+$_text-inverse: var(--ej-bg-surface, #ffffff);
+$_color-corporate: var(--ej-color-corporate, #233D63);
 
 // ====================================================
 // PAGE CONTENT WRAPPER (Canvas)

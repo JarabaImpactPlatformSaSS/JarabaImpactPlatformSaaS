@@ -74,7 +74,7 @@
 
     .driver-popover-next-btn {
         background: var(--ej-color-innovation, #00A9A5);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
 
         &:hover {
             background: var(--ej-color-innovation-hover, #008F8C);
@@ -145,7 +145,7 @@
 
     &:hover {
         background: var(--ej-color-innovation, #00A9A5);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         border-color: var(--ej-color-innovation, #00A9A5);
         transform: scale(1.08);
         box-shadow: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.10));

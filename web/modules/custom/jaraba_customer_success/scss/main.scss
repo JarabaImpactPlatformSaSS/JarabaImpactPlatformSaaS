@@ -527,7 +527,7 @@
   display: inline-flex;
   padding: 0.5rem 1.25rem;
   background: $cs-color-primary;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border-radius: $cs-border-radius;
   text-decoration: none;
   font-weight: 500;

@@ -8,11 +8,13 @@
 @use 'sass:color';
 
 // ─── Variables locales PED ──────────────────────────────────────────
+// Static values for Sass compile-time functions (color.adjust).
+// Runtime theming uses var(--ej-*) directly in CSS properties.
 $ped-azul: #233D63;
 $ped-azul-light: #2d4f7e;
 $ped-dorado: #C5A55A;
 $ped-dorado-light: #dcc07a;
-$ped-gradient: linear-gradient(135deg, $ped-azul 0%, color.adjust($ped-azul, $lightness: -8%) 50%, #1a2d4a 100%);
+$ped-gradient: linear-gradient(135deg, var(--ej-color-corporate, $ped-azul) 0%, color.adjust($ped-azul, $lightness: -8%) 50%, var(--ej-dark-accent, #1a2d4a) 100%);
 $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 100%);
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -26,7 +28,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
   justify-content: center;
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
   background: $ped-gradient;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   overflow: hidden;
   text-align: center;
 
@@ -124,7 +126,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 
   .btn-secondary, .btn-ghost, a[class*="btn-ghost"], a[class*="btn-secondary"] {
     border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     padding: 0.85rem 2rem;
     border-radius: var(--ej-radius-pill, 50rem);
     text-decoration: none;
@@ -215,14 +217,14 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 .ped-motores {
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
   background: $ped-gradient;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   h2 {
     font-family: var(--ej-font-heading, 'Outfit', sans-serif);
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 700;
     text-align: center;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 var(--ej-space-xs, 0.5rem);
   }
 
@@ -280,7 +282,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     font-size: var(--ej-text-lg, 1.25rem);
     font-weight: 700;
     margin: 0 0 var(--ej-space-xs, 0.5rem);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   p {
@@ -385,10 +387,10 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
   }
 
   // Color accents per audience
-  &__card--inversor .ped-audiencia__icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &__card--inversor .ped-audiencia__icon { background: rgba(16, 185, 129, 0.1); color: var(--ej-color-success, #10b981); }
   &__card--institucion .ped-audiencia__icon { background: rgba($ped-azul, 0.1); color: $ped-azul; }
-  &__card--prensa .ped-audiencia__icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
-  &__card--empleo .ped-audiencia__icon { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+  &__card--prensa .ped-audiencia__icon { background: rgba(139, 92, 246, 0.1); color: var(--ej-color-violet, #8b5cf6); }
+  &__card--empleo .ped-audiencia__icon { background: rgba(14, 165, 233, 0.1); color: var(--ej-color-sky, #0ea5e9); }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -396,7 +398,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 // ═══════════════════════════════════════════════════════════════════════
 .ped-partners {
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 
   h2 {
     font-family: var(--ej-font-heading, 'Outfit', sans-serif);
@@ -449,7 +451,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
   background: $ped-gradient;
   text-align: center;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   position: relative;
   overflow: hidden;
 
@@ -471,7 +473,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     font-family: var(--ej-font-heading, 'Outfit', sans-serif);
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 var(--ej-space-sm, 1rem);
   }
 
@@ -524,8 +526,8 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 [data-theme='dark'],
 .dark-mode {
   .ped-cifras {
-    background: #0f172a;
-    h2 { color: #f1f5f9; }
+    background: var(--ej-gray-900, #0f172a);
+    h2 { color: var(--ej-gray-100, #f1f5f9); }
     .ped-cifras__item {
       background: rgba(26, 26, 46, 0.6);
       border-color: rgba(255, 255, 255, 0.08);
@@ -533,18 +535,18 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
   }
 
   .ped-audiencia {
-    background: #0f172a;
-    h2 { color: #f1f5f9; }
+    background: var(--ej-gray-900, #0f172a);
+    h2 { color: var(--ej-gray-100, #f1f5f9); }
     .ped-audiencia__card {
       background: rgba(26, 26, 46, 0.6);
       border-color: rgba(255, 255, 255, 0.08);
     }
-    h3 { color: #f1f5f9; }
+    h3 { color: var(--ej-gray-100, #f1f5f9); }
   }
 
   .ped-partners {
-    background: #1e293b;
-    h2 { color: #f1f5f9; }
+    background: var(--ej-gray-800, #1e293b);
+    h2 { color: var(--ej-gray-100, #f1f5f9); }
   }
 }
 
@@ -559,7 +561,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba($ped-dorado, 0.15);
 
-    &__name { color: #fff; }
+    &__name { color: var(--ej-bg-surface, #fff); }
 
     a { color: rgba(255, 255, 255, 0.85); }
     a:hover { color: $ped-dorado; }

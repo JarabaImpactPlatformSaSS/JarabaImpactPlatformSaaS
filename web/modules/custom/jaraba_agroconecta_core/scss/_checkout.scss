@@ -73,7 +73,7 @@
         height: 28px;
         border-radius: 50%;
         background: var(--ej-color-primary, #2d6a4f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: var(--ej-font-size-sm, 0.875rem);
         font-weight: 700;
         flex-shrink: 0;
@@ -189,15 +189,15 @@
         font-size: var(--ej-font-size-sm, 0.875rem);
 
         &--error {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
+            background: var(--ej-color-red-25, #fef2f2);
+            color: var(--ej-color-red-700, #b91c1c);
+            border: 1px solid var(--ej-color-red-100, #fecaca);
         }
 
         &--success {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
+            background: var(--ej-color-green-25, #f0fdf4);
+            color: var(--ej-color-green-800, #166534);
+            border: 1px solid var(--ej-color-green-200, #bbf7d0);
         }
     }
 
@@ -210,7 +210,7 @@
         width: 100%;
         padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-xl, 2rem);
         background: var(--ej-color-primary, #2d6a4f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: var(--ej-radius-md, 8px);
         font-size: var(--ej-font-size-lg, 1.125rem);
@@ -292,7 +292,7 @@
         height: 80px;
         border-radius: 50%;
         background: linear-gradient(135deg, #2d6a4f, #40916c);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 2.5rem;
         margin-bottom: var(--ej-spacing-lg, 1.5rem);
         box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 30%, transparent);
@@ -367,7 +367,7 @@
 
         &--primary {
             background: var(--ej-color-primary, #2d6a4f);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
 
             &:hover {
                 background: var(--ej-color-primary-hover, #245a42);

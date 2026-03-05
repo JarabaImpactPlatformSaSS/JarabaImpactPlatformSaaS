@@ -86,33 +86,43 @@ function jaraba_legal_calendar_preprocess_page(array &$variables): void {
 function jaraba_legal_calendar_entity_insert(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() === 'legal_deadline') {
     $case_id = $entity->get('case_id')->target_id;
-    if ($case_id && \Drupal::moduleHandler()->moduleExists('jaraba_legal_cases')) {
-      \Drupal::service('jaraba_legal_cases.activity_logger')->log(
-        (int) $case_id,
-        'deadline_created',
-        NULL,
-        'provider',
-        (string) new TranslatableMarkup('Plazo creado: @title — Vencimiento: @date', [
-          '@title' => $entity->label(),
-          '@date' => $entity->get('due_date')->value ?? '',
-        ])
-      );
+    if ($case_id && \Drupal::hasService('jaraba_legal_cases.activity_logger')) {
+      try {
+        \Drupal::service('jaraba_legal_cases.activity_logger')->log(
+          (int) $case_id,
+          'deadline_created',
+          NULL,
+          'provider',
+          (string) new TranslatableMarkup('Plazo creado: @title — Vencimiento: @date', [
+            '@title' => $entity->label(),
+            '@date' => $entity->get('due_date')->value ?? '',
+          ])
+        );
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_legal_calendar')->error('Activity logger error: @msg', ['@msg' => $e->getMessage()]);
+      }
     }
   }
 
   if ($entity->getEntityTypeId() === 'court_hearing') {
     $case_id = $entity->get('case_id')->target_id;
-    if ($case_id && \Drupal::moduleHandler()->moduleExists('jaraba_legal_cases')) {
-      \Drupal::service('jaraba_legal_cases.activity_logger')->log(
-        (int) $case_id,
-        'hearing_scheduled',
-        NULL,
-        'provider',
-        (string) new TranslatableMarkup('Vista senalada: @title — @date', [
-          '@title' => $entity->label(),
-          '@date' => $entity->get('scheduled_at')->value ?? '',
-        ])
-      );
+    if ($case_id && \Drupal::hasService('jaraba_legal_cases.activity_logger')) {
+      try {
+        \Drupal::service('jaraba_legal_cases.activity_logger')->log(
+          (int) $case_id,
+          'hearing_scheduled',
+          NULL,
+          'provider',
+          (string) new TranslatableMarkup('Vista senalada: @title — @date', [
+            '@title' => $entity->label(),
+            '@date' => $entity->get('scheduled_at')->value ?? '',
+          ])
+        );
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_legal_calendar')->error('Activity logger error: @msg', ['@msg' => $e->getMessage()]);
+      }
     }
   }
 }

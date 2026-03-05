@@ -1,0 +1,39 @@
+id: jarabalex
+label: 'Onboarding JarabaLex'
+vertical_id: jarabalex
+headline: 'Inteligencia jurídica para tu despacho'
+subheadline: 'Búsqueda legal avanzada, alertas normativas, gestión de expedientes y copiloto legal con IA.'
+benefits:
+  - icon_category: legal
+    icon_name: scale
+    text: 'Buscador legal con IA y coherencia normativa'
+  - icon_category: ui
+    icon_name: bell
+    text: 'Alertas de cambios normativos'
+  - icon_category: ui
+    icon_name: folder
+    text: 'Gestión de expedientes y plazos'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto legal especializado'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Configura tu despacho'
+    description: 'Añade los datos de tu bufete o asesoría.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-building
+  - title: 'Realiza tu primera búsqueda legal'
+    description: 'Explora la base de datos jurídica con IA.'
+    route: 'jaraba_legal_intelligence.search'
+    route_params: {}
+    icon: bi-search
+  - title: 'Configura alertas normativas'
+    description: 'Recibe notificaciones de cambios que afecten a tus casos.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-bell
+connect_required: false
+post_onboarding_route: ''

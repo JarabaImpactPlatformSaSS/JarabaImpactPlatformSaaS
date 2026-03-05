@@ -28,19 +28,19 @@ $_fb-color-impulse: #FF8C42;
 $_fb-color-innovation: #00A9A5;
 
 // UI.
-$_fb-color-success: #10B981;
-$_fb-color-warning: #F59E0B;
-$_fb-color-danger: #EF4444;
-$_fb-color-muted: #64748B;
+$_fb-color-success: var(--ej-color-success, #10B981);
+$_fb-color-warning: var(--ej-color-warning, #F59E0B);
+$_fb-color-danger: var(--ej-color-danger, #EF4444);
+$_fb-color-muted: var(--ej-color-neutral, #64748B);
 
 // Fondos.
-$_fb-bg-body: #F8FAFC;
-$_fb-bg-surface: #FFFFFF;
-$_fb-bg-dark: #1A1A2E;
+$_fb-bg-body: var(--ej-bg-body, #F8FAFC);
+$_fb-bg-surface: var(--ej-bg-surface, #FFFFFF);
+$_fb-bg-dark: var(--ej-bg-dark, #1A1A2E);
 
 // Texto.
-$_fb-color-headings: #1A1A2E;
-$_fb-color-body: #334155;
+$_fb-color-headings: var(--ej-bg-dark, #1A1A2E);
+$_fb-color-body: var(--ej-color-body, #334155);
 
 // Spacing.
 $_fb-spacing-xs: 0.25rem;
@@ -268,7 +268,7 @@ body.canvas-editor-page {
 }
 
 .canvas-editor__saas-name {
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.875rem;
     font-weight: 600;
     font-family: var(--ej-font-headings, "Outfit", sans-serif);
@@ -502,14 +502,14 @@ body.canvas-editor-page {
 
     // Primary Button (Guardar)
     &--primary {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: linear-gradient(135deg,
             var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
             color.adjust($_fb-color-corporate, $lightness: -8%) 100%);
         box-shadow: 0 2px 8px rgba($_fb-color-corporate, 0.25), $_fb-shadow-sm;
 
         svg {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &:hover {
@@ -527,7 +527,7 @@ body.canvas-editor-page {
 
     // Success Button (Publicar) - Acción principal destacada
     &--success {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: linear-gradient(135deg,
             var(--ej-color-impulse, #{$_fb-color-impulse}) 0%,
             color.adjust($_fb-color-impulse, $lightness: -10%) 100%);
@@ -615,14 +615,14 @@ body.canvas-editor-page {
 
     &.is-active,
     &[aria-pressed="true"] {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: linear-gradient(135deg,
             var(--ej-color-innovation, #{$_fb-color-innovation}) 0%,
             color.adjust($_fb-color-innovation, $lightness: -10%) 100%);
         box-shadow: 0 2px 6px rgba($_fb-color-innovation, 0.3);
 
         svg {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 }
@@ -801,12 +801,12 @@ body.canvas-editor-page {
     }
 
     &.is-active {
-        color: #fff !important;
+        color: var(--ej-bg-surface, #fff) !important;
         background: var(--ej-color-corporate, #{$_fb-color-corporate}) !important;
         box-shadow: 0 2px 4px rgba($_fb-color-corporate, 0.3);
 
         svg {
-            color: #fff !important;
+            color: var(--ej-bg-surface, #fff) !important;
         }
 
         img {
@@ -987,7 +987,7 @@ body.canvas-editor-page {
         box-shadow: 0 2px 6px rgba($_fb-color-corporate, 0.35);
 
         svg {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -1728,12 +1728,12 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
     }
 
     &:hover {
-        color: #fff !important;
+        color: var(--ej-bg-surface, #fff) !important;
         background: rgba(255, 255, 255, 0.15) !important;
         transform: translateY(-2px);
 
         svg {
-            color: #fff !important;
+            color: var(--ej-bg-surface, #fff) !important;
             transform: scale(1.1);
         }
 
@@ -1744,12 +1744,12 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
     }
 
     &.is-active {
-        color: #fff !important;
+        color: var(--ej-bg-surface, #fff) !important;
         background: rgba(255, 255, 255, 0.25) !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
         svg {
-            color: #fff !important;
+            color: var(--ej-bg-surface, #fff) !important;
         }
 
         img {
@@ -1774,7 +1774,7 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
     svg rect,
     svg polyline,
     svg line {
-        color: #fff !important;
+        color: var(--ej-bg-surface, #fff) !important;
         fill: currentColor !important;
         stroke: currentColor !important;
     }
@@ -1916,7 +1916,7 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
         font-size: 9px;
         font-weight: 600;
         text-transform: uppercase;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         background: linear-gradient(135deg,
             var(--ej-color-corporate, #{$_fb-color-corporate}) 0%,
             var(--ej-color-impulse, #{$_fb-color-impulse}) 100%);
@@ -2081,17 +2081,17 @@ body.canvas-editor-page .jaraba-grapesjs-tab {
 
     &--critical {
         background: var(--ej-color-danger, #{$_fb-color-danger});
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--serious {
         background: var(--ej-color-warning, #{$_fb-color-warning});
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--moderate {
         background: var(--ej-text-muted, #{$_fb-color-muted});
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 

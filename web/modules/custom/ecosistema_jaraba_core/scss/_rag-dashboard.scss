@@ -11,13 +11,13 @@
 // VARIABLES ESPECÍFICAS RAG
 // ---------------------------------------------------------------------------
 
-$rag-bg: #0f172a !default;
+$rag-bg: var(--ej-gray-900, #0f172a) !default;
 $rag-card-bg: rgba(30, 41, 59, 0.8) !default;
 // Borde visible como en FinOps (rgb(238, 238, 238) = #eee)
-$rag-border: #eee !default;
+$rag-border: var(--ej-gray-lighter, #eee) !default;
 $rag-border-subtle: rgba(148, 163, 184, 0.2) !default;
-$rag-text: #e2e8f0 !default;
-$rag-text-muted: #94a3b8 !default;
+$rag-text: var(--ej-gray-200, #e2e8f0) !default;
+$rag-text-muted: var(--ej-gray-400, #94a3b8) !default;
 
 // ---------------------------------------------------------------------------
 // OVERRIDE: Cards con borde izquierdo (como Health)
@@ -52,11 +52,11 @@ $rag-text-muted: #94a3b8 !default;
         }
 
         &--gold {
-            border-left-color: #fbbf24;
+            border-left-color: var(--ej-color-amber, #fbbf24);
         }
 
         &--purple {
-            border-left-color: #8b5cf6;
+            border-left-color: var(--ej-color-violet, #8b5cf6);
         }
     }
 

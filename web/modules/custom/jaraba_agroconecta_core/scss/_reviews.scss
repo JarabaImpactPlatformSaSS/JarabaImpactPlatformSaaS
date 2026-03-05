@@ -282,7 +282,7 @@ $review-success: var(--ej-color-success, #10B981);
         gap: 8px;
         padding: 10px 24px;
         background: $review-primary;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: $review-radius-sm;
         font-size: 14px;
@@ -424,6 +424,6 @@ $review-success: var(--ej-color-success, #10B981);
 
     .agro-rating-summary {
         box-shadow: none;
-        border: 1px solid #ccc;
+        border: 1px solid var(--ej-gray-border, #ccc);
     }
 }

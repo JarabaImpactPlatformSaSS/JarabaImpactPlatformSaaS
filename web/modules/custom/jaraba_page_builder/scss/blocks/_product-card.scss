@@ -58,7 +58,7 @@
 .jaraba-product__badge {
     display: inline-block;
     background: var(--ej-color-innovation, #00A9A5);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.7rem;
@@ -102,7 +102,7 @@
 .jaraba-product__buy {
     display: inline-block;
     background: var(--ej-color-impulse, #FF8C42);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     padding: 0.5rem 1.25rem;
     border-radius: var(--ej-radius-md, 8px);
     text-decoration: none;
@@ -113,7 +113,7 @@
     transition: background-color 0.2s ease, transform 0.1s ease;
 
     &:hover {
-        background: #eb7a30; // darken(#FF8C42, 8%) pre-computed
+        background: #eb7a30; // darken(var(--ej-color-impulse, #FF8C42), 8%) pre-computed
         transform: scale(1.02);
     }
 

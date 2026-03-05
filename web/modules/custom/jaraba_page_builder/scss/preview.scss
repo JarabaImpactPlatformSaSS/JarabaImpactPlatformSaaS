@@ -18,7 +18,7 @@
 // =============================================================================
 
 // Variables locales (fallbacks de compilación)
-$preview-header-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+$preview-header-bg: linear-gradient(135deg, var(--ej-bg-dark, #1a1a2e) 0%, #16213e 100%);
 $preview-glass-bg: rgba(255, 255, 255, 0.08);
 $preview-glass-border: rgba(255, 255, 255, 0.12);
 $preview-glow-color: rgba(134, 205, 253, 0.2);
@@ -111,7 +111,7 @@ $preview-radius: 16px;
 
     &:hover {
         background: rgba(255, 255, 255, 0.15);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         transform: translateX(-4px);
     }
 }
@@ -125,7 +125,7 @@ $preview-radius: 16px;
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0 0 0.5rem;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -160,7 +160,7 @@ $preview-radius: 16px;
 
     &--premium {
         background: linear-gradient(135deg, var(--ej-color-warning, #f59e0b) 0%, #d97706 100%);
-        color: #1a1a2e;
+        color: var(--ej-bg-dark, #1a1a2e);
 
         svg {
             fill: currentColor;
@@ -221,7 +221,7 @@ $preview-radius: 16px;
 
     &.is-active {
         background: $preview-accent;
-        color: #1a1a2e;
+        color: var(--ej-bg-dark, #1a1a2e);
         box-shadow: 0 2px 8px rgba(134, 205, 253, 0.3);
     }
 }
@@ -258,7 +258,7 @@ $preview-radius: 16px;
 
     &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &:disabled {
@@ -291,7 +291,7 @@ $preview-radius: 16px;
     &:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.25);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -334,7 +334,7 @@ $preview-radius: 16px;
     background: rgba(0, 0, 0, 0.85);
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: 50px;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
@@ -362,7 +362,7 @@ $preview-radius: 16px;
 }
 
 .template-preview-premium__frame {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: $preview-radius;
     box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -412,7 +412,7 @@ $preview-radius: 16px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     padding: 0.5rem 1rem;
     border-radius: 6px;
     font-size: 0.8rem;
@@ -426,7 +426,7 @@ $preview-radius: 16px;
 .template-preview-premium__content {
     aspect-ratio: 16/10;
     min-height: 500px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     overflow: hidden;
 }
 
@@ -471,7 +471,7 @@ $preview-radius: 16px;
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #9ca3af;
+    color: var(--ej-gray-400-alt, #9ca3af);
     gap: 1rem;
 
     svg {

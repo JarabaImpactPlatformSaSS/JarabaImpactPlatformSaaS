@@ -40,10 +40,10 @@ $legal-eu-blue: #003399;
 $legal-eu-gold: #FFCC00;
 
 // Texto Principal — Texto de resoluciones, titulos.
-$legal-text: #1A1A2E;
+$legal-text: #1A1A2E;  // Static for Sass compile-time functions
 
 // Texto Secundario — Metadata, fechas, labels.
-$legal-text-light: #6B7280;
+$legal-text-light: #6B7280;  // Static for Sass compile-time functions
 
 // === Derivadas de color (con Dart Sass moderno) ===
 

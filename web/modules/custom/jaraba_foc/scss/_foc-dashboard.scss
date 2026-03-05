@@ -523,7 +523,7 @@
 
 .foc-severity--warning {
     background: linear-gradient(135deg, $foc-at-risk-color, color.adjust($foc-at-risk-color, $lightness: -10%));
-    color: #000;
+    color: var(--ej-color-black, #000);
     padding: $foc-spacing-xs $foc-spacing-sm;
     border-radius: $ej-border-radius-sm;
     font-weight: $ej-font-weight-bold;

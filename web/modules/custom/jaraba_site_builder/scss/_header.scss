@@ -13,8 +13,8 @@
 
 .jaraba-header {
   position: relative;
-  background: var(--header-bg, #FFFFFF);
-  color: var(--header-text, #1E293B);
+  background: var(--header-bg, var(--ej-bg-surface, #FFFFFF));
+  color: var(--header-text, var(--ej-gray-800, #1E293B));
   height: var(--header-height-mobile, 64px);
   z-index: var(--ej-z-header, 1000);
   transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
@@ -43,12 +43,12 @@
     left: 0;
     right: 0;
     background: transparent;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
 
     &.is-scrolled {
       position: sticky;
-      background: var(--header-bg, #FFFFFF);
-      color: var(--header-text, #1E293B);
+      background: var(--header-bg, var(--ej-bg-surface, #FFFFFF));
+      color: var(--header-text, var(--ej-gray-800, #1E293B));
       box-shadow: var(--ej-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
     }
   }
@@ -162,7 +162,7 @@
 
     &--primary {
       background: var(--ej-color-primary, #233D63);
-      color: #FFFFFF;
+      color: var(--ej-bg-surface, #FFFFFF);
 
       &:hover {
         opacity: 0.9;
@@ -171,7 +171,7 @@
 
     &--secondary {
       background: var(--ej-color-secondary, #00A9A5);
-      color: #FFFFFF;
+      color: var(--ej-bg-surface, #FFFFFF);
 
       &:hover {
         opacity: 0.9;

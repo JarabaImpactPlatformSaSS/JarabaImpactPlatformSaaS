@@ -17,15 +17,15 @@
 $addons-color-primary-fallback: #6C63FF !default;
 $addons-color-secondary-fallback: #3D37B3 !default;
 $addons-color-surface-fallback: #FAFAF8 !default;
-$addons-color-surface-elevated-fallback: #FFFFFF !default;
-$addons-color-text-fallback: #1A1A2E !default;
-$addons-color-text-muted-fallback: #64748B !default;
-$addons-color-border-fallback: #E2E8F0 !default;
+$addons-color-surface-elevated-fallback: var(--ej-bg-surface, #FFFFFF) !default;
+$addons-color-text-fallback: var(--ej-bg-dark, #1A1A2E) !default;
+$addons-color-text-muted-fallback: var(--ej-color-neutral, #64748B) !default;
+$addons-color-border-fallback: var(--ej-gray-200, #E2E8F0) !default;
 
 // Colores semánticos
-$addons-color-success: #10B981 !default;
-$addons-color-warning: #F59E0B !default;
-$addons-color-error: #EF4444 !default;
+$addons-color-success: var(--ej-color-success, #10B981) !default;
+$addons-color-warning: var(--ej-color-warning, #F59E0B) !default;
+$addons-color-error: var(--ej-color-danger, #EF4444) !default;
 
 // ---------------------------------------------------------------------------
 // COLORES POR TIPO DE ADD-ON
@@ -34,9 +34,9 @@ $addons-color-error: #EF4444 !default;
 $addons-type-feature: #6C63FF !default;
 $addons-type-storage: #FF6B35 !default;
 $addons-type-api-calls: #00BCD4 !default;
-$addons-type-support: #9C27B0 !default;
+$addons-type-support: var(--ej-color-purple-material, #9C27B0) !default;
 $addons-type-custom: #607D8B !default;
-$addons-type-vertical: #FF8C42 !default;
+$addons-type-vertical: var(--ej-color-impulse, #FF8C42) !default;
 
 // ---------------------------------------------------------------------------
 // TIPOGRAFIA

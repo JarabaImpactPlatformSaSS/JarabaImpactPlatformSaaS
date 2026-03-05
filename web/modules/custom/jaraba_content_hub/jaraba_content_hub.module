@@ -330,9 +330,16 @@ function jaraba_content_hub_content_article_update(EntityInterface $entity): voi
   
   // Trigger: Artículo publicado -> crear borrador de newsletter.
   if ($entity->get('status')->value === 'published' && $entity->original->get('status')->value !== 'published') {
-    /** @var \Drupal\jaraba_content_hub\Service\NewsletterBridgeService $bridge */
-    $bridge = \Drupal::service('jaraba_content_hub.newsletter_bridge');
-    $bridge->createArticleNewsletter($entity);
+    if (\Drupal::hasService('jaraba_content_hub.newsletter_bridge')) {
+      try {
+        /** @var \Drupal\jaraba_content_hub\Service\NewsletterBridgeService $bridge */
+        $bridge = \Drupal::service('jaraba_content_hub.newsletter_bridge');
+        $bridge->createArticleNewsletter($entity);
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_content_hub')->error('Newsletter bridge error: @msg', ['@msg' => $e->getMessage()]);
+      }
+    }
   }
 }
 

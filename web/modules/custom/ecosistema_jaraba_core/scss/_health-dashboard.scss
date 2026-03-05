@@ -11,13 +11,13 @@
 // VARIABLES ESPECÍFICAS HEALTH
 // ---------------------------------------------------------------------------
 
-$health-bg: #0f172a !default;
+$health-bg: var(--ej-gray-900, #0f172a) !default;
 $health-card-bg: rgba(30, 41, 59, 0.8) !default;
 // Borde visible como en FinOps (#eee = rgb(238, 238, 238))
-$health-border: #eee !default;
+$health-border: var(--ej-gray-lighter, #eee) !default;
 $health-border-subtle: rgba(148, 163, 184, 0.2) !default;
-$health-text: #e2e8f0 !default;
-$health-text-muted: #94a3b8 !default;
+$health-text: var(--ej-gray-200, #e2e8f0) !default;
+$health-text-muted: var(--ej-gray-400, #94a3b8) !default;
 
 // ---------------------------------------------------------------------------
 // CONTAINER PRINCIPAL - Asegurar esquinas redondeadas
@@ -61,7 +61,7 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
         display: flex;
         align-items: center;
         gap: $ej-spacing-sm;
-        background: linear-gradient(135deg, $health-healthy, #4ade80);
+        background: linear-gradient(135deg, $health-healthy, var(--ej-color-green-300, #4ade80));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -122,15 +122,15 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
     }
 
     &--services {
-        border-top: 3px solid #3b82f6;
+        border-top: 3px solid var(--ej-color-blue, #3b82f6);
     }
 
     &--uptime {
-        border-top: 3px solid #8b5cf6;
+        border-top: 3px solid var(--ej-color-violet, #8b5cf6);
     }
 
     &--external {
-        border-top: 3px solid #f59e0b;
+        border-top: 3px solid var(--ej-color-warning, #f59e0b);
     }
 
     &__icon {
@@ -158,7 +158,7 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
     &__link {
         font-size: $ej-font-size-lg;
         font-weight: $ej-font-weight-bold;
-        color: #f59e0b;
+        color: var(--ej-color-warning, #f59e0b);
         text-decoration: none;
         display: block;
 
@@ -454,7 +454,7 @@ $health-critical: var(--ej-color-error, #{$ej-color-error});
 
     &--external {
         background: rgba(139, 92, 246, 0.1);
-        color: #a78bfa;
+        color: var(--ej-color-purple, #a78bfa);
         border-color: rgba(139, 92, 246, 0.3);
     }
 

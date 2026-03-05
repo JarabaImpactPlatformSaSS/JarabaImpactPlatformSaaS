@@ -198,7 +198,7 @@
 
   &--cancelled {
     background: color-mix(in srgb, #9ca3af 15%, transparent);
-    color: #6b7280;
+    color: var(--ej-gray-500, #6b7280);
   }
 }
 
@@ -227,6 +227,6 @@
 
   &--inactive {
     background: color-mix(in srgb, #9ca3af 15%, transparent);
-    color: #6b7280;
+    color: var(--ej-gray-500, #6b7280);
   }
 }

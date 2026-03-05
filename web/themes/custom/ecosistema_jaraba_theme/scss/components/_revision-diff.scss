@@ -104,7 +104,7 @@ body.page-revisions {
     background: linear-gradient(135deg,
             var(--ej-color-corporate, #00b4b6) 0%,
             var(--ej-color-corporate-dark, #008f91) 100%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     padding: var(--ej-spacing-8, 2rem) var(--ej-spacing-6, 1.5rem);
     display: flex;
     justify-content: space-between;
@@ -124,7 +124,7 @@ body.page-revisions {
     gap: var(--ej-spacing-3, 0.75rem);
     font-size: var(--ej-font-size-2xl, 1.5rem);
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0;
 
     // Icono
@@ -344,7 +344,7 @@ body.page-revisions {
 
     &--primary {
         background: var(--ej-color-corporate, #00b4b6);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         box-shadow: 0 2px 8px rgba(0, 180, 182, 0.3);
 
         &:hover {

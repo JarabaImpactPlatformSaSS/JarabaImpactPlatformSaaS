@@ -2724,3 +2724,107 @@ function ecosistema_jaraba_core_update_9032(): string {
     return 'Error: ' . $e->getMessage();
   }
 }
+
+/**
+ * P1-01: Install VerticalOnboardingConfig entity type and import seed configs.
+ *
+ * UPDATE-HOOK-REQUIRED-001: ConfigEntities also need installEntityType().
+ */
+function ecosistema_jaraba_core_update_9033(): string {
+  try {
+    // Install the new config entity type.
+    $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('vertical_onboarding_config');
+    if ($entity_type) {
+      $entity_definition_update_manager->installEntityType($entity_type);
+    }
+
+    // Import seed configs from install directory.
+    $verticals = [
+      'empleabilidad', 'emprendimiento', 'comercioconecta', 'agroconecta',
+      'jarabalex', 'serviciosconecta', 'andalucia_ei', 'jaraba_content_hub',
+      'formacion', 'demo',
+    ];
+
+    $imported = 0;
+    $config_factory = \Drupal::configFactory();
+    $module_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core');
+
+    foreach ($verticals as $vertical) {
+      $config_name = 'ecosistema_jaraba_core.vertical_onboarding.' . $vertical;
+      $file_path = $module_path . '/config/install/' . $config_name . '.yml';
+
+      if (file_exists($file_path)) {
+        $data = \Symfony\Component\Yaml\Yaml::parseFile($file_path);
+        if ($data) {
+          $config = $config_factory->getEditable($config_name);
+          foreach ($data as $key => $value) {
+            $config->set($key, $value);
+          }
+          $config->save();
+          $imported++;
+        }
+      }
+    }
+
+    return "Installed VerticalOnboardingConfig entity type. Imported {$imported} vertical onboarding configs.";
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Update 9033 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install entity types: alert_rule, audit_log, badge, badge_award, compliance_assessment, design_token_config, impersonation_audit_log, pricing_rule, push_subscription, reseller, scheduled_report, security_policy, style_preset.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function ecosistema_jaraba_core_update_9034(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'alert_rule',
+    'audit_log',
+    'badge',
+    'badge_award',
+    'compliance_assessment',
+    'design_token_config',
+    'impersonation_audit_log',
+    'pricing_rule',
+    'push_subscription',
+    'reseller',
+    'scheduled_report',
+    'security_policy',
+    'style_preset',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}

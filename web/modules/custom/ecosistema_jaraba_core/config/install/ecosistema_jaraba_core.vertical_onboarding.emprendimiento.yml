@@ -1,0 +1,39 @@
+id: emprendimiento
+label: 'Onboarding Emprendimiento'
+vertical_id: emprendimiento
+headline: 'Transforma tu idea en un negocio viable'
+subheadline: 'Herramientas de validación, Business Model Canvas y mentoría con IA.'
+benefits:
+  - icon_category: business
+    icon_name: lightbulb
+    text: 'Business Model Canvas interactivo'
+  - icon_category: business
+    icon_name: chart
+    text: 'Calculadora de viabilidad financiera'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto IA de emprendimiento'
+  - icon_category: ui
+    icon_name: lab
+    text: 'Validación de hipótesis con experimentos'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Crea tu Business Model Canvas'
+    description: 'Define tu modelo de negocio en un lienzo visual.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-kanban
+  - title: 'Valida tu primera hipótesis'
+    description: 'Lanza un experimento para validar tu idea.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-lightning
+  - title: 'Consulta al copiloto'
+    description: 'Pide consejo a la IA sobre tu modelo de negocio.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-robot
+connect_required: false
+post_onboarding_route: ''

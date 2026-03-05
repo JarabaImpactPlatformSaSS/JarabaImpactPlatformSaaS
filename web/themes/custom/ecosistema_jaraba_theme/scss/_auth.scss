@@ -94,7 +94,7 @@
       var(--ej-color-corporate, $ej-color-corporate) 0%,
       color.adjust($ej-color-corporate, $lightness: 5%) 40%,
       color.adjust($ej-color-corporate, $lightness: -5%) 100%);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   text-align: center;
   overflow: hidden;
 
@@ -144,7 +144,7 @@
     font-size: 2rem;
     font-weight: 700;
     margin: 0 0 $ej-spacing-sm;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
     @media (max-width: 900px) {
@@ -264,17 +264,17 @@
     }
 
     &--commerce {
-      color: #F59E0B;
+      color: var(--ej-color-warning, #F59E0B);
       background: rgba(#F59E0B, 0.2);
     }
 
     &--institutions {
-      color: #A78BFA;
+      color: var(--ej-color-purple, #A78BFA);
       background: rgba(#A78BFA, 0.2);
     }
 
     &--services {
-      color: #34D399;
+      color: var(--ej-color-green-400, #34D399);
       background: rgba(#34D399, 0.2);
     }
   }
@@ -672,7 +672,7 @@
   }
 
   &--comercio {
-    color: #F59E0B;
+    color: var(--ej-color-warning, #F59E0B);
 
     &:hover {
       box-shadow:
@@ -682,7 +682,7 @@
   }
 
   &--instituciones {
-    color: #A78BFA;
+    color: var(--ej-color-purple, #A78BFA);
 
     &:hover {
       box-shadow:
@@ -692,7 +692,7 @@
   }
 
   &--servicios {
-    color: #34D399;
+    color: var(--ej-color-green-400, #34D399);
 
     &:hover {
       box-shadow:
@@ -774,7 +774,7 @@
     background: linear-gradient(135deg,
         var(--ej-color-primary, $ej-color-primary) 0%,
         color.adjust($ej-color-primary, $lightness: -8%) 100%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: var(--ej-btn-radius, $ej-btn-radius);
     font-size: 1rem;

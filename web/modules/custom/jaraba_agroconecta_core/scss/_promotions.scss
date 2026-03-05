@@ -22,22 +22,22 @@
 
     &--percentage {
         background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), color-mix(in srgb, var(--ej-color-danger, #EF4444) 80%, black));
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--bogo {
         background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), color-mix(in srgb, var(--ej-color-warning, #F59E0B) 75%, black));
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--free-shipping {
         background: linear-gradient(135deg, var(--ej-color-success, #10B981), color-mix(in srgb, var(--ej-color-success, #10B981) 75%, black));
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--fixed {
         background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black));
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -115,7 +115,7 @@
     &__btn {
         padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
         background: var(--ej-color-primary, #2d6a4f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: var(--ej-radius-md, 8px);
         font-size: var(--ej-font-size-sm, 0.875rem);
@@ -203,7 +203,7 @@
     background: linear-gradient(135deg, var(--ej-color-primary, #2d6a4f), color-mix(in srgb, var(--ej-color-success, #10B981) 60%, var(--ej-color-primary, #2d6a4f)), var(--ej-color-success, #10B981));
     background-size: 200% 200%;
     animation: agro-promo-gradient 6s ease infinite;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &__content {
         position: relative;
@@ -231,7 +231,7 @@
 
     &__cta {
         padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-lg, 1.5rem);
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         color: var(--ej-color-primary, #2d6a4f);
         border: none;
         border-radius: var(--ej-radius-md, 8px);
@@ -258,7 +258,7 @@
     &::before {
         width: 200px;
         height: 200px;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         top: -80px;
         right: -40px;
     }
@@ -266,7 +266,7 @@
     &::after {
         width: 120px;
         height: 120px;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         bottom: -40px;
         left: -20px;
     }
@@ -323,7 +323,7 @@
             width: 120px;
             padding: 4px 0;
             background: var(--ej-color-primary, #2d6a4f);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             font-size: 0.65rem;
             font-weight: 700;
             text-align: center;

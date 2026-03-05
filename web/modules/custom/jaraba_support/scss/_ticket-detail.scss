@@ -100,7 +100,7 @@
 
     &--primary {
       background: var(--ej-color-corporate, #233D63);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, #000);

@@ -157,32 +157,32 @@
 // Severity & Outcome
 // ============================================================
 .autonomous-agents-dashboard__severity--critical {
-  color: #dc2626;
+  color: var(--ej-color-danger-dark, #dc2626);
   font-weight: 600;
 }
 
 .autonomous-agents-dashboard__severity--warning {
-  color: #d97706;
+  color: var(--ej-color-warning-dark, #d97706);
   font-weight: 600;
 }
 
 .autonomous-agents-dashboard__outcome--success {
-  color: #059669;
+  color: var(--ej-color-success-dark, #059669);
   font-weight: 600;
 }
 
 .autonomous-agents-dashboard__outcome--partial {
-  color: #d97706;
+  color: var(--ej-color-warning-dark, #d97706);
   font-weight: 600;
 }
 
 .autonomous-agents-dashboard__outcome--failed {
-  color: #dc2626;
+  color: var(--ej-color-danger-dark, #dc2626);
   font-weight: 600;
 }
 
 .autonomous-agents-dashboard__failure-count {
-  color: #dc2626;
+  color: var(--ej-color-danger-dark, #dc2626);
   font-weight: 700;
 }
 
@@ -199,18 +199,18 @@
   font-weight: 600;
 
   &--healthy {
-    background: #ecfdf5;
-    color: #065f46;
+    background: var(--ej-color-green-50-alt, #ecfdf5);
+    color: var(--ej-color-green-deep, #065f46);
   }
 
   &--warning {
-    background: #fffbeb;
-    color: #92400e;
+    background: var(--ej-color-yellow-50, #fffbeb);
+    color: var(--ej-color-warning-deep, #92400e);
   }
 
   &--critical {
-    background: #fef2f2;
-    color: #991b1b;
+    background: var(--ej-color-red-25, #fef2f2);
+    color: var(--ej-color-danger-deep, #991b1b);
   }
 }
 
@@ -235,7 +235,7 @@
   padding: 0 4px;
   border-radius: 9999px;
   background: $ej-color-danger;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-size: 0.625rem;
   font-weight: 700;
 }

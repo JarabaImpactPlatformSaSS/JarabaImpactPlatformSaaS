@@ -22,7 +22,7 @@
 // ---------------------------------------------------------------------------
 .comercio-marketplace-hero {
   background: var(--ej-color-primary, $comercio-primary);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   padding: $space-2xl $space-md;
   text-align: center;
 
@@ -83,7 +83,7 @@
     padding: $space-sm $space-md;
     border: none;
     background: var(--ej-bg-dark, $comercio-text);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     cursor: pointer;
     transition: opacity $transition-fast;
 
@@ -157,7 +157,7 @@
 
     &--active {
       background: var(--ej-color-primary, $comercio-primary);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: var(--ej-color-primary, $comercio-primary);
@@ -247,7 +247,7 @@
 
     &:hover {
       background: var(--ej-color-primary, $comercio-primary);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 }
@@ -365,13 +365,13 @@
     &--sale {
       left: $space-sm;
       background: $comercio-danger;
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
 
     &--out {
       right: $space-sm;
       background: var(--ej-color-muted, $comercio-text-muted);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -483,7 +483,7 @@
     &--active {
       background: var(--ej-color-primary, $comercio-primary);
       border-color: var(--ej-color-primary, $comercio-primary);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 }

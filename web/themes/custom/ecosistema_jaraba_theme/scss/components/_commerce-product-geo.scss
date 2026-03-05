@@ -20,20 +20,20 @@
 // Estas variables pueden ser personalizadas por cada tenant vía admin
 
 // Colores principales del tenant (inyectables)
-$product-primary: var(--tenant-primary, #233D63) !default;
-$product-secondary: var(--tenant-secondary, #1E40AF) !default;
-$product-accent: var(--tenant-accent, #10B981) !default;
+$product-primary: var(--tenant-primary, var(--ej-color-corporate, #233D63)) !default;
+$product-secondary: var(--tenant-secondary, var(--ej-color-blue-deep, #1E40AF)) !default;
+$product-accent: var(--tenant-accent, var(--ej-color-success, #10B981)) !default;
 
 // Tipografía (inyectable)
 $product-font-family: var(--tenant-font-family, 'Outfit', -apple-system, sans-serif) !default;
 $product-heading-weight: var(--tenant-heading-weight, 700) !default;
 
 // Colores de UI
-$product-text: #1F2937;
-$product-text-muted: #6B7280;
-$product-bg: #FFFFFF;
-$product-bg-secondary: #F9FAFB;
-$product-border: #E5E7EB;
+$product-text: var(--ej-gray-800, #1F2937);
+$product-text-muted: var(--ej-gray-500, #6B7280);
+$product-bg: var(--ej-bg-surface, #FFFFFF);
+$product-bg-secondary: var(--ej-gray-25, #F9FAFB);
+$product-border: var(--ej-border-color, #E5E7EB);
 $product-success: var(--ej-color-success, #10B981);
 $product-warning: var(--ej-color-warning, #F59E0B);
 
@@ -302,7 +302,7 @@ $product-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
     padding: $product-spacing-md $product-spacing-xl;
     font-size: 1.125rem;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     background: linear-gradient(135deg, $product-primary, $product-secondary);
     border: none;
     border-radius: $product-radius-md;

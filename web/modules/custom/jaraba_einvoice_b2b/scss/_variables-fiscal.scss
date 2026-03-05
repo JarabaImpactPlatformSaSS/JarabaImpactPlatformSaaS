@@ -3,14 +3,14 @@
 // These $fiscal-* variables are fallbacks for when tokens are unavailable.
 
 $fiscal-primary: #1a73e8;
-$fiscal-primary-light: #4285f4;
-$fiscal-secondary: #34a853;
-$fiscal-danger: #ea4335;
-$fiscal-warning: #fbbc04;
-$fiscal-info: #4285f4;
+$fiscal-primary-light: var(--ej-brand-google-blue, #4285f4);
+$fiscal-secondary: var(--ej-brand-google-green, #34a853);
+$fiscal-danger: var(--ej-brand-google-red, #ea4335);
+$fiscal-warning: #fbbc04;  // Static for Sass compile-time functions
+$fiscal-info: var(--ej-brand-google-blue, #4285f4);
 
-$fiscal-surface: #ffffff;
-$fiscal-surface-alt: #f8f9fa;
+$fiscal-surface: var(--ej-bg-surface, #ffffff);
+$fiscal-surface-alt: var(--ej-gray-25-alt, #f8f9fa);
 $fiscal-text: #202124;
 $fiscal-text-secondary: #5f6368;
 $fiscal-border: #dadce0;

@@ -53,7 +53,7 @@ $notif-success: var(--ej-color-success, #10B981);
         padding: 0 5px;
         border-radius: 10px;
         background: $notif-danger;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 11px;
         font-weight: 700;
         display: flex;
@@ -219,7 +219,7 @@ $notif-success: var(--ej-color-success, #10B981);
         input[type="checkbox"] {
             width: 16px;
             height: 16px;
-            accent-color: #556B2F;
+            accent-color: var(--ej-color-agro, #556B2F);
             cursor: pointer;
         }
     }
@@ -230,7 +230,7 @@ $notif-success: var(--ej-color-success, #10B981);
         gap: 8px;
         padding: 10px 24px;
         background: $notif-primary;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: $notif-radius-sm;
         font-size: 14px;

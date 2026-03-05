@@ -67,14 +67,14 @@
   .offboarding-timeline__step--completed & {
     background: var(--ej-legal-success, #{$legal-success-fallback});
     border-color: var(--ej-legal-success, #{$legal-success-fallback});
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
   }
 
   // Estado activo.
   .offboarding-timeline__step--active & {
     background: var(--ej-legal-primary, #{$legal-primary-fallback});
     border-color: var(--ej-legal-primary, #{$legal-primary-fallback});
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     box-shadow: 0 0 0 4px color-mix(in srgb, #{$legal-primary-fallback} 20%, transparent);
   }
 

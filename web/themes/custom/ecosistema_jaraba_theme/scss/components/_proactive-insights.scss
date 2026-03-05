@@ -59,7 +59,7 @@
   padding: 0 5px;
   border-radius: 9px;
   background: var(--ej-insight-severity-high, #EF4444);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 18px;
@@ -185,7 +185,7 @@
 
 .proactive-insight-card__action {
   background: var(--ej-color-impulse, #{$ej-color-impulse});
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &:hover {
     opacity: 0.9;

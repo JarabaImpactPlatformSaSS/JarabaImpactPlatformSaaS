@@ -65,14 +65,14 @@
 }
 
 .aei-landing__hero-content {
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .aei-landing__title {
   font-family: var(--aei-font-headings);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   margin: 0 0 1rem;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -106,8 +106,8 @@
   border: none;
 
   &--primary {
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
 
     &:hover {
@@ -120,7 +120,7 @@
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: 1px solid rgba(255, 255, 255, 0.25);
 
     &:hover {
@@ -320,8 +320,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--aei-primary), #E67935);
-  color: #fff;
+  background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+  color: var(--ej-bg-surface, #fff);
   font-size: 0.9rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -449,7 +449,7 @@
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--aei-corporate), var(--aei-azul-profundo));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -570,7 +570,7 @@
   font-family: var(--aei-font-headings);
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   margin: 0 0 0.75rem;
 }
 

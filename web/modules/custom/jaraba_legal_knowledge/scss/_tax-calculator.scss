@@ -78,7 +78,7 @@
     align-self: flex-start;
     padding: $legal-spacing-sm $legal-spacing-xl;
     background: var(--ej-color-primary, #FF8C42);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -120,14 +120,14 @@
 
     &--highlight {
       background: var(--ej-color-primary, #FF8C42);
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
 
       .tax-calculator__result-label {
         color: rgba(255, 255, 255, 0.85);
       }
 
       .tax-calculator__result-value {
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
       }
     }
   }

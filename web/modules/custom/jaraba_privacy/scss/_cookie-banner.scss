@@ -145,7 +145,7 @@
 
   &--accept-all {
     background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
 
     &:hover {
       background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
@@ -174,7 +174,7 @@
 
   &--save {
     background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
 
     &:hover {
       background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);

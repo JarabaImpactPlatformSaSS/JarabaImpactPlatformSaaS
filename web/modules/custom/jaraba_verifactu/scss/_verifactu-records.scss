@@ -98,7 +98,7 @@
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--ej-bg-surface, #FFFFFF);
   background: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
   cursor: pointer;
   transition: background 0.15s ease;

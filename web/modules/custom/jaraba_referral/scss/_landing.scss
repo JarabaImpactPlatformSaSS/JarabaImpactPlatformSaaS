@@ -140,7 +140,7 @@
     height: 40px;
     border-radius: 50%;
     background: var(--ej-primary-color, $ref-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-weight: 700;
     font-size: 1.125rem;
   }

@@ -162,7 +162,7 @@
   border-radius: var(--ej-border-radius-md, 0.5rem);
   font-size: var(--ej-font-size-xl, 1.5rem);
   font-weight: var(--ej-font-weight-bold, 700);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &--excellent {
     background: var(--ej-color-success, #10b981);
@@ -434,7 +434,7 @@
   padding: 0 var(--ej-spacing-xs, 0.25rem);
   border-radius: var(--ej-border-radius-full, 9999px);
   background: var(--ej-color-danger, #ef4444);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-size: var(--ej-font-size-xs, 0.75rem);
   font-weight: var(--ej-font-weight-bold, 700);
 }
@@ -494,12 +494,12 @@
 
   &--critical {
     background: var(--ej-color-danger, #ef4444);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &--warning {
     background: var(--ej-color-warning, #f59e0b);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 

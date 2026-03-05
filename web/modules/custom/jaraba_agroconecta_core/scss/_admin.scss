@@ -55,17 +55,17 @@
         flex-shrink: 0;
 
         &--healthy {
-            background: #22c55e;
+            background: var(--ej-color-green-500, #22c55e);
             box-shadow: 0 0 8px color-mix(in srgb, var(--ej-color-success, #22c55e) 40%, transparent);
         }
 
         &--warning {
-            background: #f59e0b;
+            background: var(--ej-color-warning, #f59e0b);
             box-shadow: 0 0 8px color-mix(in srgb, var(--ej-color-warning, #F59E0B) 40%, transparent);
         }
 
         &--critical {
-            background: #ef4444;
+            background: var(--ej-color-danger, #ef4444);
             box-shadow: 0 0 8px color-mix(in srgb, var(--ej-color-danger, #EF4444) 40%, transparent);
             animation: agro-blink 1.5s ease-in-out infinite;
         }

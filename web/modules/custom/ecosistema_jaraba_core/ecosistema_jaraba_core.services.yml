@@ -1752,6 +1752,14 @@ services:
       - '@file_system'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # P2-05: Google OAuth 2.0 service.
+  ecosistema_jaraba_core.google_oauth:
+    class: Drupal\ecosistema_jaraba_core\Service\GoogleOAuthService
+    arguments:
+      - '@config.factory'
+      - '@http_client'
+      - '@logger.channel.ecosistema_jaraba_core'
+
   # GAP-EMAIL-VERIFY: Email verification service (HMAC tokens + State API).
   ecosistema_jaraba_core.email_verification:
     class: Drupal\ecosistema_jaraba_core\Service\EmailVerificationService

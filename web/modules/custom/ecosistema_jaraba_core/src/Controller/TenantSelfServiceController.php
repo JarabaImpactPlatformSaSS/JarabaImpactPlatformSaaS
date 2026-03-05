@@ -148,6 +148,9 @@ class TenantSelfServiceController extends ControllerBase
         $recentActivity = $this->getRecentActivity($tenant);
         $quickLinks = $this->getQuickLinks($tenant);
 
+        // P1-04: Generar datos para gráficos Chart.js via drupalSettings.
+        $chartData = $this->buildChartData($tenant);
+
         $build = [
             '#theme' => 'tenant_self_service_dashboard',
             '#tenant' => $tenant,
@@ -158,6 +161,13 @@ class TenantSelfServiceController extends ControllerBase
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/tenant-dashboard',
+                ],
+                'drupalSettings' => [
+                    'tenantDashboard' => [
+                        'charts' => $chartData,
+                        'currency' => 'EUR',
+                        'locale' => 'es-ES',
+                    ],
                 ],
             ],
         ];
@@ -525,6 +535,238 @@ class TenantSelfServiceController extends ControllerBase
         catch (\Exception) {
             return FALSE;
         }
+    }
+
+    /**
+     * P1-04: Genera datos para los 3 gráficos del dashboard.
+     *
+     * Datos inyectados via drupalSettings para evitar API calls
+     * (ROUTE-LANGPREFIX-001: nunca URLs hardcoded en JS).
+     *
+     * @return array
+     *   Array con claves 'sales', 'mrr', 'customers'.
+     */
+    protected function buildChartData($tenant): array {
+        $tenantId = $tenant->id();
+
+        return [
+            'sales' => $this->buildSalesChartData($tenantId),
+            'mrr' => $this->buildMrrChartData($tenant),
+            'customers' => $this->buildCustomersChartData($tenantId),
+        ];
+    }
+
+    /**
+     * Datos del gráfico de ventas (últimos 30 días).
+     */
+    protected function buildSalesChartData(int|string $tenantId): array {
+        $labels = [];
+        $values = [];
+        $total = 0.0;
+
+        // Generar etiquetas para los últimos 30 días.
+        for ($i = 29; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $labels[] = date('d M', strtotime($date));
+            $values[$date] = 0.0;
+        }
+
+        // Consultar ventas diarias reales del tenant.
+        try {
+            if ($this->database->schema()->tableExists('financial_transaction')) {
+                $since = strtotime('-30 days midnight');
+                $query = $this->database->select('financial_transaction', 'ft');
+                $query->addExpression("DATE(FROM_UNIXTIME(ft.created))", 'sale_date');
+                $query->addExpression('SUM(ft.amount)', 'daily_total');
+                $query->condition('ft.tenant_id', $tenantId);
+                $query->condition('ft.type', ['sale', 'order', 'payment'], 'IN');
+                $query->condition('ft.created', $since, '>=');
+                $query->groupBy('sale_date');
+                $results = $query->execute();
+
+                foreach ($results as $row) {
+                    if (isset($values[$row->sale_date])) {
+                        $values[$row->sale_date] = (float) $row->daily_total;
+                    }
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Sin datos de venta — gráfico vacío es válido.
+        }
+
+        $dataPoints = array_values($values);
+        $total = array_sum($dataPoints);
+        $average = count($dataPoints) > 0 ? $total / count($dataPoints) : 0;
+
+        return [
+            'type' => 'bar',
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => (string) $this->t('Ventas diarias'),
+                    'data' => $dataPoints,
+                    'backgroundColor' => 'rgba(0, 169, 165, 0.6)',
+                    'borderColor' => 'rgba(0, 169, 165, 1)',
+                    'borderWidth' => 1,
+                    'borderRadius' => 4,
+                ],
+            ],
+            'summary' => [
+                'total' => round($total, 2),
+                'average' => round($average, 2),
+            ],
+        ];
+    }
+
+    /**
+     * Datos del gráfico de MRR (últimos 6 meses).
+     */
+    protected function buildMrrChartData($tenant): array {
+        $labels = [];
+        $values = [];
+
+        // Precio mensual actual del plan.
+        $currentMrr = 0.0;
+        $plan = $tenant->getSubscriptionPlan();
+        if ($plan && method_exists($plan, 'getMonthlyPrice')) {
+            $currentMrr = (float) $plan->getMonthlyPrice();
+        }
+        elseif ($plan && $plan->hasField('monthly_price')) {
+            $currentMrr = (float) ($plan->get('monthly_price')->value ?? 0);
+        }
+
+        // Generar 6 meses de etiquetas.
+        for ($i = 5; $i >= 0; $i--) {
+            $monthLabel = date('M Y', strtotime("-{$i} months"));
+            $labels[] = $monthLabel;
+            // Para los meses pasados, usar el MRR actual como aproximación.
+            // En producción, se consultarían invoices históricas.
+            $values[] = $currentMrr;
+        }
+
+        // Intentar datos históricos reales desde billing_invoice.
+        try {
+            $tenantId = $tenant->id();
+            if ($this->database->schema()->tableExists('billing_invoice_field_data')) {
+                $since = strtotime('-6 months');
+                $query = $this->database->select('billing_invoice_field_data', 'bi');
+                $query->addExpression("DATE_FORMAT(FROM_UNIXTIME(bi.created), '%Y-%m')", 'month');
+                $query->addExpression('SUM(bi.total)', 'revenue');
+                $query->condition('bi.tenant_id', $tenantId);
+                $query->condition('bi.status', 'paid');
+                $query->condition('bi.created', $since, '>=');
+                $query->groupBy('month');
+                $query->orderBy('month', 'ASC');
+                $results = $query->execute()->fetchAll();
+
+                if (!empty($results)) {
+                    // Reemplazar con datos reales.
+                    $labels = [];
+                    $values = [];
+                    foreach ($results as $row) {
+                        $labels[] = date('M Y', strtotime($row->month . '-01'));
+                        $values[] = (float) $row->revenue / 100;
+                    }
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Mantener aproximación basada en plan.
+        }
+
+        $growth = 0;
+        if (count($values) >= 2) {
+            $first = $values[0];
+            $last = end($values);
+            if ($first > 0) {
+                $growth = round((($last - $first) / $first) * 100, 1);
+            }
+        }
+
+        return [
+            'type' => 'line',
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'MRR',
+                    'data' => $values,
+                    'borderColor' => 'rgba(35, 61, 99, 1)',
+                    'backgroundColor' => 'rgba(35, 61, 99, 0.1)',
+                    'fill' => TRUE,
+                    'tension' => 0.4,
+                    'pointBackgroundColor' => 'rgba(35, 61, 99, 1)',
+                ],
+            ],
+            'summary' => [
+                'current' => end($values) ?: 0,
+                'growth' => $growth,
+            ],
+        ];
+    }
+
+    /**
+     * Datos del gráfico de clientes por semana (últimas 8 semanas).
+     */
+    protected function buildCustomersChartData(int|string $tenantId): array {
+        $labels = [];
+        $values = [];
+
+        // Generar 8 semanas de etiquetas.
+        for ($i = 7; $i >= 0; $i--) {
+            $weekStart = date('d M', strtotime("-{$i} weeks monday"));
+            $labels[] = $weekStart;
+            $values[] = 0;
+        }
+
+        // Contar usuarios nuevos por semana desde group_content.
+        try {
+            if ($this->database->schema()->tableExists('group_relationship_field_data')) {
+                $since = strtotime('-8 weeks monday');
+                $query = $this->database->select('group_relationship_field_data', 'gc');
+                $query->addExpression("YEARWEEK(FROM_UNIXTIME(gc.created), 1)", 'week_num');
+                $query->addExpression('COUNT(gc.id)', 'new_members');
+                $query->condition('gc.type', '%member%', 'LIKE');
+                $query->condition('gc.gid', $tenantId);
+                $query->condition('gc.created', $since, '>=');
+                $query->groupBy('week_num');
+                $query->orderBy('week_num', 'ASC');
+                $results = $query->execute()->fetchAll();
+
+                if (!empty($results)) {
+                    // Mapear por índice de semana.
+                    $weekData = [];
+                    foreach ($results as $row) {
+                        $weekData[$row->week_num] = (int) $row->new_members;
+                    }
+
+                    // Rellenar los valores en orden.
+                    $values = [];
+                    for ($i = 7; $i >= 0; $i--) {
+                        $weekNum = date('oW', strtotime("-{$i} weeks"));
+                        $values[] = $weekData[$weekNum] ?? 0;
+                    }
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Sin datos de miembros — gráfico vacío.
+        }
+
+        return [
+            'type' => 'bar',
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => (string) $this->t('Nuevos clientes'),
+                    'data' => $values,
+                    'backgroundColor' => 'rgba(255, 140, 66, 0.6)',
+                    'borderColor' => 'rgba(255, 140, 66, 1)',
+                    'borderWidth' => 1,
+                    'borderRadius' => 4,
+                ],
+            ],
+        ];
     }
 
     /**

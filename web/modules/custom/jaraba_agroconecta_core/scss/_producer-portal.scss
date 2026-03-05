@@ -5,11 +5,11 @@
 // DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
 
 $producer-primary: var(--color-brand-primary, #2d7a3a);
-$producer-bg: var(--color-bg-primary, #f8f9fa);
-$producer-surface: var(--color-bg-surface, #ffffff);
-$producer-text: var(--color-text-primary, #1a1a2e);
-$producer-text-muted: var(--color-text-muted, #6c757d);
-$producer-border: var(--color-border, #e0e0e0);
+$producer-bg: var(--color-bg-primary, var(--ej-gray-25-alt, #f8f9fa));
+$producer-surface: var(--color-bg-surface, var(--ej-bg-surface, #ffffff));
+$producer-text: var(--color-text-primary, var(--ej-bg-dark, #1a1a2e));
+$producer-text-muted: var(--color-text-muted, var(--ej-gray-bootstrap-mid, #6c757d));
+$producer-border: var(--color-border, var(--ej-gray-divider, #e0e0e0));
 $producer-radius: var(--radius-md, 12px);
 $producer-radius-sm: var(--radius-sm, 8px);
 $producer-shadow: var(--shadow-card, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
@@ -81,7 +81,7 @@ $producer-gap: var(--spacing-lg, 24px);
 
         &--warning {
             background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--ej-color-amber-material, #ffc107);
         }
 
         &--error {
@@ -234,8 +234,8 @@ $producer-gap: var(--spacing-lg, 24px);
         font-weight: 600;
 
         &--pending {
-            background: #e9ecef;
-            color: #495057;
+            background: var(--ej-gray-150, #e9ecef);
+            color: var(--ej-gray-bootstrap-dark, #495057);
         }
 
         &--paid {

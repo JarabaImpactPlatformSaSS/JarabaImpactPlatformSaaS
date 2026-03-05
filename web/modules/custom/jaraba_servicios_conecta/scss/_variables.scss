@@ -44,10 +44,10 @@ $servicios-primary-light: color-mix(in srgb, var(--ej-servicios-primary) 15%, #F
 $servicios-primary-dark: color-mix(in srgb, var(--ej-servicios-primary) 75%, #000000);
 $servicios-secondary: var(--ej-servicios-success);
 $servicios-cream: #F0F4FF;        // Azul muy claro fondo
-$servicios-text: #1A1A2E;         // Texto principal
-$servicios-text-muted: #6B7280;   // Texto secundario
-$servicios-border: #E2E8F0;       // Bordes suaves (Jaraba palette)
-$servicios-surface: #FFFFFF;       // Fondo de cards
+$servicios-text: var(--ej-bg-dark, #1A1A2E);         // Texto principal
+$servicios-text-muted: var(--ej-gray-500, #6B7280);   // Texto secundario
+$servicios-border: var(--ej-gray-200, #E2E8F0);       // Bordes suaves (Jaraba palette)
+$servicios-surface: var(--ej-bg-surface, #FFFFFF);       // Fondo de cards
 $servicios-online: var(--ej-servicios-accent);
 
 // ---------------------------------------------------------------------------

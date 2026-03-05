@@ -166,6 +166,12 @@ if [ "$MODE" = "full" ]; then
   run_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection" \
     php "$SCRIPT_DIR/validate-optional-deps.php"
 
+  run_check "CONTROLLER-READONLY-001" "Controller readonly inherited property detection" \
+    php "$SCRIPT_DIR/validate-controller-readonly.php"
+
+  run_check "PRESAVE-RESILIENCE-001" "Presave hook resilience detection" \
+    php "$SCRIPT_DIR/validate-presave-resilience.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

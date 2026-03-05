@@ -238,7 +238,7 @@
 
   &--primary {
     background: var(--ej-primary, $servicios-primary);
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
 
     &:hover {
       background: var(--ej-primary-dark, $servicios-primary-dark);
@@ -262,7 +262,7 @@
 
     &:hover {
       background: var(--ej-primary, $servicios-primary);
-      color: #FFFFFF;
+      color: var(--ej-bg-surface, #FFFFFF);
     }
   }
 

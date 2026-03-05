@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &:hover {
     transform: scale(1.1);
@@ -114,7 +114,7 @@
   gap: var(--ej-spacing-sm, 12px);
   padding: var(--ej-spacing-md, 16px) var(--ej-spacing-lg, 20px);
   background: linear-gradient(135deg, var(--ej-faq-color-primary), var(--ej-faq-color-primary-dark));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   min-height: 64px;
 }
 
@@ -157,7 +157,7 @@
 .faq-bot__status-dot {
   width: 8px;
   height: 8px;
-  background: #10b981;
+  background: var(--ej-color-success, #10b981);
   border-radius: 50%;
   animation: faq-bot-status-pulse 2s infinite;
 }
@@ -176,7 +176,7 @@
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 50%;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   cursor: pointer;
   opacity: 0.8;
   transition: all 0.2s;
@@ -233,7 +233,7 @@
 
   .faq-bot__message--user & {
     background: var(--ej-faq-color-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-bottom-right-radius: 4px;
   }
 
@@ -249,7 +249,7 @@
   text-decoration: underline;
 
   .faq-bot__message--user & {
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -320,13 +320,13 @@
   &--cta {
     background: var(--ej-faq-color-primary);
     border-color: var(--ej-faq-color-primary);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-weight: 600;
 
     &:hover {
       background: var(--ej-faq-color-primary-dark);
       border-color: var(--ej-faq-color-primary-dark);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 }
@@ -471,7 +471,7 @@
   border-radius: 50%;
   background: var(--ej-faq-color-primary);
   border: none;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   cursor: pointer;
   display: flex;
   align-items: center;

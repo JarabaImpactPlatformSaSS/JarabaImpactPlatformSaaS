@@ -78,6 +78,8 @@
               {{ jaraba_icon('analytics', 'trend-down', { size: '18px', color: 'danger' }) }}
             {% elseif key == 'health_avg' %}
               {{ jaraba_icon('analytics', 'gauge', { size: '18px', color: 'success' }) }}
+            {% elseif key == 'fiscal_compliance' %}
+              {{ jaraba_icon('fiscal', 'shield-fiscal', { size: '18px', color: 'corporate' }) }}
             {% endif %}
           </span>
           <span class="admin-center-kpi__label">{{ kpi.label }}</span>

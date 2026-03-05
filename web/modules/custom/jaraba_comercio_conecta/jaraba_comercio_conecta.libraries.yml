@@ -45,6 +45,17 @@ merchant-portal:
     - core/once
     - jaraba_comercio_conecta/global
 
+# P1-06: Importacion CSV de productos
+merchant-import:
+  version: 1.0
+  js:
+    js/merchant-import.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_comercio_conecta/global
+
 # Portal del cliente: historial, wishlist, notificaciones
 customer-portal:
   version: 1.0

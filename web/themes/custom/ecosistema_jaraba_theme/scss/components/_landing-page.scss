@@ -235,7 +235,7 @@ body.page-front {
         right: 0;
         width: 280px;
         height: 100vh;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         padding: 80px 24px 24px;
         box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
         z-index: 1001;
@@ -268,7 +268,7 @@ body.page-front {
         right: 0;
         width: 280px;
         padding: 16px 24px;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         border-top: 1px solid rgba(0, 0, 0, 0.08);
         z-index: 1001;
         gap: 12px;
@@ -390,7 +390,7 @@ body.menu-open {
     font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.9rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
     padding: 0.75rem 1.5rem;
     background: linear-gradient(135deg, var(--ej-color-primary, #FF8C42) 0%, var(--ej-color-secondary, #E85D04) 100%);
@@ -404,7 +404,7 @@ body.menu-open {
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(255, 140, 66, 0.4);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--large {
@@ -440,7 +440,7 @@ body.menu-open {
     font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.9rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
     padding: 0.75rem 1.5rem;
     background: transparent;
@@ -452,7 +452,7 @@ body.menu-open {
     &:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &--large {
@@ -504,8 +504,8 @@ body.menu-open {
         inset: 0;
         background: linear-gradient(135deg,
                 var(--ej-color-corporate, #233D63) 0%,
-                #1a2d4a 25%,
-                #0f1d30 50%,
+                var(--ej-dark-accent, #1a2d4a) 25%,
+                var(--ej-dark-deeper, #0f1d30) 50%,
                 var(--ej-color-corporate, #233D63) 100%);
         background-size: 400% 400%;
         animation: gradient-flow 15s ease infinite;
@@ -546,7 +546,7 @@ body.menu-open {
         font-family: var(--ej-font-headings, 'Outfit', sans-serif);
         font-size: clamp(2.5rem, 6vw, 4rem);
         font-weight: 800;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         line-height: 1.2; // Aumentado para descendentes (g, y, p)
         margin: 0 0 1.5rem;
         text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
@@ -591,7 +591,7 @@ body.menu-open {
         animation: fade-in-up 0.8s ease-out 0.4s both;
         max-width: fit-content;
         margin-inline: auto;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &__trust-badge {
@@ -601,7 +601,7 @@ body.menu-open {
         font-family: var(--ej-font-body, 'Outfit', sans-serif);
         font-size: 0.8rem;
         font-weight: 500;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         letter-spacing: 0.02em;
         white-space: nowrap;
 
@@ -808,7 +808,7 @@ body.menu-open {
         font-family: var(--ej-font-headings, 'Outfit', sans-serif);
         font-size: 1rem;
         font-weight: 600;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin: 0 0 0.5rem;
     }
 
@@ -1064,7 +1064,7 @@ body.menu-open {
         font-family: var(--ej-font-headings, 'Outfit', sans-serif);
         font-size: clamp(2.5rem, 5vw, 3.5rem);
         font-weight: 800;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         line-height: 1;
         text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
     }
@@ -1089,7 +1089,7 @@ body.menu-open {
 // LANDING FOOTER
 // =============================================
 .landing-footer {
-    background: #0f1d30;
+    background: var(--ej-dark-deeper, #0f1d30);
     color: rgba(255, 255, 255, 0.8);
     padding: 4rem 1.5rem 2rem;
 
@@ -1127,7 +1127,7 @@ body.menu-open {
             font-family: var(--ej-font-headings, 'Outfit', sans-serif);
             font-size: 0.9rem;
             font-weight: 600;
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             margin: 0 0 1rem;
         }
 
@@ -1207,7 +1207,7 @@ body.menu-open {
 
             &:hover {
                 background: var(--ej-color-primary, #FF8C42);
-                color: #fff;
+                color: var(--ej-bg-surface, #fff);
             }
 
             svg {
@@ -1258,12 +1258,12 @@ body.menu-open {
         white-space: nowrap;
 
         &:hover {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             text-decoration: underline;
         }
 
         &--current {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             font-weight: 600;
             cursor: default;
         }
@@ -1303,7 +1303,7 @@ body.menu-open {
         height: auto !important;
         padding: 1rem 2rem;
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         clip: auto !important;
         white-space: normal;
         border-radius: 8px;
@@ -1344,7 +1344,7 @@ body.menu-open {
             width: 80%;
             max-width: 320px;
             height: 100vh;
-            background: #fff;
+            background: var(--ej-bg-surface, #fff);
             padding: 5rem 2rem 2rem;
             z-index: 1001;
             transition: right 0.3s ease;
@@ -1377,7 +1377,7 @@ body.menu-open {
             right: -100%;
             width: 80%;
             max-width: 320px;
-            background: #fff;
+            background: var(--ej-bg-surface, #fff);
             padding: 1.5rem 2rem;
             z-index: 1001;
             transition: right 0.3s ease;
@@ -1573,7 +1573,7 @@ body.menu-open {
 }
 
 .feature-card {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
@@ -1619,7 +1619,7 @@ body.menu-open {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         border-radius: 20px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 
@@ -1777,7 +1777,7 @@ body.menu-open {
         border-radius: 50%;
         border: none;
         background: linear-gradient(135deg, var(--ej-color-primary, #FF8C42) 0%, #e67e22 100%);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         cursor: pointer;
         box-shadow: 0 4px 20px rgba(255, 140, 66, 0.4);
         transition: all 0.3s ease;
@@ -1814,7 +1814,7 @@ body.menu-open {
         right: 0;
         width: 360px;
         max-height: 520px;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         border-radius: 16px;
         box-shadow: 0 10px 50px rgba(0, 0, 0, 0.25);
         overflow: hidden;
@@ -1836,7 +1836,7 @@ body.menu-open {
         display: flex;
         align-items: center;
         padding: 16px;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         gap: 12px;
         border-radius: 16px 16px 0 0;
     }
@@ -1873,7 +1873,7 @@ body.menu-open {
         border: none;
         background: rgba(255, 255, 255, 0.2);
         border-radius: 50%;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 20px;
         cursor: pointer;
         display: flex;
@@ -1926,7 +1926,7 @@ body.menu-open {
         padding: 12px 8px;
         border: 1px solid var(--ej-border-color, #e5e7eb);
         border-radius: 10px;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         cursor: pointer;
         transition: all 0.2s;
         gap: 6px;
@@ -1980,7 +1980,7 @@ body.menu-open {
 
         &.from-user {
             background: var(--ej-color-primary, #FF8C42);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
@@ -2031,7 +2031,7 @@ body.menu-open {
         border: none;
         border-radius: 50%;
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -2064,7 +2064,7 @@ body.menu-open {
         height: 28px;
         border: 1px solid var(--ej-border-color, #e5e7eb);
         border-radius: 50%;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         cursor: pointer;
         font-size: 14px;
         display: flex;
@@ -2107,7 +2107,7 @@ body.menu-open {
         gap: 6px;
         padding: 8px 14px;
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         text-decoration: none;
         border-radius: 20px;
         font-size: 13px;
@@ -2255,7 +2255,7 @@ body.menu-open {
     }
 
     &__dialog {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         border-radius: 16px;
         box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
         overflow: hidden;
@@ -2265,12 +2265,12 @@ body.menu-open {
     }
 
     &__header {
-        background: linear-gradient(135deg, #1a1a2e 0%, #233d63 100%);
+        background: linear-gradient(135deg, var(--ej-bg-dark, #1a1a2e) 0%, var(--ej-color-corporate, #233d63) 100%);
         padding: 1rem 1.25rem;
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &__avatar {
@@ -2308,12 +2308,12 @@ body.menu-open {
         flex: 1;
         padding: 1rem;
         overflow-y: auto;
-        background: #f8f9fa;
+        background: var(--ej-gray-25-alt, #f8f9fa);
     }
 
     &__footer {
         padding: 0.75rem 1rem;
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
@@ -2342,7 +2342,7 @@ body.menu-open {
         border: none;
         border-radius: 50%;
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -2365,7 +2365,7 @@ body.menu-open {
     margin-bottom: 1rem;
 
     &--bot p {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         padding: 0.75rem 1rem;
         border-radius: 12px 12px 12px 4px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -2376,7 +2376,7 @@ body.menu-open {
 
     &--user p {
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         padding: 0.75rem 1rem;
         border-radius: 12px 12px 4px 12px;
         margin: 0 0 0 auto;
@@ -2396,14 +2396,14 @@ body.menu-open {
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 16px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.2s;
 
     &:hover {
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border-color: var(--ej-color-primary, #FF8C42);
     }
 }
@@ -2487,12 +2487,12 @@ body.header-layout-hero {
             .landing-header__name,
             .landing-nav a,
             .btn-ghost {
-                color: #fff;
+                color: var(--ej-bg-surface, #fff);
             }
         }
 
         &__name {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &__slogan {
@@ -2501,7 +2501,7 @@ body.header-layout-hero {
     }
 
     .landing-nav a {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover,
         &.is-active {
@@ -2509,23 +2509,23 @@ body.header-layout-hero {
         }
 
         &::after {
-            background: #fff;
+            background: var(--ej-bg-surface, #fff);
         }
     }
 
     .btn-ghost {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
     .landing-header__toggle .hamburger,
     .landing-header__toggle .hamburger::before,
     .landing-header__toggle .hamburger::after {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -2672,7 +2672,7 @@ body.footer-layout-mega {
             h3 {
                 font-size: 1rem;
                 margin-bottom: 1.25rem;
-                color: #fff;
+                color: var(--ej-bg-surface, #fff);
             }
 
             ul {

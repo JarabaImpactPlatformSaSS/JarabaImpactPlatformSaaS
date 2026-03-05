@@ -1,0 +1,39 @@
+id: empleabilidad
+label: 'Onboarding Empleabilidad'
+vertical_id: empleabilidad
+headline: 'Impulsa tu carrera profesional'
+subheadline: 'Herramientas de IA para encontrar empleo, mejorar tu CV y preparar entrevistas.'
+benefits:
+  - icon_category: employment
+    icon_name: briefcase
+    text: 'Diagnóstico Express de empleabilidad con IA'
+  - icon_category: education
+    icon_name: graduation-cap
+    text: 'Rutas de aprendizaje personalizadas'
+  - icon_category: ui
+    icon_name: document
+    text: 'Constructor de CV profesional'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto IA para preparar entrevistas'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Realiza tu Diagnóstico Express'
+    description: 'Descubre tu nivel de empleabilidad en 5 minutos.'
+    route: 'jaraba_empleabilidad.diagnostico'
+    route_params: {}
+    icon: bi-clipboard-check
+  - title: 'Completa tu perfil'
+    description: 'Añade tu experiencia y formación para mejores resultados.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-person-badge
+  - title: 'Explora cursos recomendados'
+    description: 'Accede a formación adaptada a tu perfil.'
+    route: 'jaraba_lms.catalog'
+    route_params: {}
+    icon: bi-book
+connect_required: false
+post_onboarding_route: 'jaraba_empleabilidad.diagnostico'

@@ -404,6 +404,24 @@ jaraba_comercio_conecta.merchant_portal.payments:
   requirements:
     _permission: 'edit own merchant profile'
 
+# P1-06: Bulk CSV import
+jaraba_comercio_conecta.merchant_portal.import:
+  path: '/mi-comercio/importar'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantImportController::importPage'
+    _title: 'Importar Productos'
+  requirements:
+    _permission: 'create comercio products'
+
+jaraba_comercio_conecta.merchant_portal.import.process:
+  path: '/api/v1/comercio/import/process'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantImportController::processImport'
+  methods: [POST]
+  requirements:
+    _permission: 'create comercio products'
+    _csrf_request_header_token: 'TRUE'
+
 jaraba_comercio_conecta.merchant_portal.settings:
   path: '/mi-comercio/configuracion'
   defaults:

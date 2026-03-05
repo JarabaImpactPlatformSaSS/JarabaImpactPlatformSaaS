@@ -169,7 +169,7 @@
   &__winner-badge {
     padding: $ab-space-xs $ab-space-sm;
     background: $ab-success;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.6875rem;
     font-weight: 700;
     border-radius: $ab-radius-sm;
@@ -243,7 +243,7 @@
     display: inline-block;
     padding: $ab-space-sm $ab-space-lg;
     background: var(--ej-primary-color, $ab-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     text-decoration: none;
     border-radius: $ab-radius-sm;
     font-weight: 600;

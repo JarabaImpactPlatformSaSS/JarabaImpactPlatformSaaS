@@ -314,7 +314,7 @@ body.slide-panel-open {
         font-weight: 500;
 
         &:hover {
-          background: #f1f5f9;
+          background: var(--ej-gray-100, #f1f5f9);
         }
       }
 

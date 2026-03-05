@@ -172,7 +172,7 @@ $phase-colors: (
         .progress-label {
             font-size: 0.625rem;
             text-transform: uppercase;
-            color: #6b7280;
+            color: var(--ej-gray-500, #6b7280);
         }
     }
 }

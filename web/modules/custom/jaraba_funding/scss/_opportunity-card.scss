@@ -92,13 +92,13 @@
 
     &:hover {
       background: var(--ej-color-corporate, #233D63);
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
     }
 
     &--primary {
       background: var(--ej-color-impulse, #FF8C42);
       border-color: var(--ej-color-impulse, #FF8C42);
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
 
       &:hover {
         background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black);

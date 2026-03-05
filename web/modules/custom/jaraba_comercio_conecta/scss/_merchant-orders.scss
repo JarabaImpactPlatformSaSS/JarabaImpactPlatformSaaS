@@ -107,7 +107,7 @@
 
     &--warning { border-left: 3px solid $comercio-warning; }
     &--success { border-left: 3px solid $comercio-success; }
-    &--info { border-left: 3px solid #3B82F6; }
+    &--info { border-left: 3px solid var(--ej-color-blue, #3B82F6); }
   }
 
   &__summary-label {

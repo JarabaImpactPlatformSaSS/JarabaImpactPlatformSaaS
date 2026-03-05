@@ -282,7 +282,6 @@ jobs:
             LEAK_COUNT=$(grep "potential tenant isolation" tenant-output.txt | grep -oP '\d+' | head -1)
             echo "⚠️ **$LEAK_COUNT potential tenant isolation gap(s)**" >> $GITHUB_STEP_SUMMARY
           fi
-        continue-on-error: true
 
       - name: Asset freshness check (ASSET-FRESHNESS-001)
         run: |

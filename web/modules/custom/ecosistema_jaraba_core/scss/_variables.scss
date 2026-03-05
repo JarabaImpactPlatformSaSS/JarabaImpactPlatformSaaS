@@ -154,7 +154,7 @@ $text-secondary: $ej-gray-600;
 $text-muted: $ej-gray-500;
 $border-color: $ej-gray-200;
 $bg-light: $ej-gray-50;
-$white: #ffffff;
+$white: var(--ej-bg-surface, #ffffff);
 
 // ---------------------------------------------------------------------------
 // FALLBACKS PARA VARIABLES CSS INYECTABLES

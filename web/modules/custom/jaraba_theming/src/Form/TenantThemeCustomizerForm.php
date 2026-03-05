@@ -6,6 +6,7 @@ namespace Drupal\jaraba_theming\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_theming\Service\ThemeTokenService;
 use Drupal\jaraba_theming\Service\IndustryPresetService;
@@ -120,21 +121,30 @@ class TenantThemeCustomizerForm extends FormBase
 
         // Attach libraries
         $form['#attached']['library'][] = 'jaraba_theming/visual_customizer';
-        $form['#attached']['library'][] = 'ecosistema_jaraba_theme/admin-settings';
+        $form['#attached']['library'][] = 'ecosistema_jaraba_core/global';
         $form['#attributes']['class'][] = 'jaraba-theme-customizer';
         $form['#attributes']['class'][] = 'jaraba-settings';
 
-        // Premium Header with Screenshot
-        $screenshotUrl = '/' . $themePath . '/screenshot.png';
+        // Back navigation + Premium Header
+        $backUrl = '/es/my-settings';
+        $previewUrl = '/admin/appearance/theme-preview';
+        $paletteSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 2h4v4"/><path d="M21 2l-7 7"/><circle cx="8.5" cy="12.5" r="2.5"/><path d="M7 2H3v4"/><path d="M3 2l7 7"/><circle cx="6.5" cy="18.5" r="2.5"/></svg>';
+        $backArrow = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
         $form['header'] = [
             '#markup' => '
             <div class="jaraba-settings-header">
-                <div class="jaraba-settings-header__preview">
-                    <img src="' . $screenshotUrl . '" alt="' . $this->t('Vista previa del tema') . '" />
+                <div class="jaraba-settings-header__nav">
+                    <a href="' . $backUrl . '" class="jaraba-settings-back-link">' . $backArrow . ' ' . $this->t('Volver a Configuración') . '</a>
                 </div>
-                <div class="jaraba-settings-header__info">
-                    <h2>' . $this->t('Personaliza tu Sitio') . '</h2>
-                    <p>' . $this->t('Configura la apariencia visual de tu plataforma. Los cambios se aplican al guardar.') . '</p>
+                <div class="jaraba-settings-header__content">
+                    <div class="jaraba-settings-header__icon">' . $paletteSvg . '</div>
+                    <div class="jaraba-settings-header__info">
+                        <h2>' . $this->t('Diseño Visual') . '</h2>
+                        <p>' . $this->t('Configura la apariencia visual de tu plataforma. Los cambios se aplican al guardar.') . '</p>
+                    </div>
+                    <div class="jaraba-settings-header__actions">
+                        <a href="' . $previewUrl . '" target="_blank" class="jaraba-btn jaraba-btn--outline">' . $this->t('Vista previa') . '</a>
+                    </div>
                 </div>
             </div>',
         ];
@@ -186,7 +196,7 @@ class TenantThemeCustomizerForm extends FormBase
         }
 
         $form['industry_preset']['filters'] = [
-            '#markup' => '<div class="preset-filter-bar">' . $filterPills . '</div>',
+            '#markup' => Markup::create('<div class="preset-filter-bar">' . $filterPills . '</div>'),
         ];
 
         // --- Build visual preset card options ---
@@ -196,14 +206,14 @@ class TenantThemeCustomizerForm extends FormBase
         // Opción: Sin ajuste predefinido
         $customizeSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 2h4v4"/><path d="M21 2l-7 7"/><circle cx="8.5" cy="12.5" r="2.5"/><path d="M7 2H3v4"/><path d="M3 2l7 7"/><circle cx="6.5" cy="18.5" r="2.5"/></svg>';
 
-        $presetOptions[''] = '<div class="preset-picker-card preset-picker-card--none" data-vertical="todos">'
+        $presetOptions[''] = Markup::create('<div class="preset-picker-card preset-picker-card--none" data-vertical="todos">'
             . '<span class="preset-picker-check">' . $checkSvg . '</span>'
             . '<div class="preset-picker-none-content">'
             . '<div class="preset-picker-none-icon">' . $customizeSvg . '</div>'
             . '<span class="preset-picker-none-title">' . $this->t('Sin ajuste predefinido') . '</span>'
             . '<span class="preset-picker-none-desc">' . $this->t('Configura manualmente todos los colores, tipografías y componentes a tu gusto.') . '</span>'
             . '</div>'
-            . '</div>';
+            . '</div>');
 
         // Vertical labels for badges (translated)
         $verticalBadgeLabels = [
@@ -224,7 +234,7 @@ class TenantThemeCustomizerForm extends FormBase
 
             $badgeLabel = $verticalBadgeLabels[$preset['vertical']] ?? ucfirst($preset['vertical']);
 
-            $presetOptions[$id] = '<div class="preset-picker-card" data-vertical="' . $preset['vertical'] . '">'
+            $presetOptions[$id] = Markup::create('<div class="preset-picker-card" data-vertical="' . $preset['vertical'] . '">'
                 . '<span class="preset-picker-check">' . $checkSvg . '</span>'
                 . '<div class="preset-picker-thumb">'
                 . '<img src="' . $imagePath . '" alt="' . $this->t('Vista previa: @name', ['@name' => $preset['label']]) . '" loading="lazy" />'
@@ -237,7 +247,7 @@ class TenantThemeCustomizerForm extends FormBase
                 . '<div class="preset-picker-palette">' . $swatches . '</div>'
                 . '<span class="preset-picker-fonts">' . $preset['typography']['headings'] . ' + ' . $preset['typography']['body'] . '</span>'
                 . '</div>'
-                . '</div>';
+                . '</div>');
         }
 
         $form['industry_preset']['preset_id'] = [
@@ -560,6 +570,16 @@ class TenantThemeCustomizerForm extends FormBase
             '#title' => $this->t('Texto del botón CTA'),
             '#default_value' => $this->getConfigValue($config, 'header_cta_text', 'Empezar'),
             '#maxlength' => 32,
+            '#states' => ['visible' => [':input[name="header_cta_enabled"]' => ['checked' => TRUE]]],
+        ];
+
+        $form['header_options']['header_cta_url'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Enlace del botón CTA'),
+            '#default_value' => $this->getConfigValue($config, 'header_cta_url', '/registro'),
+            '#description' => $this->t('Ruta interna (ej: /registro) o URL completa (ej: https://ejemplo.com).'),
+            '#placeholder' => '/registro',
+            '#states' => ['visible' => [':input[name="header_cta_enabled"]' => ['checked' => TRUE]]],
         ];
 
         // === TAB 5: HERO ===
@@ -857,6 +877,7 @@ class TenantThemeCustomizerForm extends FormBase
             'header_sticky' => 'header_sticky',
             'header_cta_enabled' => 'header_cta_enabled',
             'header_cta_text' => 'header_cta_text',
+            'header_cta_url' => 'header_cta_url',
             'hero_variant' => 'hero_variant',
             'hero_overlay' => 'hero_overlay',
             'card_style' => 'card_style',

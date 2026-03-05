@@ -12,5 +12,5 @@
 $legal-primary: #1E3A5F;
 $legal-secondary: #2D5F8A;
 $legal-accent: #D4A843;
-$legal-surface: #F8FAFC;
-$legal-border: #E2E8F0;
+$legal-surface: var(--ej-bg-body, #F8FAFC);
+$legal-border: var(--ej-gray-200, #E2E8F0);

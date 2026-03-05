@@ -44,7 +44,7 @@
 
     &:hover {
         background: var(--ej-color-innovation, #00A9A5);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         transform: translateY(-1px);
     }
 
@@ -132,7 +132,7 @@
     justify-content: space-between;
     padding: 1rem 1.25rem;
     background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), var(--ej-color-innovation, #00A9A5));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     h3 {
         margin: 0;
@@ -144,7 +144,7 @@
 .ai-modal-close {
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
@@ -268,7 +268,7 @@
 
 .ai-btn-primary {
     background: var(--ej-color-innovation, #00A9A5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover:not(:disabled) {
         background: var(--ej-color-innovation-dark, #008F8C);
@@ -288,7 +288,7 @@
 
 .ai-btn-success {
     background: var(--ej-color-success, #10B981);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover:not(:disabled) {
         filter: brightness(0.9);

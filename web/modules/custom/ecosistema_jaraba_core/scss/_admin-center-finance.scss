@@ -20,7 +20,7 @@
 }
 
 .ac-finance__card {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border: 1px solid var(--ej-gray-200, #eeeeee);
   border-radius: 10px;
   padding: 1.25rem;

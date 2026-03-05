@@ -223,7 +223,7 @@
   border: none;
   border-radius: var(--ej-border-radius-sm, 8px);
   background: var(--ej-color-impulse, #FF8C42);
-  color: #FFFFFF;
+  color: var(--ej-bg-surface, #FFFFFF);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
 
@@ -345,7 +345,7 @@
   &__option input:checked + &__option-card &__option-check {
     border-color: var(--ej-color-impulse, #FF8C42);
     background: var(--ej-color-impulse, #FF8C42);
-    box-shadow: inset 0 0 0 3px #FFFFFF;
+    box-shadow: inset 0 0 0 3px var(--ej-bg-surface, #FFFFFF);
   }
 }
 
@@ -568,7 +568,7 @@
     width: 0;
     border-radius: 6px;
     background: linear-gradient(90deg,
-      #EF4444 0%,
+      var(--ej-color-danger, #EF4444) 0%,
       var(--ej-color-impulse, #FF8C42) 50%,
       var(--ej-color-agro, #556B2F) 100%
     );

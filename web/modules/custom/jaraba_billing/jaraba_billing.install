@@ -263,3 +263,80 @@ function jaraba_billing_update_10004(array &$sandbox): void {
     throw new \RuntimeException('Failed to update billing_usage_record: ' . $e->getMessage(), 0, $e);
   }
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_billing_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // CHECK 1: Stripe keys configured via getenv() (SECRET-MGMT-001).
+  $stripe_public = getenv('STRIPE_PUBLIC_KEY');
+  $stripe_secret = getenv('STRIPE_SECRET_KEY');
+  $stripe_webhook = getenv('STRIPE_WEBHOOK_SECRET');
+
+  if (empty($stripe_public) || empty($stripe_secret)) {
+    $requirements['jaraba_billing_stripe_keys'] = [
+      'title' => t('Jaraba Billing: Stripe API Keys'),
+      'value' => t('Not configured'),
+      'description' => t('STRIPE_PUBLIC_KEY and STRIPE_SECRET_KEY must be set via environment variables in settings.secrets.php. Billing features will not work without them.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_billing_stripe_keys'] = [
+      'title' => t('Jaraba Billing: Stripe API Keys'),
+      'value' => t('Configured (public key: @pk)', ['@pk' => substr($stripe_public, 0, 12) . '...']),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  if (empty($stripe_webhook)) {
+    $requirements['jaraba_billing_stripe_webhook'] = [
+      'title' => t('Jaraba Billing: Stripe Webhook Secret'),
+      'value' => t('Not configured'),
+      'description' => t('STRIPE_WEBHOOK_SECRET must be set for webhook signature verification (AUDIT-SEC-001).'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+  else {
+    $requirements['jaraba_billing_stripe_webhook'] = [
+      'title' => t('Jaraba Billing: Stripe Webhook Secret'),
+      'value' => t('Configured'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  // CHECK 2: Billing entity types installed.
+  $entity_types = ['billing_invoice', 'billing_usage_record', 'billing_payment_method'];
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entity_types as $type_id) {
+    if (!$update_manager->getEntityType($type_id)) {
+      $missing[] = $type_id;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_billing_entities'] = [
+      'title' => t('Jaraba Billing: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_billing_entities'] = [
+      'title' => t('Jaraba Billing: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entity_types)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

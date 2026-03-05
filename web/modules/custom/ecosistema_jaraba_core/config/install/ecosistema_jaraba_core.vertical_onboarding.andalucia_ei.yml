@@ -1,0 +1,39 @@
+id: andalucia_ei
+label: 'Onboarding Andalucía Ecosistema Innovación'
+vertical_id: andalucia_ei
+headline: 'Ecosistema de innovación para Andalucía'
+subheadline: 'Diagnóstico STO, formación especializada, mentoría y conexión con el ecosistema emprendedor.'
+benefits:
+  - icon_category: business
+    icon_name: chart
+    text: 'Diagnóstico de capacidad innovadora'
+  - icon_category: education
+    icon_name: graduation-cap
+    text: 'Módulos de formación especializados'
+  - icon_category: social
+    icon_name: users
+    text: 'Mentoría con expertos del ecosistema'
+  - icon_category: ui
+    icon_name: download
+    text: 'Informes y exportación de datos'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Realiza tu diagnóstico'
+    description: 'Evalúa la capacidad innovadora de tu organización.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-clipboard-data
+  - title: 'Explora módulos formativos'
+    description: 'Accede a formación en innovación y emprendimiento.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-book
+  - title: 'Solicita mentoría'
+    description: 'Conecta con un mentor experto en tu sector.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-people
+connect_required: false
+post_onboarding_route: ''

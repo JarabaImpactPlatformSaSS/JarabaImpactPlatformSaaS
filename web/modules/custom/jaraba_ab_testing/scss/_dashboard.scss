@@ -159,7 +159,7 @@
     margin-top: $ab-space-md;
     padding: $ab-space-sm $ab-space-lg;
     background: var(--ej-primary-color, $ab-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     text-decoration: none;
     border-radius: $ab-radius-sm;
     font-weight: 600;

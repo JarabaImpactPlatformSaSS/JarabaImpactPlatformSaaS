@@ -17,7 +17,7 @@
     height: 56px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--ej-color-primary, #2d6a4f), #40916c);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     cursor: pointer;
     display: flex;
@@ -50,14 +50,14 @@
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: #ef4444;
-        color: #fff;
+        background: var(--ej-color-danger, #ef4444);
+        color: var(--ej-bg-surface, #fff);
         font-size: 0.65rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid #fff;
+        border: 2px solid var(--ej-bg-surface, #fff);
     }
 }
 
@@ -94,8 +94,8 @@
         align-items: center;
         gap: var(--ej-spacing-sm, 0.75rem);
         padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.5rem);
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        color: #fff;
+        background: linear-gradient(135deg, var(--ej-bg-dark, #1a1a2e), #16213e);
+        color: var(--ej-bg-surface, #fff);
     }
 
     &__avatar {
@@ -131,7 +131,7 @@
         border-radius: 50%;
         background: color-mix(in srgb, #fff 10%, transparent);
         border: none;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 0.9rem;
         cursor: pointer;
         display: flex;
@@ -176,7 +176,7 @@
         &--user {
             align-self: flex-end;
             background: var(--ej-color-primary, #2d6a4f);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             border-bottom-right-radius: 4px;
         }
 
@@ -309,7 +309,7 @@
         height: 36px;
         border-radius: 50%;
         background: var(--ej-color-primary, #2d6a4f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         cursor: pointer;
         display: flex;

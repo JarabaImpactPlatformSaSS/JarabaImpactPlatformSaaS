@@ -19,19 +19,19 @@
 // VARIABLES PREMIUM (tema oscuro)
 // ---------------------------------------------------------------------------
 
-$premium-bg: #0f172a !default;
-$premium-bg-secondary: #1e293b !default;
+$premium-bg: var(--ej-gray-900, #0f172a) !default;
+$premium-bg-secondary: var(--ej-gray-800, #1e293b) !default;
 $premium-card-bg: rgba(30, 41, 59, 0.8) !default;
 $premium-border: rgba(148, 163, 184, 0.1) !default;
-$premium-text: #e2e8f0 !default;
-$premium-text-muted: #94a3b8 !default;
+$premium-text: var(--ej-gray-200, #e2e8f0) !default;
+$premium-text-muted: var(--ej-gray-400, #94a3b8) !default;
 
 // Colores semánticos usando variables CSS inyectables
 $premium-primary: var(--ej-color-primary, #{$ej-color-primary-fallback});
 $premium-success: var(--ej-color-success, #{$ej-color-success});
 $premium-warning: var(--ej-color-warning, #{$ej-color-warning});
 $premium-error: var(--ej-color-error, #{$ej-color-error});
-$premium-gold: #fbbf24;
+$premium-gold: var(--ej-color-amber, #fbbf24);
 
 // ---------------------------------------------------------------------------
 // CONTAINER BASE
@@ -215,7 +215,7 @@ $premium-gold: #fbbf24;
     }
 
     &--purple {
-        border-top: 3px solid #8b5cf6;
+        border-top: 3px solid var(--ej-color-violet, #8b5cf6);
     }
 
     &__icon {
@@ -613,7 +613,7 @@ $premium-gold: #fbbf24;
                 left: 50%;
                 transform: translateX(-50%) translateY(-5px);
                 padding: $ej-spacing-sm $ej-spacing-md;
-                background: #1e293b;
+                background: var(--ej-gray-800, #1e293b);
                 color: $premium-text;
                 font-size: $ej-font-size-xs;
                 border-radius: $ej-border-radius-sm;
@@ -648,19 +648,19 @@ $premium-gold: #fbbf24;
         // Tier badges
         &--basic {
             background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.1));
-            color: #94a3b8;
+            color: var(--ej-gray-400, #94a3b8);
         }
 
         &--professional,
         &--pro {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.1));
-            color: #60a5fa;
+            color: var(--ej-color-blue-400, #60a5fa);
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
         }
 
         &--enterprise {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
-            color: #a78bfa;
+            color: var(--ej-color-purple, #a78bfa);
             box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
         }
 
@@ -785,17 +785,17 @@ $premium-gold: #fbbf24;
 
     &--basic {
         background: rgba(148, 163, 184, 0.2);
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     &--professional {
         background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
+        color: var(--ej-color-blue-400, #60a5fa);
     }
 
     &--enterprise {
         background: rgba(139, 92, 246, 0.2);
-        color: #a78bfa;
+        color: var(--ej-color-purple, #a78bfa);
     }
 
     &--success {
@@ -972,7 +972,7 @@ $premium-gold: #fbbf24;
 
     &--external {
         background: rgba(139, 92, 246, 0.1);
-        color: #a78bfa;
+        color: var(--ej-color-purple, #a78bfa);
         border-color: rgba(139, 92, 246, 0.3);
     }
 
@@ -1027,7 +1027,7 @@ $premium-gold: #fbbf24;
     }
 
     &--storage {
-        border-left-color: #8b5cf6;
+        border-left-color: var(--ej-color-violet, #8b5cf6);
     }
 
     &--api {

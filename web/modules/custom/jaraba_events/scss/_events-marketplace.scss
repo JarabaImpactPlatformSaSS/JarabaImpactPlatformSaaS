@@ -22,7 +22,7 @@
       var(--ej-primary-color, $events-primary) 0%,
       color-mix(in srgb, var(--ej-primary-color, $events-primary) 70%, black) 100%
     );
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     padding: $events-spacing-3xl $events-spacing-md;
     text-align: center;
 
@@ -39,7 +39,7 @@
     margin: 0 0 $events-spacing-sm;
     font-size: 2rem;
     font-weight: $events-heading-weight;
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     @media (min-width: $events-bp-md) {
       font-size: 2.5rem;
@@ -130,7 +130,7 @@
 
     &--active {
       background: var(--ej-primary-color, $events-primary);
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
       border-color: var(--ej-primary-color, $events-primary);
     }
   }

@@ -85,7 +85,7 @@
         font-family: var(--ej-font-headings, var(--ej-font-family, 'Outfit', sans-serif));
         font-size: clamp(2.25rem, 5vw, 3.75rem);
         font-weight: 800;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin: 0 0 0.75rem;
         letter-spacing: -0.02em;
         line-height: 1.1;
@@ -372,7 +372,7 @@
     &--error {
         background: rgba(239, 68, 68, 0.06);
         border: 1px solid rgba(239, 68, 68, 0.25);
-        color: #991B1B;
+        color: var(--ej-color-danger-deep, #991B1B);
 
         .messages__list {
             list-style: none;
@@ -393,7 +393,7 @@
     &--status {
         background: rgba(16, 185, 129, 0.06);
         border: 1px solid rgba(16, 185, 129, 0.25);
-        color: #065F46;
+        color: var(--ej-color-green-deep, #065F46);
     }
 }
 
@@ -418,7 +418,7 @@
     background: linear-gradient(135deg,
             var(--ej-color-corporate, #233D63),
             color-mix(in srgb, var(--ej-color-corporate, #233D63), var(--ej-color-primary, #4F46E5) 40%));
-    color: #fff !important;
+    color: var(--ej-bg-surface, #fff) !important;
     font-size: 1rem;
     font-weight: 700;
     border: none;

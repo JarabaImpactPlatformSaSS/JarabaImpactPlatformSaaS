@@ -95,6 +95,39 @@ function jaraba_lms_theme(): array {
       ],
       'template' => 'gamification-leaderboard',
     ],
+    // === Instructor Dashboard (P0-05) ===
+    'lms_instructor_courses' => [
+      'variables' => [
+        'courses' => [],
+        'total' => 0,
+      ],
+      'template' => 'lms-instructor-courses',
+    ],
+    'lms_instructor_lessons' => [
+      'variables' => [
+        'course' => NULL,
+        'lessons' => [],
+        'total' => 0,
+      ],
+      'template' => 'lms-instructor-lessons',
+    ],
+    'lms_instructor_students' => [
+      'variables' => [
+        'course' => NULL,
+        'students' => [],
+        'total' => 0,
+      ],
+      'template' => 'lms-instructor-students',
+    ],
+    // P2-08: Analytics instructor.
+    'lms_instructor_analytics' => [
+      'variables' => [
+        'course' => NULL,
+        'kpis' => [],
+        'lessons' => [],
+      ],
+      'template' => 'lms-instructor-analytics',
+    ],
     // === Course Detail (Schema.org Ready) ===
     'course_detail' => [
       'variables' => [

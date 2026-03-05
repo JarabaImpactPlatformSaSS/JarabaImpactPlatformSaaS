@@ -206,7 +206,7 @@
             rgba($ej-color-innovation, 0.1) 100%);
     border: 1px solid rgba($ej-color-impulse, 0.3);
     border-radius: $ej-btn-radius;
-    color: #F8FAFC;
+    color: var(--ej-bg-body, #F8FAFC);
     font-size: 0.75rem;
     font-weight: 500;
     text-decoration: none;
@@ -298,7 +298,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.8125rem;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
@@ -368,7 +368,7 @@
     }
 
     &.is-active {
-        color: #F8FAFC;
+        color: var(--ej-bg-body, #F8FAFC);
         border-bottom-color: $ej-color-impulse;
     }
 }
@@ -567,7 +567,7 @@
     background: linear-gradient(135deg,
             var(--ej-color-primary, $ej-color-impulse),
             var(--ej-color-secondary, $ej-color-innovation));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 // ---------------------------------------------------------------------------
@@ -753,7 +753,7 @@
     background: linear-gradient(135deg,
             rgba($ej-color-corporate, 0.95) 0%,
             rgba(color.adjust($ej-color-corporate, $lightness: 8%), 0.92) 100%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.8125rem;
     font-weight: 500;
     font-family: var(--ej-font-body, $ej-font-body);
@@ -883,7 +883,7 @@
 }
 
 .gjs-frame {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: $ej-border-radius;
     box-shadow: $ej-shadow-lg;
 }
@@ -928,7 +928,7 @@
 
     &:hover {
         background: var(--ej-color-primary, $ej-color-impulse);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -937,7 +937,7 @@
     background: linear-gradient(135deg,
             var(--ej-color-primary, $ej-color-impulse),
             var(--ej-color-secondary, $ej-color-innovation));
-    color: #fff !important;
+    color: var(--ej-bg-surface, #fff) !important;
     font-size: 0.875rem;
 
     &:hover {
@@ -959,7 +959,7 @@
 
 // Labels de propiedades - Alto contraste
 .gjs-trt-trait .gjs-label {
-    color: #FFFFFF !important; // Blanco puro para máximo contraste
+    color: var(--ej-bg-surface, #FFFFFF) !important; // Blanco puro para máximo contraste
     font-size: 0.8125rem; // Ligeramente más grande (13px)
     font-weight: 600; // Mayor peso para mejor legibilidad
     margin-bottom: $ej-spacing-sm;
@@ -972,7 +972,7 @@
     background: rgba(255, 255, 255, 0.12) !important; // Fondo semi-transparente más visible
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: $ej-btn-radius;
-    color: #FFFFFF !important;
+    color: var(--ej-bg-surface, #FFFFFF) !important;
 
     &:focus-within {
         border-color: var(--ej-color-primary, $ej-color-impulse) !important;
@@ -986,7 +986,7 @@
 .gjs-field select,
 .gjs-field textarea {
     background: transparent !important;
-    color: #FFFFFF !important;
+    color: var(--ej-bg-surface, #FFFFFF) !important;
     border: none;
     padding: $ej-spacing-sm $ej-spacing-md;
     width: 100%;
@@ -996,7 +996,7 @@
 // Options dentro de select - Fondo oscuro para visibilidad
 .gjs-field select option {
     background: $ej-color-corporate;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
 }
 
 // Placeholder con contraste adecuado
@@ -1027,13 +1027,13 @@
     &:hover {
         background: var(--ej-color-primary, $ej-color-impulse);
         border-color: var(--ej-color-primary, $ej-color-impulse);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 
     &.gjs-pn-active {
         background: var(--ej-color-primary, $ej-color-impulse);
         border-color: var(--ej-color-primary, $ej-color-impulse);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -1142,7 +1142,7 @@
         background: linear-gradient(135deg,
                 var(--ej-color-primary, $ej-color-impulse),
                 var(--ej-color-secondary, $ej-color-innovation));
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             transform: translateY(-2px);
@@ -1291,7 +1291,7 @@
 .gjs-layers,
 .gjs-trt-traits {
     background: var(--ej-color-corporate, $ej-color-corporate) !important;
-    color: #F8FAFC !important;
+    color: var(--ej-bg-body, #F8FAFC) !important;
 }
 
 // Panel contenedor general
@@ -1305,7 +1305,7 @@
 
     .gjs-sm-sector-title {
         background: color.change($ej-color-innovation, $alpha: 0.15) !important;
-        color: #F8FAFC !important;
+        color: var(--ej-bg-body, #F8FAFC) !important;
         border-color: color.change($ej-color-innovation, $alpha: 0.3) !important;
     }
 
@@ -1315,7 +1315,7 @@
 
     .gjs-sm-label,
     .gjs-sm-property label {
-        color: #CBD5E1 !important;
+        color: var(--ej-gray-300, #CBD5E1) !important;
     }
 }
 
@@ -1326,7 +1326,7 @@
 .gjs-sm-select select {
     background: color.change($ej-bg-dark, $alpha: 0.5) !important;
     border-color: color.change($ej-color-innovation, $alpha: 0.3) !important;
-    color: #F8FAFC !important;
+    color: var(--ej-bg-body, #F8FAFC) !important;
 }
 
 // ===========================================================================
@@ -1392,7 +1392,7 @@
 
 .gjs-cv-canvas {
     padding-top: $ej-spacing-md !important;
-    background: #F8FAFC !important;
+    background: var(--ej-bg-body, #F8FAFC) !important;
 }
 
 .gjs-cv-canvas__frames {
@@ -1466,7 +1466,7 @@
 // Frames container con espacio
 .gjs-cv-canvas .gjs-cv-canvas__frames {
     padding: 16px !important;
-    background: #F8FAFC !important;
+    background: var(--ej-bg-body, #F8FAFC) !important;
 }
 
 // ===========================================================================
@@ -1505,7 +1505,7 @@
 
     // Título de la categoría
     .gjs-title {
-        color: #F8FAFC !important; // Blanco para legibilidad
+        color: var(--ej-bg-body, #F8FAFC) !important; // Blanco para legibilidad
         font-weight: 600 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
@@ -1527,7 +1527,7 @@
 
 // Labels de bloques individuales
 .gjs-block-label {
-    color: #CBD5E1 !important; // Gris claro legible
+    color: var(--ej-gray-300, #CBD5E1) !important; // Gris claro legible
     font-size: 0.7rem !important;
     margin-top: $ej-spacing-xs !important;
     text-align: center !important;
@@ -1544,7 +1544,7 @@
 
     // Título del sector
     .gjs-sm-sector-title {
-        color: #F8FAFC !important;
+        color: var(--ej-bg-body, #F8FAFC) !important;
         font-weight: 600 !important;
         font-size: 0.8rem !important;
         text-transform: uppercase !important;
@@ -1557,7 +1557,7 @@
 // Labels de propiedades
 .gjs-sm-label,
 .gjs-sm-property .gjs-sm-label {
-    color: #CBD5E1 !important; // Gris claro
+    color: var(--ej-gray-300, #CBD5E1) !important; // Gris claro
     font-size: 0.75rem !important;
     font-weight: 500 !important;
 }
@@ -1568,8 +1568,8 @@
 .gjs-field select,
 .gjs-sm-select,
 .gjs-clm-input {
-    background: #1A1A2E !important; // Fondo oscuro para contraste
-    color: #F8FAFC !important; // Texto blanco
+    background: var(--ej-bg-dark, #1A1A2E) !important; // Fondo oscuro para contraste
+    color: var(--ej-bg-body, #F8FAFC) !important; // Texto blanco
     border: 1px solid color.change($ej-color-innovation, $alpha: 0.3) !important;
     border-radius: 4px !important;
     padding: $ej-spacing-xs $ej-spacing-sm !important;
@@ -1582,7 +1582,7 @@
     }
 
     &::placeholder {
-        color: #64748B !important;
+        color: var(--ej-color-neutral, #64748B) !important;
     }
 }
 
@@ -1615,26 +1615,26 @@
 
 // Color picker
 .gjs-field-color {
-    background: #1A1A2E !important;
+    background: var(--ej-bg-dark, #1A1A2E) !important;
     border: 1px solid color.change($ej-color-innovation, $alpha: 0.3) !important;
     border-radius: 4px !important;
 }
 
 // Valores numéricos con unidades
 .gjs-field-units {
-    color: #94A3B8 !important;
+    color: var(--ej-gray-400, #94A3B8) !important;
     font-size: 0.7rem !important;
 }
 
 // Radio buttons y checkboxes personalizados
 .gjs-radio-item,
 .gjs-checkbox {
-    color: #CBD5E1 !important;
+    color: var(--ej-gray-300, #CBD5E1) !important;
 }
 
 // Layers panel
 .gjs-layer {
-    color: #F8FAFC !important;
+    color: var(--ej-bg-body, #F8FAFC) !important;
     background: transparent !important;
     border-bottom: 1px solid color.change($ej-color-innovation, $alpha: 0.15) !important;
 
@@ -1643,16 +1643,16 @@
     }
 
     .gjs-layer-title {
-        color: #F8FAFC !important;
+        color: var(--ej-bg-body, #F8FAFC) !important;
     }
 }
 
 // Traits panel (propiedades de componente)
 .gjs-trt-trait {
-    color: #CBD5E1 !important;
+    color: var(--ej-gray-300, #CBD5E1) !important;
 
     .gjs-trt-trait-label {
-        color: #CBD5E1 !important;
+        color: var(--ej-gray-300, #CBD5E1) !important;
     }
 }
 
@@ -1695,14 +1695,14 @@
     &:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.35);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
     }
 
     &.is-active,
     &[aria-pressed="true"] {
         background: var(--ej-color-primary, $ej-color-impulse);
         border-color: var(--ej-color-primary, $ej-color-impulse);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
 
         &:hover {
             background: color.change($ej-color-impulse, $lightness: 45%);
@@ -1750,7 +1750,7 @@
     &:hover {
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.3);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
 
         svg {
             color: rgba(255, 255, 255, 0.9);
@@ -1763,7 +1763,7 @@
                 var(--ej-color-primary, $ej-color-impulse) 0%,
                 color.adjust($ej-color-impulse, $lightness: -8%) 100%);
         border-color: var(--ej-color-primary, $ej-color-impulse);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
         font-weight: 600;
         box-shadow: 0 4px 12px rgba($ej-color-impulse, 0.35);
 
@@ -1784,7 +1784,7 @@
         }
 
         svg {
-            color: #FFFFFF;
+            color: var(--ej-bg-surface, #FFFFFF);
         }
 
         &:hover {
@@ -1836,7 +1836,7 @@
     }
 
     &.is-active {
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
         background: var(--ej-color-primary, $ej-color-impulse);
         border-color: var(--ej-color-primary, $ej-color-impulse);
         font-weight: 600;
@@ -1901,21 +1901,21 @@
     &:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.2);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
 
         svg {
-            color: #FFFFFF;
+            color: var(--ej-bg-surface, #FFFFFF);
         }
     }
 
     &.is-active {
         background: var(--ej-color-primary, $ej-color-impulse);
         border-color: var(--ej-color-primary, $ej-color-impulse);
-        color: #FFFFFF;
+        color: var(--ej-bg-surface, #FFFFFF);
         box-shadow: 0 2px 6px color.change($ej-color-impulse, $alpha: 0.4);
 
         svg {
-            color: #FFFFFF;
+            color: var(--ej-bg-surface, #FFFFFF);
         }
     }
 }

@@ -33,7 +33,7 @@
 
     &.is-active {
       background: var(--category-color, var(--ej-primary, #233D63));
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       font-weight: var(--ej-font-weight-medium, 500);
     }
   }

@@ -31,7 +31,7 @@
 
     &--primary {
       background: var(--ej-primary, $fiscal-primary);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: color-mix(in srgb, var(--ej-primary, $fiscal-primary) 85%, #000);

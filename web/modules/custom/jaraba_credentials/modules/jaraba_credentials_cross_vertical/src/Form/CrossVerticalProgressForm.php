@@ -4,29 +4,40 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_credentials_cross_vertical\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar CrossVerticalProgress.
+ *
+ * Migrado a PremiumEntityFormBase (PREMIUM-FORMS-PATTERN-001).
  */
-class CrossVerticalProgressForm extends ContentEntityForm {
+class CrossVerticalProgressForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state): int {
-    $result = parent::save($form, $form_state);
+  protected function getSectionDefinitions(): array {
+    return [
+      'progress' => [
+        'label' => $this->t('Progreso'),
+        'fields' => ['rule_id', 'uid', 'progress_by_vertical', 'total_progress', 'status'],
+      ],
+      'completion' => [
+        'label' => $this->t('Completado'),
+        'fields' => ['completed_at', 'awarded_credential_id'],
+      ],
+      'metadata' => [
+        'label' => $this->t('Metadata'),
+        'fields' => ['tenant_id', 'created', 'changed'],
+      ],
+    ];
+  }
 
-    $messageArgs = ['%id' => $this->entity->id()];
-    $message = $result === SAVED_NEW
-      ? $this->t('Progreso cross-vertical %id creado.', $messageArgs)
-      : $this->t('Progreso cross-vertical %id actualizado.', $messageArgs);
-
-    $this->messenger()->addStatus($message);
-    $form_state->setRedirectUrl($this->entity->toUrl('collection'));
-
-    return $result;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layout-template', 'variant' => 'duotone', 'color' => 'verde-innovacion'];
   }
 
 }

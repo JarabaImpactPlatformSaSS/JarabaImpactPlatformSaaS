@@ -3,10 +3,10 @@
  * Variables locales para encapsulamiento.
  */
 .page-agent-dashboard {
-  --ad-bg: #0f172a;
-  --ad-surface: #1e293b;
+  --ad-bg: var(--ej-gray-900, #0f172a);
+  --ad-surface: var(--ej-gray-800, #1e293b);
   --ad-primary: #00f0ff; /* Neon Cyan */
-  --ad-text: #f8fafc;
+  --ad-text: var(--ej-bg-body, #f8fafc);
   
   background-color: var(--ad-bg);
   color: var(--ad-text);

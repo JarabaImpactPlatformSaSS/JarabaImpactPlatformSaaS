@@ -31,7 +31,7 @@
 
   &:hover {
     background: var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     transform: scale(1.1);
   }
 
@@ -79,7 +79,7 @@
 
   &:hover {
     background: var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &:focus-visible {

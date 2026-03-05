@@ -1067,9 +1067,16 @@ function jaraba_page_builder_entity_update(\Drupal\Core\Entity\EntityInterface $
     return;
   }
 
-  /** @var \Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber $service */
-  $service = \Drupal::service('jaraba_page_builder.workflow_transition');
-  $service->onStateChanged($entity, $original_state, $new_state);
+  if (\Drupal::hasService('jaraba_page_builder.workflow_transition')) {
+    try {
+      /** @var \Drupal\jaraba_page_builder\EventSubscriber\WorkflowTransitionSubscriber $service */
+      $service = \Drupal::service('jaraba_page_builder.workflow_transition');
+      $service->onStateChanged($entity, $original_state, $new_state);
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_page_builder')->error('Workflow transition error: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
 }
 
 /**

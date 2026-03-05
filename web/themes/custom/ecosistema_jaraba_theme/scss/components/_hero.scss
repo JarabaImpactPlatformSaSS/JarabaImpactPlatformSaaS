@@ -110,7 +110,7 @@ body.hero--split .page-wrapper--clean {
         position: relative;
         z-index: 2;
         padding: var(--ej-spacing-xl) var(--ej-spacing-lg);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         text-align: center;
         display: flex;
         flex-direction: column;

@@ -5,9 +5,9 @@
 :root {
   --ej-lexnet-primary: #1A237E;
   --ej-lexnet-pending: #FB8C00;
-  --ej-lexnet-read: #1976D2;
-  --ej-lexnet-linked: #43A047;
+  --ej-lexnet-read: var(--ej-color-blue-md, #1976D2);
+  --ej-lexnet-linked: var(--ej-color-green-material-dark, #43A047);
   --ej-lexnet-archived: #78909C;
-  --ej-lexnet-error: #E53935;
-  --ej-lexnet-confirmed: #2E7D32;
+  --ej-lexnet-error: var(--ej-color-red-material-dark, #E53935);
+  --ej-lexnet-confirmed: var(--ej-color-green-md, #2E7D32);
 }

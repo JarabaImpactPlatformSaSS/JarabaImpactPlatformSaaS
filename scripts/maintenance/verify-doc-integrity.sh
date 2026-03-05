@@ -1,12 +1,13 @@
 #!/bin/bash
 # verify-doc-integrity.sh — Verificación de integridad de documentos maestros
 # DOC-THRESHOLD-001: Umbral mínimo de líneas por documento
+# DOC-GUARD-001: Máximo 10% de pérdida relativa vs HEAD
 #
 # Uso:
 #   ./scripts/maintenance/verify-doc-integrity.sh          # Verificar todos
 #   ./scripts/maintenance/verify-doc-integrity.sh --strict  # Modo estricto (falla en warnings)
 #
-# Salida: 0 = OK, 1 = Error (umbral violado)
+# Salida: 0 = OK, 1 = Error (umbral violado o pérdida >10%)
 
 set -euo pipefail
 
@@ -19,11 +20,13 @@ declare -A DOC_THRESHOLDS=(
     ["docs/00_FLUJO_TRABAJO_CLAUDE.md"]=700
 )
 
+MAX_LOSS_PCT=10
+
 errors=0
 warnings=0
 
 echo "=== Verificación de Integridad Documental ==="
-echo "    DOC-THRESHOLD-001 | $(date -Iseconds)"
+echo "    DOC-THRESHOLD-001 + DOC-GUARD-001 | $(date -Iseconds)"
 echo ""
 
 for file in "${!DOC_THRESHOLDS[@]}"; do
@@ -37,10 +40,12 @@ for file in "${!DOC_THRESHOLDS[@]}"; do
 
     lines=$(wc -l < "$file")
 
+    # CHECK 1: Absolute threshold (DOC-THRESHOLD-001).
     if [ "$lines" -lt "$threshold" ]; then
         echo "  FAIL: $file"
         echo "        Líneas: $lines (mínimo: $threshold) — UMBRAL VIOLADO"
         errors=$((errors + 1))
+        continue
     elif [ "$lines" -lt $((threshold + 100)) ]; then
         echo "  WARN: $file"
         echo "        Líneas: $lines (mínimo: $threshold) — Cerca del umbral"
@@ -48,6 +53,22 @@ for file in "${!DOC_THRESHOLDS[@]}"; do
     else
         echo "  OK:   $file"
         echo "        Líneas: $lines (mínimo: $threshold)"
+    fi
+
+    # CHECK 2: Relative loss vs HEAD (DOC-GUARD-001).
+    prev_lines=$(git show HEAD:"$file" 2>/dev/null | wc -l || echo 0)
+    if [ "$prev_lines" -gt 0 ] && [ "$lines" -lt "$prev_lines" ]; then
+        loss=$((prev_lines - lines))
+        loss_pct=$((loss * 100 / prev_lines))
+        if [ "$loss_pct" -gt "$MAX_LOSS_PCT" ]; then
+            echo "  FAIL: $file"
+            echo "        Pérdida relativa: ${loss_pct}% ($prev_lines → $lines) — MAX ${MAX_LOSS_PCT}% EXCEDIDO"
+            errors=$((errors + 1))
+        elif [ "$loss_pct" -gt 5 ]; then
+            echo "  WARN: $file"
+            echo "        Pérdida relativa: ${loss_pct}% ($prev_lines → $lines) — Vigilar"
+            warnings=$((warnings + 1))
+        fi
     fi
 done
 

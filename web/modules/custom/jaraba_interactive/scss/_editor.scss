@@ -129,7 +129,7 @@
 
 .interactive-editor__save-btn {
   background: var(--ej-color-primary, #3b82f6);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .interactive-editor__preview-btn {
@@ -145,7 +145,7 @@
 
   &.is-published {
     background: var(--ej-color-success, #22c55e);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-color: var(--ej-color-success, #22c55e);
   }
 }

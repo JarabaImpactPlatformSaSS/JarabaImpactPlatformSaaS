@@ -169,8 +169,8 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.85rem 1.5rem;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 999px;
     font-weight: 600;
@@ -212,14 +212,14 @@
     &--success {
       display: block;
       background: color-mix(in srgb, #10B981 12%, transparent);
-      color: #065F46;
+      color: var(--ej-color-green-deep, #065F46);
       border: 1px solid color-mix(in srgb, #10B981 25%, transparent);
     }
 
     &--error {
       display: block;
       background: color-mix(in srgb, #EF4444 10%, transparent);
-      color: #991B1B;
+      color: var(--ej-color-danger-deep, #991B1B);
       border: 1px solid color-mix(in srgb, #EF4444 25%, transparent);
     }
   }
@@ -237,7 +237,7 @@
     font-family: var(--aei-font-headings);
     font-size: clamp(1.25rem, 2.5vw, 1.75rem);
     font-weight: 800;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 0.5rem;
   }
 
@@ -252,8 +252,8 @@
     align-items: center;
     justify-content: center;
     padding: 0.85rem 2rem;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     border-radius: 999px;
     font-weight: 600;
     font-size: 0.95rem;

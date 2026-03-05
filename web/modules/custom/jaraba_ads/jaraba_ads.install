@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_ads.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_ads_install(): void {
+  $entity_type_ids = [
+    'ad_campaign',
+    'ads_account',
+    'ads_audience_sync',
+    'ads_campaign_sync',
+    'ads_conversion_event',
+    'ads_metrics_daily',
+  ];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  foreach ($entity_type_ids as $entity_type_id) {
+    try {
+      if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
+        $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+        $entity_definition_update_manager->installEntityType($entity_type);
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_ads')->error(
+        'Failed to install entity type @type: @message',
+        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
+ * Install all jaraba_ads entity types.
+ */
+function jaraba_ads_update_10001(): void {
+  $entity_type_ids = [
+    'ad_campaign',
+    'ads_account',
+    'ads_audience_sync',
+    'ads_campaign_sync',
+    'ads_conversion_event',
+    'ads_metrics_daily',
+  ];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  foreach ($entity_type_ids as $entity_type_id) {
+    try {
+      if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
+        $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+        $entity_definition_update_manager->installEntityType($entity_type);
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_ads')->error(
+        'Failed to install entity type @type: @message',
+        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+}

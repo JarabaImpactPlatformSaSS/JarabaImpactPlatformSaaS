@@ -59,32 +59,32 @@
 
         &--harvest {
             background: linear-gradient(135deg, var(--ej-color-success, #10B981), color-mix(in srgb, var(--ej-color-success, #10B981) 75%, black));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &--processing {
             background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), color-mix(in srgb, var(--ej-color-warning, #F59E0B) 70%, black));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &--analysis {
             background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &--packaging {
             background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 75%, black));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &--shipping {
             background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), color-mix(in srgb, var(--ej-color-danger, #EF4444) 75%, black));
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         &--pending {
             background: var(--ej-color-border, #d1d5db);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -249,7 +249,7 @@
         border-radius: var(--ej-radius-xl, 16px);
         margin-bottom: var(--ej-spacing-xl, 2rem);
         background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, color-mix(in srgb, var(--ej-color-corporate, #233D63) 80%, black) 50%, color-mix(in srgb, var(--ej-color-corporate, #233D63) 60%, black) 100%);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         padding: var(--ej-spacing-2xl, 3rem) var(--ej-spacing-xl, 2rem);
         text-align: center;
 
@@ -389,7 +389,7 @@
         gap: var(--ej-spacing-xs, 0.5rem);
         padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-xl, 2rem);
         background: var(--ej-color-primary, #2d6a4f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: var(--ej-radius-md, 8px);
         font-size: var(--ej-font-size-base, 1rem);
@@ -401,7 +401,7 @@
         &:hover {
             background: var(--ej-color-primary-hover, #245a42);
             transform: translateY(-1px);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 

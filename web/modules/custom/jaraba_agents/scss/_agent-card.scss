@@ -39,7 +39,7 @@
     // Modificadores por tipo de agente
     &--enrollment {
       background: color-mix(in srgb, #8b5cf6 15%, transparent);
-      color: #7c3aed;
+      color: var(--ej-color-violet-dark, #7c3aed);
     }
 
     &--planning {
@@ -59,7 +59,7 @@
 
     &--analytics {
       background: color-mix(in srgb, #06b6d4 15%, transparent);
-      color: #0891b2;
+      color: var(--ej-color-cyan, #0891b2);
     }
   }
 
@@ -106,7 +106,7 @@
 
     &--inactive {
       background: color-mix(in srgb, #9ca3af 15%, transparent);
-      color: #6b7280;
+      color: var(--ej-gray-500, #6b7280);
     }
   }
 

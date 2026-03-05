@@ -18,7 +18,7 @@
     display: inline-block;
     font-size: var(--ej-font-size-xs, 0.75rem);
     font-weight: var(--ej-font-weight-semibold, 600);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     padding: 4px 12px;
     border-radius: var(--ej-radius-full, 9999px);
     margin-bottom: var(--ej-spacing-sm, 0.5rem);

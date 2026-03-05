@@ -23,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border: 1px solid var(--ej-gray-200, #eeeeee);
   border-radius: 10px;
   padding: 1.25rem;
@@ -84,7 +84,7 @@
 .ac-analytics__chart-container {
   position: relative;
   padding: 1rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 8px;
 }
 
@@ -107,7 +107,7 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border: 1px solid var(--ej-gray-200, #eeeeee);
   border-radius: 10px;
 }
@@ -137,7 +137,7 @@
 
   &--active {
     background: var(--ej-color-corporate, #233d63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 

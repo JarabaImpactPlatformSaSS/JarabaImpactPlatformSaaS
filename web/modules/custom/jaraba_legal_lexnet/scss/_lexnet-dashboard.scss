@@ -48,7 +48,7 @@
   &.active,
   &:hover {
     background: var(--ej-lexnet-primary, #1A237E);
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     border-color: var(--ej-lexnet-primary, #1A237E);
   }
 }

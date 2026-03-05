@@ -140,7 +140,7 @@
     padding: 2px 8px;
     font-size: 0.625rem;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     border-radius: var(--ej-radius-full, 9999px);
     text-transform: uppercase;
     margin-left: auto;
@@ -206,7 +206,7 @@
     text-align: center;
     padding: var(--ej-spacing-md, 12px);
     background: var(--ej-color-primary, #233D63);
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     border-radius: var(--ej-radius-md, 6px);
     font-weight: 600;
     text-decoration: none;

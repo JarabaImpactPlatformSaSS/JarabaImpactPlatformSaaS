@@ -52,8 +52,8 @@ $agents-bp-lg: 1024px;
 $agents-bp-xl: 1280px;
 
 // Niveles de autonomia — colores
-$agents-level-l0: #9ca3af;
-$agents-level-l1: #3b82f6;
-$agents-level-l2: #22c55e;
-$agents-level-l3: #f97316;
-$agents-level-l4: #ef4444;
+$agents-level-l0: var(--ej-gray-400-alt, #9ca3af);
+$agents-level-l1: var(--ej-color-blue, #3b82f6);
+$agents-level-l2: var(--ej-color-green-500, #22c55e);
+$agents-level-l3: var(--ej-color-orange, #f97316);
+$agents-level-l4: var(--ej-color-danger, #ef4444);

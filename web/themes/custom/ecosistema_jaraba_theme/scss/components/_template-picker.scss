@@ -145,7 +145,7 @@
     &.is-active {
         background: var(--ej-color-primary, $ej-color-primary);
         border-color: var(--ej-color-primary, $ej-color-primary);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
@@ -227,7 +227,7 @@
 
         &--primary {
             background: var(--ej-color-primary, $ej-color-primary);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             border: none;
 
             &:hover {
@@ -237,11 +237,11 @@
 
         &--secondary {
             background: transparent;
-            color: #fff;
-            border: 1px solid #fff;
+            color: var(--ej-bg-surface, #fff);
+            border: 1px solid var(--ej-bg-surface, #fff);
 
             &:hover {
-                background: #fff;
+                background: var(--ej-bg-surface, #fff);
                 color: var(--ej-color-corporate, $ej-color-corporate);
             }
         }
@@ -287,8 +287,8 @@
         }
 
         &--premium {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: #fff;
+            background: linear-gradient(135deg, #fbbf24, var(--ej-color-warning, #f59e0b));
+            color: var(--ej-bg-surface, #fff);
         }
     }
 }
@@ -342,7 +342,7 @@
 
         &:hover {
             background: var(--ej-color-primary, $ej-color-primary);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 

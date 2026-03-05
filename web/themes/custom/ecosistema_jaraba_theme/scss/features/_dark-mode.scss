@@ -18,41 +18,41 @@
 // ==========================================================================
 @mixin dark-mode-vars {
     // --- Base UI (14 original variables) ---
-    --ej-bg-body: #1A1A2E;
-    --ej-bg-surface: #252538;
-    --ej-color-headings: #F8FAFC;
-    --ej-color-body: #CBD5E1;
-    --ej-color-muted: #94A3B8;
-    --ej-card-bg: #252538;
-    --ej-card-border: #374151;
-    --ej-header-bg: #1A1A2E;
-    --ej-header-text: #F8FAFC;
-    --ej-sidebar-bg: #252538;
-    --ej-sidebar-title: #F8FAFC;
-    --ej-sidebar-link: #CBD5E1;
-    --ej-input-bg: #252538;
-    --ej-input-border: #374151;
-    --ej-border-color: #374151;
+    --ej-bg-body: var(--ej-bg-dark, #1A1A2E);
+    --ej-bg-surface: var(--ej-color-headings, #252538);
+    --ej-color-headings: var(--ej-bg-body, #F8FAFC);
+    --ej-color-body: var(--ej-gray-300, #CBD5E1);
+    --ej-color-muted: var(--ej-gray-400, #94A3B8);
+    --ej-card-bg: var(--ej-color-headings, #252538);
+    --ej-card-border: var(--ej-gray-700, #374151);
+    --ej-header-bg: var(--ej-bg-dark, #1A1A2E);
+    --ej-header-text: var(--ej-bg-body, #F8FAFC);
+    --ej-sidebar-bg: var(--ej-color-headings, #252538);
+    --ej-sidebar-title: var(--ej-bg-body, #F8FAFC);
+    --ej-sidebar-link: var(--ej-gray-300, #CBD5E1);
+    --ej-input-bg: var(--ej-color-headings, #252538);
+    --ej-input-border: var(--ej-gray-700, #374151);
+    --ej-border-color: var(--ej-gray-700, #374151);
 
     // --- Generic overrides for components using --ej-color-* ---
-    --ej-color-bg: #1A1A2E;
-    --ej-color-background: #1A1A2E;
-    --ej-color-background-secondary: #252538;
-    --ej-color-text: #F8FAFC;
-    --ej-color-text-secondary: #94A3B8;
-    --ej-color-text-tertiary: #64748B;
-    --ej-color-border: #374151;
+    --ej-color-bg: var(--ej-bg-dark, #1A1A2E);
+    --ej-color-background: var(--ej-bg-dark, #1A1A2E);
+    --ej-color-background-secondary: var(--ej-color-headings, #252538);
+    --ej-color-text: var(--ej-bg-body, #F8FAFC);
+    --ej-color-text-secondary: var(--ej-gray-400, #94A3B8);
+    --ej-color-text-tertiary: var(--ej-color-neutral, #64748B);
+    --ej-color-border: var(--ej-gray-700, #374151);
     --ej-color-surface: #2D2D42;
 
     // --- Copilot Widget (5 vars) ---
-    --ej-copilot-bg: #1A1A2E;
+    --ej-copilot-bg: var(--ej-bg-dark, #1A1A2E);
     --ej-copilot-bubble-user: #{color.adjust($ej-color-impulse, $lightness: -15%)};
     --ej-copilot-bubble-ai: #2D2D42;
     --ej-copilot-input-bg: #1F1F35;
     --ej-copilot-input-border: #4A4A6A;
 
     // --- AI Dashboard (3 vars) ---
-    --ej-dashboard-chart-bg: #252538;
+    --ej-dashboard-chart-bg: var(--ej-color-headings, #252538);
     --ej-dashboard-sparkline: #{$ej-color-innovation};
     --ej-dashboard-badge-bg: #2D2D42;
 
@@ -64,17 +64,17 @@
 
     // --- Inline AI (2 vars) ---
     --ej-inline-ai-sparkle: #{$ej-color-impulse};
-    --ej-inline-ai-panel-bg: #252538;
+    --ej-inline-ai-panel-bg: var(--ej-color-headings, #252538);
 
     // --- Proactive Insights (4 vars) ---
-    --ej-insight-card-bg: #252538;
-    --ej-insight-severity-high: #EF4444;
-    --ej-insight-severity-medium: #F59E0B;
-    --ej-insight-severity-low: #10B981;
+    --ej-insight-card-bg: var(--ej-color-headings, #252538);
+    --ej-insight-severity-high: var(--ej-color-danger, #EF4444);
+    --ej-insight-severity-medium: var(--ej-color-warning, #F59E0B);
+    --ej-insight-severity-low: var(--ej-color-success, #10B981);
 
     // --- Charts (2 vars) ---
-    --ej-chart-grid: #374151;
-    --ej-chart-text: #94A3B8;
+    --ej-chart-grid: var(--ej-gray-700, #374151);
+    --ej-chart-text: var(--ej-gray-400, #94A3B8);
 }
 
 // ==========================================================================

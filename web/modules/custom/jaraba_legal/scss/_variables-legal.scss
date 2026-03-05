@@ -15,40 +15,40 @@
 // COLORES LEGAL (branding compliance)
 // ---------------------------------------------------------------------------
 
-$legal-primary-fallback: #1565C0 !default;
-$legal-primary-light-fallback: #E3F2FD !default;
-$legal-success-fallback: #2E7D32 !default;
-$legal-success-light-fallback: #E8F5E9 !default;
-$legal-warning-fallback: #E65100 !default;
-$legal-warning-light-fallback: #FFF3E0 !default;
-$legal-danger-fallback: #C62828 !default;
-$legal-danger-light-fallback: #FFEBEE !default;
+$legal-primary-fallback: var(--ej-color-blue-material-dark, #1565C0) !default;
+$legal-primary-light-fallback: var(--ej-color-blue-50-alt, #E3F2FD) !default;
+$legal-success-fallback: var(--ej-color-green-md, #2E7D32) !default;
+$legal-success-light-fallback: var(--ej-color-green-material-50, #E8F5E9) !default;
+$legal-warning-fallback: var(--ej-color-orange-deep, #E65100) !default;
+$legal-warning-light-fallback: var(--ej-color-orange-material-50, #FFF3E0) !default;
+$legal-danger-fallback: var(--ej-color-red-deep, #C62828) !default;
+$legal-danger-light-fallback: var(--ej-color-red-material-50, #FFEBEE) !default;
 $legal-info-fallback: #0277BD !default;
-$legal-info-light-fallback: #E1F5FE !default;
+$legal-info-light-fallback: var(--ej-color-blue-material-50, #E1F5FE) !default;
 
 // ---------------------------------------------------------------------------
 // ESTADOS ToS (Terms of Service)
 // ---------------------------------------------------------------------------
 
-$legal-tos-accepted-fallback: #2E7D32 !default;
-$legal-tos-pending-fallback: #E65100 !default;
-$legal-tos-expired-fallback: #C62828 !default;
+$legal-tos-accepted-fallback: var(--ej-color-green-md, #2E7D32) !default;
+$legal-tos-pending-fallback: var(--ej-color-orange-deep, #E65100) !default;
+$legal-tos-expired-fallback: var(--ej-color-red-deep, #C62828) !default;
 
 // ---------------------------------------------------------------------------
 // ESTADOS SLA
 // ---------------------------------------------------------------------------
 
-$legal-sla-compliant-fallback: #2E7D32 !default;
+$legal-sla-compliant-fallback: var(--ej-color-green-md, #2E7D32) !default;
 $legal-sla-at-risk-fallback: #F57F17 !default;
-$legal-sla-breached-fallback: #C62828 !default;
+$legal-sla-breached-fallback: var(--ej-color-red-deep, #C62828) !default;
 
 // ---------------------------------------------------------------------------
 // ESTADOS AUP (Acceptable Use Policy)
 // ---------------------------------------------------------------------------
 
-$legal-aup-clean-fallback: #2E7D32 !default;
-$legal-aup-warning-fallback: #E65100 !default;
-$legal-aup-suspended-fallback: #C62828 !default;
+$legal-aup-clean-fallback: var(--ej-color-green-md, #2E7D32) !default;
+$legal-aup-warning-fallback: var(--ej-color-orange-deep, #E65100) !default;
+$legal-aup-suspended-fallback: var(--ej-color-red-deep, #C62828) !default;
 
 // ---------------------------------------------------------------------------
 // ESTADOS OFFBOARDING
@@ -56,18 +56,18 @@ $legal-aup-suspended-fallback: #C62828 !default;
 
 $legal-offboarding-grace-fallback: #F57F17 !default;
 $legal-offboarding-export-fallback: #0277BD !default;
-$legal-offboarding-deletion-fallback: #C62828 !default;
-$legal-offboarding-completed-fallback: #6B7280 !default;
-$legal-offboarding-cancelled-fallback: #9E9E9E !default;
+$legal-offboarding-deletion-fallback: var(--ej-color-red-deep, #C62828) !default;
+$legal-offboarding-completed-fallback: var(--ej-gray-500, #6B7280) !default;
+$legal-offboarding-cancelled-fallback: var(--ej-gray-450, #9E9E9E) !default;
 
 // ---------------------------------------------------------------------------
 // SEVERIDAD WHISTLEBLOWER
 // ---------------------------------------------------------------------------
 
-$legal-severity-low-fallback: #6B7280 !default;
+$legal-severity-low-fallback: var(--ej-gray-500, #6B7280) !default;
 $legal-severity-medium-fallback: #F57F17 !default;
-$legal-severity-high-fallback: #E65100 !default;
-$legal-severity-critical-fallback: #C62828 !default;
+$legal-severity-high-fallback: var(--ej-color-orange-deep, #E65100) !default;
+$legal-severity-critical-fallback: var(--ej-color-red-deep, #C62828) !default;
 
 // ---------------------------------------------------------------------------
 // TIPOGRAFÍA

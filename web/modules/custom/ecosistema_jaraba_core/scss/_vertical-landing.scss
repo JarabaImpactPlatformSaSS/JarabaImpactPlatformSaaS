@@ -128,7 +128,7 @@ $landing-radius-md: 12px;
   font-family: var(--ej-font-headings, 'Outfit', sans-serif);
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   margin: 0 0 1rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -179,7 +179,7 @@ $landing-radius-md: 12px;
 
 .btn--primary {
   background: var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 
   &:hover {
@@ -188,11 +188,11 @@ $landing-radius-md: 12px;
 
   // Inside hero (invert colors)
   .landing-hero & {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     color: var(--ej-color-corporate, #233D63);
 
     &:hover {
-      background: #f8fafc;
+      background: var(--ej-bg-body, #f8fafc);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     }
   }
@@ -200,11 +200,11 @@ $landing-radius-md: 12px;
 
 .btn--outline {
   background: transparent;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border: 2px solid rgba(255, 255, 255, 0.5);
 
   &:hover {
-    border-color: #fff;
+    border-color: var(--ej-bg-surface, #fff);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
   }
@@ -226,7 +226,7 @@ $landing-radius-md: 12px;
   border: 1px solid var(--ej-border-color, #e2e8f0);
 
   &:hover {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 }
@@ -319,7 +319,7 @@ $landing-radius-md: 12px;
 // =============================================================================
 .landing-solution {
   padding: $landing-section-padding;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 }
 
 .landing-solution__container {
@@ -370,7 +370,7 @@ $landing-radius-md: 12px;
   height: 56px;
   border-radius: 50%;
   background: var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 1.25rem;
@@ -532,7 +532,7 @@ $landing-radius-md: 12px;
 // =============================================================================
 .landing-social-proof {
   padding: $landing-section-padding;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 }
 
 .landing-social-proof__container {
@@ -683,7 +683,7 @@ $landing-radius-md: 12px;
     var(--ej-color-corporate, #233D63) 0%,
     var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42)) 100%
   );
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .landing-lead-magnet__container {
@@ -713,7 +713,7 @@ $landing-radius-md: 12px;
   font-size: clamp(1.3rem, 3.5vw, 1.75rem);
   font-weight: 700;
   margin: 0 0 0.75rem;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .landing-lead-magnet__description {
@@ -724,11 +724,11 @@ $landing-radius-md: 12px;
 }
 
 .landing-lead-magnet__cta {
-  background: #fff !important;
+  background: var(--ej-bg-surface, #fff) !important;
   color: var(--ej-color-corporate, #233D63) !important;
 
   &:hover {
-    background: #f8fafc !important;
+    background: var(--ej-bg-body, #f8fafc) !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 }
@@ -926,7 +926,7 @@ $landing-radius-md: 12px;
 // =============================================================================
 .landing-faq {
   padding: $landing-section-padding;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 }
 
 .landing-faq__container {
@@ -1030,7 +1030,7 @@ $landing-radius-md: 12px;
     var(--ej-color-corporate, #233D63)
   );
   text-align: center;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .landing-final-cta__container {
@@ -1042,7 +1042,7 @@ $landing-radius-md: 12px;
   font-family: var(--ej-font-headings, 'Outfit', sans-serif);
   font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 700;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   margin: 0 0 0.75rem;
 }
 

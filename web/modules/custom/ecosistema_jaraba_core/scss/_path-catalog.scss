@@ -69,7 +69,7 @@ $path-radius: 12px;
     padding: 0.5rem 1rem;
     border: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
     border-radius: 6px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     color: var(--ej-text-primary, #{$ej-color-text-fallback});
     min-width: 150px;
 
@@ -141,13 +141,13 @@ $path-radius: 12px;
     left: 0.75rem;
     padding: 0.25rem 0.75rem;
     background: var(--ej-color-warning, #F59E0B);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
 
     &.featured {
-        background: linear-gradient(135deg, #F59E0B, #EAB308);
+        background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), #EAB308);
     }
 }
 
@@ -225,18 +225,18 @@ $path-radius: 12px;
 
 .tag-difficulty {
     &.tag-beginner {
-        background: #D1FAE5;
-        color: #065F46;
+        background: var(--ej-color-green-50, #D1FAE5);
+        color: var(--ej-color-green-deep, #065F46);
     }
 
     &.tag-intermediate {
-        background: #FEF3C7;
-        color: #92400E;
+        background: var(--ej-color-amber-50, #FEF3C7);
+        color: var(--ej-color-warning-deep, #92400E);
     }
 
     &.tag-advanced {
-        background: #FEE2E2;
-        color: #991B1B;
+        background: var(--ej-color-red-50, #FEE2E2);
+        color: var(--ej-color-danger-deep, #991B1B);
     }
 }
 
@@ -372,18 +372,18 @@ $path-radius: 12px;
 
 .badge-difficulty {
     &.badge-beginner {
-        background: #D1FAE5;
-        color: #065F46;
+        background: var(--ej-color-green-50, #D1FAE5);
+        color: var(--ej-color-green-deep, #065F46);
     }
 
     &.badge-intermediate {
-        background: #FEF3C7;
-        color: #92400E;
+        background: var(--ej-color-amber-50, #FEF3C7);
+        color: var(--ej-color-warning-deep, #92400E);
     }
 
     &.badge-advanced {
-        background: #FEE2E2;
-        color: #991B1B;
+        background: var(--ej-color-red-50, #FEE2E2);
+        color: var(--ej-color-danger-deep, #991B1B);
     }
 }
 
@@ -483,7 +483,7 @@ $path-radius: 12px;
     justify-content: center;
 
     .marker-number {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 0.75rem;
         font-weight: 700;
     }
@@ -578,10 +578,10 @@ $path-radius: 12px;
         var(--ej-color-primary, #{$ej-color-primary-fallback}),
         var(--ej-color-secondary, #{$ej-color-secondary-fallback}));
     border-radius: $path-radius;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     h3 {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin-bottom: 0.5rem;
     }
 
@@ -591,7 +591,7 @@ $path-radius: 12px;
     }
 
     .btn-primary {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         color: var(--ej-color-primary, #{$ej-color-primary-fallback});
     }
 }
@@ -799,18 +799,18 @@ $path-radius: 12px;
     border-radius: 20px;
 
     &.active {
-        background: #DBEAFE;
-        color: #1E40AF;
+        background: var(--ej-color-blue-50, #DBEAFE);
+        color: var(--ej-color-blue-deep, #1E40AF);
     }
 
     &.completed {
-        background: #D1FAE5;
-        color: #065F46;
+        background: var(--ej-color-green-50, #D1FAE5);
+        color: var(--ej-color-green-deep, #065F46);
     }
 
     &.paused {
-        background: #FEF3C7;
-        color: #92400E;
+        background: var(--ej-color-amber-50, #FEF3C7);
+        color: var(--ej-color-warning-deep, #92400E);
     }
 }
 

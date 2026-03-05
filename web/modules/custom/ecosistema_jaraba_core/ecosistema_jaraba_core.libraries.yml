@@ -504,6 +504,7 @@ admin-center:
   version: 1.x
   css:
     theme:
+      css/ecosistema-jaraba-core.css: {}
       css/admin-center.css: {}
   js:
     js/admin-center-layout.js: {}

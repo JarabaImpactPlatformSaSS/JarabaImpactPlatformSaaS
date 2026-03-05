@@ -2206,6 +2206,23 @@ entity.security_policy.settings:
 # PÁGINAS ESTÁTICAS — Meta-Sitio (Sprint 3)
 # ============================================================================
 
+# P2-05: Google OAuth social login.
+ecosistema_jaraba_core.google_oauth_redirect:
+  path: '/user/login/google'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\GoogleOAuthController::redirectToGoogle'
+    _title: 'Iniciar sesión con Google'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.google_oauth_callback:
+  path: '/user/login/google/callback'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\GoogleOAuthController::callback'
+    _title: 'Google OAuth Callback'
+  requirements:
+    _access: 'TRUE'
+
 # GAP-EMAIL-VERIFY: Email verification link.
 ecosistema_jaraba_core.email_verify:
   path: '/verificar-email/{token}'

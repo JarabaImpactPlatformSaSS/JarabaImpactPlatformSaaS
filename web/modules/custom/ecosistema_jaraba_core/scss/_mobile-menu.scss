@@ -75,7 +75,7 @@ nav.mobile-menu-nav ul li,
         transform: scale(1.1) rotate(0deg);
 
         svg {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 

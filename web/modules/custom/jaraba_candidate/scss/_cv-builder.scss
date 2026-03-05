@@ -32,7 +32,7 @@
       var(--ej-color-corporate, #233D63) 0%,
       var(--ej-color-azul-profundo, #003366) 100%);
   border-radius: var(--ej-radius-xl, 20px);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   position: relative;
   overflow: hidden;
 
@@ -242,7 +242,7 @@
 
   &:hover {
     background: var(--ej-color-corporate, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -254,7 +254,7 @@
   padding: 0.6rem 1rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   background: linear-gradient(135deg,
       var(--ej-color-innovation, #00A9A5),
       var(--ej-color-azul-verdoso, #2B7A78));
@@ -300,7 +300,7 @@
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: var(--ej-color-impulse, #FF8C42);
     border: none;
     border-radius: 10px;
@@ -368,7 +368,7 @@
   padding: 0.6rem 1rem;
   font-size: 0.85rem;
   color: var(--ej-text-primary, #374151);
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border: 1px solid var(--ej-border-color, #E5E7EB);
   border-radius: 10px;
   outline: none;
@@ -384,7 +384,7 @@
   padding: 0.6rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   background: var(--ej-color-innovation, #00A9A5);
   border: none;
   border-radius: 10px;
@@ -413,7 +413,7 @@
   padding: 0.6rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   background: var(--ej-color-corporate, #233D63);
   border: none;
   border-radius: 10px;
@@ -424,7 +424,7 @@
   &:hover {
     filter: brightness(1.15);
     transform: translateY(-1px);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -440,7 +440,7 @@
   border: 1px solid var(--ej-border-color, #E5E7EB);
   border-radius: var(--ej-radius-xl, 16px);
   overflow: hidden;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 }
 
 .cv-builder__help-summary {
@@ -523,7 +523,7 @@
   min-width: 32px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   background: linear-gradient(135deg,
       var(--ej-color-corporate, #233D63),
       var(--ej-color-azul-profundo, #003366));

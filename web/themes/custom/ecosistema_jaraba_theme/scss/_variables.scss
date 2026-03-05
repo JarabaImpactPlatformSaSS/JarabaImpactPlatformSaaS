@@ -17,9 +17,88 @@ $ej-color-secondary: $ej-color-innovation;
 
 // === UI EXTENDIDA ===
 $ej-color-success: #10B981;
+$ej-color-success-dark: #059669;
+$ej-color-success-alt: #198754;
 $ej-color-warning: #F59E0B;
+$ej-color-warning-dark: #D97706;
+$ej-color-warning-deep: #92400E;
 $ej-color-danger: #EF4444;
+$ej-color-danger-dark: #DC2626;
+$ej-color-danger-deep: #991B1B;
 $ej-color-neutral: #64748B;
+$ej-color-purple: #A78BFA;
+$ej-color-black: #000000;
+
+// === EXTENDED PALETTE ===
+// Blues.
+$ej-color-blue: #3B82F6;
+$ej-color-blue-dark: #2563EB;
+$ej-color-blue-deep: #1E40AF;
+$ej-color-blue-md: #1976D2;
+$ej-color-blue-50: #DBEAFE;
+$ej-color-blue-50-alt: #E3F2FD;
+$ej-color-blue-100: #BFDBFE;
+$ej-color-blue-400: #60A5FA;
+
+// Purples.
+$ej-color-violet: #8B5CF6;
+$ej-color-indigo: #6366F1;
+$ej-color-purple-deep: #764BA2;
+$ej-color-violet-dark: #7C3AED;
+
+// Greens (extended).
+$ej-color-green-deep: #065F46;
+$ej-color-green-md: #2E7D32;
+$ej-color-green-50: #D1FAE5;
+$ej-color-green-100: #A7F3D0;
+$ej-color-green-400: #34D399;
+$ej-color-green-700: #047857;
+$ej-color-green-800: #166534;
+
+// Oranges/Ambers.
+$ej-color-orange: #F97316;
+$ej-color-orange-alt: #E67935;
+$ej-color-orange-deep: #E65100;
+$ej-color-amber: #FBBF24;
+$ej-color-amber-50: #FEF3C7;
+$ej-color-orange-100: #FED7AA;
+
+// Reds (extended).
+$ej-color-red-deep: #C62828;
+$ej-color-red-700: #B91C1C;
+$ej-color-red-100: #FECACA;
+$ej-color-red-50: #FEE2E2;
+$ej-color-red-900: #7F1D1D;
+
+// === GRAY SCALE (Tailwind-based) ===
+$ej-gray-lightest: #FAFAFA;
+$ej-gray-light: #F5F5F5;
+$ej-gray-50: #F3F4F6;
+$ej-gray-100: #F1F5F9;
+$ej-gray-lighter: #EEEEEE;
+$ej-gray-200: #E2E8F0;
+$ej-gray-divider: #E0E0E0;
+$ej-gray-300: #CBD5E1;
+$ej-gray-border: #CCCCCC;
+$ej-gray-border-light: #DDDDDD;
+$ej-gray-350: #D1D5DB;
+$ej-gray-400: #94A3B8;
+$ej-gray-400-alt: #9CA3AF;
+$ej-gray-mid-light: #AAAAAA;
+$ej-gray-mid: #999999;
+$ej-gray-500: #6B7280;
+$ej-gray-mid-dark: #777777;
+$ej-gray-600: #475569;
+$ej-gray-650: #4B5563;
+$ej-gray-text: #666666;
+$ej-gray-700: #374151;
+$ej-gray-dark-alt: #555555;
+$ej-gray-darker: #444444;
+$ej-gray-dark: #333333;
+$ej-gray-800: #1E293B;
+$ej-gray-darkest: #222222;
+$ej-gray-900: #0F172A;
+$ej-gray-900-deep: #111827;
 
 // === FONDOS ===
 $ej-bg-body: #F8FAFC;

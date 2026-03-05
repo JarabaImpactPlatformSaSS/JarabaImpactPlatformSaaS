@@ -184,7 +184,7 @@ $wizard-total-steps: 7;
   .wizard__step-number {
     border-color: var(--ej-color-impulse, #FF8C42);
     background: var(--ej-color-impulse, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.2);
   }
 
@@ -199,7 +199,7 @@ $wizard-total-steps: 7;
   .wizard__step-number {
     border-color: var(--ej-color-success, #22c55e);
     background: var(--ej-color-success, #22c55e);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   .wizard__step-label {
@@ -478,7 +478,7 @@ $wizard-total-steps: 7;
   &--next,
   &--launch {
     background: var(--ej-color-impulse, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover:not(:disabled) {
       background: var(--ej-color-impulse-hover, #e67a30);
@@ -509,7 +509,7 @@ $wizard-total-steps: 7;
 
   &--stripe {
     background: #635bff;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover:not(:disabled) {
       background: #5046e5;
@@ -550,7 +550,7 @@ $wizard-total-steps: 7;
 
   .wizard__btn--next:hover:not(:disabled),
   .wizard__btn--launch:hover:not(:disabled) {
-    background: #16a34a;
+    background: var(--ej-color-green-600, #16a34a);
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
   }
 

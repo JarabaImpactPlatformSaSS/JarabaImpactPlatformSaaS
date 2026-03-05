@@ -26,7 +26,7 @@
     padding: $ej-spacing-xl * 1.5 $ej-spacing-xl;
     margin-bottom: $ej-spacing-xl;
     overflow: hidden;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     animation: fadeInUp 0.5s ease both;
 
     // Subtle pattern overlay
@@ -65,7 +65,7 @@
             font-weight: 800;
             line-height: 1.2;
             margin: 0 0 $ej-spacing-sm 0;
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
     }
 
@@ -100,7 +100,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #10b981;
+            background: var(--ej-color-success, #10b981);
             animation: pulse-dot 2s infinite;
         }
     }
@@ -129,7 +129,7 @@
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 14px;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-decoration: none;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -151,7 +151,7 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 
         &:hover {
-            background: #fff;
+            background: var(--ej-bg-surface, #fff);
             color: var(--ej-color-corporate, #233D63);
         }
     }
@@ -295,7 +295,7 @@
         padding: 0 8px;
         border-radius: 12px;
         background: var(--ej-color-primary, #FF8C42);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 0.75rem;
         font-weight: 700;
     }
@@ -345,7 +345,7 @@
             height: 72px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             font-size: 1.5rem;
             font-weight: 700;
         }
@@ -536,7 +536,7 @@
     height: 42px;
     border-radius: 12px;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-    color: #059669;
+    color: var(--ej-color-success-dark, #059669);
     font-size: 0.75rem;
     font-weight: 700;
     flex-shrink: 0;
@@ -556,7 +556,7 @@
     align-items: center;
     gap: 4px;
     padding: $ej-spacing-lg;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     text-align: center;
 
     .stat-value {
@@ -661,7 +661,7 @@
     padding: $ej-spacing-md;
     border-radius: 14px;
     border: 1px solid rgba(0, 0, 0, 0.06);
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     text-decoration: none;
     scroll-snap-align: start;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -686,7 +686,7 @@
         padding: 3px 10px;
         border-radius: 20px;
         background: rgba(16, 185, 129, 0.08);
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
         font-size: 0.75rem;
         font-weight: 600;
     }
@@ -727,7 +727,7 @@
 
         &--primary {
             background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             box-shadow: 0 4px 12px rgba(35, 61, 99, 0.2);
 
             &:hover {
@@ -737,7 +737,7 @@
         }
 
         &--secondary {
-            background: #fff;
+            background: var(--ej-bg-surface, #fff);
             color: var(--ej-color-corporate, #233D63);
             border: 1.5px solid var(--ej-border-color, #e2e8f0);
 
@@ -775,7 +775,7 @@
     padding: $ej-spacing-md;
     border-radius: 14px;
     border: 1px solid rgba(0, 0, 0, 0.06);
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     transition: all 0.3s ease;
 
     &:hover {

@@ -41,3 +41,90 @@ function jaraba_security_compliance_uninstall(): void {
 
   \Drupal::messenger()->addStatus(t('Jaraba Security Compliance desinstalado. Los datos de auditoría y compliance se han eliminado.'));
 }
+
+/**
+ * Install entity types: compliance_assessment_v2, ens_compliance, risk_assessment, security_audit_log, security_policy_v2.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function jaraba_security_compliance_update_10001(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'compliance_assessment_v2',
+    'ens_compliance',
+    'risk_assessment',
+    'security_audit_log',
+    'security_policy_v2',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_security_compliance_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = [
+    'compliance_assessment_v2',
+    'ens_compliance',
+    'risk_assessment',
+    'security_audit_log',
+    'security_policy_v2',
+  ];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_security_compliance_entities'] = [
+      'title' => t('Jaraba security compliance: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_security_compliance_entities'] = [
+      'title' => t('Jaraba security compliance: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

@@ -83,7 +83,7 @@
 
   &__ticket-header {
     background: var(--ej-primary-color, $events-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     padding: $events-spacing-md $events-spacing-lg;
 
     h2 {

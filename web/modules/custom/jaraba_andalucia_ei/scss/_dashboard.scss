@@ -206,7 +206,7 @@
     font-family: var(--aei-font-headings);
     font-size: clamp(2.25rem, 5vw, 3.75rem);
     font-weight: 800;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 0.75rem;
     letter-spacing: -0.02em;
     line-height: 1.1;
@@ -385,19 +385,19 @@
 
   &--atencion {
     background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 14%, transparent);
-    color: #92400E;
+    color: var(--ej-color-warning-deep, #92400E);
     border: 1px solid color-mix(in srgb, var(--ej-color-warning, #F59E0B) 30%, transparent);
   }
 
   &--insercion {
     background: color-mix(in srgb, var(--ej-color-success, #10B981) 14%, transparent);
-    color: #065F46;
+    color: var(--ej-color-green-deep, #065F46);
     border: 1px solid color-mix(in srgb, var(--ej-color-success, #10B981) 30%, transparent);
   }
 
   &--baja {
     background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 14%, transparent);
-    color: #991B1B;
+    color: var(--ej-color-danger-deep, #991B1B);
     border: 1px solid color-mix(in srgb, var(--ej-color-danger, #EF4444) 30%, transparent);
   }
 }
@@ -742,8 +742,8 @@
   }
 
   &--primary {
-    background: linear-gradient(135deg, var(--aei-primary) 0%, #E67935 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary) 0%, var(--ej-color-orange-alt, #E67935) 100%);
+    color: var(--ej-bg-surface, #fff);
 
     .aei-action__icon {
       background: rgba(255, 255, 255, 0.2);
@@ -877,7 +877,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
     border: none;
     cursor: pointer;
     display: flex;
@@ -1026,8 +1026,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.85rem 2rem;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     border-radius: 999px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -1123,15 +1123,15 @@
     }
     &--admitido {
       background: color-mix(in srgb, #22c55e 12%, #fff);
-      color: #16a34a;
+      color: var(--ej-color-green-600, #16a34a);
     }
     &--rechazado {
       background: color-mix(in srgb, #ef4444 10%, #fff);
-      color: #dc2626;
+      color: var(--ej-color-danger-dark, #dc2626);
     }
     &--lista_espera {
       background: color-mix(in srgb, #eab308 12%, #fff);
-      color: #ca8a04;
+      color: var(--ej-color-yellow-dark, #ca8a04);
     }
   }
 
@@ -1181,7 +1181,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background: #fff;
+      background: var(--ej-bg-surface, #fff);
       border-color: color-mix(in srgb, var(--aei-primary) 25%, transparent);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
       transform: translateY(-1px);
@@ -1243,8 +1243,8 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.65rem 1.25rem;
-    background: linear-gradient(135deg, var(--aei-primary), #E67935);
-    color: #fff;
+    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 999px;
     font-weight: 600;

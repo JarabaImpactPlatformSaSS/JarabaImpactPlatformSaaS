@@ -65,7 +65,7 @@
     position: absolute;
     width: 100%;
     background: transparent;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 /* === HEADER COMPONENT VARIANTS (SDC) === */
@@ -170,7 +170,7 @@
     position: absolute;
     width: 100%;
     background: transparent;
-    --header-text: #fff;
+    --header-text: var(--ej-bg-surface, #fff);
 }
 
 .header--transparent.is-scrolled {
@@ -249,7 +249,7 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: var(--ej-color-impulse, #FF8C42);
     border-radius: 50%;
 }
@@ -286,7 +286,7 @@
     padding: 2px 6px;
     font-size: 11px;
     font-family: monospace;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border: 1px solid var(--header-border);
     border-radius: 4px;
     color: var(--ej-text-muted, #6b7280);
@@ -314,7 +314,7 @@
     align-items: center;
     justify-content: center;
     background: var(--ej-color-corporate, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-weight: 600;
 }
 
@@ -329,7 +329,7 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: var(--ej-color-danger, #EF4444);
     border-radius: 50%;
 }
@@ -368,7 +368,7 @@
     right: auto;
     left: -200px;
     width: 840px;
-    background: var(--header-bg, #ffffff);
+    background: var(--header-bg, var(--ej-bg-surface, #ffffff));
     color: var(--ej-text-primary, #1a1d29);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     border-radius: 0 0 var(--ej-border-radius-lg, 16px) var(--ej-border-radius-lg, 16px);
@@ -436,7 +436,7 @@
     padding: var(--ej-spacing-lg, 1.5rem);
     background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), var(--ej-color-innovation, #00A9A5));
     border-radius: var(--ej-border-radius-lg, 16px);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 }
 
 .header--mega .mega-panel__promo h4 {

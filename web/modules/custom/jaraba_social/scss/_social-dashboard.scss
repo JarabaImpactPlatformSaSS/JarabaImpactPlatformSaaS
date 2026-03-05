@@ -125,7 +125,7 @@
         font-size: 1.25rem;
 
         &--facebook {
-            background: #1877f2;
+            background: var(--ej-brand-facebook, #1877f2);
             color: white;
         }
 
@@ -135,17 +135,17 @@
         }
 
         &--linkedin {
-            background: #0a66c2;
+            background: var(--ej-brand-linkedin-alt, #0a66c2);
             color: white;
         }
 
         &--twitter {
-            background: #1da1f2;
+            background: var(--ej-brand-twitter, #1da1f2);
             color: white;
         }
 
         &--tiktok {
-            background: #000000;
+            background: var(--ej-color-black, #000000);
             color: white;
         }
     }

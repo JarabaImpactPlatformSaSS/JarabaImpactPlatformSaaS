@@ -139,7 +139,7 @@
     // Coincide con la miniatura PNG diseñada (#e8f5e9 → #f1f8e9).
     // Ref: Spec 20260130c §6.1
     &--light-green {
-        background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 100%);
+        background: linear-gradient(180deg, var(--ej-color-green-material-50, #e8f5e9) 0%, #f1f8e9 100%);
 
         .jaraba-features__title {
             color: var(--ej-text-primary, #1e293b);
@@ -358,8 +358,8 @@
         }
 
         &--success {
-            background: #dcfce7;
-            color: #16a34a;
+            background: var(--ej-color-green-100-alt, #dcfce7);
+            color: var(--ej-color-green-600, #16a34a);
         }
     }
 }

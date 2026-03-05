@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Parcial: Barra de progreso del onboarding (4 pasos).
+ *
+ * P1-03: Indicador visual de progreso unificado en todos los pasos del onboarding.
+ * Usa las clases CSS existentes en main.css (.ej-onboarding-progress, .ej-progress-step).
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ *
+ * Variables:
+ *   - onboarding_step: Paso actual (1-4).
+ */
+#}
+
+{# P3-03: WCAG 2.1 AA — nav landmark, aria-label, aria-current #}
+<nav class="ej-onboarding-progress" aria-label="{% trans %}Progreso del registro{% endtrans %}">
+  <ol class="ej-onboarding-progress__container" role="list">
+    {% set steps = [
+      { label: 'Registro'|trans },
+      { label: 'Plan'|trans },
+      { label: 'Pago'|trans },
+      { label: 'Listo'|trans },
+    ] %}
+    {% for step in steps %}
+      {% set step_num = loop.index %}
+      {% set is_completed = onboarding_step > step_num or (step_num == 4 and onboarding_step == 4) %}
+      {% set is_active = onboarding_step == step_num and step_num != 4 %}
+      <li class="ej-progress-step {{ is_completed ? 'ej-progress-step--completed' : '' }} {{ is_active ? 'ej-progress-step--active' : '' }}"
+          {{ is_active ? 'aria-current="step"' }}>
+        <span class="ej-progress-step__number" aria-hidden="true">
+          {% if is_completed %}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% else %}
+            {{ step_num }}
+          {% endif %}
+        </span>
+        <span class="ej-progress-step__label">{{ step.label }}</span>
+      </li>
+    {% endfor %}
+  </ol>
+</nav>

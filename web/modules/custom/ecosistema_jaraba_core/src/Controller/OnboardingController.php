@@ -5,6 +5,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Entity\VerticalInterface;
+use Drupal\ecosistema_jaraba_core\Entity\VerticalOnboardingConfig;
 use Drupal\ecosistema_jaraba_core\Service\TenantOnboardingService;
 use Drupal\ecosistema_jaraba_core\Service\TenantManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -102,11 +103,32 @@ class OnboardingController extends ControllerBase
         // Ordenar planes por peso
         usort($plans, fn($a, $b) => ($a->get('weight')->value ?? 0) - ($b->get('weight')->value ?? 0));
 
+        // P1-01: Cargar config de onboarding vertical-aware.
+        $onboardingConfig = VerticalOnboardingConfig::load($vertical->id());
+        $benefits = $onboardingConfig ? $onboardingConfig->getBenefits() : [];
+        $headline = $onboardingConfig ? $onboardingConfig->getHeadline() : '';
+        $subheadline = $onboardingConfig ? $onboardingConfig->getSubheadline() : '';
+
+        // P2-05: Check if Google OAuth is configured.
+        $googleOAuthEnabled = FALSE;
+        if (\Drupal::hasService('ecosistema_jaraba_core.google_oauth')) {
+          try {
+            $googleOAuthEnabled = \Drupal::service('ecosistema_jaraba_core.google_oauth')->isConfigured();
+          }
+          catch (\Throwable) {
+            // Service unavailable — leave disabled.
+          }
+        }
+
         return [
             '#theme' => 'ecosistema_jaraba_register_form',
             '#vertical' => $vertical,
             '#plans' => $plans,
             '#theme_settings' => $themeSettings,
+            '#benefits' => $benefits,
+            '#headline' => $headline,
+            '#subheadline' => $subheadline,
+            '#google_oauth_enabled' => $googleOAuthEnabled,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/onboarding'],
                 'drupalSettings' => [
@@ -288,11 +310,22 @@ class OnboardingController extends ControllerBase
         // Preparar datos para Stripe
         $stripePublicKey = $this->config('ecosistema_jaraba_core.stripe')->get('public_key');
 
+        // P2-02: Pre-fill billing con datos del registro.
+        $currentUser = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
+        $prefillName = '';
+        $prefillEmail = '';
+        if ($currentUser) {
+            $prefillEmail = $currentUser->getEmail() ?: '';
+            $prefillName = $currentUser->getDisplayName() ?: '';
+        }
+
         return [
             '#theme' => 'ecosistema_jaraba_setup_payment',
             '#tenant' => $tenant,
             '#plan' => $plan,
             '#stripe_public_key' => $stripePublicKey,
+            '#prefill_name' => $prefillName,
+            '#prefill_email' => $prefillEmail,
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/onboarding',
@@ -347,6 +380,10 @@ class OnboardingController extends ControllerBase
             $trialDaysRemaining = $diff->invert ? 0 : $diff->days;
         }
 
+        // P1-01 + P1-02: Cargar config de onboarding para next_steps y connect_required.
+        $onboardingConfig = VerticalOnboardingConfig::load($vertical->id());
+        $connectRequired = $onboardingConfig ? $onboardingConfig->isConnectRequired() : FALSE;
+
         return [
             '#theme' => 'ecosistema_jaraba_welcome',
             '#tenant' => $tenant,
@@ -355,6 +392,8 @@ class OnboardingController extends ControllerBase
             '#trial_days_remaining' => $trialDaysRemaining,
             '#tenant_url' => 'https://' . $tenant->getDomain() . '.jaraba.io',
             '#next_steps' => $this->getNextSteps($tenant),
+            '#connect_required' => $connectRequired,
+            '#connect_url' => Url::fromRoute('ecosistema_jaraba_core.api.stripe.connect.onboard')->toString(),
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/onboarding'],
             ],
@@ -370,8 +409,46 @@ class OnboardingController extends ControllerBase
      * @return array
      *   Array de pasos con título, descripción, URL e icono.
      */
+    /**
+     * Genera la lista de siguientes pasos para el nuevo tenant.
+     *
+     * P1-01: Lee de VerticalOnboardingConfig en vez de hardcoded.
+     * Fallback a pasos genéricos si no hay config para la vertical.
+     */
     protected function getNextSteps($tenant): array
     {
+        $vertical = $tenant->getVertical();
+        $onboardingConfig = VerticalOnboardingConfig::load($vertical->id());
+
+        if ($onboardingConfig && !empty($onboardingConfig->getNextSteps())) {
+            $steps = [];
+            foreach ($onboardingConfig->getNextSteps() as $step) {
+                $url = '';
+                try {
+                    $routeParams = $step['route_params'] ?? [];
+                    // Inyectar tenant_id si la ruta lo necesita.
+                    if ($step['route'] === 'entity.tenant.edit_form') {
+                        $routeParams = ['tenant' => $tenant->id()];
+                    }
+                    $url = Url::fromRoute($step['route'], $routeParams)->toString();
+                }
+                catch (\Exception $e) {
+                    // Ruta no existe aún — usar fallback.
+                    $url = Url::fromRoute('entity.tenant.edit_form', ['tenant' => $tenant->id()])->toString();
+                }
+
+                $steps[] = [
+                    'title' => $this->t($step['title']),
+                    'description' => $this->t($step['description']),
+                    'url' => $url,
+                    'icon' => $step['icon'] ?? 'bi-arrow-right',
+                    'completed' => FALSE,
+                ];
+            }
+            return $steps;
+        }
+
+        // Fallback genérico.
         return [
             [
                 'title' => $this->t('Completa tu perfil'),
@@ -382,23 +459,16 @@ class OnboardingController extends ControllerBase
             ],
             [
                 'title' => $this->t('Invita a tu equipo'),
-                'description' => $this->t('Añade productores y colaboradores a tu organización.'),
-                'url' => '/admin/people/invite',
+                'description' => $this->t('Añade colaboradores a tu organización.'),
+                'url' => Url::fromRoute('entity.tenant.edit_form', ['tenant' => $tenant->id()])->toString(),
                 'icon' => 'bi-people',
                 'completed' => FALSE,
             ],
             [
-                'title' => $this->t('Configura tus productos'),
-                'description' => $this->t('Crea tu catálogo de productos para trazabilidad.'),
-                'url' => '/admin/content/product',
-                'icon' => 'bi-box-seam',
-                'completed' => FALSE,
-            ],
-            [
-                'title' => $this->t('Crea tu primer lote'),
-                'description' => $this->t('Registra un lote de producción con trazabilidad.'),
-                'url' => '/node/add/lote_produccion',
-                'icon' => 'bi-upc-scan',
+                'title' => $this->t('Explora la plataforma'),
+                'description' => $this->t('Descubre las herramientas disponibles para tu vertical.'),
+                'url' => Url::fromRoute('entity.tenant.edit_form', ['tenant' => $tenant->id()])->toString(),
+                'icon' => 'bi-compass',
                 'completed' => FALSE,
             ],
         ];

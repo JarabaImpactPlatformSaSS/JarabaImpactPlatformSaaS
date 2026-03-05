@@ -138,5 +138,70 @@
       }
     }, 5000);
   }
+  /**
+   * Preset Picker behavior — filter pills + card selection.
+   */
+  Drupal.behaviors.presetPicker = {
+    attach: function (context) {
+      // --- Filter pills ---
+      once('preset-filter-init', '.preset-filter-bar', context).forEach(function (bar) {
+        var pills = bar.querySelectorAll('.preset-filter-pill');
+        pills.forEach(function (pill) {
+          pill.addEventListener('click', function () {
+            var vertical = pill.getAttribute('data-vertical');
+            // Update active pill.
+            pills.forEach(function (p) { p.classList.remove('is-active'); });
+            pill.classList.add('is-active');
+            // Show/hide cards.
+            var cards = document.querySelectorAll('.preset-picker-card');
+            cards.forEach(function (card) {
+              var wrapper = card.closest('.form-type-radio') || card.parentElement;
+              if (vertical === 'todos' || card.getAttribute('data-vertical') === vertical) {
+                wrapper.style.display = '';
+                card.removeAttribute('data-hidden');
+              } else {
+                wrapper.style.display = 'none';
+                card.setAttribute('data-hidden', 'true');
+              }
+            });
+          });
+        });
+      });
+
+      // --- Card selection ---
+      once('preset-card-init', '.preset-picker-card', context).forEach(function (card) {
+        card.addEventListener('click', function () {
+          // Find and check the associated radio input.
+          var wrapper = card.closest('.form-type-radio');
+          if (wrapper) {
+            var radio = wrapper.querySelector('input[type="radio"]');
+            if (radio) {
+              radio.checked = true;
+              radio.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          }
+          // Update visual selection state.
+          document.querySelectorAll('.preset-picker-card').forEach(function (c) {
+            c.classList.remove('is-selected');
+          });
+          card.classList.add('is-selected');
+        });
+      });
+
+      // --- Initialize selected state on page load ---
+      once('preset-selected-init', '.jaraba-preset-picker', context).forEach(function (container) {
+        var checked = container.querySelector('input[type="radio"]:checked');
+        if (checked) {
+          var wrapper = checked.closest('.form-type-radio');
+          if (wrapper) {
+            var card = wrapper.querySelector('.preset-picker-card');
+            if (card) {
+              card.classList.add('is-selected');
+            }
+          }
+        }
+      });
+    }
+  };
 
 })(Drupal, once);

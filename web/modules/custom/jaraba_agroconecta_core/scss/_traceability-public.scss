@@ -6,7 +6,7 @@
   --at-primary: var(--ej-color-agro, #556B2F);
   --at-accent: var(--ej-color-accent, #FF8C42);
   --at-bg: #FAFAF5;
-  --at-card-bg: #FFFFFF;
+  --at-card-bg: var(--ej-bg-surface, #FFFFFF);
   --at-border: color-mix(in srgb, var(--at-primary) 10%, transparent);
 
   background: var(--at-bg);

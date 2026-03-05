@@ -481,7 +481,7 @@ $search-shadow-lg: var(--ej-shadow-lg, 0 8px 30px color-mix(in srgb, var(--ej-co
     &--primary {
         background: $search-primary;
         border: 2px solid $search-primary;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             opacity: 0.9;

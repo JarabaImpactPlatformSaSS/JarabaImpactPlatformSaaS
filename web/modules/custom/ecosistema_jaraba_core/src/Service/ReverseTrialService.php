@@ -296,16 +296,14 @@ class ReverseTrialService
     public function processTrialNotifications(): int
     {
         $sent = 0;
-        $now = new \DateTime();
 
         try {
             $tenantStorage = $this->entityTypeManager->getStorage('tenant');
 
-            // Buscar tenants en reverse trial activo.
+            // P2-04: Notificar TODOS los tenants en trial (reverse + normales).
             $query = $tenantStorage->getQuery()
                 ->accessCheck(FALSE)
-                ->condition('subscription_status', 'trial')
-                ->condition('is_reverse_trial', TRUE);
+                ->condition('subscription_status', 'trial');
 
             $tenantIds = $query->execute();
 

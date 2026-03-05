@@ -33,7 +33,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: #000;
+    background: var(--ej-color-black, #000);
   }
 
   &__controls {
@@ -297,7 +297,7 @@
     align-items: center;
     gap: var(--ej-spacing-xs, 4px);
     background: var(--ej-color-primary, #3b82f6);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
     border-radius: var(--ej-border-radius-md, 8px);
@@ -394,7 +394,7 @@
 
     &.is-current {
       background: var(--ej-color-primary, #3b82f6);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -689,7 +689,7 @@
 
   &__check-btn {
     background: var(--ej-color-primary, #3b82f6);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &__reset-btn {
@@ -902,7 +902,7 @@
     align-items: center;
     gap: var(--ej-spacing-sm, 8px);
     background: var(--ej-color-primary, #3b82f6);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     padding: var(--ej-spacing-md, 16px) var(--ej-spacing-xl, 32px);
     border-radius: var(--ej-border-radius-md, 8px);

@@ -140,11 +140,11 @@
 
     &--active {
       background: var(--ej-color-primary, #FF8C42);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       border-color: var(--ej-color-primary, #FF8C42);
 
       svg {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
       }
     }
 
@@ -194,8 +194,8 @@
   &__content {
     display: flex;
     min-height: 300px;
-    background: #1a1a2e;
-    color: #e2e8f0;
+    background: var(--ej-bg-dark, #1a1a2e);
+    color: var(--ej-gray-200, #e2e8f0);
 
     &--chat {
       flex-direction: column;
@@ -265,7 +265,7 @@
     display: block;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &__stat-label {
@@ -292,7 +292,7 @@
     &--user {
       align-self: flex-end;
       background: var(--ej-color-primary, #FF8C42);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       border-bottom-right-radius: 4px;
     }
 
@@ -336,7 +336,7 @@
     font-size: 1rem;
     font-weight: 600;
     margin: 0 0 1.25rem;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &__metric-bars {

@@ -161,23 +161,23 @@
 }
 
 .shadow--linkedin {
-    @include brand-shadow(#0A66C2);
+    @include brand-shadow(var(--ej-brand-linkedin-alt, #0A66C2));
 }
 
 .shadow--tiktok {
-    @include brand-shadow(#000000);
+    @include brand-shadow(var(--ej-color-black, #000000));
 }
 
 .shadow--corporate {
-    @include brand-shadow(#233D63);
+    @include brand-shadow(var(--ej-color-corporate, #233D63));
 }
 
 .shadow--innovation {
-    @include brand-shadow(#00A9A5);
+    @include brand-shadow(var(--ej-color-innovation, #00A9A5));
 }
 
 .shadow--impulse {
-    @include brand-shadow(#FF8C42);
+    @include brand-shadow(var(--ej-color-impulse, #FF8C42));
 }
 
 /// Efecto de hover en elementos hijos (logos, iconos)

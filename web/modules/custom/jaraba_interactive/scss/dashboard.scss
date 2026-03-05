@@ -135,7 +135,7 @@
     padding: var(--spacing-md);
 
     &--question_set {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #667eea, var(--ej-color-purple-deep, #764ba2));
     }
 
     &--interactive_video {
@@ -413,7 +413,7 @@ details {
 
 // pb-card--insight variant (for Smart Import button)
 .pb-card--insight {
-    --ej-card-gradient-start: #6366f1;
-    --ej-card-gradient-end: #8b5cf6;
+    --ej-card-gradient-start: var(--ej-color-indigo, #6366f1);
+    --ej-card-gradient-end: var(--ej-color-violet, #8b5cf6);
     --ej-card-border-color: rgba(99, 102, 241, 0.3);
 }

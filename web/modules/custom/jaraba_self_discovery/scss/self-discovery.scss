@@ -874,7 +874,7 @@ body.slide-panel-open {
 }
 
 .riasec-category {
-    border: 2px solid var(--category-color, #E2E8F0);
+    border: 2px solid var(--category-color, var(--ej-gray-200, #E2E8F0));
     border-radius: 12px;
     padding: 1.5rem;
     background: linear-gradient(135deg, color-mix(in srgb, var(--category-color, #E2E8F0) 5%, transparent), transparent);
@@ -899,7 +899,7 @@ body.slide-panel-open {
     height: 8px;
     border-radius: 4px;
     appearance: none;
-    background: linear-gradient(to right, #E2E8F0, var(--category-color, #00A9A5));
+    background: linear-gradient(to right, var(--ej-gray-200, #E2E8F0), var(--category-color, var(--ej-color-innovation, #00A9A5)));
     cursor: pointer;
 
     &::-webkit-slider-thumb {
@@ -907,7 +907,7 @@ body.slide-panel-open {
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background: var(--category-color, #00A9A5);
+        background: var(--category-color, var(--ej-color-innovation, #00A9A5));
         border: 3px solid white;
         box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-text-primary, #000) 20%, transparent);
         cursor: grab;
@@ -917,7 +917,7 @@ body.slide-panel-open {
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background: var(--category-color, #00A9A5);
+        background: var(--category-color, var(--ej-color-innovation, #00A9A5));
         border: 3px solid white;
         box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-text-primary, #000) 20%, transparent);
         cursor: grab;
@@ -994,7 +994,7 @@ body.slide-panel-open {
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    background: linear-gradient(135deg, #00A9A5, #233D63);
+    background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-corporate, #233D63));
     padding: 0.75rem 1.5rem;
     border-radius: 50px;
 
@@ -1036,7 +1036,7 @@ body.slide-panel-open {
 
     &__value {
         font-weight: 700;
-        color: var(--score-color, #00A9A5);
+        color: var(--score-color, var(--ej-color-innovation, #00A9A5));
     }
 
     &__bar {
@@ -1048,7 +1048,7 @@ body.slide-panel-open {
 
     &__fill {
         height: 100%;
-        background: var(--score-color, #00A9A5);
+        background: var(--score-color, var(--ej-color-innovation, #00A9A5));
         border-radius: 6px;
         transition: width 1s ease;
     }
@@ -1260,7 +1260,7 @@ body.slide-panel-open {
 
     &__bar {
         height: 8px;
-        background: linear-gradient(90deg, #00A9A5, #233D63);
+        background: linear-gradient(90deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-corporate, #233D63));
         border-radius: 4px;
         transition: width 0.3s ease;
     }
@@ -1420,7 +1420,7 @@ body.slide-panel-open {
         font-family: var(--ej-font-headings, "Outfit", sans-serif);
         font-size: 2rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #F59E0B, #EF4444);
+        background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), var(--ej-color-danger, #EF4444));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -1476,7 +1476,7 @@ body.slide-panel-open {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #00A9A5, #233D63);
+    background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-corporate, #233D63));
     color: white;
     font-size: 0.85rem;
     font-weight: 700;

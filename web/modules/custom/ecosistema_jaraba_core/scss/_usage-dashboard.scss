@@ -24,6 +24,7 @@
 // ---------------------------------------------------------------------------
 // VARIABLES LOCALES
 // ---------------------------------------------------------------------------
+// Static values for Sass compile-time color functions (color.change/adjust).
 $_primary: #233D63;
 $_accent: #00A9A5;
 $_orange: #FF8C42;
@@ -526,7 +527,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
   display: inline-block;
   padding: 0.625rem 1.5rem;
   background: var(--ej-color-accent, $_accent);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border-radius: $_radius-sm;
   text-decoration: none;
   font-weight: 600;
@@ -535,6 +536,6 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 
   &:hover {
     background: color.adjust($_accent, $lightness: -8%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }

@@ -26,7 +26,7 @@
     z-index: 10000;
     padding: $ej-spacing-md $ej-spacing-xl;
     background: var(--ej-color-corporate, $ej-color-corporate);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: $ej-btn-radius;
     font-weight: 600;
     font-family: var(--ej-font-body, $ej-font-body);
@@ -39,7 +39,7 @@
         transform: translateX(-50%) translateY($ej-spacing-md);
         outline: 3px solid var(--ej-color-primary, $ej-color-primary);
         outline-offset: 3px;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6), $ej-shadow-lg;
+        box-shadow: 0 0 0 2px var(--ej-bg-surface, #fff), 0 0 0 5px rgba(0, 0, 0, 0.6), $ej-shadow-lg;
     }
 }
 
@@ -50,7 +50,7 @@
     outline: 3px solid var(--ej-color-primary, $ej-color-primary);
     outline-offset: 3px;
     // A11Y-02: Dark outer ring ensures visibility on colored backgrounds.
-    box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 2px var(--ej-bg-surface, #fff), 0 0 0 5px rgba(0, 0, 0, 0.6);
 }
 
 // Botones con focus visible
@@ -61,7 +61,7 @@ button,
     &:focus-visible {
         outline: 3px solid var(--ej-color-primary, $ej-color-primary);
         outline-offset: 3px;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(0, 0, 0, 0.6), 0 0 0 8px rgba($ej-color-primary, 0.25);
+        box-shadow: 0 0 0 2px var(--ej-bg-surface, #fff), 0 0 0 5px rgba(0, 0, 0, 0.6), 0 0 0 8px rgba($ej-color-primary, 0.25);
     }
 }
 
@@ -72,7 +72,7 @@ button,
     &:focus-visible {
         outline: 3px solid var(--ej-color-primary, $ej-color-primary);
         outline-offset: 4px;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 0 2px var(--ej-bg-surface, #fff), 0 0 0 6px rgba(0, 0, 0, 0.5);
         transform: translateY(-4px);
     }
 }
@@ -85,7 +85,7 @@ select {
         outline: 3px solid var(--ej-color-primary, $ej-color-primary);
         outline-offset: 0;
         border-color: var(--ej-color-primary, $ej-color-primary);
-        box-shadow: 0 0 0 1px #fff, 0 0 0 4px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 0 0 1px var(--ej-bg-surface, #fff), 0 0 0 4px rgba(0, 0, 0, 0.4);
     }
 }
 
@@ -124,7 +124,7 @@ select {
     :root {
         --ej-color-primary: #ff6600;
         --ej-color-corporate: #000033;
-        --ej-border-color: #000;
+        --ej-border-color: var(--ej-color-black, #000);
     }
 
     .btn,
@@ -200,7 +200,7 @@ select {
     *::before,
     *::after {
         background: transparent !important;
-        color: #000 !important;
+        color: var(--ej-color-black, #000) !important;
         box-shadow: none !important;
         text-shadow: none !important;
     }
@@ -214,7 +214,7 @@ select {
     a[href]::after {
         content: " (" attr(href) ")";
         font-size: 0.85em;
-        color: #555 !important;
+        color: var(--ej-gray-dark-alt, #555) !important;
     }
 
     // Don't show URL for anchor/JS links.

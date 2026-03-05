@@ -456,3 +456,43 @@ function jaraba_ai_agents_requirements($phase) {
 
   return $requirements;
 }
+
+/**
+ * Install entity types: ai_workflow, collaboration_session, pending_approval.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function jaraba_ai_agents_update_10010(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'ai_workflow',
+    'collaboration_session',
+    'pending_approval',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}

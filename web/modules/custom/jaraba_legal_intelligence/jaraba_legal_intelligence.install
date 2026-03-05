@@ -494,3 +494,86 @@ function jaraba_legal_intelligence_uninstall(): void {
     $schema->dropTable('legal_citation_graph');
   }
 }
+
+/**
+ * Install entity types: legal_alert, legal_bookmark, legal_source.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function jaraba_legal_intelligence_update_10006(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'legal_alert',
+    'legal_bookmark',
+    'legal_source',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_legal_intelligence_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = [
+    'legal_alert',
+    'legal_bookmark',
+    'legal_source',
+  ];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_legal_intelligence_entities'] = [
+      'title' => t('Jaraba legal intelligence: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_legal_intelligence_entities'] = [
+      'title' => t('Jaraba legal intelligence: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

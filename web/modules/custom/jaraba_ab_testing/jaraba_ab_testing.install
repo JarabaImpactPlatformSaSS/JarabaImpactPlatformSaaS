@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_ab_testing.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_ab_testing_install(): void {
+  $entity_type_ids = [
+    'ab_experiment',
+    'ab_variant',
+    'experiment_exposure',
+    'experiment_result',
+  ];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  foreach ($entity_type_ids as $entity_type_id) {
+    try {
+      if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
+        $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+        $entity_definition_update_manager->installEntityType($entity_type);
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_ab_testing')->error(
+        'Failed to install entity type @type: @message',
+        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
+ * Install all jaraba_ab_testing entity types.
+ */
+function jaraba_ab_testing_update_10001(): void {
+  $entity_type_ids = [
+    'ab_experiment',
+    'ab_variant',
+    'experiment_exposure',
+    'experiment_result',
+  ];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  foreach ($entity_type_ids as $entity_type_id) {
+    try {
+      if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
+        $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+        $entity_definition_update_manager->installEntityType($entity_type);
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_ab_testing')->error(
+        'Failed to install entity type @type: @message',
+        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+}

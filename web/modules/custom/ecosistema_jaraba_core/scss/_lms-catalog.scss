@@ -176,7 +176,7 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--ej-color-success, #10b981) 0%, var(--ej-color-success-dark, #059669) 100%);
     color: white;
     padding: 6px 12px;
     border-radius: 20px;
@@ -320,8 +320,8 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #000;
+    background: linear-gradient(135deg, #fbbf24 0%, var(--ej-color-warning, #f59e0b) 100%);
+    color: var(--ej-color-black, #000);
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 11px;
@@ -372,19 +372,19 @@
     &.difficulty-beginner,
     &.difficulty-principiante {
         background: rgba(16, 185, 129, 0.15);
-        color: #059669;
+        color: var(--ej-color-success-dark, #059669);
     }
 
     &.difficulty-intermediate,
     &.difficulty-intermedio {
         background: rgba(59, 130, 246, 0.15);
-        color: #2563eb;
+        color: var(--ej-color-blue-dark, #2563eb);
     }
 
     &.difficulty-advanced,
     &.difficulty-avanzado {
         background: rgba(239, 68, 68, 0.15);
-        color: #dc2626;
+        color: var(--ej-color-danger-dark, #dc2626);
     }
 }
 
@@ -452,7 +452,7 @@
     color: var(--ej-color-primary, #{$ej-color-primary-fallback});
 
     &.free {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, var(--ej-color-success, #10b981) 0%, var(--ej-color-success-dark, #059669) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -619,10 +619,10 @@
     }
 
     .course-title {
-        color: #e2e8f0;
+        color: var(--ej-gray-200, #e2e8f0);
     }
 
     .course-summary {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 }

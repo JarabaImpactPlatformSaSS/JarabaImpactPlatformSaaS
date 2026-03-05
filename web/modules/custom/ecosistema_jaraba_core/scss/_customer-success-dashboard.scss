@@ -74,11 +74,11 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
 
   &--active {
     background: $cs-corporate;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover {
       background: $cs-corporate;
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 }
@@ -94,7 +94,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
 }
 
 .cs-stat-card {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: $cs-radius;
   padding: 1.5rem;
   box-shadow: $cs-shadow;
@@ -152,7 +152,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-size: var(--ej-font-size-xs, 0.75rem);
   font-weight: 600;
   min-width: 24px;
@@ -205,7 +205,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
 }
 
 .cs-dashboard__panel {
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: $cs-radius;
   padding: 1.5rem;
   box-shadow: $cs-shadow;
@@ -280,7 +280,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   border-radius: 6px;
   font-size: var(--ej-font-size-xs, 0.75rem);
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &--low { background: $cs-healthy; }
   &--medium { background: $cs-neutral; }
@@ -321,7 +321,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
 .cs-health-card {
   max-width: 600px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: $cs-radius;
   padding: 2rem;
   box-shadow: $cs-shadow;
@@ -364,7 +364,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   border-radius: 20px;
   font-size: var(--ej-font-size-sm, 0.875rem);
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &--healthy { background: $cs-healthy; }
   &--neutral { background: $cs-neutral; }
@@ -512,7 +512,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   border-radius: 4px;
   font-size: var(--ej-font-size-xs, 0.75rem);
   font-weight: 600;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   &--running { background: $cs-corporate; }
   &--completed { background: $cs-healthy; }
@@ -539,7 +539,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 8px;
   box-shadow: $cs-shadow;
   margin-bottom: 0.5rem;
@@ -556,7 +556,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   font-size: var(--ej-font-size-xs, 0.75rem);
   font-weight: 600;
   background: $cs-corporate;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 }
 
 .cs-expansion-list__tenant {
@@ -607,7 +607,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
   display: inline-block;
   padding: 0.625rem 1.5rem;
   background: $cs-corporate;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
@@ -632,7 +632,7 @@ $cs-transition: var(--ej-transition, all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1
 // =============================================================================
 .cs-expansion-pipeline {
   padding: 1.5rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: $cs-radius;
   box-shadow: $cs-shadow;
   font-size: var(--ej-font-size-base, 1rem);

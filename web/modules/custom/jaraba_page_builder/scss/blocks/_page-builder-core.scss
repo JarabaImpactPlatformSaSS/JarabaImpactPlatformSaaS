@@ -106,7 +106,7 @@
         var(--ej-color-corporate, #233D63) 0%,
         var(--ej-color-innovation, #00A9A5) 100%
     );
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border-radius: var(--ej-radius-xl, 16px);
     padding: var(--ej-spacing-xxl, 3rem);
 }
@@ -179,7 +179,7 @@
 
 .jaraba-button--primary {
     background: var(--ej-color-impulse, #FF8C42);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     &:hover {
         box-shadow: 0 4px 12px rgba(255, 140, 66, 0.35);
@@ -193,7 +193,7 @@
 
     &:hover {
         background: var(--ej-color-corporate, #233D63);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
     }
 }
 
@@ -363,8 +363,8 @@
 }
 
 .jaraba-code {
-    background: #1e293b;
-    color: #e2e8f0;
+    background: var(--ej-gray-800, #1e293b);
+    color: var(--ej-gray-200, #e2e8f0);
     padding: var(--ej-spacing-lg, 1.5rem);
     border-radius: var(--ej-radius-lg, 12px);
     font-family: 'JetBrains Mono', 'Fira Code', monospace;

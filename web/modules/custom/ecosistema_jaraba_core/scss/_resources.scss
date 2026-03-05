@@ -86,8 +86,8 @@
     }
 
     &--enterprise {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        color: #78350f;
+        background: linear-gradient(135deg, #fbbf24, var(--ej-color-warning, #f59e0b));
+        color: var(--ej-color-amber-900, #78350f);
     }
 }
 

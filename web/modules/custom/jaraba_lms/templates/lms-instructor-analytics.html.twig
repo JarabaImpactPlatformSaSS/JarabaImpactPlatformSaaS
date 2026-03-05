@@ -1,0 +1,116 @@
+{#
+/**
+ * @file
+ * P2-08: Analytics de curso para instructores.
+ *
+ * Variables:
+ * - course: Array {id, title, is_published}
+ * - kpis: Array {total_students, completed_students, completion_rate, avg_progress, total_lessons}
+ * - lessons: Array [{id, title, views, completions, drop_off_rate}]
+ *
+ * Charts via drupalSettings.lmsAnalytics (ZERO-REGION-001).
+ * CSS-VAR-ALL-COLORS-001: Colores via --ej-*.
+ * ROUTE-LANGPREFIX-001: URLs via {{ path() }}.
+ */
+#}
+
+<div class="lms-analytics">
+  {# Header con navegacion #}
+  <header class="lms-analytics__header">
+    <div class="lms-analytics__breadcrumb">
+      <a href="{{ path('jaraba_lms.instructor.courses') }}" class="lms-analytics__back">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        {% trans %}Mis Cursos{% endtrans %}
+      </a>
+      <span class="lms-analytics__separator" aria-hidden="true">/</span>
+      <span class="lms-analytics__current">{{ course.title }}</span>
+    </div>
+
+    <div class="lms-analytics__tabs" role="tablist" aria-label="{% trans %}Secciones del curso{% endtrans %}">
+      <a href="{{ path('jaraba_lms.instructor.lessons', { course_id: course.id }) }}"
+         class="lms-analytics__tab" role="tab">
+        {% trans %}Lecciones{% endtrans %}
+      </a>
+      <a href="{{ path('jaraba_lms.instructor.students', { course_id: course.id }) }}"
+         class="lms-analytics__tab" role="tab">
+        {% trans %}Alumnos{% endtrans %}
+      </a>
+      <a href="{{ path('jaraba_lms.instructor.analytics', { course_id: course.id }) }}"
+         class="lms-analytics__tab lms-analytics__tab--active" role="tab" aria-current="page">
+        {% trans %}Analytics{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# KPIs #}
+  <div class="lms-analytics__kpis">
+    <div class="lms-analytics__kpi">
+      <span class="lms-analytics__kpi-value">{{ kpis.total_students }}</span>
+      <span class="lms-analytics__kpi-label">{% trans %}Alumnos totales{% endtrans %}</span>
+    </div>
+    <div class="lms-analytics__kpi">
+      <span class="lms-analytics__kpi-value">{{ kpis.completion_rate }}%</span>
+      <span class="lms-analytics__kpi-label">{% trans %}Tasa de completado{% endtrans %}</span>
+    </div>
+    <div class="lms-analytics__kpi">
+      <span class="lms-analytics__kpi-value">{{ kpis.avg_progress }}%</span>
+      <span class="lms-analytics__kpi-label">{% trans %}Progreso promedio{% endtrans %}</span>
+    </div>
+    <div class="lms-analytics__kpi">
+      <span class="lms-analytics__kpi-value">{{ kpis.total_lessons }}</span>
+      <span class="lms-analytics__kpi-label">{% trans %}Lecciones{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Charts #}
+  <div class="lms-analytics__charts">
+    <div class="lms-analytics__chart-card">
+      <h3 class="lms-analytics__chart-title">{% trans %}Tendencia de matriculas{% endtrans %}</h3>
+      <canvas id="lms-enrollment-chart" width="400" height="200"
+              aria-label="{% trans %}Grafico de matriculas semanales{% endtrans %}"
+              role="img"></canvas>
+    </div>
+    <div class="lms-analytics__chart-card">
+      <h3 class="lms-analytics__chart-title">{% trans %}Engagement semanal{% endtrans %}</h3>
+      <canvas id="lms-engagement-chart" width="400" height="200"
+              aria-label="{% trans %}Grafico de engagement semanal{% endtrans %}"
+              role="img"></canvas>
+    </div>
+  </div>
+
+  {# Tabla de lecciones #}
+  <div class="lms-analytics__lessons-table">
+    <h3 class="lms-analytics__section-title">{% trans %}Rendimiento por leccion{% endtrans %}</h3>
+
+    {% if lessons|length > 0 %}
+      <table class="lms-analytics__table" aria-label="{% trans %}Estadisticas por leccion{% endtrans %}">
+        <thead>
+          <tr>
+            <th>{% trans %}Leccion{% endtrans %}</th>
+            <th class="text-center">{% trans %}Vistas{% endtrans %}</th>
+            <th class="text-center">{% trans %}Completados{% endtrans %}</th>
+            <th class="text-center">{% trans %}Abandono{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lesson in lessons %}
+            <tr>
+              <td>{{ lesson.title }}</td>
+              <td class="text-center">{{ lesson.views }}</td>
+              <td class="text-center">{{ lesson.completions }}</td>
+              <td class="text-center">
+                <span class="lms-analytics__drop-off {{ lesson.drop_off_rate > 50 ? 'lms-analytics__drop-off--high' : '' }}">
+                  {{ lesson.drop_off_rate }}%
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="lms-analytics__empty">
+        <p>{% trans %}No hay lecciones en este curso todavia.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

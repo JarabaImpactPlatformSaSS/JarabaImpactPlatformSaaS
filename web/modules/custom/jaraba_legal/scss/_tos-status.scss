@@ -88,7 +88,7 @@
   font-weight: 500;
   cursor: pointer;
   background: var(--ej-legal-primary, #{$legal-primary-fallback});
-  color: #FFFFFF;
+  color: var(--ej-bg-surface, #FFFFFF);
   transition: background-color 150ms ease;
 
   &:hover {

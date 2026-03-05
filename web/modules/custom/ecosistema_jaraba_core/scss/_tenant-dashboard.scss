@@ -78,29 +78,29 @@
     border-radius: 9999px;
 
     &--trial {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        color: #92400e;
+        background: linear-gradient(135deg, var(--ej-color-amber-50, #fef3c7) 0%, #fde68a 100%);
+        color: var(--ej-color-warning-deep, #92400e);
     }
 
     &--active {
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        color: #065f46;
+        background: linear-gradient(135deg, var(--ej-color-green-50, #d1fae5) 0%, var(--ej-color-green-100, #a7f3d0) 100%);
+        color: var(--ej-color-green-deep, #065f46);
     }
 
     &--past_due {
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        color: #991b1b;
+        background: linear-gradient(135deg, var(--ej-color-red-50, #fee2e2) 0%, var(--ej-color-red-100, #fecaca) 100%);
+        color: var(--ej-color-danger-deep, #991b1b);
     }
 
     &--suspended {
-        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-        color: #374151;
+        background: linear-gradient(135deg, var(--ej-border-color, #e5e7eb) 0%, #d1d5db 100%);
+        color: var(--ej-gray-700, #374151);
     }
 }
 
 .trial-countdown {
     font-size: 0.875rem;
-    color: #92400e;
+    color: var(--ej-color-warning-deep, #92400e);
     font-weight: 500;
 }
 
@@ -149,7 +149,7 @@
     }
 
     &--metrics &__icon {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        background: linear-gradient(135deg, var(--ej-color-violet, #8b5cf6) 0%, var(--ej-color-violet-dark, #7c3aed) 100%);
     }
 
     &--storage &__icon {
@@ -157,7 +157,7 @@
     }
 
     &--content &__icon {
-        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        background: linear-gradient(135deg, var(--ej-color-pink, #ec4899) 0%, var(--ej-color-pink-dark, #db2777) 100%);
     }
 
     &__title {
@@ -217,7 +217,7 @@
 
     &__bar {
         height: 100%;
-        background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+        background: linear-gradient(90deg, #fbbf24 0%, var(--ej-color-warning, #f59e0b) 100%);
         border-radius: 3px;
         transition: width 0.3s ease;
     }
@@ -226,7 +226,7 @@
 .trial-info__text {
     margin: 0;
     font-size: 0.75rem;
-    color: #92400e;
+    color: var(--ej-color-warning-deep, #92400e);
 }
 
 // --------------------------------------------------------------------------
@@ -427,8 +427,8 @@ button.quick-action {
 .billing-error {
     margin-top: 0.75rem;
     padding: 0.75rem;
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--ej-color-red-50, #fee2e2);
+    color: var(--ej-color-danger-deep, #991b1b);
     border-radius: 8px;
     font-size: 0.875rem;
 }
@@ -521,8 +521,8 @@ button.quick-action {
 // --------------------------------------------------------------------------
 
 .admin-premium.tenant-dashboard {
-    background: #0f172a;
-    color: #e2e8f0;
+    background: var(--ej-gray-900, #0f172a);
+    color: var(--ej-gray-200, #e2e8f0);
     max-width: 100%;
     min-height: 100vh;
 
@@ -531,19 +531,19 @@ button.quick-action {
     }
 
     .tenant-dashboard__title {
-        color: #e2e8f0;
-        background: linear-gradient(135deg, #fbbf24, $success-color);
+        color: var(--ej-gray-200, #e2e8f0);
+        background: linear-gradient(135deg, var(--ej-color-amber, #fbbf24), $success-color);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
     .tenant-dashboard__vertical {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     .section-title {
-        color: #e2e8f0;
+        color: var(--ej-gray-200, #e2e8f0);
     }
 
     .dashboard-card {
@@ -556,32 +556,32 @@ button.quick-action {
         }
 
         &__title {
-            color: #94a3b8;
+            color: var(--ej-gray-400, #94a3b8);
         }
     }
 
     .plan-info__name {
-        color: #e2e8f0;
+        color: var(--ej-gray-200, #e2e8f0);
     }
 
     .plan-info__price {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     .no-plan {
-        color: #64748b;
+        color: var(--ej-color-neutral, #64748b);
     }
 
     .metric-display__value {
-        color: #e2e8f0;
+        color: var(--ej-gray-200, #e2e8f0);
     }
 
     .metric-display__limit {
-        color: #64748b;
+        color: var(--ej-color-neutral, #64748b);
     }
 
     .metric-display__label {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     .usage-bar {
@@ -589,7 +589,7 @@ button.quick-action {
     }
 
     .usage-bar__label {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     .trial-progress {
@@ -606,20 +606,20 @@ button.quick-action {
         }
 
         &__title {
-            color: #e2e8f0;
+            color: var(--ej-gray-200, #e2e8f0);
         }
 
         &__description {
-            color: #94a3b8;
+            color: var(--ej-gray-400, #94a3b8);
         }
 
         &__arrow {
-            color: #64748b;
+            color: var(--ej-color-neutral, #64748b);
         }
 
         &__icon {
             background: rgba(0, 0, 0, 0.2);
-            color: #94a3b8;
+            color: var(--ej-gray-400, #94a3b8);
         }
 
         &:hover &__icon {
@@ -634,21 +634,21 @@ button.quick-action {
     }
 
     .tech-info-item__label {
-        color: #94a3b8;
+        color: var(--ej-gray-400, #94a3b8);
     }
 
     .tech-info-item__value {
-        color: #e2e8f0;
+        color: var(--ej-gray-200, #e2e8f0);
 
         a {
-            color: #60a5fa;
+            color: var(--ej-color-blue-400, #60a5fa);
         }
     }
 
     .status-badge {
         &--trial {
             background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
+            color: var(--ej-color-amber, #fbbf24);
         }
 
         &--active {
@@ -663,11 +663,11 @@ button.quick-action {
 
         &--suspended {
             background: rgba(148, 163, 184, 0.2);
-            color: #94a3b8;
+            color: var(--ej-gray-400, #94a3b8);
         }
     }
 
     .trial-countdown {
-        color: #fbbf24;
+        color: var(--ej-color-amber, #fbbf24);
     }
 }

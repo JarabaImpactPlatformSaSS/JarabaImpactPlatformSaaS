@@ -1,0 +1,663 @@
+/**
+ * @file
+ * Main SCSS entry point for jaraba_facturae module.
+ *
+ * Compiles all partials in dependency order.
+ * Compile: npx sass scss/main.scss:css/facturae.css --style=compressed --no-source-map
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+/**
+ * @file
+ * Facturae dashboard layout and components.
+ *
+ * Uses federated design tokens from ecosistema_jaraba_core.
+ * BEM naming: .facturae-dashboard__element--modifier.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+.facturae-dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+.facturae-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+.facturae-dashboard__title-group {
+  flex: 1;
+}
+.facturae-dashboard__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-fiscal-face, #553C9A);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.facturae-dashboard__icon {
+  font-size: 1.5rem;
+}
+.facturae-dashboard__description {
+  color: var(--ej-text-secondary, #666);
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+.facturae-dashboard__stats {
+  margin-bottom: 2rem;
+}
+.facturae-dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.facturae-dashboard__face-panel, .facturae-dashboard__cert-panel {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1.5rem;
+}
+.facturae-dashboard__recent {
+  margin-bottom: 2rem;
+}
+.facturae-dashboard__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #333);
+  margin: 0 0 1rem;
+}
+.facturae-dashboard__recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.facturae-dashboard__empty {
+  grid-column: 1/-1;
+  text-align: center;
+  color: var(--ej-text-secondary, #999);
+  padding: 2rem;
+}
+.facturae-dashboard__actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.facturae-dashboard__action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  text-decoration: none;
+  color: var(--ej-text-primary, #333);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.facturae-dashboard__action-card:hover {
+  border-color: var(--ej-fiscal-face, #553C9A);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 15%, transparent);
+}
+.facturae-dashboard__action-card:focus-visible {
+  outline: 2px solid var(--ej-fiscal-face, #553C9A);
+  outline-offset: 2px;
+}
+.facturae-dashboard__action-icon {
+  font-size: 1.5rem;
+  color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-dashboard__action-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/**
+ * @file
+ * Facturae documents listing page styles.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+.facturae-documents {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+.facturae-documents__header {
+  margin-bottom: 1.5rem;
+}
+.facturae-documents__back {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #666);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+.facturae-documents__back:hover {
+  color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-documents__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-documents__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  margin-bottom: 1.5rem;
+}
+.facturae-documents__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.facturae-documents__filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.facturae-documents__filter-select, .facturae-documents__filter-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-sm, 4px);
+  font-size: 0.875rem;
+  background: var(--ej-surface, #fff);
+  color: var(--ej-text-primary, #333);
+}
+.facturae-documents__filter-select:focus, .facturae-documents__filter-input:focus {
+  border-color: var(--ej-fiscal-face, #553C9A);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 20%, transparent);
+}
+.facturae-documents__filter-apply {
+  padding: 0.5rem 1.25rem;
+  background: var(--ej-fiscal-face, #553C9A);
+  color: var(--ej-bg-surface, #fff);
+  border: none;
+  border-radius: var(--ej-radius-sm, 4px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.facturae-documents__filter-apply:hover {
+  background: color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 85%, #000);
+}
+.facturae-documents__table-wrapper {
+  overflow-x: auto;
+}
+.facturae-documents__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.facturae-documents__table thead {
+  background: var(--ej-surface-alt, #f5f5f5);
+  position: sticky;
+  top: 0;
+}
+.facturae-documents__table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #666);
+  border-bottom: 2px solid var(--ej-border, #e0e0e0);
+  white-space: nowrap;
+}
+.facturae-documents__table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ej-border-light, #f0f0f0);
+  color: var(--ej-text-primary, #333);
+}
+.facturae-documents__table tbody tr {
+  transition: background 0.15s;
+}
+.facturae-documents__table tbody tr:hover {
+  background: color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 5%, transparent);
+}
+.facturae-documents__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+}
+.facturae-documents__page-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-sm, 4px);
+  background: var(--ej-surface, #fff);
+  color: var(--ej-text-primary, #333);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.facturae-documents__page-btn:hover:not(:disabled) {
+  border-color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-documents__page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.facturae-documents__page-info {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #666);
+}
+
+/**
+ * @file
+ * XAdES-EPES signature info panel styles.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+.facturae-signature {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.facturae-signature--signed {
+  border-left: 4px solid var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669));
+}
+.facturae-signature--unsigned {
+  border-left: 4px solid var(--ej-text-secondary, #999);
+}
+.facturae-signature__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-signature__icon {
+  font-size: 1.125rem;
+}
+.facturae-signature__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.facturae-signature__status--valid {
+  color: var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669));
+}
+.facturae-signature__status--pending {
+  color: var(--ej-text-secondary, #999);
+}
+.facturae-signature__check {
+  font-size: 1.125rem;
+}
+.facturae-signature__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+.facturae-signature__dl dt {
+  font-weight: 600;
+  color: var(--ej-text-secondary, #666);
+}
+.facturae-signature__dl dd {
+  margin: 0;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-signature__policy {
+  font-style: italic;
+  font-size: 0.75rem;
+}
+.facturae-signature__hint {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #666);
+  margin: 0;
+}
+
+/**
+ * @file
+ * FACe portal status panel and document card styles.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+.facturae-face-status__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-face-status__description {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #666);
+  margin: 0 0 0.75rem;
+}
+.facturae-face-status__indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669));
+}
+.facturae-face-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.facturae-face-status__dot--active {
+  background: var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669));
+  box-shadow: 0 0 4px color-mix(in srgb, var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669)) 40%, transparent);
+}
+.facturae-face-status__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.375rem 1rem;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+.facturae-face-status__dl dt {
+  font-weight: 600;
+  color: var(--ej-text-secondary, #666);
+}
+.facturae-face-status__dl dd {
+  margin: 0;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-face-status__mono {
+  font-family: ui-monospace, "Cascadia Code", "Fira Code", Menlo, Monaco, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+.facturae-face-status__anulacion {
+  color: var(--ej-fiscal-status-error, var(--ej-color-danger-dark, #DC2626));
+  font-weight: 600;
+}
+
+.facturae-doc-card {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.facturae-doc-card:hover {
+  border-color: var(--ej-fiscal-face, #553C9A);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 12%, transparent);
+}
+.facturae-doc-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.facturae-doc-card__number {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-doc-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.facturae-doc-card__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+.facturae-doc-card__value {
+  font-size: 0.875rem;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-doc-card__value--amount {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.facturae-doc-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--ej-border-light, #f0f0f0);
+}
+.facturae-doc-card__face-label {
+  font-size: 0.75rem;
+  color: var(--ej-text-secondary, #999);
+}
+.facturae-doc-card__view-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ej-fiscal-face, #553C9A);
+  text-decoration: none;
+}
+.facturae-doc-card__view-link:hover {
+  text-decoration: underline;
+}
+
+.facturae-detail {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+.facturae-detail__header {
+  margin-bottom: 1.5rem;
+}
+.facturae-detail__back {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #666);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+.facturae-detail__back:hover {
+  color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-detail__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-detail__badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.facturae-detail__grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  align-items: start;
+}
+.facturae-detail__section {
+  background: var(--ej-surface, #fff);
+  border: 1px solid var(--ej-border, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.facturae-detail__section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-detail__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.375rem 1rem;
+  font-size: 0.875rem;
+  margin: 0;
+}
+.facturae-detail__dl dt {
+  font-weight: 600;
+  color: var(--ej-text-secondary, #666);
+}
+.facturae-detail__dl dd {
+  margin: 0;
+  color: var(--ej-text-primary, #333);
+}
+.facturae-detail__dl--amounts dd {
+  text-align: right;
+  font-family: ui-monospace, "Cascadia Code", "Fira Code", Menlo, Monaco, monospace;
+}
+.facturae-detail__dt--total {
+  font-size: 1rem;
+  padding-top: 0.5rem;
+  border-top: 2px solid var(--ej-fiscal-face, #553C9A);
+}
+.facturae-detail__dd--total {
+  font-size: 1.125rem;
+  font-weight: 700;
+  padding-top: 0.5rem;
+  border-top: 2px solid var(--ej-fiscal-face, #553C9A);
+  color: var(--ej-fiscal-face, #553C9A);
+}
+.facturae-detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.facturae-detail__action-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--ej-radius-sm, 4px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.facturae-detail__action-btn--sign {
+  background: var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669));
+  color: var(--ej-bg-surface, #fff);
+}
+.facturae-detail__action-btn--sign:hover {
+  background: color-mix(in srgb, var(--ej-fiscal-cert-valid, var(--ej-color-success-dark, #059669)) 85%, #000);
+}
+.facturae-detail__action-btn--send {
+  background: var(--ej-fiscal-face, #553C9A);
+  color: var(--ej-bg-surface, #fff);
+}
+.facturae-detail__action-btn--send:hover {
+  background: color-mix(in srgb, var(--ej-fiscal-face, #553C9A) 85%, #000);
+}
+.facturae-detail__action-btn--pdf {
+  background: var(--ej-surface-alt, #f5f5f5);
+  color: var(--ej-text-primary, #333);
+  border: 1px solid var(--ej-border, #e0e0e0);
+}
+.facturae-detail__action-btn--pdf:hover {
+  background: var(--ej-surface, #fff);
+  border-color: var(--ej-fiscal-face, #553C9A);
+}
+
+/**
+ * @file
+ * Responsive breakpoints for Facturae module.
+ *
+ * Mobile-first approach with min-width breakpoints.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+@media (max-width: 480px) {
+  .facturae-dashboard {
+    padding: 1rem;
+  }
+  .facturae-dashboard__header {
+    flex-direction: column;
+  }
+  .facturae-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+  .facturae-dashboard__recent-grid {
+    grid-template-columns: 1fr;
+  }
+  .facturae-dashboard__actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .facturae-documents {
+    padding: 1rem;
+  }
+  .facturae-documents__filters {
+    flex-direction: column;
+  }
+  .facturae-documents__pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .facturae-detail {
+    padding: 1rem;
+  }
+  .facturae-detail__grid {
+    grid-template-columns: 1fr;
+  }
+  .facturae-stats {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .facturae-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+  .facturae-dashboard__recent-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .facturae-dashboard__actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .facturae-documents__filters {
+    flex-wrap: wrap;
+  }
+  .facturae-documents__col-hide-mobile {
+    display: none;
+  }
+  .facturae-detail__grid {
+    grid-template-columns: 1fr;
+  }
+  .facturae-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .facturae-dashboard__action-card,
+  .facturae-doc-card,
+  .facturae-documents__table tbody tr,
+  .facturae-documents__filter-select,
+  .facturae-documents__filter-input,
+  .facturae-detail__action-btn {
+    transition: none;
+  }
+}

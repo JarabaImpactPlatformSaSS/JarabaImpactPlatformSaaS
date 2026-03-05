@@ -455,8 +455,8 @@ body.page-site-builder {
     }
 
     &--muted {
-        background: #f3f4f6;
-        color: #9ca3af;
+        background: var(--ej-gray-50, #f3f4f6);
+        color: var(--ej-gray-400-alt, #9ca3af);
     }
 }
 

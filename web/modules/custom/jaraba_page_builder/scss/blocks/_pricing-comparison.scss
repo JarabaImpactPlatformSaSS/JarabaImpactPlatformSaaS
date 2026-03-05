@@ -209,7 +209,7 @@
     background: linear-gradient(135deg,
         var(--ej-color-corporate, #233D63) 0%,
         var(--ej-color-impulse, #FF8C42) 100%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-radius-full, 9999px);
 }
 

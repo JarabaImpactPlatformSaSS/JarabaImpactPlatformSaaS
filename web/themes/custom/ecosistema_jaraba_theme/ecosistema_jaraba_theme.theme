@@ -2902,8 +2902,19 @@ function ecosistema_jaraba_theme_preprocess_page__auth(&$variables) {
       break;
 
     default:
-      // Para otras rutas, no renderizar contenido extra.
-      $form = NULL;
+      // Onboarding routes: extract system_main_block content from page.
+      if (str_starts_with($route, 'ecosistema_jaraba_core.onboarding.') ||
+          str_starts_with($route, 'jaraba_onboarding.')) {
+        if (isset($variables['page']['content'])) {
+          foreach ($variables['page']['content'] as $key => $element) {
+            if (is_array($element) && ($element['#plugin_id'] ?? '') === 'system_main_block') {
+              $form = $element;
+              break;
+            }
+          }
+        }
+        $form_type = 'register';
+      }
       break;
   }
   

@@ -1,0 +1,39 @@
+id: comercioconecta
+label: 'Onboarding ComercioConecta'
+vertical_id: comercioconecta
+headline: 'Digitaliza tu comercio de barrio'
+subheadline: 'Marketplace local, pedidos online, ofertas flash y visibilidad SEO para tu negocio.'
+benefits:
+  - icon_category: commerce
+    icon_name: store
+    text: 'Tienda online en el marketplace local'
+  - icon_category: commerce
+    icon_name: cart
+    text: 'Gestión de pedidos y pagos con Stripe'
+  - icon_category: marketing
+    icon_name: megaphone
+    text: 'Ofertas flash geolocalizadas'
+  - icon_category: ui
+    icon_name: qr-code
+    text: 'Códigos QR dinámicos con A/B testing'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Configura tu comercio'
+    description: 'Añade el logo, horarios y dirección de tu tienda.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-shop
+  - title: 'Añade tu primer producto'
+    description: 'Crea tu catálogo de productos para vender online.'
+    route: 'entity.product_retail.add_form'
+    route_params: {}
+    icon: bi-box-seam
+  - title: 'Conecta tu cuenta bancaria'
+    description: 'Configura Stripe para recibir pagos de tus clientes.'
+    route: 'ecosistema_jaraba_core.api.stripe.connect.onboard'
+    route_params: {}
+    icon: bi-credit-card
+connect_required: true
+post_onboarding_route: ''

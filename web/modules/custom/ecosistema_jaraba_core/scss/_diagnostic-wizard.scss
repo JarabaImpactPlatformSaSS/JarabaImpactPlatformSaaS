@@ -177,7 +177,7 @@ $wizard-radius: 12px;
     width: 100%;
     padding: 1rem 2rem;
     background: var(--ej-color-primary, #{$ej-color-primary-fallback});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -493,28 +493,28 @@ $wizard-radius: 12px;
 }
 
 .maturity-analogico {
-    background: #FEE2E2;
-    color: #991B1B;
+    background: var(--ej-color-red-50, #FEE2E2);
+    color: var(--ej-color-danger-deep, #991B1B);
 }
 
 .maturity-basico {
-    background: #FEF3C7;
-    color: #92400E;
+    background: var(--ej-color-amber-50, #FEF3C7);
+    color: var(--ej-color-warning-deep, #92400E);
 }
 
 .maturity-conectado {
-    background: #E0E7FF;
+    background: var(--ej-color-indigo-50, #E0E7FF);
     color: #3730A3;
 }
 
 .maturity-digitalizado {
-    background: #D1FAE5;
-    color: #065F46;
+    background: var(--ej-color-green-50, #D1FAE5);
+    color: var(--ej-color-green-deep, #065F46);
 }
 
 .maturity-inteligente {
-    background: #DBEAFE;
-    color: #1E40AF;
+    background: var(--ej-color-blue-50, #DBEAFE);
+    color: var(--ej-color-blue-deep, #1E40AF);
 }
 
 .loss-warning {
@@ -664,8 +664,8 @@ $wizard-radius: 12px;
 
 .rec-badge {
     padding: 0.25rem 0.5rem;
-    background: #FEE2E2;
-    color: #991B1B;
+    background: var(--ej-color-red-50, #FEE2E2);
+    color: var(--ej-color-danger-deep, #991B1B);
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -703,13 +703,13 @@ $wizard-radius: 12px;
     background: linear-gradient(135deg,
         var(--ej-color-primary, #{$ej-color-primary-fallback}) 0%,
         var(--ej-color-secondary, #{$ej-color-secondary-fallback}) 100%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: $wizard-radius;
     padding: 2rem;
     text-align: center;
 
     h3 {
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin-bottom: 1rem;
     }
 
@@ -719,7 +719,7 @@ $wizard-radius: 12px;
     }
 
     .btn-primary {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
         color: var(--ej-color-primary, #{$ej-color-primary-fallback});
         width: auto;
 
@@ -834,7 +834,7 @@ $wizard-radius: 12px;
 .radar-points {
     .data-point {
         fill: var(--ej-color-primary, #{$ej-color-primary-fallback});
-        stroke: #fff;
+        stroke: var(--ej-bg-surface, #fff);
         stroke-width: 2;
         opacity: 0;
         animation: pointFadeIn 0.5s ease forwards;
@@ -951,7 +951,7 @@ $wizard-radius: 12px;
     transform: translateX(-50%) translateY(100px);
     padding: 1rem 1.5rem;
     background: var(--ej-text-primary, #{$ej-color-text-fallback});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border-radius: 8px;
     font-weight: 500;
     box-shadow: var(--ej-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.2));
@@ -990,7 +990,7 @@ $wizard-radius: 12px;
         height: 20px;
         margin: -10px 0 0 -10px;
         border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #fff;
+        border-top-color: var(--ej-bg-surface, #fff);
         border-radius: 50%;
         animation: spin 0.6s linear infinite;
     }

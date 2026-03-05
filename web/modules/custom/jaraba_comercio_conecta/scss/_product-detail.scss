@@ -201,7 +201,7 @@
 
 .comercio-product-detail__discount-badge {
   background: $comercio-danger;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   padding: $space-xs $space-sm;
   border-radius: $radius-sm;
   font-size: 0.75rem;

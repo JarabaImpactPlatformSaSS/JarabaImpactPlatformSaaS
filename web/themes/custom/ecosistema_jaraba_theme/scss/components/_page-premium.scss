@@ -26,7 +26,7 @@
     &--clean {
         background: linear-gradient(180deg,
                 var(--ej-bg-body, #F8FAFC) 0%,
-                #fff 100%);
+                var(--ej-bg-surface, #fff) 100%);
     }
 
     // Variante premium (con efectos visuales mejorados)
@@ -159,19 +159,19 @@
         &--status {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #065F46;
+            color: var(--ej-color-green-deep, #065F46);
         }
 
         &--warning {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #92400E;
+            color: var(--ej-color-warning-deep, #92400E);
         }
 
         &--error {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #991B1B;
+            color: var(--ej-color-danger-deep, #991B1B);
         }
     }
 }
@@ -210,18 +210,18 @@
 
     // Variante con fondo alternativo
     &--alt {
-        background: #fff;
+        background: var(--ej-bg-surface, #fff);
     }
 
     // Variante con gradiente oscuro (como hero)
     &--dark {
         background: linear-gradient(135deg,
                 var(--ej-color-corporate, #233D63) 0%,
-                #1a2d4a 50%,
-                #0f1d30 100%);
+                var(--ej-dark-accent, #1a2d4a) 50%,
+                var(--ej-dark-deeper, #0f1d30) 100%);
 
         .section-premium__title {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
         }
 
         .section-premium__subtitle {

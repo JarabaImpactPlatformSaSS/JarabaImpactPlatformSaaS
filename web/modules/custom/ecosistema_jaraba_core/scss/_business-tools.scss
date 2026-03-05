@@ -207,7 +207,7 @@
 // ============================================
 
 .post-it {
-    background: #FFE082;
+    background: var(--ej-color-amber-material-200, #FFE082);
     padding: var(--ej-spacing-xs, 0.25rem) var(--ej-spacing-sm, 0.5rem);
     border-radius: var(--ej-radius-sm, 4px);
     font-size: 0.8rem;
@@ -510,7 +510,7 @@
         gap: 0.5rem;
         padding: 0.75rem 1.25rem;
         background: var(--ej-color-primary, #4F46E5);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border: none;
         border-radius: var(--ej-radius-md, 8px);
         font-weight: 600;
@@ -711,7 +711,7 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     background: var(--ej-color-impulse, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &--comercio {
         background: var(--ej-color-impulse, #FF8C42);
@@ -722,7 +722,7 @@
     }
 
     &--hosteleria {
-        background: #E11D48;
+        background: var(--ej-color-rose, #E11D48);
     }
 
     &--agro {
@@ -858,22 +858,22 @@
     color: var(--ej-text-muted, #64748b);
 
     &--idea {
-        background: #DBEAFE;
-        color: #1E40AF;
+        background: var(--ej-color-blue-50, #DBEAFE);
+        color: var(--ej-color-blue-deep, #1E40AF);
     }
 
     &--validacion {
-        background: #FEF3C7;
-        color: #92400E;
+        background: var(--ej-color-amber-50, #FEF3C7);
+        color: var(--ej-color-warning-deep, #92400E);
     }
 
     &--crecimiento {
-        background: #D1FAE5;
-        color: #065F46;
+        background: var(--ej-color-green-50, #D1FAE5);
+        color: var(--ej-color-green-deep, #065F46);
     }
 
     &--escalado {
-        background: #EDE9FE;
+        background: var(--ej-color-violet-50, #EDE9FE);
         color: #5B21B6;
     }
 }

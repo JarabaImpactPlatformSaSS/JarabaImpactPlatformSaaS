@@ -12,6 +12,8 @@
 @use 'sass:color';
 
 // ===== VARIABLES DEL DIAGNÓSTICO =====
+// Static hex values required for Sass compile-time functions (color.adjust, rgba).
+// CSS custom properties are applied directly in property values where needed.
 $diagnostic-primary: #FF8C42;
 $diagnostic-secondary: #00A9A5;
 $diagnostic-dark: #233D63;
@@ -24,7 +26,7 @@ $diagnostic-danger: #DC3545;
     max-width: 600px;
     margin: 0 auto;
     padding: 2rem;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background: linear-gradient(135deg, var(--ej-bg-surface, #ffffff) 0%, #f8f9fa 100%);
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 
@@ -57,7 +59,7 @@ $diagnostic-danger: #DC3545;
         }
 
         p {
-            color: #666;
+            color: var(--ej-gray-text, #666);
             font-size: 1rem;
         }
     }
@@ -129,7 +131,7 @@ $diagnostic-danger: #DC3545;
             align-items: center;
             padding: 1rem 1.25rem;
             background: white;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--ej-gray-divider, #e0e0e0);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -143,7 +145,7 @@ $diagnostic-danger: #DC3545;
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
-                background: #f0f0f0;
+                background: var(--ej-color-bg-subtle, #f0f0f0);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -167,7 +169,7 @@ $diagnostic-danger: #DC3545;
 
                 .option-subtitle {
                     font-size: 0.85rem;
-                    color: #666;
+                    color: var(--ej-gray-text, #666);
                 }
             }
         }
@@ -218,7 +220,7 @@ $diagnostic-danger: #DC3545;
 
         .progress-bar-bg {
             height: 8px;
-            background: #e0e0e0;
+            background: var(--ej-gray-divider, #e0e0e0);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -255,7 +257,7 @@ $diagnostic-danger: #DC3545;
         border-radius: 50%;
         background: conic-gradient(from 0deg,
                 var(--score-color, $diagnostic-primary) var(--score-percent, 0%),
-                #e0e0e0 var(--score-percent, 0%));
+                var(--ej-gray-divider, #e0e0e0) var(--score-percent, 0%));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -284,7 +286,7 @@ $diagnostic-danger: #DC3545;
 
             .result-score-max {
                 font-size: 1rem;
-                color: #666;
+                color: var(--ej-gray-text, #666);
             }
         }
     }
@@ -304,7 +306,7 @@ $diagnostic-danger: #DC3545;
 
         .card-label {
             font-size: 0.85rem;
-            color: #666;
+            color: var(--ej-gray-text, #666);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 0.5rem;
@@ -372,7 +374,7 @@ $diagnostic-danger: #DC3545;
             display: block;
             margin-top: 0.75rem;
             font-size: 0.9rem;
-            color: #666;
+            color: var(--ej-gray-text, #666);
         }
     }
 }

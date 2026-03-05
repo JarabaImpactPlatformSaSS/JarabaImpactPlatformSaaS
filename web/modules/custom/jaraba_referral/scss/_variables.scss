@@ -5,10 +5,10 @@
 
 // --- Colores ---
 $ref-primary: #6C63FF;
-$ref-success: #4CAF50;
-$ref-warning: #FF9800;
-$ref-error: #F44336;
-$ref-info: #2196F3;
+$ref-success: var(--ej-color-green-material, #4CAF50);
+$ref-warning: var(--ej-color-orange-material, #FF9800);
+$ref-error: var(--ej-color-red-material, #F44336);
+$ref-info: var(--ej-color-blue-material, #2196F3);
 
 // --- Espaciado ---
 $ref-space-xs: 0.25rem;
@@ -63,7 +63,7 @@ $ref-bp-xl: 1280px;
   justify-content: center;
   padding: $ref-space-sm $ref-space-lg;
   background: var(--ej-primary-color, $ref-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   border: none;
   border-radius: $ref-radius-sm;
   font-weight: 600;

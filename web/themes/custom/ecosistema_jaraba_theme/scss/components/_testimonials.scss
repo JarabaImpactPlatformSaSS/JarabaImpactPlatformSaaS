@@ -106,7 +106,7 @@
       var(--ej-naranja-impulso, #ff8c42) 0%,
       var(--ej-color-primary-accent, #e67e22) 100%
     );
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     display: flex;
     align-items: center;
     justify-content: center;

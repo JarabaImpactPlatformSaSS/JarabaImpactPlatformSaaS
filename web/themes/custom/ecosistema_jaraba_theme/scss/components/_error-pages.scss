@@ -109,7 +109,7 @@
 .error-page__search-btn {
   border: none;
   background: $ej-color-primary;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   padding: $ej-spacing-md $ej-spacing-lg;
   cursor: pointer;
   font-size: 1rem;
@@ -145,7 +145,7 @@
   gap: $ej-spacing-sm;
   padding: $ej-spacing-md $ej-spacing-xl;
   background: $ej-color-primary;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-weight: 600;
   font-size: 1rem;
   border: none;
@@ -157,7 +157,7 @@
   &:hover {
     transform: translateY(-1px);
     box-shadow: $ej-hover-shadow;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   &:focus-visible {

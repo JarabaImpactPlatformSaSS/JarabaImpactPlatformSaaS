@@ -5,35 +5,35 @@
 
 :root {
   // --- Colores base ---
-  --ej-templates-primary: #6366f1;
+  --ej-templates-primary: var(--ej-color-indigo, #6366f1);
   --ej-templates-primary-light: #{color-mix(in srgb, #6366f1 20%, white)};
-  --ej-templates-secondary: #8b5cf6;
-  --ej-templates-success: #10b981;
-  --ej-templates-warning: #f59e0b;
-  --ej-templates-info: #06b6d4;
-  --ej-templates-surface: #ffffff;
-  --ej-templates-surface-alt: #f8fafc;
-  --ej-templates-border: #e2e8f0;
+  --ej-templates-secondary: var(--ej-color-violet, #8b5cf6);
+  --ej-templates-success: var(--ej-color-success, #10b981);
+  --ej-templates-warning: var(--ej-color-warning, #f59e0b);
+  --ej-templates-info: var(--ej-color-cyan-light, #06b6d4);
+  --ej-templates-surface: var(--ej-bg-surface, #ffffff);
+  --ej-templates-surface-alt: var(--ej-bg-body, #f8fafc);
+  --ej-templates-border: var(--ej-gray-200, #e2e8f0);
 
   // --- Texto ---
-  --ej-templates-text: #1e293b;
-  --ej-templates-text-muted: #64748b;
+  --ej-templates-text: var(--ej-gray-800, #1e293b);
+  --ej-templates-text-muted: var(--ej-color-neutral, #64748b);
 
   // --- Espaciado ---
   --ej-templates-gap: 1rem;
   --ej-templates-radius: 0.5rem;
 
   // --- Estados de documento ---
-  --ej-templates-status-draft: #94a3b8;
-  --ej-templates-status-reviewing: #f59e0b;
-  --ej-templates-status-approved: #10b981;
-  --ej-templates-status-finalized: #6366f1;
+  --ej-templates-status-draft: var(--ej-gray-400, #94a3b8);
+  --ej-templates-status-reviewing: var(--ej-color-warning, #f59e0b);
+  --ej-templates-status-approved: var(--ej-color-success, #10b981);
+  --ej-templates-status-finalized: var(--ej-color-indigo, #6366f1);
 
   // --- Tipos de plantilla ---
-  --ej-templates-type-demanda: #ef4444;
-  --ej-templates-type-contestacion: #f97316;
-  --ej-templates-type-recurso: #eab308;
-  --ej-templates-type-contrato: #22c55e;
-  --ej-templates-type-escrito: #3b82f6;
-  --ej-templates-type-dictamen: #8b5cf6;
+  --ej-templates-type-demanda: var(--ej-color-danger, #ef4444);
+  --ej-templates-type-contestacion: var(--ej-color-orange, #f97316);
+  --ej-templates-type-recurso: var(--ej-color-yellow, #eab308);
+  --ej-templates-type-contrato: var(--ej-color-green-500, #22c55e);
+  --ej-templates-type-escrito: var(--ej-color-blue, #3b82f6);
+  --ej-templates-type-dictamen: var(--ej-color-violet, #8b5cf6);
 }

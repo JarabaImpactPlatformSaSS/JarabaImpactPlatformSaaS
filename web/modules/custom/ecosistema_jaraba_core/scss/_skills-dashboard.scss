@@ -407,12 +407,12 @@
 
 .skill-card__status--active {
     background: rgba(16, 185, 129, 0.1);
-    color: #059669;
+    color: var(--ej-color-success-dark, #059669);
 }
 
 .skill-card__status--inactive {
     background: rgba(239, 68, 68, 0.1);
-    color: #DC2626;
+    color: var(--ej-color-danger-dark, #DC2626);
 }
 
 .skill-card__preview {
@@ -647,7 +647,7 @@
     width: 2rem;
     height: 2rem;
     background: var(--ej-color-corporate, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 50%;
@@ -956,7 +956,7 @@
 
 .kpi-card--latency .kpi-card__icon {
     background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
+    color: var(--ej-color-blue, #3B82F6);
 }
 
 .kpi-card--success .kpi-card__icon {

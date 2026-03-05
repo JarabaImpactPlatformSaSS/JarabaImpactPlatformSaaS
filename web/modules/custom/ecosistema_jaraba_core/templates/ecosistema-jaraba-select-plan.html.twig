@@ -18,27 +18,8 @@
 #}
 
 <div class="ej-select-plan-page">
-  {# Progress indicator #}
-  <div class="ej-onboarding-progress">
-    <div class="ej-onboarding-progress__container">
-      <div class="ej-progress-step ej-progress-step--completed">
-        <span class="ej-progress-step__number">1</span>
-        <span class="ej-progress-step__label">{{ 'Registro'|t }}</span>
-      </div>
-      <div class="ej-progress-step ej-progress-step--active">
-        <span class="ej-progress-step__number">2</span>
-        <span class="ej-progress-step__label">{{ 'Seleccionar Plan'|t }}</span>
-      </div>
-      <div class="ej-progress-step">
-        <span class="ej-progress-step__number">3</span>
-        <span class="ej-progress-step__label">{{ 'Configurar Pago'|t }}</span>
-      </div>
-      <div class="ej-progress-step">
-        <span class="ej-progress-step__number">4</span>
-        <span class="ej-progress-step__label">{{ '¡Listo!'|t }}</span>
-      </div>
-    </div>
-  </div>
+  {# P1-03: Barra de progreso unificada #}
+  {% include '@ecosistema_jaraba_core/partials/_onboarding-progress.html.twig' with { onboarding_step: 2 } %}
 
   <main class="ej-select-plan-main">
     <div class="ej-select-plan-container">

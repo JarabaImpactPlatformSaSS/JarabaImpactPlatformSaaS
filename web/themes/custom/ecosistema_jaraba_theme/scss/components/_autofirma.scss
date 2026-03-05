@@ -12,7 +12,7 @@ $autofirma-primary: var(--ej-color-corporate, #233D63);
 $autofirma-success: var(--ej-color-success, #10B981);
 $autofirma-danger: var(--ej-color-danger, #EF4444);
 $autofirma-overlay-bg: rgba(0, 0, 0, 0.6);
-$autofirma-modal-bg: #ffffff;
+$autofirma-modal-bg: var(--ej-bg-surface, #ffffff);
 $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
 // ---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   background: linear-gradient(135deg, $autofirma-primary, color.adjust($autofirma-primary, $lightness: -10%));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
 
   h5 {
     margin: 0;
@@ -138,7 +138,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   gap: 0.5rem;
   padding: 0.625rem 1.25rem;
   background: linear-gradient(135deg, $autofirma-primary, color.adjust($autofirma-primary, $lightness: -8%));
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -371,7 +371,7 @@ $autofirma-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
       .count-badge {
         background: $autofirma-primary;
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         padding: 0.125rem 0.5rem;
         border-radius: 20px;
         font-size: 0.75rem;

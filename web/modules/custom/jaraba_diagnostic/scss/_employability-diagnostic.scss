@@ -75,7 +75,7 @@
     display: inline-flex;
     padding: 0.875rem 2rem;
     background: var(--ej-primary, #4F46E5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 0.5rem;
     font-size: 1.125rem;
@@ -226,7 +226,7 @@
   &__submit-btn {
     padding: 0.875rem;
     background: var(--ej-primary, #4F46E5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 0.5rem;
     font-size: 1rem;
@@ -381,7 +381,7 @@
     display: block;
     padding: 1rem;
     background: var(--ej-primary, #4F46E5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-align: center;
     border-radius: 0.5rem;
     font-weight: 600;
@@ -390,7 +390,7 @@
 
     &:hover {
       background: var(--ej-primary-dark, #4338CA);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -561,7 +561,7 @@
     display: block;
     padding: 1rem;
     background: var(--ej-primary, #4F46E5);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     text-align: center;
     border-radius: 0.5rem;
     font-weight: 600;
@@ -569,7 +569,7 @@
 
     &:hover {
       background: var(--ej-primary-dark, #4338CA);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 

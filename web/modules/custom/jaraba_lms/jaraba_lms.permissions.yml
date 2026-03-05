@@ -110,6 +110,11 @@ view course reviews:
   title: 'View course reviews'
   description: 'View approved course reviews'
 
+# --- Permisos de Instructor (P0-05) ---
+access lms courses:
+  title: 'Access LMS courses'
+  description: 'Basic access to LMS course content'
+
 submit course reviews:
   title: 'Submit course reviews'
   description: 'Create new reviews for enrolled courses'

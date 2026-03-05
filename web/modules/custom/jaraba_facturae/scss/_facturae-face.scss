@@ -69,7 +69,7 @@
   }
 
   &__anulacion {
-    color: var(--ej-fiscal-status-error, #{$fiscal-status-error-fallback});
+    color: var(--ej-fiscal-status-error, #{$fiscal-error-fallback});
     font-weight: 600;
   }
 }
@@ -269,7 +269,7 @@
 
     &--sign {
       background: var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback});
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: color-mix(in srgb, var(--ej-fiscal-cert-valid, #{$fiscal-cert-valid-fallback}) 85%, #000);
@@ -278,7 +278,7 @@
 
     &--send {
       background: var(--ej-fiscal-face, #{$fiscal-face-fallback});
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: color-mix(in srgb, var(--ej-fiscal-face, #{$fiscal-face-fallback}) 85%, #000);

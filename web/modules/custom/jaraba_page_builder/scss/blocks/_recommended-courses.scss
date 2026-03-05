@@ -204,7 +204,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        background: linear-gradient(135deg, var(--ej-gray-200, #e2e8f0) 0%, var(--ej-gray-300, #cbd5e1) 100%);
         color: var(--ej-text-muted, #94a3b8);
     }
 
@@ -219,17 +219,17 @@
         text-transform: uppercase;
 
         &--beginner {
-            background: #10b981;
+            background: var(--ej-color-success, #10b981);
             color: white;
         }
 
         &--intermediate {
-            background: #f59e0b;
+            background: var(--ej-color-warning, #f59e0b);
             color: white;
         }
 
         &--advanced {
-            background: #ef4444;
+            background: var(--ej-color-danger, #ef4444);
             color: white;
         }
     }

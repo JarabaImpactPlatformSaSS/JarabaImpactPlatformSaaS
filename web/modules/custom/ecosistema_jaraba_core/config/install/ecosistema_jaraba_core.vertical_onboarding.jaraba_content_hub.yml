@@ -1,0 +1,39 @@
+id: jaraba_content_hub
+label: 'Onboarding Content Hub'
+vertical_id: jaraba_content_hub
+headline: 'Tu hub de contenidos profesional'
+subheadline: 'Blog, artículos, newsletter y gestión editorial con IA para tu marca.'
+benefits:
+  - icon_category: content
+    icon_name: article
+    text: 'Editor de artículos profesional'
+  - icon_category: marketing
+    icon_name: megaphone
+    text: 'SEO automático con IA'
+  - icon_category: social
+    icon_name: share
+    text: 'Distribución multi-canal'
+  - icon_category: social
+    icon_name: chat
+    text: 'Escritor de contenido con IA'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Configura tu marca editorial'
+    description: 'Define el estilo y tono de tu contenido.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-palette
+  - title: 'Escribe tu primer artículo'
+    description: 'Crea contenido profesional con ayuda de IA.'
+    route: 'entity.content_article.add_form'
+    route_params: {}
+    icon: bi-pencil-square
+  - title: 'Configura categorías'
+    description: 'Organiza tu contenido por temáticas.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-tags
+connect_required: false
+post_onboarding_route: ''

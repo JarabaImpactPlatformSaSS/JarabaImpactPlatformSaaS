@@ -9,7 +9,7 @@
     background: linear-gradient(135deg, var(--ej-color-corporate, $azul-corporativo), color.scale($azul-corporativo, $lightness: 20%));
     padding: 4rem 1.5rem 3rem;
     text-align: center;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &__container {
         max-width: $sc-container-max;
@@ -77,7 +77,7 @@
         }
 
         &--active {
-            color: #fff;
+            color: var(--ej-bg-surface, #fff);
             background: var(--ej-color-corporate, $azul-corporativo);
             border-color: var(--ej-color-corporate, $azul-corporativo);
         }
@@ -141,7 +141,7 @@
 
     .pager__item--active span {
         background: var(--ej-color-corporate, $azul-corporativo);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border-color: var(--ej-color-corporate, $azul-corporativo);
     }
 }

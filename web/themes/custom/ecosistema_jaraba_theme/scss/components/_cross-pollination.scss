@@ -80,12 +80,12 @@
     }
 
     // Accent colors per vertical
-    &--empleabilidad { &:hover { border-color: #0ea5e9; } .cross-pollination__icon { color: #0ea5e9; } }
-    &--emprendimiento { &:hover { border-color: #f59e0b; } .cross-pollination__icon { color: #f59e0b; } }
-    &--agroconecta { &:hover { border-color: #10b981; } .cross-pollination__icon { color: #10b981; } }
-    &--comercioconecta { &:hover { border-color: #8b5cf6; } .cross-pollination__icon { color: #8b5cf6; } }
-    &--servicios { &:hover { border-color: #ec4899; } .cross-pollination__icon { color: #ec4899; } }
-    &--jarabalex { &:hover { border-color: #f97316; } .cross-pollination__icon { color: #f97316; } }
+    &--empleabilidad { &:hover { border-color: var(--ej-color-sky, #0ea5e9); } .cross-pollination__icon { color: var(--ej-color-sky, #0ea5e9); } }
+    &--emprendimiento { &:hover { border-color: var(--ej-color-warning, #f59e0b); } .cross-pollination__icon { color: var(--ej-color-warning, #f59e0b); } }
+    &--agroconecta { &:hover { border-color: var(--ej-color-success, #10b981); } .cross-pollination__icon { color: var(--ej-color-success, #10b981); } }
+    &--comercioconecta { &:hover { border-color: var(--ej-color-violet, #8b5cf6); } .cross-pollination__icon { color: var(--ej-color-violet, #8b5cf6); } }
+    &--servicios { &:hover { border-color: var(--ej-color-pink, #ec4899); } .cross-pollination__icon { color: var(--ej-color-pink, #ec4899); } }
+    &--jarabalex { &:hover { border-color: var(--ej-color-orange, #f97316); } .cross-pollination__icon { color: var(--ej-color-orange, #f97316); } }
   }
 
   &__icon {

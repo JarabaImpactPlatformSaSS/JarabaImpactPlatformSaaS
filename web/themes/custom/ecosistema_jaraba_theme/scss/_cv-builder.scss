@@ -174,13 +174,13 @@
 
     &:hover {
         background: var(--ej-color-corporate, #0097A7);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
     }
 }
 
 .cv-template-card__download {
     background: var(--ej-color-corporate, #0097A7);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover {
         background: var(--ej-color-corporate-dark, #00838f);

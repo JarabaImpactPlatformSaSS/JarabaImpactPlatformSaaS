@@ -133,6 +133,43 @@ jaraba_lms.api.recommend_paths:
     _permission: 'view learning paths'
   methods: [GET]
 
+# --- Rutas de Instructor (P0-05) ---
+jaraba_lms.instructor.courses:
+  path: '/mis-cursos'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::courses'
+    _title: 'Mis Cursos'
+  requirements:
+    _permission: 'edit own courses'
+
+jaraba_lms.instructor.lessons:
+  path: '/mis-cursos/{course_id}/lecciones'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::lessons'
+    _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::lessonsTitle'
+  requirements:
+    _permission: 'edit own courses'
+    course_id: '\d+'
+
+jaraba_lms.instructor.students:
+  path: '/mis-cursos/{course_id}/alumnos'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::students'
+    _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::studentsTitle'
+  requirements:
+    _permission: 'view learner progress'
+    course_id: '\d+'
+
+# P2-08: Analytics instructor.
+jaraba_lms.instructor.analytics:
+  path: '/mis-cursos/{course_id}/analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::courseAnalytics'
+    _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::analyticsTitle'
+  requirements:
+    _permission: 'view learner progress'
+    course_id: '\d+'
+
 # --- Rutas de Administración ---
 # Settings en /admin/config (no content entities)
 jaraba_lms.settings:

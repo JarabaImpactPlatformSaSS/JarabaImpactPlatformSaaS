@@ -284,7 +284,7 @@ form.candidate-profile-form {
             font-family: var(--ej-font-family, 'Outfit', sans-serif);
             font-size: 1rem;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--ej-bg-surface, #ffffff);
             background: linear-gradient(135deg,
                 var(--ej-color-impulse, #{$ej-color-impulse}),
                 #{color.scale($ej-color-impulse, $lightness: -15%)});
@@ -361,7 +361,7 @@ form.candidate-profile-form {
     border-radius: var(--ej-border-radius, #{$ej-border-radius});
     padding: var(--ej-spacing-2xl, #{$ej-spacing-2xl}) var(--ej-spacing-xl, #{$ej-spacing-xl});
     margin-bottom: var(--ej-spacing-xl, #{$ej-spacing-xl});
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     h1 {
         font-family: var(--ej-font-family, 'Outfit', sans-serif);
@@ -519,7 +519,7 @@ form.candidate-profile-form {
     }
 
     .cv-template-card__download {
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         background: linear-gradient(135deg,
             var(--ej-color-impulse, #{$ej-color-impulse}),
             #{color.scale($ej-color-impulse, $lightness: -15%)});

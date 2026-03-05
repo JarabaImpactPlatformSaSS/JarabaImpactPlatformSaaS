@@ -24,7 +24,7 @@
     padding: 2px 8px;
     border-radius: var(--ej-radius-sm, 4px);
     background: var(--ej-primary, #233D63);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-size: var(--ej-font-size-xs, 0.75rem);
     font-weight: var(--ej-font-weight-medium, 500);
   }
@@ -61,7 +61,7 @@
     code {
       font-family: 'JetBrains Mono', 'Fira Code', monospace;
       font-size: var(--ej-font-size-xs, 0.75rem);
-      color: #e5e7eb;
+      color: var(--ej-border-color, #e5e7eb);
       line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-all;
@@ -115,7 +115,7 @@
 
     &--default {
       background: var(--ej-primary, #233D63);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 

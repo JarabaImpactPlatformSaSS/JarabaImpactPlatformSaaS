@@ -119,7 +119,7 @@
 
   &--primary {
     background-color: var(--ej-color-impulse, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover {
       background-color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, #000);

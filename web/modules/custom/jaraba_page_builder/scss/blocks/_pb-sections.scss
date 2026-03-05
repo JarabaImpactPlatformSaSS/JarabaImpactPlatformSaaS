@@ -182,7 +182,7 @@
 }
 
 .pb-section--emprendimiento {
-  --ej-pb-accent: #8B5CF6;
+  --ej-pb-accent: var(--ej-color-violet, #8B5CF6);
 }
 
 .pb-section--andalucia_ei {
@@ -1034,11 +1034,11 @@
 // Orange accent, institutional feel, CTA orange variant
 // ============================================================================
 .pb-section--andalucia_ei {
-  --ej-pb-accent: #FF8C42;
+  --ej-pb-accent: var(--ej-color-impulse, #FF8C42);
   --ej-pb-accent-light: rgba(255, 140, 66, 0.08);
 
   .pb-section__cta--orange {
-    background: linear-gradient(135deg, #FF8C42 0%, #E67332 100%);
+    background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42) 0%, #E67332 100%);
     color: white;
     border: none;
 
@@ -1050,7 +1050,7 @@
   }
 
   .pb-section__eyebrow {
-    color: #FF8C42;
+    color: var(--ej-color-impulse, #FF8C42);
     border-color: rgba(255, 140, 66, 0.3);
   }
 

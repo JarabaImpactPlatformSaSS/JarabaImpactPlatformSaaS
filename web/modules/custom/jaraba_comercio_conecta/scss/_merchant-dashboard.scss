@@ -11,7 +11,7 @@
 .comercio-merchant-dashboard {
   &__header {
     background: linear-gradient(135deg, var(--ej-color-primary, $comercio-primary), var(--ej-color-primary, color.scale($comercio-primary, $lightness: -15%)));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     padding: $space-xl $space-md;
   }
 

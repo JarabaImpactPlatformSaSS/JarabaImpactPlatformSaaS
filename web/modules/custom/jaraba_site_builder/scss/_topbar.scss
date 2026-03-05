@@ -5,7 +5,7 @@
 
 .jaraba-topbar {
   background: var(--topbar-bg, #1E3A5F);
-  color: var(--topbar-text, #FFFFFF);
+  color: var(--topbar-text, var(--ej-bg-surface, #FFFFFF));
   font-size: var(--ej-font-size-xs, 0.75rem);
   line-height: 1.5;
   position: relative;

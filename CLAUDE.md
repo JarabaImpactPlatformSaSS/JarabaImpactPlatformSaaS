@@ -118,6 +118,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - SCSS-ENTRY-CONSOLIDATION-001: Si existen name.scss y _name.scss en mismo directorio, Dart Sass falla. Consolidar en entry point
 - SCSS-COMPILE-VERIFY-001 (P0): Tras CADA edicion .scss, SIEMPRE recompilar y verificar timestamp CSS > SCSS
 - SCSS-COLORMIX-001: Migrar rgba() a color-mix(in srgb, {token} {pct}%, transparent)
+- SCSS-COMPILETIME-001: Variables SCSS que alimentan color.scale/adjust/change DEBEN ser hex estatico, NUNCA var(). Para runtime alpha usar color-mix()
 - SCSS-001: @use crea scope aislado. Cada parcial DEBE incluir `@use '../variables' as *;`
 - Huerfanos: scripts/check-scss-orphans.js detecta parciales sin @use en main.scss (bloquea build)
 - Compilacion: `npm run build` desde web/themes/custom/ecosistema_jaraba_theme/
@@ -234,11 +235,11 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v111.0.0
-- ARQUITECTURA: v100.0.0
-- INDICE: v140.0.0
-- FLUJO: v64.0.0
-- Ultimo aprendizaje: #161
+- DIRECTRICES: v114.0.0
+- ARQUITECTURA: v103.0.0
+- INDICE: v143.0.0
+- FLUJO: v67.0.0
+- Ultimo aprendizaje: #164
 - Ultima golden rule: #103
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION

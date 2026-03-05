@@ -1,0 +1,120 @@
+{#
+/**
+ * @file
+ * Template: Listado de alumnos de un curso del instructor.
+ *
+ * DIRECTRIZ: Template limpia sin page.content (zero-region pattern).
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ * URLs: path() (ROUTE-LANGPREFIX-001, NUNCA hardcoded).
+ *
+ * Variables:
+ *   - course: Array con id, title, is_published.
+ *   - students: Array con enrollment_id, user_id, user_name, user_email,
+ *               status, progress, enrollment_type, enrolled_date.
+ *   - total: Total de alumnos.
+ */
+#}
+
+<div class="lms-instructor" role="main" aria-label="{% trans %}Alumnos del curso{% endtrans %}">
+  <header class="lms-instructor__header container">
+    <div class="lms-instructor__header-inner">
+      <nav class="lms-instructor__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+        <a href="{{ path('jaraba_lms.instructor.courses') }}">{% trans %}Mis Cursos{% endtrans %}</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ course.title }}</span>
+      </nav>
+      <h1>{% trans %}Alumnos{% endtrans %}</h1>
+      <p class="lms-instructor__count">{{ total }} {% trans %}alumnos{% endtrans %}</p>
+    </div>
+    <div class="lms-instructor__header-actions">
+      <a href="{{ path('jaraba_lms.instructor.lessons', {'course_id': course.id}) }}"
+         class="lms-btn lms-btn--outline">
+        {% trans %}Ver Lecciones{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {% if students|length > 0 %}
+    <div class="lms-table-responsive container">
+      <table class="lms-table lms-table--students">
+        <thead>
+          <tr>
+            <th>{% trans %}Alumno{% endtrans %}</th>
+            <th>{% trans %}Progreso{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Tipo{% endtrans %}</th>
+            <th>{% trans %}Fecha inscripción{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+            <tr>
+              <td class="lms-table__cell--student">
+                <div class="lms-table__student-info">
+                  <span class="lms-table__student-name">{{ student.user_name }}</span>
+                  {% if student.user_email %}
+                    <span class="lms-table__student-email">{{ student.user_email }}</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td>
+                <div class="lms-progress" title="{{ student.progress }}%">
+                  <div class="lms-progress__bar">
+                    <div class="lms-progress__fill" style="width: {{ student.progress }}%"></div>
+                  </div>
+                  <span class="lms-progress__text">{{ student.progress }}%</span>
+                </div>
+              </td>
+              <td>
+                {% if student.status == 'active' %}
+                  <span class="lms-status lms-status--active">{% trans %}Activo{% endtrans %}</span>
+                {% elseif student.status == 'completed' %}
+                  <span class="lms-status lms-status--completed">{% trans %}Completado{% endtrans %}</span>
+                {% elseif student.status == 'expired' %}
+                  <span class="lms-status lms-status--expired">{% trans %}Expirado{% endtrans %}</span>
+                {% elseif student.status == 'cancelled' %}
+                  <span class="lms-status lms-status--cancelled">{% trans %}Cancelado{% endtrans %}</span>
+                {% elseif student.status == 'suspended' %}
+                  <span class="lms-status lms-status--suspended">{% trans %}Suspendido{% endtrans %}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if student.enrollment_type == 'free' %}
+                  {% trans %}Gratuito{% endtrans %}
+                {% elseif student.enrollment_type == 'paid' %}
+                  {% trans %}Pago{% endtrans %}
+                {% elseif student.enrollment_type == 'grant' %}
+                  {% trans %}Beca{% endtrans %}
+                {% elseif student.enrollment_type == 'scholarship' %}
+                  {% trans %}Subvención{% endtrans %}
+                {% elseif student.enrollment_type == 'bulk' %}
+                  {% trans %}Grupo{% endtrans %}
+                {% endif %}
+              </td>
+              <td>
+                {% if student.enrolled_date %}
+                  {{ student.enrolled_date|date('d/m/Y') }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lms-empty-state container">
+      <div class="lms-empty-state__icon">
+        {{ jaraba_icon('social', 'users', { variant: 'duotone', size: '64px', color: 'verde-innovacion' }) }}
+      </div>
+      <h3 class="lms-empty-state__title">{% trans %}Aún no hay alumnos inscritos{% endtrans %}</h3>
+      <p class="lms-empty-state__text">
+        {% trans %}Cuando los alumnos se inscriban en tu curso, podrás ver su progreso aquí.{% endtrans %}
+      </p>
+      <a href="{{ path('jaraba_lms.instructor.courses') }}" class="lms-btn lms-btn--outline">
+        {% trans %}Volver a Mis Cursos{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</div>

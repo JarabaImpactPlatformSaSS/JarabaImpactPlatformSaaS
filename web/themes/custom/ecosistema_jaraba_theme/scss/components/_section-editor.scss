@@ -250,7 +250,7 @@
         }
 
         &--visibility:hover {
-            color: #f59e0b;
+            color: var(--ej-color-warning, #f59e0b);
         }
 
         &--delete:hover {
@@ -330,7 +330,7 @@
         right: 0.5rem;
         padding: 0.125rem 0.375rem;
         background: linear-gradient(135deg, var(--ej-color-warning, #F59E0B), color-mix(in srgb, var(--ej-color-warning, #F59E0B) 75%, black));
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         font-size: 0.5625rem;
         font-weight: 700;
         border-radius: var(--ej-radius-sm, 4px);

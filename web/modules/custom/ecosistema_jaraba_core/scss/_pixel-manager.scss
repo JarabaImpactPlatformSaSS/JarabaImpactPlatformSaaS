@@ -271,18 +271,18 @@
     &--google {
         background: $white;
         border: $ej-border-width solid var(--ej-border-color, #{$border-color});
-        color: #4285F4;
+        color: var(--ej-brand-google-blue, #4285F4);
         box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
     }
 
     &--linkedin {
-        background: linear-gradient(135deg, #0A66C2 0%, #0077B5 100%);
+        background: linear-gradient(135deg, var(--ej-brand-linkedin-alt, #0A66C2) 0%, var(--ej-brand-linkedin, #0077B5) 100%);
         color: $white;
         box-shadow: 0 4px 16px rgba(10, 102, 194, 0.35);
     }
 
     &--tiktok {
-        background: linear-gradient(135deg, #000000 0%, #25232F 100%);
+        background: linear-gradient(135deg, var(--ej-color-black, #000000) 0%, #25232F 100%);
         color: $white;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
     }

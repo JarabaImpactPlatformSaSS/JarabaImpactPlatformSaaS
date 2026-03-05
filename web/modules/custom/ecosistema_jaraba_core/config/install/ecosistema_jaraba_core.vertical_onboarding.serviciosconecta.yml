@@ -1,0 +1,39 @@
+id: serviciosconecta
+label: 'Onboarding ServiciosConecta'
+vertical_id: serviciosconecta
+headline: 'Digitaliza tu negocio de servicios'
+subheadline: 'Reservas online, presupuestador IA, reseñas verificadas y visibilidad local.'
+benefits:
+  - icon_category: services
+    icon_name: calendar
+    text: 'Sistema de reservas online'
+  - icon_category: business
+    icon_name: calculator
+    text: 'Presupuestador IA automático'
+  - icon_category: social
+    icon_name: star
+    text: 'Reseñas verificadas de clientes'
+  - icon_category: social
+    icon_name: chat
+    text: 'Copiloto IA para profesionales'
+  - icon_category: ui
+    icon_name: star
+    text: '14 días de prueba gratuita'
+next_steps:
+  - title: 'Configura tu perfil profesional'
+    description: 'Añade tus servicios, horarios y zona de cobertura.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-person-badge
+  - title: 'Crea tus paquetes de servicios'
+    description: 'Define los servicios que ofreces y sus precios.'
+    route: 'entity.tenant.edit_form'
+    route_params: {}
+    icon: bi-box-seam
+  - title: 'Conecta tu cuenta bancaria'
+    description: 'Configura Stripe para recibir pagos de tus clientes.'
+    route: 'ecosistema_jaraba_core.api.stripe.connect.onboard'
+    route_params: {}
+    icon: bi-credit-card
+connect_required: true
+post_onboarding_route: ''

@@ -112,7 +112,7 @@
   &__submit {
     padding: $legal-spacing-md $legal-spacing-xl;
     background: var(--ej-color-primary, #FF8C42);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -383,7 +383,7 @@
 
     &--medium {
       background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
+      color: var(--ej-color-blue, #3b82f6);
     }
 
     &--low,

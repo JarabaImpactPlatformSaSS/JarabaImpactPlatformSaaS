@@ -153,7 +153,7 @@
   }
 
   &.is-active {
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
     border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
     box-shadow: 0 2px 8px color.adjust($ej-color-impulse-fallback, $alpha: -0.6);
@@ -338,7 +338,7 @@
       left: 2px;
       width: 20px;
       height: 20px;
-      background: #fff;
+      background: var(--ej-bg-surface, #fff);
       border-radius: 50%;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       transition: transform $ej-transition-duration-fast $ej-transition-easing-bounce;
@@ -470,7 +470,7 @@
     font-family: var(--ej-font-family, #{$ej-font-family-fallback});
     font-size: $ej-font-size-md;
     font-weight: $ej-font-weight-semibold;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
     border: none;
     border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});

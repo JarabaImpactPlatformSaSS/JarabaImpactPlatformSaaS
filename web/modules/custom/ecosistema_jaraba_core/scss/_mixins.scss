@@ -145,7 +145,7 @@
 @mixin button-primary {
     @include button-base;
     background-color: var(--ej-color-primary);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     &:hover:not(:disabled) {
         background-color: var(--ej-color-primary-hover);
@@ -167,7 +167,7 @@
 
     &:hover:not(:disabled) {
         background-color: var(--ej-color-primary);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
     }
 }
 

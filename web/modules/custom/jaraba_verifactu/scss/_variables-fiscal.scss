@@ -20,21 +20,21 @@
 $fiscal-aeat-fallback: #1A365D !default;
 $fiscal-aeat-light-fallback: #EBF4FF !default;
 $fiscal-face-fallback: #553C9A !default;
-$fiscal-face-light-fallback: #FAF5FF !default;
+$fiscal-face-light-fallback: var(--ej-color-purple-50, #FAF5FF) !default;
 $fiscal-b2b-fallback: #276749 !default;
 $fiscal-b2b-light-fallback: #F0FFF4 !default;
 
-$fiscal-accepted-fallback: #10B981 !default;
-$fiscal-pending-fallback: #F59E0B !default;
-$fiscal-rejected-fallback: #EF4444 !default;
-$fiscal-error-fallback: #DC2626 !default;
+$fiscal-accepted-fallback: var(--ej-color-success, #10B981) !default;
+$fiscal-pending-fallback: var(--ej-color-warning, #F59E0B) !default;
+$fiscal-rejected-fallback: var(--ej-color-danger, #EF4444) !default;
+$fiscal-error-fallback: var(--ej-color-danger-dark, #DC2626) !default;
 
-$fiscal-cert-warning-fallback: #D97706 !default;
-$fiscal-cert-expired-fallback: #B91C1C !default;
-$fiscal-cert-valid-fallback: #059669 !default;
+$fiscal-cert-warning-fallback: var(--ej-color-warning-dark, #D97706) !default;
+$fiscal-cert-expired-fallback: var(--ej-color-red-700, #B91C1C) !default;
+$fiscal-cert-valid-fallback: var(--ej-color-success-dark, #059669) !default;
 
-$fiscal-chain-valid-fallback: #0891B2 !default;
-$fiscal-chain-broken-fallback: #DC2626 !default;
+$fiscal-chain-valid-fallback: var(--ej-color-cyan, #0891B2) !default;
+$fiscal-chain-broken-fallback: var(--ej-color-danger-dark, #DC2626) !default;
 
 $fiscal-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
 

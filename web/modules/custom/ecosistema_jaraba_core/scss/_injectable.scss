@@ -64,8 +64,8 @@
 
     // Fondos
     --ej-bg-page: linear-gradient(135deg, #{$ej-gray-50} 0%, #{$ej-gray-200} 100%);
-    --ej-bg-card: #ffffff;
-    --ej-bg-input: #ffffff;
+    --ej-bg-card: var(--ej-bg-surface, #ffffff);
+    --ej-bg-input: var(--ej-bg-surface, #ffffff);
 
     // Bordes
     --ej-border-color: #{$ej-gray-300};

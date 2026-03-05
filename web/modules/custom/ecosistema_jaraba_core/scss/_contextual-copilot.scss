@@ -111,7 +111,7 @@
     background: linear-gradient(135deg,
         var(--ej-color-corporate, #{$ej-color-corporate-fallback}),
         var(--ej-color-azul-profundo, #{$ej-color-azul-profundo-fallback}));
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     min-height: 72px;
 }
 
@@ -155,7 +155,7 @@
     .status-dot {
         width: 8px;
         height: 8px;
-        background: #10b981;
+        background: var(--ej-color-success, #10b981);
         border-radius: 50%;
         animation: status-pulse 2s infinite;
     }
@@ -182,7 +182,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: none;
     border-radius: 50%;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     cursor: pointer;
     opacity: 0.8;
     transition: all 0.2s;
@@ -306,7 +306,7 @@
 
     .chat-message--user & {
         background: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         border-bottom-right-radius: 4px;
     }
 
@@ -382,13 +382,13 @@
 
     &:hover {
         background: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
     }
 
     // Variante enlace directo — fondo sólido, destaca como CTA.
     &--link {
         background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
         font-weight: 600;
 
@@ -482,7 +482,7 @@
     border-radius: 50%;
     background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
     border: none;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     cursor: pointer;
     display: flex;
     align-items: center;

@@ -11,17 +11,17 @@
  */
 
 .jaraba-footer {
-  background: var(--footer-bg, #1E293B);
-  color: var(--footer-text, #94A3B8);
+  background: var(--footer-bg, var(--ej-gray-800, #1E293B));
+  color: var(--footer-text, var(--ej-gray-400, #94A3B8));
   padding: var(--ej-spacing-2xl, 48px) 0 var(--ej-spacing-lg, 24px);
 
   a {
-    color: var(--footer-text, #94A3B8);
+    color: var(--footer-text, var(--ej-gray-400, #94A3B8));
     text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
-      color: var(--footer-accent, #3B82F6);
+      color: var(--footer-accent, var(--ej-color-blue, #3B82F6));
     }
   }
 
@@ -46,7 +46,7 @@
   &__cta-title {
     font-size: var(--ej-font-size-2xl, 1.75rem);
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     margin: 0 0 var(--ej-spacing-sm, 8px);
   }
 
@@ -59,8 +59,8 @@
   &__cta-btn {
     display: inline-block;
     padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-xl, 32px);
-    background: var(--footer-accent, #3B82F6);
-    color: #FFFFFF !important;
+    background: var(--footer-accent, var(--ej-color-blue, #3B82F6));
+    color: var(--ej-bg-surface, #FFFFFF) !important;
     border-radius: var(--ej-radius-md, 6px);
     font-weight: 600;
 
@@ -99,7 +99,7 @@
     display: block;
     font-size: var(--ej-font-size-lg, 1.25rem);
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     margin-bottom: var(--ej-spacing-md, 16px);
   }
 
@@ -123,7 +123,7 @@
   &__column-title {
     font-size: var(--ej-font-size-sm, 0.875rem);
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 var(--ej-spacing-md, 16px);
@@ -156,7 +156,7 @@
   &__newsletter-title {
     font-size: var(--ej-font-size-sm, 0.875rem);
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     margin: 0 0 var(--ej-spacing-sm, 12px);
   }
 
@@ -171,7 +171,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--ej-radius-md, 6px);
-    color: #FFFFFF;
+    color: var(--ej-bg-surface, #FFFFFF);
     font-size: var(--ej-font-size-sm, 0.875rem);
 
     &::placeholder {
@@ -180,14 +180,14 @@
 
     &:focus {
       outline: none;
-      border-color: var(--footer-accent, #3B82F6);
+      border-color: var(--footer-accent, var(--ej-color-blue, #3B82F6));
     }
   }
 
   &__newsletter-btn {
     padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
-    background: var(--footer-accent, #3B82F6);
-    color: #FFFFFF;
+    background: var(--footer-accent, var(--ej-color-blue, #3B82F6));
+    color: var(--ej-bg-surface, #FFFFFF);
     border: none;
     border-radius: var(--ej-radius-md, 6px);
     font-size: var(--ej-font-size-sm, 0.875rem);
@@ -231,8 +231,8 @@
     transition: background-color 0.2s ease;
 
     &:hover {
-      background: var(--footer-accent, #3B82F6);
-      color: #FFFFFF !important;
+      background: var(--footer-accent, var(--ej-color-blue, #3B82F6));
+      color: var(--ej-bg-surface, #FFFFFF) !important;
     }
   }
 

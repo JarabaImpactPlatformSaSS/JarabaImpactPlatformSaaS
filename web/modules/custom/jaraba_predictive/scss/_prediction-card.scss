@@ -179,15 +179,15 @@
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
     &--engagement {
-      background: linear-gradient(90deg, #818CF8, #6366F1);
+      background: linear-gradient(90deg, #818CF8, var(--ej-color-indigo, #6366F1));
     }
 
     &--activation {
-      background: linear-gradient(90deg, #34D399, #059669);
+      background: linear-gradient(90deg, #34D399, var(--ej-color-success-dark, #059669));
     }
 
     &--intent {
-      background: linear-gradient(90deg, #FBBF24, #D97706);
+      background: linear-gradient(90deg, #FBBF24, var(--ej-color-warning-dark, #D97706));
     }
   }
 

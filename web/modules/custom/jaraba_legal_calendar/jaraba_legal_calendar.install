@@ -62,3 +62,90 @@ function jaraba_legal_calendar_install(): void {
 
   \Drupal::messenger()->addStatus(t('Se han creado @count reglas de computo de plazos.', ['@count' => count($rules)]));
 }
+
+/**
+ * Install entity types: calendar_connection, court_hearing, external_event_cache, legal_deadline, synced_calendar.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Ensure all entity type definitions are installed.
+ */
+function jaraba_legal_calendar_update_10001(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $entityTypes = [
+    'calendar_connection',
+    'court_hearing',
+    'external_event_cache',
+    'legal_deadline',
+    'synced_calendar',
+  ];
+
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $messages[] = "Installed entity type: $entityTypeId.";
+        }
+        else {
+          $messages[] = "Definition not found: $entityTypeId.";
+        }
+      }
+      else {
+        $messages[] = "Already installed: $entityTypeId.";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error installing $entityTypeId: " . $e->getMessage();
+    }
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_legal_calendar_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = [
+    'calendar_connection',
+    'court_hearing',
+    'external_event_cache',
+    'legal_deadline',
+    'synced_calendar',
+  ];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_legal_calendar_entities'] = [
+      'title' => t('Jaraba legal calendar: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_legal_calendar_entities'] = [
+      'title' => t('Jaraba legal calendar: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

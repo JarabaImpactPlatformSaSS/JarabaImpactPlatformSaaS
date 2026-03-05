@@ -12,22 +12,46 @@
  * 3. Semántica HTML5: article, header, section para contexto
  * 4. SSR completo: Todo el contenido server-rendered (no JS)
  *
+ * Variables disponibles (de Commerce preprocess + jaraba_commerce):
+ * - product_entity: La entidad Commerce Product completa.
+ * - product: Array de campos renderizados (render arrays, NO la entidad).
+ * - product_url: URL del producto.
+ * - price_currency, price_number, price_formatted: Del preprocess.
+ * - store_name: Nombre de la tienda.
+ * - rating, review_count: Valoraciones agregadas.
+ *
+ * TWIG-ENTITY-METHOD-001: Usar product_entity.getTitle(), product_entity.isPublished(),
+ * product_entity.get('field').value — NUNCA product.title.value (es render array).
+ *
  * @see https://www.perplexity.ai/hub/blog/pplx-ranking-factors
  */
 #}
 
-{# Answer Capsule - Primeros 150 caracteres optimizados para LLMs #}
-{% set ai_summary = product.field_ai_summary.value|default(product.title.value ~ ' - Producto premium disponible en Jaraba Impact Platform.') %}
+{# Extraer valores seguros de la entidad Commerce Product #}
+{% set product_title = product_entity.getTitle() %}
+{% set product_published = product_entity.isPublished() %}
+{% set ai_summary_raw = product_entity.get('field_ai_summary').value|default('') %}
+{% set ai_summary = ai_summary_raw ? ai_summary_raw : (product_title ~ ' - ' ~ 'Producto premium disponible en Jaraba Impact Platform.'|trans) %}
+
+{# Imagen: resolver URI desde la entidad, no desde render array #}
+{% set has_images = product_entity.hasField('field_images') and not product_entity.get('field_images').isEmpty() %}
+{% if has_images %}
+  {% set image_entity = product_entity.get('field_images').entity %}
+  {% set image_url = file_url(image_entity.getFileUri()) %}
+{% endif %}
+
+{# Body: acceder al valor del campo desde la entidad #}
+{% set body_value = product_entity.hasField('body') and not product_entity.get('body').isEmpty() ? product_entity.get('body').value : '' %}
 
 {# Schema.org JSON-LD para máxima indexación #}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "{{ product.title.value|e('js') }}",
-  "description": "{{ ai_summary|striptags|slice(0, 500)|e('js') }}",
-  {% if product.field_images.entity %}
-  "image": "{{ file_url(product.field_images.entity.uri.value) }}",
+  "name": {{ product_title|json_encode|raw }},
+  "description": {{ ai_summary|striptags|slice(0, 500)|json_encode|raw }},
+  {% if has_images and image_url %}
+  "image": {{ image_url|json_encode|raw }},
   {% endif %}
   "brand": {
     "@type": "Brand",
@@ -35,12 +59,12 @@
   },
   "offers": {
     "@type": "Offer",
-    "priceCurrency": "{{ price_currency|default('EUR') }}",
-    "price": "{{ price_number|default('0') }}",
-    "availability": "{{ product.status.value ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+    "priceCurrency": {{ (price_currency|default('EUR'))|json_encode|raw }},
+    "price": {{ (price_number|default('0'))|json_encode|raw }},
+    "availability": "{{ product_published ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
     "seller": {
       "@type": "Organization",
-      "name": "{{ store_name|default('Jaraba Impact Platform') }}"
+      "name": {{ (store_name|default('Jaraba Impact Platform'))|json_encode|raw }}
     }
   },
   "aggregateRating": {
@@ -55,8 +79,8 @@
 
   {# Header con título y Answer Capsule #}
   <header class="product__header">
-    <h1 class="product__title" itemprop="name">{{ product.title.value }}</h1>
-    
+    <h1 class="product__title" itemprop="name">{{ product_title }}</h1>
+
     {# Answer Capsule visible para LLMs - CRÍTICO para GEO #}
     <p class="product__answer-capsule" itemprop="description">
       {{ ai_summary|striptags|slice(0, 300) }}
@@ -64,11 +88,11 @@
   </header>
 
   {# Imagen principal #}
-  {% if product.field_images.entity %}
+  {% if has_images and image_url %}
   <figure class="product__image-wrapper">
-    <img 
-      src="{{ file_url(product.field_images.entity.uri.value) }}" 
-      alt="{{ product.title.value }}"
+    <img
+      src="{{ image_url }}"
+      alt="{{ product_title }}"
       class="product__image"
       itemprop="image"
       loading="lazy"
@@ -79,29 +103,33 @@
   {# Información de precio #}
   <section class="product__pricing" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
     <meta itemprop="priceCurrency" content="{{ price_currency|default('EUR') }}" />
-    <meta itemprop="availability" content="{{ product.status.value ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}" />
-    
+    <meta itemprop="availability" content="{{ product_published ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}" />
+
     <span class="product__price" itemprop="price" content="{{ price_number|default('0') }}">
-      {{ price_formatted|default('Consultar precio'|t) }}
+      {% if price_formatted %}
+        {{ price_formatted }}
+      {% else %}
+        {% trans %}Consultar precio{% endtrans %}
+      {% endif %}
     </span>
-    
-    {% if product.status.value %}
+
+    {% if product_published %}
     <span class="product__availability product__availability--in-stock">
-      {{ 'Disponible'|t }}
+      {% trans %}Disponible{% endtrans %}
     </span>
     {% else %}
     <span class="product__availability product__availability--out-of-stock">
-      {{ 'Agotado'|t }}
+      {% trans %}Agotado{% endtrans %}
     </span>
     {% endif %}
   </section>
 
   {# Descripción completa #}
-  {% if product.body.value %}
+  {% if body_value %}
   <section class="product__description">
-    <h2>{{ 'Descripción del Producto'|t }}</h2>
+    <h2>{% trans %}Descripción del Producto{% endtrans %}</h2>
     <div class="product__body" itemprop="description">
-      {{ product.body.value|safe_html }}
+      {{ body_value|check_markup('full_html') }}
     </div>
   </section>
   {% endif %}
@@ -109,7 +137,7 @@
   {# Atributos/Especificaciones (para LLMs que buscan specs) #}
   {% if product.field_specifications is defined and product.field_specifications|length > 0 %}
   <section class="product__specifications">
-    <h2>{{ 'Especificaciones'|t }}</h2>
+    <h2>{% trans %}Especificaciones{% endtrans %}</h2>
     <dl class="product__specs-list">
       {% for spec in product.field_specifications %}
       <div class="product__spec-item">
@@ -124,25 +152,25 @@
   {# CTA - Botón de compra #}
   <section class="product__actions">
     {{ product_variations|default('') }}
-    
+
     <button type="submit" class="product__add-to-cart btn btn--primary">
-      {{ 'Añadir al Carrito'|t }}
+      {% trans %}Añadir al Carrito{% endtrans %}
     </button>
   </section>
 
   {# Breadcrumb para contexto #}
-  <nav class="product__breadcrumb" aria-label="Migas de pan">
+  <nav class="product__breadcrumb" aria-label="{% trans %}Migas de pan{% endtrans %}">
     <ol itemscope itemtype="https://schema.org/BreadcrumbList">
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/" itemprop="item"><span itemprop="name">{{ 'Inicio'|t }}</span></a>
+        <a href="/" itemprop="item"><span itemprop="name">{% trans %}Inicio{% endtrans %}</span></a>
         <meta itemprop="position" content="1" />
       </li>
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/productos" itemprop="item"><span itemprop="name">{{ 'Productos'|t }}</span></a>
+        <a href="/productos" itemprop="item"><span itemprop="name">{% trans %}Productos{% endtrans %}</span></a>
         <meta itemprop="position" content="2" />
       </li>
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <span itemprop="name">{{ product.title.value }}</span>
+        <span itemprop="name">{{ product_title }}</span>
         <meta itemprop="position" content="3" />
       </li>
     </ol>
@@ -152,7 +180,7 @@
 
 {# Datos adicionales para AI crawlers (hidden pero indexable) #}
 <div class="visually-hidden" aria-hidden="true">
-  <p>Resumen AI: {{ ai_summary }}</p>
-  <p>Categoría: Productos de Impacto Social</p>
-  <p>Plataforma: Jaraba Impact - La primera plataforma de comercio diseñada para que la IA venda tus productos</p>
+  <p>{% trans %}Resumen AI{% endtrans %}: {{ ai_summary }}</p>
+  <p>{% trans %}Categoría{% endtrans %}: {% trans %}Productos de Impacto Social{% endtrans %}</p>
+  <p>{% trans %}Plataforma{% endtrans %}: {% trans %}Jaraba Impact - La primera plataforma de comercio diseñada para que la IA venda tus productos{% endtrans %}</p>
 </div>

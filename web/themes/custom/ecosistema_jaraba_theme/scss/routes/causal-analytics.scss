@@ -100,7 +100,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: var(--ej-color-primary, $ej-color-primary);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
 }
 
 .causal-analytics-dashboard__insight-vertical {
@@ -225,7 +225,7 @@
   &:hover,
   &--active {
     background: var(--ej-color-primary, $ej-color-corporate);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
     border-color: var(--ej-color-primary, $ej-color-corporate);
   }
 }

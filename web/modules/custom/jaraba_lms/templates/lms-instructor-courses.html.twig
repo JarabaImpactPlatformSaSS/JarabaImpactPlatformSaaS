@@ -1,0 +1,123 @@
+{#
+/**
+ * @file
+ * Template: Listado de cursos del instructor LMS.
+ *
+ * DIRECTRIZ: Template limpia sin page.content (zero-region pattern).
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ * URLs: path() (ROUTE-LANGPREFIX-001, NUNCA hardcoded).
+ * Slide-panel: data-slide-panel-* para CRUD sin abandonar la pagina.
+ *
+ * Variables:
+ *   - courses: Array de cursos con id, title, difficulty_level, is_published,
+ *              is_premium, price, duration_formatted, lesson_count, student_count.
+ *   - total: Total de cursos.
+ */
+#}
+
+<div class="lms-instructor" role="main" aria-label="{% trans %}Panel de instructor{% endtrans %}">
+  <header class="lms-instructor__header container">
+    <div class="lms-instructor__header-inner">
+      <h1>{% trans %}Mis Cursos{% endtrans %}</h1>
+      <p class="lms-instructor__count">{{ total }} {% trans %}cursos{% endtrans %}</p>
+    </div>
+    <button class="lms-btn lms-btn--primary"
+            data-slide-panel="nuevo-curso-lms"
+            data-slide-panel-url="{{ path('entity.lms_course.add_form') }}"
+            data-slide-panel-title="{% trans %}Nuevo Curso{% endtrans %}">
+      + {% trans %}Crear Curso{% endtrans %}
+    </button>
+  </header>
+
+  {% if courses|length > 0 %}
+    <div class="lms-instructor__grid container">
+      {% for course in courses %}
+        <article class="lms-instructor__card" aria-label="{{ course.title }}">
+          <div class="lms-instructor__card-header">
+            <h3 class="lms-instructor__card-title">{{ course.title }}</h3>
+            <div class="lms-instructor__card-badges">
+              {% if course.is_published %}
+                <span class="lms-badge lms-badge--success">{% trans %}Publicado{% endtrans %}</span>
+              {% else %}
+                <span class="lms-badge lms-badge--draft">{% trans %}Borrador{% endtrans %}</span>
+              {% endif %}
+              {% if course.is_premium %}
+                <span class="lms-badge lms-badge--premium">{% trans %}Premium{% endtrans %}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="lms-instructor__card-meta">
+            <span class="lms-instructor__meta-item" title="{% trans %}Nivel{% endtrans %}">
+              {{ jaraba_icon('education', 'level', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
+              {% if course.difficulty_level == 'beginner' %}
+                {% trans %}Principiante{% endtrans %}
+              {% elseif course.difficulty_level == 'intermediate' %}
+                {% trans %}Intermedio{% endtrans %}
+              {% elseif course.difficulty_level == 'advanced' %}
+                {% trans %}Avanzado{% endtrans %}
+              {% else %}
+                {{ course.difficulty_level }}
+              {% endif %}
+            </span>
+            <span class="lms-instructor__meta-item" title="{% trans %}Duración{% endtrans %}">
+              {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
+              {{ course.duration_formatted }}
+            </span>
+            {% if course.is_premium %}
+              <span class="lms-instructor__meta-item" title="{% trans %}Precio{% endtrans %}">
+                {{ course.price }} EUR
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="lms-instructor__card-stats">
+            <a href="{{ path('jaraba_lms.instructor.lessons', {'course_id': course.id}) }}"
+               class="lms-instructor__stat">
+              <span class="lms-instructor__stat-number">{{ course.lesson_count }}</span>
+              <span class="lms-instructor__stat-label">{% trans %}Lecciones{% endtrans %}</span>
+            </a>
+            <a href="{{ path('jaraba_lms.instructor.students', {'course_id': course.id}) }}"
+               class="lms-instructor__stat">
+              <span class="lms-instructor__stat-number">{{ course.student_count }}</span>
+              <span class="lms-instructor__stat-label">{% trans %}Alumnos{% endtrans %}</span>
+            </a>
+          </div>
+
+          <div class="lms-instructor__card-actions">
+            <a href="{{ path('jaraba_lms.instructor.lessons', {'course_id': course.id}) }}"
+               class="lms-btn lms-btn--small lms-btn--outline">
+              {% trans %}Lecciones{% endtrans %}
+            </a>
+            <a href="{{ path('jaraba_lms.instructor.students', {'course_id': course.id}) }}"
+               class="lms-btn lms-btn--small lms-btn--outline">
+              {% trans %}Alumnos{% endtrans %}
+            </a>
+            <button class="lms-btn lms-btn--small lms-btn--outline"
+                    data-slide-panel="editar-curso-lms"
+                    data-slide-panel-url="{{ path('entity.lms_course.edit_form', {'lms_course': course.id}) }}"
+                    data-slide-panel-title="{% trans %}Editar Curso{% endtrans %}">
+              {% trans %}Editar{% endtrans %}
+            </button>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="lms-empty-state container">
+      <div class="lms-empty-state__icon">
+        {{ jaraba_icon('education', 'graduation-cap', { variant: 'duotone', size: '64px', color: 'verde-innovacion' }) }}
+      </div>
+      <h3 class="lms-empty-state__title">{% trans %}No tienes cursos todavía{% endtrans %}</h3>
+      <p class="lms-empty-state__text">
+        {% trans %}Crea tu primer curso para empezar a formar alumnos en la plataforma.{% endtrans %}
+      </p>
+      <button class="lms-btn lms-btn--primary"
+              data-slide-panel="nuevo-curso-lms"
+              data-slide-panel-url="{{ path('entity.lms_course.add_form') }}"
+              data-slide-panel-title="{% trans %}Nuevo Curso{% endtrans %}">
+        + {% trans %}Crear mi primer curso{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

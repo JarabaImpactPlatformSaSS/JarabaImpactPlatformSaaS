@@ -119,7 +119,7 @@
   border: none;
   border-radius: v.$export-radius-md;
   background: var(--ej-color-primary, #2563eb);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   font-family: var(--ej-font-family, 'Outfit', sans-serif);
   font-size: 0.875rem;
   font-weight: 600;
@@ -177,7 +177,7 @@
   gap: v.$export-spacing-xs;
   padding: v.$export-spacing-sm v.$export-spacing-md;
   background: var(--ej-color-success, #10b981);
-  color: #ffffff;
+  color: var(--ej-bg-surface, #ffffff);
   border-radius: v.$export-radius-sm;
   font-size: 0.875rem;
   font-weight: 500;
@@ -186,6 +186,6 @@
 
   &:hover {
     background: color-mix(in srgb, var(--ej-color-success, #10b981) 85%, black);
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
   }
 }

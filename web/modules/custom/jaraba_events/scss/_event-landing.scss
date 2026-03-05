@@ -27,7 +27,7 @@
       var(--ej-primary-color, $events-primary) 0%,
       color-mix(in srgb, var(--ej-primary-color, $events-primary) 60%, black) 100%
     );
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     @media (min-width: $events-bp-md) {
       min-height: 480px;
@@ -67,7 +67,7 @@
     opacity: 0.8;
 
     a {
-      color: #ffffff;
+      color: var(--ej-bg-surface, #ffffff);
       text-decoration: none;
 
       &:hover {
@@ -102,7 +102,7 @@
     font-size: 1.75rem;
     font-weight: $events-heading-weight;
     line-height: 1.2;
-    color: #ffffff;
+    color: var(--ej-bg-surface, #ffffff);
 
     @media (min-width: $events-bp-md) {
       font-size: 2.5rem;

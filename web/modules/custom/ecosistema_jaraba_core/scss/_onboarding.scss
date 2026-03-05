@@ -16,6 +16,93 @@
 @include keyframes-fade-in;
 
 // ---------------------------------------------------------------------------
+// P3-03: WCAG 2.1 AA — SKIP LINK, FOCUS VISIBLE, TOUCH TARGETS
+// ---------------------------------------------------------------------------
+
+.ej-skip-link {
+    position: absolute;
+    top: -100%;
+    left: $ej-spacing-md;
+    z-index: $ej-z-index-modal + 1;
+    background-color: var(--ej-color-primary);
+    color: var(--ej-bg-surface, #ffffff);
+    padding: $ej-spacing-sm $ej-spacing-lg;
+    border-radius: $ej-border-radius-md;
+    font-weight: $ej-font-weight-semibold;
+    text-decoration: none;
+
+    &:focus {
+        top: $ej-spacing-md;
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+    }
+}
+
+// Focus visible para todos los interactivos del onboarding
+.ej-register-page,
+.ej-select-plan-page,
+.ej-setup-payment-page,
+.ej-welcome-page {
+    // Inputs y selects
+    .ej-form-input:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+        border-color: var(--ej-color-primary);
+    }
+
+    // Botones
+    .ej-btn:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+    }
+
+    // Links
+    a:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+        border-radius: $ej-border-radius-sm;
+    }
+
+    // Checkboxes y radios
+    input[type="checkbox"]:focus-visible,
+    input[type="radio"]:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+    }
+
+    // Toggle de contraseña
+    .ej-password-toggle:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+        border-radius: $ej-border-radius-sm;
+    }
+
+    // Touch targets mínimo 44px
+    .ej-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    .ej-password-toggle {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+// Progress steps como lista ordenada (WCAG: nav > ol)
+.ej-onboarding-progress__container {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+// ---------------------------------------------------------------------------
 // LAYOUT BASE DE PÁGINAS DE ONBOARDING
 // ---------------------------------------------------------------------------
 
@@ -48,7 +135,7 @@
 
     &__title {
         margin: 0;
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         font-size: $ej-font-size-2xl;
         font-weight: $ej-font-weight-bold;
     }
@@ -155,6 +242,55 @@
 .ej-plan-price {
     color: var(--ej-color-primary);
     font-weight: $ej-font-weight-semibold;
+}
+
+// P2-05: Social login (Google OAuth)
+.ej-social-login {
+    margin-bottom: $ej-spacing-lg;
+}
+
+.ej-btn--google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $ej-spacing-sm;
+    background-color: var(--ej-bg-surface, #ffffff);
+    color: var(--ej-text-primary);
+    border: 1px solid var(--ej-border-color);
+    font-weight: $ej-font-weight-medium;
+    text-decoration: none;
+    transition: var(--ej-transition-fast);
+
+    &:hover {
+        background-color: var(--ej-gray-50);
+        box-shadow: var(--ej-shadow-sm);
+    }
+
+    &:focus-visible {
+        outline: 3px solid var(--ej-color-primary);
+        outline-offset: 2px;
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.ej-social-divider {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-lg;
+    color: var(--ej-text-muted);
+    font-size: $ej-font-size-sm;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background-color: var(--ej-border-color-light);
+    }
 }
 
 // Formulario de registro
@@ -285,12 +421,12 @@
 
     &--completed &__number {
         background-color: var(--ej-color-success);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
     }
 
     &--active &__number {
         background-color: var(--ej-color-primary);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         box-shadow: 0 0 0 4px var(--ej-color-primary-light);
     }
 
@@ -398,7 +534,7 @@
         left: 50%;
         transform: translateX(-50%);
         background-color: var(--ej-color-primary);
-        color: #ffffff;
+        color: var(--ej-bg-surface, #ffffff);
         padding: 0.375rem 1rem;
         border-radius: $ej-border-radius-full;
         font-size: $ej-font-size-xs;
@@ -596,7 +732,7 @@
 
         i {
             font-size: $ej-font-size-4xl;
-            color: #ffffff;
+            color: var(--ej-bg-surface, #ffffff);
         }
     }
 
@@ -619,8 +755,8 @@
     display: flex;
     align-items: center;
     gap: $ej-spacing-lg;
-    background: linear-gradient(135deg, #FFF8E1, #FFECB3);
-    border: 1px solid #FFD54F;
+    background: linear-gradient(135deg, var(--ej-color-amber-material-50, #FFF8E1), #FFECB3);
+    border: 1px solid var(--ej-color-amber-material-300, #FFD54F);
     border-radius: var(--ej-border-radius);
     padding: $ej-spacing-lg;
     margin-bottom: $ej-spacing-xl;
@@ -633,14 +769,14 @@
     &__icon {
         width: 48px;
         height: 48px;
-        background-color: #FFB300;
+        background-color: var(--ej-color-amber-material-dark, #FFB300);
         border-radius: 50%;
         @include flex-center;
         flex-shrink: 0;
 
         i {
             font-size: $ej-font-size-2xl;
-            color: #ffffff;
+            color: var(--ej-bg-surface, #ffffff);
         }
     }
 
@@ -768,7 +904,7 @@
 
         i {
             font-size: $ej-font-size-xl;
-            color: #ffffff;
+            color: var(--ej-bg-surface, #ffffff);
         }
     }
 
@@ -831,7 +967,7 @@
     &__icon {
         width: 48px;
         height: 48px;
-        background-color: #E3F2FD;
+        background-color: var(--ej-color-blue-50-alt, #E3F2FD);
         border-radius: 50%;
         @include flex-center;
         flex-shrink: 0;
@@ -862,5 +998,161 @@
     &__actions {
         display: flex;
         gap: $ej-spacing-sm;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// P2-01: PASSWORD STRENGTH INDICATOR
+// ---------------------------------------------------------------------------
+
+.ej-password-strength {
+    margin-top: $ej-spacing-sm;
+
+    &__bar {
+        height: 4px;
+        background-color: var(--ej-gray-200);
+        border-radius: $ej-border-radius-full;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: $ej-border-radius-full;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    &__label {
+        display: block;
+        margin-top: $ej-spacing-xs;
+        font-size: $ej-font-size-xs;
+        font-weight: $ej-font-weight-medium;
+        transition: color 0.3s ease;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// P2-07: SECURITY BADGES
+// ---------------------------------------------------------------------------
+
+.ej-security-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-md;
+    justify-content: center;
+    padding: $ej-spacing-lg 0;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        font-size: $ej-font-size-xs;
+        color: var(--ej-text-secondary);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// P3-01: ONBOARDING WIZARD MULTI-STEP ANIMADO
+// ---------------------------------------------------------------------------
+
+.ej-wizard-step {
+    animation: wizard-slide-in 0.4s ease both;
+
+    &--exit {
+        animation: wizard-slide-out 0.3s ease both;
+    }
+}
+
+@keyframes wizard-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes wizard-slide-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+// Progress bar premium (glassmorphism)
+.ej-onboarding-progress {
+    &--premium {
+        background: color-mix(in srgb, var(--ej-bg-card) 80%, transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+}
+
+.ej-progress-step {
+    &--active &__number {
+        animation: pulse-ring 1.5s ease infinite;
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--ej-color-primary) 30%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px color-mix(in srgb, var(--ej-color-primary) 10%, transparent);
+    }
+
+    100% {
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--ej-color-primary) 30%, transparent);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// P3-04: PREFERS-REDUCED-MOTION
+// ---------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ej-confetti-container,
+    .ej-confetti-particle {
+        animation: none !important;
+        display: none !important;
+    }
+
+    .ej-wizard-step {
+        animation: none !important;
+
+        &--exit {
+            animation: none !important;
+        }
+    }
+
+    .ej-progress-step--active .ej-progress-step__number {
+        animation: none !important;
+    }
+
+    .ej-welcome-header__icon {
+        animation: none !important;
+    }
+
+    .ej-next-step-card:hover {
+        transform: none !important;
+    }
+
+    .ej-password-strength__fill,
+    .ej-password-strength__label {
+        transition: none !important;
+    }
+
+    .ej-pricing-toggle__label {
+        transition: none !important;
     }
 }

@@ -23,6 +23,9 @@
   {# Confetti animation container #}
   <div id="ej-confetti-container" class="ej-confetti-container"></div>
 
+  {# P1-03: Barra de progreso unificada #}
+  {% include '@ecosistema_jaraba_core/partials/_onboarding-progress.html.twig' with { onboarding_step: 4 } %}
+
   <main class="ej-welcome-main">
     <div class="ej-welcome-container">
       {# Success header #}
@@ -116,6 +119,22 @@
           {% endfor %}
         </div>
       </div>
+
+      {# P1-02: Stripe Connect prompt para merchants #}
+      {% if connect_required %}
+        <div class="ej-welcome__connect-prompt" role="alert">
+          <div class="ej-welcome__connect-icon">
+            {{ jaraba_icon('ui', 'wallet-duotone', { size: '48px', color: 'naranja-impulso' }) }}
+          </div>
+          <div class="ej-welcome__connect-content">
+            <h3>{% trans %}Conecta tu cuenta bancaria{% endtrans %}</h3>
+            <p>{% trans %}Para recibir pagos de tus clientes, necesitas configurar tu cuenta Stripe. Es rápido y seguro.{% endtrans %}</p>
+          </div>
+          <a href="{{ connect_url }}" class="ej-btn ej-btn--primary ej-btn--lg">
+            {% trans %}Configurar pagos ahora{% endtrans %}
+          </a>
+        </div>
+      {% endif %}
 
       {# Quick actions #}
       <div class="ej-welcome-actions">

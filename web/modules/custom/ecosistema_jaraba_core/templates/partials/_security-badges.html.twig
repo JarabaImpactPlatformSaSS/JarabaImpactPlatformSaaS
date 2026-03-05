@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * P2-07: Parcial reutilizable de badges de seguridad.
+ *
+ * Muestra indicadores de confianza: pago seguro, Stripe, cifrado SSL.
+ * Usado en checkout, setup-payment y confirmacion de pedido.
+ *
+ * Variables: ninguna requerida.
+ */
+#}
+
+<div class="ej-security-badges" aria-label="{% trans %}Garantías de seguridad{% endtrans %}">
+  <div class="ej-security-badges__item">
+    {{ jaraba_icon('ui', 'shield-check', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+    <span>{% trans %}Pago 100% seguro{% endtrans %}</span>
+  </div>
+  <div class="ej-security-badges__item">
+    {{ jaraba_icon('ui', 'credit-card', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+    <span>{% trans %}Powered by Stripe{% endtrans %}</span>
+  </div>
+  <div class="ej-security-badges__item">
+    {{ jaraba_icon('ui', 'lock', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+    <span>{% trans %}Cifrado SSL 256-bit{% endtrans %}</span>
+  </div>
+</div>

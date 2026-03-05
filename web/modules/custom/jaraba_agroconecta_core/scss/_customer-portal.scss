@@ -5,10 +5,10 @@
 // DIRECTRIZ: Solo var(--ej-*, $fallback) — NUNCA $ej-* locales.
 
 $customer-primary: var(--color-brand-primary, #2d7a3a);
-$customer-surface: var(--color-bg-surface, #ffffff);
-$customer-text: var(--color-text-primary, #1a1a2e);
-$customer-text-muted: var(--color-text-muted, #6c757d);
-$customer-border: var(--color-border, #e0e0e0);
+$customer-surface: var(--color-bg-surface, var(--ej-bg-surface, #ffffff));
+$customer-text: var(--color-text-primary, var(--ej-bg-dark, #1a1a2e));
+$customer-text-muted: var(--color-text-muted, var(--ej-gray-bootstrap-mid, #6c757d));
+$customer-border: var(--color-border, var(--ej-gray-divider, #e0e0e0));
 $customer-radius: var(--radius-md, 12px);
 $customer-radius-sm: var(--radius-sm, 8px);
 $customer-shadow: var(--shadow-card, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
@@ -279,8 +279,8 @@ $customer-gap: var(--spacing-lg, 24px);
         font-weight: 600;
 
         &--pending {
-            background: #e9ecef;
-            color: #495057;
+            background: var(--ej-gray-150, #e9ecef);
+            color: var(--ej-gray-bootstrap-dark, #495057);
         }
 
         &--paid {

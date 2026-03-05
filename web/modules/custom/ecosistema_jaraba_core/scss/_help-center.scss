@@ -59,7 +59,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 .help-center__title {
   font-size: 2rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   margin: 0 0 0.5rem;
 
   @media (min-width: 768px) {
@@ -81,7 +81,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 .help-center__search-wrapper {
   display: flex;
   align-items: center;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: 50px;
   padding: 4px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -113,7 +113,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 .help-center__search-btn {
   padding: 0.75rem 1.5rem;
   background: var(--ej-color-accent, $_accent);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border: none;
   border-radius: 50px;
   font-weight: 600;
@@ -139,7 +139,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: $_radius;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   margin-top: 0.5rem;
@@ -568,7 +568,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
   align-items: center;
   padding: 0.6rem 1.25rem;
   background: var(--ej-color-accent, $_accent);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -578,7 +578,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 
   &:hover {
     background: color.adjust($_accent, $lightness: -8%);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -624,11 +624,11 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 
   &--primary {
     background: var(--ej-color-accent, $_accent);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
     &:hover {
       background: color.adjust($_accent, $lightness: -8%);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -639,7 +639,7 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 
     &:hover {
       background: var(--ej-color-primary, $_primary);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 }

@@ -35,6 +35,15 @@ services:
       - '@ecosistema_jaraba_core.comercioconecta_feature_gate'
 
   # =====================================================================
+  # P1-06: ProductImportService — Bulk CSV import for merchants
+  # =====================================================================
+  jaraba_comercio_conecta.product_import:
+    class: Drupal\jaraba_comercio_conecta\Service\ProductImportService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
   # MerchantDashboardService: KPIs y datos del dashboard del comerciante
   # Responsabilidad: ventas, pedidos pendientes, alertas stock, rating
   # Relaciones: consume OrderRetail, ProductRetail, ReviewRetail

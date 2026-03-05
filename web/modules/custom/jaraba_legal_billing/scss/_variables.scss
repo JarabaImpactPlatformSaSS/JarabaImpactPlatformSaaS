@@ -4,12 +4,12 @@
 // =============================================================================
 
 :root {
-  --ej-billing-primary: #1565C0;
-  --ej-billing-success: #43A047;
+  --ej-billing-primary: var(--ej-color-blue-material-dark, #1565C0);
+  --ej-billing-success: var(--ej-color-green-material-dark, #43A047);
   --ej-billing-warning: #FB8C00;
-  --ej-billing-danger: #E53935;
-  --ej-billing-info: #1976D2;
-  --ej-billing-paid: #2E7D32;
-  --ej-billing-overdue: #C62828;
+  --ej-billing-danger: var(--ej-color-red-material-dark, #E53935);
+  --ej-billing-info: var(--ej-color-blue-md, #1976D2);
+  --ej-billing-paid: var(--ej-color-green-md, #2E7D32);
+  --ej-billing-overdue: var(--ej-color-red-deep, #C62828);
   --ej-billing-draft: #78909C;
 }

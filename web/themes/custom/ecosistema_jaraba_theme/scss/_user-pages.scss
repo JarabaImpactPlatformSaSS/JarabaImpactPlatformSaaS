@@ -35,7 +35,7 @@
   // Con header sticky no hace falta compensar la altura del header fijo;
   // solo un pequeño padding estético para separar del header.
   padding-top: $ej-spacing-lg;
-  background: linear-gradient(180deg, #f0f4f8 0%, #e8edf3 50%, #f8fafc 100%);
+  background: linear-gradient(180deg, #f0f4f8 0%, #e8edf3 50%, var(--ej-bg-body, #f8fafc) 100%);
 }
 
 // =============================================================================
@@ -165,7 +165,7 @@
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 2rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     letter-spacing: 0.05em;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -182,7 +182,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #10B981;
+    background: var(--ej-color-success, #10B981);
     border: 3px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
   }
@@ -197,7 +197,7 @@
     font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: 2rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 $ej-spacing-xs;
     line-height: 1.2;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -245,7 +245,7 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 0.8125rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     letter-spacing: 0.02em;
     text-transform: capitalize;
   }
@@ -280,7 +280,7 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 10px;
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     color: var(--ej-color-corporate, #233D63);
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.9375rem;
@@ -294,7 +294,7 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      background: #f8fafc;
+      background: var(--ej-bg-body, #f8fafc);
     }
   }
 
@@ -305,7 +305,7 @@
     padding: 10px 22px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.9375rem;
     font-weight: 600;
@@ -946,7 +946,7 @@
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.9375rem;
     color: var(--ej-text-primary, #1a202c);
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     outline: none;
 
@@ -962,7 +962,7 @@
     &:focus {
       border-color: var(--ej-color-primary, #4F46E5);
       box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-      background: #fff;
+      background: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -1156,7 +1156,7 @@
       min-width: 20px;
       border: 2px solid var(--ej-border-color, #cbd5e1);
       border-radius: 6px;
-      background: #fff;
+      background: var(--ej-bg-surface, #fff);
       cursor: pointer;
       position: relative;
       margin-top: 2px;
@@ -1173,7 +1173,7 @@
           left: 5px;
           width: 6px;
           height: 10px;
-          border: solid #fff;
+          border: solid var(--ej-bg-surface, #fff);
           border-width: 0 2px 2px 0;
           transform: rotate(45deg);
         }
@@ -1249,7 +1249,7 @@
     }
 
     td {
-      background: #fff;
+      background: var(--ej-bg-surface, #fff);
     }
 
     tr:last-child td {
@@ -1291,7 +1291,7 @@ button[type="submit"],
   padding: 12px 32px;
   border-radius: 12px;
   background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   font-family: var(--ej-font-family, 'Outfit', sans-serif);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -1318,7 +1318,7 @@ button[type="submit"],
   align-items: center;
   padding: 10px 22px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   color: var(--ej-color-corporate, #233D63);
   font-family: var(--ej-font-family, 'Outfit', sans-serif);
   font-size: 0.875rem;
@@ -1328,7 +1328,7 @@ button[type="submit"],
   transition: all 0.3s ease;
 
   &:hover {
-    background: #f8fafc;
+    background: var(--ej-bg-body, #f8fafc);
     border-color: var(--ej-color-corporate, #233D63);
     transform: translateY(-1px);
   }
@@ -1344,17 +1344,17 @@ button[type="submit"],
 
   &--status {
     background: rgba(16, 185, 129, 0.08);
-    color: #065f46;
+    color: var(--ej-color-green-deep, #065f46);
   }
 
   &--warning {
     background: rgba(245, 158, 11, 0.08);
-    color: #92400e;
+    color: var(--ej-color-warning-deep, #92400e);
   }
 
   &--error {
     background: rgba(239, 68, 68, 0.08);
-    color: #991b1b;
+    color: var(--ej-color-danger-deep, #991b1b);
   }
 }
 }

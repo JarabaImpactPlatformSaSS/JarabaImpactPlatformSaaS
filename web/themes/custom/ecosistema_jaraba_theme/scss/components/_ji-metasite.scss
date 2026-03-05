@@ -24,7 +24,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
   justify-content: center;
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
   background: $ji-gradient;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   overflow: hidden;
   text-align: center;
 
@@ -100,7 +100,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
 
     &:first-of-type {
       background: $ji-gradient-teal;
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       box-shadow: 0 4px 20px rgba($ji-teal, 0.3);
 
       &:hover {
@@ -111,7 +111,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
 
     &:nth-of-type(2) {
       border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
       backdrop-filter: blur(8px);
 
       &:hover {
@@ -161,9 +161,9 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
   // ─── Dark variant (Triple Motor, Resultados) ─────────────
   &--dark {
     background: $ji-gradient;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
 
-    h2 { color: #fff; }
+    h2 { color: var(--ej-bg-surface, #fff); }
     h2 + p, h2 + div > p:first-child { color: rgba(255, 255, 255, 0.7); }
   }
 }
@@ -239,7 +239,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
     font-family: var(--ej-font-heading, 'Outfit', sans-serif);
     font-size: var(--ej-text-lg, 1.25rem);
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 
   p { color: rgba(255, 255, 255, 0.7); font-size: var(--ej-text-sm, 0.875rem); line-height: 1.6; }
@@ -319,7 +319,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
   padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
   background: $ji-gradient;
   text-align: center;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   position: relative;
   overflow: hidden;
 
@@ -341,7 +341,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
     font-family: var(--ej-font-heading, 'Outfit', sans-serif);
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 var(--ej-space-sm, 1rem);
   }
 
@@ -355,7 +355,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
   a[class*="btn"], .btn-primary {
     display: inline-block;
     background: $ji-gradient-teal;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     font-weight: 700;
     padding: 1rem 2.5rem;
     border-radius: var(--ej-radius-pill, 50rem);
@@ -394,7 +394,7 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba($ji-teal, 0.15);
 
-    &__name { color: #fff; }
+    &__name { color: var(--ej-bg-surface, #fff); }
     a { color: rgba(255, 255, 255, 0.85); }
     a:hover { color: $ji-teal-light; }
   }
@@ -412,13 +412,13 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
 [data-theme='dark'],
 .dark-mode {
   .ji-section--light {
-    background: #0f172a;
-    h2 { color: #f1f5f9; }
+    background: var(--ej-gray-900, #0f172a);
+    h2 { color: var(--ej-gray-100, #f1f5f9); }
 
     [class*="card"], [data-type="card"] {
       background: rgba(26, 26, 46, 0.6);
       border-color: rgba(255, 255, 255, 0.08);
-      h3 { color: #f1f5f9; }
+      h3 { color: var(--ej-gray-100, #f1f5f9); }
     }
   }
 }

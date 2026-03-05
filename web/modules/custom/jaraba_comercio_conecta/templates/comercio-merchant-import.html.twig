@@ -1,0 +1,129 @@
+{#
+/**
+ * @file
+ * P1-06: Template para la importación masiva de productos via CSV.
+ *
+ * Variables:
+ * - merchant: Perfil del comerciante
+ * - max_file_size: Tamaño máximo permitido
+ * - accepted_formats: Formatos aceptados
+ * - sample_url: URL de descarga del CSV de ejemplo
+ *
+ * ZERO-REGION-001: Sin regions Drupal.
+ * CSS-VAR-ALL-COLORS-001: Colores via --ej-* tokens.
+ * i18n: {% trans %} bloques.
+ */
+#}
+
+<div class="comercio-import">
+  <header class="comercio-import__header">
+    <div class="comercio-import__header-content">
+      <a href="{{ path('jaraba_comercio_conecta.merchant_portal.products') }}" class="comercio-import__back">
+        {{ jaraba_icon('ui', 'arrow-left', { variant: 'duotone', size: '16px' }) }}
+        {% trans %}Volver a productos{% endtrans %}
+      </a>
+      <h1 class="comercio-import__title">
+        {{ jaraba_icon('ui', 'upload', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+        {% trans %}Importar Productos{% endtrans %}
+      </h1>
+      <p class="comercio-import__subtitle">
+        {% trans %}Sube un archivo CSV con tus productos para añadirlos todos a la vez.{% endtrans %}
+      </p>
+    </div>
+  </header>
+
+  <div class="comercio-import__content">
+    {# Zona de subida de archivo #}
+    <div class="comercio-import__upload-zone" id="import-dropzone" data-import-dropzone>
+      <div class="comercio-import__upload-icon">
+        {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}
+      </div>
+      <p class="comercio-import__upload-text">
+        {% trans %}Arrastra tu archivo CSV aquí{% endtrans %}
+      </p>
+      <p class="comercio-import__upload-hint">
+        {% trans %}o haz clic para seleccionar{% endtrans %}
+      </p>
+      <input type="file"
+             id="csv-file-input"
+             accept=".csv"
+             class="comercio-import__file-input"
+             aria-label="{% trans %}Seleccionar archivo CSV{% endtrans %}">
+      <p class="comercio-import__upload-limits">
+        {% trans %}Máximo {{ max_file_size }}. Solo archivos {{ accepted_formats }}.{% endtrans %}
+      </p>
+    </div>
+
+    {# Información sobre el formato #}
+    <div class="comercio-import__format-info">
+      <h3>
+        {{ jaraba_icon('ui', 'info', { variant: 'duotone', size: '18px' }) }}
+        {% trans %}Formato del CSV{% endtrans %}
+      </h3>
+      <p>{% trans %}Tu archivo debe incluir las siguientes columnas (la primera fila es la cabecera):{% endtrans %}</p>
+
+      <div class="comercio-import__columns">
+        <div class="comercio-import__column comercio-import__column--required">
+          <span class="comercio-import__column-badge">{% trans %}Obligatorio{% endtrans %}</span>
+          <code>name</code> — {% trans %}Nombre del producto{% endtrans %}
+        </div>
+        <div class="comercio-import__column comercio-import__column--required">
+          <span class="comercio-import__column-badge">{% trans %}Obligatorio{% endtrans %}</span>
+          <code>sku</code> — {% trans %}Código de referencia único{% endtrans %}
+        </div>
+        <div class="comercio-import__column comercio-import__column--required">
+          <span class="comercio-import__column-badge">{% trans %}Obligatorio{% endtrans %}</span>
+          <code>price</code> — {% trans %}Precio en euros{% endtrans %}
+        </div>
+        <div class="comercio-import__column">
+          <code>description</code> — {% trans %}Descripción del producto{% endtrans %}
+        </div>
+        <div class="comercio-import__column">
+          <code>stock_quantity</code> — {% trans %}Unidades en stock{% endtrans %}
+        </div>
+        <div class="comercio-import__column">
+          <code>category</code> — {% trans %}Categoría{% endtrans %}
+        </div>
+        <div class="comercio-import__column">
+          <code>brand</code> — {% trans %}Marca{% endtrans %}
+        </div>
+        <div class="comercio-import__column">
+          <code>barcode</code> — {% trans %}Código de barras{% endtrans %}
+        </div>
+      </div>
+
+      {% if sample_url %}
+      <a href="{{ sample_url }}" class="comercio-import__sample-link" download>
+        {{ jaraba_icon('ui', 'download', { variant: 'duotone', size: '16px' }) }}
+        {% trans %}Descargar CSV de ejemplo{% endtrans %}
+      </a>
+      {% endif %}
+    </div>
+
+    {# Resultados de la importación #}
+    <div class="comercio-import__results" id="import-results" style="display: none;">
+      <h3 class="comercio-import__results-title">{% trans %}Resultado de la importación{% endtrans %}</h3>
+      <div class="comercio-import__results-grid">
+        <div class="comercio-import__result-card comercio-import__result-card--success">
+          <span class="comercio-import__result-value" id="import-count-success">0</span>
+          <span class="comercio-import__result-label">{% trans %}Importados{% endtrans %}</span>
+        </div>
+        <div class="comercio-import__result-card comercio-import__result-card--warning">
+          <span class="comercio-import__result-value" id="import-count-skipped">0</span>
+          <span class="comercio-import__result-label">{% trans %}Omitidos{% endtrans %}</span>
+        </div>
+      </div>
+      <div class="comercio-import__errors" id="import-errors"></div>
+    </div>
+
+    {# Barra de progreso #}
+    <div class="comercio-import__progress" id="import-progress" style="display: none;">
+      <div class="comercio-import__progress-bar">
+        <div class="comercio-import__progress-fill" id="import-progress-fill"></div>
+      </div>
+      <p class="comercio-import__progress-text" id="import-progress-text">
+        {% trans %}Procesando...{% endtrans %}
+      </p>
+    </div>
+  </div>
+</div>

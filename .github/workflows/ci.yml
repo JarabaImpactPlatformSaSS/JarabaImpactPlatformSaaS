@@ -85,7 +85,6 @@ jobs:
       # SERVICE-ORPHAN-001: Detect orphaned services (standalone for clarity).
       - name: Validate service consumers
         run: php scripts/validation/validate-service-consumers.php
-        continue-on-error: true
 
       # ASSET-FRESHNESS-001: Compiled CSS must be up-to-date.
       - name: Validate compiled assets freshness
@@ -94,7 +93,6 @@ jobs:
       # TEST-COVERAGE-MAP-001: Critical modules must have tests.
       - name: Validate test coverage map
         run: php scripts/validation/validate-test-coverage-map.php
-        continue-on-error: true
 
       # CONTAINER-DEPS-001: Service container dependency integrity (blocking).
       - name: Validate container dependencies

@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Template: Listado de lecciones de un curso del instructor.
+ *
+ * DIRECTRIZ: Template limpia sin page.content (zero-region pattern).
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ * URLs: path() (ROUTE-LANGPREFIX-001, NUNCA hardcoded).
+ *
+ * Variables:
+ *   - course: Array con id, title, is_published.
+ *   - lessons: Array con id, title, lesson_type, estimated_duration, weight.
+ *   - total: Total de lecciones.
+ */
+#}
+
+<div class="lms-instructor" role="main" aria-label="{% trans %}Lecciones del curso{% endtrans %}">
+  <header class="lms-instructor__header container">
+    <div class="lms-instructor__header-inner">
+      <nav class="lms-instructor__breadcrumb" aria-label="{% trans %}Navegación{% endtrans %}">
+        <a href="{{ path('jaraba_lms.instructor.courses') }}">{% trans %}Mis Cursos{% endtrans %}</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ course.title }}</span>
+      </nav>
+      <h1>{% trans %}Lecciones{% endtrans %}</h1>
+      <p class="lms-instructor__count">{{ total }} {% trans %}lecciones{% endtrans %}</p>
+    </div>
+    <div class="lms-instructor__header-actions">
+      <a href="{{ path('jaraba_lms.instructor.students', {'course_id': course.id}) }}"
+         class="lms-btn lms-btn--outline">
+        {% trans %}Ver Alumnos{% endtrans %}
+      </a>
+      <button class="lms-btn lms-btn--primary"
+              data-slide-panel="editar-curso-lms"
+              data-slide-panel-url="{{ path('entity.lms_course.edit_form', {'lms_course': course.id}) }}"
+              data-slide-panel-title="{% trans %}Editar Curso{% endtrans %}">
+        {% trans %}Editar Curso{% endtrans %}
+      </button>
+    </div>
+  </header>
+
+  {% if lessons|length > 0 %}
+    <div class="lms-table-responsive container">
+      <table class="lms-table lms-table--lessons">
+        <thead>
+          <tr>
+            <th>{% trans %}Orden{% endtrans %}</th>
+            <th>{% trans %}Lección{% endtrans %}</th>
+            <th>{% trans %}Tipo{% endtrans %}</th>
+            <th>{% trans %}Duración{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lesson in lessons %}
+            <tr>
+              <td class="lms-table__cell--order">{{ lesson.weight + 1 }}</td>
+              <td class="lms-table__cell--title">
+                <span class="lms-table__lesson-name">{{ lesson.title }}</span>
+              </td>
+              <td>
+                {% if lesson.lesson_type == 'video' %}
+                  <span class="lms-badge lms-badge--info">
+                    {{ jaraba_icon('media', 'video', { variant: 'duotone', size: '14px', color: 'azul-corporativo' }) }}
+                    {% trans %}Vídeo{% endtrans %}
+                  </span>
+                {% elseif lesson.lesson_type == 'text' %}
+                  <span class="lms-badge lms-badge--neutral">
+                    {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '14px', color: 'azul-corporativo' }) }}
+                    {% trans %}Texto{% endtrans %}
+                  </span>
+                {% elseif lesson.lesson_type == 'h5p' %}
+                  <span class="lms-badge lms-badge--accent">
+                    {{ jaraba_icon('education', 'interactive', { variant: 'duotone', size: '14px', color: 'naranja-impulso' }) }}
+                    {% trans %}Interactivo{% endtrans %}
+                  </span>
+                {% elseif lesson.lesson_type == 'quiz' %}
+                  <span class="lms-badge lms-badge--warning">
+                    {{ jaraba_icon('education', 'quiz', { variant: 'duotone', size: '14px', color: 'naranja-impulso' }) }}
+                    {% trans %}Quiz{% endtrans %}
+                  </span>
+                {% elseif lesson.lesson_type == 'assignment' %}
+                  <span class="lms-badge lms-badge--primary">
+                    {{ jaraba_icon('education', 'assignment', { variant: 'duotone', size: '14px', color: 'azul-corporativo' }) }}
+                    {% trans %}Tarea{% endtrans %}
+                  </span>
+                {% endif %}
+              </td>
+              <td>{{ lesson.estimated_duration }} {% trans %}min{% endtrans %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="lms-empty-state container">
+      <div class="lms-empty-state__icon">
+        {{ jaraba_icon('education', 'lesson', { variant: 'duotone', size: '64px', color: 'verde-innovacion' }) }}
+      </div>
+      <h3 class="lms-empty-state__title">{% trans %}Este curso no tiene lecciones{% endtrans %}</h3>
+      <p class="lms-empty-state__text">
+        {% trans %}Añade lecciones desde la pantalla de edición del curso.{% endtrans %}
+      </p>
+      <button class="lms-btn lms-btn--primary"
+              data-slide-panel="editar-curso-lms"
+              data-slide-panel-url="{{ path('entity.lms_course.edit_form', {'lms_course': course.id}) }}"
+              data-slide-panel-title="{% trans %}Editar Curso{% endtrans %}">
+        {% trans %}Editar Curso{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

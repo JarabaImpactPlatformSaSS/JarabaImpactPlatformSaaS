@@ -45,8 +45,8 @@
     background: linear-gradient(
       135deg,
       var(--ej-color-corporate, #233D63) 0%,
-      #1a2d4a 40%,
-      #0f1d30 100%
+      var(--ej-dark-accent, #1a2d4a) 40%,
+      var(--ej-dark-deeper, #0f1d30) 100%
     );
     background-size: 300% 300%;
     animation: landing-gradient-flow 12s ease infinite;
@@ -74,7 +74,7 @@
     font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     line-height: 1.15;
     margin: 0 0 1.25rem;
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
@@ -147,7 +147,7 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: var(--ej-card-radius, 12px);
   border-left: 4px solid var(--ej-color-error, #EF4444);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -180,7 +180,7 @@
 // =============================================
 .landing-steps {
   padding: 5rem 1.5rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 
   &__container {
     max-width: 900px;
@@ -223,7 +223,7 @@
     height: 48px;
     border-radius: 50%;
     background: var(--ej-color-primary, #FF8C42);
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -314,7 +314,7 @@
 
 .landing-feature {
   padding: 1.75rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
   border-radius: var(--ej-card-radius, 12px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
@@ -354,7 +354,7 @@
 // =============================================
 .landing-social-proof {
   padding: 5rem 1.5rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 
   &__container {
     max-width: 1000px;
@@ -449,7 +449,7 @@
   background: linear-gradient(
     135deg,
     var(--ej-color-corporate, #233D63) 0%,
-    #1a2d4a 100%
+    var(--ej-dark-accent, #1a2d4a) 100%
   );
 
   &__container {
@@ -488,7 +488,7 @@
     font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: 1.35rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 0.5rem;
   }
 
@@ -526,7 +526,7 @@
   }
 
   &__card {
-    background: #fff;
+    background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-card-radius, 16px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
     padding: 2.5rem 2rem;
@@ -604,7 +604,7 @@
 // =============================================
 .landing-faq {
   padding: 5rem 1.5rem;
-  background: #fff;
+  background: var(--ej-bg-surface, #fff);
 
   &__container {
     max-width: 800px;
@@ -719,7 +719,7 @@
   background: linear-gradient(
     135deg,
     var(--ej-color-corporate, #233D63) 0%,
-    #0f1d30 100%
+    var(--ej-dark-deeper, #0f1d30) 100%
   );
   text-align: center;
 
@@ -732,7 +732,7 @@
     font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 700;
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
     margin: 0 0 1rem;
   }
 
@@ -775,24 +775,24 @@
         var(--ej-color-primary, #FF8C42) 0%,
         var(--ej-color-secondary, #E85D04) 100%
       );
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(255, 140, 66, 0.4);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
       }
     }
 
     &--outline {
       background: transparent;
       border: 2px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
 
       &:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
       }
     }
 
@@ -850,7 +850,7 @@
 // ComercioConecta — Verde éxito
 .vertical-landing--comercioconecta {
   .landing-hero__gradient {
-    background: linear-gradient(135deg, #065f46 0%, #064e3b 40%, #022c22 100%);
+    background: linear-gradient(135deg, var(--ej-color-green-deep, #065f46) 0%, #064e3b 40%, #022c22 100%);
   }
 
   .landing-pain-point {
@@ -870,7 +870,7 @@
   }
 
   .landing-lead-magnet {
-    background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+    background: linear-gradient(135deg, var(--ej-color-green-deep, #065f46) 0%, #064e3b 100%);
   }
 
   .landing-faq__item[open] {
@@ -878,7 +878,7 @@
   }
 
   .landing-final-cta {
-    background: linear-gradient(135deg, #065f46 0%, #022c22 100%);
+    background: linear-gradient(135deg, var(--ej-color-green-deep, #065f46) 0%, #022c22 100%);
   }
 }
 
@@ -947,7 +947,7 @@
 // Emprendimiento — Impulso naranja
 .vertical-landing--emprendimiento {
   .landing-hero__gradient {
-    background: linear-gradient(135deg, #7c2d12 0%, #6a2410 40%, #431407 100%);
+    background: linear-gradient(135deg, #7c2d12 0%, #6a2410 40%, var(--ej-color-orange-950, #431407) 100%);
   }
 
   .landing-pain-point {
@@ -963,11 +963,11 @@
   }
 
   .landing-lead-magnet {
-    background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
+    background: linear-gradient(135deg, #7c2d12 0%, var(--ej-color-orange-950, #431407) 100%);
   }
 
   .landing-final-cta {
-    background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
+    background: linear-gradient(135deg, #7c2d12 0%, var(--ej-color-orange-950, #431407) 100%);
   }
 }
 

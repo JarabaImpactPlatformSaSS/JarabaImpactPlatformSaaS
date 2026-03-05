@@ -129,7 +129,7 @@
         text-align: left;
         padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
         background: var(--ej-color-agro-dark, #3e4e23);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         font-size: 0.8rem;
         font-weight: 600;
         text-transform: uppercase;
@@ -315,7 +315,7 @@
         background: linear-gradient(135deg, var(--ej-color-agro-dark, #3e4e23), var(--ej-color-agro, #556b2f));
         border-radius: var(--ej-radius-lg, 12px);
         padding: var(--ej-spacing-xl, 2.5rem);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
         margin-bottom: var(--ej-spacing-xl, 2.5rem);
         position: relative;
         overflow: hidden;
@@ -490,7 +490,7 @@
 
     &--primary {
         background: var(--ej-color-agro, #556b2f);
-        color: #fff;
+        color: var(--ej-bg-surface, #fff);
 
         &:hover {
             background: var(--ej-color-agro-dark, #3e4e23);

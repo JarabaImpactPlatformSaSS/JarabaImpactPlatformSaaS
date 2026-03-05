@@ -60,9 +60,9 @@
 
     // Icono blanco para contraste
     svg {
-        color: #ffffff !important;
-        fill: #ffffff !important;
-        stroke: #ffffff !important;
+        color: var(--ej-bg-surface, #ffffff) !important;
+        fill: var(--ej-bg-surface, #ffffff) !important;
+        stroke: var(--ej-bg-surface, #ffffff) !important;
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         flex-shrink: 0;
     }

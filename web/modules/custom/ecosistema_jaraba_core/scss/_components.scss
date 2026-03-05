@@ -76,17 +76,17 @@
     }
 
     &--warning {
-        background-color: #FFF3E0;
-        color: #E65100;
+        background-color: var(--ej-color-orange-material-50, #FFF3E0);
+        color: var(--ej-color-orange-deep, #E65100);
     }
 
     &--error {
-        background-color: #FFEBEE;
+        background-color: var(--ej-color-red-material-50, #FFEBEE);
         color: var(--ej-color-error);
     }
 
     &--info {
-        background-color: #E3F2FD;
+        background-color: var(--ej-color-blue-50-alt, #E3F2FD);
         color: var(--ej-color-info);
     }
 }
@@ -101,27 +101,27 @@
     margin: $ej-spacing-md 0;
 
     &--error {
-        background-color: #FFEBEE;
-        border: 1px solid #FFCDD2;
-        color: #C62828;
+        background-color: var(--ej-color-red-material-50, #FFEBEE);
+        border: 1px solid var(--ej-color-red-material-100, #FFCDD2);
+        color: var(--ej-color-red-deep, #C62828);
     }
 
     &--success {
-        background-color: #E8F5E9;
-        border: 1px solid #C8E6C9;
-        color: #2E7D32;
+        background-color: var(--ej-color-green-material-50, #E8F5E9);
+        border: 1px solid var(--ej-color-green-material-100, #C8E6C9);
+        color: var(--ej-color-green-md, #2E7D32);
     }
 
     &--warning {
-        background-color: #FFF8E1;
-        border: 1px solid #FFE082;
-        color: #E65100;
+        background-color: var(--ej-color-amber-material-50, #FFF8E1);
+        border: 1px solid var(--ej-color-amber-material-200, #FFE082);
+        color: var(--ej-color-orange-deep, #E65100);
     }
 
     &--info {
-        background-color: #E3F2FD;
-        border: 1px solid #90CAF9;
-        color: #1565C0;
+        background-color: var(--ej-color-blue-50-alt, #E3F2FD);
+        border: 1px solid var(--ej-color-blue-material-200, #90CAF9);
+        color: var(--ej-color-blue-material-dark, #1565C0);
     }
 }
 
@@ -270,7 +270,7 @@
             width: 20px;
             left: 3px;
             bottom: 3px;
-            background-color: #ffffff;
+            background-color: var(--ej-bg-surface, #ffffff);
             border-radius: 50%;
             transition: var(--ej-transition);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);

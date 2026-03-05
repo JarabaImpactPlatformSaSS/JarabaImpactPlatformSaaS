@@ -245,6 +245,126 @@ class ProductAgro extends ContentEntityBase implements EntityChangedInterface, E
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // P1-05: Galería multi-imagen (hasta 5 fotos).
+        $fields['images'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Galería de imágenes'))
+            ->setDescription(t('Imágenes adicionales del producto (hasta 5).'))
+            ->setCardinality(5)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('file_directory', 'agro/products/gallery')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 6,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Número de lote de producción (trazabilidad).
+        $fields['lot_number'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Número de lote'))
+            ->setDescription(t('Código de lote para trazabilidad.'))
+            ->setSetting('max_length', 64)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 7,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Certificación (Ecológico, DOP, IGP, etc.).
+        $fields['certification'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Certificación'))
+            ->setDescription(t('Tipo de certificación agroalimentaria.'))
+            ->setSetting('allowed_values', [
+                'ecologico' => 'Ecológico',
+                'dop' => 'DOP (Denominación de Origen Protegida)',
+                'igp' => 'IGP (Indicación Geográfica Protegida)',
+                'conversion' => 'En conversión ecológica',
+                'integrada' => 'Producción integrada',
+                'sin_certificar' => 'Sin certificar',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 8,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Origen geográfico detallado.
+        $fields['geographic_origin'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Origen geográfico'))
+            ->setDescription(t('Comarca, municipio o denominación de origen.'))
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 9,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Temporada de cosecha.
+        $fields['harvest_season'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Temporada de cosecha'))
+            ->setDescription(t('Época del año en que se recolecta.'))
+            ->setSetting('allowed_values', [
+                'primavera' => 'Primavera',
+                'verano' => 'Verano',
+                'otono' => 'Otoño',
+                'invierno' => 'Invierno',
+                'todo_ano' => 'Todo el año',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 10,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Unidad de peso/medida del formato.
+        $fields['weight_unit'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Unidad de peso'))
+            ->setDescription(t('Unidad de medida del formato de venta.'))
+            ->setSetting('allowed_values', [
+                'kg' => 'Kilogramo (kg)',
+                'g' => 'Gramo (g)',
+                'unidad' => 'Unidad',
+                'caja' => 'Caja',
+                'saco' => 'Saco',
+                'litro' => 'Litro (L)',
+                'docena' => 'Docena',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 11,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: Valor de peso por unidad.
+        $fields['weight_value'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Peso por unidad'))
+            ->setDescription(t('Peso o volumen por unidad de venta.'))
+            ->setSetting('precision', 8)
+            ->setSetting('scale', 2)
+            ->setDisplayOptions('form', [
+                'type' => 'number',
+                'weight' => 12,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // P1-05: URL del código QR de trazabilidad.
+        $fields['qr_code_url'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('QR de trazabilidad'))
+            ->setDescription(t('URL del código QR que enlaza a la ficha de trazabilidad.'))
+            ->setSetting('max_length', 512)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 13,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // Campos de sistema
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Creado'));

@@ -383,3 +383,68 @@ ecosistema_jaraba_core.demo_settings:
         products_viewed_per_session:
           type: integer
           label: 'Max products viewed per session'
+
+# P1-01: Vertical Onboarding Config entity schema.
+ecosistema_jaraba_core.vertical_onboarding.*:
+  type: config_entity
+  label: 'Vertical Onboarding Config'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    vertical_id:
+      type: string
+      label: 'Vertical ID'
+    headline:
+      type: string
+      label: 'Register page headline'
+    subheadline:
+      type: string
+      label: 'Register page subheadline'
+    benefits:
+      type: sequence
+      label: 'Benefits list'
+      sequence:
+        type: mapping
+        label: 'Benefit'
+        mapping:
+          icon_category:
+            type: string
+            label: 'Icon category'
+          icon_name:
+            type: string
+            label: 'Icon name'
+          text:
+            type: string
+            label: 'Benefit text'
+    next_steps:
+      type: sequence
+      label: 'Next steps list'
+      sequence:
+        type: mapping
+        label: 'Next step'
+        mapping:
+          title:
+            type: string
+            label: 'Step title'
+          description:
+            type: string
+            label: 'Step description'
+          route:
+            type: string
+            label: 'Route name'
+          route_params:
+            type: mapping
+            label: 'Route parameters'
+          icon:
+            type: string
+            label: 'Bootstrap icon class'
+    connect_required:
+      type: boolean
+      label: 'Stripe Connect required'
+    post_onboarding_route:
+      type: string
+      label: 'Post onboarding route'

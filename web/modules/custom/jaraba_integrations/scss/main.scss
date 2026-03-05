@@ -59,7 +59,7 @@
 .integrations-dashboard__search-btn {
   padding: 0.5rem 1rem;
   background: $int-color-primary;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   border: none;
   border-radius: $int-border-radius;
   cursor: pointer;
@@ -477,9 +477,9 @@
   &--sm { font-size: 0.7rem; padding: 0.1rem 0.4rem; }
   &--lg { font-size: 0.85rem; padding: 0.25rem 0.75rem; }
   &--success { background: rgba(22, 163, 74, 0.1); color: #15803d; }
-  &--error { background: rgba(220, 38, 38, 0.1); color: #b91c1c; }
+  &--error { background: rgba(220, 38, 38, 0.1); color: var(--ej-color-red-700, #b91c1c); }
   &--warning { background: rgba(245, 158, 11, 0.1); color: #b45309; }
-  &--muted { background: rgba(100, 116, 139, 0.1); color: #475569; }
+  &--muted { background: rgba(100, 116, 139, 0.1); color: var(--ej-gray-600, #475569); }
 }
 
 .btn {
@@ -496,8 +496,8 @@
   transition: all 0.15s;
 
   &--sm { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
-  &--primary { background: $int-color-primary; color: #fff; &:hover { opacity: 0.9; } }
-  &--secondary { background: $int-color-secondary; color: #fff; &:hover { opacity: 0.9; } }
+  &--primary { background: $int-color-primary; color: var(--ej-bg-surface, #fff); &:hover { opacity: 0.9; } }
+  &--secondary { background: $int-color-secondary; color: var(--ej-bg-surface, #fff); &:hover { opacity: 0.9; } }
   &--outline { border-color: $int-border-color; background: transparent; color: $int-color-text; &:hover { background: rgba(0,0,0,0.03); } }
-  &--danger { background: $int-color-danger; color: #fff; &:hover { opacity: 0.9; } }
+  &--danger { background: $int-color-danger; color: var(--ej-bg-surface, #fff); &:hover { opacity: 0.9; } }
 }

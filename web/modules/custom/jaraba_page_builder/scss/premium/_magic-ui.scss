@@ -36,17 +36,17 @@
 // VARIABLES SCSS FALLBACK (paleta oficial Jaraba)
 // ============================================================================
 
-$_ej-color-primary: #FF8C42;
-$_ej-color-secondary: #00A9A5;
-$_ej-color-corporate: #233D63;
-$_ej-color-accent: #FF8C42;
+$_ej-color-primary: var(--ej-color-impulse, #FF8C42);
+$_ej-color-secondary: var(--ej-color-innovation, #00A9A5);
+$_ej-color-corporate: var(--ej-color-corporate, #233D63);
+$_ej-color-accent: var(--ej-color-impulse, #FF8C42);
 $_ej-color-accent-dark: color.adjust(#FF8C42, $lightness: -10%);
-$_ej-bg-surface: #FFFFFF;
-$_ej-bg-dark: #1A1A2E;
+$_ej-bg-surface: var(--ej-bg-surface, #FFFFFF);
+$_ej-bg-dark: var(--ej-bg-dark, #1A1A2E);
 $_ej-bg-darker: #16213E;
-$_ej-color-text: #334155;
-$_ej-color-text-inverse: #FFFFFF;
-$_ej-color-border: #E5E7EB;
+$_ej-color-text: var(--ej-color-body, #334155);
+$_ej-color-text-inverse: var(--ej-bg-surface, #FFFFFF);
+$_ej-color-border: var(--ej-border-color, #E5E7EB);
 $_ej-border-radius: 12px;
 $_ej-focus-ring-color: rgba($_ej-color-primary, 0.4);
 $_ej-focus-ring-width: 3px;

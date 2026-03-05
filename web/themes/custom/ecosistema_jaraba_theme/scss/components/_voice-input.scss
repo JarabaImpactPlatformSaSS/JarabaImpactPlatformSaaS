@@ -34,9 +34,9 @@
 
   // Recording state — pulsing red.
   &--recording {
-    background: #EF4444;
-    border-color: #EF4444;
-    color: #fff;
+    background: var(--ej-color-danger, #EF4444);
+    border-color: var(--ej-color-danger, #EF4444);
+    color: var(--ej-bg-surface, #fff);
     animation: voice-pulse 1.5s ease-in-out infinite;
   }
 
@@ -112,7 +112,7 @@
 
   &:hover {
     background: var(--ej-color-impulse, #{$ej-color-impulse});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 
@@ -139,7 +139,7 @@
   &--active {
     background: var(--ej-color-impulse, #{$ej-color-impulse});
     border-color: var(--ej-color-impulse, #{$ej-color-impulse});
-    color: #fff;
+    color: var(--ej-bg-surface, #fff);
   }
 }
 

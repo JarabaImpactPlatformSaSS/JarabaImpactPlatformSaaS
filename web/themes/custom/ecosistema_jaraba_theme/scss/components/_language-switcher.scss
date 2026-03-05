@@ -88,7 +88,7 @@
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      color: var(--ej-bg-surface, #fff);
     }
   }
 
@@ -120,7 +120,7 @@
   .language-switcher__toggle {
     background: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.12);
-    color: #233D63;
+    color: var(--ej-color-corporate, #233D63);
 
     &:hover {
       background: rgba(0, 0, 0, 0.08);
