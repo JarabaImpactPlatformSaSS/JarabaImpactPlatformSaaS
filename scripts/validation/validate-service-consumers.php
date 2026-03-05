@@ -266,6 +266,7 @@ $terminalTags = [
   'eca.condition',
   'eca.event',
   'jaraba_ai_agents.tool',
+  'ecosistema_jaraba_core.tenant_settings_section',
   'drush.command',
   'console.command',
   'cache_tags_invalidator',
