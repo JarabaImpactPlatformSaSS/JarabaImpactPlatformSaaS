@@ -1,7 +1,7 @@
 # Patrones de Customización por Vertical
 
-> **Versión**: 2.2.0
-> **Ultima actualizacion**: 2026-02-23
+> **Versión**: 3.1.0
+> **Ultima actualizacion**: 2026-03-05
 
 ## 1. Arquitectura Multi-Vertical
 
@@ -281,7 +281,104 @@ El vertical `jaraba_content_hub` gestiona el ecosistema de contenido editorial: 
 | **Comentarios** | ContentComment entity con threading depth 3 | `jaraba_content_hub` |
 | **SEO** | OG tags, Twitter Cards, JSON-LD, BreadcrumbList | `jaraba_content_hub` (SeoService) |
 
-## 8. Roadmap
+## 8. Verticales Componibles (ADDON-VERTICAL-001)
+
+> **Desde v3.1.0 (2026-03-05)** — Los verticales pueden activarse como add-ons por tenant, permitiendo multi-vertical sin cambiar de grupo.
+
+### 8.1 Concepto
+
+Un tenant tiene un **vertical primario** (asignado al crear el grupo) y puede activar **verticales adicionales** como add-ons de pago. Esto permite combinaciones como un despacho de abogados (JarabaLex) que también gestiona formación (Formación) o un agricultor (AgroConecta) que vende en marketplace (ComercioConecta).
+
+### 8.2 Arquitectura
+
+```
+┌─────────────────────────────────────────────┐
+│  Tenant "Despacho García"                   │
+│  ┌──────────────┐  ┌─────────────────────┐  │
+│  │ Primario:    │  │ Add-ons activos:    │  │
+│  │ jarabalex    │  │ - formacion         │  │
+│  │ (del Group)  │  │ - emprendimiento    │  │
+│  │              │  │ (AddonSubscription)  │  │
+│  └──────────────┘  └─────────────────────┘  │
+│                                             │
+│  TenantVerticalService::getActiveVerticals()│
+│  → ['jarabalex', 'formacion',              │
+│     'emprendimiento']                       │
+└─────────────────────────────────────────────┘
+```
+
+### 8.3 Entidades Clave
+
+| Entidad | Tipo | Rol |
+|---------|------|-----|
+| `Addon` | ConfigEntity | Define un vertical como addon (addon_type='vertical', vertical_ref=machine_name) |
+| `AddonSubscription` | ContentEntity | Registra la activacion de un addon por tenant (tenant_id, addon_id, status, timestamps) |
+
+### 8.4 Servicios
+
+| Servicio | Clase | Responsabilidad |
+|----------|-------|-----------------|
+| `jaraba_addons.tenant_vertical` | `TenantVerticalService` | Resuelve TODOS los verticales activos: primario (Group) + addon subscriptions |
+| `jaraba_addons.vertical_billing` | `VerticalAddonBillingService` | Orquesta activacion/desactivacion con Stripe sync |
+| `jaraba_billing.feature_access` | `FeatureAccessService` | Verifica features via `hasActiveAddonSubscription()` con fallback legacy |
+
+### 8.5 Resolución Multi-Vertical
+
+```php
+// TenantVerticalService::getActiveVerticals($tenantId)
+// 1. Vertical primario del Group
+$primary = $group->get('field_vertical')->value;
+
+// 2. Verticales addon activos
+$addons = $this->entityTypeManager
+  ->getStorage('addon_subscription')
+  ->loadByProperties([
+    'tenant_id' => $tenantId,
+    'status' => 'active',
+  ]);
+
+// 3. Merge: primario + addons con vertical_ref
+return array_unique([$primary, ...addonVerticals]);
+```
+
+### 8.6 Enriquecimiento IA
+
+`BaseAgent::getAddonVerticalsContext()` inyecta los verticales addon en el prompt de cada agente:
+
+```php
+protected function getAddonVerticalsContext(): string {
+  if (!\Drupal::hasService('jaraba_addons.tenant_vertical')) {
+    return '';
+  }
+  try {
+    $verticals = \Drupal::service('jaraba_addons.tenant_vertical')
+      ->getActiveVerticals($this->tenantId);
+    // Filtra el primario (ya está en contexto base)
+    // Genera bloque de contexto para addon verticals
+  } catch (\Throwable $e) {
+    return ''; // Fallo silencioso — addon context es opcional
+  }
+}
+```
+
+### 8.7 API REST
+
+4 endpoints en `/api/v1/addons/verticals/`:
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/v1/addons/verticals/available` | Lista verticales disponibles para activar |
+| POST | `/api/v1/addons/verticals/activate` | Activa un vertical addon (+ Stripe) |
+| POST | `/api/v1/addons/verticals/deactivate` | Desactiva un vertical addon (+ Stripe) |
+| GET | `/api/v1/addons/verticals/active` | Lista verticales activos del tenant |
+
+### 8.8 Reglas
+
+- **ADDON-VERTICAL-001**: `addon_type='vertical'` + `vertical_ref` en Addon entity. `TenantVerticalService` como fuente de verdad para multi-vertical resolution
+- **Golden Rule #103**: Lazy-load con `hasService()` para dependencias opcionales cross-module (jaraba_addons desde jaraba_ai_agents)
+- 9 verticales seed disponibles (todos excepto demo) con precios escalonados por tier
+
+## 9. Roadmap
 
 | Item | Estado | Prioridad |
 |------|--------|-----------|
@@ -291,6 +388,7 @@ El vertical `jaraba_content_hub` gestiona el ecosistema de contenido editorial: 
 | Herencia de features (Vertical → Plan) | ✅ Completado (PlanResolverService v2.1) | - |
 | Andalucía +ei vertical completo | ✅ Completado (jaraba_andalucia_ei) | - |
 | Content Hub como vertical | ✅ Completado (jaraba_content_hub) | - |
+| Verticales componibles (add-ons) | ✅ Completado (jaraba_addons + TenantVerticalService) | - |
 | Design tokens propios para andalucia_ei | ⏸️ Planificado | Media |
 | Design tokens propios para formacion | ⏸️ Planificado | Media |
 | UI para theme_overrides | ⏸️ Planificado | Alta |
@@ -303,6 +401,7 @@ El vertical `jaraba_content_hub` gestiona el ecosistema de contenido editorial: 
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-05 | **3.1.0** | **Verticales Componibles (ADDON-VERTICAL-001):** Nueva sección 8 completa — addon_type='vertical', TenantVerticalService multi-vertical resolution, VerticalAddonBillingService con Stripe sync, BaseAgent::getAddonVerticalsContext() para enriquecimiento IA, 4 endpoints REST, 9 verticales seed. Roadmap actualizado. Cross-ref: Aprendizaje #161, Golden Rules #102-103. |
 | 2026-02-27 | **3.0.0** | **10 Verticales Canónicos:** Tabla actualizada de 6→10 verticales (se añaden andalucia_ei, jaraba_content_hub, formacion, demo). Diagrama Mermaid actualizado. Nuevas secciones 7.2 (Andalucía +ei) y 7.3 (Content Hub). context_type `program_support` para messaging. Referencia canónica a `BaseAgent::VERTICALS`. |
 | 2026-02-23 | **2.2.0** | **PlanResolverService v2.1:** Seccion 4.2 reescrita con patron PlanResolverService como fuente de verdad para features y limites por vertical+tier. Cascade PLAN-CASCADE-001 documentado (especifico→default→NULL). Roadmap: "Herencia de features" marcado como completado. |
 | 2026-02-20 | **2.1.0** | Seccion 7 nueva: Capacidades Cross-Vertical — documentacion de `jaraba_messaging` como servicio cross-vertical con context_type por vertical. Tabla de 6 context_types con casos de uso. Roadmap actualizado (messaging como completado). |

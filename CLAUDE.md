@@ -232,12 +232,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v110.0.0
-- ARQUITECTURA: v99.0.0
-- INDICE: v139.0.0
-- FLUJO: v63.0.0
-- Ultimo aprendizaje: #160
-- Ultima golden rule: #101
+- DIRECTRICES: v111.0.0
+- ARQUITECTURA: v100.0.0
+- INDICE: v140.0.0
+- FLUJO: v64.0.0
+- Ultimo aprendizaje: #161
+- Ultima golden rule: #103
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
