@@ -50,6 +50,103 @@ function jaraba_i18n_theme(): array {
 }
 
 /**
+ * Implements hook_entity_update().
+ *
+ * Detecta cambios en canvas_data/rendered_html de PageContent y campos
+ * texto de SiteConfig, y encola traduccion asincrona via queue.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ */
+function jaraba_i18n_entity_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Solo entidades de contenido.
+  if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+    return;
+  }
+
+  // Prevenir loops: si estamos sincronizando traducciones, no re-encolar.
+  if ($entity->isSyncing()) {
+    return;
+  }
+
+  // Solo procesar entidades que nos interesan.
+  $entityType = $entity->getEntityTypeId();
+  if (!in_array($entityType, ['page_content', 'site_config'], TRUE)) {
+    return;
+  }
+
+  // Solo el idioma original (no traducciones).
+  if (!$entity->isDefaultTranslation()) {
+    return;
+  }
+
+  // Verificar que hay original para comparar.
+  if (!isset($entity->original)) {
+    return;
+  }
+
+  $hasChanges = FALSE;
+
+  if ($entityType === 'page_content') {
+    // Detectar cambios en canvas_data o rendered_html.
+    foreach (['canvas_data', 'rendered_html', 'content_data'] as $fieldName) {
+      if (!$entity->hasField($fieldName)) {
+        continue;
+      }
+      $oldValue = $entity->original->get($fieldName)->value ?? '';
+      $newValue = $entity->get($fieldName)->value ?? '';
+      if ($oldValue !== $newValue) {
+        $hasChanges = TRUE;
+        break;
+      }
+    }
+  }
+  elseif ($entityType === 'site_config') {
+    // Detectar cambios en campos texto traducibles.
+    $translatableFields = [
+      'site_name', 'site_tagline', 'header_cta_text', 'footer_copyright',
+      'footer_col1_title', 'footer_col2_title', 'footer_col3_title', 'meta_title_suffix',
+    ];
+    foreach ($translatableFields as $fieldName) {
+      if (!$entity->hasField($fieldName)) {
+        continue;
+      }
+      $oldValue = $entity->original->get($fieldName)->value ?? '';
+      $newValue = $entity->get($fieldName)->value ?? '';
+      if ($oldValue !== $newValue) {
+        $hasChanges = TRUE;
+        break;
+      }
+    }
+  }
+
+  if (!$hasChanges) {
+    return;
+  }
+
+  // Encolar traduccion asincrona.
+  try {
+    if (!\Drupal::hasService('jaraba_i18n.canvas_translation')) {
+      return;
+    }
+    /** @var \Drupal\Core\Queue\QueueFactory $queueFactory */
+    $queueFactory = \Drupal::service('queue');
+    $queue = $queueFactory->get('jaraba_i18n_canvas_translation');
+    $queue->createItem([
+      'entity_type' => $entityType,
+      'entity_id' => $entity->id(),
+      'changed_time' => $entity->hasField('changed') ? (int) $entity->get('changed')->value : 0,
+    ]);
+  }
+  catch (\Throwable $e) {
+    // Queue failure must not break entity save.
+    \Drupal::logger('jaraba_i18n')->error('Failed to enqueue canvas translation for @type/@id: @msg', [
+      '@type' => $entityType,
+      '@id' => $entity->id(),
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK() para i18n_selector.
  *
  * Añade las librerías necesarias y prepara variables.

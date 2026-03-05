@@ -55,6 +55,20 @@ services:
   # ---------------------------------------------------------------------------
   # Permite usar {% include '@jaraba_i18n/template.html.twig' %} en otros módulos.
   #
+  # ---------------------------------------------------------------------------
+  # CanvasTranslationService
+  # ---------------------------------------------------------------------------
+  # Traduce canvas_data, rendered_html y content_data de PageContent.
+  # Encapsula logica de GrapesJS canvas translation como servicio reutilizable.
+  #
+  jaraba_i18n.canvas_translation:
+    class: Drupal\jaraba_i18n\Service\CanvasTranslationService
+    arguments:
+      - '@jaraba_i18n.ai_translation'
+      - '@jaraba_i18n.translation_manager'
+      - '@language_manager'
+      - '@logger.channel.jaraba_i18n'
+
   jaraba_i18n.twig.loader.filesystem:
     class: Drupal\jaraba_i18n\TwigLoader\JarabaI18nTwigLoader
     tags:

@@ -71,6 +71,19 @@ if (\Drupal::hasService('jaraba_i18n.translation_manager')) {
   $translationManager = \Drupal::service('jaraba_i18n.translation_manager');
 }
 
+// Detectar modo --force: actualizar traducciones existentes con canvas vacio.
+$forceMode = in_array('--force', $extra ?? $_SERVER['argv'] ?? [], TRUE);
+if ($forceMode) {
+  echo "🔧 Modo --force: actualizará traducciones existentes con canvas vacío\n";
+}
+
+// Intentar usar CanvasTranslationService si disponible.
+$canvasTranslationService = NULL;
+if (\Drupal::hasService('jaraba_i18n.canvas_translation')) {
+  $canvasTranslationService = \Drupal::service('jaraba_i18n.canvas_translation');
+  echo "✅ CanvasTranslationService disponible — usando servicio\n";
+}
+
 $storage = $entityTypeManager->getStorage('page_content');
 
 // =========================================================================
@@ -78,6 +91,7 @@ $storage = $entityTypeManager->getStorage('page_content');
 // =========================================================================
 
 $totalCreated = 0;
+$totalUpdated = 0;
 $totalSkipped = 0;
 $totalErrors = 0;
 
@@ -106,8 +120,56 @@ foreach ($tenants as $tenantId => $config) {
 
       // Verificar si ya existe la traducción.
       if ($page->hasTranslation($targetLang)) {
-        echo "ya existe (skip)";
-        $totalSkipped++;
+        // En modo --force, verificar si canvas_data esta vacio.
+        if ($forceMode) {
+          $existingTranslation = $page->getTranslation($targetLang);
+          $existingCanvas = $existingTranslation->get('canvas_data')->value ?? '';
+          $existingHtml = $existingTranslation->get('rendered_html')->value ?? '';
+          if (empty($existingCanvas) && empty($existingHtml)) {
+            echo "canvas vacío — forzando re-traducción... ";
+            // Usar CanvasTranslationService si disponible.
+            if ($canvasTranslationService) {
+              try {
+                $canvasTranslationService->translatePageCanvas($page, $targetLang, 'es');
+                echo "✅ actualizada (servicio)";
+                $totalUpdated++;
+              }
+              catch (\Throwable $e) {
+                echo "❌ error: " . $e->getMessage();
+                $totalErrors++;
+              }
+              continue;
+            }
+            // Fallback: eliminar traducción y recrear.
+            $page->removeTranslation($targetLang);
+            $page->save();
+            echo "(recreando) ";
+            // Continue to creation logic below.
+          }
+          else {
+            echo "ya tiene contenido (skip)";
+            $totalSkipped++;
+            continue;
+          }
+        }
+        else {
+          echo "ya existe (skip)";
+          $totalSkipped++;
+          continue;
+        }
+      }
+
+      // Usar CanvasTranslationService si disponible.
+      if ($canvasTranslationService) {
+        try {
+          $canvasTranslationService->translatePageCanvas($page, $targetLang, 'es');
+          echo "✅ creada (servicio)";
+          $totalCreated++;
+        }
+        catch (\Throwable $e) {
+          echo "❌ error: " . $e->getMessage();
+          $totalErrors++;
+        }
         continue;
       }
 
@@ -196,9 +258,10 @@ foreach ($tenants as $tenantId => $config) {
 echo "\n\n" . str_repeat('═', 60) . "\n";
 echo "📊 RESUMEN\n";
 echo str_repeat('═', 60) . "\n";
-echo "  ✅ Traducciones creadas: $totalCreated\n";
-echo "  ⏭️  Existentes (skip):   $totalSkipped\n";
-echo "  ❌ Errores:              $totalErrors\n";
+echo "  ✅ Traducciones creadas:    $totalCreated\n";
+echo "  🔄 Traducciones actualizadas: $totalUpdated\n";
+echo "  ⏭️  Existentes (skip):      $totalSkipped\n";
+echo "  ❌ Errores:                 $totalErrors\n";
 echo str_repeat('═', 60) . "\n\n";
 
 // =========================================================================
