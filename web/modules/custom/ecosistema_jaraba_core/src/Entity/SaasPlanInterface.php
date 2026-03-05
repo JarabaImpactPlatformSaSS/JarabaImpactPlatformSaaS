@@ -122,4 +122,20 @@ interface SaasPlanInterface extends ContentEntityInterface
      */
     public function getYearlyPrice(): float;
 
+    /**
+     * Obtiene el ID del producto en Stripe.
+     *
+     * @return string|null
+     *   El ID del producto en Stripe (prod_xxx) o NULL si no sincronizado.
+     */
+    public function getStripeProductId(): ?string;
+
+    /**
+     * Obtiene el ID del precio anual en Stripe.
+     *
+     * @return string|null
+     *   El ID del precio anual en Stripe (price_xxx) o NULL si no sincronizado.
+     */
+    public function getStripePriceYearlyId(): ?string;
+
 }

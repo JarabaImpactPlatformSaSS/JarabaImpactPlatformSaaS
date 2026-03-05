@@ -62,6 +62,13 @@
                   billingNote.hidden = true;
                 }
               }
+
+              // STRIPE-CHECKOUT-001: Update checkout CTA href with billing cycle.
+              var checkoutBtn = card.querySelector('.pricing-card__btn--checkout');
+              if (checkoutBtn) {
+                var baseHref = checkoutBtn.getAttribute('href').split('?')[0];
+                checkoutBtn.setAttribute('href', baseHref + '?cycle=' + billing);
+              }
             });
           });
         });

@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * page--checkout.html.twig — Checkout Stripe Embebido.
+ *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
+ * Template zero-region para /checkout/* (plan checkout, success, cancel).
+ * Layout limpio centrado, sin regiones ni bloques de Drupal.
+ *
+ * ARQUITECTURA:
+ * - Sin {{ page.* }} = Sin bloques/regiones de Drupal
+ * - {{ clean_content }} extrae solo system_main_block
+ * - {{ clean_messages }} para mensajes del sistema
+ * - Body class 'page-checkout' via hook_preprocess_html()
+ * - Variables CSS var(--ej-*)
+ *
+ * STRIPE-CHECKOUT-001 §5.3
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+  {# HEADER MINIMALISTA — Logo + volver #}
+  <header class="checkout-header" role="banner">
+    <div class="checkout-header__inner">
+      <a href="{{ path('<front>') }}" class="checkout-header__logo" aria-label="{% trans %}Volver al inicio{% endtrans %}">
+        {% if logo %}
+          <img src="{{ logo }}" alt="{{ site_name }}" class="checkout-header__logo-img">
+        {% else %}
+          <span class="checkout-header__logo-text">{{ site_name }}</span>
+        {% endif %}
+      </a>
+
+      <a href="{{ path('ecosistema_jaraba_core.pricing.page') }}" class="checkout-header__back">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        {% trans %}Volver a planes{% endtrans %}
+      </a>
+    </div>
+  </header>
+
+  {# DRUPAL MESSAGES #}
+  {% if clean_messages %}
+    <div class="checkout-messages">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
+
+  {# MAIN CONTENT — Checkout embebido #}
+  <main id="main-content" class="checkout-main" role="main">
+    {{ clean_content }}
+  </main>
+
+  {# FOOTER MINIMALISTA #}
+  <footer class="checkout-footer" role="contentinfo">
+    <div class="checkout-footer__inner">
+      <div class="checkout-footer__security">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+          <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        {% trans %}Pago seguro con Stripe{% endtrans %}
+      </div>
+      <div class="checkout-footer__links">
+        <a href="{{ path('<front>') }}terminos-uso">{% trans %}Terminos{% endtrans %}</a>
+        <a href="{{ path('<front>') }}politica-privacidad">{% trans %}Privacidad{% endtrans %}</a>
+      </div>
+      <p class="checkout-footer__copyright">
+        &copy; {{ "now"|date("Y") }} {{ site_name }}
+      </p>
+    </div>
+  </footer>

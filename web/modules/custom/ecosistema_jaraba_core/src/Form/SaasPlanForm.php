@@ -25,8 +25,8 @@ class SaasPlanForm extends PremiumEntityFormBase {
       'pricing' => [
         'label' => $this->t('Precios'),
         'icon' => ['category' => 'fiscal', 'name' => 'receipt'],
-        'description' => $this->t('Precios mensuales, anuales y Stripe.'),
-        'fields' => ['price_monthly', 'price_yearly', 'stripe_price_id'],
+        'description' => $this->t('Precios mensuales, anuales y sincronizacion con Stripe.'),
+        'fields' => ['price_monthly', 'price_yearly', 'stripe_product_id', 'stripe_price_id', 'stripe_price_yearly_id'],
       ],
       'features' => [
         'label' => $this->t('Features Incluidas'),
@@ -55,6 +55,14 @@ class SaasPlanForm extends PremiumEntityFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
+
+    // Stripe fields are auto-populated — mark as disabled (computed).
+    $stripeSection = 'premium_section_pricing';
+    foreach (['stripe_product_id', 'stripe_price_id', 'stripe_price_yearly_id'] as $stripeField) {
+      if (isset($form[$stripeSection][$stripeField])) {
+        $form[$stripeSection][$stripeField]['#disabled'] = TRUE;
+      }
+    }
 
     // Add description and help for limits JSON field.
     $section = 'premium_section_limits';

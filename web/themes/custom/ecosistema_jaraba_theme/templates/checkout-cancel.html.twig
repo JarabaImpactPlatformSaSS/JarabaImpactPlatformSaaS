@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * checkout-cancel.html.twig — Cancelacion del proceso de checkout.
+ *
+ * STRIPE-CHECKOUT-001 §5.3: Template de cancelacion de checkout.
+ *
+ * Convenciones:
+ * - i18n: {% trans %} en todos los textos.
+ * - CSS: var(--ej-*) para todos los colores.
+ */
+#}
+
+<div class="checkout-result checkout-result--cancel">
+  <div class="checkout-result__card">
+    {# Icono informativo #}
+    <div class="checkout-result__icon">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="var(--ej-color-warning, #F59E0B)" opacity="0.1" stroke="var(--ej-color-warning, #F59E0B)" stroke-width="2"/>
+        <path d="M32 20v16" stroke="var(--ej-color-warning, #F59E0B)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="44" r="2" fill="var(--ej-color-warning, #F59E0B)"/>
+      </svg>
+    </div>
+
+    <h1 class="checkout-result__title">{% trans %}Pago cancelado{% endtrans %}</h1>
+
+    <p class="checkout-result__message">
+      {% trans %}No se ha realizado ningun cargo. Puedes volver a intentarlo cuando quieras.{% endtrans %}
+    </p>
+
+    <div class="checkout-result__actions">
+      <a href="{{ path('ecosistema_jaraba_core.pricing.page') }}" class="checkout-result__btn checkout-result__btn--primary">
+        {% trans %}Ver planes disponibles{% endtrans %}
+      </a>
+      <a href="{{ path('<front>') }}" class="checkout-result__btn checkout-result__btn--secondary">
+        {% trans %}Volver al inicio{% endtrans %}
+      </a>
+    </div>
+  </div>
+</div>

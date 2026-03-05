@@ -1,3 +1,14 @@
+# STRIPE-CHECKOUT-001 §5.4: Stripe Embedded Checkout JS.
+# Stripe.js CDN is loaded dynamically in the behavior (PCI compliance requirement).
+stripe-checkout:
+  version: 1.x
+  js:
+    js/stripe-checkout.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 revenue-dashboard:
   version: 1.x
   css:

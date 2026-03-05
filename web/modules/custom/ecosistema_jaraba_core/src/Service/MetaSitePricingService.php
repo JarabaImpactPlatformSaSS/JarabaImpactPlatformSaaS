@@ -110,6 +110,7 @@ class MetaSitePricingService
                 'stripe_price_yearly' => $tier->getStripePriceYearly(),
                 'price_monthly' => $tierPrices['price_monthly'] ?? 0.0,
                 'price_yearly' => $tierPrices['price_yearly'] ?? 0.0,
+                'saas_plan_id' => $tierPrices['saas_plan_id'] ?? NULL,
             ];
         }
 
@@ -288,6 +289,7 @@ class MetaSitePricingService
                 $priceMap[$tierKeys[$index]] = [
                     'price_monthly' => (float) $plan->getPriceMonthly(),
                     'price_yearly' => (float) $plan->getPriceYearly(),
+                    'saas_plan_id' => (int) $plan->id(),
                 ];
                 $index++;
             }

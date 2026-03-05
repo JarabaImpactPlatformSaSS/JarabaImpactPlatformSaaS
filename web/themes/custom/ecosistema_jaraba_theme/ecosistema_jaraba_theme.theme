@@ -1635,6 +1635,19 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
+  // CHECKOUT PAGES - Stripe Embedded Checkout (STRIPE-CHECKOUT-001)
+  // =========================================================================
+  $checkout_routes = [
+    'jaraba_billing.checkout',
+    'jaraba_billing.checkout.success',
+    'jaraba_billing.checkout.cancel',
+  ];
+  if (in_array($route, $checkout_routes)) {
+    $variables['attributes']['class'][] = 'page-checkout';
+    $variables['attributes']['class'][] = 'clean-layout';
+  }
+
+  // =========================================================================
   // USER PAGES - Paginas de usuario autenticado con header/footer
   // =========================================================================
   $user_account_routes = [
@@ -4119,6 +4132,18 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // =========================================================================
   if ($route === 'jaraba_credentials.verify') {
     $suggestions[] = 'page__verify';
+  }
+
+  // =========================================================================
+  // CHECKOUT — Stripe Embedded Checkout (STRIPE-CHECKOUT-001)
+  // =========================================================================
+  $checkout_routes = [
+    'jaraba_billing.checkout',
+    'jaraba_billing.checkout.success',
+    'jaraba_billing.checkout.cancel',
+  ];
+  if (in_array($route, $checkout_routes)) {
+    $suggestions[] = 'page__checkout';
   }
 
   // =========================================================================

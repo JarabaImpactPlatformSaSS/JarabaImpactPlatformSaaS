@@ -264,6 +264,51 @@ jaraba_billing.api.pricing.estimate:
 # REST API — Add-ons (spec 158 §5.4)
 # =============================================
 
+# =============================================
+# CHECKOUT — Stripe Embedded Checkout (STRIPE-CHECKOUT-001 §5.2)
+# =============================================
+
+jaraba_billing.checkout:
+  path: '/checkout/{saas_plan}'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutPage'
+    _title_callback: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutTitle'
+  requirements:
+    _access: 'TRUE'
+  options:
+    parameters:
+      saas_plan:
+        type: entity:saas_plan
+
+jaraba_billing.checkout_session.create:
+  path: '/api/v1/billing/checkout-session'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::createCheckoutSession'
+  requirements:
+    _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+  methods: [POST]
+
+jaraba_billing.checkout.success:
+  path: '/checkout/success'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutSuccess'
+    _title: 'Pago completado'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_billing.checkout.cancel:
+  path: '/checkout/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutCancel'
+    _title: 'Pago cancelado'
+  requirements:
+    _access: 'TRUE'
+
+# =============================================
+# REST API — Add-ons (spec 158 §5.4)
+# =============================================
+
 jaraba_billing.api.addon.subscription:
   path: '/api/v1/subscription'
   defaults:

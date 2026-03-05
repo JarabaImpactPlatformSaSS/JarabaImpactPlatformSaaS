@@ -2828,3 +2828,50 @@ function ecosistema_jaraba_core_update_9034(): string {
 
   return implode(' ', $messages);
 }
+
+/**
+ * Install stripe_product_id and stripe_price_yearly_id fields on saas_plan.
+ *
+ * STRIPE-CHECKOUT-001 §4.2: Campos nuevos para sincronizacion bidireccional
+ * Drupal→Stripe. stripe_product_id almacena el Product ID, y
+ * stripe_price_yearly_id almacena el Price ID anual (el mensual ya existia
+ * como stripe_price_id).
+ *
+ * UPDATE-HOOK-REQUIRED-001: Campos nuevos en baseFieldDefinitions().
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() obligatorios.
+ * UPDATE-HOOK-CATCH-001: catch(\Throwable).
+ */
+function ecosistema_jaraba_core_update_9035(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityType = $updateManager->getEntityType('saas_plan');
+  if (!$entityType) {
+    return 'saas_plan entity type not installed yet.';
+  }
+
+  $fields = \Drupal\ecosistema_jaraba_core\Entity\SaasPlan::baseFieldDefinitions($entityType);
+  $installed = [];
+  $targetFields = ['stripe_product_id', 'stripe_price_yearly_id'];
+
+  foreach ($targetFields as $fieldName) {
+    if (!isset($fields[$fieldName])) {
+      continue;
+    }
+    try {
+      $existing = $updateManager->getFieldStorageDefinition($fieldName, 'saas_plan');
+      if (!$existing) {
+        $fieldDef = $fields[$fieldName];
+        $fieldDef->setName($fieldName);
+        $fieldDef->setTargetEntityTypeId('saas_plan');
+        $updateManager->installFieldStorageDefinition(
+          $fieldName, 'saas_plan', 'ecosistema_jaraba_core', $fieldDef
+        );
+        $installed[] = $fieldName;
+      }
+    }
+    catch (\Throwable $e) {
+      return "Error installing $fieldName: " . $e->getMessage();
+    }
+  }
+
+  return 'Installed fields on saas_plan: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
+}

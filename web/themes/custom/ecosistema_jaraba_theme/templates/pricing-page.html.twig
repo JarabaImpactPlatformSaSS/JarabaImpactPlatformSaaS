@@ -174,21 +174,10 @@
           </ul>
         {% endif %}
 
-        {# CTA button — vertical-aware URLs via Drupal path() #}
+        {# CTA button — STRIPE-CHECKOUT-001: checkout directo si plan sincronizado #}
         <div class="pricing-card__cta">
-          {% if tier.tier_key == 'starter' %}
-            {% if vertical_key %}
-              <a href="{{ path('user.register') }}?plan=starter&vertical={{ vertical_key }}"
-            {% else %}
-              <a href="{{ path('user.register') }}?plan=starter"
-            {% endif %}
-               class="btn btn--primary btn--lg pricing-card__btn"
-               data-track-cta="pricing_starter"
-               data-track-position="pricing_page"
-               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-              {% trans %}Empezar gratis{% endtrans %}
-            </a>
-          {% elseif tier.tier_key == 'enterprise' %}
+          {% if tier.tier_key == 'enterprise' %}
+            {# Enterprise: contacto comercial (sin checkout self-service) #}
             <a href="{{ path('ecosistema_jaraba_core.contact') }}?asunto=plan-empresa{% if vertical_key %}&vertical={{ vertical_key }}{% endif %}"
                class="btn btn--outline btn--lg pricing-card__btn"
                data-track-cta="pricing_enterprise"
@@ -196,17 +185,32 @@
                {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
               {% trans %}Contactar{% endtrans %}
             </a>
+          {% elseif tier.saas_plan_id %}
+            {# Plan con Stripe sincronizado: checkout directo #}
+            <a href="{{ path('jaraba_billing.checkout', {saas_plan: tier.saas_plan_id}) }}"
+               class="btn btn--primary btn--lg pricing-card__btn pricing-card__btn--checkout"
+               data-checkout-plan="{{ tier.saas_plan_id }}"
+               data-track-cta="pricing_{{ tier.tier_key }}"
+               data-track-position="pricing_page"
+               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
+              {% if tier.tier_key == 'starter' and tier.price_monthly == 0 %}
+                {% trans %}Empezar gratis{% endtrans %}
+              {% else %}
+                {% trans %}Empezar ahora{% endtrans %}
+              {% endif %}
+            </a>
           {% else %}
-            {% if vertical_key %}
-              <a href="{{ path('user.register') }}?plan={{ tier.tier_key }}&vertical={{ vertical_key }}"
-            {% else %}
-              <a href="{{ path('user.register') }}?plan={{ tier.tier_key }}"
-            {% endif %}
+            {# Fallback: registro clasico si plan no sincronizado con Stripe #}
+            <a href="{{ path('user.register') }}?plan={{ tier.tier_key }}{% if vertical_key %}&vertical={{ vertical_key }}{% endif %}"
                class="btn btn--primary btn--lg pricing-card__btn"
                data-track-cta="pricing_{{ tier.tier_key }}"
                data-track-position="pricing_page"
                {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-              {% trans %}Empezar ahora{% endtrans %}
+              {% if tier.tier_key == 'starter' %}
+                {% trans %}Empezar gratis{% endtrans %}
+              {% else %}
+                {% trans %}Empezar ahora{% endtrans %}
+              {% endif %}
             </a>
           {% endif %}
         </div>

@@ -85,6 +85,54 @@ function jaraba_billing_cron(): void {
 }
 
 /**
+ * Implements hook_entity_presave() for saas_plan.
+ *
+ * STRIPE-CHECKOUT-001 §4.3: Sincroniza automaticamente el plan con Stripe
+ * Products/Prices. Aplica PRESAVE-RESILIENCE-001: servicio opcional + try-catch.
+ * El save del plan NUNCA falla por errores de Stripe.
+ */
+function jaraba_billing_saas_plan_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Solo si el servicio existe (modulo habilitado).
+  if (!\Drupal::hasService('jaraba_billing.stripe_product_sync')) {
+    return;
+  }
+
+  // No sincronizar durante imports, syncs o migraciones.
+  if ($entity->isSyncing()) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_billing\Service\StripeProductSyncService $syncService */
+    $syncService = \Drupal::service('jaraba_billing.stripe_product_sync');
+    $result = $syncService->syncPlan($entity);
+
+    // Actualizar campos del entity con los IDs de Stripe.
+    if (!empty($result['product_id'])) {
+      $entity->set('stripe_product_id', $result['product_id']);
+    }
+    if (!empty($result['price_monthly_id'])) {
+      $entity->set('stripe_price_id', $result['price_monthly_id']);
+    }
+    if (!empty($result['price_yearly_id'])) {
+      $entity->set('stripe_price_yearly_id', $result['price_yearly_id']);
+    }
+
+    // Si el plan se desactiva y tenia producto en Stripe, archivar.
+    if (!$entity->get('status')->value && !empty($entity->getStripeProductId())) {
+      $syncService->archiveProduct($entity->getStripeProductId());
+    }
+  }
+  catch (\Throwable $e) {
+    // PRESAVE-RESILIENCE-001: el save del plan NO debe fallar por Stripe.
+    \Drupal::logger('jaraba_billing')->error(
+      'Stripe sync failed for plan @id: @error',
+      ['@id' => $entity->id() ?? 'new', '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
  * Implements hook_entity_insert().
  *
  * GAP-M05: Auto-crear Stripe Customer cuando se crea un Tenant.
@@ -117,6 +165,9 @@ function jaraba_billing_entity_insert(\Drupal\Core\Entity\EntityInterface $entit
  * Implements hook_theme().
  */
 function jaraba_billing_theme(): array {
+  $themePath = \Drupal::service('extension.list.theme')
+    ->getPath('ecosistema_jaraba_theme') . '/templates';
+
   return [
     'financial_dashboard' => [
       'variables' => [
@@ -131,6 +182,26 @@ function jaraba_billing_theme(): array {
         'snapshot' => [],
       ],
       'template' => 'revenue-dashboard',
+    ],
+    // STRIPE-CHECKOUT-001 §5.3: Checkout templates.
+    'checkout_page' => [
+      'variables' => [
+        'plan' => [],
+      ],
+      'template' => 'checkout-page',
+      'path' => $themePath,
+    ],
+    'checkout_success' => [
+      'variables' => [
+        'session' => [],
+      ],
+      'template' => 'checkout-success',
+      'path' => $themePath,
+    ],
+    'checkout_cancel' => [
+      'variables' => [],
+      'template' => 'checkout-cancel',
+      'path' => $themePath,
     ],
   ];
 }

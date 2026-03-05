@@ -1,0 +1,7 @@
+services:
+  jaraba_billing.commands.stripe_sync:
+    class: Drupal\jaraba_billing\Commands\StripeSyncCommands
+    arguments:
+      - '@jaraba_billing.stripe_product_sync'
+    tags:
+      - { name: drush.command }

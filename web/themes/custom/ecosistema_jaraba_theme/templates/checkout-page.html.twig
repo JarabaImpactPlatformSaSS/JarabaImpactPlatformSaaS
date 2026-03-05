@@ -1,0 +1,155 @@
+{#
+/**
+ * @file
+ * checkout-page.html.twig — Formulario de Stripe Embedded Checkout.
+ *
+ * STRIPE-CHECKOUT-001 §5.3: Template del formulario de checkout.
+ * El JS (stripe-checkout.js) monta el componente Stripe aqui.
+ *
+ * Variables:
+ * - plan.id: ID del SaasPlan.
+ * - plan.name: Nombre del plan.
+ * - plan.price: Precio (mensual o anual).
+ * - plan.cycle: 'monthly' o 'yearly'.
+ * - plan.is_yearly: Boolean.
+ * - plan.features: Array de features del plan.
+ * - plan.vertical: Nombre de la vertical.
+ *
+ * Convenciones:
+ * - i18n: {% trans %} en todos los textos.
+ * - CSS: var(--ej-*) para todos los colores.
+ * - Accesibilidad: aria-labels, headings jerarquicos, focus visible.
+ * - INNERHTML-XSS-001: Datos sanitizados server-side.
+ */
+#}
+
+<div class="checkout-layout">
+  {# ================================================================
+     COLUMNA IZQUIERDA: Resumen del plan
+     ================================================================ #}
+  <aside class="checkout-summary" aria-label="{% trans %}Resumen del pedido{% endtrans %}">
+    <div class="checkout-summary__card">
+      {# Badge de vertical #}
+      {% if plan.vertical %}
+        <span class="checkout-summary__vertical">{{ plan.vertical }}</span>
+      {% endif %}
+
+      <h2 class="checkout-summary__plan-name">{{ plan.name }}</h2>
+
+      <div class="checkout-summary__price">
+        <span class="checkout-summary__amount">
+          {% if plan.price == 0 %}
+            {% trans %}Gratis{% endtrans %}
+          {% else %}
+            {{ plan.price|number_format(2, ',', '.') }}&euro;
+          {% endif %}
+        </span>
+        {% if plan.price > 0 %}
+          <span class="checkout-summary__cycle">
+            {% if plan.is_yearly %}
+              /{% trans %}ano{% endtrans %}
+            {% else %}
+              /{% trans %}mes{% endtrans %}
+            {% endif %}
+          </span>
+        {% endif %}
+      </div>
+
+      {# Ahorro anual #}
+      {% if plan.is_yearly and plan.price > 0 %}
+        <div class="checkout-summary__savings">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          {% trans %}Ahorra con el plan anual{% endtrans %}
+        </div>
+      {% endif %}
+
+      {# Features incluidas #}
+      {% if plan.features %}
+        <div class="checkout-summary__features">
+          <h3 class="checkout-summary__features-title">{% trans %}Incluido en tu plan{% endtrans %}</h3>
+          <ul class="checkout-summary__features-list">
+            {% for feature in plan.features %}
+              <li class="checkout-summary__feature">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                {{ feature }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {# Garantias #}
+      <div class="checkout-summary__guarantees">
+        <div class="checkout-summary__guarantee">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          {% trans %}Pago 100% seguro{% endtrans %}
+        </div>
+        <div class="checkout-summary__guarantee">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+          </svg>
+          {% trans %}Cancela cuando quieras{% endtrans %}
+        </div>
+        <div class="checkout-summary__guarantee">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+          {% trans %}Soporte prioritario{% endtrans %}
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  {# ================================================================
+     COLUMNA DERECHA: Checkout embebido de Stripe
+     ================================================================ #}
+  <section class="checkout-form-section" aria-label="{% trans %}Formulario de pago{% endtrans %}">
+    <div id="checkout-container" class="checkout-container">
+
+      {# Formulario de datos del cliente (pre-Stripe) #}
+      <form id="checkout-customer-form" class="checkout-customer-form" novalidate>
+        <h2 class="checkout-customer-form__title">{% trans %}Datos de facturacion{% endtrans %}</h2>
+
+        <div class="checkout-customer-form__field">
+          <label for="checkout-email">{% trans %}Email{% endtrans %}</label>
+          <input type="email"
+                 id="checkout-email"
+                 name="email"
+                 required
+                 autocomplete="email"
+                 placeholder="tu@empresa.com">
+        </div>
+
+        <div class="checkout-customer-form__field">
+          <label for="checkout-business">{% trans %}Nombre de empresa{% endtrans %}</label>
+          <input type="text"
+                 id="checkout-business"
+                 name="business_name"
+                 required
+                 autocomplete="organization"
+                 placeholder="{% trans %}Tu empresa o proyecto{% endtrans %}">
+        </div>
+
+        <button type="submit" class="checkout-customer-form__submit">
+          {% trans %}Continuar al pago{% endtrans %}
+        </button>
+      </form>
+
+      {# Spinner de carga #}
+      <div class="checkout-loading" style="display: none;" aria-label="{% trans %}Cargando formulario de pago{% endtrans %}">
+        <div class="checkout-loading__spinner"></div>
+        <p>{% trans %}Preparando el pago seguro...{% endtrans %}</p>
+      </div>
+
+      {# Punto de montaje para Stripe Embedded Checkout #}
+      <div id="stripe-checkout-mount" class="checkout-mount"></div>
+    </div>
+  </section>
+</div>

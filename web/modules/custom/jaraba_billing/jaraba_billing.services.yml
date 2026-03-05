@@ -105,6 +105,28 @@ services:
   # STRIPE INTEGRATION — Servicios de integración real
   # ===========================================
 
+  # Sincronizacion bidireccional Drupal→Stripe de Products/Prices.
+  # STRIPE-CHECKOUT-001 §4.1: Invocado desde hook_entity_presave de SaasPlan.
+  # AUDIT-PERF-002: Lock para prevenir race conditions.
+  jaraba_billing.stripe_product_sync:
+    class: Drupal\jaraba_billing\Service\StripeProductSyncService
+    arguments:
+      - '@?jaraba_foc.stripe_connect'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+      - '@lock'
+
+  # Checkout Session para Stripe Embedded Checkout.
+  # STRIPE-CHECKOUT-001 §5.1: Crea sessions con ui_mode=embedded.
+  jaraba_billing.checkout_session:
+    class: Drupal\jaraba_billing\Service\CheckoutSessionService
+    arguments:
+      - '@?jaraba_foc.stripe_connect'
+      - '@?jaraba_billing.stripe_customer'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+      - '@config.factory'
+
   # Gestión de clientes Stripe
   # AUDIT-PERF-002: Inyección de @lock para prevenir race conditions.
   jaraba_billing.stripe_customer:

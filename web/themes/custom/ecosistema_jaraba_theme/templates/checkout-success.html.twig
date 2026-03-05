@@ -1,0 +1,67 @@
+{#
+/**
+ * @file
+ * checkout-success.html.twig — Confirmacion post-checkout exitoso.
+ *
+ * STRIPE-CHECKOUT-001 §5.3: Template de exito post-pago.
+ *
+ * Variables:
+ * - session.status: Estado de la session ('complete', 'unknown').
+ * - session.customer_email: Email del cliente.
+ * - session.plan_name: ID del plan contratado.
+ *
+ * Convenciones:
+ * - i18n: {% trans %} en todos los textos.
+ * - CSS: var(--ej-*) para todos los colores.
+ */
+#}
+
+<div class="checkout-result checkout-result--success">
+  <div class="checkout-result__card">
+    {# Icono de exito animado #}
+    <div class="checkout-result__icon">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="checkout-result__check-icon">
+        <circle cx="32" cy="32" r="30" fill="var(--ej-color-success, #10B981)" opacity="0.1" stroke="var(--ej-color-success, #10B981)" stroke-width="2"/>
+        <path d="M20 33l8 8 16-16" stroke="var(--ej-color-success, #10B981)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="checkout-result__check-path"/>
+      </svg>
+    </div>
+
+    <h1 class="checkout-result__title">{% trans %}Pago completado{% endtrans %}</h1>
+
+    {% if session.status == 'complete' %}
+      <p class="checkout-result__message">
+        {% trans %}Tu suscripcion se ha activado correctamente. En breve recibiras un email de confirmacion.{% endtrans %}
+      </p>
+
+      {% if session.customer_email %}
+        <p class="checkout-result__email">
+          {% trans %}Email de confirmacion enviado a:{% endtrans %}
+          <strong>{{ session.customer_email }}</strong>
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="checkout-result__message">
+        {% trans %}Tu pago esta siendo procesado. Te notificaremos cuando se complete.{% endtrans %}
+      </p>
+    {% endif %}
+
+    <div class="checkout-result__actions">
+      <a href="{{ path('jaraba_billing.financial_dashboard') }}" class="checkout-result__btn checkout-result__btn--primary">
+        {% trans %}Ir a mi panel{% endtrans %}
+      </a>
+      <a href="{{ path('<front>') }}" class="checkout-result__btn checkout-result__btn--secondary">
+        {% trans %}Volver al inicio{% endtrans %}
+      </a>
+    </div>
+
+    {# Proximos pasos #}
+    <div class="checkout-result__next-steps">
+      <h2 class="checkout-result__next-title">{% trans %}Proximos pasos{% endtrans %}</h2>
+      <ol class="checkout-result__steps">
+        <li>{% trans %}Revisa tu email para confirmar la cuenta{% endtrans %}</li>
+        <li>{% trans %}Configura tu espacio de trabajo{% endtrans %}</li>
+        <li>{% trans %}Explora las herramientas de tu plan{% endtrans %}</li>
+      </ol>
+    </div>
+  </div>
+</div>

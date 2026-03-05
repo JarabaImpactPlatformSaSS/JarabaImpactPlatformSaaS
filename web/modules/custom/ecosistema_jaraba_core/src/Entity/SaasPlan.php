@@ -145,6 +145,22 @@ class SaasPlan extends ContentEntityBase implements SaasPlanInterface
     /**
      * {@inheritdoc}
      */
+    public function getStripeProductId(): ?string
+    {
+        return $this->get('stripe_product_id')->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStripePriceYearlyId(): ?string
+    {
+        return $this->get('stripe_price_yearly_id')->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isFree(): bool
     {
         return $this->getPriceMonthly() <= 0;
@@ -292,14 +308,36 @@ class SaasPlan extends ContentEntityBase implements SaasPlanInterface
             ])
             ->setDisplayConfigurable('form', TRUE);
 
-        // Stripe Price ID.
+        // Stripe Product ID — auto-rellenado por StripeProductSyncService.
+        $fields['stripe_product_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Stripe Product ID'))
+            ->setDescription(t('ID del producto en Stripe (prod_xxx). Se rellena automaticamente al guardar.'))
+            ->setSetting('max_length', 100)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 18,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Stripe Price ID (monthly) — auto-rellenado por StripeProductSyncService.
         $fields['stripe_price_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Stripe Price ID'))
-            ->setDescription(t('ID del precio en Stripe (ej: price_1234567890).'))
+            ->setLabel(t('Stripe Price ID (Mensual)'))
+            ->setDescription(t('ID del precio mensual en Stripe (price_xxx). Se rellena automaticamente al guardar.'))
             ->setSetting('max_length', 100)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
                 'weight' => 20,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Stripe Price ID (yearly) — auto-rellenado por StripeProductSyncService.
+        $fields['stripe_price_yearly_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Stripe Price ID (Anual)'))
+            ->setDescription(t('ID del precio anual en Stripe (price_xxx). Se rellena automaticamente al guardar.'))
+            ->setSetting('max_length', 100)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 22,
             ])
             ->setDisplayConfigurable('form', TRUE);
 
