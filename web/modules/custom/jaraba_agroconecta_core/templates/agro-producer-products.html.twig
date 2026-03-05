@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * Template del listado de productos del productor AgroConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content (zero-region pattern).
+ * Body classes: agroconecta-page, producer-products-page.
+ *
+ * Variables:
+ *   - products: Array de arrays con datos de productos (id, name, sku, price, stock, status, category).
+ *   - total: Total de productos.
+ *
+ * Patron: Replica comercio-merchant-products.html.twig adaptado a ProductAgro.
+ * Slide-panel: data-slide-panel-* para CRUD sin abandonar la pagina.
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ * Iconos: jaraba_icon() con variante duotone y colores de paleta Jaraba.
+ */
+#}
+
+<div class="agro-producer-products">
+  <header class="agro-producer-products__header container">
+    <div class="agro-producer-products__header-inner">
+      <h1>{% trans %}Mis Productos{% endtrans %}</h1>
+      <p class="agro-producer-products__count">{{ total }} {% trans %}productos{% endtrans %}</p>
+    </div>
+    <button class="agro-btn agro-btn--primary"
+            data-slide-panel="nuevo-producto-agro"
+            data-slide-panel-url="{{ path('entity.product_agro.add_form') }}"
+            data-slide-panel-title="{{ 'Nuevo Producto'|trans }}">
+      + {% trans %}Añadir Producto{% endtrans %}
+    </button>
+  </header>
+
+  {# Filtros rapidos por estado #}
+  <div class="agro-producer-products__filters container">
+    <div class="agro-filter-tabs">
+      <a href="?" class="agro-filter-tab {{ filter_status is not defined or filter_status is null ? 'agro-filter-tab--active' : '' }}">
+        {% trans %}Todos{% endtrans %}
+      </a>
+      <a href="?status=1" class="agro-filter-tab {{ filter_status == '1' ? 'agro-filter-tab--active' : '' }}">
+        {% trans %}Activos{% endtrans %}
+      </a>
+      <a href="?status=0" class="agro-filter-tab {{ filter_status == '0' ? 'agro-filter-tab--active' : '' }}">
+        {% trans %}Borradores{% endtrans %}
+      </a>
+    </div>
+  </div>
+
+  {# Tabla de productos #}
+  {% if products|length > 0 %}
+    <div class="agro-table-responsive container">
+      <table class="agro-table agro-table--products">
+        <thead>
+          <tr>
+            <th>{% trans %}Producto{% endtrans %}</th>
+            <th>{% trans %}SKU{% endtrans %}</th>
+            <th>{% trans %}Precio{% endtrans %}</th>
+            <th>{% trans %}Stock{% endtrans %}</th>
+            <th>{% trans %}Categoría{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}Acciones{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+            <tr>
+              <td class="agro-table__cell--product">
+                <div class="agro-table__product-info">
+                  <span class="agro-table__product-name">{{ product.name }}</span>
+                </div>
+              </td>
+              <td><code>{{ product.sku }}</code></td>
+              <td>{{ product.price }}</td>
+              <td>
+                {% set stock = product.stock %}
+                <span class="agro-badge {{ stock == 0 ? 'agro-badge--danger' : (stock <= 5 ? 'agro-badge--warning' : 'agro-badge--success') }}">
+                  {{ stock }}
+                </span>
+              </td>
+              <td>{{ product.category }}</td>
+              <td>
+                {% if product.status %}
+                  <span class="agro-status agro-status--active">{% trans %}Activo{% endtrans %}</span>
+                {% else %}
+                  <span class="agro-status agro-status--draft">{% trans %}Borrador{% endtrans %}</span>
+                {% endif %}
+              </td>
+              <td>
+                <button class="agro-btn agro-btn--small agro-btn--outline"
+                        data-slide-panel="editar-producto-agro"
+                        data-slide-panel-url="{{ path('entity.product_agro.edit_form', {'product_agro': product.id}) }}"
+                        data-slide-panel-title="{{ 'Editar Producto'|trans }}">
+                  {% trans %}Editar{% endtrans %}
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="agro-empty-state container">
+      <div class="agro-empty-state__icon">
+        {{ jaraba_icon('agriculture', 'seedling', { variant: 'duotone', size: '64px', color: 'verde-innovacion' }) }}
+      </div>
+      <h3 class="agro-empty-state__title">{% trans %}No tienes productos todavía{% endtrans %}</h3>
+      <p class="agro-empty-state__text">
+        {% trans %}Añade tu primer producto para empezar a vender en el marketplace agroalimentario.{% endtrans %}
+      </p>
+      <button class="agro-btn agro-btn--primary"
+              data-slide-panel="nuevo-producto-agro"
+              data-slide-panel-url="{{ path('entity.product_agro.add_form') }}"
+              data-slide-panel-title="{{ 'Nuevo Producto'|trans }}">
+        + {% trans %}Crear mi primer producto{% endtrans %}
+      </button>
+    </div>
+  {% endif %}
+</div>

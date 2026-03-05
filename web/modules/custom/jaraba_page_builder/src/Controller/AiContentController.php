@@ -65,6 +65,20 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
     protected $aiImageSuggestion;
 
     /**
+     * GAP-H05: Feature access gating for AI endpoints.
+     *
+     * @var object|null
+     */
+    protected $featureAccess;
+
+    /**
+     * GAP-H05: AI usage limit enforcement.
+     *
+     * @var object|null
+     */
+    protected $aiUsageLimit;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container)
@@ -89,6 +103,14 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
         }
         if ($container->has('jaraba_page_builder.ai_image_suggestion')) {
             $instance->aiImageSuggestion = $container->get('jaraba_page_builder.ai_image_suggestion');
+        }
+
+        // GAP-H05: Feature access + AI usage limit gating.
+        if ($container->has('jaraba_billing.feature_access')) {
+            $instance->featureAccess = $container->get('jaraba_billing.feature_access');
+        }
+        if ($container->has('ecosistema_jaraba_core.ai_usage_limit')) {
+            $instance->aiUsageLimit = $container->get('ecosistema_jaraba_core.ai_usage_limit');
         }
 
         return $instance;
@@ -345,6 +367,12 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
      */
     public function seoSuggest(Request $request): JsonResponse
     {
+        // GAP-H05: Feature access + usage limit gating.
+        $gateResult = $this->checkAiFeatureGate('page_builder_seo');
+        if ($gateResult) {
+            return $gateResult;
+        }
+
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['html'])) {
@@ -401,6 +429,12 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
      */
     public function generateAITemplate(Request $request): JsonResponse
     {
+        // GAP-H05: Feature access + usage limit gating.
+        $gateResult = $this->checkAiFeatureGate('premium_blocks');
+        if ($gateResult) {
+            return $gateResult;
+        }
+
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['prompt'])) {
@@ -528,6 +562,12 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
      */
     public function suggestImages(Request $request): JsonResponse
     {
+        // GAP-H05: Feature access + usage limit gating.
+        $gateResult = $this->checkAiFeatureGate('page_builder_analytics');
+        if ($gateResult) {
+            return $gateResult;
+        }
+
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['block_type'])) {
@@ -606,6 +646,115 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
         return new JsonResponse([
             'success' => $tracked,
         ]);
+    }
+
+    /**
+     * GAP-H05: Checks feature access and AI usage limits for the current tenant.
+     *
+     * @param string $featureKey
+     *   The feature key to check (e.g. 'page_builder_seo', 'premium_blocks').
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse|null
+     *   A 403 response if access denied, or NULL if access granted.
+     */
+    protected function checkAiFeatureGate(string $featureKey): ?JsonResponse {
+        try {
+            // Resolve tenant ID from the resolver service.
+            $tenantId = NULL;
+            if ($this->tenantResolver && method_exists($this->tenantResolver, 'getCurrentTenantId')) {
+                $tenantId = $this->tenantResolver->getCurrentTenantId();
+            }
+
+            if (!$tenantId) {
+                return NULL;
+            }
+
+            // Check feature access via plan + add-ons.
+            if ($this->featureAccess && method_exists($this->featureAccess, 'canAccess')) {
+                if (!$this->featureAccess->canAccess($tenantId, $featureKey)) {
+                    // GAP-H08: Fire upgrade trigger for feature-blocked event.
+                    $this->fireUpgradeTrigger($tenantId, 'feature_blocked', [
+                        'feature' => $featureKey,
+                        'source' => 'page_builder_ai',
+                    ]);
+                    return new JsonResponse([
+                        'success' => FALSE,
+                        'error' => $this->t('Tu plan actual no incluye esta funcionalidad. Actualiza tu plan para acceder.'),
+                        'upgrade_required' => TRUE,
+                        'feature' => $featureKey,
+                    ], 403);
+                }
+            }
+
+            // Check AI usage limits (daily/monthly quotas).
+            if ($this->aiUsageLimit && method_exists($this->aiUsageLimit, 'checkLimit')) {
+                $limitResult = $this->aiUsageLimit->checkLimit($tenantId, 'page_builder_ai');
+                if (isset($limitResult['exceeded']) && $limitResult['exceeded']) {
+                    // GAP-H08: Fire upgrade trigger for limit-reached event.
+                    $this->fireUpgradeTrigger($tenantId, 'limit_reached', [
+                        'feature' => $featureKey,
+                        'source' => 'ai_usage_limit',
+                    ]);
+                    return new JsonResponse([
+                        'success' => FALSE,
+                        'error' => $this->t('Has alcanzado el límite de uso de IA para tu plan. Se restablecerá pronto.'),
+                        'limit_exceeded' => TRUE,
+                        'reset_at' => $limitResult['reset_at'] ?? NULL,
+                    ], 429);
+                }
+            }
+        }
+        catch (\Throwable $e) {
+            $this->getLogger('jaraba_page_builder')->warning(
+                'GAP-H05: Feature gate check failed for @feature: @msg',
+                ['@feature' => $featureKey, '@msg' => $e->getMessage()]
+            );
+        }
+
+        return NULL;
+    }
+
+    /**
+     * GAP-H08: Fires an upgrade trigger event for the given tenant.
+     *
+     * @param int $tenantId
+     *   The tenant ID.
+     * @param string $triggerType
+     *   The trigger type (e.g. 'feature_blocked', 'limit_reached').
+     * @param array $context
+     *   Additional context for the trigger.
+     */
+    protected function fireUpgradeTrigger(int $tenantId, string $triggerType, array $context = []): void {
+        try {
+            if (!\Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')
+                || !\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+                return;
+            }
+
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+            $tenant = $tenantContext->getCurrentTenant();
+            if (!$tenant) {
+                return;
+            }
+
+            // TenantResolverService returns GroupInterface; we need TenantInterface.
+            // Use TenantBridgeService if available.
+            $tenantEntity = NULL;
+            if (\Drupal::hasService('ecosistema_jaraba_core.tenant_bridge')) {
+                $bridge = \Drupal::service('ecosistema_jaraba_core.tenant_bridge');
+                if (method_exists($bridge, 'getTenantForGroup')) {
+                    $tenantEntity = $bridge->getTenantForGroup($tenant);
+                }
+            }
+
+            if ($tenantEntity) {
+                \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
+                    ->fire($triggerType, $tenantEntity, $context);
+            }
+        }
+        catch (\Throwable $e) {
+            // PRESAVE-RESILIENCE-001: Never block on optional trigger.
+        }
     }
 
 }

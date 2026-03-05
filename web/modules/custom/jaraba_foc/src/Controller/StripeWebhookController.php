@@ -125,6 +125,10 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
                 'account.updated' => $this->handleAccountUpdated($eventData),
                 'customer.subscription.created' => $this->handleSubscriptionCreated($eventData),
                 'customer.subscription.deleted' => $this->handleSubscriptionCanceled($eventData),
+                // GAP-H07: Commerce checkout, transfer and payout handlers.
+                'checkout.session.completed' => $this->handleCheckoutSessionCompleted($eventData),
+                'transfer.created' => $this->handleTransferCreated($eventData),
+                'payout.paid' => $this->handlePayoutPaid($eventData),
                 default => $this->handleUnknownEvent($eventType),
             };
         } catch (\Exception $e) {
@@ -343,6 +347,102 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
                 '@error' => $e->getMessage(),
             ]);
         }
+
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+    }
+
+    /**
+     * GAP-H07: Procesa checkout session completado (Connect marketplace).
+     *
+     * Registra la venta en el libro mayor cuando un checkout de marketplace
+     * se completa exitosamente. Incluye desglose de comision de plataforma.
+     */
+    protected function handleCheckoutSessionCompleted(array $data): JsonResponse {
+        $sessionId = $data['id'] ?? '';
+        $amountTotal = ($data['amount_total'] ?? 0) / 100;
+        $currency = strtoupper($data['currency'] ?? 'EUR');
+        $metadata = $data['metadata'] ?? [];
+        $tenantId = $metadata['tenant_id'] ?? NULL;
+        $vertical = $metadata['vertical'] ?? 'comercioconecta';
+
+        $this->createFinancialTransaction([
+            'amount' => $amountTotal,
+            'currency' => $currency,
+            'transaction_type' => 'one_time_sale',
+            'source_system' => 'stripe_connect',
+            'external_id' => $sessionId,
+            'related_tenant' => $tenantId,
+            'is_recurring' => FALSE,
+            'description' => sprintf('Checkout completado (session %s)', substr($sessionId, 0, 20)),
+            'related_vertical' => $vertical,
+        ]);
+
+        $this->focLogger->info('Checkout session completado: @id, monto: @amount @currency', [
+            '@id' => $sessionId,
+            '@amount' => $amountTotal,
+            '@currency' => $currency,
+        ]);
+
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+    }
+
+    /**
+     * GAP-H07: Procesa transferencia creada (payout a connected account).
+     *
+     * Registra la transferencia como gasto operativo (platform -> merchant).
+     */
+    protected function handleTransferCreated(array $data): JsonResponse {
+        $transferId = $data['id'] ?? '';
+        $amount = ($data['amount'] ?? 0) / 100;
+        $currency = strtoupper($data['currency'] ?? 'EUR');
+        $destinationAccount = $data['destination'] ?? '';
+
+        $this->createFinancialTransaction([
+            'amount' => -$amount, // Negativo: salida de la plataforma.
+            'currency' => $currency,
+            'transaction_type' => 'transfer_out',
+            'source_system' => 'stripe_connect',
+            'external_id' => $transferId,
+            'is_recurring' => FALSE,
+            'description' => sprintf('Transferencia a cuenta conectada %s', substr($destinationAccount, 0, 15)),
+        ]);
+
+        $this->focLogger->info('Transfer creado: @id -> @dest, monto: @amount @currency', [
+            '@id' => $transferId,
+            '@dest' => $destinationAccount,
+            '@amount' => $amount,
+            '@currency' => $currency,
+        ]);
+
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+    }
+
+    /**
+     * GAP-H07: Procesa payout ejecutado (Stripe -> bank account).
+     *
+     * Registra el payout como informacion de liquidacion bancaria.
+     */
+    protected function handlePayoutPaid(array $data): JsonResponse {
+        $payoutId = $data['id'] ?? '';
+        $amount = ($data['amount'] ?? 0) / 100;
+        $currency = strtoupper($data['currency'] ?? 'EUR');
+        $arrivalDate = $data['arrival_date'] ?? NULL;
+
+        $this->createFinancialTransaction([
+            'amount' => -$amount, // Negativo: dinero sale de Stripe a banco.
+            'currency' => $currency,
+            'transaction_type' => 'payout',
+            'source_system' => 'stripe_connect',
+            'external_id' => $payoutId,
+            'is_recurring' => FALSE,
+            'description' => sprintf('Payout a cuenta bancaria (llegada: %s)', $arrivalDate ? date('Y-m-d', $arrivalDate) : 'pendiente'),
+        ]);
+
+        $this->focLogger->info('Payout ejecutado: @id, monto: @amount @currency', [
+            '@id' => $payoutId,
+            '@amount' => $amount,
+            '@currency' => $currency,
+        ]);
 
         return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }

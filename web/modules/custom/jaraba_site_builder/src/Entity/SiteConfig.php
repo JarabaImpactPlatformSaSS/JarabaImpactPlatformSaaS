@@ -30,11 +30,14 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "site_config",
+ *   data_table = "site_config_field_data",
+ *   translatable = TRUE,
  *   admin_permission = "administer site structure",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "site_name",
  *     "uuid" = "uuid",
+ *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/site-builder/config/{site_config}",
@@ -75,6 +78,7 @@ class SiteConfig extends ContentEntityBase
             ->setLabel(t('Nombre del Sitio'))
             ->setDescription(t('Nombre principal del sitio web.'))
             ->setRequired(TRUE)
+            ->setTranslatable(TRUE)
             ->setSettings([
                 'max_length' => 255,
             ])
@@ -87,6 +91,7 @@ class SiteConfig extends ContentEntityBase
         $fields['site_tagline'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Eslogan'))
             ->setDescription(t('Subtítulo o eslogan del sitio.'))
+            ->setTranslatable(TRUE)
             ->setSettings([
                 'max_length' => 255,
             ])
@@ -163,6 +168,7 @@ class SiteConfig extends ContentEntityBase
         $fields['meta_title_suffix'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Sufijo de Meta Title'))
             ->setDescription(t('Texto que se añade al final de los títulos (ej: " | Mi Empresa").'))
+            ->setTranslatable(TRUE)
             ->setSettings([
                 'max_length' => 100,
             ])
@@ -348,6 +354,7 @@ class SiteConfig extends ContentEntityBase
         $fields['header_cta_text'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Texto CTA Header'))
             ->setDescription(t('Texto del botón de acción principal en el header.'))
+            ->setTranslatable(TRUE)
             ->setSettings([
                 'max_length' => 50,
             ])
@@ -426,6 +433,7 @@ class SiteConfig extends ContentEntityBase
         $fields['footer_copyright'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Texto Copyright'))
             ->setDescription(t('Texto de copyright. Usa {year} para el año actual.'))
+            ->setTranslatable(TRUE)
             ->setSettings([
                 'max_length' => 255,
             ])
@@ -441,6 +449,7 @@ class SiteConfig extends ContentEntityBase
         $fields['footer_col1_title'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Titulo Columna 1 Footer'))
             ->setDescription(t('Titulo de la primera columna del footer. Si vacio, usa el nombre del sitio.'))
+            ->setTranslatable(TRUE)
             ->setSettings(['max_length' => 100])
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
@@ -451,6 +460,7 @@ class SiteConfig extends ContentEntityBase
         $fields['footer_col2_title'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Titulo Columna 2 Footer'))
             ->setDescription(t('Titulo de la segunda columna del footer. Si vacio, usa "Empresa".'))
+            ->setTranslatable(TRUE)
             ->setSettings(['max_length' => 100])
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
@@ -461,6 +471,7 @@ class SiteConfig extends ContentEntityBase
         $fields['footer_col3_title'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Titulo Columna 3 Footer'))
             ->setDescription(t('Titulo de la tercera columna del footer. Si vacio, usa "Legal".'))
+            ->setTranslatable(TRUE)
             ->setSettings(['max_length' => 100])
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',

@@ -93,3 +93,44 @@ function jaraba_site_builder_update_10003(): string {
 
   return 'Installed fields on site_config: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
 }
+
+/**
+ * Make site_config translatable (failed — see 10005).
+ */
+function jaraba_site_builder_update_10004(): string {
+  return 'No-op: replaced by update_10005.';
+}
+
+/**
+ * Make site_config translatable: update entity type + translatable fields.
+ *
+ * Uses sandbox for data migration (entity schema change requires batch).
+ * Uses EntityFieldManager to get complete field definitions including
+ * auto-generated fields (default_langcode, langcode).
+ */
+function jaraba_site_builder_update_10005(array &$sandbox): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('site_config');
+
+    // Use EntityFieldManager to get complete field definitions including
+    // auto-generated default_langcode that translatable entities need.
+    /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
+    $field_manager = \Drupal::service('entity_field.manager');
+    // Clear cached definitions so the new translatable annotation is picked up.
+    $field_manager->clearCachedFieldDefinitions();
+    $field_definitions = $field_manager->getBaseFieldDefinitions('site_config');
+
+    // Set name + target on each field definition (UPDATE-FIELD-DEF-001).
+    foreach ($field_definitions as $field_name => $definition) {
+      $definition->setName($field_name);
+      $definition->setTargetEntityTypeId('site_config');
+    }
+
+    $update_manager->updateFieldableEntityType($entity_type, $field_definitions, $sandbox);
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to make site_config translatable: ' . $e->getMessage(), 0, $e);
+  }
+}

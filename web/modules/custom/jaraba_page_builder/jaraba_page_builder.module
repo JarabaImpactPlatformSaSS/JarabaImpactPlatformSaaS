@@ -1273,3 +1273,17 @@ function jaraba_page_builder_preprocess_stat_item(array &$variables): void {
   }
   $variables['stat_item'] = $entity;
 }
+
+/**
+ * Implements hook_ENTITY_TYPE_view_alter() for page_content.
+ *
+ * Oculta el formulario de moderación (content_moderation_control) del
+ * frontend público. Este extra field es registrado por content_moderation
+ * con visible=TRUE por defecto y se renderiza para todos los usuarios,
+ * incluidos anónimos. Las páginas del Page Builder son contenido público
+ * renderizado por canvas HTML; el estado de moderación se gestiona
+ * desde el backoffice.
+ */
+function jaraba_page_builder_page_content_view_alter(array &$build): void {
+  unset($build['content_moderation_control']);
+}

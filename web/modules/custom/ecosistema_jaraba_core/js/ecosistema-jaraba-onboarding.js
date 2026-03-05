@@ -9,6 +9,8 @@
  * - Envío del formulario de registro vía AJAX
  * - Animación de confetti en página de bienvenida
  *
+ * ROUTE-LANGPREFIX-001: Todas las URLs via drupalSettings (Url::fromRoute).
+ *
  * @module ecosistemaJarabaOnboarding
  */
 
@@ -28,15 +30,15 @@
          * @param {HTMLFormElement} form - El formulario de registro.
          */
         initRegisterForm: function (form) {
-            const submitBtn = form.querySelector('[type="submit"]');
-            const passwordField = form.querySelector('#password');
-            const passwordToggle = form.querySelector('.ej-password-toggle');
-            const domainInput = form.querySelector('#domain');
+            var submitBtn = form.querySelector('[type="submit"]');
+            var passwordField = form.querySelector('#password');
+            var passwordToggle = form.querySelector('.ej-password-toggle');
+            var domainInput = form.querySelector('#domain');
 
             // Toggle de visibilidad de contraseña
             if (passwordToggle && passwordField) {
                 passwordToggle.addEventListener('click', function () {
-                    const type = passwordField.type === 'password' ? 'text' : 'password';
+                    var type = passwordField.type === 'password' ? 'text' : 'password';
                     passwordField.type = type;
                     this.querySelector('i').classList.toggle('bi-eye');
                     this.querySelector('i').classList.toggle('bi-eye-slash');
@@ -74,38 +76,39 @@
          * @returns {boolean} - True si el campo es válido.
          */
         validateField: function (input) {
-            const errorElement = input.closest('.ej-form-group')?.querySelector('.ej-form-error');
-            let isValid = true;
-            let errorMessage = '';
+            var formGroup = input.closest('.ej-form-group');
+            var errorElement = formGroup ? formGroup.querySelector('.ej-form-error') : null;
+            var isValid = true;
+            var errorMessage = '';
 
             // Validar campo requerido
             if (input.required && !input.value.trim()) {
                 isValid = false;
-                errorMessage = 'Este campo es obligatorio.';
+                errorMessage = Drupal.t('Este campo es obligatorio.');
             }
             // Validar email
             else if (input.type === 'email' && input.value) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(input.value)) {
                     isValid = false;
-                    errorMessage = 'El formato del email no es válido.';
+                    errorMessage = Drupal.t('El formato del email no es válido.');
                 }
             }
             // Validar contraseña
             else if (input.name === 'password' && input.value) {
                 if (input.value.length < 8) {
                     isValid = false;
-                    errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
+                    errorMessage = Drupal.t('La contraseña debe tener al menos 8 caracteres.');
                 } else if (!/[A-Z]/.test(input.value) || !/[0-9]/.test(input.value)) {
                     isValid = false;
-                    errorMessage = 'Debe contener al menos una mayúscula y un número.';
+                    errorMessage = Drupal.t('Debe contener al menos una mayúscula y un número.');
                 }
             }
             // Validar dominio
             else if (input.name === 'domain' && input.value) {
                 if (!/^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/.test(input.value)) {
                     isValid = false;
-                    errorMessage = 'Formato inválido. Use solo letras minúsculas, números y guiones.';
+                    errorMessage = Drupal.t('Formato inválido. Use solo letras minúsculas, números y guiones.');
                 }
             }
 
@@ -127,7 +130,7 @@
          */
         submitForm: function (form, submitBtn) {
             // Validar todos los campos primero
-            let allValid = true;
+            var allValid = true;
             form.querySelectorAll('.ej-form-input, [type="checkbox"]').forEach(function (input) {
                 if (!Drupal.ecosistemaJarabaOnboarding.validateField(input)) {
                     allValid = false;
@@ -135,13 +138,14 @@
             });
 
             // Validar checkbox de términos
-            const termsCheckbox = form.querySelector('#accept_terms');
+            var termsCheckbox = form.querySelector('#accept_terms');
             if (termsCheckbox && !termsCheckbox.checked) {
                 allValid = false;
-                const errorElement = termsCheckbox.closest('.ej-form-group')?.querySelector('.ej-form-error');
-                if (errorElement) {
-                    errorElement.textContent = 'Debes aceptar los términos y condiciones.';
-                    errorElement.classList.add('active');
+                var termsGroup = termsCheckbox.closest('.ej-form-group');
+                var termsError = termsGroup ? termsGroup.querySelector('.ej-form-error') : null;
+                if (termsError) {
+                    termsError.textContent = Drupal.t('Debes aceptar los términos y condiciones.');
+                    termsError.classList.add('active');
                 }
             }
 
@@ -150,23 +154,27 @@
             }
 
             // Preparar datos
-            const formData = new FormData(form);
-            const data = {};
+            var formData = new FormData(form);
+            var data = {};
             formData.forEach(function (value, key) {
                 data[key] = value;
             });
 
             // Mostrar estado de carga
             submitBtn.disabled = true;
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+            var originalText = submitBtn.textContent;
+            submitBtn.textContent = Drupal.t('Procesando...');
+
+            // ROUTE-LANGPREFIX-001: URL from drupalSettings (Url::fromRoute).
+            var settings = drupalSettings.ecosistemaJaraba || {};
+            var registerUrl = settings.registerProcessUrl || '/registro/procesar';
 
             // Enviar petición
-            fetch('/registro/procesar', {
+            fetch(registerUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': drupalSettings.ecosistemaJaraba?.csrfToken || ''
+                    'X-CSRF-Token': settings.csrfToken || ''
                 },
                 body: JSON.stringify(data)
             })
@@ -176,28 +184,29 @@
                 .then(function (result) {
                     if (result.success) {
                         // Éxito: redirigir
-                        submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> ¡Registro exitoso!';
+                        submitBtn.textContent = Drupal.t('¡Registro exitoso!');
                         if (result.redirect) {
                             window.location.href = result.redirect;
                         }
                     } else {
                         // Mostrar errores
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
+                        submitBtn.textContent = originalText;
 
                         if (result.errors) {
                             Object.keys(result.errors).forEach(function (field) {
-                                const input = form.querySelector('[name="' + field + '"]');
-                                const errorElement = input?.closest('.ej-form-group')?.querySelector('.ej-form-error');
-                                if (errorElement) {
-                                    errorElement.textContent = result.errors[field];
-                                    errorElement.classList.add('active');
+                                var input = form.querySelector('[name="' + field + '"]');
+                                var inputGroup = input ? input.closest('.ej-form-group') : null;
+                                var fieldError = inputGroup ? inputGroup.querySelector('.ej-form-error') : null;
+                                if (fieldError) {
+                                    fieldError.textContent = result.errors[field];
+                                    fieldError.classList.add('active');
                                 }
                             });
                         }
 
                         if (result.error) {
-                            const generalError = document.getElementById('ej-register-error');
+                            var generalError = document.getElementById('ej-register-error');
                             if (generalError) {
                                 generalError.textContent = result.error;
                                 generalError.style.display = 'block';
@@ -208,11 +217,11 @@
                 .catch(function (error) {
                     console.error('Error en registro:', error);
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
+                    submitBtn.textContent = originalText;
 
-                    const generalError = document.getElementById('ej-register-error');
+                    var generalError = document.getElementById('ej-register-error');
                     if (generalError) {
-                        generalError.textContent = 'Error de conexión. Por favor, inténtalo de nuevo.';
+                        generalError.textContent = Drupal.t('Error de conexión. Por favor, inténtalo de nuevo.');
                         generalError.style.display = 'block';
                     }
                 });
@@ -224,15 +233,15 @@
          * @param {HTMLElement} container - Contenedor de la página de planes.
          */
         initPricingToggle: function (container) {
-            const toggle = container.querySelector('#pricing-toggle');
-            const monthlyPrices = container.querySelectorAll('.ej-plan-price--monthly');
-            const yearlyPrices = container.querySelectorAll('.ej-plan-price--yearly');
-            const labels = container.querySelectorAll('.ej-pricing-toggle__label');
+            var toggle = container.querySelector('#pricing-toggle');
+            var monthlyPrices = container.querySelectorAll('.ej-plan-price--monthly');
+            var yearlyPrices = container.querySelectorAll('.ej-plan-price--yearly');
+            var labels = container.querySelectorAll('.ej-pricing-toggle__label');
 
             if (!toggle) return;
 
             toggle.addEventListener('change', function () {
-                const isYearly = this.checked;
+                var isYearly = this.checked;
 
                 monthlyPrices.forEach(function (el) {
                     el.style.display = isYearly ? 'none' : 'block';
@@ -242,14 +251,16 @@
                 });
 
                 labels.forEach(function (label) {
-                    const isActive = (isYearly && label.dataset.period === 'yearly') ||
+                    var isActive = (isYearly && label.dataset.period === 'yearly') ||
                         (!isYearly && label.dataset.period === 'monthly');
                     label.classList.toggle('active', isActive);
                 });
             });
 
             // Estado inicial
-            labels[0]?.classList.add('active');
+            if (labels[0]) {
+                labels[0].classList.add('active');
+            }
         },
 
         /**
@@ -261,46 +272,36 @@
             if (!container) return;
 
             // Crear partículas de confetti
-            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-            const particleCount = 50;
+            var colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+            var particleCount = 50;
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
+            for (var i = 0; i < particleCount; i++) {
+                var particle = document.createElement('div');
                 particle.className = 'ej-confetti-particle';
-                particle.style.cssText = `
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          background: ${colors[Math.floor(Math.random() * colors.length)]};
-          left: ${Math.random() * 100}%;
-          top: -20px;
-          animation: confetti-fall ${2 + Math.random() * 2}s ease-out forwards;
-          animation-delay: ${Math.random() * 0.5}s;
-          transform: rotate(${Math.random() * 360}deg);
-          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-        `;
+                particle.style.position = 'absolute';
+                particle.style.width = '10px';
+                particle.style.height = '10px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = (Math.random() * 100) + '%';
+                particle.style.top = '-20px';
+                particle.style.animation = 'confetti-fall ' + (2 + Math.random() * 2) + 's ease-out forwards';
+                particle.style.animationDelay = (Math.random() * 0.5) + 's';
+                particle.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+                particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
                 container.appendChild(particle);
             }
 
             // Añadir keyframes dinámicamente
             if (!document.getElementById('ej-confetti-styles')) {
-                const style = document.createElement('style');
+                var style = document.createElement('style');
                 style.id = 'ej-confetti-styles';
-                style.textContent = `
-          @keyframes confetti-fall {
-            to {
-              top: 100%;
-              opacity: 0;
-              transform: rotate(720deg) translateX(${Math.random() * 100 - 50}px);
-            }
-          }
-        `;
+                style.textContent = '@keyframes confetti-fall { to { top: 100%; opacity: 0; transform: rotate(720deg) translateX(' + (Math.random() * 100 - 50) + 'px); } }';
                 document.head.appendChild(style);
             }
 
             // Limpiar partículas después de la animación
             setTimeout(function () {
-                container.innerHTML = '';
+                container.textContent = '';
             }, 5000);
         }
     };

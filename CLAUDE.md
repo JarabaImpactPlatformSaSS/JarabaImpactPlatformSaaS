@@ -26,6 +26,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - TENANT-ISOLATION-ACCESS-001: Todo AccessControlHandler con tenant_id DEBE verificar tenant match para update/delete
 - TENANT-001: TODA query DEBE filtrar por tenant. Sin excepciones
 - TENANT-002: Usar `ecosistema_jaraba_core.tenant_context` para obtener tenant. NUNCA resolver via queries ad-hoc
+- DOMAIN-ROUTE-CACHE-001: Cada hostname multi-tenant DEBE tener su propia Domain entity. Sin ella, RouteProvider cachea por [domain] key en Redis y path processors NO se ejecutan en cache HIT
+- VARY-HOST-001: SecurityHeadersSubscriber appends `Vary: Host` en prioridad -10 para CDN/reverse proxy multi-tenant
 
 ### Servicios Clave
 - TenantContextService: resuelve via admin_user + group membership

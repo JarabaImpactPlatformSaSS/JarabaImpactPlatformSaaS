@@ -13,6 +13,7 @@
  * - Feedback visual del proceso
  *
  * Requiere que la clave pública de Stripe esté disponible en drupalSettings.
+ * ROUTE-LANGPREFIX-001: Todas las URLs via drupalSettings (Url::fromRoute).
  *
  * @module ecosistemaJarabaStripe
  */
@@ -51,8 +52,8 @@
          * @param {HTMLElement} container - Contenedor del formulario de pago.
          */
         init: function (container) {
-            const self = this;
-            const publishableKey = drupalSettings.ecosistemaJaraba?.stripePublicKey;
+            var self = this;
+            var publishableKey = drupalSettings.ecosistemaJaraba && drupalSettings.ecosistemaJaraba.stripePublicKey;
 
             if (!publishableKey) {
                 console.error('Stripe: Clave pública no configurada');
@@ -89,8 +90,8 @@
          * @param {HTMLElement} container - Contenedor principal.
          */
         mountCardElement: function (container) {
-            const self = this;
-            const cardContainer = container.querySelector('#ej-card-element');
+            var self = this;
+            var cardContainer = container.querySelector('#ej-card-element');
 
             if (!cardContainer) {
                 console.error('Stripe: Contenedor de tarjeta no encontrado');
@@ -98,7 +99,7 @@
             }
 
             // Estilos para el elemento de tarjeta
-            const style = {
+            var style = {
                 base: {
                     fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
                     fontSize: '16px',
@@ -124,7 +125,7 @@
 
             // Manejar cambios y errores
             this.cardElement.on('change', function (event) {
-                const errorContainer = container.querySelector('#ej-card-errors');
+                var errorContainer = container.querySelector('#ej-card-errors');
                 if (errorContainer) {
                     if (event.error) {
                         errorContainer.textContent = event.error.message;
@@ -136,7 +137,7 @@
                 }
 
                 // Habilitar/deshabilitar botón según completitud
-                const submitBtn = container.querySelector('#ej-submit-payment');
+                var submitBtn = container.querySelector('#ej-submit-payment');
                 if (submitBtn) {
                     submitBtn.disabled = !event.complete;
                 }
@@ -158,9 +159,9 @@
          * @param {HTMLElement} container - Contenedor principal.
          */
         setupForm: function (container) {
-            const self = this;
-            const form = container.querySelector('#ej-payment-form');
-            const submitBtn = container.querySelector('#ej-submit-payment');
+            var self = this;
+            var form = container.querySelector('#ej-payment-form');
+            var submitBtn = container.querySelector('#ej-submit-payment');
 
             if (!form) return;
 
@@ -179,16 +180,16 @@
          * @param {HTMLElement} container - Contenedor principal.
          */
         setupBillingToggle: function (container) {
-            const toggle = container.querySelector('#billing-period-toggle');
-            const monthlyLabel = container.querySelector('[data-period="monthly"]');
-            const yearlyLabel = container.querySelector('[data-period="yearly"]');
-            const priceDisplay = container.querySelector('#ej-price-display');
-            const settings = drupalSettings.ecosistemaJaraba || {};
+            var toggle = container.querySelector('#billing-period-toggle');
+            var monthlyLabel = container.querySelector('[data-period="monthly"]');
+            var yearlyLabel = container.querySelector('[data-period="yearly"]');
+            var priceDisplay = container.querySelector('#ej-price-display');
+            var settings = drupalSettings.ecosistemaJaraba || {};
 
             if (!toggle) return;
 
             toggle.addEventListener('change', function () {
-                const isYearly = this.checked;
+                var isYearly = this.checked;
 
                 if (monthlyLabel) monthlyLabel.classList.toggle('active', !isYearly);
                 if (yearlyLabel) yearlyLabel.classList.toggle('active', isYearly);
@@ -196,17 +197,10 @@
                 // Actualizar precio mostrado
                 if (priceDisplay) {
                     if (isYearly) {
-                        const yearlyMonthly = (parseFloat(settings.priceYearly) / 12).toFixed(2);
-                        priceDisplay.innerHTML = `
-              <span class="ej-price-amount">${yearlyMonthly}€</span>
-              <span class="ej-price-period">/mes</span>
-              <span class="ej-price-billed">Facturado anualmente (${settings.priceYearly}€/año)</span>
-            `;
+                        var yearlyMonthly = (parseFloat(settings.priceYearly) / 12).toFixed(2);
+                        priceDisplay.textContent = yearlyMonthly + '\u20AC/mes (facturado anualmente ' + settings.priceYearly + '\u20AC/a\u00F1o)';
                     } else {
-                        priceDisplay.innerHTML = `
-              <span class="ej-price-amount">${settings.priceMonthly}€</span>
-              <span class="ej-price-period">/mes</span>
-            `;
+                        priceDisplay.textContent = settings.priceMonthly + '\u20AC/mes';
                     }
                 }
             });
@@ -222,65 +216,71 @@
          * @param {HTMLButtonElement} submitBtn - Botón de envío.
          */
         submitPayment: async function (container, submitBtn) {
-            const self = this;
-            const originalText = submitBtn.innerHTML;
+            var self = this;
+            var originalText = submitBtn.textContent;
+            var settings = drupalSettings.ecosistemaJaraba || {};
+
+            // ROUTE-LANGPREFIX-001: URLs from drupalSettings (Url::fromRoute).
+            var createSubscriptionUrl = settings.createSubscriptionUrl || '/api/v1/stripe/create-subscription';
+            var confirmSubscriptionUrl = settings.confirmSubscriptionUrl || '/api/v1/stripe/confirm-subscription';
+            var welcomeUrl = settings.welcomeUrl || '/onboarding/bienvenida';
 
             // Estado de carga
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando pago...';
+            submitBtn.textContent = Drupal.t('Procesando pago...');
 
             try {
                 // 1. Crear método de pago con Stripe
-                const { paymentMethod, error: pmError } = await this.stripe.createPaymentMethod({
+                var pmResult = await this.stripe.createPaymentMethod({
                     type: 'card',
                     card: this.cardElement,
                     billing_details: this.getBillingDetails(container)
                 });
 
-                if (pmError) {
-                    throw new Error(pmError.message);
+                if (pmResult.error) {
+                    throw new Error(pmResult.error.message);
                 }
 
                 // 2. Determinar periodo de facturación
-                const billingToggle = container.querySelector('#billing-period-toggle');
-                const billingPeriod = billingToggle?.checked ? 'yearly' : 'monthly';
+                var billingToggle = container.querySelector('#billing-period-toggle');
+                var billingPeriod = billingToggle && billingToggle.checked ? 'yearly' : 'monthly';
 
                 // 3. Enviar al backend para crear suscripción
-                const response = await fetch('/api/v1/stripe/create-subscription', {
+                var response = await fetch(createSubscriptionUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-Token': drupalSettings.ecosistemaJaraba?.csrfToken || ''
+                        'X-CSRF-Token': settings.csrfToken || ''
                     },
                     body: JSON.stringify({
-                        payment_method_id: paymentMethod.id,
-                        plan_id: drupalSettings.ecosistemaJaraba?.planId,
+                        payment_method_id: pmResult.paymentMethod.id,
+                        plan_id: settings.planId,
                         billing_period: billingPeriod
                     })
                 });
 
-                const result = await response.json();
+                var result = await response.json();
 
                 if (!result.success) {
-                    throw new Error(result.error || 'Error al crear la suscripción');
+                    throw new Error(result.error || Drupal.t('Error al crear la suscripción'));
                 }
 
                 // 4. Manejar confirmación de pago si requiere 3D Secure
                 if (result.requires_action) {
-                    const { error: confirmError } = await this.stripe.confirmCardPayment(
+                    var confirmResult = await this.stripe.confirmCardPayment(
                         result.client_secret
                     );
 
-                    if (confirmError) {
-                        throw new Error(confirmError.message);
+                    if (confirmResult.error) {
+                        throw new Error(confirmResult.error.message);
                     }
 
                     // Confirmar al backend que el pago fue exitoso
-                    await fetch('/api/v1/stripe/confirm-subscription', {
+                    await fetch(confirmSubscriptionUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-Token': drupalSettings.ecosistemaJaraba?.csrfToken || ''
+                            'X-CSRF-Token': settings.csrfToken || ''
                         },
                         body: JSON.stringify({
                             subscription_id: result.subscription_id
@@ -289,17 +289,17 @@
                 }
 
                 // 5. Éxito - redirigir a página de bienvenida
-                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> ¡Pago completado!';
-                this.showSuccess(container, '¡Suscripción activada correctamente!');
+                submitBtn.textContent = Drupal.t('¡Pago completado!');
+                this.showSuccess(container, Drupal.t('¡Suscripción activada correctamente!'));
 
                 setTimeout(function () {
-                    window.location.href = result.redirect || '/onboarding/bienvenida';
+                    window.location.href = result.redirect || welcomeUrl;
                 }, 1500);
 
             } catch (error) {
                 console.error('Error en pago:', error);
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                submitBtn.textContent = originalText;
                 this.showError(container, error.message);
             }
         },
@@ -311,12 +311,12 @@
          * @returns {Object} - Detalles de facturación para Stripe.
          */
         getBillingDetails: function (container) {
-            const nameInput = container.querySelector('#billing-name');
-            const emailInput = container.querySelector('#billing-email');
+            var nameInput = container.querySelector('#billing-name');
+            var emailInput = container.querySelector('#billing-email');
 
             return {
-                name: nameInput?.value || '',
-                email: emailInput?.value || ''
+                name: nameInput ? nameInput.value : '',
+                email: emailInput ? emailInput.value : ''
             };
         },
 
@@ -327,7 +327,7 @@
          * @param {string} message - Mensaje de error.
          */
         showError: function (container, message) {
-            const errorContainer = container.querySelector('#ej-payment-error');
+            var errorContainer = container.querySelector('#ej-payment-error');
             if (errorContainer) {
                 errorContainer.textContent = message;
                 errorContainer.style.display = 'block';
@@ -349,7 +349,7 @@
          * @param {string} message - Mensaje de éxito.
          */
         showSuccess: function (container, message) {
-            const successContainer = container.querySelector('#ej-payment-success');
+            var successContainer = container.querySelector('#ej-payment-success');
             if (successContainer) {
                 successContainer.textContent = message;
                 successContainer.style.display = 'block';
@@ -364,10 +364,10 @@
          * @param {string} sessionId - ID de la sesión de Checkout creada en backend.
          */
         redirectToCheckout: async function (sessionId) {
-            const { error } = await this.stripe.redirectToCheckout({ sessionId });
+            var result = await this.stripe.redirectToCheckout({ sessionId: sessionId });
 
-            if (error) {
-                console.error('Error al redirigir a Checkout:', error);
+            if (result.error) {
+                console.error('Error al redirigir a Checkout:', result.error);
             }
         }
     };

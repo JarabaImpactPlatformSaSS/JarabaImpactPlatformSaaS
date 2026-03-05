@@ -60,9 +60,14 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents(): array
     {
-        // Prioridad alta para asegurar que se aplican siempre.
         return [
-            KernelEvents::RESPONSE => ['onKernelResponse', 100],
+                // Security headers run early (100) to be present on all responses.
+                // Vary: Host runs late (-10) to append AFTER FinishResponseSubscriber
+                // (priority 0) which sets Vary: Cookie.
+            KernelEvents::RESPONSE => [
+                ['onKernelResponse', 100],
+                ['onAddVaryHost', -10],
+            ],
         ];
     }
 
@@ -84,8 +89,11 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $response = $event->getResponse();
         $request = $event->getRequest();
+        if ($request === NULL) {
+            return;
+        }
+        $response = $event->getResponse();
         $config = $this->configFactory->get('ecosistema_jaraba_core.security_headers');
 
         // ═══════════════════════════════════════════════════
@@ -148,6 +156,27 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
         if ($hstsEnabled) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
+
+    }
+
+    /**
+     * Appends Vary: Host for multi-tenant reverse proxy cache isolation.
+     *
+     * Runs AFTER FinishResponseSubscriber (priority 0) which sets Vary: Cookie.
+     * Without this, Traefik/Varnish/CDN can serve a cached response from one
+     * subdomain to another.
+     */
+    public function onAddVaryHost(ResponseEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+        $response = $event->getResponse();
+        $vary = $response->headers->get('Vary', '');
+        if (stripos($vary, 'Host') === FALSE) {
+            $response->headers->set('Vary', $vary ? $vary . ', Host' : 'Host');
+        }
+
     }
 
 }

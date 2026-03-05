@@ -470,7 +470,58 @@ abstract class BaseAgent implements AgentInterface
         $vertical = $this->vertical ?? 'general';
         $vertical = $aliases[$vertical] ?? $vertical;
 
-        return $contexts[$vertical] ?? $contexts['general'];
+        $primaryContext = $contexts[$vertical] ?? $contexts['general'];
+
+        // Multi-vertical: si el tenant tiene verticales addon, enriquecer contexto.
+        $addonVerticalContext = $this->getAddonVerticalsContext($contexts);
+        if ($addonVerticalContext) {
+            $primaryContext .= "\n\nEste tenant tambien tiene activos los siguientes verticales adicionales:\n" . $addonVerticalContext;
+        }
+
+        return $primaryContext;
+    }
+
+    /**
+     * Obtiene contexto de verticales addon activos del tenant.
+     *
+     * Consulta TenantVerticalService (si disponible) para obtener
+     * los verticales addon activos y sus descripciones.
+     *
+     * @param array $contexts
+     *   Mapa de descripciones de verticales.
+     *
+     * @return string
+     *   Texto con verticales addon o cadena vacia.
+     */
+    protected function getAddonVerticalsContext(array $contexts): string
+    {
+        if (!$this->tenantId) {
+            return '';
+        }
+
+        try {
+            if (!\Drupal::hasService('jaraba_addons.tenant_vertical')) {
+                return '';
+            }
+
+            $tenantVerticalService = \Drupal::service('jaraba_addons.tenant_vertical');
+            $addonVerticals = $tenantVerticalService->getAddonVerticals((int) $this->tenantId);
+
+            if (empty($addonVerticals)) {
+                return '';
+            }
+
+            $parts = [];
+            foreach ($addonVerticals as $key => $data) {
+                $desc = $contexts[$key] ?? ucfirst($key);
+                $parts[] = "- {$data['label']}: {$desc}";
+            }
+
+            return implode("\n", $parts);
+        }
+        catch (\Exception) {
+            return '';
+        }
     }
 
     /**

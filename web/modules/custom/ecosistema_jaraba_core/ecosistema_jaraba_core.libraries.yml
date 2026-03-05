@@ -45,6 +45,7 @@ onboarding:
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
+      css/main.css: {}
   js:
     js/ecosistema-jaraba-onboarding.js: {}
   dependencies:
