@@ -47,7 +47,7 @@ function jaraba_mentoring_update_10001(): void {
         \Drupal::logger('jaraba_mentoring')->notice("Installed entity type: @type", ['@type' => $entity_type_id]);
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       \Drupal::logger('jaraba_mentoring')->warning("Could not install @type: @message", [
         '@type' => $entity_type_id,
         '@message' => $e->getMessage(),
@@ -350,5 +350,37 @@ function jaraba_mentoring_update_10006(): string {
   }
   catch (\Throwable $e) {
     return 'Error installing program_groups: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Add tenant_id field to mentoring_session (TENANT-001).
+ */
+function jaraba_mentoring_update_10007(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'mentoring_session';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return 'mentoring_session entity type not found.';
+  }
+
+  $field_name = 'tenant_id';
+  if ($update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+    return 'tenant_id field already exists on mentoring_session.';
+  }
+
+  try {
+    $definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant al que pertenece esta sesión.'))
+      ->setSetting('target_type', 'group')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+    return 'Installed tenant_id field on mentoring_session.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing tenant_id on mentoring_session: ' . $e->getMessage();
   }
 }

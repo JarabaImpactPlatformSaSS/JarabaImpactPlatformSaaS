@@ -50,8 +50,9 @@ class HumanMentorshipTracker {
         return;
       }
 
-      // Find the participante from the mentee user.
-      $participante = $this->resolveParticipante((int) $menteeId);
+      // Find the participante from the mentee user (TENANT-001).
+      $tenantId = $session->get('tenant_id')->target_id;
+      $participante = $this->resolveParticipante((int) $menteeId, $tenantId ? (int) $tenantId : NULL);
       if (!$participante) {
         $this->logger->info('No participante found for mentee @uid, skipping hours tracking.', ['@uid' => $menteeId]);
         return;
@@ -160,17 +161,21 @@ class HumanMentorshipTracker {
   }
 
   /**
-   * Resolves the participante entity from a user ID.
+   * Resolves the participante entity from a user ID (TENANT-001).
    */
-  protected function resolveParticipante(int $userId): mixed {
-    $ids = $this->entityTypeManager->getStorage('programa_participante_ei')
+  protected function resolveParticipante(int $userId, ?int $tenantId = NULL): mixed {
+    $query = $this->entityTypeManager->getStorage('programa_participante_ei')
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('uid', $userId)
       ->sort('created', 'DESC')
-      ->range(0, 1)
-      ->execute();
+      ->range(0, 1);
 
+    if ($tenantId) {
+      $query->condition('tenant_id', $tenantId);
+    }
+
+    $ids = $query->execute();
     return !empty($ids) ? $this->entityTypeManager->getStorage('programa_participante_ei')->load(reset($ids)) : NULL;
   }
 

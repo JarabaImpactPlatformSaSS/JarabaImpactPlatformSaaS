@@ -6,8 +6,12 @@
  * POST a /api/v1/andalucia-ei/guia-download, muestra feedback, localStorage tracking.
  */
 
-(function (Drupal, once) {
+(function (Drupal, drupalSettings, once) {
   'use strict';
+
+  // ROUTE-LANGPREFIX-001: URL via drupalSettings, never hardcoded.
+  var guiaApiUrl = (drupalSettings.jarabaAndaluciaEi && drupalSettings.jarabaAndaluciaEi.guiaDownloadUrl)
+    || '/api/v1/andalucia-ei/guia-download';
 
   Drupal.behaviors.aeiGuiaForm = {
     attach: function (context) {
@@ -68,7 +72,7 @@
             email: email.value.trim()
           };
 
-          fetch('/api/v1/andalucia-ei/guia-download', {
+          fetch(guiaApiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -129,4 +133,4 @@
     });
   }
 
-})(Drupal, once);
+})(Drupal, drupalSettings, once);

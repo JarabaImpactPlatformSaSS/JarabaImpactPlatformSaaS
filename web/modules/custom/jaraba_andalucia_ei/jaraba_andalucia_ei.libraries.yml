@@ -36,6 +36,7 @@ guia:
   dependencies:
     - jaraba_andalucia_ei/dashboard
     - core/drupal
+    - core/drupalSettings
     - core/once
 
 programa-mentores:

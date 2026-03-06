@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -51,6 +52,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       'message' => 'Complementa tu formación con herramientas de búsqueda activa de empleo y preparación de entrevistas.',
       'cta_label' => 'Diagnóstico de Empleabilidad',
       'cta_url' => '/empleabilidad/diagnostico',
+      'cta_route' => 'jaraba_diagnostic.employability.landing',
       'condition' => 'no_insertion_90_days',
       'priority' => 20,
     ],
@@ -75,6 +77,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       'message' => 'Felicidades por tu inserción. Potencia tu carrera con formación avanzada certificada.',
       'cta_label' => 'Catálogo Formativo',
       'cta_url' => '/andalucia-ei/programa/formacion',
+      'cta_route' => 'jaraba_andalucia_ei.programa_formacion',
       'condition' => 'recently_inserted',
       'priority' => 15,
     ],
@@ -104,6 +107,9 @@ class AndaluciaEiCrossVerticalBridgeService {
         if (in_array($bridgeId, $dismissed, TRUE)) {
           continue;
         }
+        // ROUTE-LANGPREFIX-001: Resolve URL via route when available.
+        $bridge['cta_url'] = $this->resolveCtaUrl($bridge);
+        unset($bridge['cta_route']);
         $bridges[] = $bridge;
       }
     }
@@ -160,6 +166,26 @@ class AndaluciaEiCrossVerticalBridgeService {
       '@response' => $response,
       '@uid' => $userId,
     ]);
+  }
+
+  /**
+   * Resolves CTA URL via route name (ROUTE-LANGPREFIX-001).
+   *
+   * Falls back to raw path if route doesn't exist (cross-vertical not installed).
+   */
+  protected function resolveCtaUrl(array $bridge): string {
+    if (!empty($bridge['cta_route'])) {
+      try {
+        $routeProvider = \Drupal::service('router.route_provider');
+        $routeProvider->getRouteByName($bridge['cta_route']);
+        return Url::fromRoute($bridge['cta_route'])->toString();
+      }
+      catch (\Throwable) {
+        // Route not available — fall back to raw path.
+      }
+    }
+
+    return $bridge['cta_url'];
   }
 
   /**

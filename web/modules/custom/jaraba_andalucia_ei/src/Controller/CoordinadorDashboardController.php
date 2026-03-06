@@ -6,6 +6,7 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,6 +24,7 @@ class CoordinadorDashboardController extends ControllerBase {
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
+    protected ?TenantContextService $tenantContext,
     protected LoggerInterface $logger,
   ) {
     $this->entityTypeManager = $entity_type_manager;
@@ -34,6 +36,7 @@ class CoordinadorDashboardController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context', ContainerInterface::NULL_ON_INVALID_REFERENCE),
       $container->get('logger.channel.jaraba_andalucia_ei'),
     );
   }
@@ -45,10 +48,11 @@ class CoordinadorDashboardController extends ControllerBase {
    *   Render array.
    */
   public function dashboard(): array {
-    $stats = $this->buildProgramStats();
-    $phaseDistribution = $this->getPhaseDistribution();
-    $mentorUtilization = $this->getMentorUtilization();
-    $recentActivity = $this->getRecentActivity();
+    $tenantId = $this->resolveTenantGroupId();
+    $stats = $this->buildProgramStats($tenantId);
+    $phaseDistribution = $this->getPhaseDistribution($tenantId);
+    $mentorUtilization = $this->getMentorUtilization($tenantId);
+    $recentActivity = $this->getRecentActivity($tenantId);
 
     return [
       '#theme' => 'coordinador_dashboard',
@@ -62,7 +66,7 @@ class CoordinadorDashboardController extends ControllerBase {
         ],
       ],
       '#cache' => [
-        'contexts' => ['user'],
+        'contexts' => ['user', 'url.site'],
         'tags' => ['programa_participante_ei_list', 'mentoring_session_list'],
         'max-age' => 600,
       ],
@@ -70,49 +74,78 @@ class CoordinadorDashboardController extends ControllerBase {
   }
 
   /**
+   * Resolves the current tenant Group ID.
+   */
+  protected function resolveTenantGroupId(): ?int {
+    if (!$this->tenantContext) {
+      return NULL;
+    }
+
+    try {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
+    }
+    catch (\Throwable) {
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Adds tenant condition to an entity query (TENANT-001).
+   */
+  protected function addTenantCondition(mixed $query, ?int $tenantId): void {
+    if ($tenantId) {
+      $query->condition('tenant_id', $tenantId);
+    }
+  }
+
+  /**
    * Builds aggregate program statistics.
    */
-  protected function buildProgramStats(): array {
+  protected function buildProgramStats(?int $tenantId): array {
     try {
       $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
 
-      // Total participants.
-      $totalIds = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->execute();
+      // Total participants (TENANT-001).
+      $totalQuery = $storage->getQuery()->accessCheck(TRUE);
+      $this->addTenantCondition($totalQuery, $tenantId);
+      $totalIds = $totalQuery->execute();
 
       // Active (not in baja).
-      $activeIds = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('fase_actual', 'baja', '!=')
-        ->execute();
+      $activeQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=');
+      $this->addTenantCondition($activeQuery, $tenantId);
+      $activeIds = $activeQuery->execute();
 
       // In insertion phase.
-      $insertionIds = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('fase_actual', 'insercion')
-        ->execute();
+      $insertionQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'insercion');
+      $this->addTenantCondition($insertionQuery, $tenantId);
+      $insertionIds = $insertionQuery->execute();
 
-      // Completed sessions.
+      // Completed sessions (TENANT-001).
       $completedSessions = 0;
       if ($this->entityTypeManager->hasDefinition('mentoring_session')) {
-        $completedSessions = (int) $this->entityTypeManager->getStorage('mentoring_session')
+        $sessQuery = $this->entityTypeManager->getStorage('mentoring_session')
           ->getQuery()
-          ->accessCheck(FALSE)
+          ->accessCheck(TRUE)
           ->condition('status', 'completed')
-          ->count()
-          ->execute();
+          ->count();
+        $this->addTenantCondition($sessQuery, $tenantId);
+        $completedSessions = (int) $sessQuery->execute();
       }
 
-      // Pending solicitudes.
+      // Pending solicitudes (TENANT-001).
       $pendingSolicitudes = 0;
       if ($this->entityTypeManager->hasDefinition('solicitud_ei')) {
-        $pendingSolicitudes = (int) $this->entityTypeManager->getStorage('solicitud_ei')
+        $solQuery = $this->entityTypeManager->getStorage('solicitud_ei')
           ->getQuery()
-          ->accessCheck(FALSE)
+          ->accessCheck(TRUE)
           ->condition('status', 'pendiente')
-          ->count()
-          ->execute();
+          ->count();
+        $this->addTenantCondition($solQuery, $tenantId);
+        $pendingSolicitudes = (int) $solQuery->execute();
       }
 
       return [
@@ -142,17 +175,18 @@ class CoordinadorDashboardController extends ControllerBase {
   /**
    * Gets participant distribution by phase.
    */
-  protected function getPhaseDistribution(): array {
+  protected function getPhaseDistribution(?int $tenantId): array {
     try {
       $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
       $phases = ['atencion' => 0, 'insercion' => 0, 'baja' => 0];
 
       foreach (array_keys($phases) as $phase) {
-        $phases[$phase] = (int) $storage->getQuery()
-          ->accessCheck(FALSE)
+        $query = $storage->getQuery()
+          ->accessCheck(TRUE)
           ->condition('fase_actual', $phase)
-          ->count()
-          ->execute();
+          ->count();
+        $this->addTenantCondition($query, $tenantId);
+        $phases[$phase] = (int) $query->execute();
       }
 
       return $phases;
@@ -165,17 +199,18 @@ class CoordinadorDashboardController extends ControllerBase {
   /**
    * Gets mentor utilization stats.
    */
-  protected function getMentorUtilization(): array {
+  protected function getMentorUtilization(?int $tenantId): array {
     if (!$this->entityTypeManager->hasDefinition('mentor_profile')) {
       return [];
     }
 
     try {
       $storage = $this->entityTypeManager->getStorage('mentor_profile');
-      $activeMentors = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('status', 'active')
-        ->execute();
+      $query = $storage->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('status', 'active');
+      $this->addTenantCondition($query, $tenantId);
+      $activeMentors = $query->execute();
 
       $mentors = [];
       foreach ($storage->loadMultiple($activeMentors) as $mentor) {
@@ -201,19 +236,20 @@ class CoordinadorDashboardController extends ControllerBase {
   /**
    * Gets recent activity items.
    */
-  protected function getRecentActivity(): array {
+  protected function getRecentActivity(?int $tenantId): array {
     $activity = [];
 
     try {
-      // Recent completed sessions.
+      // Recent completed sessions (TENANT-001).
       if ($this->entityTypeManager->hasDefinition('mentoring_session')) {
-        $sessionIds = $this->entityTypeManager->getStorage('mentoring_session')
+        $sessQuery = $this->entityTypeManager->getStorage('mentoring_session')
           ->getQuery()
-          ->accessCheck(FALSE)
+          ->accessCheck(TRUE)
           ->condition('status', 'completed')
           ->sort('changed', 'DESC')
-          ->range(0, 5)
-          ->execute();
+          ->range(0, 5);
+        $this->addTenantCondition($sessQuery, $tenantId);
+        $sessionIds = $sessQuery->execute();
 
         foreach ($this->entityTypeManager->getStorage('mentoring_session')->loadMultiple($sessionIds) as $session) {
           $mentee = $session->get('mentee_id')->entity;
@@ -226,13 +262,14 @@ class CoordinadorDashboardController extends ControllerBase {
         }
       }
 
-      // Recent phase transitions.
-      $participanteIds = $this->entityTypeManager->getStorage('programa_participante_ei')
+      // Recent phase transitions (TENANT-001).
+      $partQuery = $this->entityTypeManager->getStorage('programa_participante_ei')
         ->getQuery()
-        ->accessCheck(FALSE)
+        ->accessCheck(TRUE)
         ->sort('changed', 'DESC')
-        ->range(0, 5)
-        ->execute();
+        ->range(0, 5);
+      $this->addTenantCondition($partQuery, $tenantId);
+      $participanteIds = $partQuery->execute();
 
       foreach ($this->entityTypeManager->getStorage('programa_participante_ei')->loadMultiple($participanteIds) as $p) {
         $activity[] = [

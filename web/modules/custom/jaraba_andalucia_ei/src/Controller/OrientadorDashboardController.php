@@ -6,6 +6,7 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Service\ExpedienteCompletenessService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,6 +25,7 @@ class OrientadorDashboardController extends ControllerBase {
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     protected ExpedienteCompletenessService $completenessService,
+    protected ?TenantContextService $tenantContext,
     protected LoggerInterface $logger,
   ) {
     $this->entityTypeManager = $entity_type_manager;
@@ -36,6 +38,7 @@ class OrientadorDashboardController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('jaraba_andalucia_ei.expediente_completeness'),
+      $container->get('ecosistema_jaraba_core.tenant_context', ContainerInterface::NULL_ON_INVALID_REFERENCE),
       $container->get('logger.channel.jaraba_andalucia_ei'),
     );
   }
@@ -48,18 +51,19 @@ class OrientadorDashboardController extends ControllerBase {
    */
   public function dashboard(): array {
     $userId = (int) $this->currentUser()->id();
+    $tenantId = $this->resolveTenantGroupId();
 
     // Get mentor profile for this user.
     $mentorProfile = $this->getMentorProfile($userId);
 
     // Get assigned participants via mentoring sessions.
-    $participants = $this->getAssignedParticipants($userId);
+    $participants = $this->getAssignedParticipants($userId, $tenantId);
 
     // Get pending service sheets.
-    $pendingSheets = $this->getPendingServiceSheets($userId);
+    $pendingSheets = $this->getPendingServiceSheets($userId, $tenantId);
 
     // Get upcoming sessions.
-    $upcomingSessions = $this->getUpcomingSessions($userId);
+    $upcomingSessions = $this->getUpcomingSessions($userId, $tenantId);
 
     // Get participant completeness summaries.
     $completenessMap = [];
@@ -85,11 +89,34 @@ class OrientadorDashboardController extends ControllerBase {
         ],
       ],
       '#cache' => [
-        'contexts' => ['user'],
+        'contexts' => ['user', 'url.site'],
         'tags' => ['mentoring_session_list', 'programa_participante_ei_list'],
         'max-age' => 300,
       ],
     ];
+  }
+
+  /**
+   * Resolves the current tenant Group ID.
+   */
+  protected function resolveTenantGroupId(): ?int {
+    if (!$this->tenantContext) {
+      return NULL;
+    }
+
+    try {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      if ($tenant) {
+        // TenantContextService returns TenantInterface.
+        // tenant_id fields reference 'group'. We need TenantBridgeService
+        // but the tenant ID itself is often used as group ref in this vertical.
+        return (int) $tenant->id();
+      }
+    }
+    catch (\Throwable) {
+    }
+
+    return NULL;
   }
 
   /**
@@ -130,25 +157,34 @@ class OrientadorDashboardController extends ControllerBase {
   /**
    * Gets participants assigned to this mentor via mentoring sessions.
    */
-  protected function getAssignedParticipants(int $userId): array {
+  protected function getAssignedParticipants(int $userId, ?int $tenantId): array {
     try {
       // Find mentor_profile for this user.
-      $mentorIds = $this->entityTypeManager->getStorage('mentor_profile')
+      $mentorQuery = $this->entityTypeManager->getStorage('mentor_profile')
         ->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('user_id', $userId)
-        ->execute();
+        ->accessCheck(TRUE)
+        ->condition('user_id', $userId);
 
+      if ($tenantId) {
+        $mentorQuery->condition('tenant_id', $tenantId);
+      }
+
+      $mentorIds = $mentorQuery->execute();
       if (empty($mentorIds)) {
         return [];
       }
 
-      // Find unique mentee IDs from sessions.
-      $sessionIds = $this->entityTypeManager->getStorage('mentoring_session')
+      // Find unique mentee IDs from sessions (TENANT-001).
+      $sessionQuery = $this->entityTypeManager->getStorage('mentoring_session')
         ->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('mentor_id', $mentorIds, 'IN')
-        ->execute();
+        ->accessCheck(TRUE)
+        ->condition('mentor_id', $mentorIds, 'IN');
+
+      if ($tenantId) {
+        $sessionQuery->condition('tenant_id', $tenantId);
+      }
+
+      $sessionIds = $sessionQuery->execute();
 
       $menteeUserIds = [];
       foreach ($this->entityTypeManager->getStorage('mentoring_session')->loadMultiple($sessionIds) as $session) {
@@ -162,12 +198,17 @@ class OrientadorDashboardController extends ControllerBase {
         return [];
       }
 
-      // Resolve to participantes.
-      $participanteIds = $this->entityTypeManager->getStorage('programa_participante_ei')
+      // Resolve to participantes (TENANT-001).
+      $participanteQuery = $this->entityTypeManager->getStorage('programa_participante_ei')
         ->getQuery()
         ->accessCheck(TRUE)
-        ->condition('uid', array_values($menteeUserIds), 'IN')
-        ->execute();
+        ->condition('uid', array_values($menteeUserIds), 'IN');
+
+      if ($tenantId) {
+        $participanteQuery->condition('tenant_id', $tenantId);
+      }
+
+      $participanteIds = $participanteQuery->execute();
 
       $participants = [];
       foreach ($this->entityTypeManager->getStorage('programa_participante_ei')->loadMultiple($participanteIds) as $p) {
@@ -190,27 +231,36 @@ class OrientadorDashboardController extends ControllerBase {
   /**
    * Gets pending service sheets that need mentor signature.
    */
-  protected function getPendingServiceSheets(int $userId): array {
+  protected function getPendingServiceSheets(int $userId, ?int $tenantId): array {
     try {
-      $mentorIds = $this->entityTypeManager->getStorage('mentor_profile')
+      $mentorQuery = $this->entityTypeManager->getStorage('mentor_profile')
         ->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('user_id', $userId)
-        ->execute();
+        ->accessCheck(TRUE)
+        ->condition('user_id', $userId);
 
+      if ($tenantId) {
+        $mentorQuery->condition('tenant_id', $tenantId);
+      }
+
+      $mentorIds = $mentorQuery->execute();
       if (empty($mentorIds)) {
         return [];
       }
 
-      $sessionIds = $this->entityTypeManager->getStorage('mentoring_session')
+      $sessionQuery = $this->entityTypeManager->getStorage('mentoring_session')
         ->getQuery()
-        ->accessCheck(FALSE)
+        ->accessCheck(TRUE)
         ->condition('mentor_id', $mentorIds, 'IN')
         ->condition('status', 'completed')
         ->condition('firma_orientador_status', 'pending')
         ->sort('scheduled_start', 'DESC')
-        ->range(0, 20)
-        ->execute();
+        ->range(0, 20);
+
+      if ($tenantId) {
+        $sessionQuery->condition('tenant_id', $tenantId);
+      }
+
+      $sessionIds = $sessionQuery->execute();
 
       $sheets = [];
       foreach ($this->entityTypeManager->getStorage('mentoring_session')->loadMultiple($sessionIds) as $session) {
@@ -235,28 +285,37 @@ class OrientadorDashboardController extends ControllerBase {
   /**
    * Gets upcoming sessions for this mentor.
    */
-  protected function getUpcomingSessions(int $userId): array {
+  protected function getUpcomingSessions(int $userId, ?int $tenantId): array {
     try {
-      $mentorIds = $this->entityTypeManager->getStorage('mentor_profile')
+      $mentorQuery = $this->entityTypeManager->getStorage('mentor_profile')
         ->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('user_id', $userId)
-        ->execute();
+        ->accessCheck(TRUE)
+        ->condition('user_id', $userId);
 
+      if ($tenantId) {
+        $mentorQuery->condition('tenant_id', $tenantId);
+      }
+
+      $mentorIds = $mentorQuery->execute();
       if (empty($mentorIds)) {
         return [];
       }
 
       $now = (new \DateTime())->format('Y-m-d\TH:i:s');
-      $sessionIds = $this->entityTypeManager->getStorage('mentoring_session')
+      $sessionQuery = $this->entityTypeManager->getStorage('mentoring_session')
         ->getQuery()
-        ->accessCheck(FALSE)
+        ->accessCheck(TRUE)
         ->condition('mentor_id', $mentorIds, 'IN')
         ->condition('status', ['scheduled', 'confirmed'], 'IN')
         ->condition('scheduled_start', $now, '>')
         ->sort('scheduled_start', 'ASC')
-        ->range(0, 10)
-        ->execute();
+        ->range(0, 10);
+
+      if ($tenantId) {
+        $sessionQuery->condition('tenant_id', $tenantId);
+      }
+
+      $sessionIds = $sessionQuery->execute();
 
       $sessions = [];
       foreach ($this->entityTypeManager->getStorage('mentoring_session')->loadMultiple($sessionIds) as $session) {

@@ -56,8 +56,9 @@ class HojaServicioMentoriaService {
       $mentor = $session->get('mentor_id')->entity;
       $mentee = $session->get('mentee_id')->entity;
 
-      // Resolve the participante from mentee user.
-      $participanteId = $this->resolveParticipanteId($mentee ? (int) $mentee->id() : 0);
+      // Resolve the participante from mentee user (TENANT-001).
+      $tenantId = $session->get('tenant_id')->target_id;
+      $participanteId = $this->resolveParticipanteId($mentee ? (int) $mentee->id() : 0, $tenantId ? (int) $tenantId : NULL);
       if (!$participanteId) {
         $this->logger->warning('No participante found for mentee in session @id.', ['@id' => $sessionId]);
         return NULL;
@@ -166,22 +167,26 @@ class HojaServicioMentoriaService {
   }
 
   /**
-   * Resolves the programa_participante_ei ID from a user ID.
+   * Resolves the programa_participante_ei ID from a user ID (TENANT-001).
    */
-  protected function resolveParticipanteId(int $userId): ?int {
+  protected function resolveParticipanteId(int $userId, ?int $tenantId = NULL): ?int {
     if ($userId <= 0) {
       return NULL;
     }
 
     try {
-      $ids = $this->entityTypeManager->getStorage('programa_participante_ei')
+      $query = $this->entityTypeManager->getStorage('programa_participante_ei')
         ->getQuery()
         ->accessCheck(FALSE)
         ->condition('uid', $userId)
         ->sort('created', 'DESC')
-        ->range(0, 1)
-        ->execute();
+        ->range(0, 1);
 
+      if ($tenantId) {
+        $query->condition('tenant_id', $tenantId);
+      }
+
+      $ids = $query->execute();
       return !empty($ids) ? (int) reset($ids) : NULL;
     }
     catch (\Throwable $e) {

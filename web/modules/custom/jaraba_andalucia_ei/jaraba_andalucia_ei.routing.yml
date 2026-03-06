@@ -214,6 +214,7 @@ jaraba_andalucia_ei.guia_download_api:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # === PROGRAMA: MENTORES CONTEXTUALIZADOS ===
 jaraba_andalucia_ei.programa_mentores:

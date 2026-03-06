@@ -50,12 +50,20 @@ class GuiaParticipanteController extends ControllerBase {
   public function guia(): array {
     $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
 
+    // ROUTE-LANGPREFIX-001: Pass API URL via drupalSettings for JS.
+    $guiaDownloadUrl = Url::fromRoute('jaraba_andalucia_ei.guia_download_api')->toString();
+
     return [
       '#theme' => 'andalucia_ei_guia_participante',
       '#solicitar_url' => $solicitarUrl,
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/guia',
+        ],
+        'drupalSettings' => [
+          'jarabaAndaluciaEi' => [
+            'guiaDownloadUrl' => $guiaDownloadUrl,
+          ],
         ],
       ],
       '#cache' => [

@@ -30,8 +30,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_mentoring\MentoringSessionListBuilder",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_mentoring\Form\MentoringSessionForm",
+ *       "edit" = "Drupal\jaraba_mentoring\Form\MentoringSessionForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_mentoring\MentoringSessionAccessControlHandler",
@@ -287,6 +287,14 @@ class MentoringSession extends ContentEntityBase
         $fields['reminder_15min_sent'] = BaseFieldDefinition::create('boolean')
             ->setLabel(t('Recordatorio 15min Enviado'))
             ->setDefaultValue(FALSE);
+
+        // === Multi-tenancy (TENANT-001) ===
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant al que pertenece esta sesión.'))
+            ->setSetting('target_type', 'group')
+            ->setRequired(TRUE)
+            ->setDisplayConfigurable('form', TRUE);
 
         // === Timestamps ===
         $fields['created'] = BaseFieldDefinition::create('created')
