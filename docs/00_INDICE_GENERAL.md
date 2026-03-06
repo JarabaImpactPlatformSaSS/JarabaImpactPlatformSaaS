@@ -4,12 +4,14 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-06
-**Versión:** 147.0.0 (Theming Multi-Tenant Fixes — CTA fallback cascade, Visual Customizer slide-panel, overflow-x:clip sticky + aprendizaje #168)
+**Versión:** 148.0.0 (Cumplimiento PIIL CV 2025 — 6 fases, 3 entities, 6 servicios, 102 tests + aprendizaje #169)
 
-> **🎨 THEMING MULTI-TENANT FIXES — v118 DIRECTRICES + v106 ARQUITECTURA** (2026-03-06)
-> - **Contexto:** Correcciones criticas en la cascada de theming multi-tenant, visual customizer convertido a slide-panel lateral, y 2 reglas CSS nuevas.
-> - **Fixes clave:** SSOT-THEME-001 corregido (SiteConfig=fallback, no override); hero invisible por animation inline (CSS-ANIM-INLINE-001); sticky roto por overflow-x:hidden (OVERFLOW-CLIP-STICKY-001); Visual Customizer como slide-panel 480px con live-update.
-> - **2 reglas nuevas:** OVERFLOW-CLIP-STICKY-001 (P1), CSS-ANIM-INLINE-001 (P1). Aprendizaje #168.
+> **📋 CUMPLIMIENTO PIIL CV 2025 — v119 DIRECTRICES + v107 ARQUITECTURA** (2026-03-06)
+> - **Contexto:** Implementacion completa del itinerario PIIL CV 2025 para Andalucia +ei. Modelo de 6 fases canonicas migrado desde 3. 3 ContentEntities nuevas, 6 servicios, 102 unit tests.
+> - **Entidades:** ActuacionSto (22 campos, VoBo SAE), IndicadorFsePlus (26 campos, 3 momentos FSE+), InsercionLaboral (20+ campos condicionales por tipo insercion).
+> - **Servicios:** DaciService, ReciboServicioService, ActuacionStoService, AlertasNormativasService, CalendarioProgramaService, FaseTransitionManager (rewrite con prerrequisitos normativos).
+> - **Integraciones:** Cron (semanas + alertas), admision (DACI auto), actuaciones (recibos auto), dashboard coordinador (alertas normativas), cross-vertical bridges actualizados.
+> - **Aprendizaje #169.** Cross-refs: Directrices v119.0.0, Arquitectura v107.0.0, Indice v148.0.0, Flujo v72.0.0.
 
 > **🎯 ANDALUCIA +ei MENTORING CONTEXTUALIZADO** (2026-03-06)
 > - **Contexto:** Implementacion completa de mentoring contextualizado, formacion contextualizada, hojas de servicio con firma digital, hub documental, dashboards orientador/coordinador para el programa Andalucia +ei. 9 fases: infraestructura datos, mentores, formacion, hoja servicio+firma, hub documental, orientador, coordinador, CSS mentoring, separacion programa/cross-selling.

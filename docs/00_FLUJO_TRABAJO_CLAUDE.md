@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-06
-**Version:** 71.0.0 (Theming Multi-Tenant Fixes — SSOT-THEME-001 fallback, overflow-x:clip sticky, Visual Customizer slide-panel + aprendizaje #168)
+**Version:** 72.0.0 (Cumplimiento PIIL CV 2025 — 6 fases, 3 entities, 6 servicios, 102 tests + aprendizaje #169)
 
 ---
 ## 1. Inicio de Sesion
