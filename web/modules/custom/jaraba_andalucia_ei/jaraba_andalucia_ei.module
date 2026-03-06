@@ -123,6 +123,54 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-guia-participante',
     ],
+    'programa_mentores' => [
+      'variables' => [
+        'mentors' => [],
+        'total_mentors' => 0,
+        'participante' => NULL,
+        'solicitar_url' => NULL,
+      ],
+      'template' => 'programa-mentores',
+    ],
+    'programa_formacion' => [
+      'variables' => [
+        'courses' => [],
+        'total_courses' => 0,
+        'enrollments' => [],
+        'participante' => NULL,
+        'solicitar_url' => NULL,
+      ],
+      'template' => 'programa-formacion',
+    ],
+    'expediente_hub' => [
+      'variables' => [
+        'participante' => NULL,
+        'completeness' => [],
+        'documents_by_category' => [],
+        'total_percent' => 0,
+      ],
+      'template' => 'expediente-hub',
+    ],
+    'orientador_dashboard' => [
+      'variables' => [
+        'mentor_profile' => NULL,
+        'participants' => [],
+        'pending_sheets' => [],
+        'upcoming_sessions' => [],
+        'completeness_map' => [],
+        'stats' => [],
+      ],
+      'template' => 'orientador-dashboard',
+    ],
+    'coordinador_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'phase_distribution' => [],
+        'mentor_utilization' => [],
+        'recent_activity' => [],
+      ],
+      'template' => 'coordinador-dashboard',
+    ],
   ];
 }
 
@@ -936,6 +984,62 @@ function _jaraba_andalucia_ei_check_reengagement(): void {
       'Re-engagement check error: @message',
       ['@message' => $e->getMessage()]
     );
+  }
+}
+
+// =============================================================================
+// MENTORING SESSION: AUTO-GENERATE SERVICE SHEET + TRACK HOURS
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for mentoring_session.
+ *
+ * When a session transitions to 'completed' and has session_notes,
+ * auto-generates the service sheet (hoja de servicio) and tracks
+ * human mentoring hours. Uses update (not presave) to guarantee
+ * entity ID is available. Follows PRESAVE-RESILIENCE-001.
+ */
+function jaraba_andalucia_ei_mentoring_session_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $newStatus = $entity->get('status')->value;
+  if ($newStatus !== 'completed') {
+    return;
+  }
+
+  // Check if this is a transition (not already completed).
+  if (isset($entity->original)) {
+    $oldStatus = $entity->original->get('status')->value;
+    if ($oldStatus === 'completed') {
+      return;
+    }
+  }
+
+  // Track human mentoring hours (PRESAVE-RESILIENCE-001).
+  if (\Drupal::hasService('jaraba_andalucia_ei.human_mentorship_tracker')) {
+    try {
+      \Drupal::service('jaraba_andalucia_ei.human_mentorship_tracker')
+        ->registrarSesionHumana((int) $entity->id());
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_andalucia_ei')->warning('Failed to track mentoring hours for session @id: @msg', [
+        '@id' => $entity->id(),
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // Auto-generate service sheet if session_notes are filled.
+  $notes = $entity->get('session_notes')->value;
+  if (!empty($notes) && \Drupal::hasService('jaraba_andalucia_ei.hoja_servicio_mentoria')) {
+    try {
+      \Drupal::service('jaraba_andalucia_ei.hoja_servicio_mentoria')
+        ->generarHojaServicio((int) $entity->id());
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_andalucia_ei')->warning('Failed to generate service sheet for session @id: @msg', [
+        '@id' => $entity->id(),
+        '@msg' => $e->getMessage(),
+      ]);
+    }
   }
 }
 

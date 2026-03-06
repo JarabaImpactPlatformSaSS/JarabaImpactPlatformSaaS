@@ -1,0 +1,183 @@
+{#
+/**
+ * @file
+ * Mentores contextualizados para Andalucía +ei.
+ *
+ * Variables:
+ *   - mentors: Array de mentores con id, display_name, headline, avatar,
+ *              specializations, sectors, certification_level, average_rating,
+ *              total_sessions, is_available, profile_url.
+ *   - total_mentors: Número total de mentores.
+ *   - participante: Datos del participante (id, nombre, fase, carril) o null.
+ *   - solicitar_url: URL para solicitar plaza.
+ */
+#}
+
+<div class="programa-mentores">
+
+  {# === HERO SECTION === #}
+  <section class="programa-mentores__hero" aria-labelledby="mentores-title">
+    <div class="programa-mentores__hero-content">
+      <h1 id="mentores-title" class="programa-mentores__title">
+        {% trans %}Tu equipo de mentores{% endtrans %}
+      </h1>
+      <p class="programa-mentores__subtitle">
+        {% if participante %}
+          {% trans %}Mentores especializados asignados a tu programa. Reserva sesiones y acelera tu empleabilidad.{% endtrans %}
+        {% else %}
+          {% trans %}Profesionales con experiencia real que te guiarán en tu camino hacia la empleabilidad.{% endtrans %}
+        {% endif %}
+      </p>
+      {% if total_mentors > 0 %}
+        <span class="programa-mentores__badge" aria-label="{% trans %}Total de mentores disponibles{% endtrans %}">
+          {{ total_mentors }} {% trans %}mentores disponibles{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+  </section>
+
+  {# === FILTROS (solo para participantes) === #}
+  {% if participante %}
+    <section class="programa-mentores__filters" aria-label="{% trans %}Filtros de mentores{% endtrans %}">
+      <div class="programa-mentores__filter-bar">
+        <button class="programa-mentores__filter-btn is-active" data-filter="all" type="button">
+          {% trans %}Todos{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="comercio" type="button">
+          {% trans %}Comercio{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="servicios" type="button">
+          {% trans %}Servicios{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="tech" type="button">
+          {% trans %}Tecnología{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="hosteleria" type="button">
+          {% trans %}Hostelería{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="agro" type="button">
+          {% trans %}Agroalimentario{% endtrans %}
+        </button>
+        <button class="programa-mentores__filter-btn" data-filter="industria" type="button">
+          {% trans %}Industria{% endtrans %}
+        </button>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === GRID DE MENTORES === #}
+  {% if mentors|length > 0 %}
+    <section class="programa-mentores__grid" aria-label="{% trans %}Listado de mentores{% endtrans %}">
+      {% for mentor in mentors %}
+        <article class="mentor-card" data-sectors="{{ mentor.sectors|join(',') }}" aria-label="{{ mentor.display_name }}">
+          <div class="mentor-card__header">
+            <div class="mentor-card__avatar-wrapper">
+              {% if mentor.avatar %}
+                <img
+                  class="mentor-card__avatar"
+                  src="{{ mentor.avatar }}"
+                  alt="{{ mentor.display_name }}"
+                  loading="lazy"
+                  width="80"
+                  height="80"
+                >
+              {% else %}
+                <div class="mentor-card__avatar mentor-card__avatar--placeholder" aria-hidden="true">
+                  {{ mentor.display_name|first|upper }}
+                </div>
+              {% endif %}
+              {% if mentor.is_available %}
+                <span class="mentor-card__status mentor-card__status--available" aria-label="{% trans %}Disponible{% endtrans %}"></span>
+              {% endif %}
+            </div>
+            <div class="mentor-card__info">
+              <h3 class="mentor-card__name">{{ mentor.display_name }}</h3>
+              {% if mentor.headline %}
+                <p class="mentor-card__headline">{{ mentor.headline }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          {# Certificación #}
+          {% if mentor.certification_level != 'base' %}
+            <div class="mentor-card__badge mentor-card__badge--{{ mentor.certification_level }}">
+              {% if mentor.certification_level == 'certified' %}
+                {% trans %}Certificado{% endtrans %}
+              {% elseif mentor.certification_level == 'premium' %}
+                {% trans %}Premium{% endtrans %}
+              {% elseif mentor.certification_level == 'elite' %}
+                {% trans %}Elite{% endtrans %}
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {# Rating y sesiones #}
+          <div class="mentor-card__stats">
+            {% if mentor.average_rating > 0 %}
+              <span class="mentor-card__rating" aria-label="{% trans %}Valoración media{% endtrans %}: {{ mentor.average_rating|number_format(1) }}">
+                <svg class="mentor-card__star" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="var(--ej-color-naranja-impulso, #FF8C42)"/>
+                </svg>
+                {{ mentor.average_rating|number_format(1) }}
+              </span>
+            {% endif %}
+            {% if mentor.total_sessions > 0 %}
+              <span class="mentor-card__sessions">
+                {{ mentor.total_sessions }} {% trans %}sesiones{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+
+          {# Especializaciones #}
+          {% if mentor.specializations|length > 0 %}
+            <div class="mentor-card__tags">
+              {% for spec in mentor.specializations|slice(0, 3) %}
+                <span class="mentor-card__tag">{{ spec }}</span>
+              {% endfor %}
+              {% if mentor.specializations|length > 3 %}
+                <span class="mentor-card__tag mentor-card__tag--more">+{{ mentor.specializations|length - 3 }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {# Acción #}
+          <div class="mentor-card__actions">
+            <a href="{{ mentor.profile_url }}" class="mentor-card__btn mentor-card__btn--primary">
+              {% trans %}Ver perfil{% endtrans %}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    {# Empty state #}
+    <section class="programa-mentores__empty" aria-label="{% trans %}Sin mentores{% endtrans %}">
+      <div class="programa-mentores__empty-content">
+        <svg class="programa-mentores__empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="var(--ej-color-azul-corporativo, #233D63)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="9" cy="7" r="4" stroke="var(--ej-color-azul-corporativo, #233D63)" stroke-width="1.5"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <h2 class="programa-mentores__empty-title">{% trans %}Próximamente{% endtrans %}</h2>
+        <p class="programa-mentores__empty-text">
+          {% trans %}Estamos incorporando mentores especializados para tu programa. Pronto podrás reservar sesiones.{% endtrans %}
+        </p>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === CTA para no-participantes === #}
+  {% if not participante and solicitar_url %}
+    <section class="programa-mentores__cta" aria-label="{% trans %}Únete al programa{% endtrans %}">
+      <h2 class="programa-mentores__cta-title">{% trans %}¿Quieres acceder a mentoría personalizada?{% endtrans %}</h2>
+      <p class="programa-mentores__cta-text">
+        {% trans %}Solicita tu plaza en Andalucía +ei y accede a sesiones individuales con mentores especializados.{% endtrans %}
+      </p>
+      <a href="{{ solicitar_url }}" class="programa-mentores__cta-btn">
+        {% trans %}Solicitar plaza{% endtrans %}
+      </a>
+    </section>
+  {% endif %}
+
+</div>

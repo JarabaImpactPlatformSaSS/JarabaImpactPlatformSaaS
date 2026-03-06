@@ -1,0 +1,409 @@
+/**
+ * @file
+ * Mentoring catalog styles (/mentors page).
+ * Uses CSS Custom Properties (CSS-VAR-ALL-COLORS-001).
+ */
+
+/* === MENTORS CATALOG PAGE === */
+.mentoring-catalog {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.mentoring-catalog__hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+
+.mentoring-catalog__title {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--ej-color-azul-corporativo, #233D63);
+  margin: 0 0 0.75rem;
+}
+
+.mentoring-catalog__subtitle {
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 1.125rem;
+  color: var(--ej-text-muted, #64748B);
+  max-width: 640px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+/* === SEARCH & FILTERS === */
+.mentoring-catalog__search {
+  display: flex;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.mentoring-catalog__search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--ej-border-color, #E2E8F0);
+  border-radius: 8px;
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  background: var(--ej-color-bg-surface, #FFFFFF);
+  transition: border-color 0.2s ease;
+}
+
+.mentoring-catalog__search-input:focus {
+  outline: none;
+  border-color: var(--ej-color-naranja-impulso, #FF8C42);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent);
+}
+
+.mentoring-catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.mentoring-catalog__filter-chip {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ej-border-color, #E2E8F0);
+  border-radius: 999px;
+  background: var(--ej-color-bg-surface, #FFFFFF);
+  color: var(--ej-text-primary, #1A1A2E);
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mentoring-catalog__filter-chip:hover {
+  border-color: var(--ej-color-naranja-impulso, #FF8C42);
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+}
+
+.mentoring-catalog__filter-chip.is-active {
+  background: var(--ej-color-naranja-impulso, #FF8C42);
+  border-color: var(--ej-color-naranja-impulso, #FF8C42);
+  color: var(--ej-color-light, #FFFFFF);
+}
+
+/* === MENTOR GRID === */
+.mentoring-catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* === MENTOR CARD (extends programa-mentores pattern) === */
+.mentoring-card {
+  background: var(--ej-color-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E2E8F0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mentoring-card:hover {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-dark, #000) 8%, transparent);
+  transform: translateY(-2px);
+}
+
+.mentoring-card__header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.mentoring-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mentoring-card__avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent);
+  color: var(--ej-color-azul-corporativo, #233D63);
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.mentoring-card__name {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #1A1A2E);
+  margin: 0 0 0.25rem;
+}
+
+.mentoring-card__headline {
+  font-size: 0.8125rem;
+  color: var(--ej-text-muted, #64748B);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mentoring-card__certification {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.mentoring-card__certification--certified {
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent);
+  color: var(--ej-color-azul-corporativo, #233D63);
+}
+
+.mentoring-card__certification--premium {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent);
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+}
+
+.mentoring-card__certification--elite {
+  background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  color: var(--ej-color-verde-innovacion, #00A9A5);
+}
+
+.mentoring-card__stats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.mentoring-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #1A1A2E);
+}
+
+.mentoring-card__sessions {
+  color: var(--ej-text-muted, #64748B);
+}
+
+.mentoring-card__rate {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--ej-color-azul-corporativo, #233D63);
+}
+
+.mentoring-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.mentoring-card__tag {
+  padding: 0.25rem 0.625rem;
+  background: var(--ej-color-bg-body, #F8FAFC);
+  color: var(--ej-text-secondary, #475569);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.mentoring-card__actions {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ej-border-color, #E2E8F0);
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mentoring-card__btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.mentoring-card__btn--primary {
+  background: var(--ej-color-naranja-impulso, #FF8C42);
+  color: var(--ej-color-light, #FFFFFF);
+}
+
+.mentoring-card__btn--primary:hover {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 85%, var(--ej-color-dark, #1a1a2e));
+  color: var(--ej-color-light, #FFFFFF);
+}
+
+.mentoring-card__btn--secondary {
+  background: transparent;
+  border: 1px solid var(--ej-border-color, #E2E8F0);
+  color: var(--ej-text-primary, #1A1A2E);
+}
+
+.mentoring-card__btn--secondary:hover {
+  border-color: var(--ej-color-naranja-impulso, #FF8C42);
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+}
+
+/* === MENTOR DETAIL PAGE === */
+.mentor-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.mentor-detail__header {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--ej-border-color, #E2E8F0);
+}
+
+.mentor-detail__avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--ej-color-bg-body, #F8FAFC);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-dark, #000) 10%, transparent);
+}
+
+.mentor-detail__name {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-color-azul-corporativo, #233D63);
+  margin: 0 0 0.5rem;
+}
+
+.mentor-detail__headline {
+  font-size: 1rem;
+  color: var(--ej-text-muted, #64748B);
+  margin: 0 0 1rem;
+}
+
+.mentor-detail__bio {
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 0.9375rem;
+  color: var(--ej-text-secondary, #475569);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.mentor-detail__section {
+  margin-bottom: 2rem;
+}
+
+.mentor-detail__section-title {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #1A1A2E);
+  margin: 0 0 1rem;
+}
+
+/* === BOOKING CTA === */
+.mentor-detail__cta {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 20%, transparent);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.mentor-detail__cta-btn {
+  display: inline-block;
+  padding: 0.875rem 2.5rem;
+  background: var(--ej-color-naranja-impulso, #FF8C42);
+  color: var(--ej-color-light, #FFFFFF);
+  border-radius: 8px;
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.mentor-detail__cta-btn:hover {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 85%, var(--ej-color-dark, #1a1a2e));
+  color: var(--ej-color-light, #FFFFFF);
+}
+
+/* === DASHBOARD MENTOR === */
+.mentor-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.mentor-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mentor-dashboard__stat-card {
+  background: var(--ej-color-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E2E8F0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.mentor-dashboard__stat-value {
+  display: block;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ej-color-azul-corporativo, #233D63);
+  margin-bottom: 0.25rem;
+}
+
+.mentor-dashboard__stat-label {
+  font-size: 0.8125rem;
+  color: var(--ej-text-muted, #64748B);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .mentoring-catalog__title {
+    font-size: 1.75rem;
+  }
+
+  .mentoring-catalog__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mentor-detail__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .mentoring-catalog__search {
+    flex-direction: column;
+  }
+
+  .mentor-dashboard__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -23,24 +23,24 @@
       <span class="aei-acciones__card-label">{{ 'Copilot IA'|t }}</span>
     </a>
 
-    {# Mentor #}
-    <a href="#" class="aei-acciones__card" data-slide-panel="solicitar-mentor" data-effect="fade-up" data-delay="80">
+    {# Mentor — Ruta contextualizada del programa #}
+    <a href="{{ path('jaraba_andalucia_ei.programa_mentores') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="80">
       <div class="aei-acciones__card-icon" aria-hidden="true">
         {{ jaraba_icon('ui', 'users', { variant: 'duotone', size: '28px' }) }}
       </div>
-      <span class="aei-acciones__card-label">{{ 'Mi mentor'|t }}</span>
+      <span class="aei-acciones__card-label">{{ 'Mis mentores'|t }}</span>
     </a>
 
-    {# Formación / LMS #}
-    <a href="{{ path('jaraba_andalucia_ei.dashboard') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="160">
+    {# Formación — Ruta contextualizada del programa #}
+    <a href="{{ path('jaraba_andalucia_ei.programa_formacion') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="160">
       <div class="aei-acciones__card-icon" aria-hidden="true">
         {{ jaraba_icon('education', 'graduation', { variant: 'duotone', size: '28px' }) }}
       </div>
       <span class="aei-acciones__card-label">{{ 'Formación'|t }}</span>
     </a>
 
-    {# Documentos #}
-    <a href="#" class="aei-acciones__card" data-slide-panel="subir-documento" data-participante-id="{{ participante.id() }}" data-effect="fade-up" data-delay="240">
+    {# Documentos — Ruta al hub documental #}
+    <a href="{{ path('jaraba_andalucia_ei.expediente_hub') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="240">
       <div class="aei-acciones__card-icon" aria-hidden="true">
         {{ jaraba_icon('ui', 'folder', { variant: 'duotone', size: '28px' }) }}
       </div>

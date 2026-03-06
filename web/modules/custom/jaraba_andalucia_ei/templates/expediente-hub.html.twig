@@ -1,0 +1,115 @@
+{#
+/**
+ * @file
+ * Hub documental del expediente del participante Andalucía +ei.
+ *
+ * Variables:
+ *   - participante: {id, nombre, fase}
+ *   - completeness: Map group => {label, required, completed, missing, percent}
+ *   - documents_by_category: Map category => [{id, titulo, estado_revision, ...}]
+ *   - total_percent: Overall completeness percentage.
+ */
+#}
+
+<div class="expediente-hub">
+
+  {# === HEADER === #}
+  <section class="expediente-hub__header" aria-labelledby="hub-title">
+    <h1 id="hub-title" class="expediente-hub__title">{% trans %}Mi Expediente{% endtrans %}</h1>
+    <p class="expediente-hub__subtitle">
+      {% trans %}Gestiona toda tu documentación del programa en un solo lugar.{% endtrans %}
+    </p>
+
+    {# Overall progress #}
+    <div class="expediente-hub__progress-overview">
+      <div class="expediente-hub__progress-circle" data-percent="{{ total_percent }}">
+        <span class="expediente-hub__progress-value">{{ total_percent }}%</span>
+      </div>
+      <div class="expediente-hub__progress-info">
+        <span class="expediente-hub__progress-label">{% trans %}Completitud documental{% endtrans %}</span>
+        {% if total_percent == 100 %}
+          <span class="expediente-hub__progress-status expediente-hub__progress-status--complete">
+            {% trans %}Expediente completo{% endtrans %}
+          </span>
+        {% else %}
+          <span class="expediente-hub__progress-status">
+            {% trans %}Faltan documentos por aportar{% endtrans %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# === DOCUMENT GROUPS === #}
+  {% for group_key, group in completeness if group_key != 'total_percent' %}
+    <section class="expediente-hub__group" aria-labelledby="group-{{ group_key }}">
+      <div class="expediente-hub__group-header">
+        <h2 id="group-{{ group_key }}" class="expediente-hub__group-title">
+          {{ group.label }}
+        </h2>
+        <div class="expediente-hub__group-progress">
+          <div class="expediente-hub__group-bar">
+            <div class="expediente-hub__group-bar-fill" style="width: {{ group.percent }}%"></div>
+          </div>
+          <span class="expediente-hub__group-percent">{{ group.percent }}%</span>
+        </div>
+      </div>
+
+      <div class="expediente-hub__docs-grid">
+        {# Completed docs #}
+        {% for doc in group.completed %}
+          {% set category_docs = documents_by_category[doc.category] is defined ? documents_by_category[doc.category] : [] %}
+          <div class="expediente-hub__doc-card expediente-hub__doc-card--{{ doc.status }}">
+            <div class="expediente-hub__doc-status">
+              {% if doc.status == 'aprobado' %}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" fill="var(--ej-color-verde-innovacion, #00A9A5)" opacity="0.1"/>
+                  <path d="M9 12l2 2 4-4" stroke="var(--ej-color-verde-innovacion, #00A9A5)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              {% else %}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" fill="var(--ej-color-naranja-impulso, #FF8C42)" opacity="0.1"/>
+                  <path d="M12 8v4m0 4h.01" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              {% endif %}
+            </div>
+            <div class="expediente-hub__doc-info">
+              <span class="expediente-hub__doc-label">{{ doc.label }}</span>
+              <span class="expediente-hub__doc-state">
+                {% if doc.status == 'aprobado' %}
+                  {% trans %}Aprobado{% endtrans %}
+                {% elseif doc.status == 'pendiente' %}
+                  {% trans %}Pendiente de revisión{% endtrans %}
+                {% elseif doc.status == 'en_revision' %}
+                  {% trans %}En revisión{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+            {% if category_docs|length > 0 %}
+              <span class="expediente-hub__doc-count">{{ category_docs|length }}</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {# Missing docs #}
+        {% for doc in group.missing %}
+          <div class="expediente-hub__doc-card expediente-hub__doc-card--missing">
+            <div class="expediente-hub__doc-status">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="var(--ej-border-color, #E2E8F0)" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <path d="M12 8v8m-4-4h8" stroke="var(--ej-text-muted, #64748B)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="expediente-hub__doc-info">
+              <span class="expediente-hub__doc-label">{{ doc.label }}</span>
+              <span class="expediente-hub__doc-state expediente-hub__doc-state--missing">
+                {% trans %}Pendiente de subida{% endtrans %}
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+
+</div>

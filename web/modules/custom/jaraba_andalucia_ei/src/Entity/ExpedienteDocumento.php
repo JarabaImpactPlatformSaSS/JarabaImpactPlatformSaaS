@@ -91,6 +91,13 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
     'cert_formacion' => 'Certificado de formación',
     'cert_competencias' => 'Certificado de competencias',
     'cert_participacion' => 'Certificado de participación',
+    // Mentoría y orientación.
+    'mentoria_hoja_servicio' => 'Hoja de servicio de mentoría',
+    'orientacion_hoja_servicio' => 'Hoja de servicio de orientación',
+    'orientacion_informe' => 'Informe de orientación',
+    // Inserción laboral.
+    'insercion_contrato_laboral' => 'Contrato laboral',
+    'insercion_alta_ss' => 'Alta en Seguridad Social',
   ];
 
   /**

@@ -1,0 +1,143 @@
+{#
+/**
+ * @file
+ * Dashboard del coordinador para Andalucía +ei.
+ *
+ * Variables:
+ *   - stats: {total_participants, active_participants, insertion_phase,
+ *             completed_sessions, pending_solicitudes, insertion_rate}.
+ *   - phase_distribution: {atencion: N, insercion: N, baja: N}.
+ *   - mentor_utilization: Array de mentores con stats.
+ *   - recent_activity: Array de actividad reciente.
+ */
+#}
+
+<div class="coordinador-dashboard">
+
+  {# === HEADER === #}
+  <section class="coordinador-dashboard__header" aria-labelledby="coord-title">
+    <h1 id="coord-title" class="coordinador-dashboard__title">
+      {% trans %}Panel de Coordinación{% endtrans %}
+    </h1>
+    <p class="coordinador-dashboard__subtitle">
+      {% trans %}Visión global del programa Andalucía +ei.{% endtrans %}
+    </p>
+  </section>
+
+  {# === KPI CARDS === #}
+  <section class="coordinador-dashboard__kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
+    <div class="coordinador-dashboard__kpi-card">
+      <span class="coordinador-dashboard__kpi-value">{{ stats.total_participants }}</span>
+      <span class="coordinador-dashboard__kpi-label">{% trans %}Total Participantes{% endtrans %}</span>
+    </div>
+    <div class="coordinador-dashboard__kpi-card">
+      <span class="coordinador-dashboard__kpi-value">{{ stats.active_participants }}</span>
+      <span class="coordinador-dashboard__kpi-label">{% trans %}Activos{% endtrans %}</span>
+    </div>
+    <div class="coordinador-dashboard__kpi-card coordinador-dashboard__kpi-card--highlight">
+      <span class="coordinador-dashboard__kpi-value">{{ stats.insertion_rate }}%</span>
+      <span class="coordinador-dashboard__kpi-label">{% trans %}Tasa de Inserción{% endtrans %}</span>
+    </div>
+    <div class="coordinador-dashboard__kpi-card">
+      <span class="coordinador-dashboard__kpi-value">{{ stats.completed_sessions }}</span>
+      <span class="coordinador-dashboard__kpi-label">{% trans %}Sesiones Completadas{% endtrans %}</span>
+    </div>
+    <div class="coordinador-dashboard__kpi-card coordinador-dashboard__kpi-card--alert">
+      <span class="coordinador-dashboard__kpi-value">{{ stats.pending_solicitudes }}</span>
+      <span class="coordinador-dashboard__kpi-label">{% trans %}Solicitudes Pendientes{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# === PHASE DISTRIBUTION === #}
+  <section class="coordinador-dashboard__section" aria-labelledby="phases-title">
+    <h2 id="phases-title" class="coordinador-dashboard__section-title">
+      {% trans %}Distribución por Fase{% endtrans %}
+    </h2>
+    <div class="coordinador-dashboard__phases">
+      {% set total = phase_distribution.atencion + phase_distribution.insercion + phase_distribution.baja %}
+      {% for phase, count in phase_distribution %}
+        {% set percent = total > 0 ? ((count / total) * 100)|round : 0 %}
+        <div class="coordinador-dashboard__phase-bar">
+          <div class="coordinador-dashboard__phase-label">
+            <span class="coordinador-dashboard__phase-name coordinador-dashboard__phase-name--{{ phase }}">
+              {% if phase == 'atencion' %}{% trans %}Atención{% endtrans %}
+              {% elseif phase == 'insercion' %}{% trans %}Inserción{% endtrans %}
+              {% elseif phase == 'baja' %}{% trans %}Baja{% endtrans %}
+              {% endif %}
+            </span>
+            <span class="coordinador-dashboard__phase-count">{{ count }} ({{ percent }}%)</span>
+          </div>
+          <div class="coordinador-dashboard__phase-track">
+            <div class="coordinador-dashboard__phase-fill coordinador-dashboard__phase-fill--{{ phase }}" style="width: {{ percent }}%"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# === MENTOR UTILIZATION === #}
+  {% if mentor_utilization|length > 0 %}
+    <section class="coordinador-dashboard__section" aria-labelledby="mentors-title">
+      <h2 id="mentors-title" class="coordinador-dashboard__section-title">
+        {% trans %}Actividad de Mentores{% endtrans %}
+      </h2>
+      <div class="coordinador-dashboard__table-wrapper">
+        <table class="coordinador-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Mentor{% endtrans %}</th>
+              <th>{% trans %}Sesiones{% endtrans %}</th>
+              <th>{% trans %}Rating{% endtrans %}</th>
+              <th>{% trans %}Disponible{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for mentor in mentor_utilization %}
+              <tr>
+                <td>{{ mentor.name }}</td>
+                <td>{{ mentor.total_sessions }}</td>
+                <td>
+                  {% if mentor.average_rating > 0 %}
+                    {{ mentor.average_rating|number_format(1) }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if mentor.is_available %}
+                    <span class="coordinador-dashboard__badge coordinador-dashboard__badge--success">{% trans %}Sí{% endtrans %}</span>
+                  {% else %}
+                    <span class="coordinador-dashboard__badge coordinador-dashboard__badge--inactive">{% trans %}No{% endtrans %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === RECENT ACTIVITY === #}
+  {% if recent_activity|length > 0 %}
+    <section class="coordinador-dashboard__section" aria-labelledby="activity-title">
+      <h2 id="activity-title" class="coordinador-dashboard__section-title">
+        {% trans %}Actividad Reciente{% endtrans %}
+      </h2>
+      <div class="coordinador-dashboard__activity-list">
+        {% for item in recent_activity %}
+          <div class="coordinador-dashboard__activity-item coordinador-dashboard__activity-item--{{ item.type }}">
+            <div class="coordinador-dashboard__activity-dot"></div>
+            <div class="coordinador-dashboard__activity-content">
+              <span class="coordinador-dashboard__activity-label">{{ item.label }}</span>
+              {% if item.detail %}
+                <span class="coordinador-dashboard__activity-detail">{{ item.detail }}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>

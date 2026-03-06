@@ -37,3 +37,25 @@ guia:
     - jaraba_andalucia_ei/dashboard
     - core/drupal
     - core/once
+
+programa-mentores:
+  version: 1.x
+  css:
+    theme:
+      css/programa-mentores.css: {}
+  js:
+    js/programa-mentores.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+programa-formacion:
+  version: 1.x
+  css:
+    theme:
+      css/programa-formacion.css: {}
+  js:
+    js/programa-formacion.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

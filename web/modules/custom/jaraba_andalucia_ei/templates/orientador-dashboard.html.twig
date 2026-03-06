@@ -1,0 +1,153 @@
+{#
+/**
+ * @file
+ * Dashboard del orientador/mentor para Andalucía +ei.
+ *
+ * Variables:
+ *   - mentor_profile: {id, display_name, certification_level, total_sessions, average_rating}
+ *   - participants: Array de participantes asignados.
+ *   - pending_sheets: Hojas de servicio pendientes de firma.
+ *   - upcoming_sessions: Próximas sesiones.
+ *   - completeness_map: Map participante_id => completeness data.
+ *   - stats: {total_participants, pending_signatures, upcoming_count}.
+ */
+#}
+
+<div class="orientador-dashboard">
+
+  {# === HEADER === #}
+  <section class="orientador-dashboard__header" aria-labelledby="orientador-title">
+    <div class="orientador-dashboard__welcome">
+      <h1 id="orientador-title" class="orientador-dashboard__title">
+        {% if mentor_profile %}
+          {% trans %}Hola, {{ mentor_profile.display_name }}{% endtrans %}
+        {% else %}
+          {% trans %}Panel del Orientador{% endtrans %}
+        {% endif %}
+      </h1>
+      <p class="orientador-dashboard__subtitle">
+        {% trans %}Gestiona tus participantes, sesiones y hojas de servicio.{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  {# === STAT CARDS === #}
+  <section class="orientador-dashboard__stats" aria-label="{% trans %}Resumen{% endtrans %}">
+    <div class="orientador-dashboard__stat-card">
+      <span class="orientador-dashboard__stat-value">{{ stats.total_participants }}</span>
+      <span class="orientador-dashboard__stat-label">{% trans %}Participantes{% endtrans %}</span>
+    </div>
+    <div class="orientador-dashboard__stat-card orientador-dashboard__stat-card--warning">
+      <span class="orientador-dashboard__stat-value">{{ stats.pending_signatures }}</span>
+      <span class="orientador-dashboard__stat-label">{% trans %}Firmas pendientes{% endtrans %}</span>
+    </div>
+    <div class="orientador-dashboard__stat-card">
+      <span class="orientador-dashboard__stat-value">{{ stats.upcoming_count }}</span>
+      <span class="orientador-dashboard__stat-label">{% trans %}Sesiones próximas{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# === PENDING SERVICE SHEETS === #}
+  {% if pending_sheets|length > 0 %}
+    <section class="orientador-dashboard__section" aria-labelledby="pending-title">
+      <h2 id="pending-title" class="orientador-dashboard__section-title">
+        {% trans %}Hojas de Servicio Pendientes{% endtrans %}
+      </h2>
+      <div class="orientador-dashboard__table-wrapper">
+        <table class="orientador-dashboard__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Sesión{% endtrans %}</th>
+              <th>{% trans %}Participante{% endtrans %}</th>
+              <th>{% trans %}Fecha{% endtrans %}</th>
+              <th>{% trans %}Firma Participante{% endtrans %}</th>
+              <th>{% trans %}Acción{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sheet in pending_sheets %}
+              <tr>
+                <td>#{{ sheet.session_number }}</td>
+                <td>{{ sheet.mentee_name }}</td>
+                <td>{{ sheet.scheduled_start }}</td>
+                <td>
+                  {% if sheet.firma_participante == 'signed' %}
+                    <span class="orientador-dashboard__badge orientador-dashboard__badge--success">{% trans %}Firmado{% endtrans %}</span>
+                  {% else %}
+                    <span class="orientador-dashboard__badge orientador-dashboard__badge--pending">{% trans %}Pendiente{% endtrans %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <button class="orientador-dashboard__btn-sign"
+                          data-session-id="{{ sheet.session_id }}"
+                          type="button">
+                    {% trans %}Firmar{% endtrans %}
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === UPCOMING SESSIONS === #}
+  {% if upcoming_sessions|length > 0 %}
+    <section class="orientador-dashboard__section" aria-labelledby="upcoming-title">
+      <h2 id="upcoming-title" class="orientador-dashboard__section-title">
+        {% trans %}Próximas Sesiones{% endtrans %}
+      </h2>
+      <div class="orientador-dashboard__sessions-grid">
+        {% for session in upcoming_sessions %}
+          <div class="orientador-dashboard__session-card">
+            <div class="orientador-dashboard__session-info">
+              <span class="orientador-dashboard__session-type">{{ session.session_type }}</span>
+              <h3 class="orientador-dashboard__session-mentee">{{ session.mentee_name }}</h3>
+              <span class="orientador-dashboard__session-time">{{ session.scheduled_start }}</span>
+            </div>
+            {% if session.can_join and session.meeting_url %}
+              <a href="{{ session.meeting_url }}" class="orientador-dashboard__join-btn" target="_blank" rel="noopener">
+                {% trans %}Unirse{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# === PARTICIPANTS LIST === #}
+  {% if participants|length > 0 %}
+    <section class="orientador-dashboard__section" aria-labelledby="participants-title">
+      <h2 id="participants-title" class="orientador-dashboard__section-title">
+        {% trans %}Mis Participantes{% endtrans %}
+      </h2>
+      <div class="orientador-dashboard__participants-grid">
+        {% for participant in participants %}
+          {% set completeness = completeness_map[participant.id] is defined ? completeness_map[participant.id] : {} %}
+          <div class="orientador-dashboard__participant-card">
+            <div class="orientador-dashboard__participant-info">
+              <h3 class="orientador-dashboard__participant-name">{{ participant.nombre }}</h3>
+              <span class="orientador-dashboard__participant-phase orientador-dashboard__participant-phase--{{ participant.fase }}">
+                {{ participant.fase }}
+              </span>
+              {% if participant.carril %}
+                <span class="orientador-dashboard__participant-track">{{ participant.carril }}</span>
+              {% endif %}
+            </div>
+            {% if completeness.total_percent is defined %}
+              <div class="orientador-dashboard__participant-progress">
+                <div class="orientador-dashboard__mini-bar">
+                  <div class="orientador-dashboard__mini-bar-fill" style="width: {{ completeness.total_percent }}%"></div>
+                </div>
+                <span>{{ completeness.total_percent }}%</span>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>

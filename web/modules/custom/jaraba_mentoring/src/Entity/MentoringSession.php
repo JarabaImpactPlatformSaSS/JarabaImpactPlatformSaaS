@@ -169,6 +169,91 @@ class MentoringSession extends ContentEntityBase
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // === Contenido de la Sesión (Hoja de Servicio) ===
+        $fields['session_notes'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Notas de la sesión'))
+            ->setDescription(t('Resumen narrativo de lo tratado en la sesión.'))
+            ->setDisplayOptions('form', [
+                'type' => 'text_textarea',
+                'weight' => 11,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['objectives_worked'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Objetivos trabajados'))
+            ->setDescription(t('Objetivos abordados durante la sesión (JSON array).'))
+            ->setDisplayOptions('form', [
+                'type' => 'text_textarea',
+                'weight' => 12,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['agreements'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Acuerdos alcanzados'))
+            ->setDescription(t('Compromisos y acuerdos de la sesión (JSON array).'))
+            ->setDisplayOptions('form', [
+                'type' => 'text_textarea',
+                'weight' => 13,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['next_steps'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Próximos pasos'))
+            ->setDescription(t('Acciones a realizar antes de la siguiente sesión (JSON array).'))
+            ->setDisplayOptions('form', [
+                'type' => 'text_textarea',
+                'weight' => 14,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === Valoraciones de la sesión ===
+        $fields['participant_rating'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Valoración del participante'))
+            ->setDescription(t('Puntuación que da el participante a la sesión (1-5).'))
+            ->setSetting('min', 1)
+            ->setSetting('max', 5)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['mentor_rating'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Valoración del mentor'))
+            ->setDescription(t('Puntuación que da el mentor al participante (1-5).'))
+            ->setSetting('min', 1)
+            ->setSetting('max', 5)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === Hoja de Servicio y Firma ===
+        $fields['service_sheet_doc'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Documento Hoja de Servicio'))
+            ->setDescription(t('ID del ExpedienteDocumento generado como hoja de servicio.'));
+
+        $fields['firma_participante_status'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Firma participante'))
+            ->setDescription(t('Estado de firma digital del participante.'))
+            ->setSetting('allowed_values', [
+                'pending' => 'Pendiente',
+                'signed' => 'Firmado',
+                'rejected' => 'Rechazado',
+            ])
+            ->setDefaultValue('pending')
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['firma_orientador_status'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Firma orientador'))
+            ->setDescription(t('Estado de firma digital del orientador/mentor.'))
+            ->setSetting('allowed_values', [
+                'pending' => 'Pendiente',
+                'signed' => 'Firmado',
+                'rejected' => 'Rechazado',
+            ])
+            ->setDefaultValue('pending')
+            ->setDisplayConfigurable('view', TRUE);
+
         // === Estado ===
         $fields['status'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Estado'))

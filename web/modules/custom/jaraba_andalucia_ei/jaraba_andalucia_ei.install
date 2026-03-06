@@ -152,3 +152,34 @@ function jaraba_andalucia_ei_update_10002(): void {
     }
   }
 }
+
+/**
+ * Update expediente_documento entity type definition to include new categories (mentoría, orientación, inserción).
+ *
+ * The CATEGORIAS const now includes: mentoria_hoja_servicio, orientacion_hoja_servicio,
+ * orientacion_informe, insercion_contrato_laboral, insercion_alta_ss.
+ * We need to update the field storage definition for 'categoria' to reflect new allowed_values.
+ */
+function jaraba_andalucia_ei_update_10005(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'expediente_documento';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return 'expediente_documento entity type not found.';
+  }
+
+  try {
+    // Update the categoria field storage definition with new allowed_values.
+    $existing = $update_manager->getFieldStorageDefinition('categoria', $entity_type_id);
+    if ($existing) {
+      $new_allowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+      $existing->setSetting('allowed_values', $new_allowed);
+      $update_manager->updateFieldStorageDefinition($existing);
+      return 'Updated categoria allowed_values with 5 new categories.';
+    }
+    return 'categoria field not found on expediente_documento.';
+  }
+  catch (\Throwable $e) {
+    return 'Error updating categoria: ' . $e->getMessage();
+  }
+}

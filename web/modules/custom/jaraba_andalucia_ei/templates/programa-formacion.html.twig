@@ -1,0 +1,138 @@
+{#
+/**
+ * @file
+ * Formación contextualizada para Andalucía +ei.
+ *
+ * Variables:
+ *   - courses: Array de cursos con id, title, summary, duration_minutes,
+ *              difficulty_level, is_premium, price, completion_credits, course_url.
+ *   - total_courses: Número total de cursos.
+ *   - enrollments: Map course_id => {status, progress}.
+ *   - participante: Datos del participante (id, nombre, fase, carril) o null.
+ *   - solicitar_url: URL para solicitar plaza.
+ */
+#}
+
+<div class="programa-formacion">
+
+  {# === HERO === #}
+  <section class="programa-formacion__hero" aria-labelledby="formacion-title">
+    <div class="programa-formacion__hero-content">
+      <h1 id="formacion-title" class="programa-formacion__title">
+        {% trans %}Formación del programa{% endtrans %}
+      </h1>
+      <p class="programa-formacion__subtitle">
+        {% if participante %}
+          {% trans %}Cursos seleccionados para potenciar tu empleabilidad. Completa módulos y obtén créditos.{% endtrans %}
+        {% else %}
+          {% trans %}Formación certificada para impulsar tu carrera profesional dentro del programa Andalucía +ei.{% endtrans %}
+        {% endif %}
+      </p>
+      {% if total_courses > 0 %}
+        <span class="programa-formacion__badge">
+          {{ total_courses }} {% trans %}cursos disponibles{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+  </section>
+
+  {# === GRID DE CURSOS === #}
+  {% if courses|length > 0 %}
+    <section class="programa-formacion__grid" aria-label="{% trans %}Catálogo formativo{% endtrans %}">
+      {% for course in courses %}
+        {% set enrollment = enrollments[course.id] is defined ? enrollments[course.id] : null %}
+        <article class="course-card" aria-label="{{ course.title }}">
+          <div class="course-card__header">
+            {# Dificultad #}
+            <span class="course-card__difficulty course-card__difficulty--{{ course.difficulty_level }}">
+              {% if course.difficulty_level == 'beginner' %}
+                {% trans %}Básico{% endtrans %}
+              {% elseif course.difficulty_level == 'intermediate' %}
+                {% trans %}Intermedio{% endtrans %}
+              {% elseif course.difficulty_level == 'advanced' %}
+                {% trans %}Avanzado{% endtrans %}
+              {% else %}
+                {{ course.difficulty_level }}
+              {% endif %}
+            </span>
+            {% if course.completion_credits > 0 %}
+              <span class="course-card__credits" aria-label="{% trans %}Créditos{% endtrans %}">
+                {{ course.completion_credits }} {% trans %}créditos{% endtrans %}
+              </span>
+            {% endif %}
+          </div>
+
+          <h3 class="course-card__title">{{ course.title }}</h3>
+
+          {% if course.summary %}
+            <p class="course-card__summary">{{ course.summary }}</p>
+          {% endif %}
+
+          <div class="course-card__meta">
+            {% if course.duration_minutes > 0 %}
+              <span class="course-card__duration">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="var(--ej-text-muted, #64748B)" stroke-width="1.5"/>
+                  <polyline points="12 6 12 12 16 14" stroke="var(--ej-text-muted, #64748B)" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                {{ (course.duration_minutes / 60)|number_format(0) }}h {{ course.duration_minutes % 60 }}min
+              </span>
+            {% endif %}
+            {% if course.is_premium %}
+              <span class="course-card__premium">{% trans %}Premium{% endtrans %}</span>
+            {% else %}
+              <span class="course-card__free">{% trans %}Incluido{% endtrans %}</span>
+            {% endif %}
+          </div>
+
+          {# Progress bar si está inscrito #}
+          {% if enrollment %}
+            <div class="course-card__progress">
+              <div class="course-card__progress-bar">
+                <div class="course-card__progress-fill" style="width: {{ enrollment.progress }}%"></div>
+              </div>
+              <span class="course-card__progress-text">{{ enrollment.progress }}% {% trans %}completado{% endtrans %}</span>
+            </div>
+          {% endif %}
+
+          <div class="course-card__actions">
+            <a href="{{ course.course_url }}" class="course-card__btn">
+              {% if enrollment %}
+                {% trans %}Continuar{% endtrans %}
+              {% else %}
+                {% trans %}Ver curso{% endtrans %}
+              {% endif %}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="programa-formacion__empty" aria-label="{% trans %}Sin cursos{% endtrans %}">
+      <div class="programa-formacion__empty-content">
+        <svg class="programa-formacion__empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke="var(--ej-color-azul-corporativo, #233D63)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <h2 class="programa-formacion__empty-title">{% trans %}Catálogo en preparación{% endtrans %}</h2>
+        <p class="programa-formacion__empty-text">
+          {% trans %}Estamos preparando el catálogo formativo para tu programa. Pronto podrás inscribirte.{% endtrans %}
+        </p>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === CTA para no-participantes === #}
+  {% if not participante and solicitar_url %}
+    <section class="programa-formacion__cta" aria-label="{% trans %}Únete al programa{% endtrans %}">
+      <h2 class="programa-formacion__cta-title">{% trans %}¿Quieres acceder a formación certificada?{% endtrans %}</h2>
+      <p class="programa-formacion__cta-text">
+        {% trans %}Solicita tu plaza en Andalucía +ei y accede a todo el catálogo formativo sin coste adicional.{% endtrans %}
+      </p>
+      <a href="{{ solicitar_url }}" class="programa-formacion__cta-btn">
+        {% trans %}Solicitar plaza{% endtrans %}
+      </a>
+    </section>
+  {% endif %}
+
+</div>

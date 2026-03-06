@@ -293,6 +293,19 @@ class MentorProfile extends ContentEntityBase implements MentorProfileInterface,
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // === Programas Asociados (Andalucía +ei y otros) ===
+        $fields['program_groups'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Programas asociados'))
+            ->setDescription(t('Grupos/programas en los que este mentor está activo.'))
+            ->setCardinality(-1)
+            ->setSetting('target_type', 'group')
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => 24,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // === Multi-tenancy ===
         $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
             ->setLabel(t('Tenant'))

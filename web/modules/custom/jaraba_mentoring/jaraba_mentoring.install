@@ -228,3 +228,127 @@ function jaraba_mentoring_update_10004(): string {
 
   return 'Installed fields on session_review: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
 }
+
+/**
+ * Add service sheet fields to mentoring_session: session_notes, objectives_worked, agreements, next_steps, participant_rating, mentor_rating, service_sheet_doc, firma_participante_status, firma_orientador_status.
+ */
+function jaraba_mentoring_update_10005(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'mentoring_session';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return 'mentoring_session entity type not found.';
+  }
+
+  $field_defs = [
+    'session_notes' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Notas de la sesión'))
+      ->setDescription(t('Resumen narrativo de lo tratado en la sesión.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'objectives_worked' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Objetivos trabajados'))
+      ->setDescription(t('Objetivos abordados durante la sesión (JSON array).'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'agreements' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Acuerdos alcanzados'))
+      ->setDescription(t('Compromisos y acuerdos de la sesión (JSON array).'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'next_steps' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Próximos pasos'))
+      ->setDescription(t('Acciones a realizar antes de la siguiente sesión (JSON array).'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'participant_rating' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Valoración del participante'))
+      ->setDescription(t('Puntuación que da el participante a la sesión (1-5).'))
+      ->setSetting('min', 1)
+      ->setSetting('max', 5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'mentor_rating' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Valoración del mentor'))
+      ->setDescription(t('Puntuación que da el mentor al participante (1-5).'))
+      ->setSetting('min', 1)
+      ->setSetting('max', 5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE),
+    'service_sheet_doc' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Documento Hoja de Servicio'))
+      ->setDescription(t('ID del ExpedienteDocumento generado como hoja de servicio.')),
+    'firma_participante_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Firma participante'))
+      ->setDescription(t('Estado de firma digital del participante.'))
+      ->setSetting('allowed_values', [
+        'pending' => 'Pendiente',
+        'signed' => 'Firmado',
+        'rejected' => 'Rechazado',
+      ])
+      ->setDefaultValue('pending')
+      ->setDisplayConfigurable('view', TRUE),
+    'firma_orientador_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Firma orientador'))
+      ->setDescription(t('Estado de firma digital del orientador/mentor.'))
+      ->setSetting('allowed_values', [
+        'pending' => 'Pendiente',
+        'signed' => 'Firmado',
+        'rejected' => 'Rechazado',
+      ])
+      ->setDefaultValue('pending')
+      ->setDisplayConfigurable('view', TRUE),
+  ];
+
+  $installed = [];
+  foreach ($field_defs as $field_name => $definition) {
+    try {
+      if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+        $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+        $installed[] = $field_name;
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_mentoring')->warning('Could not install field @field on @type: @message', [
+        '@field' => $field_name,
+        '@type' => $entity_type_id,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  return 'Installed fields on mentoring_session: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
+}
+
+/**
+ * Add program_groups field to mentor_profile for multi-program association.
+ */
+function jaraba_mentoring_update_10006(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'mentor_profile';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return 'mentor_profile entity type not found.';
+  }
+
+  $field_name = 'program_groups';
+  if ($update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+    return 'program_groups field already exists on mentor_profile.';
+  }
+
+  try {
+    $definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Programas asociados'))
+      ->setDescription(t('Grupos/programas en los que este mentor está activo.'))
+      ->setCardinality(-1)
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+    return 'Installed program_groups field on mentor_profile.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing program_groups: ' . $e->getMessage();
+  }
+}

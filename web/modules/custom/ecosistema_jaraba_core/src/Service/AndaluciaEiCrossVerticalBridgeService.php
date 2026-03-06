@@ -74,7 +74,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       'color' => 'var(--ej-color-corporate, #233D63)',
       'message' => 'Felicidades por tu inserción. Potencia tu carrera con formación avanzada certificada.',
       'cta_label' => 'Catálogo Formativo',
-      'cta_url' => '/courses',
+      'cta_url' => '/andalucia-ei/programa/formacion',
       'condition' => 'recently_inserted',
       'priority' => 15,
     ],

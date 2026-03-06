@@ -215,6 +215,75 @@ jaraba_andalucia_ei.guia_download_api:
   requirements:
     _access: 'TRUE'
 
+# === PROGRAMA: MENTORES CONTEXTUALIZADOS ===
+jaraba_andalucia_ei.programa_mentores:
+  path: '/andalucia-ei/programa/mentores'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ProgramaMentoresController::mentores'
+    _title: 'Mentores - Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
+# === DASHBOARD ORIENTADOR ===
+jaraba_andalucia_ei.orientador_dashboard:
+  path: '/andalucia-ei/orientador'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\OrientadorDashboardController::dashboard'
+    _title: 'Panel del Orientador - Andalucía +ei'
+  requirements:
+    _permission: 'view programa participante ei'
+
+# === DASHBOARD COORDINADOR ===
+jaraba_andalucia_ei.coordinador_dashboard:
+  path: '/andalucia-ei/coordinador'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorDashboardController::dashboard'
+    _title: 'Panel de Coordinación - Andalucía +ei'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === EXPEDIENTE HUB DOCUMENTAL ===
+jaraba_andalucia_ei.expediente_hub:
+  path: '/andalucia-ei/mi-expediente'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ExpedienteHubController::hub'
+    _title: 'Mi Expediente - Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+
+# === API: HOJA DE SERVICIO FIRMA ===
+jaraba_andalucia_ei.api.hoja_servicio.firmar:
+  path: '/api/v1/andalucia-ei/hoja-servicio/{session_id}/firmar'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\HojaServicioApiController::firmar'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    session_id: '\d+'
+
+jaraba_andalucia_ei.api.hoja_servicio.estado:
+  path: '/api/v1/andalucia-ei/hoja-servicio/{session_id}/estado'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\HojaServicioApiController::estado'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+    _format: 'json'
+    session_id: '\d+'
+
+# === PROGRAMA: FORMACIÓN CONTEXTUALIZADA ===
+jaraba_andalucia_ei.programa_formacion:
+  path: '/andalucia-ei/programa/formacion'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ProgramaFormacionController::formacion'
+    _title: 'Formación - Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
 # === LANDING PAGE DE CONVERSIÓN ===
 jaraba_andalucia_ei.landing:
   path: '/andalucia-ei/programa'
