@@ -4,7 +4,12 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-06
-**Versión:** 146.0.0 (Andalucia +ei Mentoring Contextualizado: rutas /programa/mentores, /programa/formacion, /mi-expediente, /orientador, /coordinador, hojas de servicio + firma digital + aprendizaje #167)
+**Versión:** 147.0.0 (Theming Multi-Tenant Fixes — CTA fallback cascade, Visual Customizer slide-panel, overflow-x:clip sticky + aprendizaje #168)
+
+> **🎨 THEMING MULTI-TENANT FIXES — v118 DIRECTRICES + v106 ARQUITECTURA** (2026-03-06)
+> - **Contexto:** Correcciones criticas en la cascada de theming multi-tenant, visual customizer convertido a slide-panel lateral, y 2 reglas CSS nuevas.
+> - **Fixes clave:** SSOT-THEME-001 corregido (SiteConfig=fallback, no override); hero invisible por animation inline (CSS-ANIM-INLINE-001); sticky roto por overflow-x:hidden (OVERFLOW-CLIP-STICKY-001); Visual Customizer como slide-panel 480px con live-update.
+> - **2 reglas nuevas:** OVERFLOW-CLIP-STICKY-001 (P1), CSS-ANIM-INLINE-001 (P1). Aprendizaje #168.
 
 > **🎯 ANDALUCIA +ei MENTORING CONTEXTUALIZADO** (2026-03-06)
 > - **Contexto:** Implementacion completa de mentoring contextualizado, formacion contextualizada, hojas de servicio con firma digital, hub documental, dashboards orientador/coordinador para el programa Andalucia +ei. 9 fases: infraestructura datos, mentores, formacion, hoja servicio+firma, hub documental, orientador, coordinador, CSS mentoring, separacion programa/cross-selling.
@@ -2401,6 +2406,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-06 | **147.0.0** | Theming Multi-Tenant Fixes — CTA fallback cascade fix, Visual Customizer slide-panel lateral, overflow-x:clip para sticky, CSS-ANIM-INLINE-001. Aprendizaje #168. |
 | 2026-03-05 | **144.0.0** | **Stripe Embedded Checkout Self-Service (STRIPE-CHECKOUT-001):** Checkout self-service con Stripe Embedded Checkout (ui_mode embedded). StripeProductSyncService (SaasPlan→Product/Price, idempotente, lock, archiva precios). CheckoutSessionService (return_url, metadata). CheckoutController (4 handlers zero-region). stripe-checkout.js (Stripe.js dinámico, CSRF, POST session, initEmbeddedCheckout). Templates: page--checkout (zero-region), checkout-page (2 columnas), checkout-success (SVG animado), checkout-cancel (warning). SCSS _checkout.scss BEM. MetaSitePricingService +saas_plan_id. pricing-page CTAs checkout. pricing-toggle.js +cycle sync. hook_update_9035. Drush StripeSyncCommands. 1 regla: STRIPE-CHECKOUT-001 (P0). Regla de oro #107. Aprendizaje #165. |
 | 2026-03-05 | **141.0.0** | **Multi-Tenant Route Cache Isolation + Vary:Host + Visual Customizer Fix:** Homepage contamination por route cache collision — Domain entity PED creada, Vary:Host header, SecurityHeadersSubscriber dual events. visual-customizer.js reescrito (11 fantasma, 4 mismatches, 3 faltantes). Vertical tab titles plain text. TenantSubscriptionService lazy-load dedup. SEC-08 completado. 3 reglas: DOMAIN-ROUTE-CACHE-001, VARY-HOST-001, PHANTOM-ARG-JS-001. Reglas de oro #104-105. Aprendizaje #162: `docs/tecnicos/aprendizajes/2026-03-05_multi_tenant_route_cache_domain_isolation.md`. |
 | 2026-03-05 | **140.0.0** | **Verticales Componibles + Tenant Settings Hub + Stripe Sync + Tenant Token Override:** Addon entity +vertical_ref + addon_type='vertical'. TenantVerticalService resolucion multi-vertical. VerticalAddonBillingService orquestacion. 4 REST endpoints. TenantSettingsRegistry + CompilerPass + 6 secciones tagged. FeatureAccessService +hasActiveAddonSubscription(). TenantSubscriptionService changePlan() sync Stripe bidireccional. ThemeTokenService auto-resolve tenant. BaseAgent enriquece contexto con addon verticals. Config sync 200+ FVL, 28 ECA flows. 2 reglas: ADDON-VERTICAL-001, TENANT-SETTINGS-HUB-001. Reglas de oro #102-103. Aprendizaje #161. |
