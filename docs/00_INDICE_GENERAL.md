@@ -3,8 +3,21 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-05
-**Versión:** 144.0.0 (Stripe Embedded Checkout: STRIPE-CHECKOUT-001, checkout self-service ui_mode embedded, sync Product/Price bidireccional, zero-region templates + aprendizaje #165)
+**Última actualización:** 2026-03-06
+**Versión:** 146.0.0 (Andalucia +ei Mentoring Contextualizado: rutas /programa/mentores, /programa/formacion, /mi-expediente, /orientador, /coordinador, hojas de servicio + firma digital + aprendizaje #167)
+
+> **🎯 ANDALUCIA +ei MENTORING CONTEXTUALIZADO** (2026-03-06)
+> - **Contexto:** Implementacion completa de mentoring contextualizado, formacion contextualizada, hojas de servicio con firma digital, hub documental, dashboards orientador/coordinador para el programa Andalucia +ei. 9 fases: infraestructura datos, mentores, formacion, hoja servicio+firma, hub documental, orientador, coordinador, CSS mentoring, separacion programa/cross-selling.
+> - **Ficheros nuevos (21):** ProgramaMentoresController, ProgramaFormacionController, HojaServicioApiController, ExpedienteHubController, OrientadorDashboardController, CoordinadorDashboardController, HojaServicioMentoriaService, HumanMentorshipTracker, ExpedienteCompletenessService, 5 templates Twig, 3 CSS, 3 JS.
+> - **Ficheros modificados (11):** MentoringSession (+9 campos), MentorProfile (+program_groups), ExpedienteDocumento (+5 categorias), jaraba_mentoring.install (+update_10005/10006), jaraba_andalucia_ei.install (+update_10005), services.yml (+3 servicios), routing.yml (+7 rutas), module (+hook_theme+hook_update), libraries.yml (+2 libraries), _participante-acciones.html.twig (rutas contextualizadas), AndaluciaEiCrossVerticalBridgeService (cta_url fix).
+> - **Aprendizaje #167.** Cross-refs: Directrices v117.0.0, Arquitectura v105.0.0, Indice v146.0.0, Flujo v70.0.0.
+
+> **🎨 THEMING UNIFICADO MULTI-TENANT — THEMING-UNIFY-001 + SSOT-THEME-001** (2026-03-06)
+> - **Contexto:** Unificacion del sistema de theming multi-tenant. UnifiedThemeResolverService implementa cascada de 5 niveles (Plataforma→Vertical→Plan→Tenant→Meta-sitio). Resolucion por hostname para usuarios anonimos via MetaSiteResolverService + fallback por usuario autenticado. TenantThemeConfig=visual SSOT, SiteConfig=estructural SSOT.
+> - **Ficheros nuevos:** UnifiedThemeResolverService.php, UnifiedThemeResolverServiceTest.php (6 tests, 34 assertions).
+> - **Ficheros modificados:** TenantThemeConfig.php (+header_cta_url field), jaraba_theming.install (+update_10002), jaraba_theming.module (page_attachments con hostname resolution), ecosistema_jaraba_core.services.yml (+unified_theme_resolver), ecosistema_jaraba_theme.theme (META-SITIO OVERRIDE reemplazado, tenant-tokens duplicado eliminado).
+> - **2 reglas nuevas:** THEMING-UNIFY-001 (P0), SSOT-THEME-001 (P1). Aprendizaje #166.
+> - **Cross-refs:** Directrices v116.0.0, Arquitectura v105.0.0, Flujo v69.0.0.
 
 > **💳 STRIPE EMBEDDED CHECKOUT SELF-SERVICE — STRIPE-CHECKOUT-001** (2026-03-05)
 > - **Contexto:** Implementacion completa del checkout self-service para planes SaaS usando Stripe Embedded Checkout (ui_mode: embedded). Sync bidireccional SaasPlan↔Stripe Product/Price. Templates zero-region. JS con carga dinamica de Stripe.js + CSRF. Auto-provisioning via webhook checkout.session.completed.
