@@ -19,7 +19,7 @@
   right: 0;
   z-index: $privacy-banner-z-index;
   background: var(--ej-color-surface, #FFFFFF);
-  box-shadow: 0 -4px 20px color-mix(in srgb, #000000 15%, transparent);
+  box-shadow: 0 -4px 20px color-mix(in srgb, var(--ej-color-shadow, black) 15%, transparent);
   padding: 1.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -144,40 +144,42 @@
   transition: background-color 150ms ease, color 150ms ease;
 
   &--accept-all {
-    background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
-    color: var(--ej-bg-surface, #FFFFFF);
+    background: var(--ej-azul-corporativo, var(--ej-privacy-primary, #{$privacy-primary-fallback}));
+    color: var(--ej-bg-surface, white);
 
     &:hover {
-      background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+      background: color-mix(in srgb, var(--ej-azul-corporativo, var(--ej-privacy-primary, #{$privacy-primary-fallback})) 85%, black);
     }
   }
 
   &--reject-all {
-    background: var(--ej-color-background, #F3F4F6);
-    color: var(--ej-color-text-primary, #1F2937);
-    border: 1px solid var(--ej-color-border, #E5E7EB);
+    background: var(--ej-color-background, transparent);
+    color: var(--ej-color-text-primary, inherit);
+    border: 1px solid var(--ej-color-border, currentColor);
 
     &:hover {
-      background: var(--ej-color-border, #E5E7EB);
+      background: var(--ej-color-border, currentColor);
     }
   }
 
   &--customize {
     background: transparent;
-    color: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+    color: var(--ej-naranja-impulso, var(--ej-privacy-primary, #{$privacy-primary-fallback}));
+    font-weight: 600;
     text-decoration: underline;
+    text-underline-offset: 2px;
 
     &:hover {
-      color: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+      color: color-mix(in srgb, var(--ej-naranja-impulso, var(--ej-privacy-primary, #{$privacy-primary-fallback})) 85%, black);
     }
   }
 
   &--save {
-    background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
-    color: var(--ej-bg-surface, #FFFFFF);
+    background: var(--ej-azul-corporativo, var(--ej-privacy-primary, #{$privacy-primary-fallback}));
+    color: var(--ej-bg-surface, white);
 
     &:hover {
-      background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+      background: color-mix(in srgb, var(--ej-azul-corporativo, var(--ej-privacy-primary, #{$privacy-primary-fallback})) 85%, black);
     }
   }
 }

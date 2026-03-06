@@ -1,0 +1,350 @@
+{#
+/**
+ * @file
+ * Landing de reclutamiento de participantes — Andalucía +ei.
+ *
+ * URL canónica: /andaluciamasei.html (preservar reputación SEO).
+ * Datos reales del expediente SC/ICV/0111/2025.
+ * Financiado: Junta de Andalucía + FSE+ (85%).
+ *
+ * Zero Region Policy: No usa page.content ni bloques.
+ * Orden: Hero > Institucional > Qué recibes > Requisitos > Sedes >
+ *        Cómo funciona > Equipo > FAQ > CTA Final
+ */
+#}
+
+{# === PUBLICIDAD OFICIAL: Obligatorio por normativa de subvenciones === #}
+{# Logos institucionales: UE + Ministerio + Fondos Europeos + Junta de Andalucía + SAE #}
+<div class="aei-rec__publicidad-oficial" role="banner" aria-label="{% trans %}Financiación institucional del programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <h1 class="aei-rec__publicidad-titulo">{% trans %}T-Acompañamos: Programa de Proyectos Integrales para la Inserción Laboral de la Junta de Andalucía{% endtrans %}</h1>
+    <img src="/{{ module_path }}/images/publicidad-oficial-piil.png"
+         alt="{% trans %}Cofinanciado por la Unión Europea | Ministerio de Trabajo y Economía Social | Fondos Europeos | Junta de Andalucía — Consejería de Empleo, Empresa y Trabajo Autónomo — Servicio Andaluz de Empleo{% endtrans %}"
+         class="aei-rec__publicidad-img"
+         width="2937"
+         height="277"
+         loading="eager">
+  </div>
+</div>
+
+{# === HERO: Gancho emocional directo al candidato === #}
+<section class="aei-rec__hero" aria-label="{% trans %}Programa Andalucía +ei{% endtrans %}">
+  <div class="aei-rec__container">
+    <div class="aei-rec__hero-badges">
+      <span class="aei-rec__badge aei-rec__badge--institucional">{% trans %}Programa oficial{% endtrans %}</span>
+      <span class="aei-rec__badge aei-rec__badge--gratuito">{% trans %}100% gratuito{% endtrans %}</span>
+    </div>
+    <h2 class="aei-rec__title">{% trans %}Tu nuevo empleo empieza aquí{% endtrans %}</h2>
+    <p class="aei-rec__subtitle">
+      {% trans %}Programa de inserción laboral financiado por la Junta de Andalucía y la Unión Europea. Orientación personalizada, formación práctica, mentoría con IA y acompañamiento hasta tu contratación. Recibes 528 € al completar el itinerario.{% endtrans %}
+    </p>
+    <div class="aei-rec__hero-stats">
+      <div class="aei-rec__hero-stat">
+        <span class="aei-rec__hero-stat-value">{{ programa.participantes }}</span>
+        <span class="aei-rec__hero-stat-label">{% trans %}plazas disponibles{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__hero-stat">
+        <span class="aei-rec__hero-stat-value">{{ programa.incentivo }} &euro;</span>
+        <span class="aei-rec__hero-stat-label">{% trans %}incentivo al participante{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__hero-stat">
+        <span class="aei-rec__hero-stat-value">{{ programa.tasa_insercion }}%</span>
+        <span class="aei-rec__hero-stat-label">{% trans %}objetivo de inserción{% endtrans %}</span>
+      </div>
+    </div>
+    <div class="aei-rec__hero-actions">
+      <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary">
+        {% trans %}Solicitar plaza ahora{% endtrans %}
+      </a>
+      <a href="#que-recibes" class="aei-rec__cta aei-rec__cta--secondary">
+        {% trans %}Conocer el programa{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === INSTITUCIONAL: Quién financia, quién gestiona === #}
+<section class="aei-rec__institucional" aria-label="{% trans %}Financiación del programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <p class="aei-rec__institucional-text">
+      {% trans %}Programa de Itinerarios Integrados y Personalizados de Inserción Laboral (PIIL) — Convocatoria Colectivos Vulnerables 2025{% endtrans %}
+    </p>
+    <div class="aei-rec__institucional-logos">
+      <div class="aei-rec__institucional-item">
+        <span class="aei-rec__institucional-name">{% trans %}Junta de Andalucía{% endtrans %}</span>
+        <span class="aei-rec__institucional-detail">{% trans %}Servicio Andaluz de Empleo{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__institucional-divider" aria-hidden="true"></div>
+      <div class="aei-rec__institucional-item">
+        <span class="aei-rec__institucional-name">{% trans %}Unión Europea{% endtrans %}</span>
+        <span class="aei-rec__institucional-detail">{% trans %}Fondo Social Europeo Plus (FSE+){% endtrans %}</span>
+      </div>
+      <div class="aei-rec__institucional-divider" aria-hidden="true"></div>
+      <div class="aei-rec__institucional-item">
+        <span class="aei-rec__institucional-name">{% trans %}PED S.L.{% endtrans %}</span>
+        <span class="aei-rec__institucional-detail">{% trans %}Entidad gestora{% endtrans %}</span>
+      </div>
+    </div>
+    <p class="aei-rec__institucional-expediente">
+      {% trans %}Expediente{% endtrans %}: {{ programa.expediente }}
+    </p>
+  </div>
+</section>
+
+{# === QUÉ RECIBES: Beneficios tangibles === #}
+<section id="que-recibes" class="aei-rec__beneficios" aria-label="{% trans %}Qué recibes en el programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <div class="aei-rec__section-header">
+      <h2 class="aei-rec__section-title">{% trans %}Qué recibes gratuitamente{% endtrans %}</h2>
+      <p class="aei-rec__section-desc">{% trans %}Todo incluido, sin ningún coste. Financiado íntegramente con fondos públicos.{% endtrans %}</p>
+    </div>
+    <div class="aei-rec__beneficios-grid">
+      {% set beneficios = [
+        {
+          titulo: 'Orientación laboral personalizada'|t,
+          desc: 'Mínimo 10 horas con sesiones individuales. Diagnóstico de empleabilidad, diseño de tu itinerario, técnicas de búsqueda activa de empleo, confección de CV y preparación de entrevistas.'|t,
+          destacado: '10+ horas'|t,
+        },
+        {
+          titulo: 'Formación práctica certificada'|t,
+          desc: 'Mínimo 50 horas en competencias digitales, habilidades profesionales y conocimientos técnicos adaptados a tu perfil. Motor de dificultad adaptativa que se ajusta a tu nivel.'|t,
+          destacado: '50+ horas'|t,
+        },
+        {
+          titulo: 'Mentoría con Inteligencia Artificial'|t,
+          desc: 'Tutor virtual disponible 24/7 que te ayuda con tu CV, prepara entrevistas, elabora planes de negocio y te orienta profesionalmente. Tecnología exclusiva del programa.'|t,
+          destacado: 'Tutor IA 24/7'|t,
+        },
+        {
+          titulo: 'Acompañamiento hacia el empleo'|t,
+          desc: '40 horas adicionales de orientación para la inserción: acompañamiento en procesos de selección, prospección de ofertas, preparación para la incorporación laboral.'|t,
+          destacado: '40+ horas'|t,
+        },
+        {
+          titulo: 'Expediente digital seguro'|t,
+          desc: 'Toda tu documentación organizada: CV, certificados, evaluaciones, contratos. Almacenamiento cifrado, firma digital y acceso controlado. Tu historial profesional en un solo lugar.'|t,
+          destacado: '18 categorías'|t,
+        },
+        {
+          titulo: 'Incentivo económico de 528 €'|t,
+          desc: 'Al completar el itinerario formativo (10h orientación + 50h formación) recibes un incentivo de 528 euros. Verificado y gestionado a través de la plataforma.'|t,
+          destacado: '528 €'|t,
+        },
+      ] %}
+      {% for beneficio in beneficios %}
+        <div class="aei-rec__beneficio-card">
+          <span class="aei-rec__beneficio-destacado">{{ beneficio.destacado }}</span>
+          <h3 class="aei-rec__beneficio-titulo">{{ beneficio.titulo }}</h3>
+          <p class="aei-rec__beneficio-desc">{{ beneficio.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === REQUISITOS: Quién puede participar === #}
+<section class="aei-rec__requisitos" aria-label="{% trans %}Requisitos de participación{% endtrans %}">
+  <div class="aei-rec__container">
+    <div class="aei-rec__requisitos-layout">
+      <div class="aei-rec__requisitos-main">
+        <h2 class="aei-rec__section-title">{% trans %}¿Puedo participar?{% endtrans %}</h2>
+        <p class="aei-rec__section-desc">
+          {% trans %}El programa está dirigido a personas desempleadas inscritas como demandantes de empleo en el SAE que pertenezcan a alguno de estos colectivos:{% endtrans %}
+        </p>
+        <ul class="aei-rec__colectivos-list">
+          {% for colectivo in programa.colectivos %}
+            <li class="aei-rec__colectivo-item">
+              <svg class="aei-rec__check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ej-verde-innovacion, #00A9A5)" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              <span>{{ colectivo }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="aei-rec__requisitos-sidebar">
+        <div class="aei-rec__requisito-card">
+          <h3 class="aei-rec__requisito-card-title">{% trans %}Requisito imprescindible{% endtrans %}</h3>
+          <p class="aei-rec__requisito-card-text">
+            {% trans %}Estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo (SAE) en el momento del alta en el programa.{% endtrans %}
+          </p>
+          <div class="aei-rec__requisito-card-action">
+            <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary">
+              {% trans %}Comprobar elegibilidad{% endtrans %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === SEDES: Dónde se imparte === #}
+<section class="aei-rec__sedes" aria-label="{% trans %}Sedes del programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Sedes del programa{% endtrans %}</h2>
+    <div class="aei-rec__sedes-grid">
+      {% for sede in programa.sedes %}
+        <div class="aei-rec__sede-card">
+          <span class="aei-rec__sede-plazas">{{ sede.plazas }} {% trans %}plazas{% endtrans %}</span>
+          <h3 class="aei-rec__sede-ciudad">{{ sede.ciudad }}</h3>
+          <address class="aei-rec__sede-direccion">
+            {{ sede.direccion }}<br>
+            CP {{ sede.cp }} {{ sede.ciudad }}
+          </address>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === CÓMO FUNCIONA: Paso a paso claro === #}
+<section class="aei-rec__pasos" aria-label="{% trans %}Cómo funciona{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Cómo funciona{% endtrans %}</h2>
+    <div class="aei-rec__pasos-timeline">
+      {% set pasos = [
+        {
+          num: '1',
+          titulo: 'Solicita tu plaza'|t,
+          desc: 'Rellena el formulario online en 2 minutos. Nuestro sistema de inteligencia artificial evalúa tu perfil y te asigna el itinerario más adecuado en menos de 48 horas.'|t,
+        },
+        {
+          num: '2',
+          titulo: 'Acogida y diagnóstico'|t,
+          desc: 'Te recibimos en tu sede más cercana, firmamos el acuerdo de participación (DACI) y evaluamos tu situación laboral, competencias y objetivos profesionales.'|t,
+        },
+        {
+          num: '3',
+          titulo: 'Formación + orientación'|t,
+          desc: 'Mínimo 50 horas de formación certificada y 10 horas de orientación personalizada. Acceso al tutor IA 24/7, expediente digital y seguimiento de tu progreso en tiempo real.'|t,
+        },
+        {
+          num: '4',
+          titulo: 'Inserción laboral'|t,
+          desc: 'Acompañamiento activo en procesos de selección o lanzamiento de tu emprendimiento. Prospección de ofertas, preparación de entrevistas y seguimiento post-contratación durante 6 meses.'|t,
+        },
+      ] %}
+      {% for paso in pasos %}
+        <div class="aei-rec__paso">
+          <span class="aei-rec__paso-num">{{ paso.num }}</span>
+          <div class="aei-rec__paso-content">
+            <h3 class="aei-rec__paso-titulo">{{ paso.titulo }}</h3>
+            <p class="aei-rec__paso-desc">{{ paso.desc }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === EQUIPO: Quién te acompaña === #}
+<section class="aei-rec__equipo" aria-label="{% trans %}Equipo técnico{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Quién te acompaña{% endtrans %}</h2>
+    <div class="aei-rec__equipo-grid">
+      {% for miembro in programa.equipo %}
+        <div class="aei-rec__equipo-card">
+          <div class="aei-rec__equipo-avatar" aria-hidden="true">{{ miembro.nombre|first }}</div>
+          <h3 class="aei-rec__equipo-nombre">{{ miembro.nombre }}</h3>
+          <p class="aei-rec__equipo-titulo">{{ miembro.titulo }}</p>
+          <span class="aei-rec__equipo-sede">{{ miembro.sede }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === FAQ: Preguntas reales del público objetivo === #}
+<section class="aei-rec__faq" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
+    <div class="aei-rec__faq-list">
+      {% set faqs = [
+        {
+          q: '¿Es realmente gratis?'|t,
+          a: 'Sí, 100%. El programa está financiado íntegramente por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+). No pagas nada.'|t,
+        },
+        {
+          q: '¿Qué son los 528 € del incentivo?'|t,
+          a: 'Cuando completas el itinerario formativo (10 horas de orientación + 50 horas de formación con asistencia del 75%), recibes 528 € como incentivo a la participación. Es un pago directo, no un préstamo.'|t,
+        },
+        {
+          q: '¿Necesito estar apuntado en el SAE?'|t,
+          a: 'Sí, es un requisito imprescindible. Debes estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo en el momento del alta en el programa.'|t,
+        },
+        {
+          q: '¿Cuánto dura el programa?'|t,
+          a: 'El programa tiene una duración máxima de 18 meses (hasta junio de 2027). Tu itinerario personalizado depende de tu perfil y tu ritmo. La fase formativa incluye al menos 50 horas de formación y 10 de orientación.'|t,
+        },
+        {
+          q: '¿Puedo participar si tengo más de 45 años?'|t,
+          a: 'Sí, las personas mayores de 45 años son uno de los colectivos prioritarios del programa. Tu experiencia es un valor que la formación complementa.'|t,
+        },
+        {
+          q: '¿Qué pasa si encuentro trabajo durante el programa?'|t,
+          a: 'Es el objetivo. Pasas a la fase de inserción y seguimos acompañándote en tu incorporación laboral durante los primeros 6 meses de empleo.'|t,
+        },
+        {
+          q: '¿Qué es la mentoría con Inteligencia Artificial?'|t,
+          a: 'Tienes acceso a un tutor virtual basado en IA que te ayuda a mejorar tu CV, preparar entrevistas, elaborar planes de negocio y orientarte profesionalmente. Disponible 24 horas al día, 7 días a la semana.'|t,
+        },
+        {
+          q: '¿Mis datos están protegidos?'|t,
+          a: 'Toda la información se almacena con cifrado de nivel bancario (AES-256), cumplimiento RGPD completo y acceso controlado. Solo tú y los profesionales autorizados del programa acceden a tu expediente.'|t,
+        },
+        {
+          q: '¿Puedo participar si soy migrante?'|t,
+          a: 'Sí, las personas migrantes son uno de los colectivos destinatarios del programa. El único requisito es estar inscrito/a como demandante de empleo en el SAE.'|t,
+        },
+        {
+          q: '¿Dónde se imparte?'|t,
+          a: 'Tenemos sedes en Málaga (15 plazas, Centro de Negocios Málaga) y Sevilla (30 plazas, Edificio Hermes). La formación combina sesiones presenciales con contenido online (máximo 20% online).'|t,
+        },
+      ] %}
+      {% for faq in faqs %}
+        <details class="aei-rec__faq-item">
+          <summary class="aei-rec__faq-question">{{ faq.q }}</summary>
+          <div class="aei-rec__faq-answer">{{ faq.a }}</div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === CTA FINAL === #}
+<section class="aei-rec__cta-final" aria-label="{% trans %}Solicitar plaza{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__cta-final-title">{% trans %}Solo quedan 45 plazas{% endtrans %}</h2>
+    <p class="aei-rec__cta-final-desc">
+      {% trans %}Orientación personalizada + formación certificada + mentoría IA + acompañamiento a empleo + 528 € de incentivo. Todo gratuito.{% endtrans %}
+    </p>
+    <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary aei-rec__cta--large">
+      {% trans %}Solicitar plaza{% endtrans %}
+    </a>
+    <p class="aei-rec__cta-final-legal">
+      {% trans %}Programa PIIL — Convocatoria Colectivos Vulnerables 2025. Financiado por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+).{% endtrans %}
+    </p>
+  </div>
+</section>
+
+{# === SCHEMA.ORG: EducationalOccupationalProgram inyectado via hook_page_attachments() === #}
+{# Incluye: location con GeoCoordinates (sedes), funder, offers, provider con NAP === #}
+
+{# === FAQPage Schema para rich results en Google === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in faqs %}
+    {
+      "@type": "Question",
+      "name": "{{ faq.q|e('html_attr') }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ faq.a|e('html_attr') }}"
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

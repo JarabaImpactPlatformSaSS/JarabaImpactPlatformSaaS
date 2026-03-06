@@ -1,0 +1,233 @@
+/**
+ * @file
+ * Popup de reclutamiento Andalucía +ei para meta-sitios corporativos.
+ *
+ * DIRECTRIZ: CSS-VAR-ALL-COLORS-001 — Solo var(--ej-*).
+ */
+
+// =============================================================================
+// OVERLAY
+// =============================================================================
+
+.aei-popup__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 60%, transparent);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 300ms ease;
+
+  &--visible {
+    opacity: 1;
+  }
+}
+
+// =============================================================================
+// POPUP CARD
+// =============================================================================
+
+.aei-popup {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: var(--ej-color-surface, #fff);
+  border-radius: 16px;
+  padding: 2.5rem 2rem 2rem;
+  box-shadow: 0 24px 48px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 25%, transparent);
+  text-align: center;
+  transform: translateY(20px) scale(0.96);
+  transition: transform 300ms ease;
+
+  .aei-popup__overlay--visible & {
+    transform: translateY(0) scale(1);
+  }
+}
+
+// =============================================================================
+// CLOSE BUTTON
+// =============================================================================
+
+.aei-popup__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--ej-color-surface-secondary, #F3F4F6);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease;
+  line-height: 1;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ej-color-border-light, #E5E7EB);
+    color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-naranja-impulso, #FF8C42);
+    outline-offset: 2px;
+  }
+}
+
+// =============================================================================
+// BADGE
+// =============================================================================
+
+.aei-popup__badge {
+  display: inline-block;
+  background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 12%, transparent);
+  color: var(--ej-verde-innovacion, #00A9A5);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+// =============================================================================
+// CONTENT
+// =============================================================================
+
+.aei-popup__title {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: clamp(1.25rem, 3vw, 1.625rem);
+  font-weight: 800;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.aei-popup__desc {
+  font-size: 0.95rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+
+// =============================================================================
+// STATS
+// =============================================================================
+
+.aei-popup__stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.aei-popup__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aei-popup__stat-value {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+.aei-popup__stat-label {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 0.15rem;
+}
+
+// =============================================================================
+// ACTIONS
+// =============================================================================
+
+.aei-popup__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.aei-popup__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 150ms ease, transform 100ms ease;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &--primary {
+    background: var(--ej-naranja-impulso, #FF8C42);
+    color: var(--ej-color-surface, #fff);
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 85%, var(--ej-azul-corporativo, #233D63));
+    }
+  }
+
+  &--secondary {
+    background: var(--ej-color-surface-secondary, #F3F4F6);
+    color: var(--ej-azul-corporativo, #233D63);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--ej-color-border-light, #E5E7EB);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-naranja-impulso, #FF8C42);
+    outline-offset: 2px;
+  }
+}
+
+// =============================================================================
+// LEGAL
+// =============================================================================
+
+.aei-popup__legal {
+  font-size: 0.7rem;
+  color: var(--ej-color-text-muted, #9CA3AF);
+  margin: 0;
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: 480px) {
+  .aei-popup {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .aei-popup__stats {
+    gap: 1rem;
+  }
+
+  .aei-popup__stat-value {
+    font-size: 1.25rem;
+  }
+}

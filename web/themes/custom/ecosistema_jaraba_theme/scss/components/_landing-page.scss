@@ -1159,6 +1159,19 @@ body.menu-open {
         }
     }
 
+    // RGPD Art. 7.3 — Cookie link integrado en columna Legal.
+    &__cookie-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+    }
+
+    &__cookie-icon {
+        flex-shrink: 0;
+        opacity: 0.7;
+    }
+
     &__bottom {
         display: flex;
         flex-wrap: wrap;

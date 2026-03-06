@@ -52,6 +52,14 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-landing',
     ],
+    'andalucia_ei_reclutamiento' => [
+      'variables' => [
+        'solicitar_url' => NULL,
+        'programa' => [],
+        'module_path' => NULL,
+      ],
+      'template' => 'andalucia-ei-reclutamiento',
+    ],
     'participante_expediente' => [
       'variables' => [
         'completitud' => [],
@@ -1108,41 +1116,29 @@ function jaraba_andalucia_ei_mentoring_session_update(\Drupal\Core\Entity\Entity
  */
 function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
   $route = \Drupal::routeMatch()->getRouteName();
-  if ($route !== 'jaraba_andalucia_ei.landing') {
-    return;
+
+  if ($route === 'jaraba_andalucia_ei.landing') {
+    _jaraba_andalucia_ei_landing_attachments($attachments);
+  }
+  elseif ($route === 'jaraba_andalucia_ei.reclutamiento') {
+    _jaraba_andalucia_ei_reclutamiento_attachments($attachments);
   }
 
+  // Popup de reclutamiento en la home de meta-sitios corporativos.
+  _jaraba_andalucia_ei_popup_attachments($attachments, $route);
+}
+
+/**
+ * Attachments for the landing page.
+ */
+function _jaraba_andalucia_ei_landing_attachments(array &$attachments): void {
   $request = \Drupal::request();
   $currentUrl = $request->getSchemeAndHttpHost() . $request->getRequestUri();
 
   $title = t('Programa Andalucia +ei — Emprendimiento Aumentado con IA');
   $description = t('Programa gratuito de emprendimiento, formacion certificada y mentoria con inteligencia artificial para personas desempleadas en Andalucia.');
 
-  // Open Graph meta tags.
-  $og_tags = [
-    'og:title' => (string) $title,
-    'og:description' => (string) $description,
-    'og:url' => $currentUrl,
-    'og:type' => 'website',
-    'og:site_name' => 'Jaraba Impact Platform',
-    'twitter:card' => 'summary_large_image',
-    'twitter:title' => (string) $title,
-    'twitter:description' => (string) $description,
-  ];
-
-  foreach ($og_tags as $property => $content) {
-    $tag_name = str_starts_with($property, 'twitter:') ? 'name' : 'property';
-    $attachments['#attached']['html_head'][] = [
-      [
-        '#tag' => 'meta',
-        '#attributes' => [
-          $tag_name => $property,
-          'content' => $content,
-        ],
-      ],
-      'andalucia_ei_' . str_replace([':', '/'], '_', $property),
-    ];
-  }
+  _jaraba_andalucia_ei_add_og_tags($attachments, $title, $description, $currentUrl);
 
   // Schema.org JSON-LD (Course + EducationalOrganization).
   $schema = [
@@ -1176,6 +1172,243 @@ function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
       '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
     ],
     'andalucia_ei_schema_org',
+  ];
+}
+
+/**
+ * Attachments for the reclutamiento landing page.
+ *
+ * ZERO-REGION-003: Library MUST be attached here, NOT in controller #attached.
+ * Also adds OG tags, meta description, canonical URL for SEO preservation.
+ */
+function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): void {
+  // ZERO-REGION-003: Attach library here — controller #attached is NOT processed.
+  $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/reclutamiento';
+
+  // Geo meta tags para buscadores (Bing, Yahoo, Yandex).
+  $geo_tags = [
+    'geo.region' => 'ES-AN',
+    'geo.placename' => 'Málaga, Andalucía',
+    'geo.position' => '36.7265;-4.4198',
+    'ICBM' => '36.7265, -4.4198',
+  ];
+  foreach ($geo_tags as $name => $content) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => ['name' => $name, 'content' => $content],
+      ],
+      'andalucia_ei_rec_' . str_replace('.', '_', $name),
+    ];
+  }
+
+  $request = \Drupal::request();
+  $baseUrl = $request->getSchemeAndHttpHost();
+  $canonicalUrl = $baseUrl . '/andaluciamasei.html';
+
+  $title = t('Andalucia +ei — Programa Gratuito de Insercion Laboral');
+  $description = t('Programa gratuito de itinerarios integrados de insercion laboral en Malaga y Sevilla. 45 plazas, formacion certificada, orientacion personalizada y acompanamiento a la insercion. Financiado por FSE+ y Junta de Andalucia.');
+
+  // Meta description.
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'description',
+        'content' => (string) $description,
+      ],
+    ],
+    'andalucia_ei_rec_description',
+  ];
+
+  // Canonical URL.
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'link',
+      '#attributes' => [
+        'rel' => 'canonical',
+        'href' => $canonicalUrl,
+      ],
+    ],
+    'andalucia_ei_rec_canonical',
+  ];
+
+  // OG + Twitter tags.
+  _jaraba_andalucia_ei_add_og_tags($attachments, $title, $description, $canonicalUrl, 'rec_');
+
+  // Schema.org JSON-LD — EducationalOccupationalProgram con sedes geo.
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'EducationalOccupationalProgram',
+    'name' => (string) $title,
+    'description' => (string) $description,
+    'url' => $canonicalUrl,
+    'provider' => [
+      '@type' => 'Organization',
+      'name' => 'Plataforma de Ecosistemas Digitales S.L.',
+      'url' => $baseUrl,
+      'telephone' => '+34 623 174 304',
+      'email' => 'contacto@plataformadeecosistemas.es',
+    ],
+    'programType' => 'Professional training',
+    'occupationalCategory' => 'Insercion laboral',
+    'timeToComplete' => 'P18M',
+    'isAccessibleForFree' => TRUE,
+    'applicationDeadline' => '2027-06-28',
+    'startDate' => '2025-12-29',
+    'endDate' => '2027-06-28',
+    'numberOfCredits' => [
+      '@type' => 'StructuredValue',
+      'value' => 100,
+      'unitText' => 'horas formativas',
+    ],
+    'maximumEnrollment' => 45,
+    'offers' => [
+      '@type' => 'Offer',
+      'price' => '0',
+      'priceCurrency' => 'EUR',
+      'availability' => 'https://schema.org/LimitedAvailability',
+      'description' => (string) t('Programa 100% gratuito. Incentivo de 528 EUR al completar el itinerario formativo.'),
+    ],
+    'educationalProgramMode' => 'In-person',
+    'inLanguage' => 'es',
+    'location' => [
+      [
+        '@type' => 'Place',
+        'name' => (string) t('Sede Malaga — Andalucia +ei'),
+        'address' => [
+          '@type' => 'PostalAddress',
+          'streetAddress' => 'Centro de Negocios Malaga, C. Palma del Rio, 19',
+          'addressLocality' => 'Malaga',
+          'postalCode' => '29004',
+          'addressRegion' => 'Andalucia',
+          'addressCountry' => 'ES',
+        ],
+        'geo' => [
+          '@type' => 'GeoCoordinates',
+          'latitude' => 36.7265,
+          'longitude' => -4.4198,
+        ],
+        'maximumAttendeeCapacity' => 15,
+      ],
+      [
+        '@type' => 'Place',
+        'name' => (string) t('Sede Sevilla — Andalucia +ei'),
+        'address' => [
+          '@type' => 'PostalAddress',
+          'streetAddress' => 'Avda. San Francisco Javier, 22, Edificio Hermes, 1.a Planta, Modulo 14',
+          'addressLocality' => 'Sevilla',
+          'postalCode' => '41018',
+          'addressRegion' => 'Andalucia',
+          'addressCountry' => 'ES',
+        ],
+        'geo' => [
+          '@type' => 'GeoCoordinates',
+          'latitude' => 37.3773,
+          'longitude' => -5.9763,
+        ],
+        'maximumAttendeeCapacity' => 30,
+      ],
+    ],
+    'funder' => [
+      [
+        '@type' => 'GovernmentOrganization',
+        'name' => (string) t('Junta de Andalucia — Servicio Andaluz de Empleo (SAE)'),
+      ],
+      [
+        '@type' => 'GovernmentOrganization',
+        'name' => (string) t('Union Europea — Fondo Social Europeo Plus (FSE+)'),
+      ],
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ],
+    'andalucia_ei_rec_schema_org',
+  ];
+}
+
+/**
+ * Helper: adds OG and Twitter Card meta tags.
+ */
+function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $description, string $url, string $prefix = ''): void {
+  $og_tags = [
+    'og:title' => (string) $title,
+    'og:description' => (string) $description,
+    'og:url' => $url,
+    'og:type' => 'website',
+    'og:site_name' => 'Plataforma de Ecosistemas',
+    'twitter:card' => 'summary_large_image',
+    'twitter:title' => (string) $title,
+    'twitter:description' => (string) $description,
+  ];
+
+  foreach ($og_tags as $property => $content) {
+    $tag_name = str_starts_with($property, 'twitter:') ? 'name' : 'property';
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          $tag_name => $property,
+          'content' => $content,
+        ],
+      ],
+      'andalucia_ei_' . $prefix . str_replace([':', '/'], '_', $property),
+    ];
+  }
+}
+
+/**
+ * Popup de reclutamiento en la home de meta-sitios corporativos.
+ *
+ * Se inyecta solo en:
+ * - plataformadeecosistemas.es / plataformadeecosistemas.jaraba-saas.lndo.site
+ * - pepejaraba.com / pepejaraba.jaraba-saas.lndo.site
+ * - jarabaimpact.com / jarabaimpact.jaraba-saas.lndo.site
+ *
+ * Solo en la home (ruta de front page), no en la propia landing de reclutamiento.
+ */
+function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $route): void {
+  // No mostrar en las propias páginas de Andalucía +ei.
+  if ($route !== NULL && str_starts_with($route, 'jaraba_andalucia_ei.')) {
+    return;
+  }
+
+  // Solo en la raíz del sitio (home del meta-sitio).
+  // isFrontPage() no funciona aquí porque la home es una página del Page Builder,
+  // no /node. Detectamos la raíz comparando el request path.
+  $requestPath = \Drupal::request()->getPathInfo();
+  if (!in_array($requestPath, ['/', '/es', '/es/'], TRUE)) {
+    return;
+  }
+
+  // Solo en meta-sitios corporativos.
+  $host = \Drupal::request()->getHost();
+  $metaSiteHosts = [
+    'plataformadeecosistemas.es',
+    'plataformadeecosistemas.jaraba-saas.lndo.site',
+    'pepejaraba.com',
+    'pepejaraba.jaraba-saas.lndo.site',
+    'jarabaimpact.com',
+    'jarabaimpact.jaraba-saas.lndo.site',
+  ];
+
+  if (!in_array($host, $metaSiteHosts, TRUE)) {
+    return;
+  }
+
+  $solicitarUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
+  $landingUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
+
+  $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/reclutamiento-popup';
+  $attachments['#attached']['drupalSettings']['aeiRecPopup'] = [
+    'solicitarUrl' => $solicitarUrl,
+    'landingUrl' => $landingUrl,
   ];
 }
 

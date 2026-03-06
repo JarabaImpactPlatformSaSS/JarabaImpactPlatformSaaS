@@ -1,23 +1,35 @@
 {#
 /**
  * @file _hreflang-meta.html.twig
- * Tags hreflang para SEO internacional de meta-sitios.
+ * Tags hreflang para SEO internacional — dinámico por idiomas configurados.
  *
- * Genera <link rel="alternate" hreflang="xx"> para ES y EN.
- * Incluye x-default apuntando a ES como idioma principal.
+ * Genera <link rel="alternate" hreflang="xx"> para TODOS los idiomas
+ * habilitados en Drupal, no hardcoded a ES/EN.
+ *
+ * Variables (inyectadas desde preprocess_page):
+ * - available_languages: array de langcodes habilitados ['es', 'en', 'pt-br']
+ * - language_links: mapa langcode => URL completa de la página actual en ese idioma
+ * - current_langcode: idioma actual
+ *
+ * Fallback: si no hay language_links, construye URLs con prefijo de idioma.
  *
  * DIRECTRICES:
  * - SEO-GEO-001: hreflang tags
- * - i18n: soporte multilingüe
+ * - i18n: soporte multilingüe dinámico
  */
 #}
-{% set current_path = path('<current>')|default('/') %}
+{% set langs = available_languages|default(['es']) %}
+{% set links = language_links|default({}) %}
 {% set base_url_raw = url('<front>', {}, {absolute: true})|render|default('') %}
 {% set base_url = base_url_raw|trim('/') %}
+{% set current_path = path('<current>')|default('/') %}
 
-{# ES es el idioma principal (x-default) #}
-{% if base_url %}
-<link rel="alternate" hreflang="es" href="{{ base_url }}/es{{ current_path }}" />
-<link rel="alternate" hreflang="en" href="{{ base_url }}/en{{ current_path }}" />
-<link rel="alternate" hreflang="x-default" href="{{ base_url }}/es{{ current_path }}" />
+{% if base_url and langs|length > 0 %}
+  {% for lang in langs %}
+    {% set href = links[lang]|default(base_url ~ '/' ~ lang ~ current_path) %}
+    <link rel="alternate" hreflang="{{ lang }}" href="{{ href }}" />
+  {% endfor %}
+  {# x-default apunta al idioma por defecto (es) #}
+  {% set default_lang = langs|first %}
+  <link rel="alternate" hreflang="x-default" href="{{ links[default_lang]|default(base_url ~ '/' ~ default_lang ~ current_path) }}" />
 {% endif %}

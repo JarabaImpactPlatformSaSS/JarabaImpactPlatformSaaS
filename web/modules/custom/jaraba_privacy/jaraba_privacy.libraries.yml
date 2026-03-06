@@ -11,7 +11,7 @@ privacy-dashboard:
     - core/drupal.dialog.ajax
 
 cookie-banner:
-  version: 1.x
+  version: 2.0
   css:
     theme:
       css/jaraba-privacy.css: {}
@@ -20,6 +20,7 @@ cookie-banner:
   dependencies:
     - core/drupal
     - core/once
+    - core/drupalSettings
 
 dpa-signature:
   version: 1.x

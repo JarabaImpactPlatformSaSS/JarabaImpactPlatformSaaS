@@ -187,6 +187,37 @@
   };
 
   /**
+   * Behavior: Hero Variant Tracking.
+   * Tracks which hero variant was shown to the visitor (for A/B analytics).
+   */
+  Drupal.behaviors.metasiteHeroVariant = {
+    attach: function (context) {
+      once('metasite-hero-variant', '[data-hero-variant]', context).forEach(function (hero) {
+        var variant = hero.getAttribute('data-hero-variant') || 'default';
+        pushEvent('hero_variant_shown', { hero_variant: variant });
+      });
+    }
+  };
+
+  /**
+   * Behavior: Audience Selector Cookie.
+   * Sets jaraba_audience cookie when visitor clicks an audience card.
+   */
+  Drupal.behaviors.metasiteAudienceSelector = {
+    attach: function (context) {
+      once('metasite-audience', '[data-audience]', context).forEach(function (card) {
+        card.addEventListener('click', function () {
+          var audience = card.getAttribute('data-audience');
+          if (audience) {
+            document.cookie = 'jaraba_audience=' + audience + ';path=/;max-age=' + (30 * 86400) + ';SameSite=Lax';
+            pushEvent('audience_selected', { audience: audience });
+          }
+        });
+      });
+    }
+  };
+
+  /**
    * Behavior: Section View Tracking (IntersectionObserver).
    */
   Drupal.behaviors.metasiteSectionTracking = {
@@ -194,7 +225,7 @@
       if (context !== document || !window.IntersectionObserver) return;
 
       var sectionSelectors = [
-        '.ped-hero', '.ped-cifras', '.ped-motores', '.ped-audiencia', '.ped-partners',
+        '.ped-hero', '.ped-cifras', '.ped-motores', '.ped-audiencia', '.ped-partners', '.ped-vertical-highlight', '.ped-cta-saas',
         '.ji-hero', '.ji-section', '.ji-cta-block',
         '.hero-landing', '.vertical-selector', '.features-section',
         '.stats-section', '.lead-magnet', '.cross-pollination', '.testimonials'

@@ -358,7 +358,9 @@ class PrivacyApiController extends ControllerBase implements ContainerInjectionI
 
       $ipAddress = $request->getClientIp() ?? '0.0.0.0';
       $userId = $this->currentUser()->isAuthenticated() ? (int) $this->currentUser()->id() : NULL;
-      $sessionId = $body['session_id'] ?? $request->getSession()?->getId();
+      // SECURITY: NEVER accept session_id from request body — prevents consent
+      // forgery for other users' sessions. Always use server-side session.
+      $sessionId = $request->getSession()?->getId();
 
       $consent = $this->cookieConsentManager->recordConsent(
         $consentData,
@@ -385,7 +387,8 @@ class PrivacyApiController extends ControllerBase implements ContainerInjectionI
   public function getCookieConsent(Request $request): JsonResponse {
     try {
       $userId = $this->currentUser()->isAuthenticated() ? (int) $this->currentUser()->id() : NULL;
-      $sessionId = $request->query->get('session_id') ?? $request->getSession()?->getId();
+      // SECURITY: Use server-side session only — prevent cross-session data leak.
+      $sessionId = $request->getSession()?->getId();
 
       $consent = $this->cookieConsentManager->getCurrentConsent($userId, $sessionId);
 
@@ -410,6 +413,34 @@ class PrivacyApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('API getCookieConsent error: @error', ['@error' => $e->getMessage()]);
+      return $this->apiError('Error interno.', 'INTERNAL_ERROR', 500);
+    }
+  }
+
+  /**
+   * POST /api/v1/cookies/consent/revoke — Revoca consentimiento (RGPD Art. 7.3).
+   *
+   * Registra una revocacion en el audit trail y marca la sesion para que
+   * hook_page_bottom() muestre el banner en la siguiente carga de pagina.
+   */
+  public function revokeCookieConsent(Request $request): JsonResponse {
+    try {
+      $userId = $this->currentUser()->isAuthenticated() ? (int) $this->currentUser()->id() : NULL;
+      $sessionId = $request->getSession()?->getId();
+
+      $consent = $this->cookieConsentManager->getCurrentConsent($userId, $sessionId);
+
+      if ($consent) {
+        $this->cookieConsentManager->withdrawConsent((int) $consent->id());
+      }
+
+      // Mark session so hook_page_bottom() shows banner on next page load.
+      $request->getSession()?->set('jaraba_cookie_banner_reopen', TRUE);
+
+      return $this->apiSuccess(['revoked' => TRUE]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('API revokeCookieConsent error: @error', ['@error' => $e->getMessage()]);
       return $this->apiError('Error interno.', 'INTERNAL_ERROR', 500);
     }
   }

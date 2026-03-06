@@ -12,16 +12,65 @@
 @use '../variables' as *;
 
 // ===========================================================================
+// Full-width override for self-service pages
+// Body class 'page-self-service' set in hook_preprocess_html().
+// ===========================================================================
+
+body.page-self-service {
+  overflow-x: clip;
+
+  .dashboard-wrapper {
+    max-width: none;
+    padding: 0;
+    overflow-x: clip;
+  }
+}
+
+// ===========================================================================
 // Tenant Settings Hub — Premium
 // ===========================================================================
 
 .tenant-settings {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  overflow-x: clip;
 
   @media (min-width: 640px) {
     padding: 2rem;
+  }
+
+  // Full-width variant for subpage forms (design customizer, etc.)
+  // The trait wraps the <form> in .tenant-settings.tenant-form-page.
+  // Hero is INSIDE the form, so we make the whole wrapper full-width
+  // and constrain only the form content below the hero.
+  &.tenant-form-page {
+    max-width: none;
+    padding: 0;
+
+    // Hero goes edge-to-edge.
+    .tenant-settings__hero {
+      border-radius: 0;
+      margin-bottom: 0;
+    }
+
+    // Vertical tabs / form content centered with comfortable width.
+    .vertical-tabs,
+    .tenant-form__section,
+    .tenant-form__actions {
+      max-width: 1400px;
+      margin-inline: auto;
+      padding-inline: 1rem;
+
+      @media (min-width: 640px) {
+        padding-inline: 2rem;
+      }
+    }
+
+    .vertical-tabs {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
   }
 }
 
@@ -249,6 +298,7 @@
 
     .tenant-settings-card__link {
       background: var(--ej-color-azul-corporativo, #233D63);
+      color: var(--ej-color-on-primary, #fff);
     }
   }
 
@@ -345,13 +395,21 @@
   padding: 0.4rem 0.75rem;
   border-radius: var(--ej-btn-radius, 8px);
   background: var(--ej-color-naranja-impulso, #FF8C42);
-  color: var(--ej-btn-primary-text, #fff);
+  color: var(--ej-color-on-primary, #fff);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.75rem;
-  transition: background 0.25s ease, transform 0.2s ease;
+  transition: background 0.25s ease, transform 0.2s ease, color 0.25s ease;
   white-space: nowrap;
   flex-shrink: 0;
+
+  &,
+  &:visited,
+  &:hover,
+  &:active {
+    color: var(--ej-color-on-primary, #fff);
+    text-decoration: none;
+  }
 
   &:hover {
     transform: translateY(-1px);
@@ -381,9 +439,10 @@
 // ===========================================================================
 
 .tenant-form {
-  max-width: 720px;
+  max-width: 860px;
   margin: 0 auto;
   padding: 1rem;
+  overflow-x: clip;
 
   @media (min-width: 640px) {
     padding: 2rem;
@@ -702,6 +761,67 @@
   align-items: center;
   padding-top: 1.5rem;
   margin-top: 0.5rem;
+}
+
+// ─── Customizer Sticky Action Bar ───────────────────────────────────────────
+// Mirrors the Premium Sticky Bar pattern from _user-pages.scss.
+// NOTE: overflow-x MUST be 'clip' (not 'hidden') on all ancestors for sticky to work.
+.customizer-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  max-width: 1400px;
+  margin: 1.5rem auto 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ej-bg-surface, #fff) 90%, transparent) 0%,
+    var(--ej-bg-surface, #fff) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid color-mix(in srgb, var(--ej-color-body, #000) 8%, transparent);
+  box-shadow: 0 -4px 16px color-mix(in srgb, var(--ej-color-body, #000) 4%, transparent);
+
+  @media (min-width: 640px) {
+    padding: 1rem 2rem;
+  }
+}
+
+// Plan page
+.tenant-plan__current {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tenant-plan__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-color-headings, #1e293b);
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+}
+
+.tenant-plan__features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+
+  li {
+    padding: 0.5rem 0.75rem;
+    background: var(--ej-bg-surface, #f8fafc);
+    border-radius: var(--ej-btn-radius, 8px);
+    font-size: 0.8125rem;
+    color: var(--ej-color-body, #475569);
+  }
 }
 
 // Checkboxes

@@ -1,0 +1,693 @@
+/**
+ * @file
+ * SCSS para la landing de reclutamiento Andalucía +ei.
+ *
+ * URL: /andaluciamasei.html
+ * Secciones: Hero > Institucional > Beneficios > Requisitos > Sedes >
+ *            Pasos > Equipo > FAQ > CTA Final
+ *
+ * DIRECTRIZ: CSS-VAR-ALL-COLORS-001 — Solo var(--ej-*) y var(--aei-*).
+ */
+
+// =============================================================================
+// PUBLICIDAD OFICIAL (obligatorio normativa subvenciones)
+// =============================================================================
+
+.aei-rec__publicidad-oficial {
+  background: var(--ej-color-surface, #fff);
+  border-bottom: 1px solid var(--ej-color-border-light, #E5E7EB);
+  padding: 1rem 0;
+}
+
+.aei-rec__publicidad-titulo {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  color: var(--ej-azul-corporativo, #233D63);
+  text-align: center;
+  margin: 0 0 1rem;
+  line-height: 1.3;
+}
+
+.aei-rec__publicidad-img {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin: 0 auto;
+
+  @media (max-width: 640px) {
+    max-width: 100%;
+  }
+}
+
+// =============================================================================
+// SHARED
+// =============================================================================
+
+.aei-rec__container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.aei-rec__section-title {
+  font-family: var(--aei-font-headings, var(--ej-font-headings, 'Outfit', sans-serif));
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+
+  &--center {
+    text-align: center;
+  }
+}
+
+.aei-rec__section-desc {
+  font-size: 1.05rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0;
+}
+
+.aei-rec__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--ej-radius-md, 8px);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+
+  &--primary {
+    background: var(--ej-naranja-impulso, #FF8C42);
+    color: var(--ej-bg-surface, #fff);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 35%, transparent);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 45%, transparent);
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: var(--ej-bg-surface, #fff);
+    border: 2px solid color-mix(in srgb, var(--ej-bg-surface, #fff) 40%, transparent);
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-bg-surface, #fff) 10%, transparent);
+    }
+  }
+
+  &--large {
+    padding: 1rem 3rem;
+    font-size: 1.125rem;
+  }
+}
+
+// =============================================================================
+// HERO
+// =============================================================================
+
+.aei-rec__hero {
+  padding: 5rem 0 4rem;
+  background: linear-gradient(
+    135deg,
+    var(--ej-azul-corporativo, #233D63) 0%,
+    color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 70%, black) 100%
+  );
+  color: var(--ej-bg-surface, #fff);
+  text-align: center;
+}
+
+.aei-rec__hero-badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.aei-rec__badge {
+  display: inline-flex;
+  padding: 0.375rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 100px;
+
+  &--institucional {
+    background: color-mix(in srgb, var(--ej-bg-surface, #fff) 15%, transparent);
+    color: var(--ej-bg-surface, #fff);
+  }
+
+  &--gratuito {
+    background: var(--ej-verde-innovacion, #00A9A5);
+    color: var(--ej-bg-surface, #fff);
+  }
+}
+
+.aei-rec__title {
+  font-family: var(--aei-font-headings, var(--ej-font-headings, 'Outfit', sans-serif));
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.aei-rec__subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  max-width: 720px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 85%, transparent);
+}
+
+.aei-rec__hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aei-rec__hero-stat-value {
+  font-size: 2rem;
+  font-weight: 900;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+.aei-rec__hero-stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 70%, transparent);
+  margin-top: 0.25rem;
+}
+
+.aei-rec__hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+// =============================================================================
+// INSTITUCIONAL
+// =============================================================================
+
+.aei-rec__institucional {
+  padding: 2rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+  text-align: center;
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.aei-rec__institucional-text {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0 0 1.25rem;
+  font-weight: 500;
+}
+
+.aei-rec__institucional-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__institucional-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aei-rec__institucional-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ej-azul-corporativo, #233D63);
+}
+
+.aei-rec__institucional-detail {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.aei-rec__institucional-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: var(--ej-color-border, #E5E7EB);
+}
+
+.aei-rec__institucional-expediente {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 1rem 0 0;
+  font-family: var(--ej-font-monospace, 'JetBrains Mono', monospace);
+}
+
+// =============================================================================
+// BENEFICIOS
+// =============================================================================
+
+.aei-rec__beneficios {
+  padding: 5rem 0;
+}
+
+.aei-rec__beneficios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.aei-rec__beneficio-card {
+  padding: 2rem;
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: var(--ej-radius-lg, 12px);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+
+  &:hover {
+    box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-color-shadow, black) 8%, transparent);
+    transform: translateY(-2px);
+  }
+}
+
+.aei-rec__beneficio-destacado {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 12%, transparent);
+  color: var(--ej-naranja-impulso, #FF8C42);
+  border-radius: 100px;
+  margin-bottom: 1rem;
+}
+
+.aei-rec__beneficio-titulo {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.5rem;
+}
+
+.aei-rec__beneficio-desc {
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// =============================================================================
+// REQUISITOS
+// =============================================================================
+
+.aei-rec__requisitos {
+  padding: 5rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+}
+
+.aei-rec__requisitos-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aei-rec__colectivos-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.aei-rec__colectivo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  font-size: 0.95rem;
+  color: var(--ej-color-text-primary, #1F2937);
+  line-height: 1.5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.aei-rec__check-icon {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.aei-rec__requisito-card {
+  padding: 2rem;
+  background: var(--ej-azul-corporativo, #233D63);
+  color: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+}
+
+.aei-rec__requisito-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+
+.aei-rec__requisito-card-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 85%, transparent);
+}
+
+.aei-rec__requisito-card-action {
+  .aei-rec__cta--primary {
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// SEDES
+// =============================================================================
+
+.aei-rec__sedes {
+  padding: 5rem 0;
+}
+
+.aei-rec__sedes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.aei-rec__sede-card {
+  padding: 2.5rem 2rem;
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: var(--ej-radius-lg, 12px);
+  text-align: center;
+}
+
+.aei-rec__sede-plazas {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 12%, transparent);
+  color: var(--ej-verde-innovacion, #00A9A5);
+  border-radius: 100px;
+  margin-bottom: 1rem;
+}
+
+.aei-rec__sede-ciudad {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.75rem;
+}
+
+.aei-rec__sede-direccion {
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+}
+
+// =============================================================================
+// PASOS (TIMELINE)
+// =============================================================================
+
+.aei-rec__pasos {
+  padding: 5rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+}
+
+.aei-rec__pasos-timeline {
+  max-width: 720px;
+  margin: 2.5rem auto 0;
+}
+
+.aei-rec__paso {
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
+  position: relative;
+
+  // Línea vertical de timeline.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 2.75rem;
+    bottom: 0;
+    width: 2px;
+    background: var(--ej-color-border, #E5E7EB);
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.aei-rec__paso-num {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1rem;
+  background: var(--ej-azul-corporativo, #233D63);
+  color: var(--ej-bg-surface, #fff);
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+.aei-rec__paso-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.5rem;
+}
+
+.aei-rec__paso-desc {
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// =============================================================================
+// EQUIPO
+// =============================================================================
+
+.aei-rec__equipo {
+  padding: 5rem 0;
+}
+
+.aei-rec__equipo-grid {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__equipo-card {
+  text-align: center;
+  max-width: 260px;
+}
+
+.aei-rec__equipo-avatar {
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
+  color: var(--ej-azul-corporativo, #233D63);
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+}
+
+.aei-rec__equipo-nombre {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.25rem;
+}
+
+.aei-rec__equipo-titulo {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0 0 0.375rem;
+  line-height: 1.5;
+}
+
+.aei-rec__equipo-sede {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+// =============================================================================
+// FAQ
+// =============================================================================
+
+.aei-rec__faq {
+  padding: 5rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+}
+
+.aei-rec__faq-list {
+  max-width: 760px;
+  margin: 2.5rem auto 0;
+}
+
+.aei-rec__faq-item {
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.aei-rec__faq-question {
+  padding: 1.25rem 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ej-color-text-primary, #1F2937);
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: '+';
+    float: right;
+    font-size: 1.25rem;
+    color: var(--ej-color-text-secondary, #6B7280);
+    transition: transform 200ms ease;
+  }
+
+  details[open] > &::after {
+    content: '−';
+  }
+}
+
+.aei-rec__faq-answer {
+  padding: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.7;
+}
+
+// =============================================================================
+// CTA FINAL
+// =============================================================================
+
+.aei-rec__cta-final {
+  padding: 5rem 0;
+  background: linear-gradient(
+    135deg,
+    var(--ej-azul-corporativo, #233D63) 0%,
+    color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 70%, black) 100%
+  );
+  color: var(--ej-bg-surface, #fff);
+  text-align: center;
+}
+
+.aei-rec__cta-final-title {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  margin: 0 0 1rem;
+}
+
+.aei-rec__cta-final-desc {
+  font-size: 1.1rem;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 85%, transparent);
+}
+
+.aei-rec__cta-final-legal {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 50%, transparent);
+  margin: 2rem 0 0;
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: 640px) {
+  .aei-rec__hero {
+    padding: 3rem 0;
+  }
+
+  .aei-rec__hero-stats {
+    gap: 1.5rem;
+  }
+
+  .aei-rec__hero-stat-value {
+    font-size: 1.5rem;
+  }
+
+  .aei-rec__institucional-logos {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .aei-rec__institucional-divider {
+    width: 3rem;
+    height: 1px;
+  }
+
+  .aei-rec__beneficios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aei-rec__sedes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aei-rec__hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

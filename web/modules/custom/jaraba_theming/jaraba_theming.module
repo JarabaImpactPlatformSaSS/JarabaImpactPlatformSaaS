@@ -24,13 +24,32 @@ function jaraba_theming_help(string $route_name, RouteMatchInterface $route_matc
 /**
  * Implements hook_page_attachments().
  *
- * Inyecta los CSS Custom Properties según la configuración del tenant.
+ * Inyecta los CSS Custom Properties segun la configuracion del tenant.
+ *
+ * THEMING-UNIFY-001: Usa UnifiedThemeResolverService para resolver el
+ * tenant_id por hostname (anonimos) o por usuario (autenticados).
+ * Esto sustituye la resolucion exclusiva por TenantContextService
+ * que solo funcionaba para usuarios autenticados.
  */
 function jaraba_theming_page_attachments(array &$attachments): void {
   /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
   $tokenService = \Drupal::service('jaraba_theming.token_service');
 
-  $css = $tokenService->generateCss();
+  // Resolver tenant_id via UnifiedThemeResolverService (hostname + user).
+  $tenantId = NULL;
+  if (\Drupal::hasService('ecosistema_jaraba_core.unified_theme_resolver')) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\UnifiedThemeResolverService $resolver */
+      $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
+      $context = $resolver->resolveForCurrentRequest();
+      $tenantId = $context['tenant_id'] ?? NULL;
+    }
+    catch (\Throwable) {
+      // Fallback: ThemeTokenService resolvera internamente.
+    }
+  }
+
+  $css = $tokenService->generateCss($tenantId);
 
   // Inyectar CSS inline con los tokens.
   $attachments['#attached']['html_head'][] = [

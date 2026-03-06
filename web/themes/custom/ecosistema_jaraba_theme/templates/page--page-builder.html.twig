@@ -48,7 +48,10 @@
     site_slogan: site_slogan|default(''),
     logo: logo,
     logged_in: logged_in,
-    theme_settings: theme_settings
+    theme_settings: theme_settings,
+    available_languages: available_languages|default([]),
+    current_langcode: current_langcode|default('es'),
+    language_links: language_links|default({}),
   } %}
 {% else %}
   {# Non-meta-sitio (page-builder dashboard, preview, etc.): header limpio sin nav #}
@@ -78,23 +81,108 @@
    MAIN CONTENT - Full-width, Sin Regiones Drupal Heredadas
    El contenido viene directamente del PageContentViewBuilder, no de bloques
    ========================================================================= #}
+
+{# Detectar homepage PED para flujo AIDA optimizado #}
+{% set ped_homepage = is_ped|default(false) and is_meta_homepage|default(false) %}
+
+{% if ped_homepage %}
+  {{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+{% endif %}
+
 <main id="main-content" class="page-builder-main page-builder-frontend">
-  {# 
-    CONTENIDO PRINCIPAL - Full Width
-    Renderizado por PageContentViewBuilder::view()
-    NO usa regiones de bloques de Drupal, solo el entity view
-    
-    NOTA: No incluimos {{ page.breadcrumb }} ni menús para frontend limpio.
-  #}
   {% if clean_messages %}
     <div class="highlighted container">
       {{ clean_messages }}
     </div>
   {% endif %}
 
-  <div class="page-builder-content full-width">
-    {{ clean_content }}
-  </div>
+  {% if ped_homepage %}
+    {# ================================================================ #}
+    {# PED HOMEPAGE — Flujo AIDA completo via Twig partials             #}
+    {# Bypass del canvas_data legacy: todo el contenido de clase         #}
+    {# mundial se renderiza desde partials optimizados                   #}
+    {# ================================================================ #}
+
+    {# 1. HERO — Atencion (3 segundos), audience-aware #}
+    {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
+      theme_settings: theme_settings,
+      logged_in: logged_in,
+      hero: {},
+      audience: audience|default(null),
+      meta_site: meta_site,
+    } %}
+
+    {# 2. AUDIENCIA SELECTOR — Interes (segmentar antes de informar) #}
+    {% include '@ecosistema_jaraba_theme/partials/_audience-selector.html.twig' %}
+
+    {# 3. STATS DE IMPACTO — Credibilidad cuantificable #}
+    {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
+      stats: [],
+      is_ped: true,
+    } %}
+
+    {# 4. VERTICAL DESTACADO: JarabaLex — Deseo (TAM #1 legal) #}
+    {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
+      highlight_id: 'vertical-legal',
+      highlight_variant: 'dark',
+      highlight_eyebrow: 'JarabaLex — Inteligencia Legal IA'|t,
+      highlight_title: 'Todo lo que tu despacho necesita. Al precio que mereces.'|t,
+      highlight_subtitle: 'Busqueda semantica en 8 fuentes oficiales, gestion de expedientes, agenda, facturacion, LexNET y un copiloto legal que te ahorra el 30% de tu tiempo.'|t,
+      highlight_features: [
+        { icon_cat: 'legal', icon_name: 'search-legal', icon_color: 'white', title: 'Busqueda IA multi-fuente'|t, description: 'CENDOJ, EUR-Lex, CURIA, HUDOC, BOE, DGT, TEAC, EDPB'|t },
+        { icon_cat: 'ui', icon_name: 'folder', icon_color: 'white', title: 'Gestion integral'|t, description: 'Expedientes, agenda juridica, boveda documental, facturacion'|t },
+        { icon_cat: 'ui', icon_name: 'link', icon_color: 'white', title: 'LexNET integrado'|t, description: 'Comunicaciones judiciales sin salir de la plataforma'|t },
+        { icon_cat: 'ai', icon_name: 'copilot', icon_color: 'white', title: 'Copiloto legal IA'|t, description: 'Redaccion, analisis jurisprudencial, alertas normativas'|t },
+      ],
+      highlight_comparison: [
+        { name: 'Aranzadi', price: '300+ EUR/mes'|t, description: 'Solo base de datos'|t },
+        { name: 'vLex', price: '150+ EUR/mes'|t, description: 'Solo busqueda'|t },
+        { name: 'JarabaLex', price: '59 EUR/mes'|t, description: 'TODO integrado con IA'|t, is_jaraba: true },
+      ],
+      highlight_cta_text: 'Prueba JarabaLex gratis 14 dias'|t,
+      highlight_cta_url: ped_urls.jarabalex|default('/jarabalex'),
+    } %}
+
+    {# 5. VERTICAL DESTACADO: Instituciones B2G — Deseo (ventaja competitiva) #}
+    {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
+      highlight_id: 'vertical-b2g',
+      highlight_variant: 'light',
+      highlight_eyebrow: 'Solucion B2G — Fondos Europeos'|t,
+      highlight_title: 'La plataforma que necesitan tus programas de empleo y emprendimiento'|t,
+      highlight_subtitle: 'Gestion integral de participantes, fases, horas IA-tracked, justificacion FSE y copiloto para tecnicos AEDL.'|t,
+      highlight_features: [
+        { icon_cat: 'navigation', icon_name: 'layers', title: 'Gestion de programas'|t, description: 'Participantes, fases, itinerarios y seguimiento integral'|t },
+        { icon_cat: 'ai', icon_name: 'copilot', title: 'Copiloto para tecnicos'|t, description: 'Asistente IA especializado en gestion de fondos europeos'|t },
+        { icon_cat: 'analytics', icon_name: 'chart-bar', title: 'Justificacion FSE'|t, description: 'Reportes automatizados para auditorias de fondos estructurales'|t },
+        { icon_cat: 'ui', icon_name: 'clock', title: 'Horas IA-tracked'|t, description: 'Control horario inteligente con validacion automatica'|t },
+      ],
+      highlight_cta_text: 'Solicitar demo institucional'|t,
+      highlight_cta_url: ped_urls.contacto|default('/contacto'),
+    } %}
+
+    {# 6. PARTNERS INSTITUCIONALES — Credibilidad #}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' %}
+
+    {# 7. CTA BANNER FINAL — Ultima oportunidad de conversion #}
+    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' %}
+
+  {% else %}
+    {# Páginas normales del Page Builder: renderizar canvas_data #}
+    <div class="page-builder-content full-width">
+      {{ clean_content }}
+    </div>
+
+    {# Formulario de contacto PED — integrado con CRM + Email #}
+    {% if ped_contact_form %}
+      <section class="ped-section">
+        <div class="ped-section__container">
+          <h2>{% trans %}Envíanos un mensaje{% endtrans %}</h2>
+          <p>{% trans %}Rellena el formulario y te responderemos en menos de 24 horas.{% endtrans %}</p>
+          {{ ped_contact_form }}
+        </div>
+      </section>
+    {% endif %}
+  {% endif %}
 </main>
 
 {# SCHEMA.ORG — Datos estructurados dinamicos por meta-sitio (Person/Organization + sameAs) #}

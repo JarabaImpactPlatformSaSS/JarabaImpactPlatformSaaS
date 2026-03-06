@@ -1,0 +1,89 @@
+{#
+/**
+ * @file _audience-selector.html.twig
+ *
+ * Selector de audiencia para el meta-sitio corporativo PED.
+ * 4 cards interactivas que segmentan al visitante y hacen scroll
+ * a la seccion del vertical mas relevante.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos
+ * - ICON-CONVENTION-001: jaraba_icon() con variante duotone
+ * - ICON-COLOR-001: Solo colores de la paleta Jaraba
+ * - CSS: BEM .ped-audiencia__*, var(--ej-*)
+ * - A11y: aria-label, role="list", focus visible
+ * - Tracking: data-track-cta, data-track-position
+ */
+#}
+
+<section class="ped-audiencia" id="audiencia" aria-labelledby="audiencia-title">
+  <h2 id="audiencia-title" class="ped-audiencia__title">
+    {% trans %}Encuentra tu solucion{% endtrans %}
+  </h2>
+
+  <div class="ped-audiencia__grid" role="list">
+    {# Card: Abogados #}
+    <a href="#vertical-legal"
+       class="ped-audiencia__card ped-audiencia__card--legal"
+       role="listitem"
+       data-audience="legal"
+       data-track-cta="audience_legal"
+       data-track-position="homepage_audience_selector"
+       aria-label="{% trans %}Soluciones para abogados y despachos{% endtrans %}">
+      <div class="ped-audiencia__icon">
+        {{ jaraba_icon('legal', 'gavel', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+      </div>
+      <h3>{% trans %}Abogados{% endtrans %}</h3>
+      <p>{% trans %}Inteligencia legal IA, gestion de expedientes y busqueda en CENDOJ/BOE{% endtrans %}</p>
+      <span class="ped-audiencia__cta">{% trans %}Descubrir JarabaLex{% endtrans %}</span>
+    </a>
+
+    {# Card: Instituciones #}
+    <a href="#vertical-b2g"
+       class="ped-audiencia__card ped-audiencia__card--institucion"
+       role="listitem"
+       data-audience="b2g"
+       data-track-cta="audience_b2g"
+       data-track-position="homepage_audience_selector"
+       aria-label="{% trans %}Soluciones para instituciones publicas{% endtrans %}">
+      <div class="ped-audiencia__icon">
+        {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+      </div>
+      <h3>{% trans %}Instituciones{% endtrans %}</h3>
+      <p>{% trans %}Gestion de programas de empleo y emprendimiento con fondos europeos{% endtrans %}</p>
+      <span class="ped-audiencia__cta">{% trans %}Ver soluciones B2G{% endtrans %}</span>
+    </a>
+
+    {# Card: Profesionales #}
+    <a href="#vertical-empleo"
+       class="ped-audiencia__card ped-audiencia__card--profesional"
+       role="listitem"
+       data-audience="empleo"
+       data-track-cta="audience_empleo"
+       data-track-position="homepage_audience_selector"
+       aria-label="{% trans %}Soluciones para profesionales en busqueda de empleo{% endtrans %}">
+      <div class="ped-audiencia__icon">
+        {{ jaraba_icon('general', 'user', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+      </div>
+      <h3>{% trans %}Profesionales{% endtrans %}</h3>
+      <p>{% trans %}Diagnostico, CV con IA, matching inteligente y copiloto de carrera{% endtrans %}</p>
+      <span class="ped-audiencia__cta">{% trans %}Impulsar mi carrera{% endtrans %}</span>
+    </a>
+
+    {# Card: Empresas #}
+    <a href="#vertical-empresa"
+       class="ped-audiencia__card ped-audiencia__card--empresa"
+       role="listitem"
+       data-audience="emprendimiento"
+       data-track-cta="audience_empresa"
+       data-track-position="homepage_audience_selector"
+       aria-label="{% trans %}Soluciones para empresas y emprendedores{% endtrans %}">
+      <div class="ped-audiencia__icon">
+        {{ jaraba_icon('actions', 'rocket', { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
+      </div>
+      <h3>{% trans %}Empresas{% endtrans %}</h3>
+      <p>{% trans %}Emprendimiento, comercio digital, agro y servicios profesionales{% endtrans %}</p>
+      <span class="ped-audiencia__cta">{% trans %}Explorar verticales{% endtrans %}</span>
+    </a>
+  </div>
+</section>

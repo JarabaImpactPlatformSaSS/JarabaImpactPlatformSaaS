@@ -18,6 +18,11 @@
         const closeBtn = document.getElementById('pwa-install-close');
         const iosGuide = document.getElementById('pwa-ios-guide');
 
+        // Bail early if required DOM elements are missing.
+        if (!promptEl || !installBtn || !closeBtn) {
+          return;
+        }
+
         // 1. Detección de iOS
         const isIos = () => {
           const userAgent = window.navigator.userAgent.toLowerCase();

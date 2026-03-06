@@ -251,18 +251,21 @@ class MetaSiteResolverService {
 
       foreach ($treeItems as $item) {
         $page = $item->getPage();
-        if (!$page) {
+        $externalUrl = $item->get('nav_external_url')->value ?? '';
+
+        // Items sin page requieren nav_external_url (e.g. Centro de Ayuda → /ayuda).
+        if (!$page && empty($externalUrl)) {
           continue;
         }
 
         $title = $item->getNavTitle();
-        $pathAlias = $page->get('path_alias')->value ?? '/page/' . $page->id();
+        $pathAlias = $page ? ($page->get('path_alias')->value ?? '/page/' . $page->id()) : '';
         $weight = (int) ($item->get('weight')->value ?? 0);
 
         if ($item->showInNavigation()) {
           $navItems[] = [
             'title' => $title,
-            'url' => $item->get('nav_external_url')->value ?: $pathAlias,
+            'url' => $externalUrl ?: $pathAlias,
             'weight' => $weight,
             'icon' => $item->get('nav_icon')->value ?? '',
             'highlight' => (bool) ($item->get('nav_highlight')->value ?? FALSE),
@@ -272,7 +275,7 @@ class MetaSiteResolverService {
         if ((bool) ($item->get('show_in_footer')->value ?? FALSE)) {
           $footerItems[] = [
             'title' => $title,
-            'url' => $pathAlias,
+            'url' => $externalUrl ?: $pathAlias,
             'weight' => $weight,
           ];
         }

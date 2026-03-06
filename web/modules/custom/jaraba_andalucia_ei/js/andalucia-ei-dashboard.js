@@ -281,4 +281,20 @@
         }
     };
 
+    // =========================================================================
+    // Open Copilot FAB from Quick Action
+    // =========================================================================
+    Drupal.behaviors.aeiOpenCopilot = {
+        attach: function (context) {
+            once('aei-open-copilot', '[data-open-copilot]', context).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var fab = document.querySelector('.copilot-fab');
+                    if (fab) {
+                        fab.click();
+                    }
+                });
+            });
+        }
+    };
+
 })(Drupal, once);

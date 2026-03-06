@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\Trait\TenantFormHeroPremiumTrait;
 use Drupal\Component\Utility\Crypt;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,6 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Formulario para configurar webhooks del tenant.
  */
 class TenantWebhooksForm extends FormBase {
+
+  use TenantFormHeroPremiumTrait;
 
   /**
    * Eventos disponibles para webhooks.
@@ -65,26 +68,12 @@ class TenantWebhooksForm extends FormBase {
       return $form;
     }
 
-    $form['#prefix'] = '<div class="tenant-form tenant-form--webhooks">';
-    $form['#suffix'] = '</div>';
-
-    // Back link.
-    $form['back'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Volver a Configuracion'),
-      '#url' => Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.settings'),
-      '#attributes' => ['class' => ['tenant-form__back']],
-      '#weight' => -100,
-    ];
-
-    // Info.
-    $form['info'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['tenant-form__info']],
-    ];
-    $form['info']['description'] = [
-      '#markup' => '<p>' . $this->t('Los webhooks te permiten recibir notificaciones en tiempo real cuando ocurren eventos en tu tienda.') . '</p>',
-    ];
+    $this->attachTenantFormHero(
+      $form,
+      'webhook',
+      (string) $this->t('Webhooks'),
+      (string) $this->t('Configura notificaciones automaticas a sistemas externos.'),
+    );
 
     // Webhooks existentes.
     $webhooks = $this->getWebhooks($tenant->id());

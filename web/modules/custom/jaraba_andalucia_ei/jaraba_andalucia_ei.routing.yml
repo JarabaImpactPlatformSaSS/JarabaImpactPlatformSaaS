@@ -294,6 +294,17 @@ jaraba_andalucia_ei.landing:
   requirements:
     _permission: 'access content'
 
+# === LANDING RECLUTAMIENTO — URL con reputación SEO ===
+# La URL /andaluciamasei.html tiene reputación acumulada de ediciones anteriores.
+# Mantener INTACTA para preservar tráfico orgánico y backlinks.
+jaraba_andalucia_ei.reclutamiento:
+  path: '/andaluciamasei.html'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiLandingController::reclutamiento'
+    _title: 'Andalucía +ei — Programa Gratuito de Inserción Laboral'
+  requirements:
+    _access: 'TRUE'
+
 # === FORMULARIO DE SOLICITUD (PÚBLICO) ===
 jaraba_andalucia_ei.solicitar:
   path: '/andalucia-ei/solicitar'

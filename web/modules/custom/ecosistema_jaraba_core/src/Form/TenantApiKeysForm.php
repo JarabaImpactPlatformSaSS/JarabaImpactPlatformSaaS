@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\Trait\TenantFormHeroPremiumTrait;
 use Drupal\Component\Utility\Crypt;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,6 +16,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Formulario para gestionar API Keys del tenant.
  */
 class TenantApiKeysForm extends FormBase {
+
+  use TenantFormHeroPremiumTrait;
 
   public function __construct(
     protected TenantContextService $tenantContext,
@@ -49,26 +52,12 @@ class TenantApiKeysForm extends FormBase {
       return $form;
     }
 
-    $form['#prefix'] = '<div class="tenant-form tenant-form--api-keys">';
-    $form['#suffix'] = '</div>';
-
-    // Back link.
-    $form['back'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Volver a Configuracion'),
-      '#url' => Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.settings'),
-      '#attributes' => ['class' => ['tenant-form__back']],
-      '#weight' => -100,
-    ];
-
-    // Info.
-    $form['info'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['tenant-form__info']],
-    ];
-    $form['info']['description'] = [
-      '#markup' => '<p>' . $this->t('Las API Keys te permiten conectar sistemas externos con tu tienda. Manten tus claves seguras y nunca las compartas publicamente.') . '</p>',
-    ];
+    $this->attachTenantFormHero(
+      $form,
+      'code',
+      (string) $this->t('Claves API'),
+      (string) $this->t('Gestiona tus claves de acceso a la API.'),
+    );
 
     // Mostrar clave recien generada.
     $newKey = $form_state->get('new_api_key');

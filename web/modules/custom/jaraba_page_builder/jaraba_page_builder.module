@@ -508,6 +508,20 @@ function _jaraba_page_builder_inject_seo_meta(array &$attachments, $page): void 
       ];
     }
 
+    // --- Meta description (estándar para SERPs) ---
+    if (!empty($description)) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'meta_description',
+      ];
+    }
+
     // --- Open Graph tags ---
     $ogTags = [
       'og:title' => $title,
@@ -726,6 +740,15 @@ function _jaraba_page_builder_extract_og_image(array $contentData, string $baseU
       if ($found) {
         return $found;
       }
+    }
+  }
+
+  // Fallback: og-image-dynamic del tema.
+  $themePath = \Drupal::theme()->getActiveTheme()->getPath();
+  foreach (['images/og-image-dynamic.png', 'images/og-image-dynamic.webp', 'logo.svg'] as $candidate) {
+    $file = $themePath . '/' . $candidate;
+    if (file_exists(DRUPAL_ROOT . '/' . $file)) {
+      return $baseUrl . '/' . $file;
     }
   }
 

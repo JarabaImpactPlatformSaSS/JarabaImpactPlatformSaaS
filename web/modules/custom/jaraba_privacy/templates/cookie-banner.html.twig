@@ -19,7 +19,7 @@
      id="jaraba-cookie-banner"
      role="dialog"
      aria-label="{{ banner_config.texts.title }}"
-     data-api-endpoint="/api/v1/cookies/consent"
+     data-api-endpoint="{{ path('jaraba_privacy.api.cookies.consent.post') }}"
      data-expiry-days="{{ banner_config.expiry_days }}">
 
   <div class="jaraba-cookie-banner__container">
@@ -58,7 +58,8 @@
       </button>
       <button type="button"
               class="jaraba-cookie-banner__btn jaraba-cookie-banner__btn--reject-all"
-              data-action="reject-all">
+              data-action="reject-all"
+              autofocus>
         {{ banner_config.texts.reject_all }}
       </button>
       <button type="button"

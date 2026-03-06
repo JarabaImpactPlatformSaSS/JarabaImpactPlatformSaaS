@@ -2217,34 +2217,9 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     ];
   }
 
-  // =========================================================================
-  // TENANT TOKEN OVERRIDE — Inyecta :root con tokens del tenant DESPUES
-  // de jaraba_css_vars (plataforma) para que gane por orden de cascada.
-  // ThemeTokenService auto-resuelve el tenant_id desde TenantContextService.
-  // =========================================================================
-  if (\Drupal::hasService('jaraba_theming.token_service')) {
-    try {
-      /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
-      $tokenService = \Drupal::service('jaraba_theming.token_service');
-      $tenantId = $tokenService->resolveTenantId();
-      if ($tenantId !== NULL) {
-        $tenantCss = $tokenService->generateCss($tenantId);
-        if (!empty($tenantCss)) {
-          $variables['#attached']['html_head'][] = [
-            [
-              '#tag' => 'style',
-              '#value' => Markup::create($tenantCss),
-              '#attributes' => ['id' => 'jaraba-tenant-tokens'],
-            ],
-            'jaraba_tenant_tokens',
-          ];
-        }
-      }
-    }
-    catch (\Throwable) {
-      // Theme preprocess should never crash.
-    }
-  }
+  // NOTA: Tenant CSS tokens se inyectan desde jaraba_theming_page_attachments()
+  // usando UnifiedThemeResolverService (THEMING-UNIFY-001). Se elimino el
+  // bloque duplicado 'jaraba-tenant-tokens' que existia aqui.
 
   // =========================================================================
   // SEO META TAGS - Homepage optimizada para motores de búsqueda y GEO
@@ -2425,11 +2400,73 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   // =========================================================================
   $is_logged_in = \Drupal::currentUser()->isAuthenticated();
   $is_meta_site = in_array('meta-site', $variables['attributes']['class'] ?? []);
+  // Pass to html.html.twig for conditional PED schema include.
+  $variables['is_meta_site'] = $is_meta_site;
+
+  // Skip Twig hreflang partial on page_content routes (HreflangService handles those).
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $variables['is_page_content'] = ($route_name === 'entity.page_content.canonical');
+
+  // Hreflang: pass available languages to html.html.twig for _hreflang-meta.html.twig.
+  $language_manager = \Drupal::languageManager();
+  $route_match_hl = \Drupal::routeMatch();
+  $route_name_hl = $route_match_hl->getRouteName();
+  $route_params_hl = $route_match_hl->getRawParameters()->all();
+  $hl_links = [];
+  foreach ($language_manager->getLanguages() as $langcode => $language) {
+    try {
+      $url = \Drupal\Core\Url::fromRoute($route_name_hl ?: '<front>', $route_params_hl, [
+        'language' => $language,
+        'absolute' => TRUE,
+      ]);
+      $hl_links[$langcode] = $url->toString();
+    }
+    catch (\Exception $e) {
+      $hl_links[$langcode] = '/' . $langcode;
+    }
+  }
+  $variables['available_languages'] = array_keys($hl_links);
+  $variables['language_links'] = $hl_links;
+  $variables['current_langcode'] = $language_manager->getCurrentLanguage()->getId();
+
   if ($is_logged_in && !$is_meta_site) {
     $variables['attributes']['class'][] = 'has-bottom-nav';
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/bottom-nav';
     // Quick-Start Overlay — primera visita (FASE 8 Elevacion Clase Mundial).
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/quick-start';
+  }
+
+  // =========================================================================
+  // SEO P1: Preconnect / DNS-prefetch para recursos externos.
+  // Reduce latencia de Google Fonts, Stripe, y APIs externas.
+  // =========================================================================
+  $preconnect_origins = [
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+    'https://js.stripe.com',
+  ];
+  foreach ($preconnect_origins as $idx => $origin) {
+    $variables['page']['#attached']['html_head'][] = [
+      [
+        '#tag' => 'link',
+        '#attributes' => [
+          'rel' => 'preconnect',
+          'href' => $origin,
+          'crossorigin' => 'anonymous',
+        ],
+      ],
+      'preconnect_' . $idx,
+    ];
+    $variables['page']['#attached']['html_head'][] = [
+      [
+        '#tag' => 'link',
+        '#attributes' => [
+          'rel' => 'dns-prefetch',
+          'href' => $origin,
+        ],
+      ],
+      'dns_prefetch_' . $idx,
+    ];
   }
 }
 
@@ -2486,138 +2523,87 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   }
 
   // =========================================================================
-  // META-SITIO OVERRIDE (H4, H5) — Header/Footer/Nav tenant-aware
+  // THEMING-UNIFY-001: Cascada unificada de tema multi-tenant
   //
-  // Si la ruta actual es de un page_content que pertenece a un meta-sitio,
-  // override site_name, navigation_items, header/footer con datos de SiteConfig
-  // y SitePageTree. Esto hace que el meta-sitio muestre su propio branding.
+  // Usa UnifiedThemeResolverService para resolver la configuracion visual
+  // completa del request actual. Funciona para TODAS las rutas (no solo
+  // page_content), tanto para usuarios anonimos (por hostname) como
+  // autenticados (por TenantContextService).
+  //
+  // Cascada de 5 niveles:
+  // 1. Plataforma (theme settings globales — ya aplicados arriba)
+  // 2. Vertical (IndustryPresetService — reservado)
+  // 3. Plan (features por plan — reservado)
+  // 4. Tenant (TenantThemeConfig — personalizacion visual)
+  // 5. Meta-sitio (SiteConfig — override estructural por dominio)
   // =========================================================================
   $variables['meta_site'] = NULL;
   try {
-    $route_match = \Drupal::routeMatch();
-    $page_content = $route_match->getParameter('page_content');
-    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
-      /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
-      $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
-      $metaSite = $resolver->resolveFromPageContent($page_content);
-      if ($metaSite) {
-        $variables['meta_site'] = $metaSite;
-        $tenantConfig = $metaSite['site_config'];
+    if (\Drupal::hasService('ecosistema_jaraba_core.unified_theme_resolver')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\UnifiedThemeResolverService $resolver */
+      $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
+      $themeContext = $resolver->resolveForCurrentRequest();
 
-        // Resolve SiteConfig translation for current language.
-        $currentLangcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-        if ($tenantConfig->isTranslatable() && $tenantConfig->hasTranslation($currentLangcode)) {
-          $tenantConfig = $tenantConfig->getTranslation($currentLangcode);
-        }
+      // Aplicar theme_overrides (cascada Nivel 4 + Nivel 5) sobre theme_settings.
+      if (!empty($themeContext['theme_overrides'])) {
+        $variables['theme_settings'] = array_merge(
+          $variables['theme_settings'],
+          $themeContext['theme_overrides']
+        );
+      }
 
-        // Override site_name con nombre del tenant.
-        $variables['site_name'] = $metaSite['tenant_name'];
-        $variables['site_slogan'] = $tenantConfig->getTagline() ?: '';
+      // Meta-sitio context para templates (schema.org, canonical, etc.).
+      if ($themeContext['meta_site'] !== NULL) {
+        $variables['meta_site'] = $themeContext['meta_site'];
 
-        // Override navegación con items del SitePageTree.
-        if (!empty($metaSite['nav_items_formatted'])) {
-          $variables['theme_settings']['navigation_items'] = implode("\n", $metaSite['nav_items_formatted']);
-          $debugNav['nav_override'] = $variables['theme_settings']['navigation_items'];
-        }
+        // Override site_name y site_slogan desde el meta-sitio.
+        $variables['site_name'] = $themeContext['meta_site']['tenant_name'] ?? $variables['site_name'];
 
-        // Override header settings con SiteConfig.
-        $variables['theme_settings']['header_layout'] = $tenantConfig->getHeaderType();
-        $variables['theme_settings']['header_sticky'] = $tenantConfig->isHeaderSticky();
-        $variables['theme_settings']['enable_header_cta'] = !empty($tenantConfig->getHeaderCtaText());
-        $variables['theme_settings']['header_cta_text'] = $tenantConfig->getHeaderCtaText() ?: '';
-        $variables['theme_settings']['header_cta_url'] = $tenantConfig->getHeaderCtaUrl() ?: '#';
-
-        // Override footer copyright con SiteConfig.
-        $footerCopyright = $tenantConfig->getFooterCopyright();
-        if ($footerCopyright) {
-          $variables['theme_settings']['footer_copyright'] = $footerCopyright;
-        }
-
-        // Override footer layout.
-        $variables['theme_settings']['footer_layout'] = $tenantConfig->getFooterType();
-        $variables['theme_settings']['footer_show_powered_by'] = FALSE;
-
-        // Override footer navigation columns con datos del meta-sitio.
-        // Los titulos de columna vienen de SiteConfig (campos configurables desde UI).
-        // Los links vienen del SitePageTree (nav_items + footer_items, configurables desde UI).
-        // Columna 1: Primeros N nav items. Columna 2: Restantes nav items.
-        // Columna 3: Items marcados show_in_footer (legal).
-        if (!empty($metaSite['nav_items']) || !empty($metaSite['footer_items'])) {
-          $navItems = $metaSite['nav_items'] ?? [];
-          $footerLegalItems = $metaSite['footer_items'] ?? [];
-
-          // Titulos de columna desde SiteConfig (configurables desde /admin/content/site-configs).
-          $col1Title = $tenantConfig->get('footer_col1_title')->value ?? '';
-          $col2Title = $tenantConfig->get('footer_col2_title')->value ?? '';
-          $col3Title = $tenantConfig->get('footer_col3_title')->value ?? '';
-
-          // Col 1: Primeros items de nav (mitad superior).
-          $splitPoint = (int) ceil(count($navItems) / 2);
-          $col1Items = array_slice($navItems, 0, $splitPoint);
-          if (!empty($col1Items)) {
-            $col1Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $col1Items);
-            $variables['theme_settings']['footer_nav_col1_title'] = $col1Title ?: $metaSite['tenant_name'];
-            $variables['theme_settings']['footer_nav_col1_links'] = implode("\n", $col1Links);
+        // SiteConfig para slogan y logo.
+        $siteConfig = $themeContext['site_config'];
+        if ($siteConfig !== NULL) {
+          // Resolver traduccion del SiteConfig para idioma actual.
+          $currentLangcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+          if ($siteConfig->isTranslatable() && $siteConfig->hasTranslation($currentLangcode)) {
+            $siteConfig = $siteConfig->getTranslation($currentLangcode);
           }
 
-          // Col 2: Restantes items de nav (mitad inferior).
-          $col2Items = array_slice($navItems, $splitPoint);
-          if (!empty($col2Items)) {
-            $col2Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $col2Items);
-            $variables['theme_settings']['footer_nav_col2_title'] = $col2Title ?: 'Empresa';
-            $variables['theme_settings']['footer_nav_col2_links'] = implode("\n", $col2Links);
+          if (method_exists($siteConfig, 'getTagline')) {
+            $variables['site_slogan'] = $siteConfig->getTagline() ?: '';
           }
 
-          // Col 3: Items marcados show_in_footer (legal).
-          if (!empty($footerLegalItems)) {
-            $col3Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $footerLegalItems);
-            $variables['theme_settings']['footer_nav_col3_title'] = $col3Title ?: 'Legal';
-            $variables['theme_settings']['footer_nav_col3_links'] = implode("\n", $col3Links);
+          // Logo del tenant si esta configurado.
+          if ($siteConfig->hasField('site_logo')) {
+            $logoFile = $siteConfig->get('site_logo')->entity ?? NULL;
+            if ($logoFile) {
+              $file_url_generator = \Drupal::service('file_url_generator');
+              $variables['logo'] = $file_url_generator->generateAbsoluteString($logoFile->getFileUri());
+            }
           }
         }
 
-        // Logo del tenant si está configurado.
-        $logoFile = $tenantConfig->get('site_logo')->entity ?? NULL;
-        if ($logoFile) {
-          $file_url_generator = \Drupal::service('file_url_generator');
-          $variables['logo'] = $file_url_generator->generateAbsoluteString($logoFile->getFileUri());
-        }
-
-        // --- HEADER AUTH VISIBILITY ---
-        // Ocultar login/register/account en sitios brochure (pepejaraba, PED).
-        $variables['theme_settings']['header_show_auth'] = $tenantConfig->isHeaderShowAuth();
-
-        // --- ECOSYSTEM FOOTER BAND ---
-        // Banda de navegacion transversal entre los dominios del ecosistema.
-        if ($tenantConfig->isEcosystemFooterEnabled()) {
-          $variables['theme_settings']['ecosystem_footer_enabled'] = TRUE;
-          $variables['theme_settings']['ecosystem_footer_links'] = $tenantConfig->getEcosystemFooterLinks();
-        }
-        else {
-          $variables['theme_settings']['ecosystem_footer_enabled'] = FALSE;
-        }
-
-        // --- SCHEMA.ORG TYPE ---
-        // Person para pepejaraba (marca personal), Organization para el resto.
+        // Schema.org type: Person para pepejaraba (marca personal), Organization para el resto.
         $schemaType = 'Organization';
-        if ($metaSite['group_id'] == 5) {
+        if (($themeContext['meta_site']['group_id'] ?? 0) == 5) {
           $schemaType = 'Person';
         }
         $variables['meta_site']['schema_type'] = $schemaType;
 
         // Canonical URL: dominio de produccion del tenant.
-        $tenantEntity = $tenantConfig->get('tenant_id')->entity ?? NULL;
-        if ($tenantEntity) {
-          $tenantDomain = $tenantEntity->get('domain')->value ?? NULL;
-          if ($tenantDomain) {
-            $variables['meta_site']['canonical_url'] = 'https://' . $tenantDomain;
+        if ($siteConfig !== NULL && $siteConfig->hasField('tenant_id')) {
+          $tenantEntity = $siteConfig->get('tenant_id')->entity ?? NULL;
+          if ($tenantEntity && $tenantEntity->hasField('domain')) {
+            $tenantDomain = $tenantEntity->get('domain')->value ?? NULL;
+            if ($tenantDomain) {
+              $variables['meta_site']['canonical_url'] = 'https://' . $tenantDomain;
+            }
           }
         }
       }
     }
   }
-  catch (\Exception $e) {
-    // MetaSiteResolver no disponible o error — usar valores por defecto.
+  catch (\Throwable) {
+    // UnifiedThemeResolver no disponible o error — usar valores por defecto.
   }
 
   // =========================================================================
@@ -2668,6 +2654,120 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   }
 
   // =========================================================================
+  // PED META-SITE HOMEPAGE DETECTION
+  //
+  // El PathProcessor reescribe "/" a "/page/{id}" para meta-sitios, por lo que
+  // isFrontPage() devuelve FALSE. Detectamos el homepage de PED comparando el
+  // PageContent actual con el homepage_id del SiteConfig del tenant.
+  //
+  // Variables inyectadas:
+  // - is_ped: TRUE si grupo 7 (plataformadeecosistemas.es)
+  // - is_meta_homepage: TRUE si el PageContent actual es el homepage del tenant
+  // - audience: audiencia detectada (legal, b2g, empleo, emprendimiento)
+  // - ped_urls: URLs resueltas con prefijo de idioma (ROUTE-LANGPREFIX-001)
+  // =========================================================================
+  $variables['is_ped'] = FALSE;
+  $variables['is_meta_homepage'] = FALSE;
+  $variables['audience'] = NULL;
+  $variables['ped_urls'] = [];
+
+  if (!empty($variables['meta_site'])) {
+    $variables['is_ped'] = (int) ($variables['meta_site']['group_id'] ?? 0) === 7;
+
+    // Detectar si estamos en la homepage del meta-sitio.
+    $route_match_pb = \Drupal::routeMatch();
+    if ($route_match_pb->getRouteName() === 'entity.page_content.canonical') {
+      $page_content_entity = $route_match_pb->getParameter('page_content');
+      if ($page_content_entity instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+        try {
+          /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $metaResolver */
+          $metaResolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+          $metaSiteData = $metaResolver->resolveFromRequest(\Drupal::request());
+          if ($metaSiteData && $metaSiteData['site_config']) {
+            $homepageId = $metaSiteData['site_config']->get('homepage_id')->target_id ?? NULL;
+            if ($homepageId && (int) $page_content_entity->id() === (int) $homepageId) {
+              $variables['is_meta_homepage'] = TRUE;
+            }
+          }
+        }
+        catch (\Throwable) {
+          // MetaSiteResolver no disponible.
+        }
+      }
+    }
+
+    // Si es homepage de PED: inyectar audiencia y URLs.
+    if ($variables['is_ped'] && $variables['is_meta_homepage']) {
+      // Audience detection cascade: UTM → cookie → AvatarDetection.
+      $audience = NULL;
+      $request = \Drupal::request();
+      $audience = $request->query->get('audience');
+      if (empty($audience) && $request->cookies->has('jaraba_audience')) {
+        $audience = $request->cookies->get('jaraba_audience');
+      }
+      if (empty($audience) && \Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+        try {
+          $avatarDetection = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+          $avatarMap = [
+            'lawyer' => 'legal',
+            'government' => 'b2g',
+            'jobseeker' => 'empleo',
+            'entrepreneur' => 'emprendimiento',
+          ];
+          $audience = $avatarMap[$avatarDetection->getAvatarType()] ?? NULL;
+        }
+        catch (\Throwable) {
+        }
+      }
+      $validAudiences = ['legal', 'b2g', 'empleo', 'emprendimiento'];
+      $variables['audience'] = in_array($audience, $validAudiences, TRUE) ? $audience : NULL;
+
+      // PED URLs con prefijo de idioma (ROUTE-LANGPREFIX-001).
+      $pedPaths = [
+        'register' => '/user/register',
+        'jarabalex' => '/jarabalex',
+        'contacto' => '/contacto',
+        'metodo' => '/metodo',
+        'empleabilidad' => '/empleabilidad',
+      ];
+      foreach ($pedPaths as $key => $path) {
+        try {
+          if ($key === 'register') {
+            $variables['ped_urls'][$key] = \Drupal\Core\Url::fromRoute('user.register')->toString();
+          }
+          else {
+            $variables['ped_urls'][$key] = \Drupal\Core\Url::fromUserInput($path)->toString();
+          }
+        }
+        catch (\Throwable) {
+          $variables['ped_urls'][$key] = $path;
+        }
+      }
+    }
+  }
+
+  // =========================================================================
+  // PED CONTACT FORM — Inyectar formulario en página de contacto PED
+  // Detecta PageContent ID 79 (contacto de PED, tenant 7) y renderiza
+  // el formulario Drupal integrado con CRM + Email.
+  // =========================================================================
+  $variables['ped_contact_form'] = NULL;
+  if (!empty($variables['is_ped'])) {
+    $route_match_contact = \Drupal::routeMatch();
+    if ($route_match_contact->getRouteName() === 'entity.page_content.canonical') {
+      $pc = $route_match_contact->getParameter('page_content');
+      if ($pc instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+        $alias = $pc->get('path_alias')->value ?? '';
+        if ($alias === '/contacto') {
+          $variables['ped_contact_form'] = \Drupal::formBuilder()->getForm(
+            '\Drupal\ecosistema_jaraba_core\Form\PedContactForm'
+          );
+        }
+      }
+    }
+  }
+
+  // =========================================================================
   // HOMEPAGE CONTENT - Datos dinámicos desde Page Builder
   // Inyecta datos de HomepageContent entity para partials de la homepage
   // =========================================================================
@@ -2679,8 +2779,16 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       $homepage_data = $homepage_service->getHomepageData();
 
       // Inyectar datos estructurados para partials
+      $heroData = $homepage_data['hero'] ?? [];
+      // AUDIT-SEC-003: Sanitizar hero subtitle server-side para evitar |raw en Twig.
+      if (!empty($heroData['subtitle'])) {
+        $heroData['subtitle'] = \Drupal\Component\Utility\Xss::filter(
+          $heroData['subtitle'],
+          ['strong', 'em', 'br', 'a']
+        );
+      }
       $variables['homepage'] = [
-        'hero' => $homepage_data['hero'] ?? [],
+        'hero' => $heroData,
         'features' => $homepage_data['features'] ?? [],
         'stats' => $homepage_data['stats'] ?? [],
         'intentions' => $homepage_data['intentions'] ?? [],
@@ -2699,11 +2807,74 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
           $variables['detected_vertical'] = $detection->vertical;
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable) {
         // Servicio no disponible, sin detección automática
       }
+
+      // =====================================================================
+      // AUDIENCE DETECTION — Hero personalizado por audiencia (PED meta-site)
+      // Cascada: 1. UTM ?audience= → 2. Cookie jaraba_audience → 3. Avatar
+      // =====================================================================
+      $audience = NULL;
+      $request = \Drupal::request();
+
+      // Nivel 1: UTM parameter.
+      $audience = $request->query->get('audience');
+
+      // Nivel 2: Cookie de sesion (set by audience selector JS).
+      if (empty($audience) && $request->cookies->has('jaraba_audience')) {
+        $audience = $request->cookies->get('jaraba_audience');
+      }
+
+      // Nivel 3: AvatarDetectionService (si disponible).
+      if (empty($audience) && \Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+        try {
+          $avatarDetection = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+          $avatarMap = [
+            'lawyer' => 'legal',
+            'government' => 'b2g',
+            'jobseeker' => 'empleo',
+            'entrepreneur' => 'emprendimiento',
+          ];
+          $audience = $avatarMap[$avatarDetection->getAvatarType()] ?? NULL;
+        }
+        catch (\Throwable) {
+          // AvatarDetection no disponible o error.
+        }
+      }
+
+      // Whitelist de audiencias validas.
+      $validAudiences = ['legal', 'b2g', 'empleo', 'emprendimiento'];
+      $variables['audience'] = in_array($audience, $validAudiences, TRUE) ? $audience : NULL;
+
+      // =====================================================================
+      // PED URLs — Resolver URLs internas con prefijo de idioma
+      // ROUTE-LANGPREFIX-001: Url::fromRoute() o Url::fromUserInput()
+      // PRESAVE-RESILIENCE-001: try-catch para cada URL, fallback a path raw
+      // =====================================================================
+      $pedPaths = [
+        'register' => '/user/register',
+        'jarabalex' => '/jarabalex',
+        'contacto' => '/contacto',
+        'metodo' => '/metodo',
+        'empleabilidad' => '/empleabilidad',
+      ];
+      $variables['ped_urls'] = [];
+      foreach ($pedPaths as $key => $path) {
+        try {
+          if ($key === 'register') {
+            $variables['ped_urls'][$key] = \Drupal\Core\Url::fromRoute('user.register')->toString();
+          }
+          else {
+            $variables['ped_urls'][$key] = \Drupal\Core\Url::fromUserInput($path)->toString();
+          }
+        }
+        catch (\Throwable) {
+          $variables['ped_urls'][$key] = $path;
+        }
+      }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       // Servicio no disponible, usar datos vacíos (partials usan fallbacks)
       \Drupal::logger('ecosistema_jaraba_theme')->notice(
         'HomepageDataService no disponible, usando fallbacks en partials: @msg',
@@ -3319,307 +3490,24 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     $initials = mb_strtoupper(mb_substr($name, 0, 2));
     $variables['user_initials'] = $initials;
 
-    // -- Quick Access Sections ------------------------------------------------
-    // Secciones agrupadas contextuales según avatar, tenant y roles.
-    $uid = $user->id();
+    // -- Quick Access Sections (via UserProfileSectionRegistry) ----------------
+    // Patron extensible: tagged services con CompilerPass.
+    // Cada modulo registra secciones via tag 'ecosistema_jaraba_core.user_profile_section'.
+    // Template page--user.html.twig consume $user_quick_sections sin cambios.
+    $uid = (int) $user->id();
     $sections = [];
 
-    // Helper: resolver ruta con try/catch — devuelve URL string o NULL.
-    $resolve = function (string $route, array $params = []) {
+    if (\Drupal::hasService('ecosistema_jaraba_core.user_profile_section_registry')) {
       try {
-        return \Drupal\Core\Url::fromRoute($route, $params)->toString();
+        /** @var \Drupal\ecosistema_jaraba_core\UserProfile\UserProfileSectionRegistry $registry */
+        $registry = \Drupal::service('ecosistema_jaraba_core.user_profile_section_registry');
+        $sections = $registry->buildSectionsArray($uid);
       }
-      catch (\Exception $e) {
-        return NULL;
+      catch (\Throwable $e) {
+        \Drupal::logger('ecosistema_jaraba_theme')->error('Error building profile sections: @error', [
+          '@error' => $e->getMessage(),
+        ]);
       }
-    };
-
-    // Helper: construir link solo si la ruta existe.
-    $make_link = function ($label, string $route, string $icon_cat, string $icon_name, string $color, array $options = []) use ($resolve) {
-      $url = $resolve($route, $options['params'] ?? []);
-      if ($url === NULL) {
-        return NULL;
-      }
-      return [
-        'label' => $label,
-        'url' => $url,
-        'icon_category' => $icon_cat,
-        'icon_name' => $icon_name,
-        'color' => $color,
-        'description' => $options['description'] ?? '',
-        'slide_panel' => $options['slide_panel'] ?? FALSE,
-        'slide_panel_title' => $options['slide_panel_title'] ?? $label,
-      ];
-    };
-
-    // ── Section 1: Mi Perfil Profesional (siempre visible) ──────────────
-    $prof_links = array_filter([
-      $make_link(t('Ver perfil profesional'), 'jaraba_candidate.my_profile', 'ui', 'user', 'innovation', [
-        'description' => t('Visualiza cómo te ven los reclutadores'),
-      ]),
-      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'ui', 'file-text', 'innovation', [
-        'description' => t('Crea tu CV profesional en minutos'),
-      ]),
-      $make_link(t('Autoconocimiento'), 'jaraba_self_discovery.dashboard', 'ui', 'compass', 'innovation', [
-        'description' => t('Descubre tus fortalezas y áreas de mejora'),
-      ]),
-    ]);
-
-    // Completitud del perfil (solo si el servicio existe).
-    $profile_completeness = NULL;
-    if (\Drupal::hasService('jaraba_candidate.profile_completion')) {
-      try {
-        $completion_service = \Drupal::service('jaraba_candidate.profile_completion');
-        $completion = $completion_service->calculateCompletion((int) $uid);
-
-        // Mapping de secciones para el parcial _profile-completeness.html.twig.
-        $section_labels = [
-          'personal_info' => t('Datos Personales'),
-          'professional_summary' => t('Marca Profesional'),
-          'experience' => t('Experiencia Laboral'),
-          'education' => t('Formación Académica'),
-          'skills' => t('Habilidades y Competencias'),
-          'photo' => t('Foto de Perfil'),
-          'cv_document' => t('Documento CV'),
-          'languages' => t('Idiomas'),
-          'privacy' => t('Privacidad'),
-        ];
-        $section_routes = [
-          'personal_info' => 'jaraba_candidate.my_profile.personal',
-          'professional_summary' => 'jaraba_candidate.my_profile.brand',
-          'experience' => 'jaraba_candidate.my_profile.experience',
-          'education' => 'jaraba_candidate.my_profile.education',
-          'skills' => 'jaraba_candidate.my_profile.skills',
-          'photo' => 'jaraba_candidate.my_profile.personal',
-          'cv_document' => 'jaraba_candidate.cv_builder',
-          'languages' => 'jaraba_candidate.my_profile.languages',
-          'privacy' => 'jaraba_candidate.my_profile.privacy',
-        ];
-        $all_section_keys = array_keys($section_labels);
-        // Sections with defaults that are always "completed" (settings, not content).
-        $always_completed = ['privacy'];
-        $section_details = [];
-        foreach ($all_section_keys as $key) {
-          $section_details[] = [
-            'name' => $section_labels[$key],
-            'completed' => in_array($key, $always_completed) || in_array($key, $completion['completed_sections'] ?? []),
-            'url' => $resolve($section_routes[$key] ?? 'jaraba_candidate.my_profile.edit') ?: '',
-            'slide_panel_title' => $section_labels[$key],
-          ];
-        }
-
-        $pct = (int) round($completion['percentage'] ?? 0);
-        $cta_message = NULL;
-        if ($pct < 25) {
-          $cta_message = t('Tu perfil necesita atención — los candidatos con perfil completo reciben 3x más visibilidad');
-        }
-        elseif ($pct < 50) {
-          $cta_message = t('Buen comienzo — completa las secciones pendientes para destacar');
-        }
-        elseif ($pct < 80) {
-          $cta_message = t('Ya casi — solo faltan unos pasos para un perfil destacado');
-        }
-
-        $profile_completeness = [
-          'percentage' => $pct,
-          'sections' => $section_details,
-          'total_sections' => $completion['total_sections'] ?? count($all_section_keys),
-          'completed_sections' => $completion['completed_count'] ?? 0,
-          'cta_message' => $cta_message,
-        ];
-      }
-      catch (\Exception $e) {
-        // Servicio no disponible — no mostrar completitud.
-      }
-    }
-
-    if (!empty($prof_links) || $profile_completeness) {
-      $section = [
-        'id' => 'professional_profile',
-        'title' => t('Mi Perfil Profesional'),
-        'subtitle' => t('Gestiona tu presencia profesional en el ecosistema'),
-        'icon_category' => 'ui',
-        'icon_name' => 'user',
-        'links' => array_values($prof_links),
-        'color' => 'innovation',
-      ];
-      if ($profile_completeness) {
-        $section['profile_completeness'] = $profile_completeness;
-      }
-      $sections[] = $section;
-    }
-
-    // ── Section 2: Mi Vertical (dinámica por avatar) ────────────────────
-    $avatar_links = [];
-    $avatar_label = NULL;
-    $avatar_color = 'primary';
-    try {
-      if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
-        $avatar_result = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
-        $avatar_type = $avatar_result->avatarType;
-
-        // Labels legibles por avatar.
-        $avatar_labels = [
-          'jobseeker' => t('Candidato'),
-          'recruiter' => t('Reclutador'),
-          'entrepreneur' => t('Emprendedor'),
-          'producer' => t('Productor'),
-          'buyer' => t('Comprador'),
-          'merchant' => t('Comerciante'),
-          'service_provider' => t('Proveedor de Servicios'),
-          'profesional' => t('Profesional'),
-          'student' => t('Estudiante'),
-          'mentor' => t('Mentor'),
-          'legal_professional' => t('Profesional Legal'),
-          'tenant_admin' => t('Admin Tenant'),
-        ];
-        // Colores por vertical.
-        $vertical_colors = [
-          'empleabilidad' => 'innovation',
-          'emprendimiento' => 'impulse',
-          'agroconecta' => 'innovation',
-          'comercioconecta' => 'impulse',
-          'serviciosconecta' => 'servicios',
-          'jarabalex' => 'corporate',
-        ];
-
-        if ($avatar_type !== 'general' && isset($avatar_labels[$avatar_type])) {
-          $avatar_label = $avatar_labels[$avatar_type];
-          $avatar_color = $vertical_colors[$avatar_result->vertical ?? ''] ?? 'primary';
-
-          if (\Drupal::hasService('ecosistema_jaraba_core.avatar_navigation')) {
-            $nav_items = \Drupal::service('ecosistema_jaraba_core.avatar_navigation')->getNavigationItems();
-            foreach ($nav_items as $item) {
-              $avatar_links[] = [
-                'label' => $item['label'],
-                'url' => $item['url'],
-                'icon_category' => $item['icon_category'] ?? 'ui',
-                'icon_name' => $item['icon_name'] ?? 'arrow-right',
-                'color' => $avatar_color,
-                'cross_vertical' => !empty($item['cross_vertical']),
-              ];
-            }
-          }
-        }
-      }
-    }
-    catch (\Exception $e) {
-      // Servicios de avatar no disponibles.
-    }
-
-    if (!empty($avatar_links)) {
-      $sections[] = [
-        'id' => 'my_vertical',
-        'title' => $avatar_label ? t('Mi Vertical: @label', ['@label' => $avatar_label]) : t('Mi Vertical'),
-        'subtitle' => $avatar_label ? t('Accesos directos a tus herramientas de @label', ['@label' => $avatar_label]) : t('Accesos directos a tus herramientas'),
-        'icon_category' => 'verticals',
-        'icon_name' => 'rocket',
-        'links' => $avatar_links,
-        'color' => $avatar_color,
-      ];
-    }
-
-    // ── Section 3: Mi Negocio (solo si tiene tenant) ────────────────────
-    $tenant = NULL;
-    try {
-      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-        $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
-      }
-    }
-    catch (\Exception $e) {
-      // Servicio de tenant no disponible.
-    }
-
-    if ($tenant) {
-      $biz_links = array_filter([
-        $make_link(t('Dashboard Tenant'), 'ecosistema_jaraba_core.tenant.dashboard', 'ui', 'dashboard', 'corporate', [
-          'description' => t('Métricas y gestión de tu negocio'),
-          'slide_panel' => TRUE,
-        ]),
-        $make_link(t('Configuración'), 'ecosistema_jaraba_core.tenant_self_service.settings', 'ui', 'settings', 'corporate', [
-          'description' => t('Marca, diseño, dominio, API y más'),
-        ]),
-        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'tag', 'corporate', [
-          'description' => t('Explora planes y funcionalidades'),
-          'slide_panel' => TRUE,
-        ]),
-        $make_link(t('Centro de ayuda'), 'jaraba_tenant_knowledge.help_center', 'ui', 'help-circle', 'corporate', [
-          'description' => t('Guías, tutoriales y soporte'),
-        ]),
-      ]);
-
-      if (!empty($biz_links)) {
-        $sections[] = [
-          'id' => 'my_business',
-          'title' => t('Mi Negocio'),
-          'subtitle' => t('Administra tu organización y suscripción'),
-          'icon_category' => 'business',
-          'icon_name' => 'briefcase',
-          'links' => array_values($biz_links),
-          'color' => 'corporate',
-        ];
-      }
-    }
-
-    // ── Section 4: Administración (solo rol administrator) ──────────────
-    if (in_array('administrator', $role_ids)) {
-      $admin_links = array_filter([
-        $make_link(t('Admin Center'), 'ecosistema_jaraba_core.admin.center', 'ui', 'settings', 'corporate', [
-          'description' => t('Panel de control del ecosistema'),
-        ]),
-        $make_link(t('Gestión Tenants'), 'ecosistema_jaraba_core.admin.center.tenants', 'business', 'building', 'corporate', [
-          'description' => t('Organizaciones y suscripciones'),
-        ]),
-        $make_link(t('Gestión Usuarios'), 'ecosistema_jaraba_core.admin.center.users', 'ui', 'users', 'corporate', [
-          'description' => t('Cuentas, roles y permisos'),
-        ]),
-        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'finance', 'coins', 'corporate', [
-          'description' => t('Ingresos, facturación y métricas'),
-        ]),
-      ]);
-
-      if (!empty($admin_links)) {
-        $sections[] = [
-          'id' => 'administration',
-          'title' => t('Administración'),
-          'subtitle' => t('Herramientas de gestión de la plataforma'),
-          'icon_category' => 'ui',
-          'icon_name' => 'shield',
-          'links' => array_values($admin_links),
-          'color' => 'corporate',
-        ];
-      }
-    }
-
-    // ── Section 5: Cuenta (siempre visible, última posición) ────────────
-    $account_links = array_filter([
-      $make_link(t('Editar perfil'), 'entity.user.edit_form', 'actions', 'edit', 'primary', [
-        'params' => ['user' => $uid],
-        'description' => t('Nombre, email y configuración'),
-        'slide_panel' => TRUE,
-      ]),
-      [
-        'label' => t('Cerrar sesión'),
-        'url' => '/user/logout',
-        'icon_category' => 'actions',
-        'icon_name' => 'log-out',
-        'color' => 'danger',
-        'description' => '',
-        'slide_panel' => FALSE,
-        'slide_panel_title' => t('Cerrar sesión'),
-      ],
-    ]);
-
-    if (!empty($account_links)) {
-      $sections[] = [
-        'id' => 'account',
-        'title' => t('Cuenta'),
-        'subtitle' => t('Configuración de tu cuenta'),
-        'icon_category' => 'actions',
-        'icon_name' => 'settings',
-        'links' => array_values($account_links),
-        'color' => 'neutral',
-      ];
     }
 
     $variables['user_quick_sections'] = $sections;

@@ -1444,6 +1444,21 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
         $message['body'][] = $params['body'] ?? '';
       }
       break;
+
+    // Notificación de formulario de contacto PED.
+    case 'ped_contact_notification':
+      $message['subject'] = t('[PED Contacto] @type — @name', [
+        '@type' => $params['inquiry_type'],
+        '@name' => $params['contact_name'],
+      ]);
+      $message['body'][] = t("Nuevo mensaje de contacto desde plataformadeecosistemas.es\n\nNombre: @name\nEmail: @email\nTelefono: @phone\nTipo: @type\n\nMensaje:\n@message", [
+        '@name' => $params['contact_name'],
+        '@email' => $params['contact_email'],
+        '@phone' => $params['contact_phone'] ?: '(no proporcionado)',
+        '@type' => $params['inquiry_type'],
+        '@message' => $params['message'],
+      ]);
+      break;
   }
 }
 

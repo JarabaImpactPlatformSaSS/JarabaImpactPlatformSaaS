@@ -700,6 +700,16 @@ ecosistema_jaraba_core.tenant_self_service.design:
   options:
     _admin_route: FALSE
 
+ecosistema_jaraba_core.tenant_self_service.plan:
+  path: '/my-settings/plan'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\TenantPlanSettingsForm'
+    _title: 'Plan y Facturacion'
+  requirements:
+    _permission: 'edit own tenant'
+  options:
+    _admin_route: FALSE
+
 # ---------------------------------------------------------------------------
 # MARKETPLACE - PHASE 13: CROSS-TENANT VISIBILITY
 # ---------------------------------------------------------------------------

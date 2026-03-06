@@ -60,3 +60,30 @@ programa-formacion:
   dependencies:
     - core/drupal
     - core/once
+
+coordinador-hub:
+  version: 1.x
+  js:
+    js/coordinador-hub.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+reclutamiento:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+
+reclutamiento-popup:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+  js:
+    js/reclutamiento-popup.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -10,3 +10,8 @@ visual_customizer:
     - core/drupal.vertical-tabs
     - core/jquery
     - core/once
+
+preset_picker:
+  version: 1.x
+  js:
+    js/preset-picker.js: {}

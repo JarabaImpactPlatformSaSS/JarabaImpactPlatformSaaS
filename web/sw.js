@@ -8,6 +8,7 @@
  */
 
 // Versión generada dinámicamente (en producción esto se reemplaza por el hash del commit)
+// SW-BUST-20260306: CSS/JS ahora usan stale-while-revalidate en vez de cache-first.
 const CACHE_VERSION = 'jaraba-v' + (new Date().getTime());
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
@@ -31,7 +32,9 @@ const ROUTE_STRATEGIES = [
   { pattern: /^\/admin\//, strategy: 'network-only' },
   { pattern: /^\/api\/v1\//, strategy: 'network-first' },
   { pattern: /^\/user\/(login|logout|register)/, strategy: 'network-only' },
-  { pattern: /\.(?:css|js|woff2?|svg|png|jpg|webp)$/, strategy: 'cache-first' },
+  { pattern: /\.(?:woff2?)$/, strategy: 'cache-first' },
+  { pattern: /\.(?:css|js)$/, strategy: 'stale-while-revalidate' },
+  { pattern: /\.(?:svg|png|jpg|webp)$/, strategy: 'cache-first' },
   { pattern: /^\/(?:productor|comercio|legal|empleo)/, strategy: 'stale-while-revalidate' }
 ];
 

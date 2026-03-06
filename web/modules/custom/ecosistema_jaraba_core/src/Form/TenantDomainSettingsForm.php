@@ -8,12 +8,15 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\Trait\TenantFormHeroPremiumTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Formulario para configurar dominio personalizado del tenant.
  */
 class TenantDomainSettingsForm extends FormBase {
+
+  use TenantFormHeroPremiumTrait;
 
   public function __construct(
     protected TenantContextService $tenantContext,
@@ -53,27 +56,12 @@ class TenantDomainSettingsForm extends FormBase {
       $currentDomain = $tenant->get('custom_domain')->value;
     }
 
-    $form['#prefix'] = '<div class="tenant-form tenant-form--domain">';
-    $form['#suffix'] = '</div>';
-
-    // Back link.
-    $form['back'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Volver a Configuracion'),
-      '#url' => Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.settings'),
-      '#attributes' => ['class' => ['tenant-form__back']],
-      '#weight' => -100,
-    ];
-
-    // Info.
-    $form['info'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['tenant-form__info']],
-    ];
-
-    $form['info']['description'] = [
-      '#markup' => '<p>' . $this->t('Configura tu propio dominio para acceder a tu tienda. Una vez configurado, tus clientes podran acceder a traves de tu dominio personalizado.') . '</p>',
-    ];
+    $this->attachTenantFormHero(
+      $form,
+      'globe',
+      (string) $this->t('Dominio'),
+      (string) $this->t('Configura tu dominio personalizado y SSL.'),
+    );
 
     // Dominio actual.
     $form['current_section'] = [

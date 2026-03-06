@@ -67,6 +67,18 @@ services:
       - '@ecosistema_jaraba_core.tenant_manager'
       - '@ecosistema_jaraba_core.style_preset'
 
+  # THEMING-UNIFY-001: Resuelve configuracion visual completa por request.
+  # Cascada 5 niveles: Platform -> Vertical -> Plan -> Tenant -> MetaSite.
+  # Funciona para anonimos (hostname) y autenticados (TenantContext).
+  ecosistema_jaraba_core.unified_theme_resolver:
+    class: Drupal\ecosistema_jaraba_core\Service\UnifiedThemeResolverService
+    arguments:
+      - '@entity_type.manager'
+      - '@request_stack'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@?jaraba_site_builder.meta_site_resolver'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
   # Servicio de resolución de Design Tokens con cascada 4 niveles
   # Platform → Vertical → Plan → Tenant. Genera CSS --ej-* custom properties.
   ecosistema_jaraba_core.style_preset:
@@ -1855,3 +1867,52 @@ services:
     arguments: ['@current_user']
     tags:
       - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  # =========================================================================
+  # User Profile Section Hub — Registry + Secciones (tagged services)
+  # Patron identico a Tenant Settings Hub.
+  # Modulos externos registran secciones con tag:
+  #   ecosistema_jaraba_core.user_profile_section
+  # =========================================================================
+
+  ecosistema_jaraba_core.user_profile_section_registry:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\UserProfileSectionRegistry
+
+  ecosistema_jaraba_core.user_profile_section.professional_profile:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\ProfessionalProfileSection
+    arguments:
+      - '@current_user'
+      - '@?jaraba_candidate.profile_completion'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.my_vertical:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\MyVerticalSection
+    arguments:
+      - '@current_user'
+      - '@?ecosistema_jaraba_core.avatar_detection'
+      - '@?ecosistema_jaraba_core.avatar_navigation'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.my_business:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\MyBusinessSection
+    arguments:
+      - '@current_user'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.administration:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\AdministrationSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.account:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\AccountSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }

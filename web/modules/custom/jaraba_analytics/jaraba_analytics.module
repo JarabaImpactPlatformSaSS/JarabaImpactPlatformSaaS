@@ -168,8 +168,9 @@ function jaraba_analytics_page_attachments(array &$attachments) {
   // Adjuntar librería de tracking.
   $attachments['#attached']['library'][] = 'jaraba_analytics/analytics-tracker';
 
-  // Adjuntar banner de consentimiento GDPR.
-  $attachments['#attached']['library'][] = 'jaraba_analytics/consent-banner';
+  // Banner de consentimiento GDPR consolidado en jaraba_privacy/cookie-banner.
+  // El sistema de jaraba_privacy tiene entidades, API REST, audit trail RGPD
+  // y cumplimiento LSSI-CE. jaraba_analytics escucha el evento de consent.
 
   // Pasar configuración a JS.
   $attachments['#attached']['drupalSettings']['jarabaAnalytics'] = [

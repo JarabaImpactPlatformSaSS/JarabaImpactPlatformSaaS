@@ -1,0 +1,74 @@
+{#
+/**
+ * @file _partners-institucional.html.twig
+ *
+ * Logos de instituciones que han trabajado con Jose Jaraba / PED.
+ * Solo se muestra en el meta-sitio corporativo PED.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %}
+ * - A11y: aria-label
+ * - ICON-CONVENTION-001: jaraba_icon() con variante duotone
+ * - ICON-COLOR-001: Solo colores de la paleta Jaraba
+ * - CSS: BEM .ped-partners__*
+ */
+#}
+
+<section class="ped-partners" aria-labelledby="partners-title">
+  <h2 id="partners-title">{% trans %}Han confiado en nosotros{% endtrans %}</h2>
+  <div class="ped-partners__grid">
+    {# Instituciones supranacionales y nacionales #}
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Union Europea{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Estado Espanol{% endtrans %}</span>
+    </div>
+    {# Comunidades autonomas #}
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Junta de Andalucia{% endtrans %}</span>
+    </div>
+    {# Diputaciones #}
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Diputacion de Malaga{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Diputacion de Caceres{% endtrans %}</span>
+    </div>
+    {# Ayuntamientos #}
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Ayto. Alhaurin el Grande{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Ayto. Alcala de Guadaira{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Ayto. Almendralejo{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Ayto. Ponferrada{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Ayto. Puente Genil{% endtrans %}</span>
+    </div>
+    {# Universidades y fundaciones #}
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('education', 'graduation-cap', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Universidad de Cordoba{% endtrans %}</span>
+    </div>
+    <div class="ped-partners__badge">
+      {{ jaraba_icon('business', 'handshake', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      <span>{% trans %}Fundacion MADECA{% endtrans %}</span>
+    </div>
+  </div>
+</section>

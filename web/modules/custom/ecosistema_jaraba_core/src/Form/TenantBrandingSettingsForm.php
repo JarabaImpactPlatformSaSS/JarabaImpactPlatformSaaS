@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\Trait\TenantFormHeroPremiumTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,6 +25,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * y se gestionan desde el customizer de diseno.
  */
 class TenantBrandingSettingsForm extends FormBase {
+
+  use TenantFormHeroPremiumTrait;
 
   public function __construct(
     protected TenantContextService $tenantContext,
@@ -94,17 +97,12 @@ class TenantBrandingSettingsForm extends FormBase {
 
     $form_state->set('site_config_id', $siteConfig->id());
 
-    $form['#prefix'] = '<div class="tenant-form tenant-form--branding">';
-    $form['#suffix'] = '</div>';
-
-    // Back link.
-    $form['back'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Volver a Configuracion'),
-      '#url' => Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.settings'),
-      '#attributes' => ['class' => ['tenant-form__back']],
-      '#weight' => -100,
-    ];
+    $this->attachTenantFormHero(
+      $form,
+      'palette',
+      (string) $this->t('Marca y Branding'),
+      (string) $this->t('Logo, nombre, contacto y SEO basico de tu marca.'),
+    );
 
     // Identidad.
     $form['identity'] = [

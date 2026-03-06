@@ -161,7 +161,7 @@
    */
   Drupal.behaviors.animatedCounter = {
     attach: function (context) {
-      const counters = context.querySelectorAll('.stat-item__number[data-count]:not(.counter-attached)');
+      const counters = context.querySelectorAll('.stat-item__number[data-count]:not(.counter-attached), .ped-cifras__number[data-count]:not(.counter-attached)');
 
       if (counters.length === 0) {
         return;

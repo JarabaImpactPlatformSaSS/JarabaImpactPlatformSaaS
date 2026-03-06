@@ -1267,18 +1267,16 @@
     justify-content: flex-end;
     gap: $ej-spacing-md;
     padding: $ej-spacing-md $ej-spacing-lg;
-    margin: $ej-spacing-lg (
-      -$ej-spacing-lg) (-$ej-spacing-lg
-    );
-  background: linear-gradient(180deg,
+    margin: $ej-spacing-lg (-$ej-spacing-lg) 0;
+    background: linear-gradient(180deg,
       rgba(255, 255, 255, 0.85) 0%,
       rgba(255, 255, 255, 0.95) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 0 0 16px 16px;
-  animation: fadeInUp 0.5s ease 0.4s both;
-}
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0 0 16px 16px;
+    animation: fadeInUp 0.5s ease 0.4s both;
+  }
 
 // ─── SUBMIT BUTTONS — Premium ───────────────────────────────────────────────
 input[type="submit"],

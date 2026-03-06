@@ -339,6 +339,13 @@ class TenantThemeConfig extends ContentEntityBase
             ->setDefaultValue('Empezar')
             ->setDisplayConfigurable('form', TRUE);
 
+        $fields['header_cta_url'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('URL CTA'))
+            ->setDescription(t('URL del boton CTA en el header (ruta interna o URL absoluta).'))
+            ->setSetting('max_length', 255)
+            ->setDefaultValue('/registro')
+            ->setDisplayConfigurable('form', TRUE);
+
         $fields['hero_overlay'] = BaseFieldDefinition::create('boolean')
             ->setLabel(t('Hero Overlay'))
             ->setDefaultValue(TRUE)

@@ -28,7 +28,18 @@
  */
 #}
 
-{# Fallback: Datos verificables del programa Andalucía +ei #}
+{# Detectar meta-sitio PED para metricas de impacto #}
+{% set is_ped = is_ped|default(false) %}
+
+{# Fallback PED: Metricas de impacto humano verificables #}
+{% set ped_stats = [
+  { value: 100, suffix: 'M+', label: 'EUR dinamizados en proyectos'|t },
+  { value: 30, suffix: '+', label: 'anos gestionando fondos europeos'|t },
+  { value: 3, suffix: '', label: 'emprendedores lanzados con exito'|t },
+  { value: 11, suffix: '', label: 'agentes IA especializados'|t }
+] %}
+
+{# Fallback generico: Datos del programa #}
 {% set default_stats = [
   { value: 10, suffix: '', label: 'Verticales especializados'|t },
   { value: 11, suffix: '', label: 'Agentes IA Gen 2'|t },
@@ -36,18 +47,18 @@
   { value: 100, suffix: '%', label: 'Recomendarían el programa'|t }
 ] %}
 
-{% set stat_items = stats|default([])|length > 0 ? stats : default_stats %}
+{% set stat_items = stats|default([])|length > 0 ? stats : (is_ped ? ped_stats : default_stats) %}
 
-<section class="stats-section reveal-element reveal-fade-up" aria-labelledby="stats-title">
-  <div class="stats-section__container">
-    <h2 id="stats-title" class="visually-hidden">{% trans %}Resultados verificables{% endtrans %}</h2>
+<section class="{% if is_ped %}ped-cifras{% else %}stats-section{% endif %} animate-on-scroll" aria-labelledby="stats-title">
+  <div class="{% if is_ped %}ped-cifras__container{% else %}stats-section__container{% endif %}">
+    <h2 id="stats-title" class="{% if not is_ped %}visually-hidden{% endif %}">{% trans %}Resultados verificables{% endtrans %}</h2>
 
-    <div class="stats-grid">
+    <div class="{% if is_ped %}ped-cifras__grid{% else %}stats-grid{% endif %}">
       {% for stat in stat_items %}
-        <div class="stat-item">
-          <span class="stat-item__number" data-count="{{ stat.value }}">0</span>
-          {% if stat.suffix %}<span class="stat-item__suffix">{{ stat.suffix }}</span>{% endif %}
-          <span class="stat-item__label">{{ stat.label }}</span>
+        <div class="{% if is_ped %}ped-cifras__item{% else %}stat-item{% endif %}">
+          <span class="{% if is_ped %}ped-cifras__number{% else %}stat-item__number{% endif %}" data-count="{{ stat.value }}">0</span>
+          {% if stat.suffix %}<span class="{% if is_ped %}ped-cifras__suffix{% else %}stat-item__suffix{% endif %}">{{ stat.suffix }}</span>{% endif %}
+          <span class="{% if is_ped %}ped-cifras__label{% else %}stat-item__label{% endif %}">{{ stat.label }}</span>
         </div>
       {% endfor %}
     </div>

@@ -50,7 +50,7 @@ class PlanSection extends AbstractTenantSettingsSection {
    * {@inheritdoc}
    */
   public function getRoute(): string {
-    return 'ecosistema_jaraba_core.pricing.page';
+    return 'ecosistema_jaraba_core.tenant_self_service.plan';
   }
 
   /**

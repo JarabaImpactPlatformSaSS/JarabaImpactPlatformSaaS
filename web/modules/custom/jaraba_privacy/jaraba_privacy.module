@@ -185,6 +185,26 @@ function jaraba_privacy_cron(): void {
 }
 
 /**
+ * Implements hook_page_attachments().
+ *
+ * Inyecta la library y drupalSettings del cookie banner en todas las páginas
+ * para que reopenBanner() funcione desde el botón "Cookie settings" del footer
+ * incluso cuando el banner no está visible (ya hay consentimiento).
+ */
+function jaraba_privacy_page_attachments(array &$attachments): void {
+  $config = \Drupal::config('jaraba_privacy.settings');
+  if (!$config->get('enable_cookie_banner')) {
+    return;
+  }
+
+  $attachments['#attached']['library'][] = 'jaraba_privacy/cookie-banner';
+  $attachments['#attached']['drupalSettings']['jarabaCookieBanner'] = [
+    'apiEndpoint' => \Drupal\Core\Url::fromRoute('jaraba_privacy.api.cookies.consent.post')->toString(),
+    'revokeEndpoint' => \Drupal\Core\Url::fromRoute('jaraba_privacy.api.cookies.consent.revoke')->toString(),
+  ];
+}
+
+/**
  * Implements hook_page_bottom().
  *
  * Inyecta el banner de cookies en todas las páginas si está habilitado.
@@ -201,10 +221,11 @@ function jaraba_privacy_page_bottom(array &$page_bottom): void {
       return;
     }
 
-    // No mostrar en rutas de admin.
+    // No mostrar en rutas de admin (pero sí en canonical de entities públicas).
+    $adminContext = \Drupal::service('router.admin_context');
     $routeMatch = \Drupal::routeMatch();
-    $routeName = $routeMatch->getRouteName() ?? '';
-    if (str_starts_with($routeName, 'system.') || str_starts_with($routeName, 'entity.')) {
+    $routeObject = $routeMatch->getRouteObject();
+    if ($routeObject && $adminContext->isAdminRoute($routeObject)) {
       return;
     }
 
@@ -214,10 +235,18 @@ function jaraba_privacy_page_bottom(array &$page_bottom): void {
     $userId = $currentUser->isAuthenticated() ? (int) $currentUser->id() : NULL;
     $sessionId = \Drupal::request()->getSession()?->getId();
 
-    $existingConsent = $cookieManager->getCurrentConsent($userId, $sessionId);
+    // Check if user requested to reopen banner (RGPD Art. 7.3).
+    $session = \Drupal::request()->getSession();
+    $forceReopen = $session?->get('jaraba_cookie_banner_reopen', FALSE);
+    if ($forceReopen) {
+      $session->remove('jaraba_cookie_banner_reopen');
+    }
 
-    if ($existingConsent) {
-      return;
+    if (!$forceReopen) {
+      $existingConsent = $cookieManager->getCurrentConsent($userId, $sessionId);
+      if ($existingConsent) {
+        return;
+      }
     }
 
     $bannerConfig = $cookieManager->getBannerConfig(0);
@@ -225,11 +254,6 @@ function jaraba_privacy_page_bottom(array &$page_bottom): void {
     $page_bottom['jaraba_privacy_cookie_banner'] = [
       '#theme' => 'jaraba_privacy_cookie_banner',
       '#banner_config' => $bannerConfig,
-      '#attached' => [
-        'library' => [
-          'jaraba_privacy/cookie-banner',
-        ],
-      ],
       '#cache' => [
         'contexts' => ['user', 'session'],
         'tags' => ['config:jaraba_privacy.settings'],

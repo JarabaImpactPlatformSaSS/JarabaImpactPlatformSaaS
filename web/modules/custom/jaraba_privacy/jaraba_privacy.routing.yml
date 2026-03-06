@@ -143,3 +143,11 @@ jaraba_privacy.api.cookies.consent.get:
   methods: [GET]
   requirements:
     _access: 'TRUE'
+
+jaraba_privacy.api.cookies.consent.revoke:
+  path: '/api/v1/cookies/consent/revoke'
+  defaults:
+    _controller: '\Drupal\jaraba_privacy\Controller\PrivacyApiController::revokeCookieConsent'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

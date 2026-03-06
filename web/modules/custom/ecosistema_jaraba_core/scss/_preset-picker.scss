@@ -1,15 +1,15 @@
 // =============================================================================
-// PRESET PICKER - Selector Visual de Ajustes Predefinidos por Sector
+// PRESET PICKER — Selector Visual de Ajustes Predefinidos por Sector
 // =============================================================================
-// Grid premium con tarjetas de imagen, filtros por vertical,
-// hover 3D lift y estado activo con check badge.
+// PRESET-PICKER-001: Grid 2 columnas, aspect-ratio 4/3, lightbox preview,
+// transicion animada en filtros, opt-out span-2, sticky action bar.
 //
 // Consume CSS Custom Properties del sistema de design tokens (SSOT).
 // NO define variables SCSS propias — solo var(--ej-*) con fallbacks.
 // =============================================================================
 
 // ---------------------------------------------------------------------------
-// ENCABEZADO DE CONFIGURACIÓN (Header + Back Link)
+// ENCABEZADO DE CONFIGURACION (Header + Back Link)
 // ---------------------------------------------------------------------------
 .jaraba-settings-header {
   margin-bottom: 1.5rem;
@@ -45,7 +45,7 @@
   align-items: center;
   gap: 1.25rem;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, var(--ej-color-primary, #ff8c42) 0%, #e67a30 100%);
+  background: linear-gradient(135deg, var(--ej-color-naranja-impulso, #ff8c42) 0%, color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 85%, var(--ej-color-dark, #1a1a2e)) 100%);
   border-radius: 12px;
   color: var(--ej-bg-surface, #ffffff);
 }
@@ -57,7 +57,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, white 15%, transparent);
   border-radius: 12px;
 
   svg {
@@ -95,17 +95,17 @@
   font-family: var(--ej-font-body, 'Inter', sans-serif);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--ej-bg-surface, #ffffff);
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: var(--ej-color-on-primary, #ffffff);
+  background: color-mix(in srgb, white 15%, transparent);
+  border: 1px solid color-mix(in srgb, white 40%, transparent);
   border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
+    background: color-mix(in srgb, white 25%, transparent);
+    border-color: color-mix(in srgb, white 60%, transparent);
   }
 }
 
@@ -120,7 +120,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// FILTROS POR VERTICAL (Pills)
+// FILTROS POR VERTICAL (Pills con iconos)
 // ---------------------------------------------------------------------------
 .preset-filter-bar {
   display: flex;
@@ -147,17 +147,37 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  &__label {
+    white-space: nowrap;
+  }
+
   &:hover {
-    border-color: var(--ej-color-primary, #ff8c42);
-    color: var(--ej-color-primary, #ff8c42);
-    background: rgba(255, 140, 66, 0.06);
+    border-color: var(--ej-color-naranja-impulso, #ff8c42);
+    color: var(--ej-color-naranja-impulso, #ff8c42);
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 6%, transparent);
+
+    .preset-filter-pill__icon {
+      opacity: 1;
+    }
   }
 
   &.is-active {
-    background: var(--ej-color-primary, #ff8c42);
-    color: var(--ej-bg-surface, #ffffff);
-    border-color: var(--ej-color-primary, #ff8c42);
+    background: var(--ej-color-naranja-impulso, #ff8c42);
+    color: var(--ej-color-on-primary, #ffffff);
+    border-color: var(--ej-color-naranja-impulso, #ff8c42);
     font-weight: 600;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 30%, transparent);
+
+    .preset-filter-pill__icon {
+      opacity: 1;
+    }
   }
 
   .preset-filter-count {
@@ -170,56 +190,49 @@
     font-size: 0.6875rem;
     font-weight: 700;
     border-radius: 9999px;
-    background: rgba(0, 0, 0, 0.08);
+    background: color-mix(in srgb, var(--ej-color-dark, #000) 8%, transparent);
     line-height: 1;
   }
 
   &.is-active .preset-filter-count {
-    background: rgba(255, 255, 255, 0.25);
+    background: color-mix(in srgb, white 25%, transparent);
   }
 }
 
 // ---------------------------------------------------------------------------
-// GRID DE TARJETAS DE PRESET
+// GRID DE TARJETAS — 2 columnas fijas en desktop, 1 en movil
 // ---------------------------------------------------------------------------
 .preset-picker-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 1.25rem;
 
-  // Drupal may insert a .fieldset-wrapper between the grid container and items.
-  // Apply grid to both levels so whichever wraps the radios gets the grid.
-  >.fieldset-wrapper {
-    display: grid;
+  @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-
-    @media (min-width: 1200px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-    }
   }
 
-  // Drupal wraps each radio in .form-type-radio — THESE are the grid items
+  // Drupal wrappers become transparent to the grid.
+  // Real DOM: fieldset > legend + div.fieldset-wrapper > div#edit-preset-id > div.form-type-radio
+  > legend {
+    display: none;
+  }
+
+  > .fieldset-wrapper,
+  > .fieldset-wrapper > div,
+  > .fieldset-wrapper > .form-radios {
+    display: contents;
+  }
+
+  // Drupal wraps each radio — these are the actual grid items.
   .form-type-radio,
   .js-form-type-radio {
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
+    min-width: 0;
   }
 }
 
-// Make the presets tab content area take more horizontal space
+// Presets tab needs all available width for the grid.
 .customizer-tab--presets {
   .details-wrapper {
     max-width: none;
@@ -239,18 +252,19 @@
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.25s ease;
+    border-color 0.25s ease,
+    opacity 0.3s ease;
 
-  // Efecto shine al hover
+  // Efecto shine al hover.
   &::after {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(105deg,
         transparent 40%,
-        rgba(255, 255, 255, 0.4) 45%,
-        rgba(255, 255, 255, 0.6) 50%,
-        rgba(255, 255, 255, 0.4) 55%,
+        color-mix(in srgb, white 40%, transparent) 45%,
+        color-mix(in srgb, white 60%, transparent) 50%,
+        color-mix(in srgb, white 40%, transparent) 55%,
         transparent 60%);
     opacity: 0;
     transform: translateX(-100%);
@@ -262,9 +276,9 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow:
-      0 12px 28px rgba(0, 0, 0, 0.08),
-      0 4px 8px rgba(0, 0, 0, 0.04);
-    border-color: var(--ej-color-primary, #ff8c42);
+      0 12px 32px color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 10%, transparent),
+      0 4px 12px color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 6%, transparent);
+    border-color: color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 60%, transparent);
 
     &::after {
       opacity: 1;
@@ -273,41 +287,66 @@
         opacity 0.15s ease,
         transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    .preset-picker-zoom {
+      opacity: 1;
+    }
   }
 
-  // Estado seleccionado
+  // Estado seleccionado.
   &.is-selected {
-    border-color: var(--ej-color-primary, #ff8c42);
+    border-color: var(--ej-color-naranja-impulso, #ff8c42);
     box-shadow:
-      0 0 0 3px rgba(255, 140, 66, 0.15),
-      0 4px 12px rgba(255, 140, 66, 0.1);
+      0 0 0 2px color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 25%, transparent),
+      0 8px 24px color-mix(in srgb, var(--ej-color-naranja-impulso, #ff8c42) 15%, transparent);
+    transform: translateY(-2px);
 
     .preset-picker-check {
       opacity: 1;
       transform: scale(1);
     }
+
+    .preset-picker-title {
+      color: var(--ej-color-naranja-impulso, #ff8c42);
+    }
   }
 
-  // Variante "Sin ajuste predefinido"
+  // Transicion animada para filtros (en vez de display:none abrupto).
+  &[data-hidden="true"] {
+    opacity: 0;
+    transform: scale(0.92);
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+    // JS toggles visibility after transition for grid reflow.
+  }
+
+  &[data-animating] {
+    transition:
+      opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Variante "Sin ajuste predefinido" — banner horizontal span-2.
   &--none {
+    grid-column: 1 / -1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 200px;
     border-style: dashed;
+    min-height: auto;
 
     .preset-picker-none-content {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 0.75rem;
-      text-align: center;
-      padding: 1.5rem;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      width: 100%;
     }
 
     .preset-picker-none-icon {
       width: 48px;
       height: 48px;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -319,6 +358,13 @@
         width: 24px;
         height: 24px;
       }
+    }
+
+    .preset-picker-none-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
     .preset-picker-none-title {
@@ -337,23 +383,65 @@
 }
 
 // ---------------------------------------------------------------------------
-// IMAGEN DE VISTA PREVIA
+// IMAGEN DE VISTA PREVIA — aspect-ratio 4/3 para mostrar header+hero+cards
 // ---------------------------------------------------------------------------
 .preset-picker-thumb {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   background: var(--ej-color-bg-body, #f8fafc);
+
+  picture {
+    display: contents;
+  }
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .preset-picker-card:hover & img {
     transform: scale(1.03);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// BOTON LUPA (ZOOM / LIGHTBOX)
+// Always visible in top-right corner of thumb for clear affordance.
+// ---------------------------------------------------------------------------
+.preset-picker-zoom {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  margin-left: -16px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 65%, transparent);
+  color: var(--ej-bg-surface, #ffffff);
+  border: none;
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+  backdrop-filter: blur(4px);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    opacity: 1;
+    background: var(--ej-color-naranja-impulso, #ff8c42);
   }
 }
 
@@ -386,10 +474,10 @@
 }
 
 // ---------------------------------------------------------------------------
-// INFORMACIÓN DEL PRESET
+// INFORMACION DEL PRESET
 // ---------------------------------------------------------------------------
 .preset-picker-info {
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 1rem 1rem;
 }
 
 .preset-picker-header {
@@ -404,11 +492,12 @@
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--ej-text-primary, #1a1a2e);
+  transition: color 0.2s ease;
 }
 
 .preset-picker-vertical-badge {
   display: inline-flex;
-  padding: 0.125rem 0.5rem;
+  padding: 0.1875rem 0.5rem;
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -418,6 +507,14 @@
   color: var(--ej-text-secondary, #64748b);
 }
 
+// Meta row: palette + fonts side by side.
+.preset-picker-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 // ---------------------------------------------------------------------------
 // PALETA DE COLORES MINIATURA
 // ---------------------------------------------------------------------------
@@ -425,39 +522,40 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  margin-bottom: 0.375rem;
 }
 
 .preset-picker-swatch {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border: 2px solid color-mix(in srgb, white 80%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ej-color-dark, #000) 8%, transparent);
   flex-shrink: 0;
-  // Ensure inline background-color renders
   box-sizing: border-box;
   display: inline-block;
 }
 
 // ---------------------------------------------------------------------------
-// TIPOGRAFÍA INDICADA
+// TIPOGRAFIA INDICADA
 // ---------------------------------------------------------------------------
 .preset-picker-fonts {
   font-size: 0.75rem;
   color: var(--ej-text-muted, #94a3b8);
   font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // ---------------------------------------------------------------------------
-// OCULTAR RADIO INPUT DRUPAL (se controla vía JavaScript)
+// OCULTAR RADIO INPUT DRUPAL
 // ---------------------------------------------------------------------------
 .jaraba-preset-picker .form-type-radio {
   position: relative;
   margin: 0;
   padding: 0;
 
-  >input[type="radio"] {
+  > input[type="radio"] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -465,11 +563,12 @@
     pointer-events: none;
   }
 
-  >label {
+  > label {
     display: block;
     padding: 0;
     margin: 0;
     cursor: pointer;
+    height: 100%;
 
     &::before,
     &::after {
@@ -479,8 +578,184 @@
 }
 
 // ---------------------------------------------------------------------------
-// TRANSICIONES PARA FILTROS (mostrar/ocultar presets)
+// STICKY ACTION BAR — resumen de seleccion fijo en la parte inferior
 // ---------------------------------------------------------------------------
-.preset-picker-card[data-hidden="true"] {
-  display: none;
+.preset-sticky-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  margin: 1.5rem -1rem -1rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--ej-color-bg-surface, #ffffff);
+  border-top: 1px solid var(--ej-border-color, #e2e8f0);
+  box-shadow: 0 -4px 16px color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 6%, transparent);
+  border-radius: 0 0 12px 12px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__preview {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ej-text-muted, #94a3b8);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  &__name {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #1a1a2e);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__swatches {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+
+    .preset-picker-swatch {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  &__toggle-text {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-naranja-impulso, #ff8c42);
+    white-space: nowrap;
+  }
 }
+
+// Hide the original apply_preset wrapper when sticky bar is active.
+.preset-apply-wrapper {
+  margin-top: 1rem;
+}
+
+// ---------------------------------------------------------------------------
+// LIGHTBOX — Vista previa ampliada del mockup
+// ---------------------------------------------------------------------------
+.preset-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: preset-lightbox-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &[hidden] {
+    display: none;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 80%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  &__container {
+    position: relative;
+    max-width: 720px;
+    max-height: 90vh;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--ej-color-bg-surface, #ffffff);
+    box-shadow: 0 24px 64px color-mix(in srgb, var(--ej-color-dark, #000) 30%, transparent);
+    animation: preset-lightbox-scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ej-color-dark, #1a1a2e) 60%, transparent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background: var(--ej-color-naranja-impulso, #ff8c42);
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  &__caption {
+    padding: 0.875rem 1.25rem;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-text-primary, #1a1a2e);
+    text-align: center;
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+  }
+}
+
+@keyframes preset-lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes preset-lightbox-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

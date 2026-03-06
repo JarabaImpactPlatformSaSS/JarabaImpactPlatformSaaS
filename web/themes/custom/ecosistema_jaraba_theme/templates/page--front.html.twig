@@ -52,9 +52,103 @@
     theme_settings: theme_settings
   } %}
 
+  {# Detectar meta-sitio PED para flujo AIDA optimizado #}
+  {% set is_ped = meta_site is defined and meta_site and meta_site.group_id|default(0) == 7 %}
+
   {# MAIN CONTENT #}
   <main id="main-content" class="landing-main">
-    
+
+  {% if is_ped %}
+    {# ============================================================ #}
+    {# FLUJO AIDA OPTIMIZADO (solo para meta-sitio PED)             #}
+    {# Atencion -> Interes -> Deseo -> Accion                       #}
+    {# ============================================================ #}
+
+    {# 1. HERO PED — Atencion (3 segundos) #}
+    {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
+      theme_settings: theme_settings,
+      logged_in: logged_in,
+      hero: homepage.hero|default({}),
+      audience: audience|default(null),
+      meta_site: meta_site,
+    } %}
+
+    {# 2. AUDIENCIA SELECTOR — Interes (segmentar antes de informar) #}
+    {% include '@ecosistema_jaraba_theme/partials/_audience-selector.html.twig' %}
+
+    {# 3. STATS DE IMPACTO — Credibilidad cuantificable #}
+    {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
+      stats: homepage.stats|default([]),
+      is_ped: true,
+    } %}
+
+    {# 4. VERTICAL DESTACADO: JarabaLex — Deseo (TAM #1) #}
+    {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
+      highlight_id: 'vertical-legal',
+      highlight_variant: 'dark',
+      highlight_eyebrow: 'JarabaLex — Inteligencia Legal IA'|t,
+      highlight_title: 'Todo lo que tu despacho necesita. Al precio que mereces.'|t,
+      highlight_subtitle: 'Busqueda semantica en 8 fuentes oficiales, gestion de expedientes, agenda, facturacion, LexNET y un copiloto legal que te ahorra el 30% de tu tiempo.'|t,
+      highlight_features: [
+        { icon_cat: 'legal', icon_name: 'search-legal', icon_color: 'white', title: 'Busqueda IA multi-fuente'|t, description: 'CENDOJ, EUR-Lex, CURIA, HUDOC, BOE, DGT, TEAC, EDPB'|t },
+        { icon_cat: 'ui', icon_name: 'folder', icon_color: 'white', title: 'Gestion integral'|t, description: 'Expedientes, agenda juridica, boveda documental, facturacion'|t },
+        { icon_cat: 'ui', icon_name: 'link', icon_color: 'white', title: 'LexNET integrado'|t, description: 'Comunicaciones judiciales sin salir de la plataforma'|t },
+        { icon_cat: 'ai', icon_name: 'copilot', icon_color: 'white', title: 'Copiloto legal IA'|t, description: 'Redaccion, analisis jurisprudencial, alertas normativas'|t },
+      ],
+      highlight_comparison: [
+        { name: 'Aranzadi', price: '300+ EUR/mes'|t, description: 'Solo base de datos'|t },
+        { name: 'vLex', price: '150+ EUR/mes'|t, description: 'Solo busqueda'|t },
+        { name: 'JarabaLex', price: '59 EUR/mes'|t, description: 'TODO integrado con IA'|t, is_jaraba: true },
+      ],
+      highlight_cta_text: 'Prueba JarabaLex gratis 14 dias'|t,
+      highlight_cta_url: ped_urls.jarabalex|default('/jarabalex'),
+    } %}
+
+    {# 5. VERTICAL DESTACADO: Instituciones B2G — Deseo (ventaja competitiva) #}
+    {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
+      highlight_id: 'vertical-b2g',
+      highlight_variant: 'light',
+      highlight_eyebrow: 'Solucion B2G — Fondos Europeos'|t,
+      highlight_title: 'La plataforma que necesitan tus programas de empleo y emprendimiento'|t,
+      highlight_subtitle: 'Gestion integral de participantes, fases, horas IA-tracked, justificacion FSE y copiloto para tecnicos AEDL.'|t,
+      highlight_features: [
+        { icon_cat: 'navigation', icon_name: 'layers', title: 'Gestion de programas'|t, description: 'Participantes, fases, itinerarios y seguimiento integral'|t },
+        { icon_cat: 'ai', icon_name: 'copilot', title: 'Copiloto para tecnicos'|t, description: 'Asistente IA especializado en gestion de fondos europeos'|t },
+        { icon_cat: 'analytics', icon_name: 'chart-bar', title: 'Justificacion FSE'|t, description: 'Reportes automatizados para auditorias de fondos estructurales'|t },
+        { icon_cat: 'ui', icon_name: 'clock', title: 'Horas IA-tracked'|t, description: 'Control horario inteligente con validacion automatica'|t },
+      ],
+      highlight_cta_text: 'Solicitar demo institucional'|t,
+      highlight_cta_url: ped_urls.contacto|default('/contacto'),
+    } %}
+
+    {# 6. PRODUCT DEMO — Deseo (sin cambios) #}
+    {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' %}
+
+    {# 7. TESTIMONIOS — Social proof antes de captura #}
+    {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
+    {# 8. TRUST BAR + PARTNERS — Credibilidad post-social-proof #}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' %}
+
+    {# 9. LEAD MAGNET — Accion #}
+    {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
+      lead_magnet_title: theme_settings.lead_magnet_title|default(null),
+      lead_magnet_subtitle: theme_settings.lead_magnet_subtitle|default(null),
+      lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
+      lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
+      lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
+    } %}
+
+    {# 10. CTA BANNER FINAL — Ultima oportunidad de conversion #}
+    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' %}
+
+  {% else %}
+    {# ============================================================ #}
+    {# FLUJO GENERICO (SaaS principal, otros meta-sitios)           #}
+    {# Se mantiene el orden actual sin cambios                      #}
+    {# ============================================================ #}
+
     {# HERO - Partial con layout configurable + datos dinámicos #}
     {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
       theme_settings: theme_settings,
@@ -63,10 +157,10 @@
       intentions: homepage.intentions|default([])
     } %}
 
-    {# TRUST BAR - Logos tecnologías + badges (Sprint 4 #12) #}
+    {# TRUST BAR - Logos tecnologías + badges #}
     {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
 
-    {# VERTICAL SELECTOR - 5 cards interactivas (Doc 178 §4.1) #}
+    {# VERTICAL SELECTOR - 5 cards interactivas #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-selector.html.twig' with {
       verticals: verticals|default([]),
       detected_vertical: detected_vertical|default(null)
@@ -82,10 +176,10 @@
       stats: homepage.stats|default([])
     } %}
 
-    {# PRODUCT DEMO - Screenshots + tabs interactivos (Sprint 4 #9) #}
+    {# PRODUCT DEMO - Screenshots + tabs interactivos #}
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' %}
 
-    {# LEAD MAGNET - Kit de Impulso Digital — BUG-001 Fix #}
+    {# LEAD MAGNET - Kit de Impulso Digital #}
     {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
       lead_magnet_title: theme_settings.lead_magnet_title|default(null),
       lead_magnet_subtitle: theme_settings.lead_magnet_subtitle|default(null),
@@ -94,11 +188,13 @@
       lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
     } %}
 
-    {# CROSS-POLLINATION — 6 verticales del ecosistema (Sprint 5) #}
+    {# CROSS-POLLINATION — 6 verticales del ecosistema #}
     {% include '@ecosistema_jaraba_theme/partials/_cross-pollination.html.twig' %}
 
-    {# TESTIMONIOS — Casos de éxito reales (Sprint 2) #}
+    {# TESTIMONIOS — Casos de éxito reales #}
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
+  {% endif %}
 
   </main>
 

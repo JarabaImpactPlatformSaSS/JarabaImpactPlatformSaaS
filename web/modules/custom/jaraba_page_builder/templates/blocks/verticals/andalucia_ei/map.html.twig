@@ -58,7 +58,7 @@
       <p class="pb-section__subtitle">{{ subtitle|default('Formación presencial y online en toda la comunidad autónoma.')|t }}</p>
 
       {# Accept both contact_phone and phone #}
-      {% set phone_val = contact_phone|default(phone|default('+34 955 000 123')) %}
+      {% set phone_val = contact_phone|default(phone|default('+34 623 174 304')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="100">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'impulse' }) }}
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      {% set email_val = contact_email|default(email|default('info@andalucia-ei.es')) %}
+      {% set email_val = contact_email|default(email|default('contacto@plataformadeecosistemas.es')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="200">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'impulse' }) }}
@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      {% set wa_val = contact_whatsapp|default(whatsapp|default('+34 600 123 456')) %}
+      {% set wa_val = contact_whatsapp|default(whatsapp|default('+34 623 174 304')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="300">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '24px', color: 'impulse' }) }}

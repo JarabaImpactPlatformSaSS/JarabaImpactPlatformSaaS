@@ -33,6 +33,106 @@
 {# Datos dinámicos con fallbacks i18n optimizados para conversión #}
 {% set h = hero|default({}) %}
 
+{# Detectar meta-sitio PED para aplicar identidad corporativa #}
+{% set is_ped = meta_site is defined and meta_site and meta_site.group_id|default(0) == 7 %}
+
+{# Audiencia detectada via UTM/cookie/AvatarDetection #}
+{% set audience = audience|default(null) %}
+
+{# URLs resueltas con prefijo de idioma (inyectadas desde preprocess) #}
+{% set urls = ped_urls|default({}) %}
+
+{# Contenido por audiencia — fallbacks i18n #}
+{% set hero_variants = {
+  'legal': {
+    'eyebrow': '+154.000 abogados en Espana aun sin IA en su despacho'|t,
+    'title': 'Tu despacho merece inteligencia legal de verdad — a precio de autonomo'|t,
+    'subtitle': 'Busca en CENDOJ, BOE y EUR-Lex con IA. Gestiona expedientes, agenda, facturacion y LexNET. Desde 29 EUR/mes.'|t,
+    'cta_primary_text': 'Prueba JarabaLex gratis'|t,
+    'cta_primary_url': urls.jarabalex|default('/jarabalex'),
+    'cta_secondary_text': 'Ver demo de 2 minutos'|t,
+  },
+  'b2g': {
+    'eyebrow': '25,9M EUR en programas FSE gestionados con exito, 30+ anos de experiencia'|t,
+    'title': 'La plataforma digital para programas de empleo y emprendimiento con fondos europeos'|t,
+    'subtitle': 'Gestion integral de participantes, fases, horas IA-tracked, justificacion FSE y copiloto para tecnicos.'|t,
+    'cta_primary_text': 'Solicitar demo institucional'|t,
+    'cta_primary_url': urls.contacto|default('/contacto'),
+    'cta_secondary_text': 'Descargar dossier'|t,
+  },
+  'empleo': {
+    'eyebrow': '+50.000 personas formadas · +3.200 empleos facilitados · 30+ anos de experiencia'|t,
+    'title': 'Tu proximo paso profesional empieza aqui — con IA que te guia'|t,
+    'subtitle': 'Diagnostico de competencias, CV con IA, preparacion de entrevistas y matching inteligente. Gratis para empezar.'|t,
+    'cta_primary_text': 'Empieza gratis'|t,
+    'cta_primary_url': urls.register|default('/user/register'),
+    'cta_secondary_text': 'Conoce el metodo'|t,
+  },
+} %}
+
+{% set variant = hero_variants[audience]|default(null) %}
+
+{% if is_ped %}
+{# ================================================================ #}
+{# HERO PED — Identidad corporativa azul+dorado, por audiencia      #}
+{# ================================================================ #}
+<section class="ped-hero" aria-labelledby="hero-title" data-hero-variant="{{ audience|default('default') }}">
+  <div class="ped-hero__container">
+    <span class="ped-hero__eyebrow">
+      {% if variant %}
+        {{ variant.eyebrow }}
+      {% elseif h.eyebrow %}
+        {{ h.eyebrow }}
+      {% else %}
+        {% trans %}+100M EUR en fondos europeos gestionados · +50.000 personas formadas · 11 agentes IA{% endtrans %}
+      {% endif %}
+    </span>
+
+    <h1 id="hero-title">
+      {% if variant %}
+        {{ variant.title }}
+      {% elseif h.title %}
+        {{ h.title }}
+      {% else %}
+        {% trans %}Empleo, justicia y negocio digital — impulsados por IA, en una sola plataforma{% endtrans %}
+      {% endif %}
+    </h1>
+
+    <p>
+      {% if variant %}
+        {{ variant.subtitle }}
+      {% elseif h.subtitle %}
+        {{ h.subtitle|raw }}
+      {% else %}
+        {% trans %}10 verticales especializados. 11 agentes IA. Firma digital y copiloto integrado. Una sola plataforma para profesionales, empresas e instituciones.{% endtrans %}
+      {% endif %}
+    </p>
+
+    <div class="ped-hero__actions">
+      <a href="{{ variant ? variant.cta_primary_url : (h.cta_primary.url|default(urls.register|default('/user/register'))) }}"
+         class="btn-primary btn-primary--large"
+         data-track-cta="hero_register"
+         data-track-position="homepage_hero">
+        <span>{{ variant ? variant.cta_primary_text : (h.cta_primary.text|default('Empezar gratis'|t)) }}</span>
+      </a>
+
+      <a href="{{ h.cta_secondary.url|default(urls.metodo|default('/metodo')) }}"
+         class="btn-secondary btn-secondary--large"
+         data-track-cta="hero_method"
+         data-track-position="homepage_hero">
+        <span>{{ variant ? variant.cta_secondary_text : (h.cta_secondary.text|default('Conoce el metodo'|t)) }}</span>
+        <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+          <path d="M8 4L14 10L8 16" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% else %}
+{# ================================================================ #}
+{# HERO GENERICO — Sin cambios respecto al flujo actual             #}
+{# ================================================================ #}
 <section class="hero-landing hero-landing--{{ hero_layout }}" aria-labelledby="hero-title">
 
   {# Animated Background #}
@@ -63,7 +163,7 @@
 
     <div class="hero-landing__subtitle">
       {% if h.subtitle %}
-        {{ h.subtitle|striptags('<strong><em><br><a>')|raw }}
+        {{ h.subtitle|raw }}
       {% else %}
         {% trans %}Empleo · Emprendimiento · AgroConecta · ComercioConecta · ServiciosConecta · JarabaLex · Formación — 10 verticales especializados, 11 agentes IA, firma digital y copiloto integrado.{% endtrans %}
       {% endif %}
@@ -123,3 +223,4 @@
   </div>
 
 </section>
+{% endif %}

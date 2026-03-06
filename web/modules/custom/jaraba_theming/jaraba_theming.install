@@ -46,6 +46,43 @@ function jaraba_theming_update_10001(): string {
 }
 
 /**
+ * THEMING-UNIFY-001: Add header_cta_url field to TenantThemeConfig entity.
+ *
+ * GAP-2 fix: The form at /my-settings/design had header_cta_url but the entity
+ * lacked the field, causing the URL to be silently discarded on save.
+ */
+function jaraba_theming_update_10002(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+    $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('header_cta_url')
+      ->setTargetEntityTypeId('tenant_theme_config')
+      ->setLabel(t('URL CTA'))
+      ->setDescription(t('URL del boton CTA en el header (ruta interna o URL absoluta).'))
+      ->setSetting('max_length', 255)
+      ->setDefaultValue('/registro')
+      ->setDisplayConfigurable('form', TRUE);
+
+    $update_manager->installFieldStorageDefinition(
+      'header_cta_url',
+      'tenant_theme_config',
+      'jaraba_theming',
+      $field
+    );
+
+    return 'Installed header_cta_url field on tenant_theme_config.';
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_theming')->error(
+      'Error installing header_cta_url field: @error',
+      ['@error' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_theming_requirements(string $phase): array {

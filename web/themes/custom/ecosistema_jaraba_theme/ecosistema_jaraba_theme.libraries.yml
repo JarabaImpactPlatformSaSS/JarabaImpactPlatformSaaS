@@ -512,6 +512,14 @@ route-tenant-dashboard:
     - core/drupal
     - core/once
 
+route-coordinador-hub:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/coordinador-hub.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 # Legacy alias: AiComplianceDashboardController referenced this name
 bundle-ai-compliance:
   version: 1.0.0

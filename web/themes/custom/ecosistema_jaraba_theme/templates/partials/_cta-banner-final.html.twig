@@ -1,0 +1,34 @@
+{#
+/**
+ * @file _cta-banner-final.html.twig
+ *
+ * Banner de conversion final antes del footer.
+ * Usa los estilos .ped-cta-saas de _ped-metasite.scss.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %}
+ * - CSS: BEM .ped-cta-saas__*, var(--ej-*)
+ * - A11y: aria-labelledby
+ * - Tracking: data-track-cta, data-track-position
+ * - ROUTE-LANGPREFIX-001: path() para URLs internas
+ */
+#}
+
+<section class="ped-cta-saas" aria-labelledby="cta-final-title">
+  <div class="ped-cta-saas__container">
+    <h2 id="cta-final-title">
+      {% trans %}Empieza hoy. Sin compromiso.{% endtrans %}
+    </h2>
+    <p>
+      {% trans %}Registro gratuito, sin tarjeta de credito. Acceso inmediato a tu vertical con copiloto IA incluido.{% endtrans %}
+    </p>
+    <div class="ped-cta-saas__actions">
+      <a href="{{ ped_urls.register|default(path('user.register')) }}"
+         class="btn-gold"
+         data-track-cta="final_cta_register"
+         data-track-position="homepage_final_cta">
+        {% trans %}Crear cuenta gratuita{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>

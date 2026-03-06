@@ -1,0 +1,82 @@
+{#
+/**
+ * @file _vertical-highlight.html.twig
+ *
+ * Seccion destacada de un vertical especifico.
+ * Reutilizable: se invoca con datos diferentes para cada vertical.
+ *
+ * VARIABLES:
+ * - highlight_id: string -- Anchor ID (ej: 'vertical-legal')
+ * - highlight_eyebrow: string -- Texto superior pequeno
+ * - highlight_title: string -- Titulo principal
+ * - highlight_subtitle: string -- Descripcion
+ * - highlight_features: array -- [{icon_cat, icon_name, title, description}]
+ * - highlight_cta_text: string -- Texto del boton
+ * - highlight_cta_url: string -- URL del boton
+ * - highlight_variant: string -- 'dark'|'light' (estilo visual)
+ * - highlight_comparison: array|null -- [{name, price, description, is_jaraba}]
+ *
+ * DIRECTRICES:
+ * - i18n: Textos traducidos ANTES de pasar al parcial
+ * - ICON-CONVENTION-001: jaraba_icon() en features
+ * - CSS: BEM .ped-vertical-highlight__*
+ */
+#}
+
+<section class="ped-vertical-highlight ped-vertical-highlight--{{ highlight_variant|default('light') }}"
+         id="{{ highlight_id }}"
+         aria-labelledby="{{ highlight_id }}-title">
+  <div class="ped-vertical-highlight__container">
+
+    {% if highlight_eyebrow is defined and highlight_eyebrow %}
+      <span class="ped-vertical-highlight__eyebrow">{{ highlight_eyebrow }}</span>
+    {% endif %}
+
+    <h2 id="{{ highlight_id }}-title" class="ped-vertical-highlight__title">
+      {{ highlight_title }}
+    </h2>
+
+    {% if highlight_subtitle is defined and highlight_subtitle %}
+      <p class="ped-vertical-highlight__subtitle">{{ highlight_subtitle }}</p>
+    {% endif %}
+
+    <div class="ped-vertical-highlight__grid">
+      {% for feature in highlight_features|default([]) %}
+        <div class="ped-vertical-highlight__feature">
+          <div class="ped-vertical-highlight__feature-icon">
+            {{ jaraba_icon(feature.icon_cat, feature.icon_name, {
+              variant: 'duotone',
+              color: feature.icon_color|default('azul-corporativo'),
+              size: '28px'
+            }) }}
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Comparativa de precios (opcional, para JarabaLex) #}
+    {% if highlight_comparison is defined and highlight_comparison %}
+      <div class="ped-vertical-highlight__comparison">
+        {% for item in highlight_comparison %}
+          <div class="ped-vertical-highlight__comparison-item{% if item.is_jaraba|default(false) %} ped-vertical-highlight__comparison-item--featured{% endif %}">
+            <span class="ped-vertical-highlight__comparison-name">{{ item.name }}</span>
+            <span class="ped-vertical-highlight__comparison-price">{{ item.price }}</span>
+            <span class="ped-vertical-highlight__comparison-desc">{{ item.description }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="ped-vertical-highlight__cta">
+      <a href="{{ highlight_cta_url }}"
+         class="btn-gold"
+         data-track-cta="vertical_highlight_{{ highlight_id }}"
+         data-track-position="homepage_vertical_highlight">
+        {{ highlight_cta_text }}
+      </a>
+    </div>
+
+  </div>
+</section>
