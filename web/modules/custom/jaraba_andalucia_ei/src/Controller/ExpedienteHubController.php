@@ -63,7 +63,7 @@ class ExpedienteHubController extends ControllerBase {
       '#participante' => [
         'id' => $participanteId,
         'nombre' => $participante->label(),
-        'fase' => $participante->get('fase_actual')->value ?? 'atencion',
+        'fase' => $participante->get('fase_actual')->value ?? 'acogida',
       ],
       '#completeness' => $completeness,
       '#documents_by_category' => $documentsByCategory,

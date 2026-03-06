@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Template for InsercionLaboral entity view mode.
+ *
+ * Variables:
+ * - insercion_laboral: The InsercionLaboral entity.
+ * - tipo_insercion: Raw tipo_insercion value.
+ * - tipo_label: Human-readable label for the insertion type.
+ * - fecha_alta: Date of alta laboral.
+ * - verificado: Whether the insertion is verified.
+ * - elements: Render elements from the entity.
+ */
+#}
+<article{{ attributes.addClass('insercion-laboral') }}>
+  {% if content %}
+    {{ content }}
+  {% endif %}
+</article>

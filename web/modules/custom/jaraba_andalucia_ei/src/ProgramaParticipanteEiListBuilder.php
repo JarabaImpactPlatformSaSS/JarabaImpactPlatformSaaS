@@ -38,14 +38,18 @@ class ProgramaParticipanteEiListBuilder extends EntityListBuilder
         /** @var \Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface $entity */
 
         $colectivoLabels = [
-            'jovenes' => $this->t('Jóvenes'),
-            'mayores_45' => $this->t('+45 años'),
             'larga_duracion' => $this->t('Larga duración'),
+            'mayores_45' => $this->t('+45 años'),
+            'migrantes' => $this->t('Migrantes'),
+            'perceptores_prestaciones' => $this->t('Perceptores'),
         ];
 
         $faseLabels = [
+            'acogida' => $this->t('Acogida'),
+            'diagnostico' => $this->t('Diagnóstico'),
             'atencion' => $this->t('Atención'),
             'insercion' => $this->t('Inserción'),
+            'seguimiento' => $this->t('Seguimiento'),
             'baja' => $this->t('Baja'),
         ];
 

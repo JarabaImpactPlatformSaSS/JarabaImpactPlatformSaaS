@@ -66,3 +66,96 @@ entity.solicitud_ei.settings_tab:
   route_name: entity.solicitud_ei.settings
   base_route: entity.solicitud_ei.settings
 
+# === ACTUACIONES STO ===
+
+entity.actuacion_sto.collection:
+  title: 'Actuaciones STO'
+  route_name: entity.actuacion_sto.collection
+  base_route: system.admin_content
+  weight: 27
+
+entity.actuacion_sto.canonical:
+  title: 'Ver'
+  route_name: entity.actuacion_sto.canonical
+  base_route: entity.actuacion_sto.canonical
+  weight: 0
+
+entity.actuacion_sto.edit_form:
+  title: 'Editar'
+  route_name: entity.actuacion_sto.edit_form
+  base_route: entity.actuacion_sto.canonical
+  weight: 10
+
+entity.actuacion_sto.delete_form:
+  title: 'Eliminar'
+  route_name: entity.actuacion_sto.delete_form
+  base_route: entity.actuacion_sto.canonical
+  weight: 20
+
+entity.actuacion_sto.settings_tab:
+  title: 'Configuración'
+  route_name: entity.actuacion_sto.settings
+  base_route: entity.actuacion_sto.settings
+
+# === INDICADORES FSE+ ===
+
+entity.indicador_fse_plus.collection:
+  title: 'Indicadores FSE+'
+  route_name: entity.indicador_fse_plus.collection
+  base_route: system.admin_content
+  weight: 28
+
+entity.indicador_fse_plus.canonical:
+  title: 'Ver'
+  route_name: entity.indicador_fse_plus.canonical
+  base_route: entity.indicador_fse_plus.canonical
+  weight: 0
+
+entity.indicador_fse_plus.edit_form:
+  title: 'Editar'
+  route_name: entity.indicador_fse_plus.edit_form
+  base_route: entity.indicador_fse_plus.canonical
+  weight: 10
+
+entity.indicador_fse_plus.delete_form:
+  title: 'Eliminar'
+  route_name: entity.indicador_fse_plus.delete_form
+  base_route: entity.indicador_fse_plus.canonical
+  weight: 20
+
+entity.indicador_fse_plus.settings_tab:
+  title: 'Configuración'
+  route_name: entity.indicador_fse_plus.settings
+  base_route: entity.indicador_fse_plus.settings
+
+# === INSERCIONES LABORALES ===
+
+entity.insercion_laboral.collection:
+  title: 'Inserciones Laborales'
+  route_name: entity.insercion_laboral.collection
+  base_route: system.admin_content
+  weight: 29
+
+entity.insercion_laboral.canonical:
+  title: 'Ver'
+  route_name: entity.insercion_laboral.canonical
+  base_route: entity.insercion_laboral.canonical
+  weight: 0
+
+entity.insercion_laboral.edit_form:
+  title: 'Editar'
+  route_name: entity.insercion_laboral.edit_form
+  base_route: entity.insercion_laboral.canonical
+  weight: 10
+
+entity.insercion_laboral.delete_form:
+  title: 'Eliminar'
+  route_name: entity.insercion_laboral.delete_form
+  base_route: entity.insercion_laboral.canonical
+  weight: 20
+
+entity.insercion_laboral.settings_tab:
+  title: 'Configuración'
+  route_name: entity.insercion_laboral.settings
+  base_route: entity.insercion_laboral.settings
+

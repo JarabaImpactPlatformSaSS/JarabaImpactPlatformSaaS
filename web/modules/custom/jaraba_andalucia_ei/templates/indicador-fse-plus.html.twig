@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ * Template for IndicadorFsePlus entity view mode.
+ *
+ * Variables:
+ * - indicador_fse_plus: The IndicadorFsePlus entity.
+ * - momento_label: Human-readable label for momento_recogida.
+ * - is_momento_resultado: Whether this is a result-phase indicator.
+ * - elements: Render elements from the entity.
+ */
+#}
+<article{{ attributes.addClass('indicador-fse-plus') }}>
+  {% if content %}
+    {{ content }}
+  {% endif %}
+</article>

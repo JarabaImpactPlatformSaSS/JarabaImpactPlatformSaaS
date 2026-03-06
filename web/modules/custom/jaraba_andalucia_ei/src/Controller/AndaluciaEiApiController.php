@@ -381,7 +381,7 @@ class AndaluciaEiApiController extends ControllerBase
         $solicitudStorage = $this->entityTypeManager->getStorage('solicitud_ei');
 
         // Participantes por fase.
-        $fases = ['orientacion', 'formacion', 'mentoria', 'insercion'];
+        $fases = ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'];
         $porFase = [];
         foreach ($fases as $fase) {
             $porFase[$fase] = (int) $participanteStorage->getQuery()

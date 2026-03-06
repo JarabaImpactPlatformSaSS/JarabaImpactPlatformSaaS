@@ -116,3 +116,60 @@ services:
       - '@entity_type.manager'
     tags:
       - { name: access_check, applies_to: _participante_access }
+
+  # Hub Coordinador: logica de negocio del hub operativo
+  jaraba_andalucia_ei.coordinador_hub:
+    class: Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.fase_transition_manager'
+
+  # DACI: Documento de Aceptacion de Compromisos e Informacion
+  jaraba_andalucia_ei.daci:
+    class: Drupal\jaraba_andalucia_ei\Service\DaciService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Recibo de Servicio universal para todas las actuaciones
+  jaraba_andalucia_ei.recibo_servicio:
+    class: Drupal\jaraba_andalucia_ei\Service\ReciboServicioService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Actuaciones STO: logica de negocio de actuaciones del itinerario
+  jaraba_andalucia_ei.actuacion_sto:
+    class: Drupal\jaraba_andalucia_ei\Service\ActuacionStoService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Alertas normativas: deteccion de riesgos de incumplimiento
+  jaraba_andalucia_ei.alertas_normativas:
+    class: Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Calendario y temporalizacion del programa
+  jaraba_andalucia_ei.calendario_programa:
+    class: Drupal\jaraba_andalucia_ei\Service\CalendarioProgramaService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # UserProfile Section: Andalucia +ei — detecta roles del programa
+  jaraba_andalucia_ei.user_profile_section.andalucia_ei:
+    class: Drupal\jaraba_andalucia_ei\UserProfile\AndaluciaEiUserProfileSection
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }

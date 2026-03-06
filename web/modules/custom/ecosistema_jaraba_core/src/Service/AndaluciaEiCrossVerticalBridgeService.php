@@ -215,7 +215,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       }
 
       $participant = reset($participants);
-      $fase = $participant->get('fase_actual')->value ?? 'atencion';
+      $fase = $participant->get('fase_actual')->value ?? 'acogida';
 
       if ($fase !== 'insercion') {
         return FALSE;
@@ -231,12 +231,12 @@ class AndaluciaEiCrossVerticalBridgeService {
         return FALSE;
       }
 
-      // Check entrepreneur interest via colectivo or perfil field.
-      $colectivo = $participant->get('colectivo')->value ?? '';
-      return str_contains(strtolower($colectivo), 'emprendedor')
-        || str_contains(strtolower($colectivo), 'autoempleo');
+      // Check entrepreneur interest via tipo_insercion.
+      $tipoInsercion = $participant->get('tipo_insercion')->value ?? '';
+      return $tipoInsercion === 'cuenta_propia'
+        || $tipoInsercion === 'cooperativa';
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return FALSE;
     }
   }
@@ -255,7 +255,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       }
 
       $participant = reset($participants);
-      $fase = $participant->get('fase_actual')->value ?? 'atencion';
+      $fase = $participant->get('fase_actual')->value ?? 'acogida';
 
       if ($fase !== 'atencion') {
         return FALSE;
@@ -269,7 +269,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       $elapsed = \Drupal::time()->getRequestTime() - $created;
       return $elapsed > (90 * 86400);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return FALSE;
     }
   }
@@ -288,11 +288,10 @@ class AndaluciaEiCrossVerticalBridgeService {
       }
 
       $participant = reset($participants);
-      $colectivo = strtolower($participant->get('colectivo')->value ?? '');
-      return str_contains($colectivo, 'digital')
-        || str_contains($colectivo, 'tecnol');
+      $carril = $participant->get('carril')->value ?? '';
+      return $carril === 'impulso_digital';
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return FALSE;
     }
   }
@@ -311,7 +310,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       }
 
       $participant = reset($participants);
-      $fase = $participant->get('fase_actual')->value ?? 'atencion';
+      $fase = $participant->get('fase_actual')->value ?? 'acogida';
 
       if ($fase !== 'insercion') {
         return FALSE;
@@ -325,7 +324,7 @@ class AndaluciaEiCrossVerticalBridgeService {
       $thirtyDaysAgo = \Drupal::time()->getRequestTime() - (30 * 86400);
       return $changed > $thirtyDaysAgo;
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return FALSE;
     }
   }

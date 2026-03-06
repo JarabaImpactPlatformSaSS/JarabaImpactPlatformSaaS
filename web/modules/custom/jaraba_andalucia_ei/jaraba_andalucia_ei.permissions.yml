@@ -59,3 +59,42 @@ delete expediente documento:
   title: 'Eliminar documentos de expediente'
   description: 'Permite eliminar documentos del expediente.'
   restrict access: true
+
+# === ACTUACIONES STO ===
+view andalucia ei actuaciones:
+  title: 'Ver actuaciones STO'
+  description: 'Permite ver la lista de actuaciones del itinerario PIIL.'
+
+create andalucia ei actuaciones:
+  title: 'Crear actuaciones STO'
+  description: 'Permite registrar nuevas actuaciones del itinerario.'
+
+edit own andalucia ei actuaciones:
+  title: 'Editar actuaciones STO propias'
+  description: 'Permite modificar actuaciones registradas por el usuario.'
+
+# === INDICADORES FSE+ ===
+view indicador fse plus:
+  title: 'Ver indicadores FSE+'
+  description: 'Permite ver la lista de indicadores del Fondo Social Europeo Plus.'
+
+create indicador fse plus:
+  title: 'Crear indicadores FSE+'
+  description: 'Permite registrar nuevos indicadores FSE+ para participantes.'
+
+edit indicador fse plus:
+  title: 'Editar indicadores FSE+'
+  description: 'Permite modificar indicadores FSE+ existentes.'
+
+# === INSERCIONES LABORALES ===
+view insercion laboral:
+  title: 'Ver inserciones laborales'
+  description: 'Permite ver la lista de inserciones laborales de participantes.'
+
+create insercion laboral:
+  title: 'Crear inserciones laborales'
+  description: 'Permite registrar nuevas inserciones laborales.'
+
+edit insercion laboral:
+  title: 'Editar inserciones laborales'
+  description: 'Permite modificar inserciones laborales existentes.'

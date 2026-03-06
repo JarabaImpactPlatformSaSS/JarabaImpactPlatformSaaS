@@ -39,7 +39,7 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
      * Obtiene el colectivo del participante.
      *
      * @return string
-     *   Colectivo: jovenes, mayores_45, larga_duracion.
+     *   Colectivo: larga_duracion, mayores_45, migrantes, perceptores_prestaciones.
      */
     public function getColectivo(): string;
 
@@ -47,7 +47,7 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
      * Obtiene la fase actual del participante.
      *
      * @return string
-     *   Fase PIIL: atencion, insercion, baja.
+     *   Fase PIIL: acogida, diagnostico, atencion, insercion, seguimiento, baja.
      */
     public function getFaseActual(): string;
 
@@ -102,5 +102,37 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
      *   TRUE si ha recibido el incentivo de €528.
      */
     public function hasReceivedIncentivo(): bool;
+
+    /**
+     * Indica si el DACI ha sido firmado.
+     *
+     * @return bool
+     *   TRUE si el participante ha firmado el DACI.
+     */
+    public function isDaciFirmado(): bool;
+
+    /**
+     * Indica si los indicadores FSE+ de entrada están completados.
+     *
+     * @return bool
+     *   TRUE si la recogida de datos FSE+ de entrada está completa.
+     */
+    public function isFseEntradaCompletado(): bool;
+
+    /**
+     * Obtiene la semana actual del participante en el programa.
+     *
+     * @return int
+     *   Número de semana (0 si no ha iniciado).
+     */
+    public function getSemanaActual(): int;
+
+    /**
+     * Obtiene el motivo de baja del participante.
+     *
+     * @return string
+     *   Motivo de baja o cadena vacía si no aplica.
+     */
+    public function getMotivoBaja(): string;
 
 }

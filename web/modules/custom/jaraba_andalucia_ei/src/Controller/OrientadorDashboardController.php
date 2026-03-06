@@ -215,7 +215,7 @@ class OrientadorDashboardController extends ControllerBase {
         $participants[] = [
           'id' => (int) $p->id(),
           'nombre' => $p->label(),
-          'fase' => $p->get('fase_actual')->value ?? 'atencion',
+          'fase' => $p->get('fase_actual')->value ?? 'acogida',
           'carril' => $p->get('carril')->value ?? '',
         ];
       }

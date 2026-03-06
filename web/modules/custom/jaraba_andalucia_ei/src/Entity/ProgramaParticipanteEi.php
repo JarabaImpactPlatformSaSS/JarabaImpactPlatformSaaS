@@ -94,7 +94,7 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
      */
     public function getFaseActual(): string
     {
-        return $this->get('fase_actual')->value ?? 'atencion';
+        return $this->get('fase_actual')->value ?? 'acogida';
     }
 
     /**
@@ -155,6 +155,38 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
     /**
      * {@inheritdoc}
      */
+    public function isDaciFirmado(): bool
+    {
+        return (bool) ($this->get('daci_firmado')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isFseEntradaCompletado(): bool
+    {
+        return (bool) ($this->get('fse_entrada_completado')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSemanaActual(): int
+    {
+        return (int) ($this->get('semana_actual')->value ?? 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMotivoBaja(): string
+    {
+        return $this->get('motivo_baja')->value ?? '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
     {
         $fields = parent::baseFieldDefinitions($entity_type);
@@ -202,12 +234,13 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
 
         $fields['colectivo'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Colectivo'))
-            ->setDescription(t('Colectivo destino del participante.'))
+            ->setDescription(t('Colectivo vulnerable destino PIIL CV 2025.'))
             ->setRequired(TRUE)
             ->setSetting('allowed_values', [
-                'jovenes' => t('Jóvenes 18-29 Garantía Juvenil'),
+                'larga_duracion' => t('Desempleados larga duración (>12 meses)'),
                 'mayores_45' => t('Mayores de 45 años'),
-                'larga_duracion' => t('Desempleados larga duración'),
+                'migrantes' => t('Personas migrantes'),
+                'perceptores_prestaciones' => t('Perceptores de prestaciones/subsidios'),
             ])
             ->setDisplayOptions('form', [
                 'type' => 'options_select',
@@ -249,14 +282,17 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
 
         $fields['fase_actual'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Fase PIIL'))
-            ->setDescription(t('Fase actual del participante en el programa.'))
+            ->setDescription(t('Fase actual del participante en el itinerario PIIL CV 2025.'))
             ->setRequired(TRUE)
             ->setSetting('allowed_values', [
+                'acogida' => t('Acogida'),
+                'diagnostico' => t('Diagnóstico'),
                 'atencion' => t('Atención'),
                 'insercion' => t('Inserción'),
+                'seguimiento' => t('Seguimiento'),
                 'baja' => t('Baja'),
             ])
-            ->setDefaultValue('atencion')
+            ->setDefaultValue('acogida')
             ->setDisplayOptions('form', [
                 'type' => 'options_select',
                 'weight' => -5,
@@ -376,6 +412,90 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
                 'error' => t('Error'),
             ])
             ->setDefaultValue('pending')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === DACI Y FSE+ ===
+
+        $fields['daci_firmado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('DACI Firmado'))
+            ->setDescription(t('Indica si se ha firmado el Documento de Aceptación de Compromisos e Información.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 12,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['daci_fecha_firma'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Firma DACI'))
+            ->setDescription(t('Fecha en que se firmó el DACI.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['fse_entrada_completado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('FSE+ Entrada Completado'))
+            ->setDescription(t('Indicadores FSE+ en el momento de entrada recogidos.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 14,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['fse_salida_completado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('FSE+ Salida Completado'))
+            ->setDescription(t('Indicadores FSE+ en el momento de salida recogidos.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 15,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === PROGRAMA Y TEMPORALIZACIÓN ===
+
+        $fields['fecha_inicio_programa'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Inicio Programa'))
+            ->setDescription(t('Fecha de inicio del itinerario personalizado.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['fecha_fin_programa'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Fin Programa'))
+            ->setDescription(t('Fecha de finalización o baja del itinerario.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['semana_actual'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Semana Actual'))
+            ->setDescription(t('Semana del programa en la que se encuentra el participante.'))
+            ->setDefaultValue(0)
+            ->setSetting('unsigned', TRUE)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['motivo_baja'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Motivo de Baja'))
+            ->setDescription(t('Motivo de baja del programa, si aplica.'))
+            ->setSetting('allowed_values', [
+                'abandono_voluntario' => t('Abandono voluntario'),
+                'insercion_lograda' => t('Inserción laboral lograda'),
+                'incumplimiento' => t('Incumplimiento de compromisos'),
+                'fin_programa' => t('Finalización del periodo del programa'),
+                'exclusion_normativa' => t('Exclusión por causa normativa'),
+                'otro' => t('Otro motivo'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 20,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 

@@ -6,7 +6,10 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
+use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -26,6 +29,8 @@ class CoordinadorDashboardController extends ControllerBase {
     EntityTypeManagerInterface $entity_type_manager,
     protected ?TenantContextService $tenantContext,
     protected LoggerInterface $logger,
+    protected ?CoordinadorHubService $hubService = NULL,
+    protected ?AlertasNormativasService $alertasService = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -38,6 +43,9 @@ class CoordinadorDashboardController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('ecosistema_jaraba_core.tenant_context', ContainerInterface::NULL_ON_INVALID_REFERENCE),
       $container->get('logger.channel.jaraba_andalucia_ei'),
+      $container->get('jaraba_andalucia_ei.coordinador_hub'),
+      $container->has('jaraba_andalucia_ei.alertas_normativas')
+        ? $container->get('jaraba_andalucia_ei.alertas_normativas') : NULL,
     );
   }
 
@@ -54,23 +62,89 @@ class CoordinadorDashboardController extends ControllerBase {
     $mentorUtilization = $this->getMentorUtilization($tenantId);
     $recentActivity = $this->getRecentActivity($tenantId);
 
+    // Hub KPIs via CoordinadorHubService.
+    $hubKpis = $this->hubService ? $this->hubService->getHubKpis($tenantId) : $stats;
+
+    // Alertas normativas PIIL.
+    $alertas = [];
+    $alertasResumen = [];
+    if ($this->alertasService) {
+      try {
+        $alertas = $this->alertasService->getAlertas($tenantId);
+        $alertasResumen = $this->alertasService->getResumenAlertas($tenantId);
+      }
+      catch (\Throwable) {
+      }
+    }
+
+    // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.
+    $apiUrls = $this->resolveHubApiUrls();
+
     return [
       '#theme' => 'coordinador_dashboard',
       '#stats' => $stats,
       '#phase_distribution' => $phaseDistribution,
       '#mentor_utilization' => $mentorUtilization,
       '#recent_activity' => $recentActivity,
+      '#hub_kpis' => $hubKpis,
+      '#alertas' => $alertas,
+      '#alertas_resumen' => $alertasResumen,
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/dashboard',
+          'jaraba_andalucia_ei/coordinador-hub',
+          'ecosistema_jaraba_theme/route-coordinador-hub',
+        ],
+        'drupalSettings' => [
+          'jarabaAndaluciaEi' => [
+            'hub' => [
+              'kpis' => $hubKpis,
+              'apiUrls' => $apiUrls,
+              'phases' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'],
+              'estados' => ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'],
+            ],
+          ],
         ],
       ],
       '#cache' => [
         'contexts' => ['user', 'url.site'],
-        'tags' => ['programa_participante_ei_list', 'mentoring_session_list'],
+        'tags' => ['programa_participante_ei_list', 'mentoring_session_list', 'solicitud_ei_list'],
         'max-age' => 600,
       ],
     ];
+  }
+
+  /**
+   * Resuelve URLs de la API del hub (ROUTE-LANGPREFIX-001).
+   *
+   * @return array<string, string|null>
+   */
+  protected function resolveHubApiUrls(): array {
+    $routes = [
+      'solicitudes' => 'jaraba_andalucia_ei.api.hub.solicitudes',
+      'solicitudApprove' => 'jaraba_andalucia_ei.api.hub.solicitud.approve',
+      'solicitudReject' => 'jaraba_andalucia_ei.api.hub.solicitud.reject',
+      'participants' => 'jaraba_andalucia_ei.api.hub.participants',
+      'changePhase' => 'jaraba_andalucia_ei.api.hub.participant.change_phase',
+      'sessions' => 'jaraba_andalucia_ei.api.hub.sessions',
+      'kpis' => 'jaraba_andalucia_ei.api.hub.kpis',
+      'stoExport' => 'jaraba_andalucia_ei.sto_export',
+    ];
+
+    $urls = [];
+    foreach ($routes as $key => $route) {
+      try {
+        // Para rutas con {id} placeholder, resolvemos base sin parametro.
+        $urls[$key] = Url::fromRoute($route, in_array($key, ['solicitudApprove', 'solicitudReject', 'changePhase'], TRUE)
+          ? ['id' => '__ID__']
+          : []
+        )->toString();
+      }
+      catch (\Throwable) {
+        $urls[$key] = NULL;
+      }
+    }
+    return $urls;
   }
 
   /**
@@ -178,7 +252,7 @@ class CoordinadorDashboardController extends ControllerBase {
   protected function getPhaseDistribution(?int $tenantId): array {
     try {
       $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
-      $phases = ['atencion' => 0, 'insercion' => 0, 'baja' => 0];
+      $phases = ['acogida' => 0, 'diagnostico' => 0, 'atencion' => 0, 'insercion' => 0, 'seguimiento' => 0, 'baja' => 0];
 
       foreach (array_keys($phases) as $phase) {
         $query = $storage->getQuery()
@@ -192,7 +266,7 @@ class CoordinadorDashboardController extends ControllerBase {
       return $phases;
     }
     catch (\Throwable $e) {
-      return ['atencion' => 0, 'insercion' => 0, 'baja' => 0];
+      return ['acogida' => 0, 'diagnostico' => 0, 'atencion' => 0, 'insercion' => 0, 'seguimiento' => 0, 'baja' => 0];
     }
   }
 

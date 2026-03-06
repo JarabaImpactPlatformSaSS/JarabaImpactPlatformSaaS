@@ -11,23 +11,43 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Servicio para gestionar transiciones de fase PIIL de participantes.
  *
- * Fases según Doc 45:
- * - Atención: Fase inicial, recibiendo orientación y formación.
- * - Inserción: Ha encontrado empleo, seguimiento activo.
- * - Baja: Abandono o finalización del programa.
+ * 6 fases del itinerario PIIL CV 2025 según normativa:
+ * acogida → diagnóstico → atención → inserción → seguimiento → baja
+ *
+ * Cada transición tiene prerrequisitos normativos verificables.
  */
 class FaseTransitionManager
 {
 
     /**
-     * Constructor del servicio.
+     * Las 6 fases canónicas del itinerario PIIL CV 2025.
+     */
+    public const FASES = [
+        'acogida',
+        'diagnostico',
+        'atencion',
+        'insercion',
+        'seguimiento',
+        'baja',
+    ];
+
+    /**
+     * Mapa de transiciones válidas entre fases.
      *
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-     *   Entity type manager.
-     * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
-     *   Event dispatcher.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   Logger del módulo.
+     * Cada fase lista las fases destino permitidas.
+     * 'baja' es absorbente desde cualquier fase activa.
+     */
+    private const TRANSICIONES_VALIDAS = [
+        'acogida' => ['diagnostico', 'baja'],
+        'diagnostico' => ['atencion', 'baja'],
+        'atencion' => ['insercion', 'baja'],
+        'insercion' => ['seguimiento', 'baja'],
+        'seguimiento' => ['baja'],
+        'baja' => [],
+    ];
+
+    /**
+     * Constructor del servicio.
      */
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
@@ -42,12 +62,11 @@ class FaseTransitionManager
      * @param int $participante_id
      *   ID del participante.
      * @param string $nueva_fase
-     *   Nueva fase: 'atencion', 'insercion', 'baja'.
+     *   Nueva fase destino.
      * @param array $contexto
-     *   Datos adicionales del contexto (tipo_insercion, fecha, etc.).
+     *   Datos adicionales (tipo_insercion, fecha, motivo_baja, etc.).
      *
-     * @return array
-     *   Array con 'success' (bool) y 'message' (string).
+     * @return array{success: bool, message: string}
      */
     public function transitarFase(int $participante_id, string $nueva_fase, array $contexto = []): array
     {
@@ -66,13 +85,7 @@ class FaseTransitionManager
             $fase_actual = $participante->getFaseActual();
 
             // Validar transición permitida.
-            $transiciones_validas = [
-                'atencion' => ['insercion', 'baja'],
-                'insercion' => ['baja'],
-                'baja' => [],
-            ];
-
-            if (!in_array($nueva_fase, $transiciones_validas[$fase_actual] ?? [])) {
+            if (!in_array($nueva_fase, self::TRANSICIONES_VALIDAS[$fase_actual] ?? [])) {
                 return [
                     'success' => FALSE,
                     'message' => t('Transición no permitida de @from a @to.', [
@@ -82,26 +95,14 @@ class FaseTransitionManager
                 ];
             }
 
-            // Validar requisitos para transición a Inserción.
-            if ($nueva_fase === 'insercion') {
-                if (!$participante->canTransitToInsercion()) {
-                    return [
-                        'success' => FALSE,
-                        'message' => t('No cumple requisitos mínimos: 10h orientación + 50h formación.'),
-                    ];
-                }
-
-                // Verificar datos de inserción.
-                if (empty($contexto['tipo_insercion'])) {
-                    return [
-                        'success' => FALSE,
-                        'message' => t('Debe especificar el tipo de inserción.'),
-                    ];
-                }
-
-                $participante->set('tipo_insercion', $contexto['tipo_insercion']);
-                $participante->set('fecha_insercion', $contexto['fecha_insercion'] ?? date('Y-m-d'));
+            // Verificar prerrequisitos por fase destino.
+            $checkResult = $this->verificarPrerrequisitos($participante, $nueva_fase, $contexto);
+            if ($checkResult !== NULL) {
+                return $checkResult;
             }
+
+            // Aplicar datos específicos de la transición.
+            $this->aplicarDatosTransicion($participante, $nueva_fase, $contexto);
 
             // Ejecutar transición.
             $participante->setFaseActual($nueva_fase);
@@ -115,14 +116,110 @@ class FaseTransitionManager
 
             return [
                 'success' => TRUE,
-                'message' => t('Transición completada correctamente.'),
+                'message' => t('Transición completada de @from a @to.', [
+                    '@from' => $fase_actual,
+                    '@to' => $nueva_fase,
+                ]),
             ];
-        } catch (\Exception $e) {
+        }
+        catch (\Throwable $e) {
             $this->logger->error('Error en transición de fase: @message', ['@message' => $e->getMessage()]);
             return [
                 'success' => FALSE,
                 'message' => t('Error interno: @error', ['@error' => $e->getMessage()]),
             ];
+        }
+    }
+
+    /**
+     * Verifica prerrequisitos normativos para la fase destino.
+     *
+     * @return array|null
+     *   NULL si cumple, array de error si no cumple.
+     */
+    protected function verificarPrerrequisitos(object $participante, string $nueva_fase, array $contexto): ?array
+    {
+        switch ($nueva_fase) {
+            case 'diagnostico':
+                // Prerrequisito: DACI firmado.
+                if (method_exists($participante, 'isDaciFirmado') && !$participante->isDaciFirmado()) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('El DACI debe estar firmado antes de pasar a Diagnóstico.'),
+                    ];
+                }
+                break;
+
+            case 'atencion':
+                // Prerrequisito: carril asignado (DIME completado).
+                $carril = $participante->get('carril')->value ?? '';
+                if ($carril === '') {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('Debe completar el diagnóstico DIME y asignar carril antes de pasar a Atención.'),
+                    ];
+                }
+                break;
+
+            case 'insercion':
+                // Prerrequisito: mínimo 10h orientación + 50h formación.
+                if (!$participante->canTransitToInsercion()) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('No cumple requisitos mínimos: 10h orientación + 50h formación.'),
+                    ];
+                }
+                // Verificar datos de inserción.
+                if (empty($contexto['tipo_insercion'])) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('Debe especificar el tipo de inserción.'),
+                    ];
+                }
+                break;
+
+            case 'seguimiento':
+                // Prerrequisito: datos FSE+ de salida recogidos.
+                if (method_exists($participante, 'get')) {
+                    $fseSalida = (bool) ($participante->get('fse_salida_completado')->value ?? FALSE);
+                    if (!$fseSalida) {
+                        return [
+                            'success' => FALSE,
+                            'message' => t('Los indicadores FSE+ de salida deben estar completados.'),
+                        ];
+                    }
+                }
+                break;
+
+            case 'baja':
+                // Prerrequisito: motivo de baja especificado.
+                if (empty($contexto['motivo_baja'])) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('Debe especificar el motivo de baja.'),
+                    ];
+                }
+                break;
+        }
+
+        return NULL;
+    }
+
+    /**
+     * Aplica datos específicos de la transición en la entidad.
+     */
+    protected function aplicarDatosTransicion(object $participante, string $nueva_fase, array $contexto): void
+    {
+        switch ($nueva_fase) {
+            case 'insercion':
+                $participante->set('tipo_insercion', $contexto['tipo_insercion']);
+                $participante->set('fecha_insercion', $contexto['fecha_insercion'] ?? date('Y-m-d'));
+                break;
+
+            case 'baja':
+                $participante->set('motivo_baja', $contexto['motivo_baja'] ?? 'otro');
+                $participante->set('fecha_fin_programa', date('Y-m-d'));
+                break;
         }
     }
 
@@ -150,9 +247,24 @@ class FaseTransitionManager
             $horasFormacion = (float) ($participant->get('horas_formacion')->value ?? 0);
 
             return $horasOrientacion >= 10 && $horasFormacion >= 50;
-        } catch (\Throwable $e) {
+        }
+        catch (\Throwable $e) {
             return FALSE;
         }
+    }
+
+    /**
+     * Obtiene las fases destino válidas desde una fase dada.
+     *
+     * @param string $fase_actual
+     *   Fase de origen.
+     *
+     * @return array
+     *   Fases destino permitidas.
+     */
+    public function getTransicionesValidas(string $fase_actual): array
+    {
+        return self::TRANSICIONES_VALIDAS[$fase_actual] ?? [];
     }
 
     /**

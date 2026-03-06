@@ -101,7 +101,7 @@ class ProgramaMentoresController extends ControllerBase {
       '#participante' => $participante ? [
         'id' => $participante->id(),
         'nombre' => $participante->label(),
-        'fase' => $participante->get('fase_actual')->value ?? 'atencion',
+        'fase' => $participante->get('fase_actual')->value ?? 'acogida',
         'carril' => $participante->get('carril')->value ?? '',
       ] : NULL,
       '#solicitar_url' => $solicitarUrl,

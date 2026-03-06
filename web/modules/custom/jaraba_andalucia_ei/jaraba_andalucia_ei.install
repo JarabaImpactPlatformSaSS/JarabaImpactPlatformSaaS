@@ -183,3 +183,230 @@ function jaraba_andalucia_ei_update_10005(): string {
     return 'Error updating categoria: ' . $e->getMessage();
   }
 }
+
+/**
+ * Expand programa_participante_ei: 6 PIIL phases, corrected colectivos, 8 new fields.
+ *
+ * Phase 1 of PIIL CV 2025 compliance:
+ * - fase_actual: 3 → 6 phases (acogida, diagnostico, atencion, insercion, seguimiento, baja)
+ * - colectivo: corrected allowed_values for CV 2025 edition
+ * - New fields: daci_firmado, daci_fecha_firma, fse_entrada_completado,
+ *   fse_salida_completado, fecha_inicio_programa, fecha_fin_programa,
+ *   semana_actual, motivo_baja
+ *
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each definition.
+ * UPDATE-HOOK-CATCH-001: \Throwable (not \Exception).
+ */
+function jaraba_andalucia_ei_update_10006(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeId = 'programa_participante_ei';
+  $messages = [];
+
+  try {
+    // 1. Update fase_actual field storage (new allowed_values).
+    $existingFase = $updateManager->getFieldStorageDefinition('fase_actual', $entityTypeId);
+    if ($existingFase) {
+      $existingFase->setSetting('allowed_values', [
+        'acogida' => t('Acogida'),
+        'diagnostico' => t('Diagnóstico'),
+        'atencion' => t('Atención'),
+        'insercion' => t('Inserción'),
+        'seguimiento' => t('Seguimiento'),
+        'baja' => t('Baja'),
+      ]);
+      $existingFase->setDefaultValue('acogida');
+      $updateManager->updateFieldStorageDefinition($existingFase);
+      $messages[] = 'fase_actual: expanded to 6 phases.';
+    }
+
+    // 2. Update colectivo field storage (corrected for PIIL CV 2025).
+    $existingColectivo = $updateManager->getFieldStorageDefinition('colectivo', $entityTypeId);
+    if ($existingColectivo) {
+      $existingColectivo->setSetting('allowed_values', [
+        'larga_duracion' => t('Desempleados larga duración (>12 meses)'),
+        'mayores_45' => t('Mayores de 45 años'),
+        'migrantes' => t('Personas migrantes'),
+        'perceptores_prestaciones' => t('Perceptores de prestaciones/subsidios'),
+      ]);
+      $updateManager->updateFieldStorageDefinition($existingColectivo);
+      $messages[] = 'colectivo: corrected for PIIL CV 2025.';
+    }
+
+    // 3. Install new fields.
+    $newFields = [
+      'daci_firmado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('daci_firmado')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('DACI Firmado'))
+        ->setDescription(t('Indica si se ha firmado el DACI.'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'daci_fecha_firma' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('daci_fecha_firma')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Firma DACI'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'fse_entrada_completado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('fse_entrada_completado')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('FSE+ Entrada Completado'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'fse_salida_completado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('fse_salida_completado')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('FSE+ Salida Completado'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'fecha_inicio_programa' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('fecha_inicio_programa')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Inicio Programa'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'fecha_fin_programa' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('fecha_fin_programa')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Fin Programa'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'semana_actual' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+        ->setName('semana_actual')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Semana Actual'))
+        ->setDefaultValue(0)
+        ->setSetting('unsigned', TRUE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'motivo_baja' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+        ->setName('motivo_baja')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Motivo de Baja'))
+        ->setSetting('allowed_values', [
+          'abandono_voluntario' => t('Abandono voluntario'),
+          'insercion_lograda' => t('Inserción laboral lograda'),
+          'incumplimiento' => t('Incumplimiento de compromisos'),
+          'fin_programa' => t('Finalización del periodo del programa'),
+          'exclusion_normativa' => t('Exclusión por causa normativa'),
+          'otro' => t('Otro motivo'),
+        ])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+    ];
+
+    foreach ($newFields as $fieldName => $definition) {
+      $existing = $updateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+      if (!$existing) {
+        $updateManager->installFieldStorageDefinition($fieldName, $entityTypeId, 'jaraba_andalucia_ei', $definition);
+        $messages[] = $fieldName . ': installed.';
+      }
+      else {
+        $messages[] = $fieldName . ': already exists, skipped.';
+      }
+    }
+
+    // 4. Migrate existing participants with fase_actual='atencion' who have no prior phase
+    // to keep them in 'atencion' (they already completed acogida/diagnostico implicitly).
+    // No data migration needed — existing values remain valid as 'atencion' is still in allowed_values.
+
+    return 'PIIL CV 2025 Phase 1 complete: ' . implode(' ', $messages);
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10006: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install the actuacion_sto entity type.
+ *
+ * Phase 2 of PIIL CV 2025 compliance: ActuacionSto entity for tracking
+ * all individual actions in the PIIL itinerary.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New ContentEntity needs installEntityType().
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10007(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('actuacion_sto', FALSE);
+    if ($entityType && !$entityDefinitionUpdateManager->getEntityType('actuacion_sto')) {
+      $entityDefinitionUpdateManager->installEntityType($entityType);
+      return 'Entidad ActuacionSto instalada correctamente.';
+    }
+
+    return 'ActuacionSto ya instalada o definición no encontrada.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing actuacion_sto: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install the indicador_fse_plus entity type.
+ *
+ * Indicadores obligatorios FSE+ (Fondo Social Europeo Plus) recogidos
+ * en 3 momentos: entrada, salida, seguimiento a 6 meses.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New ContentEntity needs installEntityType().
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10008(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('indicador_fse_plus', FALSE);
+    if ($entityType && !$entityDefinitionUpdateManager->getEntityType('indicador_fse_plus')) {
+      $entityDefinitionUpdateManager->installEntityType($entityType);
+      return 'Entidad IndicadorFsePlus instalada correctamente.';
+    }
+
+    return 'IndicadorFsePlus ya instalada o definición no encontrada.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing indicador_fse_plus: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install the insercion_laboral entity type.
+ *
+ * Records complete detail of each labor insertion achieved by participants,
+ * differentiating by type: cuenta_ajena, cuenta_propia, agrario.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New ContentEntity needs installEntityType().
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10009(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('insercion_laboral', FALSE);
+    if ($entityType && !$entityDefinitionUpdateManager->getEntityType('insercion_laboral')) {
+      $entityDefinitionUpdateManager->installEntityType($entityType);
+      return 'Entidad InsercionLaboral instalada correctamente.';
+    }
+
+    return 'InsercionLaboral ya instalada o definición no encontrada.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing insercion_laboral: ' . $e->getMessage();
+  }
+}

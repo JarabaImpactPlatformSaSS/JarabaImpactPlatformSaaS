@@ -168,8 +168,20 @@ function jaraba_andalucia_ei_theme(): array {
         'phase_distribution' => [],
         'mentor_utilization' => [],
         'recent_activity' => [],
+        'hub_kpis' => [],
+        'alertas' => [],
+        'alertas_resumen' => [],
       ],
       'template' => 'coordinador-dashboard',
+    ],
+    'actuacion_sto' => [
+      'render element' => 'elements',
+    ],
+    'indicador_fse_plus' => [
+      'render element' => 'elements',
+    ],
+    'insercion_laboral' => [
+      'render element' => 'elements',
     ],
   ];
 }
@@ -641,9 +653,51 @@ function jaraba_andalucia_ei_cron(): void {
     // Procesar participantes pendientes de sincronización.
     _jaraba_andalucia_ei_process_sto_sync();
   }
-  catch (\Exception $e) {
+  catch (\Throwable $e) {
     \Drupal::logger('jaraba_andalucia_ei')->error(
       'Error en sincronización STO: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  // Actualizar semana_actual de todos los participantes activos.
+  try {
+    if (\Drupal::hasService('jaraba_andalucia_ei.calendario_programa')) {
+      $updated = \Drupal::service('jaraba_andalucia_ei.calendario_programa')
+        ->actualizarSemanasTodos();
+      if ($updated > 0) {
+        \Drupal::logger('jaraba_andalucia_ei')->info(
+          'Cron: @count participantes con semana actualizada.',
+          ['@count' => $updated]
+        );
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Error actualizando semanas: @message',
+      ['@message' => $e->getMessage()]
+    );
+  }
+
+  // Evaluar alertas normativas de cumplimiento PIIL.
+  try {
+    if (\Drupal::hasService('jaraba_andalucia_ei.alertas_normativas')) {
+      $resumen = \Drupal::service('jaraba_andalucia_ei.alertas_normativas')
+        ->getResumenAlertas();
+      $criticas = $resumen['critico'] ?? 0;
+      $altas = $resumen['alto'] ?? 0;
+      if ($criticas > 0 || $altas > 0) {
+        \Drupal::logger('jaraba_andalucia_ei')->warning(
+          'Alertas normativas: @criticas críticas, @altas altas.',
+          ['@criticas' => $criticas, '@altas' => $altas]
+        );
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->error(
+      'Error evaluando alertas normativas: @message',
       ['@message' => $e->getMessage()]
     );
   }
@@ -679,7 +733,7 @@ function _jaraba_andalucia_ei_process_sto_sync(): void {
       $participante->set('sto_sync_status', $result ? 'synced' : 'error');
       $participante->save();
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $participante->set('sto_sync_status', 'error');
       $participante->save();
       \Drupal::logger('jaraba_andalucia_ei')->error(
@@ -1227,4 +1281,171 @@ function jaraba_andalucia_ei_preprocess_solicitud_ei(array &$variables): void {
     return;
   }
   $variables['solicitud_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for actuacion_sto.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_actuacion_sto(array &$variables): void {
+  $entity = $variables['elements']['#actuacion_sto'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['actuacion_sto'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for indicador_fse_plus.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_indicador_fse_plus(array &$variables): void {
+  $entity = $variables['elements']['#indicador_fse_plus'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['indicador_fse_plus'] = $entity;
+
+  // Expose readable labels for Twig.
+  $momento = $entity->get('momento_recogida')->value ?? '';
+  $momentoLabels = \Drupal\jaraba_andalucia_ei\Entity\IndicadorFsePlus::MOMENTOS_RECOGIDA;
+  $variables['momento_label'] = $momentoLabels[$momento] ?? $momento;
+  $variables['is_momento_resultado'] = in_array($momento, ['salida', 'seguimiento_6m'], TRUE);
+
+  // LABEL-NULLSAFE-001: Participante ref may be empty.
+  $participanteRef = $entity->get('participante_id')->entity ?? NULL;
+  $variables['participante_label'] = $participanteRef !== NULL
+    ? ($participanteRef->label() ?? (string) $participanteRef->id())
+    : '';
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for actuacion_sto.
+ *
+ * Presave logic:
+ * 1. Calcula duracion_minutos desde hora_inicio/hora_fin.
+ * 2. Copia fase_participante desde ProgramaParticipanteEi.
+ * 3. Si es tipo 'formacion', establece vobo_sae_status = 'pendiente'.
+ *
+ * PRESAVE-RESILIENCE-001: Optional services con hasService() + try-catch.
+ */
+function jaraba_andalucia_ei_actuacion_sto_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // 1. Calcular duración.
+  $horaInicio = $entity->get('hora_inicio')->value ?? '';
+  $horaFin = $entity->get('hora_fin')->value ?? '';
+  if ($horaInicio !== '' && $horaFin !== '') {
+    if (\Drupal::hasService('jaraba_andalucia_ei.actuacion_sto')) {
+      try {
+        $service = \Drupal::service('jaraba_andalucia_ei.actuacion_sto');
+        $duracion = $service->calcularDuracionMinutos($horaInicio, $horaFin);
+        $entity->set('duracion_minutos', $duracion);
+      }
+      catch (\Throwable) {
+      }
+    }
+  }
+
+  // 2. Copiar fase del participante.
+  $participanteRef = $entity->get('participante_id')->entity;
+  if ($participanteRef && method_exists($participanteRef, 'getFaseActual')) {
+    try {
+      $entity->set('fase_participante', $participanteRef->getFaseActual());
+    }
+    catch (\Throwable) {
+    }
+  }
+
+  // 3. VoBo SAE para formación.
+  $tipoActuacion = $entity->get('tipo_actuacion')->value ?? '';
+  $voboStatus = $entity->get('vobo_sae_status')->value ?? 'no_requerido';
+  if ($tipoActuacion === 'formacion' && $voboStatus === 'no_requerido') {
+    $entity->set('vobo_sae_status', 'pendiente');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for actuacion_sto.
+ *
+ * Incrementa las horas del participante vinculado.
+ * PRESAVE-RESILIENCE-001.
+ */
+function jaraba_andalucia_ei_actuacion_sto_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $participanteId = (int) ($entity->get('participante_id')->target_id ?? 0);
+  $tipoActuacion = $entity->get('tipo_actuacion')->value ?? '';
+  $duracionMinutos = (int) ($entity->get('duracion_minutos')->value ?? 0);
+
+  if ($participanteId <= 0 || $duracionMinutos <= 0) {
+    return;
+  }
+
+  if (\Drupal::hasService('jaraba_andalucia_ei.actuacion_sto')) {
+    try {
+      \Drupal::service('jaraba_andalucia_ei.actuacion_sto')
+        ->incrementarHorasParticipante($participanteId, $tipoActuacion, $duracionMinutos / 60);
+    }
+    catch (\Throwable) {
+    }
+  }
+
+  // Generar recibo de servicio para la actuación (PRESAVE-RESILIENCE-001).
+  if (\Drupal::hasService('jaraba_andalucia_ei.recibo_servicio')) {
+    try {
+      \Drupal::service('jaraba_andalucia_ei.recibo_servicio')
+        ->generarRecibo((int) $entity->id());
+    }
+    catch (\Throwable) {
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_HOOK() for insercion_laboral.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_insercion_laboral(array &$variables): void {
+  $entity = $variables['elements']['#insercion_laboral'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['insercion_laboral'] = $entity;
+
+  // Extract primitives for Twig.
+  $variables['tipo_insercion'] = $entity->get('tipo_insercion')->value ?? '';
+  $variables['fecha_alta'] = $entity->get('fecha_alta')->value ?? '';
+  $variables['verificado'] = (bool) ($entity->get('verificado')->value ?? FALSE);
+
+  // Resolve label based on type.
+  $tipoLabels = [
+    'cuenta_ajena' => t('Cuenta ajena'),
+    'cuenta_propia' => t('Cuenta propia'),
+    'agrario' => t('Agrario'),
+  ];
+  $tipo = $variables['tipo_insercion'];
+  $variables['tipo_insercion_label'] = $tipoLabels[$tipo] ?? $tipo;
+
+  // Empresa name based on type.
+  if ($tipo === 'cuenta_ajena') {
+    $variables['empresa_label'] = $entity->get('empresa_nombre')->value ?? '';
+  }
+  elseif ($tipo === 'cuenta_propia') {
+    $variables['empresa_label'] = t('Autónomo');
+  }
+  elseif ($tipo === 'agrario') {
+    $variables['empresa_label'] = $entity->get('empresa_agraria')->value ?? '';
+  }
+  else {
+    $variables['empresa_label'] = '';
+  }
+
+  // Resolve participante reference.
+  $participanteRef = $entity->get('participante_id')->entity;
+  if ($participanteRef) {
+    $variables['participante_nombre'] = $participanteRef->label() ?? t('Participante #@id', ['@id' => $participanteRef->id()]);
+  }
+  else {
+    $variables['participante_nombre'] = '';
+  }
 }

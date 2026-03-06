@@ -1,0 +1,119 @@
+/**
+ * @file
+ * Estilos para las entidades PIIL: ActuacionSto, IndicadorFsePlus, InsercionLaboral.
+ *
+ * CSS-VAR-ALL-COLORS-001: Todos los colores via var(--ej-*).
+ */
+
+// =============================================================================
+// ACTUACION STO
+// =============================================================================
+
+.actuacion-sto {
+  padding: 1.5rem;
+  border-radius: var(--ej-border-radius, 8px);
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #e0e0e0);
+
+  .field--name-tipo-actuacion {
+    .field__label {
+      font-weight: 600;
+      color: var(--ej-color-text-secondary, #6b7280);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .field--name-duracion-minutos {
+    .field__item {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ej-color-corporate, #233D63);
+    }
+  }
+
+  .field--name-vobo-sae-status {
+    .field__item {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// =============================================================================
+// INDICADOR FSE+
+// =============================================================================
+
+.indicador-fse-plus {
+  padding: 1.5rem;
+  border-radius: var(--ej-border-radius, 8px);
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #e0e0e0);
+
+  .field--name-momento-recogida {
+    .field__item {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+  }
+
+  .field--type-boolean {
+    .field__item {
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        background: var(--ej-color-text-muted, #9ca3af);
+      }
+    }
+  }
+}
+
+// =============================================================================
+// INSERCION LABORAL
+// =============================================================================
+
+.insercion-laboral {
+  padding: 1.5rem;
+  border-radius: var(--ej-border-radius, 8px);
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #e0e0e0);
+
+  .field--name-tipo-insercion {
+    .field__item {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+  }
+
+  .field--name-verificado {
+    .field__item {
+      font-weight: 600;
+    }
+  }
+
+  .field--name-salario-bruto-anual {
+    .field__item {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ej-color-corporate, #233D63);
+    }
+  }
+}

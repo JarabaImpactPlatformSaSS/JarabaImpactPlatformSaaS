@@ -277,19 +277,41 @@ class ParticipantePortalController extends ControllerBase {
    */
   protected function buildTimeline(ProgramaParticipanteEiInterface $participante): array {
     $fase = $participante->getFaseActual();
+    $faseOrder = ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'];
+    $currentIdx = array_search($fase, $faseOrder, TRUE);
     $horasOrientacion = $participante->getTotalHorasOrientacion();
     $horasFormacion = (float) ($participante->get('horas_formacion')->value ?? 0);
     $tipoInsercion = $participante->get('tipo_insercion')->value;
     $fechaInsercion = $participante->get('fecha_insercion')->value;
+    $daciFirmado = method_exists($participante, 'isDaciFirmado') ? $participante->isDaciFirmado() : FALSE;
+    $carril = $participante->get('carril')->value ?? '';
 
     return [
+      'acogida' => [
+        'label' => t('Acogida'),
+        'active' => $fase === 'acogida',
+        'completed' => $currentIdx > 0,
+        'steps' => [
+          ['label' => t('Alta en STO'), 'completed' => TRUE],
+          ['label' => t('Firma del DACI'), 'completed' => $daciFirmado],
+          ['label' => t('Recogida indicadores FSE+ entrada'), 'completed' => (bool) ($participante->get('fse_entrada_completado')->value ?? FALSE)],
+        ],
+      ],
+      'diagnostico' => [
+        'label' => t('Diagnóstico'),
+        'active' => $fase === 'diagnostico',
+        'completed' => $currentIdx > 1,
+        'steps' => [
+          ['label' => t('Diagnóstico DIME completado'), 'completed' => !empty($carril)],
+          ['label' => t('Carril asignado'), 'completed' => !empty($carril)],
+          ['label' => t('Primera sesión de mentoría'), 'completed' => $participante->getHorasMentoriaIa() > 0 || $participante->getHorasMentoriaHumana() > 0],
+        ],
+      ],
       'atencion' => [
         'label' => t('Atención'),
         'active' => $fase === 'atencion',
-        'completed' => $fase === 'insercion',
+        'completed' => $currentIdx > 2,
         'steps' => [
-          ['label' => t('Inscripción'), 'completed' => TRUE],
-          ['label' => t('Diagnóstico inicial'), 'completed' => $participante->getHorasMentoriaIa() > 0],
           ['label' => t('Orientación individual (≥5h)'), 'completed' => $horasOrientacion >= 5],
           ['label' => t('Formación activa (≥25h)'), 'completed' => $horasFormacion >= 25],
           ['label' => t('Orientación completada (≥10h)'), 'completed' => $horasOrientacion >= 10],
@@ -299,11 +321,20 @@ class ParticipantePortalController extends ControllerBase {
       'insercion' => [
         'label' => t('Inserción'),
         'active' => $fase === 'insercion',
-        'completed' => !empty($fechaInsercion),
+        'completed' => $currentIdx > 3,
         'steps' => [
           ['label' => t('Plan de inserción definido'), 'completed' => !empty($tipoInsercion)],
-          ['label' => t('Búsqueda activa / Emprendimiento'), 'completed' => $fase === 'insercion' && !empty($tipoInsercion)],
+          ['label' => t('Búsqueda activa / Emprendimiento'), 'completed' => in_array($fase, ['insercion', 'seguimiento'], TRUE) && !empty($tipoInsercion)],
           ['label' => t('Inserción confirmada'), 'completed' => !empty($fechaInsercion)],
+        ],
+      ],
+      'seguimiento' => [
+        'label' => t('Seguimiento'),
+        'active' => $fase === 'seguimiento',
+        'completed' => $fase === 'baja' && !empty($fechaInsercion),
+        'steps' => [
+          ['label' => t('Indicadores FSE+ salida recogidos'), 'completed' => (bool) ($participante->get('fse_salida_completado')->value ?? FALSE)],
+          ['label' => t('Seguimiento a 6 meses'), 'completed' => FALSE],
         ],
       ],
     ];

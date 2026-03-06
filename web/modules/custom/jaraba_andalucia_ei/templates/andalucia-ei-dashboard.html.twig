@@ -49,7 +49,7 @@
 
   {% if participante %}
     {# Variables del participante #}
-    {% set faseActual = participante.get('fase_actual').value|default('atencion') %}
+    {% set faseActual = participante.get('fase_actual').value|default('acogida') %}
     {% set horasMentoriaIa = participante.get('horas_mentoria_ia').value|default(0) %}
     {% set horasMentoriaHumana = participante.get('horas_mentoria_humana').value|default(0) %}
     {% set horasOrientacionInd = participante.get('horas_orientacion_ind').value|default(0) %}
@@ -76,31 +76,48 @@
           <div class="aei-card__body">
             <div class="aei-progress-overview">
               <div class="aei-fase-badge aei-fase-badge--{{ faseActual }}">
-                {% if faseActual == 'atencion' %}
+                {% if faseActual == 'acogida' %}
+                  {{ jaraba_icon('ui', 'handshake', { size: '16px' }) }}
+                  <span>{% trans %}Fase Acogida{% endtrans %}</span>
+                {% elseif faseActual == 'diagnostico' %}
+                  {{ jaraba_icon('ui', 'clipboard-check', { size: '16px' }) }}
+                  <span>{% trans %}Fase Diagnóstico{% endtrans %}</span>
+                {% elseif faseActual == 'atencion' %}
                   {{ jaraba_icon('ui', 'eye', { size: '16px' }) }}
                   <span>{% trans %}Fase Atención{% endtrans %}</span>
                 {% elseif faseActual == 'insercion' %}
                   {{ jaraba_icon('actions', 'rocket', { size: '16px' }) }}
                   <span>{% trans %}Fase Inserción{% endtrans %}</span>
-                {% else %}
-                  <span>{{ faseActual|capitalize }}</span>
+                {% elseif faseActual == 'seguimiento' %}
+                  {{ jaraba_icon('analytics', 'chart-line', { size: '16px' }) }}
+                  <span>{% trans %}Fase Seguimiento{% endtrans %}</span>
+                {% elseif faseActual == 'baja' %}
+                  {{ jaraba_icon('ui', 'circle-x', { size: '16px' }) }}
+                  <span>{% trans %}Baja{% endtrans %}</span>
                 {% endif %}
               </div>
+              {% set fases = {
+                'acogida': 'Acogida'|t,
+                'diagnostico': 'Diagnóstico'|t,
+                'atencion': 'Atención'|t,
+                'insercion': 'Inserción'|t,
+                'seguimiento': 'Seguimiento'|t,
+              } %}
+              {% set faseKeys = ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento'] %}
+              {% set currentIdx = faseActual in faseKeys ? faseKeys|filter(k => k == faseActual)|keys|first : -1 %}
               <div class="aei-journey-timeline">
-                <div class="aei-timeline-step {{ faseActual == 'atencion' or faseActual == 'insercion' ? 'aei-timeline-step--done' : '' }}">
-                  <span class="aei-timeline-dot"></span>
-                  <span class="aei-timeline-label">{% trans %}Inscripción{% endtrans %}</span>
-                </div>
-                <div class="aei-timeline-connector {{ faseActual == 'atencion' or faseActual == 'insercion' ? 'aei-timeline-connector--done' : '' }}"></div>
-                <div class="aei-timeline-step {{ faseActual == 'atencion' ? 'aei-timeline-step--active' : '' }}{{ faseActual == 'insercion' ? 'aei-timeline-step--done' : '' }}">
-                  <span class="aei-timeline-dot"></span>
-                  <span class="aei-timeline-label">{% trans %}Atención{% endtrans %}</span>
-                </div>
-                <div class="aei-timeline-connector {{ faseActual == 'insercion' ? 'aei-timeline-connector--done' : '' }}"></div>
-                <div class="aei-timeline-step {{ faseActual == 'insercion' ? 'aei-timeline-step--active' : '' }}">
-                  <span class="aei-timeline-dot"></span>
-                  <span class="aei-timeline-label">{% trans %}Inserción{% endtrans %}</span>
-                </div>
+                {% for key in faseKeys %}
+                  {% set stepIdx = loop.index0 %}
+                  {% set isDone = stepIdx < currentIdx %}
+                  {% set isActive = key == faseActual %}
+                  <div class="aei-timeline-step{{ isDone ? ' aei-timeline-step--done' : '' }}{{ isActive ? ' aei-timeline-step--active' : '' }}">
+                    <span class="aei-timeline-dot"></span>
+                    <span class="aei-timeline-label">{{ fases[key] }}</span>
+                  </div>
+                  {% if not loop.last %}
+                    <div class="aei-timeline-connector{{ isDone ? ' aei-timeline-connector--done' : '' }}"></div>
+                  {% endif %}
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -241,15 +258,15 @@
         </header>
         <div class="aei-card__body">
           <nav class="aei-quick-actions" aria-label="{% trans %}Acciones rápidas{% endtrans %}">
-            <a href="/copilot" class="aei-action aei-action--primary">
-              <span class="aei-action__icon">{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'naranja-impulso', size: '22px' }) }}</span>
+            <button type="button" class="aei-action aei-action--secondary aei-action--highlight" data-open-copilot>
+              <span class="aei-action__icon aei-action__icon--copilot">{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'naranja-impulso', size: '22px' }) }}</span>
               <span class="aei-action__content">
                 <span class="aei-action__title">{% trans %}Hablar con Copilot IA{% endtrans %}</span>
                 <span class="aei-action__desc">{% trans %}Tu copiloto inteligente de mentoría{% endtrans %}</span>
               </span>
               <span class="aei-action__arrow">→</span>
-            </a>
-            <a href="/mentoring" class="aei-action aei-action--secondary">
+            </button>
+            <a href="{{ path('jaraba_mentoring.mentor_catalog') }}" class="aei-action aei-action--secondary">
               <span class="aei-action__icon">{{ jaraba_icon('ui', 'users', { size: '22px' }) }}</span>
               <span class="aei-action__content">
                 <span class="aei-action__title">{% trans %}Reservar Mentor{% endtrans %}</span>
@@ -257,7 +274,7 @@
               </span>
               <span class="aei-action__arrow">→</span>
             </a>
-            <a href="/lms" class="aei-action aei-action--secondary">
+            <a href="{{ path('jaraba_lms.catalog') }}" class="aei-action aei-action--secondary">
               <span class="aei-action__icon">{{ jaraba_icon('ui', 'book', { size: '22px' }) }}</span>
               <span class="aei-action__content">
                 <span class="aei-action__title">{% trans %}Ver Cursos{% endtrans %}</span>
@@ -431,8 +448,12 @@
           <label class="aei-filter__label">{% trans %}Fase{% endtrans %}</label>
           <select class="aei-filter__select" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
             <option value="">{% trans %}Todas las fases{% endtrans %}</option>
+            <option value="acogida">{% trans %}Acogida{% endtrans %}</option>
+            <option value="diagnostico">{% trans %}Diagnóstico{% endtrans %}</option>
             <option value="atencion">{% trans %}Atención{% endtrans %}</option>
             <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
+            <option value="seguimiento">{% trans %}Seguimiento{% endtrans %}</option>
+            <option value="baja">{% trans %}Baja{% endtrans %}</option>
           </select>
         </div>
         <div class="aei-filter">

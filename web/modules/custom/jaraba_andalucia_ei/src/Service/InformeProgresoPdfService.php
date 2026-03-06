@@ -58,8 +58,11 @@ class InformeProgresoPdfService {
     $completitud = $this->expedienteService->getCompletuDocumental((int) $participante->id());
 
     $faseLabels = [
+      'acogida' => 'Acogida',
+      'diagnostico' => 'Diagnóstico',
       'atencion' => 'Atención',
       'insercion' => 'Inserción',
+      'seguimiento' => 'Seguimiento',
       'baja' => 'Baja',
     ];
 

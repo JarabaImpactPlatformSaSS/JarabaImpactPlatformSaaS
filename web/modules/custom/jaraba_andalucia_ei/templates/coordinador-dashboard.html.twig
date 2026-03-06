@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Dashboard del coordinador para Andalucía +ei.
+ * Hub unificado del coordinador para Andalucía +ei.
  *
  * Variables:
  *   - stats: {total_participants, active_participants, insertion_phase,
@@ -9,135 +9,270 @@
  *   - phase_distribution: {atencion: N, insercion: N, baja: N}.
  *   - mentor_utilization: Array de mentores con stats.
  *   - recent_activity: Array de actividad reciente.
+ *   - hub_kpis: KPIs desde CoordinadorHubService.
  */
 #}
 
-<div class="coordinador-dashboard">
+<div class="hub-coordinador" data-coordinador-hub>
 
   {# === HEADER === #}
-  <section class="coordinador-dashboard__header" aria-labelledby="coord-title">
-    <h1 id="coord-title" class="coordinador-dashboard__title">
-      {% trans %}Panel de Coordinación{% endtrans %}
+  <section class="hub-coordinador__header" aria-labelledby="coord-title">
+    <h1 id="coord-title" class="hub-coordinador__title">
+      {% trans %}Hub de Coordinación{% endtrans %}
     </h1>
-    <p class="coordinador-dashboard__subtitle">
-      {% trans %}Visión global del programa Andalucía +ei.{% endtrans %}
+    <p class="hub-coordinador__subtitle">
+      {% trans %}Centro de operaciones del programa Andalucía +ei.{% endtrans %}
     </p>
   </section>
 
   {# === KPI CARDS === #}
-  <section class="coordinador-dashboard__kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
-    <div class="coordinador-dashboard__kpi-card">
-      <span class="coordinador-dashboard__kpi-value">{{ stats.total_participants }}</span>
-      <span class="coordinador-dashboard__kpi-label">{% trans %}Total Participantes{% endtrans %}</span>
+  <section class="hub-coordinador__kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
+    <div class="hub-coordinador__kpi-card">
+      <span class="hub-coordinador__kpi-value" data-kpi="active_participants">{{ stats.active_participants }}</span>
+      <span class="hub-coordinador__kpi-label">{% trans %}Activos{% endtrans %}</span>
     </div>
-    <div class="coordinador-dashboard__kpi-card">
-      <span class="coordinador-dashboard__kpi-value">{{ stats.active_participants }}</span>
-      <span class="coordinador-dashboard__kpi-label">{% trans %}Activos{% endtrans %}</span>
+    <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--alert">
+      <span class="hub-coordinador__kpi-value" data-kpi="pending_solicitudes">{{ stats.pending_solicitudes }}</span>
+      <span class="hub-coordinador__kpi-label">{% trans %}Solicitudes Pendientes{% endtrans %}</span>
     </div>
-    <div class="coordinador-dashboard__kpi-card coordinador-dashboard__kpi-card--highlight">
-      <span class="coordinador-dashboard__kpi-value">{{ stats.insertion_rate }}%</span>
-      <span class="coordinador-dashboard__kpi-label">{% trans %}Tasa de Inserción{% endtrans %}</span>
+    <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--highlight">
+      <span class="hub-coordinador__kpi-value" data-kpi="insertion_rate">{{ stats.insertion_rate }}%</span>
+      <span class="hub-coordinador__kpi-label">{% trans %}Tasa de Inserción{% endtrans %}</span>
     </div>
-    <div class="coordinador-dashboard__kpi-card">
-      <span class="coordinador-dashboard__kpi-value">{{ stats.completed_sessions }}</span>
-      <span class="coordinador-dashboard__kpi-label">{% trans %}Sesiones Completadas{% endtrans %}</span>
+    <div class="hub-coordinador__kpi-card">
+      <span class="hub-coordinador__kpi-value" data-kpi="completed_sessions">{{ stats.completed_sessions }}</span>
+      <span class="hub-coordinador__kpi-label">{% trans %}Sesiones Completadas{% endtrans %}</span>
     </div>
-    <div class="coordinador-dashboard__kpi-card coordinador-dashboard__kpi-card--alert">
-      <span class="coordinador-dashboard__kpi-value">{{ stats.pending_solicitudes }}</span>
-      <span class="coordinador-dashboard__kpi-label">{% trans %}Solicitudes Pendientes{% endtrans %}</span>
-    </div>
-  </section>
-
-  {# === PHASE DISTRIBUTION === #}
-  <section class="coordinador-dashboard__section" aria-labelledby="phases-title">
-    <h2 id="phases-title" class="coordinador-dashboard__section-title">
-      {% trans %}Distribución por Fase{% endtrans %}
-    </h2>
-    <div class="coordinador-dashboard__phases">
-      {% set total = phase_distribution.atencion + phase_distribution.insercion + phase_distribution.baja %}
-      {% for phase, count in phase_distribution %}
-        {% set percent = total > 0 ? ((count / total) * 100)|round : 0 %}
-        <div class="coordinador-dashboard__phase-bar">
-          <div class="coordinador-dashboard__phase-label">
-            <span class="coordinador-dashboard__phase-name coordinador-dashboard__phase-name--{{ phase }}">
-              {% if phase == 'atencion' %}{% trans %}Atención{% endtrans %}
-              {% elseif phase == 'insercion' %}{% trans %}Inserción{% endtrans %}
-              {% elseif phase == 'baja' %}{% trans %}Baja{% endtrans %}
-              {% endif %}
-            </span>
-            <span class="coordinador-dashboard__phase-count">{{ count }} ({{ percent }}%)</span>
-          </div>
-          <div class="coordinador-dashboard__phase-track">
-            <div class="coordinador-dashboard__phase-fill coordinador-dashboard__phase-fill--{{ phase }}" style="width: {{ percent }}%"></div>
-          </div>
-        </div>
-      {% endfor %}
+    <div class="hub-coordinador__kpi-card">
+      <span class="hub-coordinador__kpi-value" data-kpi="total_participants">{{ stats.total_participants }}</span>
+      <span class="hub-coordinador__kpi-label">{% trans %}Total Participantes{% endtrans %}</span>
     </div>
   </section>
 
-  {# === MENTOR UTILIZATION === #}
-  {% if mentor_utilization|length > 0 %}
-    <section class="coordinador-dashboard__section" aria-labelledby="mentors-title">
-      <h2 id="mentors-title" class="coordinador-dashboard__section-title">
-        {% trans %}Actividad de Mentores{% endtrans %}
+  {# === ALERTAS NORMATIVAS PIIL === #}
+  {% if alertas is not empty %}
+    <section class="hub-coordinador__alertas" aria-label="{% trans %}Alertas normativas{% endtrans %}">
+      <h2 class="hub-coordinador__alertas-title">
+        {% trans %}Alertas Normativas{% endtrans %}
+        {% if alertas_resumen.critico > 0 %}
+          <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--critico">{{ alertas_resumen.critico }}</span>
+        {% endif %}
+        {% if alertas_resumen.alto > 0 %}
+          <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--alto">{{ alertas_resumen.alto }}</span>
+        {% endif %}
       </h2>
-      <div class="coordinador-dashboard__table-wrapper">
-        <table class="coordinador-dashboard__table">
+      <ul class="hub-coordinador__alertas-list">
+        {% for alerta in alertas|slice(0, 10) %}
+          <li class="hub-coordinador__alerta-item hub-coordinador__alerta-item--{{ alerta.nivel }}">
+            <span class="hub-coordinador__alerta-nivel">{{ alerta.nivel }}</span>
+            <span class="hub-coordinador__alerta-msg">{{ alerta.mensaje }}</span>
+            <span class="hub-coordinador__alerta-accion">{{ alerta.accion }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {# === TAB NAVIGATION === #}
+  <nav class="hub-coordinador__tabs" role="tablist" aria-label="{% trans %}Secciones del hub{% endtrans %}">
+    <button class="hub-coordinador__tab hub-coordinador__tab--active" role="tab" aria-selected="true" aria-controls="panel-solicitudes" id="tab-solicitudes" data-tab="solicitudes">
+      {% trans %}Solicitudes{% endtrans %}
+      {% if stats.pending_solicitudes > 0 %}
+        <span class="hub-coordinador__tab-badge">{{ stats.pending_solicitudes }}</span>
+      {% endif %}
+    </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-participantes" id="tab-participantes" data-tab="participantes">
+      {% trans %}Participantes{% endtrans %}
+    </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-sesiones" id="tab-sesiones" data-tab="sesiones">
+      {% trans %}Sesiones{% endtrans %}
+    </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-metricas" id="tab-metricas" data-tab="metricas">
+      {% trans %}Métricas{% endtrans %}
+    </button>
+  </nav>
+
+  {# === TAB PANELS === #}
+  <div class="hub-coordinador__panels">
+
+    {# --- Panel: Solicitudes --- #}
+    <div class="hub-coordinador__panel hub-coordinador__panel--active" role="tabpanel" id="panel-solicitudes" aria-labelledby="tab-solicitudes" data-panel="solicitudes">
+      <div class="hub-coordinador__panel-header">
+        <h2 class="hub-coordinador__panel-title">{% trans %}Gestión de Solicitudes{% endtrans %}</h2>
+        <div class="hub-coordinador__filters">
+          <select class="hub-coordinador__filter-select" data-filter="estado" aria-label="{% trans %}Filtrar por estado{% endtrans %}">
+            <option value="">{% trans %}Todos los estados{% endtrans %}</option>
+            <option value="pendiente">{% trans %}Pendiente{% endtrans %}</option>
+            <option value="contactado">{% trans %}Contactado{% endtrans %}</option>
+            <option value="admitido">{% trans %}Admitido{% endtrans %}</option>
+            <option value="rechazado">{% trans %}Rechazado{% endtrans %}</option>
+            <option value="lista_espera">{% trans %}Lista de espera{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="solicitudes">
           <thead>
             <tr>
-              <th>{% trans %}Mentor{% endtrans %}</th>
-              <th>{% trans %}Sesiones{% endtrans %}</th>
-              <th>{% trans %}Rating{% endtrans %}</th>
-              <th>{% trans %}Disponible{% endtrans %}</th>
+              <th>{% trans %}Nombre{% endtrans %}</th>
+              <th>{% trans %}Email{% endtrans %}</th>
+              <th>{% trans %}Provincia{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}Fecha{% endtrans %}</th>
+              <th>{% trans %}Acciones{% endtrans %}</th>
             </tr>
           </thead>
-          <tbody>
-            {% for mentor in mentor_utilization %}
-              <tr>
-                <td>{{ mentor.name }}</td>
-                <td>{{ mentor.total_sessions }}</td>
-                <td>
-                  {% if mentor.average_rating > 0 %}
-                    {{ mentor.average_rating|number_format(1) }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if mentor.is_available %}
-                    <span class="coordinador-dashboard__badge coordinador-dashboard__badge--success">{% trans %}Sí{% endtrans %}</span>
-                  {% else %}
-                    <span class="coordinador-dashboard__badge coordinador-dashboard__badge--inactive">{% trans %}No{% endtrans %}</span>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
+          <tbody data-tbody="solicitudes">
+            <tr><td colspan="6" class="hub-coordinador__loading">{% trans %}Cargando solicitudes...{% endtrans %}</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
-  {% endif %}
+      <div class="hub-coordinador__pagination" data-pagination="solicitudes"></div>
+    </div>
 
-  {# === RECENT ACTIVITY === #}
-  {% if recent_activity|length > 0 %}
-    <section class="coordinador-dashboard__section" aria-labelledby="activity-title">
-      <h2 id="activity-title" class="coordinador-dashboard__section-title">
-        {% trans %}Actividad Reciente{% endtrans %}
-      </h2>
-      <div class="coordinador-dashboard__activity-list">
-        {% for item in recent_activity %}
-          <div class="coordinador-dashboard__activity-item coordinador-dashboard__activity-item--{{ item.type }}">
-            <div class="coordinador-dashboard__activity-dot"></div>
-            <div class="coordinador-dashboard__activity-content">
-              <span class="coordinador-dashboard__activity-label">{{ item.label }}</span>
-              {% if item.detail %}
-                <span class="coordinador-dashboard__activity-detail">{{ item.detail }}</span>
-              {% endif %}
-            </div>
-          </div>
-        {% endfor %}
+    {# --- Panel: Participantes --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-participantes" aria-labelledby="tab-participantes" data-panel="participantes" hidden>
+      <div class="hub-coordinador__panel-header">
+        <h2 class="hub-coordinador__panel-title">{% trans %}Gestión de Participantes{% endtrans %}</h2>
+        <div class="hub-coordinador__filters">
+          <select class="hub-coordinador__filter-select" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
+            <option value="">{% trans %}Todas las fases{% endtrans %}</option>
+            <option value="atencion">{% trans %}Atención{% endtrans %}</option>
+            <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
+            <option value="baja">{% trans %}Baja{% endtrans %}</option>
+          </select>
+          <input type="search" class="hub-coordinador__search" data-filter="search" placeholder="{{ 'Buscar por DNI/NIE'|t }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
+        </div>
       </div>
-    </section>
-  {% endif %}
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="participantes">
+          <thead>
+            <tr>
+              <th>{% trans %}DNI/NIE{% endtrans %}</th>
+              <th>{% trans %}Nombre{% endtrans %}</th>
+              <th>{% trans %}Fase{% endtrans %}</th>
+              <th>{% trans %}Última actividad{% endtrans %}</th>
+              <th>{% trans %}Acciones{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-tbody="participantes">
+            <tr><td colspan="5" class="hub-coordinador__loading">{% trans %}Cargando participantes...{% endtrans %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hub-coordinador__pagination" data-pagination="participantes"></div>
+    </div>
+
+    {# --- Panel: Sesiones --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-sesiones" aria-labelledby="tab-sesiones" data-panel="sesiones" hidden>
+      <div class="hub-coordinador__panel-header">
+        <h2 class="hub-coordinador__panel-title">{% trans %}Sesiones de Mentoría{% endtrans %}</h2>
+      </div>
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="sesiones">
+          <thead>
+            <tr>
+              <th>{% trans %}Sesión{% endtrans %}</th>
+              <th>{% trans %}Mentor{% endtrans %}</th>
+              <th>{% trans %}Participante{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-tbody="sesiones">
+            <tr><td colspan="4" class="hub-coordinador__loading">{% trans %}Cargando sesiones...{% endtrans %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {# --- Panel: Métricas --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-metricas" aria-labelledby="tab-metricas" data-panel="metricas" hidden>
+      <h2 class="hub-coordinador__panel-title">{% trans %}Métricas del Programa{% endtrans %}</h2>
+
+      {# Distribución por fase #}
+      <div class="hub-coordinador__metric-section">
+        <h3 class="hub-coordinador__metric-title">{% trans %}Distribución por Fase{% endtrans %}</h3>
+        <div class="hub-coordinador__phases">
+          {% set total = phase_distribution.atencion + phase_distribution.insercion + phase_distribution.baja %}
+          {% for phase, count in phase_distribution %}
+            {% set percent = total > 0 ? ((count / total) * 100)|round : 0 %}
+            <div class="hub-coordinador__phase-bar">
+              <div class="hub-coordinador__phase-label">
+                <span class="hub-coordinador__phase-name hub-coordinador__phase-name--{{ phase }}">
+                  {% if phase == 'atencion' %}{% trans %}Atención{% endtrans %}
+                  {% elseif phase == 'insercion' %}{% trans %}Inserción{% endtrans %}
+                  {% elseif phase == 'baja' %}{% trans %}Baja{% endtrans %}
+                  {% endif %}
+                </span>
+                <span class="hub-coordinador__phase-count">{{ count }} ({{ percent }}%)</span>
+              </div>
+              <div class="hub-coordinador__phase-track">
+                <div class="hub-coordinador__phase-fill hub-coordinador__phase-fill--{{ phase }}" style="width: {{ percent }}%"></div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# Actividad de Mentores #}
+      {% if mentor_utilization|length > 0 %}
+        <div class="hub-coordinador__metric-section">
+          <h3 class="hub-coordinador__metric-title">{% trans %}Actividad de Mentores{% endtrans %}</h3>
+          <div class="hub-coordinador__table-wrapper">
+            <table class="hub-coordinador__table">
+              <thead>
+                <tr>
+                  <th>{% trans %}Mentor{% endtrans %}</th>
+                  <th>{% trans %}Sesiones{% endtrans %}</th>
+                  <th>{% trans %}Rating{% endtrans %}</th>
+                  <th>{% trans %}Disponible{% endtrans %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for mentor in mentor_utilization %}
+                  <tr>
+                    <td>{{ mentor.name }}</td>
+                    <td>{{ mentor.total_sessions }}</td>
+                    <td>{{ mentor.average_rating > 0 ? mentor.average_rating|number_format(1) : '-' }}</td>
+                    <td>
+                      {% if mentor.is_available %}
+                        <span class="hub-coordinador__badge hub-coordinador__badge--success">{% trans %}Sí{% endtrans %}</span>
+                      {% else %}
+                        <span class="hub-coordinador__badge hub-coordinador__badge--inactive">{% trans %}No{% endtrans %}</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Actividad reciente #}
+      {% if recent_activity|length > 0 %}
+        <div class="hub-coordinador__metric-section">
+          <h3 class="hub-coordinador__metric-title">{% trans %}Actividad Reciente{% endtrans %}</h3>
+          <div class="hub-coordinador__activity-list">
+            {% for item in recent_activity %}
+              <div class="hub-coordinador__activity-item hub-coordinador__activity-item--{{ item.type }}">
+                <div class="hub-coordinador__activity-dot"></div>
+                <div class="hub-coordinador__activity-content">
+                  <span class="hub-coordinador__activity-label">{{ item.label }}</span>
+                  {% if item.detail %}
+                    <span class="hub-coordinador__activity-detail">{{ item.detail }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  {# ARIA live region para notificaciones de acciones #}
+  <div class="hub-coordinador__notifications" role="status" aria-live="polite" data-notifications></div>
 
 </div>

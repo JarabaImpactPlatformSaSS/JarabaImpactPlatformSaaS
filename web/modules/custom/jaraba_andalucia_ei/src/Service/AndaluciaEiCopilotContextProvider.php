@@ -54,8 +54,12 @@ class AndaluciaEiCopilotContextProvider {
     $completitud = $this->expedienteService->getCompletuDocumental((int) $participante->id());
 
     $faseLabels = [
+      'acogida' => 'Acogida',
+      'diagnostico' => 'Diagnóstico',
       'atencion' => 'Atención',
       'insercion' => 'Inserción',
+      'seguimiento' => 'Seguimiento',
+      'baja' => 'Baja',
     ];
 
     return [
@@ -110,7 +114,13 @@ class AndaluciaEiCopilotContextProvider {
       $formacion,
     );
 
-    if ($fase === 'atencion') {
+    if ($fase === 'acogida') {
+      $prompt .= 'El participante está en fase de acogida. Prioridad: explicar el programa, facilitar firma DACI, y recoger indicadores FSE+ de entrada. NO ofrecer orientación vocacional ni formación aún. ';
+    }
+    elseif ($fase === 'diagnostico') {
+      $prompt .= 'El participante está en fase de diagnóstico. Prioridad: completar cuestionario DIME para asignar carril (Impulso Digital o Acelera Pro). Puede explorar intereses pero NO iniciar formación formal. ';
+    }
+    elseif ($fase === 'atencion') {
       if ($horas < 5) {
         $prompt .= 'Prioridad: aumentar horas de orientación. Sugiere sesiones y actividades. ';
       }
@@ -129,6 +139,9 @@ class AndaluciaEiCopilotContextProvider {
       else {
         $prompt .= sprintf('Vía de inserción: %s. Apoya en la búsqueda activa y preparación. ', $tipo);
       }
+    }
+    elseif ($fase === 'seguimiento') {
+      $prompt .= 'El participante está en fase de seguimiento post-inserción. Apoya en la consolidación del empleo y gestiona indicadores FSE+ de salida. ';
     }
 
     return $prompt;

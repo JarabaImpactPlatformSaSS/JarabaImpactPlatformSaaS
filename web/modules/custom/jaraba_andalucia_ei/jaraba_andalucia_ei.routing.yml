@@ -404,3 +404,223 @@ entity.expediente_documento.settings:
     _title: 'Configuración Documento de Expediente'
   requirements:
     _permission: 'administer andalucia ei'
+
+# === API: HUB COORDINADOR ===
+jaraba_andalucia_ei.api.hub.solicitudes:
+  path: '/api/v1/andalucia-ei/hub/solicitudes'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listSolicitudes'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.solicitud.approve:
+  path: '/api/v1/andalucia-ei/hub/solicitud/{id}/approve'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::approveSolicitud'
+  methods: [POST]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _csrf_request_header_token: 'TRUE'
+    id: '\d+'
+
+jaraba_andalucia_ei.api.hub.solicitud.reject:
+  path: '/api/v1/andalucia-ei/hub/solicitud/{id}/reject'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::rejectSolicitud'
+  methods: [POST]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _csrf_request_header_token: 'TRUE'
+    id: '\d+'
+
+jaraba_andalucia_ei.api.hub.participant.change_phase:
+  path: '/api/v1/andalucia-ei/hub/participant/{id}/phase'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::changePhase'
+  methods: [POST]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _csrf_request_header_token: 'TRUE'
+    id: '\d+'
+
+jaraba_andalucia_ei.api.hub.participants:
+  path: '/api/v1/andalucia-ei/hub/participants'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listParticipants'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.sessions:
+  path: '/api/v1/andalucia-ei/hub/sessions'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listSessions'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.kpis:
+  path: '/api/v1/andalucia-ei/hub/kpis'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::getKpis'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+# === ACTUACIONES STO: COLECCIÓN ADMIN ===
+entity.actuacion_sto.collection:
+  path: '/admin/content/actuaciones-sto'
+  defaults:
+    _entity_list: 'actuacion_sto'
+    _title: 'Actuaciones STO'
+  requirements:
+    _permission: 'view andalucia ei actuaciones'
+
+# === ACTUACIONES STO: CRUD ===
+entity.actuacion_sto.canonical:
+  path: '/admin/content/actuaciones-sto/{actuacion_sto}'
+  defaults:
+    _entity_view: 'actuacion_sto'
+    _title: 'Ver Actuación'
+  requirements:
+    _permission: 'view andalucia ei actuaciones'
+
+entity.actuacion_sto.add_form:
+  path: '/admin/content/actuaciones-sto/add'
+  defaults:
+    _entity_form: 'actuacion_sto.add'
+    _title: 'Registrar Actuación'
+  requirements:
+    _permission: 'create andalucia ei actuaciones'
+
+entity.actuacion_sto.edit_form:
+  path: '/admin/content/actuaciones-sto/{actuacion_sto}/edit'
+  defaults:
+    _entity_form: 'actuacion_sto.edit'
+    _title: 'Editar Actuación'
+  requirements:
+    _permission: 'edit own andalucia ei actuaciones'
+
+entity.actuacion_sto.delete_form:
+  path: '/admin/content/actuaciones-sto/{actuacion_sto}/delete'
+  defaults:
+    _entity_form: 'actuacion_sto.delete'
+    _title: 'Eliminar Actuación'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === ACTUACIONES STO: SETTINGS (Field UI) ===
+entity.actuacion_sto.settings:
+  path: '/admin/structure/actuacion-sto'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\ActuacionStoSettingsForm'
+    _title: 'Configuración Actuaciones STO'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === INDICADORES FSE+: COLECCIÓN ADMIN ===
+entity.indicador_fse_plus.collection:
+  path: '/admin/content/indicadores-fse-plus'
+  defaults:
+    _entity_list: 'indicador_fse_plus'
+    _title: 'Indicadores FSE+'
+  requirements:
+    _permission: 'view indicador fse plus'
+
+# === INDICADORES FSE+: CRUD ===
+entity.indicador_fse_plus.canonical:
+  path: '/admin/content/indicadores-fse-plus/{indicador_fse_plus}'
+  defaults:
+    _entity_view: 'indicador_fse_plus'
+    _title: 'Ver Indicador FSE+'
+  requirements:
+    _permission: 'view indicador fse plus'
+
+entity.indicador_fse_plus.add_form:
+  path: '/admin/content/indicadores-fse-plus/add'
+  defaults:
+    _entity_form: 'indicador_fse_plus.add'
+    _title: 'Registrar Indicador FSE+'
+  requirements:
+    _permission: 'create indicador fse plus'
+
+entity.indicador_fse_plus.edit_form:
+  path: '/admin/content/indicadores-fse-plus/{indicador_fse_plus}/edit'
+  defaults:
+    _entity_form: 'indicador_fse_plus.edit'
+    _title: 'Editar Indicador FSE+'
+  requirements:
+    _permission: 'edit indicador fse plus'
+
+entity.indicador_fse_plus.delete_form:
+  path: '/admin/content/indicadores-fse-plus/{indicador_fse_plus}/delete'
+  defaults:
+    _entity_form: 'indicador_fse_plus.delete'
+    _title: 'Eliminar Indicador FSE+'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === INDICADORES FSE+: SETTINGS (Field UI) ===
+entity.indicador_fse_plus.settings:
+  path: '/admin/structure/indicador-fse-plus'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\IndicadorFsePlusSettingsForm'
+    _title: 'Configuración Indicadores FSE+'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === INSERCIONES LABORALES: COLECCIÓN ADMIN ===
+entity.insercion_laboral.collection:
+  path: '/admin/content/inserciones-laborales'
+  defaults:
+    _entity_list: 'insercion_laboral'
+    _title: 'Inserciones Laborales'
+  requirements:
+    _permission: 'view insercion laboral'
+
+# === INSERCIONES LABORALES: CRUD ===
+entity.insercion_laboral.canonical:
+  path: '/admin/content/inserciones-laborales/{insercion_laboral}'
+  defaults:
+    _entity_view: 'insercion_laboral'
+    _title: 'Ver Inserción Laboral'
+  requirements:
+    _permission: 'view insercion laboral'
+
+entity.insercion_laboral.add_form:
+  path: '/admin/content/inserciones-laborales/add'
+  defaults:
+    _entity_form: 'insercion_laboral.add'
+    _title: 'Registrar Inserción Laboral'
+  requirements:
+    _permission: 'create insercion laboral'
+
+entity.insercion_laboral.edit_form:
+  path: '/admin/content/inserciones-laborales/{insercion_laboral}/edit'
+  defaults:
+    _entity_form: 'insercion_laboral.edit'
+    _title: 'Editar Inserción Laboral'
+  requirements:
+    _permission: 'edit insercion laboral'
+
+entity.insercion_laboral.delete_form:
+  path: '/admin/content/inserciones-laborales/{insercion_laboral}/delete'
+  defaults:
+    _entity_form: 'insercion_laboral.delete'
+    _title: 'Eliminar Inserción Laboral'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === INSERCIONES LABORALES: SETTINGS (Field UI) ===
+entity.insercion_laboral.settings:
+  path: '/admin/structure/insercion-laboral'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\InsercionLaboralSettingsForm'
+    _title: 'Configuración Inserción Laboral'
+  requirements:
+    _permission: 'administer andalucia ei'
