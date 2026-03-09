@@ -70,6 +70,14 @@ jaraba_andalucia_ei.sto_export:
   requirements:
     _permission: 'export sto data'
 
+jaraba_andalucia_ei.sto_export_download:
+  path: '/admin/content/andalucia-ei/export-sto/download'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\StoExportController::downloadXml'
+    _title: 'Descargar XML STO'
+  requirements:
+    _permission: 'export sto data'
+
 # === FRONTEND DASHBOARD ===
 jaraba_andalucia_ei.dashboard:
   path: '/andalucia-ei'
