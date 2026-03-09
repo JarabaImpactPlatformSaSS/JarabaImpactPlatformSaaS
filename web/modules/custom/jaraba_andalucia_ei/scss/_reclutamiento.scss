@@ -154,6 +154,28 @@
   }
 }
 
+// Video hero
+.aei-rec__hero-video-wrapper {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  border-radius: var(--ej-radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, black 40%, transparent);
+  aspect-ratio: 16 / 9;
+
+  @media (max-width: 640px) {
+    margin-bottom: 1.5rem;
+    border-radius: var(--ej-radius-md, 8px);
+  }
+}
+
+.aei-rec__hero-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .aei-rec__title {
   font-family: var(--aei-font-headings, var(--ej-font-headings, 'Outfit', sans-serif));
   font-size: clamp(2rem, 5vw, 3rem);

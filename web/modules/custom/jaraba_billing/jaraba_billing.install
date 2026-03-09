@@ -265,6 +265,41 @@ function jaraba_billing_update_10004(array &$sandbox): void {
 }
 
 /**
+ * Reconcile billing_usage_record: uninstall orphan metatag field storage.
+ *
+ * Previous update_10004 used getBaseFieldDefinitions() which included the
+ * metatag computed field (provided by metatag module via hook). Computed
+ * fields have no storage, so they should NOT be tracked as field storage
+ * definitions. This hook removes the orphan entry.
+ */
+function jaraba_billing_update_10005(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $messages = [];
+
+  try {
+    // 1. Uninstall orphan metatag field storage definition.
+    $metatagStorage = $updateManager->getFieldStorageDefinition('metatag', 'billing_usage_record');
+    if ($metatagStorage) {
+      $updateManager->uninstallFieldStorageDefinition($metatagStorage);
+      $messages[] = 'Uninstalled orphan metatag field storage from billing_usage_record.';
+    }
+    else {
+      $messages[] = 'metatag field storage not found — already clean.';
+    }
+
+    // 2. Update entity type definition if needed.
+    $entityType = \Drupal::entityTypeManager()->getDefinition('billing_usage_record');
+    $updateManager->updateEntityType($entityType);
+    $messages[] = 'Entity type billing_usage_record updated.';
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_billing_requirements(string $phase): array {

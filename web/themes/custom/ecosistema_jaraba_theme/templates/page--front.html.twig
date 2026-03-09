@@ -40,8 +40,10 @@
 {# SEO Avanzado — Datos Estructurados Schema.org #}
 {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
   site_name: site_name,
-  logo: logo
-} %}
+  logo: logo,
+  theme_settings: theme_settings|default({}),
+  directory: directory
+} only %}
 
 {# HEADER - Partial reutilizable con menú móvil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {

@@ -1406,9 +1406,11 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
   $landingUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
 
   $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/reclutamiento-popup';
+  $modulePath = '/' . \Drupal::service('extension.list.module')->getPath('jaraba_andalucia_ei');
   $attachments['#attached']['drupalSettings']['aeiRecPopup'] = [
     'solicitarUrl' => $solicitarUrl,
     'landingUrl' => $landingUrl,
+    'modulePath' => $modulePath,
   ];
 }
 

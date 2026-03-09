@@ -224,6 +224,77 @@ function jaraba_site_builder_update_10008(): string {
 }
 
 /**
+ * Reconcile site_config: install translation fields + uninstall orphan metatag.
+ *
+ * update_10005 made site_config translatable but didn't install the
+ * content_translation tracking fields. Also, previous hooks incorrectly
+ * stored the metatag computed field as a field storage definition.
+ *
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each field.
+ * UPDATE-HOOK-CATCH-001: \Throwable catch.
+ */
+function jaraba_site_builder_update_10009(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $messages = [];
+
+  try {
+    // 1. Uninstall orphan metatag field storage definition.
+    $metatagStorage = $updateManager->getFieldStorageDefinition('metatag', 'site_config');
+    if ($metatagStorage) {
+      $updateManager->uninstallFieldStorageDefinition($metatagStorage);
+      $messages[] = 'Uninstalled orphan metatag field storage from site_config.';
+    }
+
+    // 2. Install content_translation tracking fields.
+    $fieldManager = \Drupal::service('entity_field.manager');
+    $fieldManager->clearCachedFieldDefinitions();
+    $fieldStorageDefs = $fieldManager->getFieldStorageDefinitions('site_config');
+
+    $translationFields = [
+      'content_translation_source',
+      'content_translation_outdated',
+      'content_translation_uid',
+      'content_translation_status',
+      'content_translation_created',
+      'content_translation_changed',
+    ];
+
+    foreach ($translationFields as $fieldName) {
+      if (isset($fieldStorageDefs[$fieldName])) {
+        $existing = $updateManager->getFieldStorageDefinition($fieldName, 'site_config');
+        $fieldDef = $fieldStorageDefs[$fieldName];
+        $fieldDef->setName($fieldName);
+        $fieldDef->setTargetEntityTypeId('site_config');
+
+        if ($existing) {
+          $updateManager->updateFieldStorageDefinition($fieldDef);
+          $messages[] = "Updated $fieldName.";
+        }
+        else {
+          $updateManager->installFieldStorageDefinition(
+            $fieldName, 'site_config', $fieldDef->getProvider(), $fieldDef
+          );
+          $messages[] = "Installed $fieldName.";
+        }
+      }
+      else {
+        $messages[] = "$fieldName not found in current definitions — content_translation module enabled?";
+      }
+    }
+
+    // 3. Update entity type definition.
+    $entityType = \Drupal::entityTypeManager()->getDefinition('site_config');
+    $updateManager->updateEntityType($entityType);
+    $messages[] = 'Entity type site_config updated.';
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_site_builder_requirements(string $phase): array {

@@ -172,6 +172,9 @@ if [ "$MODE" = "full" ]; then
   run_check "PRESAVE-RESILIENCE-001" "Presave hook resilience detection" \
     php "$SCRIPT_DIR/validate-presave-resilience.php"
 
+  run_check "ENTITY-SCHEMA-SYNC-001" "Entity schema sync (computed orphans, translatable fields, Twig url())" \
+    php "$SCRIPT_DIR/validate-entity-schema-sync.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -181,6 +184,7 @@ else
   skip_check "TENANT-CHECK-001" "Tenant isolation verification"
   skip_check "TEST-COVERAGE-MAP-001" "Test coverage map"
   skip_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection"
+  skip_check "ENTITY-SCHEMA-SYNC-001" "Entity schema sync (computed orphans, translatable fields, Twig url())"
 fi
 
 fi  # End of non-checklist mode guard.

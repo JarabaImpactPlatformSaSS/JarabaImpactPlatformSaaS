@@ -118,7 +118,7 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
   }
 
   public function getColor(): string {
-    return 'andalucia';
+    return 'innovation';
   }
 
   public function getWeight(): int {
@@ -263,19 +263,19 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
       $this->makeLink(
         $this->t('Mi Portal'),
         'jaraba_andalucia_ei.participante_portal',
-        'general', 'user', 'andalucia',
+        'ui', 'user', 'innovation',
         ['description' => $this->t('Tu espacio personal en el programa')],
       ),
       $this->makeLink(
         $this->t('Mi Expediente'),
         'jaraba_andalucia_ei.expediente_hub',
-        'general', 'folder', 'andalucia',
+        'ui', 'folder', 'innovation',
         ['description' => $this->t('Documentacion y seguimiento')],
       ),
       $this->makeLink(
         $this->t('Informe de Progreso'),
         'jaraba_andalucia_ei.informe_progreso_pdf',
-        'general', 'file-text', 'andalucia',
+        'ui', 'file-text', 'innovation',
         ['description' => $this->t('Descarga tu informe actualizado')],
       ),
     ];
@@ -291,13 +291,13 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
       $this->makeLink(
         $this->t('Panel Orientador'),
         'jaraba_andalucia_ei.orientador_dashboard',
-        'business', 'briefcase', 'andalucia',
+        'business', 'briefcase', 'innovation',
         ['description' => $this->t('Seguimiento de tus participantes')],
       ),
       $this->makeLink(
         $this->t('Mis Participantes'),
         'entity.programa_participante_ei.collection',
-        'general', 'users', 'andalucia',
+        'ui', 'users', 'innovation',
         ['description' => $this->t('Lista de participantes asignados')],
       ),
     ];
@@ -313,19 +313,19 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
       $this->makeLink(
         $this->t('Hub Coordinador'),
         'jaraba_andalucia_ei.coordinador_dashboard',
-        'ui', 'dashboard', 'andalucia',
+        'ui', 'dashboard', 'innovation',
         ['description' => $this->t('Centro de operaciones del programa')],
       ),
       $this->makeLink(
         $this->t('Gestion Solicitudes'),
         'entity.solicitud_ei.collection',
-        'general', 'inbox', 'andalucia',
+        'ui', 'inbox', 'innovation',
         ['description' => $this->t('Triage y gestion de solicitudes')],
       ),
       $this->makeLink(
         $this->t('Exportar STO'),
         'jaraba_andalucia_ei.sto_export',
-        'general', 'download', 'andalucia',
+        'actions', 'download', 'innovation',
         ['description' => $this->t('Exportacion para el Servicio Telefonico de Orientacion')],
       ),
     ];

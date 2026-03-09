@@ -18,9 +18,15 @@
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
-{% set site_url = url('<front>', {}, {absolute: true}) %}
-{% set logo_url = logo ? logo : (site_url ~ 'themes/custom/ecosistema_jaraba_theme/logo.svg') %}
 {% set ts = theme_settings|default({}) %}
+
+{# url() en Drupal 11 devuelve render array (para bubbleable metadata).
+   NO se puede concatenar con ~. Usar file_url() para assets estáticos. #}
+{% if logo is defined and logo is not iterable and logo is not empty %}
+  {% set logo_url = logo %}
+{% else %}
+  {% set logo_url = '/' ~ directory ~ '/logo.svg' %}
+{% endif %}
 
 {# Datos de contacto desde Theme Settings TAB 14 (Páginas Legales) #}
 {% set contact_email = ts.contact_email|default('contacto@plataformadeecosistemas.es') %}
@@ -39,7 +45,7 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "{{ site_name }}",
-  "url": "{{ site_url }}",
+  "url": "{{ url('<front>', {}, {absolute: true}) }}",
   "logo": "{{ logo_url }}",
   "description": "{{ 'Plataforma SaaS de desarrollo local: empleabilidad, emprendimiento, comercio y agroalimentación — impulsada por IA.'|t }}",
   "founder": {
@@ -70,7 +76,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "{{ site_name }}",
-  "url": "{{ site_url }}",
+  "url": "{{ url('<front>', {}, {absolute: true}) }}",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "All",
   "abstract": "{{ 'Plataforma SaaS con 10 verticales especializados, 11 agentes IA Gen 2, copiloto integrado, firma digital PAdES, multi-tenancy y 80+ módulos custom. Empleabilidad, emprendimiento, agroalimentación, comercio local, servicios profesionales, legal, formación e inserción laboral.'|t }}",

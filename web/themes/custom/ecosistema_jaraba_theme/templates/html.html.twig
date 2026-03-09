@@ -50,8 +50,9 @@
     {# Schema.org JSON-LD: Organization + SoftwareApplication (global) #}
     {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' ignore missing with {
       site_name: head_title_array.name|default('Jaraba Impact Platform'),
-      theme_settings: theme_settings|default({})
-    } %}
+      theme_settings: theme_settings|default({}),
+      directory: directory
+    } only %}
     {# Schema.org JSON-LD: PED S.L. Corporation (meta-sitio corporativo) #}
     {% if is_meta_site|default(false) %}
       {% include '@ecosistema_jaraba_theme/partials/_ped-schema.html.twig' ignore missing %}

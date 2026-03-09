@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Person head -->
+  <circle cx="8" cy="4.5" r="2.5"/>
+  <!-- Person body -->
+  <path d="M3 18v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/>
+  <!-- Compass circle -->
+  <circle cx="18.5" cy="8" r="4.5"/>
+  <!-- Compass needle N-S -->
+  <path d="M18.5 4.5v2M18.5 11.5v-2"/>
+  <!-- Compass needle E-W -->
+  <path d="M15 8h2M20.5 8h2"/>
+  <!-- Compass diamond pointer -->
+  <path d="M18.5 6l1.2 2-1.2 2-1.2-2z" fill="currentColor" stroke="none"/>
+</svg>

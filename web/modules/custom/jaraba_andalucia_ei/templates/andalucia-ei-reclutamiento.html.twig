@@ -34,6 +34,19 @@
       <span class="aei-rec__badge aei-rec__badge--institucional">{% trans %}Programa oficial{% endtrans %}</span>
       <span class="aei-rec__badge aei-rec__badge--gratuito">{% trans %}100% gratuito{% endtrans %}</span>
     </div>
+    {# === VÍDEO HERO: Autoplay muted para máximo impacto visual === #}
+    <div class="aei-rec__hero-video-wrapper">
+      <video class="aei-rec__hero-video"
+             autoplay
+             muted
+             loop
+             playsinline
+             preload="auto"
+             poster="/{{ module_path }}/images/reclutamiento-popup-hero.webp"
+             aria-label="{% trans %}Vídeo presentación del programa T-Acompañamos{% endtrans %}">
+        <source src="/{{ module_path }}/images/reclutamiento-hero-video.mp4" type="video/mp4">
+      </video>
+    </div>
     <h2 class="aei-rec__title">{% trans %}Tu nuevo empleo empieza aquí{% endtrans %}</h2>
     <p class="aei-rec__subtitle">
       {% trans %}Programa de inserción laboral financiado por la Junta de Andalucía y la Unión Europea. Orientación personalizada, formación práctica, mentoría con IA y acompañamiento hasta tu contratación. Recibes 528 € al completar el itinerario.{% endtrans %}

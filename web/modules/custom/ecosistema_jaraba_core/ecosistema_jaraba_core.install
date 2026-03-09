@@ -54,6 +54,15 @@ function ecosistema_jaraba_core_uninstall() {
  * y en el informe de estado.
  */
 function ecosistema_jaraba_core_requirements($phase) {
+  // Drupal 11: constants from install.inc may not be loaded in all contexts.
+  if (!defined('REQUIREMENT_OK')) {
+    // @see core/includes/install.inc
+    define('REQUIREMENT_OK', 0);
+    define('REQUIREMENT_INFO', -1);
+    define('REQUIREMENT_WARNING', 1);
+    define('REQUIREMENT_ERROR', 2);
+  }
+
   $requirements = [];
 
   if ($phase == 'runtime') {

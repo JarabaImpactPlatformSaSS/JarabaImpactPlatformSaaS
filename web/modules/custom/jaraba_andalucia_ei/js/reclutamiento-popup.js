@@ -45,9 +45,14 @@
       overlay.setAttribute('aria-modal', 'true');
       overlay.setAttribute('aria-label', Drupal.t('Programa gratuito de inserción laboral'));
 
+      var modulePath = settings.modulePath || '';
       overlay.innerHTML =
         '<div class="aei-popup">' +
           '<button class="aei-popup__close" aria-label="' + Drupal.t('Cerrar') + '">&times;</button>' +
+          '<picture class="aei-popup__hero">' +
+            '<source srcset="' + Drupal.checkPlain(modulePath) + '/images/reclutamiento-popup-hero.webp" type="image/webp">' +
+            '<img src="' + Drupal.checkPlain(modulePath) + '/images/reclutamiento-popup-hero.png" alt="' + Drupal.t('Grupo diverso de personas colaborando en un programa de inserción laboral en Andalucía') + '" width="520" height="293" loading="eager">' +
+          '</picture>' +
           '<div class="aei-popup__badge">' + Drupal.t('Programa oficial') + '</div>' +
           '<h2 class="aei-popup__title">' + Drupal.t('¿Buscas empleo en Andalucía?') + '</h2>' +
           '<p class="aei-popup__desc">' +
