@@ -47,9 +47,9 @@
         <source src="/{{ module_path }}/images/reclutamiento-hero-video.mp4" type="video/mp4">
       </video>
     </div>
-    <h2 class="aei-rec__title">{% trans %}Tu nuevo empleo empieza aquí{% endtrans %}</h2>
+    <h2 class="aei-rec__title">{% trans %}Fórmate gratis, cobra 528 € y encuentra empleo en Andalucía{% endtrans %}</h2>
     <p class="aei-rec__subtitle">
-      {% trans %}Programa de inserción laboral financiado por la Junta de Andalucía y la Unión Europea. Orientación personalizada, formación práctica, mentoría con IA y acompañamiento hasta tu contratación. Recibes 528 € al completar el itinerario.{% endtrans %}
+      {% trans %}Programa oficial T-Acompañamos: orientación personalizada, formación certificada, mentoría con IA y acompañamiento hasta tu contratación. Compatible con tu subsidio por desempleo.{% endtrans %}
     </p>
     <div class="aei-rec__hero-stats">
       <div class="aei-rec__hero-stat">
@@ -266,51 +266,103 @@
   </div>
 </section>
 
-{# === FAQ: Preguntas reales del público objetivo === #}
+{# === SOCIAL PROOF: Datos del programa T-Acompañamos a nivel regional === #}
+<section class="aei-rec__social-proof" aria-label="{% trans %}Resultados del programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}El programa T-Acompañamos en cifras{% endtrans %}</h2>
+    <p class="aei-rec__section-desc" style="text-align: center; margin: 0 auto 2rem;">
+      {% trans %}A nivel regional, el programa T-Acompañamos de la Junta de Andalucía está diseñado para generar impacto real en la empleabilidad de colectivos vulnerables.{% endtrans %}
+    </p>
+    <div class="aei-rec__social-proof-grid">
+      <div class="aei-rec__social-proof-card">
+        <span class="aei-rec__social-proof-value">22.222</span>
+        <span class="aei-rec__social-proof-label">{% trans %}plazas totales T-Acompañamos en Andalucía{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__social-proof-card">
+        <span class="aei-rec__social-proof-value">40%</span>
+        <span class="aei-rec__social-proof-label">{% trans %}objetivo de inserción laboral{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__social-proof-card">
+        <span class="aei-rec__social-proof-value">100%</span>
+        <span class="aei-rec__social-proof-label">{% trans %}gratuito, financiado por la UE{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__social-proof-card">
+        <span class="aei-rec__social-proof-value">24/7</span>
+        <span class="aei-rec__social-proof-label">{% trans %}mentoría IA exclusiva de nuestro programa{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === LEAD MAGNET: Guía descargable para captar leads === #}
+<section class="aei-rec__lead-magnet" aria-label="{% trans %}Guía gratuita del participante{% endtrans %}">
+  <div class="aei-rec__container">
+    <div class="aei-rec__lead-magnet-content">
+      <h2 class="aei-rec__section-title">{% trans %}Descarga la Guía del Participante{% endtrans %}</h2>
+      <p class="aei-rec__section-desc">
+        {% trans %}Toda la información del programa en un documento: fases, requisitos, calendario, derechos del participante y preguntas frecuentes. Descárgala antes de solicitar tu plaza.{% endtrans %}
+      </p>
+      <a href="{{ guia_url }}" class="aei-rec__cta aei-rec__cta--secondary aei-rec__cta--lead-magnet">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        {% trans %}Descargar guía gratuita{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === FAQ: Preguntas optimizadas para SEO (People Also Ask) === #}
 <section class="aei-rec__faq" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
   <div class="aei-rec__container">
     <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
     <div class="aei-rec__faq-list">
       {% set faqs = [
         {
-          q: '¿Es realmente gratis?'|t,
-          a: 'Sí, 100%. El programa está financiado íntegramente por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+). No pagas nada.'|t,
+          q: '¿Es realmente gratis? ¿Tiene algún coste oculto?'|t,
+          a: 'Sí, 100% gratuito. El programa está financiado íntegramente por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+). No pagas nada: ni matrícula, ni material, ni tasas. Además recibes 528 € de incentivo al completar la formación.'|t,
         },
         {
-          q: '¿Qué son los 528 € del incentivo?'|t,
-          a: 'Cuando completas el itinerario formativo (10 horas de orientación + 50 horas de formación con asistencia del 75%), recibes 528 € como incentivo a la participación. Es un pago directo, no un préstamo.'|t,
+          q: '¿Es compatible con el subsidio por desempleo o la RAI?'|t,
+          a: 'Sí. Participar en el programa T-Acompañamos es compatible con la prestación por desempleo, el subsidio y la Renta Activa de Inserción (RAI). No pierdes tu prestación por participar. Los 528 € del incentivo son un pago adicional.'|t,
+        },
+        {
+          q: '¿Cuánto dinero recibo por participar y cuándo lo cobro?'|t,
+          a: 'Recibes 528 € al completar el itinerario formativo (10 horas de orientación + 50 horas de formación con asistencia mínima del 75%). Es un pago directo a tu cuenta bancaria, no un préstamo ni un anticipo. Se abona tras verificar la asistencia.'|t,
         },
         {
           q: '¿Necesito estar apuntado en el SAE?'|t,
-          a: 'Sí, es un requisito imprescindible. Debes estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo en el momento del alta en el programa.'|t,
-        },
-        {
-          q: '¿Cuánto dura el programa?'|t,
-          a: 'El programa tiene una duración máxima de 18 meses (hasta junio de 2027). Tu itinerario personalizado depende de tu perfil y tu ritmo. La fase formativa incluye al menos 50 horas de formación y 10 de orientación.'|t,
+          a: 'Sí, es un requisito imprescindible. Debes estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo en el momento del alta en el programa. Si no estás inscrito/a, puedes hacerlo en tu oficina SAE más cercana antes de solicitar plaza.'|t,
         },
         {
           q: '¿Puedo participar si tengo más de 45 años?'|t,
-          a: 'Sí, las personas mayores de 45 años son uno de los colectivos prioritarios del programa. Tu experiencia es un valor que la formación complementa.'|t,
+          a: 'Sí, las personas mayores de 45 años son uno de los colectivos prioritarios del programa. Tu experiencia profesional es un valor que la formación complementa. Muchas de las 22.222 plazas de T-Acompañamos en Andalucía están dirigidas específicamente a este colectivo.'|t,
         },
         {
-          q: '¿Qué pasa si encuentro trabajo durante el programa?'|t,
-          a: 'Es el objetivo. Pasas a la fase de inserción y seguimos acompañándote en tu incorporación laboral durante los primeros 6 meses de empleo.'|t,
+          q: '¿Puedo participar si soy migrante?'|t,
+          a: 'Sí, las personas migrantes son uno de los colectivos destinatarios del programa. El único requisito es estar inscrito/a como demandante de empleo en el SAE. El programa ofrece acompañamiento adaptado a tu situación y te ayuda a homologar tu experiencia profesional.'|t,
+        },
+        {
+          q: '¿Cuánto dura el programa y cuántas horas son?'|t,
+          a: 'El programa dura hasta 18 meses (hasta junio de 2027). Incluye mínimo 10 horas de orientación personalizada, 50 horas de formación certificada y 40 horas de acompañamiento a la inserción. Tu itinerario se adapta a tu perfil y tu ritmo.'|t,
+        },
+        {
+          q: '¿Qué porcentaje de participantes consigue empleo?'|t,
+          a: 'El objetivo del programa es alcanzar una tasa de inserción laboral del 40%, ya sea por cuenta ajena o por emprendimiento. Además, el seguimiento post-contratación dura 6 meses para asegurar la estabilidad del empleo.'|t,
+        },
+        {
+          q: '¿Qué diferencia hay entre este programa y un curso del SAE?'|t,
+          a: 'Los cursos del SAE son formación puntual. T-Acompañamos es un itinerario completo que combina orientación personalizada, formación certificada, mentoría con Inteligencia Artificial 24/7, acompañamiento en procesos de selección y un incentivo de 528 €. Es un programa integral, no solo un curso.'|t,
         },
         {
           q: '¿Qué es la mentoría con Inteligencia Artificial?'|t,
-          a: 'Tienes acceso a un tutor virtual basado en IA que te ayuda a mejorar tu CV, preparar entrevistas, elaborar planes de negocio y orientarte profesionalmente. Disponible 24 horas al día, 7 días a la semana.'|t,
+          a: 'Tienes acceso a un tutor virtual basado en IA que te ayuda a mejorar tu CV, preparar entrevistas, elaborar planes de negocio y orientarte profesionalmente. Disponible 24 horas al día, 7 días a la semana. Es tecnología exclusiva de nuestro programa.'|t,
         },
         {
           q: '¿Mis datos están protegidos?'|t,
           a: 'Toda la información se almacena con cifrado de nivel bancario (AES-256), cumplimiento RGPD completo y acceso controlado. Solo tú y los profesionales autorizados del programa acceden a tu expediente.'|t,
         },
         {
-          q: '¿Puedo participar si soy migrante?'|t,
-          a: 'Sí, las personas migrantes son uno de los colectivos destinatarios del programa. El único requisito es estar inscrito/a como demandante de empleo en el SAE.'|t,
-        },
-        {
-          q: '¿Dónde se imparte?'|t,
-          a: 'Tenemos sedes en Málaga (15 plazas, Centro de Negocios Málaga) y Sevilla (30 plazas, Edificio Hermes). La formación combina sesiones presenciales con contenido online (máximo 20% online).'|t,
+          q: '¿Dónde se imparte el programa?'|t,
+          a: 'Tenemos sedes en Málaga (15 plazas, Centro de Negocios Málaga) y Sevilla (30 plazas, Edificio Hermes). La formación combina sesiones presenciales con contenido online (máximo 20% online). Puedes elegir la sede más cercana a tu domicilio.'|t,
         },
       ] %}
       {% for faq in faqs %}
@@ -326,12 +378,12 @@
 {# === CTA FINAL === #}
 <section class="aei-rec__cta-final" aria-label="{% trans %}Solicitar plaza{% endtrans %}">
   <div class="aei-rec__container">
-    <h2 class="aei-rec__cta-final-title">{% trans %}Solo quedan 45 plazas{% endtrans %}</h2>
+    <h2 class="aei-rec__cta-final-title">{% trans %}Solo quedan{% endtrans %} {{ programa.participantes }} {% trans %}plazas{% endtrans %}</h2>
     <p class="aei-rec__cta-final-desc">
-      {% trans %}Orientación personalizada + formación certificada + mentoría IA + acompañamiento a empleo + 528 € de incentivo. Todo gratuito.{% endtrans %}
+      {% trans %}Fórmate gratis, cobra 528 € y recibe acompañamiento hasta tu contratación. Compatible con tu subsidio por desempleo.{% endtrans %}
     </p>
     <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary aei-rec__cta--large">
-      {% trans %}Solicitar plaza{% endtrans %}
+      {% trans %}Solicitar plaza ahora{% endtrans %}
     </a>
     <p class="aei-rec__cta-final-legal">
       {% trans %}Programa PIIL — Convocatoria Colectivos Vulnerables 2025. Financiado por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+).{% endtrans %}

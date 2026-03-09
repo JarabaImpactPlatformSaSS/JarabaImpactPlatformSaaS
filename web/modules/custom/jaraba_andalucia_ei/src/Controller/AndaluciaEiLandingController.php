@@ -68,6 +68,7 @@ class AndaluciaEiLandingController extends ControllerBase {
    */
   public function reclutamiento(): array {
     $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
+    $guiaUrl = Url::fromRoute('jaraba_andalucia_ei.guia_participante')->toString();
 
     $programa = [
       'expediente' => 'SC/ICV/0111/2025',
@@ -121,6 +122,7 @@ class AndaluciaEiLandingController extends ControllerBase {
     return [
       '#theme' => 'andalucia_ei_reclutamiento',
       '#solicitar_url' => $solicitarUrl,
+      '#guia_url' => $guiaUrl,
       '#programa' => $programa,
       '#module_path' => $modulePath,
       '#cache' => [

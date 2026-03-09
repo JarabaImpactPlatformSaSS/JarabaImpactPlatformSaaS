@@ -183,6 +183,8 @@
   margin: 0 0 1.25rem;
   letter-spacing: -0.03em;
   line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 2px 8px color-mix(in srgb, black 50%, transparent);
 }
 
 .aei-rec__subtitle {
@@ -588,6 +590,95 @@
 }
 
 // =============================================================================
+// SOCIAL PROOF
+// =============================================================================
+
+.aei-rec__social-proof {
+  padding: 4rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+}
+
+.aei-rec__social-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aei-rec__social-proof-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-shadow, black) 6%, transparent);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-shadow, black) 10%, transparent);
+  }
+}
+
+.aei-rec__social-proof-value {
+  display: block;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--ej-naranja-impulso, #FF8C42);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.aei-rec__social-proof-label {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.4;
+}
+
+// =============================================================================
+// LEAD MAGNET
+// =============================================================================
+
+.aei-rec__lead-magnet {
+  padding: 3.5rem 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 8%, transparent) 0%,
+    color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 3%, transparent) 100%
+  );
+  border-top: 3px solid var(--ej-verde-innovacion, #00A9A5);
+}
+
+.aei-rec__lead-magnet-content {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.aei-rec__cta--lead-magnet {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1.5rem;
+  background: var(--ej-verde-innovacion, #00A9A5);
+  color: var(--ej-bg-surface, #fff);
+  border: none;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 85%, black);
+    transform: translateY(-1px);
+  }
+}
+
+// =============================================================================
 // FAQ
 // =============================================================================
 
@@ -668,7 +759,7 @@
 }
 
 .aei-rec__cta-final-legal {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: color-mix(in srgb, var(--ej-bg-surface, #fff) 50%, transparent);
   margin: 2rem 0 0;
 }

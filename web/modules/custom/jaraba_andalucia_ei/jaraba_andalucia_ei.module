@@ -55,6 +55,7 @@ function jaraba_andalucia_ei_theme(): array {
     'andalucia_ei_reclutamiento' => [
       'variables' => [
         'solicitar_url' => NULL,
+        'guia_url' => NULL,
         'programa' => [],
         'module_path' => NULL,
       ],
@@ -1123,6 +1124,14 @@ function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
   elseif ($route === 'jaraba_andalucia_ei.reclutamiento') {
     _jaraba_andalucia_ei_reclutamiento_attachments($attachments);
   }
+  elseif ($route === 'jaraba_andalucia_ei.guia_participante') {
+    // ZERO-REGION-003: Library + drupalSettings MUST be attached here.
+    $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/guia';
+    $guiaDownloadUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.guia_download_api')->toString();
+    $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi'] = [
+      'guiaDownloadUrl' => $guiaDownloadUrl,
+    ];
+  }
 
   // Popup de reclutamiento en la home de meta-sitios corporativos.
   _jaraba_andalucia_ei_popup_attachments($attachments, $route);
@@ -1206,8 +1215,11 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
   $baseUrl = $request->getSchemeAndHttpHost();
   $canonicalUrl = $baseUrl . '/andaluciamasei.html';
 
-  $title = t('Andalucia +ei — Programa Gratuito de Insercion Laboral');
-  $description = t('Programa gratuito de itinerarios integrados de insercion laboral en Malaga y Sevilla. 45 plazas, formacion certificada, orientacion personalizada y acompanamiento a la insercion. Financiado por FSE+ y Junta de Andalucia.');
+  // SEO: Title y description optimizados para keywords de alto volumen.
+  // Keywords objetivo: "formación gratuita desempleados", "528 euros",
+  // "inserción laboral Andalucía", "programa empleo Sevilla Málaga".
+  $title = t('Formación Gratuita + 528 € | Programa Inserción Laboral Andalucía 2026');
+  $description = t('Programa gratuito T-Acompañamos: formación certificada, orientación personalizada, mentoría IA y 528 € de incentivo. 45 plazas en Málaga y Sevilla para desempleados. Financiado por Junta de Andalucía y FSE+. Inscríbete ahora.');
 
   // Meta description.
   $attachments['#attached']['html_head'][] = [
@@ -1233,8 +1245,10 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     'andalucia_ei_rec_canonical',
   ];
 
-  // OG + Twitter tags.
-  _jaraba_andalucia_ei_add_og_tags($attachments, $title, $description, $canonicalUrl, 'rec_');
+  // OG + Twitter tags (incluye og:image).
+  $modulePath = \Drupal::service('extension.list.module')->getPath('jaraba_andalucia_ei');
+  $ogImageUrl = $baseUrl . '/' . $modulePath . '/images/reclutamiento-popup-hero.png';
+  _jaraba_andalucia_ei_add_og_tags($attachments, $title, $description, $canonicalUrl, 'rec_', $ogImageUrl);
 
   // Schema.org JSON-LD — EducationalOccupationalProgram con sedes geo.
   $schema = [
@@ -1331,22 +1345,68 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     ],
     'andalucia_ei_rec_schema_org',
   ];
+
+  // BreadcrumbList schema — mejora navegación en SERPs.
+  $breadcrumb_schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+      [
+        '@type' => 'ListItem',
+        'position' => 1,
+        'name' => 'Inicio',
+        'item' => $baseUrl,
+      ],
+      [
+        '@type' => 'ListItem',
+        'position' => 2,
+        'name' => 'Andalucía +ei',
+        'item' => $baseUrl . '/andalucia-ei/programa',
+      ],
+      [
+        '@type' => 'ListItem',
+        'position' => 3,
+        'name' => (string) t('Programa T-Acompañamos — Inscripción'),
+        'item' => $canonicalUrl,
+      ],
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($breadcrumb_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ],
+    'andalucia_ei_rec_breadcrumb_schema',
+  ];
 }
 
 /**
  * Helper: adds OG and Twitter Card meta tags.
  */
-function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $description, string $url, string $prefix = ''): void {
+function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $description, string $url, string $prefix = '', string $imageUrl = ''): void {
   $og_tags = [
     'og:title' => (string) $title,
     'og:description' => (string) $description,
     'og:url' => $url,
     'og:type' => 'website',
     'og:site_name' => 'Plataforma de Ecosistemas',
+    'og:locale' => 'es_ES',
     'twitter:card' => 'summary_large_image',
     'twitter:title' => (string) $title,
     'twitter:description' => (string) $description,
   ];
+
+  // og:image + twitter:image — crítico para CTR en redes sociales (+30-40%).
+  if ($imageUrl !== '') {
+    $og_tags['og:image'] = $imageUrl;
+    $og_tags['og:image:width'] = '1200';
+    $og_tags['og:image:height'] = '630';
+    $og_tags['og:image:type'] = 'image/png';
+    $og_tags['twitter:image'] = $imageUrl;
+  }
 
   foreach ($og_tags as $property => $content) {
     $tag_name = str_starts_with($property, 'twitter:') ? 'name' : 'property';
@@ -1428,6 +1488,9 @@ function jaraba_andalucia_ei_preprocess_html(array &$variables): void {
     if ($route === 'jaraba_andalucia_ei.landing') {
       $variables['attributes']['class'][] = 'page-andalucia-ei--landing';
     }
+    elseif ($route === 'jaraba_andalucia_ei.reclutamiento') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--reclutamiento';
+    }
     elseif ($route === 'jaraba_andalucia_ei.solicitar') {
       $variables['attributes']['class'][] = 'page-andalucia-ei--solicitar';
     }
@@ -1450,6 +1513,14 @@ function jaraba_andalucia_ei_preprocess_html(array &$variables): void {
  * Adds Andalucía +ei public pages to the sitemap.
  */
 function jaraba_andalucia_ei_simple_sitemap_links_alter(array &$links, $sitemap_variant): void {
+  // Reclutamiento page — highest priority (main conversion funnel).
+  $links[] = [
+    'url' => '/andaluciamasei.html',
+    'priority' => 0.95,
+    'changefreq' => 'weekly',
+    'lastmod' => date('Y-m-d'),
+  ];
+
   // Landing page — high priority.
   $links[] = [
     'url' => '/andalucia-ei/programa',
