@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-06 | Version: 1.3.0
+# Ultima actualizacion: 2026-03-09 | Version: 1.4.0
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -83,6 +83,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - UPDATE-FIELD-DEF-001: updateFieldStorageDefinition() EXIGE setName($field_name) y setTargetEntityTypeId($entity_type_id) en el BaseFieldDefinition. baseFieldDefinitions() NO los establece — estan en la key del array, no dentro del objeto
 - UPDATE-HOOK-CATCH-001: try-catch en hook_update_N() DEBE usar \Throwable (NO \Exception). PHP 8.4 TypeError extiende \Error, no \Exception. catch(\Exception) deja pasar TypeErrors y mata updatedb
 - UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity (Content O Config), o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager::installEntityType(). INCLUYE ConfigEntities — Drupal trackea sus entity type definitions. Sin el hook, CI pasa pero produccion diverge con "entity type needs to be installed"
+- UPDATE-HOOK-FIELDABLE-001: Al usar `updateFieldableEntityType()`, DEBE usarse `getFieldStorageDefinitions()` (NO `getBaseFieldDefinitions()`). `getBaseFieldDefinitions()` incluye campos computed (ej: metatag del modulo metatag) que NO tienen storage. Incluirlos crea orphan entries en key-value store `entity.definitions.installed` que generan errores permanentes en /admin/reports/status
+- TRANSLATABLE-FIELDS-INSTALL-001: Cuando un hook_update_N() hace una entidad `translatable = TRUE`, DEBE instalar los 6 campos de content_translation: source, outdated, uid, status, created, changed. `updateFieldableEntityType()` solo actualiza el entity type — los campos del modulo content_translation se proveen via hook y requieren `installFieldStorageDefinition()` individual
 - Raw SQL SOLO en .install hooks. En todo otro contexto: Entity Query o DB API
 
 ### JavaScript
@@ -97,6 +99,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Accesibilidad: aria-labels en interactivos, headings jerarquicos, focus visible
 - XSS: NUNCA |raw sin sanitizacion previa servidor (AUDIT-SEC-003)
 - Sin logica de negocio (solo presentacion). Usar preprocess para preparar variables
+- TWIG-URL-RENDER-ARRAY-001: `url()` en Drupal 11 devuelve **render array** (NO string). NUNCA concatenar con `~`. Solo usar dentro de `{{ }}` donde escapeFilter maneja el render array. Para construir URLs concatenadas, pasar la URL como string desde preprocess PHP o usar path relativo (`'/' ~ directory ~ '/logo.svg'`)
+- TWIG-INCLUDE-ONLY-001: Usar `only` en `{% include %}` de parciales para aislar el contexto. Sin `only`, TODAS las variables del template padre se filtran al parcial (incluyendo render arrays que colisionan con variables esperadas como strings). Pasar explicitamente solo las variables necesarias
 
 ## THEMING — ecosistema_jaraba_theme
 
@@ -235,12 +239,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v114.0.0
-- ARQUITECTURA: v103.0.0
-- INDICE: v143.0.0
-- FLUJO: v67.0.0
-- Ultimo aprendizaje: #164
-- Ultima golden rule: #103
+- DIRECTRICES: v121.0.0
+- ARQUITECTURA: v109.0.0
+- INDICE: v150.0.0
+- FLUJO: v74.0.0
+- Ultimo aprendizaje: #171
+- Ultima golden rule: #111
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
