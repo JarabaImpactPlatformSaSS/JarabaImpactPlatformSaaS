@@ -12,7 +12,7 @@ time_limit: 5
 expire: 300
 form_settings:
   user_register_form: true
-  user_pass: false
+  user_pass: true
   feedback_contact_message_form: true
   _contact_message_form: true
-  user_login_form: false
+  user_login_form: true
