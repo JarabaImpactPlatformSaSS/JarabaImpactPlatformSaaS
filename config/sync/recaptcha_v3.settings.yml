@@ -5,7 +5,7 @@ site_key: ''
 secret_key: ''
 hide_badge: false
 verify_hostname: false
-default_challenge: captcha/Math
-error_message: 'Anti-bot verification failed.'
+default_challenge: ''
+error_message: 'La verificación de seguridad ha fallado. Por favor, inténtelo de nuevo.'
 cacheable: false
 library_use_recaptcha_net: false

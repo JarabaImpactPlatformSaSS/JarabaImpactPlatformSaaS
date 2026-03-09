@@ -214,6 +214,28 @@ function ecosistema_jaraba_core_requirements($phase) {
     }
 
     // ─────────────────────────────────────────────────────────
+    // SALVAGUARDA: Verificar reCAPTCHA v3 keys configuradas.
+    // ─────────────────────────────────────────────────────────
+    $recaptcha_config = \Drupal::config('recaptcha_v3.settings');
+    $recaptcha_site_key = $recaptcha_config->get('site_key');
+    $recaptcha_secret_key = $recaptcha_config->get('secret_key');
+    if (empty($recaptcha_site_key) || empty($recaptcha_secret_key)) {
+      $requirements['ecosistema_jaraba_recaptcha'] = [
+        'title' => t('Ecosistema Jaraba - reCAPTCHA v3'),
+        'value' => t('No configurado'),
+        'description' => t('Las claves de reCAPTCHA v3 no están configuradas. Los formularios protegidos (login, registro, contacto) no podrán validar contra bots. Configure RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY como GitHub Secrets y redepliegue.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_recaptcha'] = [
+        'title' => t('Ecosistema Jaraba - reCAPTCHA v3'),
+        'value' => t('Configurado (site key: @key...)', ['@key' => substr($recaptcha_site_key, 0, 8)]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+
+    // ─────────────────────────────────────────────────────────
     // SALVAGUARDA: Verificar que entity definitions estan sync.
     // ─────────────────────────────────────────────────────────
     try {

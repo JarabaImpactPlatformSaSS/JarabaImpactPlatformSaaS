@@ -5,4 +5,4 @@ dependencies: {  }
 id: default
 label: Default
 threshold: 0.5
-challenge: captcha/Math
+challenge: ''

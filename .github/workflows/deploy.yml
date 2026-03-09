@@ -242,6 +242,8 @@ jobs:
           KEY_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
           KEY_GEMINI: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
           KEY_QDRANT: ${{ secrets.QDRANT_API_KEY }}
+          KEY_RECAPTCHA_SITE: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          KEY_RECAPTCHA_SECRET: ${{ secrets.RECAPTCHA_SECRET_KEY }}
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << EOFKEYS
             cd ~/JarabaImpactPlatformSaaS
@@ -262,6 +264,8 @@ jobs:
               [ -n "${KEY_ANTHROPIC}" ] && echo "putenv('ANTHROPIC_API_KEY=${KEY_ANTHROPIC}');"
               [ -n "${KEY_GEMINI}" ] && echo "putenv('GOOGLE_GEMINI_API_KEY=${KEY_GEMINI}');"
               [ -n "${KEY_QDRANT}" ] && echo "putenv('QDRANT_API_KEY=${KEY_QDRANT}');"
+              [ -n "${KEY_RECAPTCHA_SITE}" ] && echo "putenv('RECAPTCHA_SITE_KEY=${KEY_RECAPTCHA_SITE}');"
+              [ -n "${KEY_RECAPTCHA_SECRET}" ] && echo "putenv('RECAPTCHA_SECRET_KEY=${KEY_RECAPTCHA_SECRET}');"
               echo "// END API Keys"
             } >> "\$SETTINGS"
 
