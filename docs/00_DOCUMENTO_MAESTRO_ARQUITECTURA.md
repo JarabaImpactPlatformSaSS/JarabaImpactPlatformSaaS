@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-06
-**Versión:** 109.0.0 (Twig Render Array Safety + Entity Update Hook Hardening — TWIG-URL-RENDER-ARRAY-001, TWIG-INCLUDE-ONLY-001, UPDATE-HOOK-FIELDABLE-001, TRANSLATABLE-FIELDS-INSTALL-001 + aprendizaje #171)
+**Fecha:** 2026-03-10
+**Versión:** 111.0.0 (Anti-Spam Stack Consolidation + Coordinador Dashboard Clase Mundial + Reclutamiento Landing Elevation SEO + 312 Unit Tests + aprendizaje #173)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -888,36 +888,44 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      ANDALUCIA EI: PLAN MAESTRO 8 FASES ⭐            │
+│           ANDALUCIA EI: PLAN MAESTRO 12 SPRINTS CLASE MUNDIAL ⭐       │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   📦 jaraba_andalucia_ei (v2.0 — Plan Maestro) ⭐                    │
-│   ├── Fase 1: P0/P1 fixes (AiMentorshipTracker, StoExportService,    │
-│   │   tenant isolation, DI, SCSS)                                      │
-│   ├── Fase 2: 11 bloques Page Builder verticales (hero, features,     │
-│   │   content, gallery, faq, testimonials, social_proof, stats,        │
-│   │   pricing, cta, map) + config YAMLs + templates + update hook     │
-│   ├── Fase 3: Landing conversion /andalucia-ei/programa               │
-│   │   └── Zero Region + Open Graph + Schema.org JSON-LD               │
-│   ├── Fase 4: Portal participante /andalucia-ei/mi-participacion      │
-│   │   ├── Health score gauge, timeline expandida con sub-steps        │
-│   │   ├── Training progress, quick actions, achievements/badges       │
-│   │   └── PDF progress report generation                               │
-│   ├── Fase 5: ExpedienteDocumento entity (19 categorias documentales) │
-│   │   ├── Vault cifrado, revision IA, firmas digitales               │
-│   │   └── STO compliance tracking + CRUD + Field UI                   │
-│   ├── Fase 6: Mensajeria integration (CONTEXT_ANDALUCIA_EI,          │
-│   │   MensajeriaIntegrationService, widget)                            │
-│   ├── Fase 7: AI automation (CopilotContextProvider,                  │
-│   │   AdaptiveDifficultyEngine, 4 nudge rules proactivos)             │
-│   └── Fase 8: SEO/marketing (sitemap, lead magnet guide page)        │
+│   📦 jaraba_andalucia_ei (v3.0 — Plan Maestro Clase Mundial) ⭐      │
 │                                                                         │
-│   Nuevas entidades: ExpedienteDocumento (ContentEntity, 19 categorias)│
-│   Nuevos servicios (7): ExpedienteService, DocumentoRevisionIaService,│
-│   InformeProgresoPdfService, MensajeriaIntegrationService,            │
-│   AdaptiveDifficultyEngine, AndaluciaEiCopilotContextProvider,        │
-│   AndaluciaEiJourneyProgressionService                                 │
-│   71 ficheros, +6644/-531 lineas                                       │
+│   PARTE I — Firma Electrónica (Sprints 1-6):                           │
+│   ├── Sprint 1: FirmaWorkflowService state machine (8 estados:        │
+│   │   borrador→pendiente_firma→firmado_parcial→firmado + caducado)    │
+│   ├── Sprint 2: Firma táctil (canvas), AutoFirma (PAdES), sello      │
+│   │   empresa (PKCS#12), SCSS firma-pad + verificación QR             │
+│   ├── Sprint 3: DocumentoFirmaOrchestrator (37 categorías → 4 flujos:│
+│   │   FIRMA_SIMPLE, FIRMA_DUAL, FIRMA_SELLO, SIN_FIRMA)              │
+│   ├── Sprint 4: Dashboard firma masiva + JS handler batch             │
+│   │   (selección, filtros, progreso, sello lote)                      │
+│   ├── Sprint 5: Post-firma automatizado (QR URI, TSA timestamp,      │
+│   │   notificación), verificación pública /verificar/{hash}           │
+│   └── Sprint 6: Tests (14 FirmaController + 12 Orchestrator)         │
+│                                                                         │
+│   PARTE II — Emprendimiento Inclusivo (Sprints 7-12):                  │
+│   ├── Sprint 7: PlanEmprendimientoEi entity (20 campos, 4 fases:     │
+│   │   ideación→validación→lanzamiento→consolidación) +                │
+│   │   EiEmprendimientoBridgeService (scoring viabilidad 0-100, SROI)  │
+│   ├── Sprint 8: AdaptacionItinerarioService (8 tipos barrera,         │
+│   │   complejidad scoring) + CopilotContext enriquecido con barreras  │
+│   ├── Sprint 9: EiMatchingBridgeService (Qdrant vectorial             │
+│   │   participante↔empresa) + EmpresaCandidatosController             │
+│   ├── Sprint 10: EiAlumniBridgeService + AlumniController +           │
+│   │   comunidad-alumni.html.twig + _historia-exito.html.twig          │
+│   ├── Sprint 11: EiBadgeBridgeService (9 hitos PIIL) +               │
+│   │   ImpactoPublicoController (SROI, IRIS+, ODS) + dashboard público │
+│   └── Sprint 12: EiPushNotificationService (8 eventos, routing       │
+│       prioridad) + notificaciones en transición de fase               │
+│                                                                         │
+│   Entidades: ExpedienteDocumento, PlanEmprendimientoEi                 │
+│   Servicios (14+): FirmaWorkflow, DocumentoFirmaOrchestrator,         │
+│   EiEmprendimientoBridge, AdaptacionItinerario, EiMatchingBridge,     │
+│   EiAlumniBridge, EiBadgeBridge, EiPushNotification + 7 previos       │
+│   100+ ficheros, 231 tests OK                                          │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -2917,6 +2925,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 | 2026-03-04 | **98.0.0** | **Stripe Connect Integration + DI Audit Runtime Fixes:** Seccion PAGOS ampliada: Stripe Connect tipo plataforma/marketplace con destination charges, subscriptions recurrentes + metered billing basado en uso, 2 webhook endpoints separados (billing + FOC) con secrets independientes. settings.secrets.php unificado: 3 namespaces config (ecosistema_jaraba_core.stripe, jaraba_foc.settings, jaraba_legal_billing.settings) alimentados por 4 env vars via getenv(). StripeConnectService con fallback getenv() directo. Stripe CLI v1.37.2 instalado. DI audit exhaustivo: 21 mismatches corregidos en 9 modulos — 12 logger channel→factory (pixels 7, comercio_conecta 8, agroconecta 3, business_tools 4, resources 1), 6 phantom args eliminados (candidate 3, job_board 1, lms 3), 6 circular deps resueltas (interactive, core, foc, email, lms, resources). PHP 8.4 nullable fix FlashOfferService. 4 reglas nuevas: LOGGER-DI-001, CIRCULAR-DEP-001, PHANTOM-ARG-001, STRIPE-ENV-UNIFY-001. Gaps salvaguarda: no detection circular deps, no phantom arg validation, logger mismatch solo en --full mode. Reglas de oro #99, #100. Aprendizaje #159. |
 | 2026-03-04 | **97.0.0** | **7 Items SaaS Post-Evaluacion — 7 implementaciones estrategicas:** ecosistema_jaraba_core: +1 ConfigEntity VerticalBrandConfig (18 campos sub-marca por vertical, 10 config YAMLs, revelation levels landing/trial/expansion/enterprise) + 3 Services (RevelationLevelService, NavigationFilterService, VerticalBrandSeoService) + VerticalBrandController + FeatureGateRouterService (ServiceLocator 10 verticales) + Twig test feature_allowed en JarabaTwigExtension. jaraba_analytics: +1 ContentEntity ProductMetricSnapshot (16 campos metricas pre-PMF: activation_rate, retained_d7/d30, nps_score, monthly_churn_rate, kill_criteria_triggered) + 1 ConfigEntity ActivationCriteriaConfig (10 YAMLs verticales, thresholds PMF) + 5 Services (ActivationTracking, RetentionCalculator, NpsSurvey, KillCriteriaAlert, ProductMetricsAggregator) + PrePmfDashboardController + NPS API endpoint. jaraba_pilot_manager (MODULO NUEVO): 3 ContentEntities (PilotProgram 18 campos status draft/active/completed/cancelled, PilotTenant 15 campos con activation_score/retention_d30/churn_risk, PilotFeedback 13 campos nps/csat/feature_request/bug_report/general) + PilotEvaluatorService (evaluatePilot/evaluateTenant/getConversionProbability/generateReport) + PilotDashboardController + 5 ECA Events + 3 AccessControlHandlers tenant-aware + 3 PremiumEntityFormBase + 3 ListBuilders. jaraba_institutional: +7 campos ProgramParticipant (piil_registration_number, fundae_group_id, fse_plus_indicator, certification_date/type, digital_skills_level DigComp 2.2, employment_sector CNAE) + 6 campos InstitutionalProgram (piil_program_code, fundae_action_id, fse_plus_priority_axis, cofinancing_rate, target_employment_rate, reporting_frequency) + PiilMetricsService + StoSyncService + PiilDashboardController. jaraba_integrations: +OpenApiSpecService (spec OpenAPI 3.0 dinamica) + OpenApiController (/api/v1/openapi.json cache 1h). Safeguards: CHECK 7 validate-entity-integrity.php (entity types sin .install), UPDATE-HOOK-REQUIRED-001 reforzado ConfigEntities. 40 tests, 294 assertions. Aprendizaje #158. |
 | 2026-03-04 | **96.0.0** | **LCIS Gap Closure — 2 Entities + 2 QueueWorkers + EU AI Act Audit Trail:** Seccion 12.6 LCIS actualizada: jaraba_legal_knowledge 4→5 entidades (+LegalNormRelation con 10 tipos de relacion normativa: deroga_total/deroga_parcial/modifica/desarrolla/transpone/cita/complementa/prevalece_sobre/es_especial_de/sustituye, source/target_norm_id entity_reference, affected_articles JSON, PremiumEntityFormBase, AccessControlHandler tenant-aware). jaraba_legal_intelligence +1 entity LegalCoherenceLog (15 campos audit trail: query_text, intent_type, coherence_score, validator_results JSON, verifier_results JSON, norm_citations JSON, hierarchy_chain JSON, disclaimer_appended, retries_needed, blocked, block_reason, response_snippet, vertical, trace_id — EU AI Act Art. 12 compliance, read-only). +2 QueueWorkers: NormativeUpdateWorker (cron 60s, actualiza status normas afectadas + crea LegalNormRelation), NormVectorizationWorker (cron 120s, chunking + embeddings + Qdrant upsert, defensivo si servicios no disponibles). NormativeGraphEnricher L3 actualizado: consulta legal_norm_relation real para detectar derogaciones/modificaciones en vez de heuristicas. LegalCoherenceValidatorService L6 + LegalCoherenceVerifierService L7 actualizados: crean LegalCoherenceLog tras cada validacion/verificacion. 2 hook_update_N() para instalar entity types. 5 tests nuevos (2 Unit + 3 Kernel). Reglas LCIS-AUDIT-001, LCIS-GRAPH-001 en Directrices v107.0.0. Aprendizaje #157. |
+| 2026-03-10 | **110.0.0** | **Anti-Spam Stack Consolidation + Coordinador Dashboard Clase Mundial + Reclutamiento Landing Elevation SEO:** Anti-spam: eliminadas capas redundantes (antibot, honeypot) de login/password forms, reCAPTCHA v3 con default_challenge=none, keys inyectadas desde GitHub Secrets en deploy.yml via putenv(). Coordinador dashboard: 19 gaps cerrados en 3 sprints P0/P1/P2 (empty states siempre visibles, focus trap Tab/Shift+Tab en modales, CSRF token TTL 1h refresh, aria-live polite, Drupal.behaviors detach con clearInterval, responsive tables sticky first column, prefers-reduced-motion, focus-visible, zero-value checkmarks). /user profile: widgets Andalucía +ei con badges por fase (5 variantes color-mix), stats row success/alert, completitud 100% success. Reclutamiento landing: social proof grid 4 cards (22.222 plazas, 40% inserción, 100% gratuito, 24/7 mentoría IA), lead magnet guía descargable, 12 FAQs SEO People Also Ask, BreadcrumbList schema, og:image 1200x630 con width/height/type metadata. StoExportForm + download route. cross_vertical fix (solo TRUE para jaraba_mentoring). 312 unit tests (1122 assertions, 0 errores) — 21 nuevos test files. Aprendizaje #173. |
 | 2026-03-09 | **109.0.0** | **Twig Render Array Safety + Entity Update Hook Hardening:** 4 reglas arquitectonicas nuevas. TWIG-URL-RENDER-ARRAY-001: descubrimiento critico — `url()` en Drupal 11 Twig devuelve render array (lineas 244-247 de TwigExtension.php: `$build = ['#markup' => $url]; $generated_url->applyTo($build); return $build;`), NO un string. Concatenar con `~` genera "Array to string conversion". Solo usar dentro de `{{ }}`. TWIG-INCLUDE-ONLY-001: includes Twig DEBEN usar `only` para evitar leakage de variables (render arrays del padre contaminan el parcial). UPDATE-HOOK-FIELDABLE-001: `updateFieldableEntityType()` DEBE recibir `getFieldStorageDefinitions()` (no `getBaseFieldDefinitions()`) — campos computed como metatag crean orphan entries permanentes en key-value store. TRANSLATABLE-FIELDS-INSTALL-001: hacer entity translatable requiere instalar 6 campos content_translation individualmente. Fixes aplicados: _seo-schema.html.twig (3 archivos), jaraba_billing_update_10005, jaraba_site_builder_update_10009. Aprendizaje #171. |
 | 2026-03-06 | **108.0.0** | **SEO/GEO Meta-Sitio Corporativo 10/10 — Reclutamiento Elevation + Schema.org Enriquecido:** Page Builder SEO mejorado: `_jaraba_page_builder_inject_seo_meta()` inyecta `<meta name="description">` ademas de og:description. `_jaraba_page_builder_extract_og_image()` cascade 5 niveles (hero_image > og_image > image > og-image-dynamic.png > logo.svg). Hreflang deduplication: variable `is_page_content` en preprocess_html condiciona parcial Twig (HreflangService ya cubre page_content). URLs absolutas con `'absolute' => TRUE` en Url::fromRoute(). Orphan templates resueltos: `_ped-schema.html.twig` (Corporation + GeoCoordinates + 2 PostalAddress Malaga/Sevilla + hasMap) y `_seo-schema.html.twig` (Organization + SoftwareApplication) ahora incluidos en `html.html.twig`. NAP normalizado: telefono `+34 623 174 304`, email `contacto@plataformadeecosistemas.es`, eliminados placeholders falsos de map templates. Cookie banner: localStorage-first pattern en `submitConsent()` — persist + hide ANTES del fetch. Landing reclutamiento: ZERO-REGION-003 aplicado (library via hook_page_attachments), publicidad oficial PIIL CV (logos institucionales obligatorios), Schema.org EducationalOccupationalProgram (2 sedes + GeoCoordinates + funder FSE+/SAE), geo meta tags (ES-AN, ICBM), popup reclutamiento en meta-sites homepage (sessionStorage dismiss, requestPath detection). 5 reglas nuevas. Aprendizaje #170. |
 | 2026-03-03 | **95.0.0** | **Sistema de Validacion Arquitectonica Automatizada — 6 Scripts + 4 Puntos de Control:** Nueva seccion 10.8.1 Automated Architectural Validation System con ASCII box. 6 scripts en `scripts/validation/`: validate-services-di.php (DI type mismatches YAML↔PHP, 781 servicios, mapping 30+ servicios core), validate-routing.php (route→controller existence, filtro isCustomClass jaraba_*/ecosistema_*, 2127 refs), validate-entity-integrity.php (6 checks: ENTITY-001, AUDIT-CONS-001, ENTITY-PREPROCESS-001, FIELD-UI-SETTINGS-TAB-001, VIEWS-DATA-001, ECA-EVENT-001), validate-query-chains.php (QUERY-CHAIN-001 regex multilinea), validate-config-sync.sh (config/install vs config/sync drift), validate-all.sh (orquestador --fast <3s / --full). 4 puntos de integracion: pre-commit condicional (staged files trigger), CI step antes de PHPStan, deploy step pre-rsync, lando validate/validate-fast tooling. Auto-descubrimiento via glob, zero listas hardcoded. 6 violaciones pre-existentes corregidas (3 SettingsForm + 3 admin_permission). 4 bugs runtime (3 ECA event_name + 1 $wContract). 3 reglas: ARCH-VALIDATE-001, ECA-EVENT-001, BASELINE-CLEAN-001. Regla de oro #94-96. Aprendizaje #156. |
