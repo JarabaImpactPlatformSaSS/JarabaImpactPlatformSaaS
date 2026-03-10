@@ -63,7 +63,7 @@ services:
       - '@entity_type.manager'
       - '@file_system'
       - '@logger.channel.jaraba_support'
-      - '@?jaraba_billing.plan_resolver'
+      - '@?ecosistema_jaraba_core.plan_resolver'
 
   jaraba_support.attachment_scan:
     class: Drupal\jaraba_support\Service\AttachmentScanService

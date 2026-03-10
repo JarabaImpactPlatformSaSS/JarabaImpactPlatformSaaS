@@ -134,6 +134,77 @@ class ExpedienteService {
   }
 
   /**
+   * Crea un documento en el expediente desde contenido generado (PDF, etc.).
+   *
+   * Método puente utilizado por DaciService, AcuerdoParticipacionService
+   * y ReciboServicioService para crear documentos programáticamente.
+   *
+   * @param int $participanteId
+   *   ID del participante.
+   * @param string $categoria
+   *   Categoría del documento (clave de CATEGORIAS).
+   * @param string $titulo
+   *   Título descriptivo.
+   * @param string|null $pdfContent
+   *   Contenido PDF binario (NULL si solo se crea el registro).
+   * @param int|null $tenantId
+   *   ID del tenant (se hereda del participante si NULL).
+   *
+   * @return int|null
+   *   ID del documento creado o NULL si falla.
+   */
+  public function createDocument(
+    int $participanteId,
+    string $categoria,
+    string $titulo,
+    ?string $pdfContent = NULL,
+    ?int $tenantId = NULL,
+  ): ?int {
+    $nombreArchivo = str_replace(' ', '_', strtolower($titulo)) . '_' . $participanteId . '.pdf';
+    $mimeType = 'application/pdf';
+
+    if ($pdfContent === NULL) {
+      // Crear registro sin archivo (solo metadata).
+      $storage = $this->entityTypeManager->getStorage('expediente_documento');
+      $requeridoSto = str_starts_with($categoria, 'sto_');
+
+      /** @var \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface $documento */
+      $documento = $storage->create([
+        'participante_id' => $participanteId,
+        'titulo' => $titulo,
+        'categoria' => $categoria,
+        'estado_revision' => 'pendiente',
+        'requerido_sto' => $requeridoSto,
+        'uid' => $this->currentUser->id(),
+      ]);
+
+      if ($tenantId) {
+        $documento->set('tenant_id', $tenantId);
+      }
+      else {
+        $participante = $this->entityTypeManager->getStorage('programa_participante_ei')->load($participanteId);
+        if ($participante && $participante->hasField('tenant_id') && !$participante->get('tenant_id')->isEmpty()) {
+          $documento->set('tenant_id', $participante->get('tenant_id')->target_id);
+        }
+      }
+
+      try {
+        $documento->save();
+        return (int) $documento->id();
+      }
+      catch (\Throwable $e) {
+        $this->logger->error('Error creating expediente documento: @message', [
+          '@message' => $e->getMessage(),
+        ]);
+        return NULL;
+      }
+    }
+
+    $doc = $this->subirDocumento($participanteId, $categoria, $titulo, $pdfContent, $nombreArchivo, $mimeType);
+    return $doc ? (int) $doc->id() : NULL;
+  }
+
+  /**
    * Lista documentos de un participante, opcionalmente filtrados por categoría.
    *
    * @param int $participanteId

@@ -6,9 +6,14 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface;
+use Drupal\jaraba_andalucia_ei\Service\AccesoProgramaService;
+use Drupal\jaraba_andalucia_ei\Service\EiEmprendimientoBridgeService;
 use Drupal\jaraba_andalucia_ei\Service\ExpedienteService;
+use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Drupal\jaraba_andalucia_ei\Service\InformeProgresoPdfService;
+use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -35,6 +40,11 @@ class ParticipantePortalController extends ControllerBase {
     protected ?object $crossVerticalBridgeService,
     protected ?InformeProgresoPdfService $informePdfService,
     protected LoggerInterface $logger,
+    protected ?TenantContextService $tenantContext = NULL,
+    protected ?AccesoProgramaService $accesoProgramaService = NULL,
+    protected ?RiesgoAbandonoService $riesgoService = NULL,
+    protected ?FirmaWorkflowService $firmaWorkflow = NULL,
+    protected ?EiEmprendimientoBridgeService $emprendimientoBridge = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -59,6 +69,21 @@ class ParticipantePortalController extends ControllerBase {
         ? $container->get('jaraba_andalucia_ei.informe_progreso_pdf')
         : NULL,
       $container->get('logger.channel.jaraba_andalucia_ei'),
+      $container->has('ecosistema_jaraba_core.tenant_context')
+        ? $container->get('ecosistema_jaraba_core.tenant_context')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.acceso_programa')
+        ? $container->get('jaraba_andalucia_ei.acceso_programa')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.riesgo_abandono')
+        ? $container->get('jaraba_andalucia_ei.riesgo_abandono')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.firma_workflow')
+        ? $container->get('jaraba_andalucia_ei.firma_workflow')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.ei_emprendimiento_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_emprendimiento_bridge')
+        : NULL,
     );
   }
 
@@ -83,8 +108,38 @@ class ParticipantePortalController extends ControllerBase {
     $timeline = $this->buildTimeline($participante);
     $formacion = $this->buildFormacion($participante);
 
+    // Riesgo de abandono para el participante.
+    $riesgo = NULL;
+    if ($this->riesgoService) {
+      try {
+        $riesgo = $this->riesgoService->evaluarRiesgo((int) $participante->id());
+      }
+      catch (\Throwable) {
+      }
+    }
+
     // Group documents by category prefix.
     $documentosPorCategoria = $this->groupDocumentosByPrefix($documentos);
+
+    // Sprint 4: Documentos pendientes de firma del participante.
+    $firmaPendientes = $this->getFirmasPendientes();
+
+    // Sprint 7: Hitos de emprendimiento si tiene plan activo.
+    $hitosEmprendimiento = [];
+    if ($this->emprendimientoBridge) {
+      try {
+        $hitosEmprendimiento = $this->emprendimientoBridge->getHitosEmprendimiento(
+          (int) $participante->id()
+        );
+      }
+      catch (\Throwable) {
+      }
+    }
+
+    $libraries = ['jaraba_andalucia_ei/participante-portal'];
+    if (!empty($firmaPendientes)) {
+      $libraries[] = 'jaraba_andalucia_ei/firma-electronica';
+    }
 
     return [
       '#theme' => 'participante_portal',
@@ -96,10 +151,10 @@ class ParticipantePortalController extends ControllerBase {
       '#proactive_action' => $proactiveAction,
       '#timeline' => $timeline,
       '#formacion' => $formacion,
+      '#firma_pendientes' => $firmaPendientes,
+      '#hitos_emprendimiento' => $hitosEmprendimiento,
       '#attached' => [
-        'library' => [
-          'jaraba_andalucia_ei/participante-portal',
-        ],
+        'library' => $libraries,
       ],
       '#cache' => [
         'contexts' => ['user'],
@@ -180,24 +235,53 @@ class ParticipantePortalController extends ControllerBase {
   /**
    * Gets the current user's participant entity.
    *
+   * TENANT-001: Filters by uid AND tenant_id when available.
+   *
    * @return \Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface|null
    *   The participant entity or NULL.
    */
   protected function getParticipanteActual(): ?ProgramaParticipanteEiInterface {
     $uid = $this->currentUser()->id();
     $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
-    $ids = $storage->getQuery()
+    $query = $storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('uid', $uid)
       ->condition('fase_actual', 'baja', '<>')
-      ->range(0, 1)
-      ->execute();
+      ->range(0, 1);
+
+    // TENANT-001: filtrar por tenant del usuario actual.
+    $tenantId = $this->resolveCurrentTenantId();
+    if ($tenantId) {
+      $query->condition('tenant_id', $tenantId);
+    }
+
+    $ids = $query->execute();
 
     if (empty($ids)) {
       return NULL;
     }
 
     return $storage->load(reset($ids));
+  }
+
+  /**
+   * Resolves the current tenant Group ID.
+   *
+   * @return int|null
+   *   The group ID, or NULL if unavailable.
+   */
+  protected function resolveCurrentTenantId(): ?int {
+    if (!$this->tenantContext) {
+      return NULL;
+    }
+
+    try {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
+    }
+    catch (\Throwable) {
+      return NULL;
+    }
   }
 
   /**
@@ -217,7 +301,7 @@ class ParticipantePortalController extends ControllerBase {
     try {
       return $this->healthScoreService->calculate($participante);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->warning('Health score error: @msg', ['@msg' => $e->getMessage()]);
       return NULL;
     }
@@ -240,7 +324,7 @@ class ParticipantePortalController extends ControllerBase {
     try {
       return $this->crossVerticalBridgeService->getBridges($participante);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->warning('Bridge error: @msg', ['@msg' => $e->getMessage()]);
       return [];
     }
@@ -260,7 +344,7 @@ class ParticipantePortalController extends ControllerBase {
     try {
       return $this->journeyProgressionService->getPendingAction((int) $this->currentUser()->id());
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->warning('Journey progression error: @msg', ['@msg' => $e->getMessage()]);
       return NULL;
     }
@@ -283,6 +367,7 @@ class ParticipantePortalController extends ControllerBase {
     $horasFormacion = (float) ($participante->get('horas_formacion')->value ?? 0);
     $tipoInsercion = $participante->get('tipo_insercion')->value;
     $fechaInsercion = $participante->get('fecha_insercion')->value;
+    $acuerdoFirmado = method_exists($participante, 'isAcuerdoParticipacionFirmado') ? $participante->isAcuerdoParticipacionFirmado() : FALSE;
     $daciFirmado = method_exists($participante, 'isDaciFirmado') ? $participante->isDaciFirmado() : FALSE;
     $carril = $participante->get('carril')->value ?? '';
 
@@ -293,7 +378,8 @@ class ParticipantePortalController extends ControllerBase {
         'completed' => $currentIdx > 0,
         'steps' => [
           ['label' => t('Alta en STO'), 'completed' => TRUE],
-          ['label' => t('Firma del DACI'), 'completed' => $daciFirmado],
+          ['label' => t('Firma del Acuerdo de Participación'), 'completed' => $acuerdoFirmado],
+          ['label' => t('Firma del DACI (Aceptación de Compromisos)'), 'completed' => $daciFirmado],
           ['label' => t('Recogida indicadores FSE+ entrada'), 'completed' => (bool) ($participante->get('fse_entrada_completado')->value ?? FALSE)],
         ],
       ],
@@ -303,7 +389,7 @@ class ParticipantePortalController extends ControllerBase {
         'completed' => $currentIdx > 1,
         'steps' => [
           ['label' => t('Diagnóstico DIME completado'), 'completed' => !empty($carril)],
-          ['label' => t('Carril asignado'), 'completed' => !empty($carril)],
+          ['label' => t('Itinerario asignado'), 'completed' => !empty($carril)],
           ['label' => t('Primera sesión de mentoría'), 'completed' => $participante->getHorasMentoriaIa() > 0 || $participante->getHorasMentoriaHumana() > 0],
         ],
       ],
@@ -397,6 +483,30 @@ class ParticipantePortalController extends ControllerBase {
     }
 
     return $grouped;
+  }
+
+  /**
+   * Gets pending signature documents for the current user.
+   *
+   * @return array
+   *   List of pending documents with titulo and documento_id.
+   */
+  protected function getFirmasPendientes(): array {
+    if (!$this->firmaWorkflow) {
+      return [];
+    }
+
+    try {
+      $tenantId = $this->resolveCurrentTenantId();
+      return $this->firmaWorkflow->getDocumentosPendientes(
+        (int) $this->currentUser()->id(),
+        $tenantId,
+      );
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error al obtener firmas pendientes: @msg', ['@msg' => $e->getMessage()]);
+      return [];
+    }
   }
 
 }

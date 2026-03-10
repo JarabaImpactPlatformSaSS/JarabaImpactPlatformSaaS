@@ -8,23 +8,24 @@
  */
 #}
 
-<section class="aei-guia" data-effect="fade-up" aria-label="{{ 'Guía del Participante'|t }}">
+<section class="aei-guia" aria-label="{{ 'Guía del Participante'|t }}">
   <div class="aei-guia__container">
     <div class="aei-guia__content">
       <span class="aei-guia__eyebrow">{{ 'Recurso gratuito'|t }}</span>
       <h1 class="aei-guia__title">{{ 'Guía del Participante Andalucía +ei'|t }}</h1>
       <p class="aei-guia__subtitle">
-        {{ 'Descarga nuestra guía completa con todo lo que necesitas saber sobre el programa: requisitos, fases, recursos disponibles y consejos para aprovechar al máximo tu participación.'|t }}
+        {{ 'Todo lo que necesitas saber sobre el PIIL CV 2025: las 6 fases del itinerario, los requisitos de acceso, el incentivo de 528 €, la tutoría con IA 24/7 y cómo aprovechar al máximo las 45 plazas disponibles entre Málaga y Sevilla.'|t }}
       </p>
 
       <ul class="aei-guia__highlights">
         {% set highlights = [
-          'Requisitos y proceso de inscripción'|t,
-          'Las 2 fases del programa explicadas'|t,
-          'Cómo funciona la mentoría con IA'|t,
-          'Guía de documentación STO necesaria'|t,
-          'Recursos de formación disponibles'|t,
-          'Preguntas frecuentes resueltas'|t,
+          'Las 6 fases del itinerario: Acogida, Diagnóstico, Atención, Inserción, Seguimiento y Baja'|t,
+          'Requisitos de acceso y colectivos prioritarios'|t,
+          '10h de orientación + 50h de formación certificada + 40h de inserción'|t,
+          'Tutoría virtual con IA disponible 24/7'|t,
+          'Incentivo económico de 528 € al completar el itinerario'|t,
+          'Expediente digital seguro y documentación STO necesaria'|t,
+          'Resultados 1ª Edición: 46% de inserción real (23 de 50)'|t,
         ] %}
         {% for item in highlights %}
           <li class="aei-guia__highlight">
@@ -38,7 +39,7 @@
     <div class="aei-guia__form-wrapper">
       <div class="aei-guia__form-card">
         <h2 class="aei-guia__form-title">{{ 'Descarga la guía gratis'|t }}</h2>
-        <p class="aei-guia__form-desc">{{ 'Introduce tu email y te enviaremos la guía en PDF.'|t }}</p>
+        <p class="aei-guia__form-desc">{{ 'Recibe en tu email la guía completa del PIIL CV 2025 en PDF con el detalle de las 6 fases y todos los recursos.'|t }}</p>
 
         <form class="aei-guia__form" data-guia-form>
           <div class="aei-guia__field">
@@ -69,10 +70,10 @@
 </section>
 
 {# CTA to apply #}
-<section class="aei-guia__cta" data-effect="fade-up" aria-label="{{ 'Solicitar plaza'|t }}">
+<section class="aei-guia__cta" aria-label="{{ 'Solicitar plaza'|t }}">
   <div class="aei-guia__container">
-    <h2 class="aei-guia__cta-title">{{ '¿Listo para empezar?'|t }}</h2>
-    <p class="aei-guia__cta-subtitle">{{ 'El programa es 100% gratuito. Solicita tu plaza ahora.'|t }}</p>
+    <h2 class="aei-guia__cta-title">{{ '¿Listo para transformar tu futuro profesional?'|t }}</h2>
+    <p class="aei-guia__cta-subtitle">{{ '100% gratuito · 528 € de incentivo · 45 plazas entre Málaga y Sevilla'|t }}</p>
     <a href="{{ solicitar_url }}" class="aei-guia__cta-btn">
       {{ 'Solicitar plaza'|t }}
     </a>

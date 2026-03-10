@@ -17,9 +17,31 @@ jaraba_andalucia_ei.solicitud_structure:
   weight: 31
 
 # Entrada en Config > Programas
+jaraba_andalucia_ei.prospeccion_structure:
+  title: 'Prospección Empresarial'
+  description: 'Administrar campos y visualización de prospecciones empresariales.'
+  route_name: entity.prospeccion_empresarial.settings
+  parent: system.admin_structure
+  weight: 32
+
 jaraba_andalucia_ei.config:
   title: 'Andalucía +ei'
   description: 'Configuración general del programa Andalucía +ei.'
   route_name: jaraba_andalucia_ei.settings
   parent: system.admin_config
   weight: 50
+
+# Sprint 7: Plan de Emprendimiento EI
+jaraba_andalucia_ei.plan_emprendimiento_ei.admin:
+  title: 'Planes de Emprendimiento +ei'
+  description: 'Gestionar planes de emprendimiento de participantes.'
+  route_name: entity.plan_emprendimiento_ei.collection
+  parent: system.admin_content
+  weight: 33
+
+jaraba_andalucia_ei.plan_emprendimiento_ei.structure:
+  title: 'Plan Emprendimiento +ei'
+  description: 'Configurar campos y visualización de planes de emprendimiento.'
+  route_name: entity.plan_emprendimiento_ei.settings
+  parent: system.admin_structure
+  weight: 33

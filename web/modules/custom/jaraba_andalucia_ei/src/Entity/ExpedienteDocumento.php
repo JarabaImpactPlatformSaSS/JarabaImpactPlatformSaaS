@@ -98,6 +98,28 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
     // Inserción laboral.
     'insercion_contrato_laboral' => 'Contrato laboral',
     'insercion_alta_ss' => 'Alta en Seguridad Social',
+    'insercion_ficha' => 'Ficha de inserción laboral',
+    // Formación.
+    'formacion_hoja_servicio' => 'Hoja de servicio de formación',
+    'formacion_vobo_sae' => 'VoBo SAE de acción formativa',
+    // Prospección e intermediación.
+    'prospeccion_informe' => 'Informe de prospección empresarial',
+    'intermediacion_informe' => 'Informe de intermediación laboral',
+    // Indicadores FSE+.
+    'indicadores_fse_entrada' => 'Indicadores FSE+ de entrada',
+    'indicadores_fse_salida' => 'Indicadores FSE+ de salida',
+    'indicadores_fse_6m' => 'Indicadores FSE+ seguimiento 6 meses',
+    // Justificación económica.
+    'justificacion_trimestral' => 'Justificación económica trimestral',
+    'justificacion_final' => 'Justificación económica final',
+    // Acuerdo de Participación y DACI — documentos DISTINTOS.
+    'sto_acuerdo_participacion' => 'Acuerdo de Participación (Acuerdo_participacion_ICV25)',
+    'sto_daci' => 'DACI — Aceptación de Compromisos e Información (Anexo_DACI_ICV25)',
+    // Incentivo económico §528.
+    'sto_recibi_incentivo' => 'Recibí del incentivo €528 (Recibi_Incentivo_ICV25)',
+    'sto_renuncia_incentivo' => 'Renuncia al incentivo €528 (Renuncia_Incentivo_ICV25)',
+    // Recibo de actuaciones (firma dual: participante + técnico).
+    'sto_recibo_actuaciones' => 'Recibo de Actuaciones (Recibo_actuaciones_ICV25)',
   ];
 
   /**
@@ -172,6 +194,35 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
   public function getRevisionIaScore(): ?float {
     $value = $this->get('revision_ia_score')->value;
     return $value !== NULL ? (float) $value : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEstadoFirma(): string {
+    return $this->get('estado_firma')->value ?? 'borrador';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEstadoFirma(string $estado): self {
+    $this->set('estado_firma', $estado);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFirmaMetodo(): ?string {
+    return $this->get('firma_metodo')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVerificacionHash(): ?string {
+    return $this->get('verificacion_hash')->value;
   }
 
   /**
@@ -341,6 +392,99 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
     $fields['firma_certificado_info'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Info certificado'))
       ->setDescription(t('Información del certificado de firma (JSON).'))
+      ->setDisplayConfigurable('view', TRUE);
+
+    // === WORKFLOW DE FIRMA (Sprint 1 — Plan Maestro Clase Mundial) ===
+
+    $fields['estado_firma'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado de firma'))
+      ->setDescription(t('Estado en la máquina de estados de firma electrónica.'))
+      ->setSetting('allowed_values', [
+        'borrador' => t('Borrador'),
+        'pendiente_firma' => t('Pendiente de firma'),
+        'pendiente_firma_tecnico' => t('Pendiente firma técnico'),
+        'pendiente_firma_participante' => t('Pendiente firma participante'),
+        'firmado_parcial' => t('Firmado parcialmente'),
+        'firmado' => t('Firmado'),
+        'rechazado' => t('Rechazado'),
+        'caducado' => t('Caducado'),
+      ])
+      ->setDefaultValue('borrador')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_solicitada_fecha'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha solicitud de firma'))
+      ->setDescription(t('Cuándo se solicitó la firma.'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_solicitante_uid'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Firmante principal'))
+      ->setDescription(t('Usuario al que se solicitó la firma.'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_ip'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('IP del firmante'))
+      ->setDescription(t('Dirección IP del firmante (IPv4/IPv6).'))
+      ->setSetting('max_length', 45)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_user_agent'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('User-Agent'))
+      ->setDescription(t('User-Agent del navegador del firmante.'))
+      ->setSetting('max_length', 512)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_metodo'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Método de firma'))
+      ->setDescription(t('Método utilizado para firmar.'))
+      ->setSetting('allowed_values', [
+        'tactil' => t('Firma táctil'),
+        'autofirma' => t('AutoFirma (certificado digital)'),
+        'sello_empresa' => t('Sello de empresa'),
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['firma_hash_documento'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Hash del documento'))
+      ->setDescription(t('SHA-256 del PDF en el momento de firma.'))
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['co_firmante_uid'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Co-firmante'))
+      ->setDescription(t('Segundo firmante para firma dual.'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['co_firma_fecha'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha de co-firma'))
+      ->setDescription(t('Fecha en que el co-firmante firmó.'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['co_firma_metodo'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Método de co-firma'))
+      ->setDescription(t('Método de firma del co-firmante.'))
+      ->setSetting('allowed_values', [
+        'tactil' => t('Firma táctil'),
+        'autofirma' => t('AutoFirma (certificado digital)'),
+        'sello_empresa' => t('Sello de empresa'),
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['verificacion_hash'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Hash de verificación'))
+      ->setDescription(t('Hash público para QR de verificación.'))
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['verificacion_qr_uri'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('URI del QR'))
+      ->setDescription(t('URI de la imagen QR de verificación.'))
+      ->setSetting('max_length', 255)
       ->setDisplayConfigurable('view', TRUE);
 
     // === SINCRONIZACIÓN STO ===

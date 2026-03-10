@@ -3,7 +3,7 @@
  * SCSS para la pagina de Guia del Participante (lead magnet).
  *
  * Split layout: highlights (60%) + form card (40%).
- * Reutiliza tokens --aei-* de _dashboard.scss.
+ * CSS-VAR-ALL-COLORS-001: Solo var(--ej-*) con fallbacks.
  */
 
 // =============================================================================
@@ -12,7 +12,7 @@
 
 .aei-guia {
   padding: 4rem 0;
-  background: var(--aei-bg-body);
+  background: var(--ej-color-background, #F9FAFB);
 
   &__container {
     max-width: 1100px;
@@ -34,15 +34,15 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--aei-primary);
+    color: var(--ej-naranja-impulso, #FF8C42);
     margin-bottom: 0.5rem;
   }
 
   &__title {
-    font-family: var(--aei-font-headings);
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 800;
-    color: var(--aei-corporate);
+    color: var(--ej-azul-corporativo, #233D63);
     margin: 0 0 1rem;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -50,7 +50,7 @@
 
   &__subtitle {
     font-size: 1rem;
-    color: var(--aei-text-muted);
+    color: var(--ej-color-text-secondary, #6B7280);
     line-height: 1.6;
     margin: 0 0 1.5rem;
   }
@@ -70,7 +70,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.95rem;
-    color: var(--aei-text);
+    color: var(--ej-color-text-primary, #1F2937);
 
     span {
       flex: 1;
@@ -84,23 +84,23 @@
   }
 
   &__form-card {
-    background: var(--aei-surface);
-    border-radius: var(--aei-radius);
-    border: 1px solid var(--aei-border);
-    box-shadow: var(--aei-shadow-card);
+    background: var(--ej-color-surface, #fff);
+    border-radius: var(--ej-radius-lg, 12px);
+    border: 1px solid var(--ej-color-border, #E5E7EB);
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--ej-color-shadow, black) 6%, transparent);
     padding: 2rem;
   }
 
   &__form-title {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--aei-corporate);
+    color: var(--ej-azul-corporativo, #233D63);
     margin: 0 0 0.5rem;
   }
 
   &__form-desc {
     font-size: 0.9rem;
-    color: var(--aei-text-muted);
+    color: var(--ej-color-text-secondary, #6B7280);
     margin: 0 0 1.5rem;
   }
 
@@ -120,28 +120,28 @@
   &__label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--aei-corporate);
+    color: var(--ej-azul-corporativo, #233D63);
   }
 
   &__input {
     padding: 0.7rem 1rem;
-    border: 1px solid var(--aei-border);
+    border: 1px solid var(--ej-color-border, #E5E7EB);
     border-radius: 10px;
-    background: var(--aei-bg-body);
-    color: var(--aei-text);
+    background: var(--ej-color-background, #F9FAFB);
+    color: var(--ej-color-text-primary, #1F2937);
     font-size: 0.9rem;
-    font-family: var(--aei-font);
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &::placeholder {
-      color: var(--aei-text-muted);
+      color: var(--ej-color-text-secondary, #6B7280);
       opacity: 0.6;
     }
 
     &:focus {
       outline: none;
-      border-color: var(--aei-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--aei-primary) 12%, transparent);
+      border-color: var(--ej-naranja-impulso, #FF8C42);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 12%, transparent);
     }
   }
 
@@ -151,14 +151,14 @@
     gap: 0.5rem;
     cursor: pointer;
     font-size: 0.8rem;
-    color: var(--aei-text-muted);
+    color: var(--ej-color-text-secondary, #6B7280);
     line-height: 1.4;
   }
 
   &__checkbox {
     width: 18px;
     height: 18px;
-    accent-color: var(--aei-primary);
+    accent-color: var(--ej-naranja-impulso, #FF8C42);
     flex-shrink: 0;
     margin-top: 1px;
   }
@@ -169,21 +169,21 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.85rem 1.5rem;
-    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    background: var(--ej-naranja-impulso, #FF8C42);
     color: var(--ej-bg-surface, #fff);
     border: none;
     border-radius: 999px;
     font-weight: 600;
     font-size: 0.95rem;
-    font-family: var(--aei-font);
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 30%, transparent);
     margin-top: 0.25rem;
 
     &:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 40%, transparent);
     }
 
     &:disabled {
@@ -191,11 +191,16 @@
       cursor: not-allowed;
       transform: none;
     }
+
+    &:focus-visible {
+      outline: 3px solid var(--ej-naranja-impulso, #FF8C42);
+      outline-offset: 2px;
+    }
   }
 
   &__legal {
     font-size: 0.7rem;
-    color: var(--aei-text-muted);
+    color: var(--ej-color-text-secondary, #6B7280);
     line-height: 1.5;
     margin: 0;
     opacity: 0.7;
@@ -211,15 +216,15 @@
 
     &--success {
       display: block;
-      background: color-mix(in srgb, #10B981 12%, transparent);
-      color: var(--ej-color-green-deep, #065F46);
-      border: 1px solid color-mix(in srgb, #10B981 25%, transparent);
+      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 12%, transparent);
+      color: var(--ej-verde-innovacion, #00A9A5);
+      border: 1px solid color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 25%, transparent);
     }
 
     &--error {
       display: block;
       background: color-mix(in srgb, #EF4444 10%, transparent);
-      color: var(--ej-color-danger-deep, #991B1B);
+      color: #991B1B;
       border: 1px solid color-mix(in srgb, #EF4444 25%, transparent);
     }
   }
@@ -228,13 +233,13 @@
   &__cta {
     padding: 3rem 0;
     background: linear-gradient(135deg,
-      var(--aei-corporate) 0%,
-      var(--aei-azul-profundo) 100%);
+      var(--ej-azul-corporativo, #233D63) 0%,
+      color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 70%, black) 100%);
     text-align: center;
   }
 
   &__cta-title {
-    font-family: var(--aei-font-headings);
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     font-size: clamp(1.25rem, 2.5vw, 1.75rem);
     font-weight: 800;
     color: var(--ej-bg-surface, #fff);
@@ -243,7 +248,7 @@
 
   &__cta-subtitle {
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: color-mix(in srgb, var(--ej-bg-surface, #fff) 80%, transparent);
     margin: 0 0 1.5rem;
   }
 
@@ -252,18 +257,23 @@
     align-items: center;
     justify-content: center;
     padding: 0.85rem 2rem;
-    background: linear-gradient(135deg, var(--aei-primary), var(--ej-color-orange-alt, #E67935));
+    background: var(--ej-naranja-impulso, #FF8C42);
     color: var(--ej-bg-surface, #fff);
     border-radius: 999px;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 30%, transparent);
 
     &:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 40%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ej-naranja-impulso, #FF8C42);
+      outline-offset: 2px;
     }
   }
 }

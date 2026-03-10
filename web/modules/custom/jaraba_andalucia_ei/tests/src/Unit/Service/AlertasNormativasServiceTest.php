@@ -79,11 +79,12 @@ class AlertasNormativasServiceTest extends UnitTestCase {
    * @covers ::getAlertas
    */
   #[\PHPUnit\Framework\Attributes\Test]
-  public function getAlertasSinParticipantesDevuelveVacio(): void {
-    $this->query->method('execute')->willReturn([]);
-    $this->participanteStorage->method('loadMultiple')->willReturn([]);
-
+  public function getAlertasSinTenantDevuelveVacio(): void {
+    // TENANT-001: Sin tenantId, getAlertas() DEBE devolver vacío.
     $alertas = $this->service->getAlertas();
+    $this->assertEmpty($alertas);
+
+    $alertas = $this->service->getAlertas(NULL);
     $this->assertEmpty($alertas);
   }
 
@@ -91,10 +92,23 @@ class AlertasNormativasServiceTest extends UnitTestCase {
    * @covers ::getAlertas
    */
   #[\PHPUnit\Framework\Attributes\Test]
-  public function getAlertasDetectaDaciPendienteSemana1(): void {
+  public function getAlertasSinParticipantesDevuelveVacio(): void {
+    $this->query->method('execute')->willReturn([]);
+    $this->participanteStorage->method('loadMultiple')->willReturn([]);
+
+    $alertas = $this->service->getAlertas(1);
+    $this->assertEmpty($alertas);
+  }
+
+  /**
+   * @covers ::getAlertas
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function getAlertasDetectaAcuerdoYDaciPendienteSemana1(): void {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'acogida',
       'semana_actual' => 1,
+      'acuerdo_participacion_firmado' => FALSE,
       'daci_firmado' => FALSE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_a',
@@ -103,9 +117,16 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $this->assertNotEmpty($alertas);
+
+    // Alerta de Acuerdo de Participación.
+    $acuerdoAlerta = $this->findAlertaByTipo($alertas, 'acuerdo_participacion_pendiente');
+    $this->assertNotNull($acuerdoAlerta);
+    $this->assertEquals(AlertasNormativasService::NIVEL_ALTO, $acuerdoAlerta['nivel']);
+
+    // Alerta de DACI (documento separado).
     $daciAlerta = $this->findAlertaByTipo($alertas, 'daci_pendiente');
     $this->assertNotNull($daciAlerta);
     $this->assertEquals(AlertasNormativasService::NIVEL_ALTO, $daciAlerta['nivel']);
@@ -115,10 +136,11 @@ class AlertasNormativasServiceTest extends UnitTestCase {
    * @covers ::getAlertas
    */
   #[\PHPUnit\Framework\Attributes\Test]
-  public function getAlertasDaciPendienteSemana2EsCritico(): void {
+  public function getAlertasAcuerdoYDaciPendienteSemana2EsCritico(): void {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'acogida',
       'semana_actual' => 2,
+      'acuerdo_participacion_firmado' => FALSE,
       'daci_firmado' => FALSE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_a',
@@ -127,7 +149,12 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
+
+    // Ambos documentos pendientes = CRITICO en semana 2.
+    $acuerdoAlerta = $this->findAlertaByTipo($alertas, 'acuerdo_participacion_pendiente');
+    $this->assertNotNull($acuerdoAlerta);
+    $this->assertEquals(AlertasNormativasService::NIVEL_CRITICO, $acuerdoAlerta['nivel']);
 
     $daciAlerta = $this->findAlertaByTipo($alertas, 'daci_pendiente');
     $this->assertNotNull($daciAlerta);
@@ -142,6 +169,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'acogida',
       'semana_actual' => 2,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => FALSE,
       'carril' => 'carril_a',
@@ -150,7 +178,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $fseAlerta = $this->findAlertaByTipo($alertas, 'fse_entrada_pendiente');
     $this->assertNotNull($fseAlerta);
@@ -165,6 +193,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'diagnostico',
       'semana_actual' => 4,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => FALSE,
       'carril' => 'carril_a',
@@ -173,7 +202,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $fseAlerta = $this->findAlertaByTipo($alertas, 'fse_entrada_pendiente');
     $this->assertNotNull($fseAlerta);
@@ -188,6 +217,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'diagnostico',
       'semana_actual' => 3,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => '',
@@ -196,7 +226,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $carrilAlerta = $this->findAlertaByTipo($alertas, 'carril_pendiente');
     $this->assertNotNull($carrilAlerta);
@@ -212,6 +242,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'acogida',
       'semana_actual' => 5,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => '',
@@ -220,7 +251,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $carrilAlerta = $this->findAlertaByTipo($alertas, 'carril_pendiente');
     $this->assertNull($carrilAlerta);
@@ -234,6 +265,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'atencion',
       'semana_actual' => 30,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_b',
@@ -247,7 +279,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $orientAlerta = $this->findAlertaByTipo($alertas, 'horas_orientacion_insuficientes');
     $this->assertNotNull($orientAlerta);
@@ -266,6 +298,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'atencion',
       'semana_actual' => 36,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_a',
@@ -279,7 +312,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $orientAlerta = $this->findAlertaByTipo($alertas, 'horas_orientacion_insuficientes');
     $this->assertNotNull($orientAlerta);
@@ -299,6 +332,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'insercion',
       'semana_actual' => 35,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_a',
@@ -312,7 +346,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $orientAlerta = $this->findAlertaByTipo($alertas, 'horas_orientacion_insuficientes');
     $this->assertNull($orientAlerta);
@@ -327,6 +361,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'atencion',
       'semana_actual' => 36,
+      'acuerdo_participacion_firmado' => FALSE,
       'daci_firmado' => FALSE,
       'fse_entrada_completado' => FALSE,
       'carril' => '',
@@ -340,7 +375,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
 
     $this->assertGreaterThan(2, count($alertas));
 
@@ -369,6 +404,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'atencion',
       'semana_actual' => 36,
+      'acuerdo_participacion_firmado' => FALSE,
       'daci_firmado' => FALSE,
       'fse_entrada_completado' => FALSE,
       'carril' => '',
@@ -382,7 +418,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $resumen = $this->service->getResumenAlertas();
+    $resumen = $this->service->getResumenAlertas(1);
 
     $this->assertArrayHasKey(AlertasNormativasService::NIVEL_CRITICO, $resumen);
     $this->assertArrayHasKey(AlertasNormativasService::NIVEL_ALTO, $resumen);
@@ -403,7 +439,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([]);
     $this->participanteStorage->method('loadMultiple')->willReturn([]);
 
-    $resumen = $this->service->getResumenAlertas();
+    $resumen = $this->service->getResumenAlertas(1);
 
     $this->assertEquals(0, $resumen[AlertasNormativasService::NIVEL_CRITICO]);
     $this->assertEquals(0, $resumen[AlertasNormativasService::NIVEL_ALTO]);
@@ -419,6 +455,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $participante = $this->createParticipanteMock(1, [
       'fase_actual' => 'atencion',
       'semana_actual' => 10,
+      'acuerdo_participacion_firmado' => TRUE,
       'daci_firmado' => TRUE,
       'fse_entrada_completado' => TRUE,
       'carril' => 'carril_a',
@@ -432,7 +469,7 @@ class AlertasNormativasServiceTest extends UnitTestCase {
     $this->query->method('execute')->willReturn([1]);
     $this->participanteStorage->method('loadMultiple')->willReturn([$participante]);
 
-    $alertas = $this->service->getAlertas();
+    $alertas = $this->service->getAlertas(1);
     $this->assertEmpty($alertas);
   }
 

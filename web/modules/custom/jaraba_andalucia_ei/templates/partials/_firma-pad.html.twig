@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Parcial: Slide-panel de firma táctil manuscrita.
+ *
+ * Sprint 2 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Variables:
+ * - documento: array — Datos del documento (id, titulo, categoria, estado_firma, firmado).
+ *
+ * Accesibilidad: aria-labels, focus visible, role="img" en canvas.
+ */
+#}
+
+<div class="firma-pad" data-firma-documento="{{ documento.id }}">
+
+  <div class="firma-pad__header">
+    <h2 class="firma-pad__title">
+      {% trans %}Firmar documento{% endtrans %}
+    </h2>
+  </div>
+
+  {% if documento.firmado %}
+    {# Documento ya firmado — mostrar estado. #}
+    <div class="firma-pad__feedback firma-pad__feedback--success" role="status">
+      {% trans %}Este documento ya está firmado.{% endtrans %}
+    </div>
+  {% elseif documento.estado_firma == 'rechazado' %}
+    <div class="firma-pad__feedback firma-pad__feedback--error" role="status">
+      {% trans %}La firma de este documento fue rechazada.{% endtrans %}
+    </div>
+  {% else %}
+
+    <div class="firma-pad__document-info">
+      <p>
+        <strong>{{ documento.titulo }}</strong>
+      </p>
+      {% if documento.categoria %}
+        <p class="firma-pad__status">
+          {{ documento.categoria }}
+        </p>
+      {% endif %}
+    </div>
+
+    <p class="firma-pad__instructions">
+      {% trans %}Dibuja tu firma en el recuadro con el dedo o ratón. La firma será insertada en el documento.{% endtrans %}
+    </p>
+
+    <div class="firma-pad__canvas-wrapper">
+      <canvas class="firma-pad__canvas"
+              role="img"
+              aria-label="{% trans %}Área de firma manuscrita{% endtrans %}"
+              tabindex="0">
+      </canvas>
+      <span class="firma-pad__placeholder" aria-hidden="true">
+        {% trans %}Firma aquí{% endtrans %}
+      </span>
+    </div>
+
+    <div class="firma-pad__actions">
+      <button type="button"
+              class="firma-pad__btn firma-pad__btn--limpiar"
+              data-firma-action="limpiar"
+              aria-describedby="firma-limpiar-desc">
+        {% trans %}Limpiar{% endtrans %}
+      </button>
+      <span id="firma-limpiar-desc" class="visually-hidden">
+        {% trans %}Borra la firma y permite empezar de nuevo{% endtrans %}
+      </span>
+
+      <button type="button"
+              class="firma-pad__btn firma-pad__btn--firmar"
+              data-firma-action="firmar"
+              disabled
+              aria-disabled="true"
+              aria-describedby="firma-confirmar-desc">
+        {% trans %}Firmar documento{% endtrans %}
+      </button>
+      <span id="firma-confirmar-desc" class="visually-hidden">
+        {% trans %}Envía tu firma manuscrita para firmar el documento electrónicamente{% endtrans %}
+      </span>
+    </div>
+
+    <div class="firma-pad__feedback" role="status" aria-live="polite"></div>
+
+  {% endif %}
+
+</div>

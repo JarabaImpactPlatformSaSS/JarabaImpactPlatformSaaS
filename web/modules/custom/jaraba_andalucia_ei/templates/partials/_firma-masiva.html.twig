@@ -1,0 +1,116 @@
+{#
+/**
+ * @file
+ * Parcial: Dashboard de firma masiva para orientador/coordinador.
+ *
+ * Sprint 4 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Variables:
+ * - pendientes: array — Lista de documentos pendientes de firma.
+ * - count: int — Número de documentos pendientes.
+ * - puede_sello: bool — Si el usuario tiene permiso para aplicar sello de empresa.
+ *
+ * TWIG-INCLUDE-ONLY-001: Incluir con 'only'.
+ */
+#}
+
+{% if count > 0 %}
+<div class="firma-masiva" role="region" aria-label="{% trans %}Gestión masiva de firmas{% endtrans %}">
+  <div class="firma-masiva__header">
+    <h3 class="firma-masiva__title">
+      {% trans %}Firmas pendientes{% endtrans %}
+    </h3>
+    <span class="firma-masiva__badge" aria-label="{% trans %}{{ count }} documentos pendientes{% endtrans %}">
+      {{ count }}
+    </span>
+  </div>
+
+  <div class="firma-masiva__filters">
+    <label for="firma-masiva-filtro-tipo" class="sr-only">{% trans %}Filtrar por tipo{% endtrans %}</label>
+    <select id="firma-masiva-filtro-tipo" class="firma-masiva__filter-select" data-firma-filter="tipo">
+      <option value="">{% trans %}Todos los tipos{% endtrans %}</option>
+      <option value="hoja_servicio">{% trans %}Hojas de servicio{% endtrans %}</option>
+      <option value="recibo">{% trans %}Recibos de actuación{% endtrans %}</option>
+      <option value="acuerdo">{% trans %}Acuerdos{% endtrans %}</option>
+      <option value="certificado">{% trans %}Certificados{% endtrans %}</option>
+    </select>
+  </div>
+
+  <div class="firma-masiva__actions-bar">
+    <label class="firma-masiva__select-all">
+      <input type="checkbox" data-firma-select-all aria-label="{% trans %}Seleccionar todos{% endtrans %}">
+      <span>{% trans %}Seleccionar todos{% endtrans %}</span>
+    </label>
+    <button type="button"
+            class="firma-masiva__btn firma-masiva__btn--firmar"
+            data-firma-action="firmar-seleccionados"
+            disabled
+            aria-label="{% trans %}Firmar documentos seleccionados{% endtrans %}">
+      {% trans %}Firmar seleccionados{% endtrans %}
+    </button>
+    {% if puede_sello %}
+      <button type="button"
+              class="firma-masiva__btn firma-masiva__btn--sello"
+              data-firma-action="sello-seleccionados"
+              disabled
+              aria-label="{% trans %}Aplicar sello de empresa a los documentos seleccionados{% endtrans %}">
+        {% trans %}Aplicar sello de empresa{% endtrans %}
+      </button>
+    {% endif %}
+  </div>
+
+  <table class="firma-masiva__table" role="grid" aria-label="{% trans %}Documentos pendientes de firma{% endtrans %}">
+    <thead>
+      <tr>
+        <th scope="col" class="firma-masiva__th--check">
+          <span class="sr-only">{% trans %}Seleccionar{% endtrans %}</span>
+        </th>
+        <th scope="col">{% trans %}Documento{% endtrans %}</th>
+        <th scope="col">{% trans %}Participante{% endtrans %}</th>
+        <th scope="col">{% trans %}Tipo firma{% endtrans %}</th>
+        <th scope="col">{% trans %}Fecha solicitud{% endtrans %}</th>
+        <th scope="col">{% trans %}Acciones{% endtrans %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in pendientes %}
+        <tr class="firma-masiva__row" data-firma-tipo="{{ doc.categoria }}" data-firma-documento-id="{{ doc.documento_id }}">
+          <td>
+            <input type="checkbox"
+                   class="firma-masiva__checkbox"
+                   data-firma-check="{{ doc.documento_id }}"
+                   aria-label="{% trans %}Seleccionar {{ doc.titulo }}{% endtrans %}">
+          </td>
+          <td class="firma-masiva__doc-titulo">{{ doc.titulo }}</td>
+          <td class="firma-masiva__doc-participante">{{ doc.participante_nombre }}</td>
+          <td class="firma-masiva__doc-tipo">
+            {% if doc.tipo_firma == 'dual' %}
+              <span class="firma-masiva__tipo-badge firma-masiva__tipo-badge--dual">{% trans %}Dual{% endtrans %}</span>
+            {% elseif doc.tipo_firma == 'sello_empresa' %}
+              <span class="firma-masiva__tipo-badge firma-masiva__tipo-badge--sello">{% trans %}Sello{% endtrans %}</span>
+            {% else %}
+              <span class="firma-masiva__tipo-badge">{% trans %}Simple{% endtrans %}</span>
+            {% endif %}
+          </td>
+          <td class="firma-masiva__doc-fecha">{{ doc.fecha_solicitud }}</td>
+          <td>
+            <button type="button"
+                    class="firma-masiva__btn-firmar-individual"
+                    data-firma-documento-id="{{ doc.documento_id }}"
+                    aria-label="{% trans %}Firmar {{ doc.titulo }}{% endtrans %}">
+              {% trans %}Firmar{% endtrans %}
+            </button>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="firma-masiva__progress" role="progressbar" aria-hidden="true" style="display: none;">
+    <div class="firma-masiva__progress-bar"></div>
+    <span class="firma-masiva__progress-text"></span>
+  </div>
+
+  <div class="firma-masiva__result" role="alert" aria-live="polite" style="display: none;"></div>
+</div>
+{% endif %}

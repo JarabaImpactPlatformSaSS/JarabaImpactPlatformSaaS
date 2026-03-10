@@ -47,15 +47,18 @@
     <noscript>
       <link rel="stylesheet" href="/{{ directory }}/css/ecosistema-jaraba-theme.css">
     </noscript>
-    {# Schema.org JSON-LD: Organization + SoftwareApplication (global) #}
-    {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' ignore missing with {
-      site_name: head_title_array.name|default('Jaraba Impact Platform'),
-      theme_settings: theme_settings|default({}),
-      directory: directory
-    } only %}
-    {# Schema.org JSON-LD: PED S.L. Corporation (meta-sitio corporativo) #}
+    {# Schema.org JSON-LD: Schemas diferenciados segun contexto.
+       Meta-sitios tienen schemas dedicados (_ped-schema, _ji-schema, _meta-site-schema).
+       El schema global _seo-schema solo se inyecta en paginas NO meta-sitio para evitar
+       duplicacion de Organization blocks (SEO penalty). #}
     {% if is_meta_site|default(false) %}
       {% include '@ecosistema_jaraba_theme/partials/_ped-schema.html.twig' ignore missing %}
+    {% else %}
+      {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' ignore missing with {
+        site_name: head_title_array.name|default('Jaraba Impact Platform'),
+        theme_settings: theme_settings|default({}),
+        directory: directory
+      } only %}
     {% endif %}
   </head>
   <body{{ attributes }}>

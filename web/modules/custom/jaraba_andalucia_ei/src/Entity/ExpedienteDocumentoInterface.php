@@ -100,4 +100,38 @@ interface ExpedienteDocumentoInterface extends ContentEntityInterface, EntityCha
    */
   public function getRevisionIaScore(): ?float;
 
+  /**
+   * Obtiene el estado de firma del documento.
+   *
+   * @return string
+   *   Estado: borrador, pendiente_firma, firmado, rechazado, etc.
+   */
+  public function getEstadoFirma(): string;
+
+  /**
+   * Establece el estado de firma.
+   *
+   * @param string $estado
+   *   Nuevo estado de firma.
+   *
+   * @return $this
+   */
+  public function setEstadoFirma(string $estado): self;
+
+  /**
+   * Obtiene el método de firma utilizado.
+   *
+   * @return string|null
+   *   tactil, autofirma, sello_empresa o NULL.
+   */
+  public function getFirmaMetodo(): ?string;
+
+  /**
+   * Obtiene el hash de verificación pública (para QR).
+   *
+   * @return string|null
+   *   Hash SHA-256 de 64 caracteres o NULL.
+   */
+  public function getVerificacionHash(): ?string;
+
 }

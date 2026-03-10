@@ -61,6 +61,14 @@ programa-formacion:
     - core/drupal
     - core/once
 
+leads-guia:
+  version: 1.x
+  css:
+    theme:
+      css/leads-guia.css: {}
+  dependencies:
+    - jaraba_andalucia_ei/dashboard
+
 coordinador-hub:
   version: 1.x
   js:
@@ -75,6 +83,20 @@ reclutamiento:
   css:
     theme:
       css/andalucia-ei.css: {}
+  js:
+    js/reclutamiento-landing.js: { attributes: { defer: true } }
+
+firma-electronica:
+  version: 1.x
+  css:
+    component:
+      css/firma-electronica.css: {}
+  js:
+    js/firma-electronica.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 
 reclutamiento-popup:
   version: 1.x
@@ -83,6 +105,32 @@ reclutamiento-popup:
       css/andalucia-ei.css: {}
   js:
     js/reclutamiento-popup.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+alumni:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+  dependencies:
+    - jaraba_andalucia_ei/dashboard
+
+impacto-publico:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+
+firma-masiva:
+  version: 1.x
+  css:
+    component:
+      css/andalucia-ei.css: {}
+  js:
+    js/firma-masiva.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings

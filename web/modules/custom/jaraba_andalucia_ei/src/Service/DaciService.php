@@ -10,9 +10,13 @@ use Psr\Log\LoggerInterface;
 /**
  * Servicio para gestionar el DACI (Documento de Aceptación de Compromisos e Información).
  *
- * El DACI es obligatorio para todos los participantes PIIL el primer día.
- * Este servicio genera el PDF, lo almacena como ExpedienteDocumento,
- * y marca el participante como firmado.
+ * Documento oficial: Anexo_DACI_ICV25.odt
+ * El DACI es obligatorio para todos los participantes PIIL. En él, el
+ * participante acepta los compromisos del programa y es informado de sus
+ * derechos. DISTINTO del Acuerdo de Participación (Acuerdo_participacion_ICV25.odt).
+ *
+ * @see \Drupal\jaraba_andalucia_ei\Service\AcuerdoParticipacionService
+ *   Para el Acuerdo de Participación bilateral (documento separado).
  *
  * PRESAVE-RESILIENCE-001: Servicios opcionales con try-catch.
  */
@@ -93,7 +97,7 @@ class DaciService {
       // Crear documento en expediente.
       $documentoId = $this->expedienteService->createDocument(
         $participanteId,
-        'daci',
+        'sto_daci',
         sprintf('DACI - %s - %s', $nombreCompleto, date('d/m/Y')),
         $pdfContent,
         $tenantId ? (int) $tenantId : NULL,

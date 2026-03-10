@@ -1,0 +1,85 @@
+{#
+/**
+ * @file
+ * Template: Comunidad Alumni Andalucía +ei.
+ *
+ * Sprint 10 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Variables:
+ * - alumni: array — Directorio de alumni.
+ * - stats: array — Estadísticas de la comunidad.
+ * - historias: array — Historias de éxito.
+ */
+#}
+
+<div class="alumni-comunidad" role="main">
+  <header class="alumni-comunidad__hero">
+    <h1>{% trans %}Comunidad Alumni Andalucía +ei{% endtrans %}</h1>
+    <p class="alumni-comunidad__intro">
+      {% trans %}Personas que completaron su itinerario y hoy son ejemplo de transformación.{% endtrans %}
+    </p>
+  </header>
+
+  {% if stats %}
+    <section class="alumni-comunidad__stats" aria-label="{% trans %}Estadísticas de la comunidad{% endtrans %}">
+      <div class="alumni-comunidad__stat">
+        <span class="alumni-comunidad__stat-value">{{ stats.total|default(0) }}</span>
+        <span class="alumni-comunidad__stat-label">{% trans %}Alumni{% endtrans %}</span>
+      </div>
+      {% if stats.tasa_insercion is defined %}
+        <div class="alumni-comunidad__stat">
+          <span class="alumni-comunidad__stat-value">{{ stats.tasa_insercion }}%</span>
+          <span class="alumni-comunidad__stat-label">{% trans %}Tasa de inserción{% endtrans %}</span>
+        </div>
+      {% endif %}
+      {% if stats.emprendimientos is defined %}
+        <div class="alumni-comunidad__stat">
+          <span class="alumni-comunidad__stat-value">{{ stats.emprendimientos }}</span>
+          <span class="alumni-comunidad__stat-label">{% trans %}Emprendimientos{% endtrans %}</span>
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if historias|length > 0 %}
+    <section class="alumni-comunidad__historias" aria-label="{% trans %}Historias de éxito{% endtrans %}">
+      <h2>{% trans %}Historias de éxito{% endtrans %}</h2>
+      <div class="alumni-comunidad__historias-grid">
+        {% for historia in historias %}
+          {% include 'modules/custom/jaraba_andalucia_ei/templates/partials/_historia-exito.html.twig'
+            with { alumni: historia } only %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if alumni|length > 0 %}
+    <section class="alumni-comunidad__directorio" aria-label="{% trans %}Directorio de alumni{% endtrans %}">
+      <h2>{% trans %}Directorio{% endtrans %}</h2>
+      <div class="alumni-comunidad__list" role="list">
+        {% for person in alumni %}
+          <article class="alumni-comunidad__card" role="listitem">
+            <h3 class="alumni-comunidad__name">{{ person.nombre }}</h3>
+            <p class="alumni-comunidad__sector">{{ person.sector }}</p>
+            <p class="alumni-comunidad__tipo">
+              {% if person.tipo_insercion == 'cuenta_propia' %}
+                {% trans %}Emprendedor/a{% endtrans %}
+              {% else %}
+                {% trans %}Insertado/a laboralmente{% endtrans %}
+              {% endif %}
+            </p>
+            {% if person.disponible_mentoring %}
+              <span class="alumni-comunidad__mentor-badge" aria-label="{% trans %}Disponible para mentoring{% endtrans %}">
+                {% trans %}Disponible para mentoring{% endtrans %}
+              </span>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <p class="alumni-comunidad__empty">
+      {% trans %}Aún no hay alumni registrados en la comunidad.{% endtrans %}
+    </p>
+  {% endif %}
+</div>

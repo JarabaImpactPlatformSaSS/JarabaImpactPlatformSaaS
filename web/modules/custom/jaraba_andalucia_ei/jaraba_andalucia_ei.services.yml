@@ -67,6 +67,7 @@ services:
       - '@current_user'
       - '@jaraba_andalucia_ei.expediente'
       - '@logger.channel.jaraba_andalucia_ei'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_andalucia_ei.adaptive_difficulty:
     class: Drupal\jaraba_andalucia_ei\Service\AdaptiveDifficultyEngine
@@ -125,7 +126,17 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?jaraba_andalucia_ei.fase_transition_manager'
 
-  # DACI: Documento de Aceptacion de Compromisos e Informacion
+  # Acuerdo de Participacion: documento bilateral (Acuerdo_participacion_ICV25.odt)
+  jaraba_andalucia_ei.acuerdo_participacion:
+    class: Drupal\jaraba_andalucia_ei\Service\AcuerdoParticipacionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # DACI: Documento de Aceptacion de Compromisos e Informacion (Anexo_DACI_ICV25.odt)
+  # DISTINTO del Acuerdo de Participacion.
   jaraba_andalucia_ei.daci:
     class: Drupal\jaraba_andalucia_ei\Service\DaciService
     arguments:
@@ -137,6 +148,24 @@ services:
   # Recibo de Servicio universal para todas las actuaciones
   jaraba_andalucia_ei.recibo_servicio:
     class: Drupal\jaraba_andalucia_ei\Service\ReciboServicioService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Recibi del Incentivo €528 (Recibi_Incentivo_ICV25.odt)
+  jaraba_andalucia_ei.incentive_receipt:
+    class: Drupal\jaraba_andalucia_ei\Service\IncentiveReceiptService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Renuncia al Incentivo €528 (Renuncia_Incentivo_ICV25.odt)
+  jaraba_andalucia_ei.incentive_waiver:
+    class: Drupal\jaraba_andalucia_ei\Service\IncentiveWaiverService
     arguments:
       - '@entity_type.manager'
       - '@jaraba_andalucia_ei.expediente'
@@ -164,6 +193,123 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
 
+  # Justificacion economica: calculo de modulos persona atendida/insertada (202.500€)
+  jaraba_andalucia_ei.justificacion_economica:
+    class: Drupal\jaraba_andalucia_ei\Service\JustificacionEconomicaService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Riesgo de abandono: deteccion temprana y factores de riesgo
+  jaraba_andalucia_ei.riesgo_abandono:
+    class: Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Prospeccion empresarial: gestion de contactos con empresas
+  jaraba_andalucia_ei.prospeccion:
+    class: Drupal\jaraba_andalucia_ei\Service\ProspeccionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Acceso al programa: elegibilidad y roles de usuario
+  jaraba_andalucia_ei.acceso_programa:
+    class: Drupal\jaraba_andalucia_ei\Service\AccesoProgramaService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Puntos de impacto: scoring de KPIs y reporting
+  jaraba_andalucia_ei.puntos_impacto:
+    class: Drupal\jaraba_andalucia_ei\Service\PuntosImpactoEiService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Documento-Firma Orchestrator: mapea categorias a flujos de firma
+  # Sprint 3 — Plan Maestro Andalucia +ei Clase Mundial
+  jaraba_andalucia_ei.documento_firma_orchestrator:
+    class: Drupal\jaraba_andalucia_ei\Service\DocumentoFirmaOrchestrator
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.firma_workflow'
+
+  # Firma Workflow: orquestador del ciclo de vida de firma electronica
+  # Sprint 1 — Plan Maestro Andalucia +ei Clase Mundial
+  jaraba_andalucia_ei.firma_workflow:
+    class: Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@database'
+      - '@request_stack'
+      - '@?ecosistema_jaraba_core.firma_digital'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@?jaraba_support.notification'
+
+  # Sprint 7: Puente emprendimiento ↔ business_tools
+  jaraba_andalucia_ei.ei_emprendimiento_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiEmprendimientoBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_business_tools.canvas'
+      - '@?jaraba_business_tools.mvp_validation'
+      - '@?jaraba_business_tools.projection'
+      - '@?jaraba_business_tools.sroi_calculator'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  # Sprint 8: Adaptacion itinerario por colectivo y barreras
+  jaraba_andalucia_ei.adaptacion_itinerario:
+    class: Drupal\jaraba_andalucia_ei\Service\AdaptacionItinerarioService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.riesgo_abandono'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  # Sprint 9: Matching bidireccional participante ↔ empresa
+  jaraba_andalucia_ei.ei_matching_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiMatchingBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_matching.matching'
+      - '@?jaraba_candidate.profile'
+      - '@?jaraba_candidate.skills'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  # Sprint 10: Red Alumni Viva
+  jaraba_andalucia_ei.ei_alumni_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiAlumniBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_mentoring.mentor_matching'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  # Sprint 11: Gamificacion significativa — badges por hitos PIIL
+  jaraba_andalucia_ei.ei_badge_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiBadgeBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?ecosistema_jaraba_core.badge_award'
+
+  # Sprint 12: Push notifications programaticas para firma y programa
+  jaraba_andalucia_ei.ei_push_notification:
+    class: Drupal\jaraba_andalucia_ei\Service\EiPushNotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_pwa.push'
+      - '@?jaraba_support.notification'
+
   # UserProfile Section: Andalucia +ei — detecta roles del programa
   jaraba_andalucia_ei.user_profile_section.andalucia_ei:
     class: Drupal\jaraba_andalucia_ei\UserProfile\AndaluciaEiUserProfileSection
@@ -171,5 +317,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@?ecosistema_jaraba_core.tenant_context'
+      - '@database'
+      - '@logger.channel.jaraba_andalucia_ei'
     tags:
       - { name: ecosistema_jaraba_core.user_profile_section }

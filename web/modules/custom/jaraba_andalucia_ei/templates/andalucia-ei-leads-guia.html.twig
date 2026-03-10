@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Leads Guía del Participante — Panel de coordinación.
+ *
+ * Variables:
+ * - leads: Array de leads capturados.
+ * - stats: { total, this_week, this_month }
+ * - guia_url: URL pública de la guía.
+ */
+#}
+
+<div class="aei-leads">
+  {# ═══ HEADER ═══ #}
+  <div class="aei-leads__header">
+    <div class="aei-leads__header-info">
+      <h1 class="aei-leads__title">{% trans %}Leads — Guía del Participante{% endtrans %}</h1>
+      <p class="aei-leads__subtitle">{% trans %}Solicitudes de descarga del lead magnet Andalucía +ei{% endtrans %}</p>
+    </div>
+    {% if guia_url %}
+      <a href="{{ guia_url }}" class="aei-leads__header-action" target="_blank" rel="noopener">
+        {{ jaraba_icon('ui', 'external-link', { variant: 'duotone', size: '16px' }) }}
+        {% trans %}Ver página de la guía{% endtrans %}
+      </a>
+    {% endif %}
+  </div>
+
+  {# ═══ STAT CARDS ═══ #}
+  <div class="aei-leads__stats">
+    <div class="aei-leads__stat-card aei-leads__stat-card--total">
+      <span class="aei-leads__stat-value">{{ stats.total }}</span>
+      <span class="aei-leads__stat-label">{% trans %}Leads totales{% endtrans %}</span>
+    </div>
+    <div class="aei-leads__stat-card aei-leads__stat-card--week">
+      <span class="aei-leads__stat-value">{{ stats.this_week }}</span>
+      <span class="aei-leads__stat-label">{% trans %}Esta semana{% endtrans %}</span>
+    </div>
+    <div class="aei-leads__stat-card aei-leads__stat-card--month">
+      <span class="aei-leads__stat-value">{{ stats.this_month }}</span>
+      <span class="aei-leads__stat-label">{% trans %}Este mes{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ═══ TABLE ═══ #}
+  {% if leads|length > 0 %}
+    <div class="aei-leads__table-wrapper">
+      <table class="aei-leads__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Nombre{% endtrans %}</th>
+            <th>{% trans %}Email{% endtrans %}</th>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+            <th>{% trans %}Estado{% endtrans %}</th>
+            <th>{% trans %}CRM{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+            <tr class="aei-leads__row">
+              <td class="aei-leads__cell aei-leads__cell--name">
+                <span class="aei-leads__avatar">{{ lead.name|first|upper }}</span>
+                <span>{{ lead.name }}</span>
+              </td>
+              <td class="aei-leads__cell aei-leads__cell--email">
+                <a href="mailto:{{ lead.email }}">{{ lead.email }}</a>
+              </td>
+              <td class="aei-leads__cell aei-leads__cell--date">{{ lead.date }}</td>
+              <td class="aei-leads__cell aei-leads__cell--status">
+                <span class="aei-leads__badge aei-leads__badge--{{ lead.status }}">{{ lead.status }}</span>
+              </td>
+              <td class="aei-leads__cell aei-leads__cell--crm">
+                {% if lead.crm_url %}
+                  <a href="{{ lead.crm_url }}" class="aei-leads__crm-link">
+                    {{ jaraba_icon('ui', 'user', { variant: 'duotone', size: '14px' }) }}
+                    #{{ lead.crm_id }}
+                  </a>
+                {% elseif lead.crm_id %}
+                  <span class="aei-leads__crm-id">#{{ lead.crm_id }}</span>
+                {% else %}
+                  <span class="aei-leads__crm-none">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="aei-leads__empty">
+      {{ jaraba_icon('ui', 'inbox', { variant: 'duotone', size: '48px' }) }}
+      <p>{% trans %}Aún no hay solicitudes de descarga de la guía.{% endtrans %}</p>
+      {% if guia_url %}
+        <a href="{{ guia_url }}" class="aei-leads__empty-action">{% trans %}Ver página de la guía{% endtrans %}</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

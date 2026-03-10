@@ -1,0 +1,111 @@
+@use '../variables' as *;
+
+// =============================================================================
+// PARTNERS INSTITUCIONAL — Logos reales de confianza
+// Componente reutilizable para todos los meta-sitios del ecosistema.
+// =============================================================================
+
+.ped-partners {
+  padding: 4rem 1.5rem;
+  background: var(--ej-color-bg-body, #F9FAFB);
+}
+
+.ped-partners__container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.ped-partners__title {
+  font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  text-align: center;
+  color: var(--ej-azul-corporativo, #233D63);
+  margin: 0 0 0.5rem;
+}
+
+.ped-partners__subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+}
+
+// --- Tier structure ---
+
+.ped-partners__tier {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ped-partners__tier-label {
+  display: block;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+// --- Logo rows ---
+
+.ped-partners__logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+
+  img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(100%) opacity(0.5);
+    transition: filter 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      filter: grayscale(0%) opacity(1);
+      transform: scale(1.08);
+    }
+  }
+
+  // Tier 1: Larger logos for institutions
+  &--tier1 img {
+    height: 52px;
+  }
+
+  // Tier 2: Standard for ayuntamientos
+  &--tier2 img {
+    height: 44px;
+  }
+
+  // Tier 3: Slightly smaller for partners
+  &--tier3 img {
+    height: 40px;
+  }
+
+  @media (max-width: 600px) {
+    gap: 1.5rem;
+
+    img {
+      height: 36px;
+    }
+
+    &--tier1 img {
+      height: 40px;
+    }
+
+    &--tier2 img,
+    &--tier3 img {
+      height: 32px;
+    }
+  }
+}

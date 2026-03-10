@@ -161,7 +161,10 @@
     } %}
 
     {# 6. PARTNERS INSTITUCIONALES — Credibilidad #}
-    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+      theme_path: directory,
+      partners_variant: 'full',
+    } only %}
 
     {# 7. CTA BANNER FINAL — Ultima oportunidad de conversion #}
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' %}
@@ -182,11 +185,21 @@
         </div>
       </section>
     {% endif %}
+
+    {# PARTNERS INSTITUCIONALES — Credibilidad para meta-sitios del ecosistema #}
+    {% if meta_site %}
+      {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+        theme_path: directory,
+        partners_variant: 'full',
+      } only %}
+    {% endif %}
   {% endif %}
 </main>
 
-{# SCHEMA.ORG — Datos estructurados dinamicos por meta-sitio (Person/Organization + sameAs) #}
-{% if meta_site %}
+{# SCHEMA.ORG — Datos estructurados dinamicos por meta-sitio.
+   PED (group_id 7) ya tiene _ped-schema.html.twig en html.html.twig (Corporation + WebSite).
+   Solo inyectar _meta-site-schema para otros meta-sitios que no tienen schema dedicado. #}
+{% if meta_site and meta_site.group_id|default(0) != 7 %}
   {% include '@ecosistema_jaraba_theme/partials/_meta-site-schema.html.twig' ignore missing %}
 {% endif %}
 

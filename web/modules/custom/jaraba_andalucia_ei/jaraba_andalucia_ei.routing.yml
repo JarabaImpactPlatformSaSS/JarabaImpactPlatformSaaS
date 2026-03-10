@@ -224,6 +224,15 @@ jaraba_andalucia_ei.guia_download_api:
     _access: 'TRUE'
     _csrf_request_header_token: 'TRUE'
 
+# === COORDINADOR: LEADS GUÍA PARTICIPANTE ===
+jaraba_andalucia_ei.leads_guia:
+  path: '/andalucia-ei/coordinador/leads-guia'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\GuiaParticipanteController::leadsGuia'
+    _title: 'Leads Guía del Participante'
+  requirements:
+    _permission: 'administer andalucia ei'
+
 # === PROGRAMA: MENTORES CONTEXTUALIZADOS ===
 jaraba_andalucia_ei.programa_mentores:
   path: '/andalucia-ei/programa/mentores'
@@ -491,6 +500,15 @@ jaraba_andalucia_ei.api.hub.kpis:
     _permission: 'administer andalucia ei'
     _format: 'json'
 
+jaraba_andalucia_ei.api.hub.documentacion:
+  path: '/api/v1/andalucia-ei/hub/documentacion'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listDocumentacion'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
 # === ACTUACIONES STO: COLECCIÓN ADMIN ===
 entity.actuacion_sto.collection:
   path: '/admin/content/actuaciones-sto'
@@ -643,3 +661,253 @@ entity.insercion_laboral.settings:
     _title: 'Configuración Inserción Laboral'
   requirements:
     _permission: 'administer andalucia ei'
+
+# === PROSPECCIÓN EMPRESARIAL: COLECCIÓN ADMIN ===
+entity.prospeccion_empresarial.collection:
+  path: '/admin/content/prospeccion-empresarial'
+  defaults:
+    _entity_list: 'prospeccion_empresarial'
+    _title: 'Prospección Empresarial'
+  requirements:
+    _permission: 'view prospeccion empresarial'
+
+# === PROSPECCIÓN EMPRESARIAL: CRUD ===
+entity.prospeccion_empresarial.canonical:
+  path: '/admin/content/prospeccion-empresarial/{prospeccion_empresarial}'
+  defaults:
+    _entity_view: 'prospeccion_empresarial'
+    _title: 'Ver Prospección'
+  requirements:
+    _permission: 'view prospeccion empresarial'
+
+entity.prospeccion_empresarial.add_form:
+  path: '/admin/content/prospeccion-empresarial/add'
+  defaults:
+    _entity_form: 'prospeccion_empresarial.add'
+    _title: 'Añadir Prospección Empresarial'
+  requirements:
+    _permission: 'create prospeccion empresarial'
+
+entity.prospeccion_empresarial.edit_form:
+  path: '/admin/content/prospeccion-empresarial/{prospeccion_empresarial}/edit'
+  defaults:
+    _entity_form: 'prospeccion_empresarial.edit'
+    _title: 'Editar Prospección'
+  requirements:
+    _permission: 'edit prospeccion empresarial'
+
+entity.prospeccion_empresarial.delete_form:
+  path: '/admin/content/prospeccion-empresarial/{prospeccion_empresarial}/delete'
+  defaults:
+    _entity_form: 'prospeccion_empresarial.delete'
+    _title: 'Eliminar Prospección'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === PROSPECCIÓN EMPRESARIAL: SETTINGS (Field UI) ===
+entity.prospeccion_empresarial.settings:
+  path: '/admin/structure/prospeccion-empresarial'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\ProspeccionEmpresarialSettingsForm'
+    _title: 'Configuración Prospección Empresarial'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === API: Actuaciones STO (frontend) ===
+jaraba_andalucia_ei.api.actuaciones:
+  path: '/api/v1/andalucia-ei/actuaciones'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::listActuaciones'
+  requirements:
+    _permission: 'view andalucia ei actuaciones'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_andalucia_ei.api.actuacion:
+  path: '/api/v1/andalucia-ei/actuaciones/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::getActuacion'
+  requirements:
+    _permission: 'view andalucia ei actuaciones'
+    _csrf_request_header_token: 'TRUE'
+    id: \d+
+
+# === API: Indicadores FSE+ (frontend) ===
+jaraba_andalucia_ei.api.indicadores_fse:
+  path: '/api/v1/andalucia-ei/indicadores-fse'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::listIndicadoresFse'
+  requirements:
+    _permission: 'view indicador fse plus'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_andalucia_ei.api.indicador_fse:
+  path: '/api/v1/andalucia-ei/indicadores-fse/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::getIndicadorFse'
+  requirements:
+    _permission: 'view indicador fse plus'
+    _csrf_request_header_token: 'TRUE'
+    id: \d+
+
+# === API: Inserciones Laborales (frontend) ===
+jaraba_andalucia_ei.api.inserciones:
+  path: '/api/v1/andalucia-ei/inserciones'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::listInserciones'
+  requirements:
+    _permission: 'view insercion laboral'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_andalucia_ei.api.insercion:
+  path: '/api/v1/andalucia-ei/inserciones/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::getInsercion'
+  requirements:
+    _permission: 'view insercion laboral'
+    _csrf_request_header_token: 'TRUE'
+    id: \d+
+
+# === API: Prospección Empresarial (frontend) ===
+jaraba_andalucia_ei.api.prospecciones:
+  path: '/api/v1/andalucia-ei/prospecciones'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::listProspecciones'
+  requirements:
+    _permission: 'view prospeccion empresarial'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_andalucia_ei.api.prospeccion:
+  path: '/api/v1/andalucia-ei/prospecciones/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EntidadesApiController::getProspeccion'
+  requirements:
+    _permission: 'view prospeccion empresarial'
+    _csrf_request_header_token: 'TRUE'
+    id: \d+
+
+# === FIRMA ELECTRÓNICA (Sprint 1 — Plan Maestro Clase Mundial) ===
+
+# API: Obtener documento para firma (AutoFirma adapter)
+jaraba_andalucia_ei.firma.documento:
+  path: '/api/v1/andalucia-ei/firma/documento/{expediente_documento}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::getDocumentoParaFirma'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    _csrf_request_header_token: 'TRUE'
+    expediente_documento: \d+
+
+# API: Firma táctil (manuscrita sobre canvas)
+jaraba_andalucia_ei.firma.firmar_tactil:
+  path: '/api/v1/andalucia-ei/firma/firmar-tactil'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::firmarTactil'
+  methods: [POST]
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    _csrf_request_header_token: 'TRUE'
+
+# API: Firma vía AutoFirma (PAdES con certificado digital)
+jaraba_andalucia_ei.firma.firmar_autofirma:
+  path: '/api/v1/andalucia-ei/firma/firmar-autofirma'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::firmarAutofirma'
+  methods: [POST]
+  requirements:
+    _permission: 'use digital signature'
+    _csrf_request_header_token: 'TRUE'
+
+# API: Sello de empresa (firma masiva PKCS#12)
+jaraba_andalucia_ei.firma.firmar_sello:
+  path: '/api/v1/andalucia-ei/firma/firmar-sello'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::firmarSello'
+  methods: [POST]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _csrf_request_header_token: 'TRUE'
+
+# API: Rechazar firma con motivo
+jaraba_andalucia_ei.firma.rechazar:
+  path: '/api/v1/andalucia-ei/firma/rechazar'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::rechazar'
+  methods: [POST]
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    _csrf_request_header_token: 'TRUE'
+
+# API: Estado de firma de un documento
+jaraba_andalucia_ei.firma.estado:
+  path: '/api/v1/andalucia-ei/firma/estado/{expediente_documento}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::getEstado'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    _csrf_request_header_token: 'TRUE'
+    expediente_documento: \d+
+
+# API: Documentos pendientes de firma del usuario actual
+jaraba_andalucia_ei.firma.pendientes:
+  path: '/api/v1/andalucia-ei/firma/pendientes'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::getPendientes'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    _csrf_request_header_token: 'TRUE'
+
+# Slide-panel de firma táctil
+jaraba_andalucia_ei.firma.slide_panel:
+  path: '/andalucia-ei/firma/{expediente_documento}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaTactilController::firmaPanel'
+    _title: 'Firmar Documento'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+    expediente_documento: \d+
+
+# Verificación pública de documento por QR hash
+jaraba_andalucia_ei.verificar_documento:
+  path: '/verificar/{hash}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FirmaDocumentoController::verificarPublico'
+    _title: 'Verificación de Documento'
+  requirements:
+    _access: 'TRUE'
+
+# === SPRINT 7: PLAN EMPRENDIMIENTO EI ===
+entity.plan_emprendimiento_ei.settings:
+  path: '/admin/structure/plan-emprendimiento-ei/settings'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\PlanEmprendimientoEiSettingsForm'
+    _title: 'Plan de Emprendimiento Settings'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === SPRINT 10: COMUNIDAD ALUMNI ===
+jaraba_andalucia_ei.alumni:
+  path: '/andalucia-ei/alumni'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AlumniController::comunidad'
+    _title: 'Comunidad Alumni Andalucía +ei'
+  requirements:
+    _permission: 'access andalucia ei alumni'
+
+# === SPRINT 11: DASHBOARD PÚBLICO DE IMPACTO ===
+jaraba_andalucia_ei.impacto_publico:
+  path: '/andalucia-ei/impacto'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\ImpactoPublicoController::dashboard'
+    _title: 'Impacto Andalucía +ei'
+  requirements:
+    _access: 'TRUE'
+
+# === SPRINT 9: PORTAL EMPRESA ANONIMIZADO ===
+jaraba_andalucia_ei.empresa_candidatos:
+  path: '/andalucia-ei/empresa/{prospeccion_empresarial}/candidatos'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EmpresaCandidatosController::listado'
+    _title: 'Candidatos compatibles'
+  requirements:
+    _permission: 'view andalucia ei matching anonimizado'
+    prospeccion_empresarial: \d+

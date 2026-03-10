@@ -27,6 +27,27 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 function jaraba_geo_page_attachments(array &$attachments): void {
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
 
+  // Skip Organization schema for meta-sites — they have dedicated schemas
+  // in _ped-schema.html.twig, _ji-schema.html.twig, _meta-site-schema.html.twig.
+  // Prevents duplicate Organization JSON-LD blocks (SEO penalty).
+  try {
+    $route_match = \Drupal::routeMatch();
+    $page_content = $route_match->getParameter('page_content');
+    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+      if (\Drupal::hasService('jaraba_site_builder.meta_site_resolver')) {
+        $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+        $metaSite = $resolver->resolveFromPageContent($page_content);
+        if ($metaSite && $metaSite['site_config']) {
+          // Meta-site has dedicated schemas, skip this generic one.
+          return;
+        }
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // Continue with generic schema.
+  }
+
   // Schema.org Organization — H6 fix: tenant-aware cuando estamos en un meta-sitio.
   $orgName = 'Jaraba Impact Platform';
   $orgDescription = 'Plataforma SaaS AI-First para productores locales con e-commerce, trazabilidad, certificación digital y agentes de IA.';
@@ -74,7 +95,7 @@ function jaraba_geo_page_attachments(array &$attachments): void {
       'contactType' => 'customer service',
       'availableLanguage' => ['Spanish', 'English'],
     ],
-    'foundingDate' => '2024',
+    'foundingDate' => '2020',
     'areaServed' => 'ES',
     'knowsAbout' => [
       'E-commerce para productores locales',

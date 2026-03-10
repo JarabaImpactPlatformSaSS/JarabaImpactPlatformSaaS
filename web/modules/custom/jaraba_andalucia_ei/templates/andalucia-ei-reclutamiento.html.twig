@@ -13,11 +13,23 @@
  */
 #}
 
+{# === STICKY URGENCY BAR: Visible al hacer scroll pasado el hero === #}
+<div class="aei-rec__sticky-bar" aria-label="{% trans %}Solicitar plaza{% endtrans %}">
+  <div class="aei-rec__sticky-bar-inner">
+    <span class="aei-rec__sticky-bar-text">
+      <strong>{{ programa.participantes }}</strong> {% trans %}plazas{% endtrans %} &middot;
+      <strong>{{ programa.incentivo }} &euro;</strong> {% trans %}incentivo{% endtrans %} &middot;
+      {% trans %}100% gratuito{% endtrans %}
+    </span>
+    <a href="{{ solicitar_url }}" class="aei-rec__sticky-bar-cta">{% trans %}Solicitar plaza{% endtrans %}</a>
+  </div>
+</div>
+
 {# === PUBLICIDAD OFICIAL: Obligatorio por normativa de subvenciones === #}
 {# Logos institucionales: UE + Ministerio + Fondos Europeos + Junta de Andalucía + SAE #}
 <div class="aei-rec__publicidad-oficial" role="banner" aria-label="{% trans %}Financiación institucional del programa{% endtrans %}">
   <div class="aei-rec__container">
-    <h1 class="aei-rec__publicidad-titulo">{% trans %}T-Acompañamos: Programa de Proyectos Integrales para la Inserción Laboral de la Junta de Andalucía{% endtrans %}</h1>
+    <p class="aei-rec__publicidad-titulo">{% trans %}T-Acompañamos: Programa de Proyectos Integrales para la Inserción Laboral de la Junta de Andalucía{% endtrans %}</p>
     <img src="/{{ module_path }}/images/publicidad-oficial-piil.png"
          alt="{% trans %}Cofinanciado por la Unión Europea | Ministerio de Trabajo y Economía Social | Fondos Europeos | Junta de Andalucía — Consejería de Empleo, Empresa y Trabajo Autónomo — Servicio Andaluz de Empleo{% endtrans %}"
          class="aei-rec__publicidad-img"
@@ -41,13 +53,21 @@
              muted
              loop
              playsinline
-             preload="auto"
+             preload="metadata"
              poster="/{{ module_path }}/images/reclutamiento-popup-hero.webp"
              aria-label="{% trans %}Vídeo presentación del programa T-Acompañamos{% endtrans %}">
         <source src="/{{ module_path }}/images/reclutamiento-hero-video.mp4" type="video/mp4">
       </video>
+      {# P1-3: Play/pause control for accessibility #}
+      <button class="aei-rec__hero-video-control" type="button"
+              aria-label="{% trans %}Pausar vídeo{% endtrans %}"
+              data-label-play="{% trans %}Reproducir vídeo{% endtrans %}"
+              data-label-pause="{% trans %}Pausar vídeo{% endtrans %}">
+        <svg class="aei-rec__hero-video-icon aei-rec__hero-video-icon--pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <svg class="aei-rec__hero-video-icon aei-rec__hero-video-icon--play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none"><polygon points="5,3 19,12 5,21"/></svg>
+      </button>
     </div>
-    <h2 class="aei-rec__title">{% trans %}Fórmate gratis, cobra 528 € y encuentra empleo en Andalucía{% endtrans %}</h2>
+    <h1 class="aei-rec__title">{% trans %}Fórmate gratis, cobra 528 € y encuentra empleo en Andalucía{% endtrans %}</h1>
     <p class="aei-rec__subtitle">
       {% trans %}Programa oficial T-Acompañamos: orientación personalizada, formación certificada, mentoría con IA y acompañamiento hasta tu contratación. Compatible con tu subsidio por desempleo.{% endtrans %}
     </p>
@@ -72,6 +92,17 @@
       <a href="#que-recibes" class="aei-rec__cta aei-rec__cta--secondary">
         {% trans %}Conocer el programa{% endtrans %}
       </a>
+      <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
+         class="aei-rec__cta aei-rec__cta--whatsapp-hero" target="_blank" rel="noopener noreferrer"
+         aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+        {% trans %}WhatsApp{% endtrans %}
+      </a>
+    </div>
+    {# P2-6: Indicador de actividad reciente (FOMO) #}
+    <div class="aei-rec__hero-fomo" aria-live="polite">
+      <span class="aei-rec__hero-fomo-dot" aria-hidden="true"></span>
+      <span class="aei-rec__hero-fomo-text">{% trans %}Última solicitud hace 3 horas — {{ programa.participantes }} plazas disponibles{% endtrans %}</span>
     </div>
   </div>
 </section>
@@ -155,6 +186,21 @@
   </div>
 </section>
 
+{# === P2-9: SECTORES DE EMPLEO: Salidas profesionales === #}
+<section class="aei-rec__sectores" aria-label="{% trans %}Sectores de empleo{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Sectores con más oportunidades{% endtrans %}</h2>
+    <p class="aei-rec__section-desc aei-rec__section-desc--center">
+      {% trans %}Nuestro equipo de prospección empresarial trabaja con empleadores de estos sectores clave en Málaga y Sevilla:{% endtrans %}
+    </p>
+    <div class="aei-rec__sectores-tags">
+      {% for sector in programa.sectores %}
+        <span class="aei-rec__sector-tag">{{ sector }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
 {# === REQUISITOS: Quién puede participar === #}
 <section class="aei-rec__requisitos" aria-label="{% trans %}Requisitos de participación{% endtrans %}">
   <div class="aei-rec__container">
@@ -203,6 +249,13 @@
             {{ sede.direccion }}<br>
             CP {{ sede.cp }} {{ sede.ciudad }}
           </address>
+          {# P2-2: Enlace a Google Maps #}
+          <a href="https://www.google.com/maps/search/?api=1&query={{ sede.direccion|url_encode }}+{{ sede.cp }}+{{ sede.ciudad|url_encode }}"
+             class="aei-rec__sede-map-link" target="_blank" rel="noopener noreferrer"
+             aria-label="{% trans %}Ver {{ sede.ciudad }} en Google Maps{% endtrans %}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {% trans %}Ver en mapa{% endtrans %}
+          </a>
         </div>
       {% endfor %}
     </div>
@@ -223,7 +276,7 @@
         {
           num: '2',
           titulo: 'Acogida y diagnóstico'|t,
-          desc: 'Te recibimos en tu sede más cercana, firmamos el acuerdo de participación (DACI) y evaluamos tu situación laboral, competencias y objetivos profesionales.'|t,
+          desc: 'Te recibimos en tu sede más cercana, firmamos el Acuerdo de Participación y evaluamos tu situación laboral, competencias y objetivos profesionales.'|t,
         },
         {
           num: '3',
@@ -253,43 +306,265 @@
 <section class="aei-rec__equipo" aria-label="{% trans %}Equipo técnico{% endtrans %}">
   <div class="aei-rec__container">
     <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Quién te acompaña{% endtrans %}</h2>
+    <p class="aei-rec__section-desc aei-rec__section-desc--center">
+      {% trans %}Profesionales con décadas de experiencia en empleabilidad, emprendimiento y desarrollo local. No somos teóricos: hemos estado donde tú estás.{% endtrans %}
+    </p>
+    <div class="aei-rec__equipo-impacto" aria-label="{% trans %}Impacto combinado del equipo{% endtrans %}">
+      <div class="aei-rec__equipo-impacto-item">
+        <span class="aei-rec__equipo-impacto-valor">+50</span>
+        <span class="aei-rec__equipo-impacto-label">{% trans %}años de experiencia combinada{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__equipo-impacto-sep" aria-hidden="true"></div>
+      <div class="aei-rec__equipo-impacto-item">
+        <span class="aei-rec__equipo-impacto-valor">+500</span>
+        <span class="aei-rec__equipo-impacto-label">{% trans %}proyectos de emprendimiento y empleo{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__equipo-impacto-sep" aria-hidden="true"></div>
+      <div class="aei-rec__equipo-impacto-item">
+        <span class="aei-rec__equipo-impacto-valor">+100M&euro;</span>
+        <span class="aei-rec__equipo-impacto-label">{% trans %}en fondos europeos gestionados{% endtrans %}</span>
+      </div>
+    </div>
     <div class="aei-rec__equipo-grid">
       {% for miembro in programa.equipo %}
-        <div class="aei-rec__equipo-card">
-          <div class="aei-rec__equipo-avatar" aria-hidden="true">{{ miembro.nombre|first }}</div>
-          <h3 class="aei-rec__equipo-nombre">{{ miembro.nombre }}</h3>
-          <p class="aei-rec__equipo-titulo">{{ miembro.titulo }}</p>
-          <span class="aei-rec__equipo-sede">{{ miembro.sede }}</span>
-        </div>
+        <article class="aei-rec__equipo-card{% if not miembro.foto %} aei-rec__equipo-card--compact{% endif %}">
+          <div class="aei-rec__equipo-foto-wrap">
+            {% if miembro.foto %}
+              <img class="aei-rec__equipo-foto"
+                   src="/{{ module_path }}/images/{{ miembro.foto }}"
+                   srcset="/{{ module_path }}/images/{{ miembro.foto }} 2x"
+                   alt="{{ miembro.nombre }}"
+                   width="160" height="160" loading="lazy">
+            {% else %}
+              {# P2-8: CSS-generated initials avatar for team members without photo #}
+              <span class="aei-rec__equipo-iniciales" aria-hidden="true">{{ miembro.iniciales }}</span>
+            {% endif %}
+            <span class="aei-rec__equipo-sede-badge">{{ miembro.sede }}</span>
+          </div>
+          <div class="aei-rec__equipo-body">
+            <h3 class="aei-rec__equipo-nombre">{{ miembro.nombre }}</h3>
+            <p class="aei-rec__equipo-cargo">{{ miembro.cargo }}</p>
+            <p class="aei-rec__equipo-bio">{{ miembro.bio }}</p>
+            <ul class="aei-rec__equipo-badges" aria-label="{% trans %}Credenciales{% endtrans %}">
+              {% for badge in miembro.badges %}
+                <li class="aei-rec__equipo-badge">
+                  <span class="aei-rec__equipo-badge-icon aei-rec__equipo-badge-icon--{{ badge.icono }}" aria-hidden="true"></span>
+                  <span>{{ badge.texto }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if miembro.cita %}
+              <blockquote class="aei-rec__equipo-cita">
+                <p>&laquo;{{ miembro.cita }}&raquo;</p>
+              </blockquote>
+            {% endif %}
+            {% if miembro.linkedin %}
+              <a href="{{ miembro.linkedin }}" target="_blank" rel="noopener noreferrer"
+                 class="aei-rec__equipo-linkedin" aria-label="{% trans %}Ver perfil de {{ miembro.nombre }} en LinkedIn{% endtrans %}">
+                <svg class="aei-rec__equipo-linkedin-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+                {% trans %}Ver perfil en LinkedIn{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </article>
       {% endfor %}
+    </div>
+    <div class="aei-rec__equipo-cta-wrap">
+      <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__equipo-cta">
+        {% trans %}Solicita tu plaza y conócenos{% endtrans %}
+      </a>
+      <p class="aei-rec__equipo-cta-sub">{% trans %}45 plazas entre Málaga y Sevilla — programa 100% subvencionado{% endtrans %}</p>
+    </div>
+
+    {# --- Logos de confianza institucional --- #}
+    <div class="aei-rec__trust-logos">
+      <p class="aei-rec__trust-logos-title">{% trans %}Programa financiado por{% endtrans %}</p>
+      <div class="aei-rec__trust-logos-row aei-rec__trust-logos-row--main">
+        <img src="/{{ module_path }}/images/logos-institucionales.webp"
+             alt="{% trans %}Cofinanciado por la Unión Europea, Ministerio de Trabajo y Economía Social, Fondos Europeos, Junta de Andalucía — Servicio Andaluz de Empleo{% endtrans %}"
+             loading="lazy" class="aei-rec__trust-logos-banner">
+      </div>
+      <p class="aei-rec__trust-logos-title aei-rec__trust-logos-title--secondary">{% trans %}Instituciones y empresas que han contratado servicios de nuestro equipo técnico{% endtrans %}</p>
+      <div class="aei-rec__trust-logos-row aei-rec__trust-logos-row--clients">
+        <img src="/{{ module_path }}/images/logo-famp.webp" alt="FAMP — Federación Andaluza de Municipios y Provincias" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-diputacion-malaga.webp" alt="Diputación de Málaga" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-diputacion-caceres.webp" alt="Diputación de Cáceres" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-granada.webp" alt="Ayuntamiento de Granada" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-malaga-imfe.webp" alt="Ayuntamiento de Málaga — IMFE" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-almeria.webp" alt="Ayuntamiento de Almería" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-alcala.webp" alt="Ayuntamiento de Alcalá de Guadaíra" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-lifewatch-eric.webp" alt="LifeWatch ERIC — European Research Infrastructure" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-smart-city-cluster.webp" alt="Smart City Cluster" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-uspace.webp" alt="Urban Space" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-food-intelligence.webp" alt="The Food Intelligence Company" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-alhaurin.webp" alt="Ayuntamiento de Alhaurín el Grande" width="120" height="48" loading="lazy">
+        <img src="/{{ module_path }}/images/logo-ayto-ponferrada.webp" alt="Ayuntamiento de Ponferrada" width="120" height="48" loading="lazy">
+      </div>
     </div>
   </div>
 </section>
 
-{# === SOCIAL PROOF: Datos del programa T-Acompañamos a nivel regional === #}
+{# === SOCIAL PROOF: P1-4 — Separación clara entre macro (regional) y micro (nuestro programa) === #}
 <section class="aei-rec__social-proof" aria-label="{% trans %}Resultados del programa{% endtrans %}">
   <div class="aei-rec__container">
-    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}El programa T-Acompañamos en cifras{% endtrans %}</h2>
-    <p class="aei-rec__section-desc" style="text-align: center; margin: 0 auto 2rem;">
-      {% trans %}A nivel regional, el programa T-Acompañamos de la Junta de Andalucía está diseñado para generar impacto real en la empleabilidad de colectivos vulnerables.{% endtrans %}
+    {# P1-4: Macro — programa regional #}
+    <div class="aei-rec__social-proof-scope">
+      <span class="aei-rec__social-proof-scope-tag">{% trans %}Programa regional T-Acompañamos{% endtrans %}</span>
+    </div>
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Un programa de la Junta de Andalucía con alcance masivo{% endtrans %}</h2>
+    <p class="aei-rec__section-desc aei-rec__section-desc--center">
+      {% trans %}22.222 plazas en toda Andalucía. Nosotros gestionamos 45 plazas entre Málaga y Sevilla con un valor añadido único: mentoría con Inteligencia Artificial.{% endtrans %}
     </p>
     <div class="aei-rec__social-proof-grid">
       <div class="aei-rec__social-proof-card">
         <span class="aei-rec__social-proof-value">22.222</span>
-        <span class="aei-rec__social-proof-label">{% trans %}plazas totales T-Acompañamos en Andalucía{% endtrans %}</span>
+        <span class="aei-rec__social-proof-label">{% trans %}plazas totales en Andalucía{% endtrans %}</span>
+      </div>
+      <div class="aei-rec__social-proof-card aei-rec__social-proof-card--highlight">
+        <span class="aei-rec__social-proof-value">45</span>
+        <span class="aei-rec__social-proof-label">{% trans %}nuestras plazas (Málaga + Sevilla){% endtrans %}</span>
       </div>
       <div class="aei-rec__social-proof-card">
         <span class="aei-rec__social-proof-value">40%</span>
         <span class="aei-rec__social-proof-label">{% trans %}objetivo de inserción laboral{% endtrans %}</span>
       </div>
-      <div class="aei-rec__social-proof-card">
-        <span class="aei-rec__social-proof-value">100%</span>
-        <span class="aei-rec__social-proof-label">{% trans %}gratuito, financiado por la UE{% endtrans %}</span>
-      </div>
-      <div class="aei-rec__social-proof-card">
+      <div class="aei-rec__social-proof-card aei-rec__social-proof-card--highlight">
         <span class="aei-rec__social-proof-value">24/7</span>
-        <span class="aei-rec__social-proof-label">{% trans %}mentoría IA exclusiva de nuestro programa{% endtrans %}</span>
+        <span class="aei-rec__social-proof-label">{% trans %}mentoría IA — exclusiva nuestra{% endtrans %}</span>
       </div>
+    </div>
+  </div>
+</section>
+
+{# === TESTIMONIOS: Prueba social de participantes 1ª edición === #}
+<section class="aei-rec__testimonios" aria-label="{% trans %}Testimonios de participantes{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Lo dicen quienes ya lo han vivido{% endtrans %}</h2>
+    <p class="aei-rec__section-desc aei-rec__section-desc--center">
+      {% trans %}Participantes de la 1.ª edición del programa comparten su experiencia real.{% endtrans %}
+    </p>
+    <div class="aei-rec__testimonios-grid">
+      {# Cristina Martín Pereira — Málaga, emprendedora #}
+      <div class="aei-rec__testimonio-card">
+        <div class="aei-rec__testimonio-header">
+          <img src="/{{ module_path }}/images/testimonio-cristina.webp"
+               alt="{% trans %}Cristina Martín Pereira, participante del programa{% endtrans %}"
+               class="aei-rec__testimonio-avatar"
+               width="80" height="80" loading="lazy">
+          <div class="aei-rec__testimonio-meta">
+            <span class="aei-rec__testimonio-nombre">Cristina Martín Pereira</span>
+            <span class="aei-rec__testimonio-rol">{% trans %}Fundadora de De Cris Moda{% endtrans %}</span>
+            <span class="aei-rec__testimonio-sede">{% trans %}Málaga{% endtrans %}</span>
+          </div>
+        </div>
+        <blockquote class="aei-rec__testimonio-cita">
+          <p>{% trans %}No ha sido solamente el curso. Después realmente hay un seguimiento real, que en muchos sitios se queda en el aire. Aquí no. Aquí funciona.{% endtrans %}</p>
+        </blockquote>
+        <div class="aei-rec__testimonio-resultado">
+          <span class="aei-rec__testimonio-resultado-label">{% trans %}Resultado{% endtrans %}</span>
+          <span class="aei-rec__testimonio-resultado-text">{% trans %}Tienda online con ventas internacionales{% endtrans %}</span>
+        </div>
+      </div>
+      {# Adrian Capatina Tudor — Málaga, persona migrante #}
+      <div class="aei-rec__testimonio-card">
+        <div class="aei-rec__testimonio-header">
+          <img src="/{{ module_path }}/images/testimonio-adrian.webp"
+               alt="{% trans %}Adrian Capatina Tudor, participante del programa{% endtrans %}"
+               class="aei-rec__testimonio-avatar"
+               width="80" height="80" loading="lazy">
+          <div class="aei-rec__testimonio-meta">
+            <span class="aei-rec__testimonio-nombre">Adrian Capatina Tudor</span>
+            <span class="aei-rec__testimonio-rol">{% trans %}Fundador de NOVAVID Media{% endtrans %}</span>
+            <span class="aei-rec__testimonio-sede">{% trans %}Málaga{% endtrans %}</span>
+          </div>
+        </div>
+        <blockquote class="aei-rec__testimonio-cita">
+          <p>{% trans %}A mí me ha sacado de un punto muerto. Te abre el pensamiento, cambias totalmente todo. Desde calcular tu beneficio hasta networking, hasta creer en ti.{% endtrans %}</p>
+        </blockquote>
+        <div class="aei-rec__testimonio-resultado">
+          <span class="aei-rec__testimonio-resultado-label">{% trans %}Resultado{% endtrans %}</span>
+          <span class="aei-rec__testimonio-resultado-text">{% trans %}Agencia de producción audiovisual{% endtrans %}</span>
+        </div>
+      </div>
+      {# Marcela Calabia — Sevilla, reinserción laboral #}
+      <div class="aei-rec__testimonio-card">
+        <div class="aei-rec__testimonio-header">
+          <img src="/{{ module_path }}/images/testimonio-marcela.webp"
+               alt="{% trans %}Marcela Calabia, participante del programa{% endtrans %}"
+               class="aei-rec__testimonio-avatar"
+               width="80" height="80" loading="lazy">
+          <div class="aei-rec__testimonio-meta">
+            <span class="aei-rec__testimonio-nombre">Marcela Calabia</span>
+            <span class="aei-rec__testimonio-rol">{% trans %}Coach de comunicación estratégica{% endtrans %}</span>
+            <span class="aei-rec__testimonio-sede">{% trans %}Sevilla{% endtrans %}</span>
+          </div>
+        </div>
+        <blockquote class="aei-rec__testimonio-cita">
+          <p>{% trans %}Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.{% endtrans %}</p>
+        </blockquote>
+        <div class="aei-rec__testimonio-resultado">
+          <span class="aei-rec__testimonio-resultado-label">{% trans %}Resultado{% endtrans %}</span>
+          <span class="aei-rec__testimonio-resultado-text">{% trans %}Libros publicados en 4 idiomas, tarifa desde 75 €/h{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === RESULTADOS 1ª EDICIÓN: Prueba social con datos reales === #}
+<section class="aei-rec__edicion-anterior" aria-label="{% trans %}Resultados de la 1.ª edición{% endtrans %}">
+  <div class="aei-rec__container">
+    <div class="aei-rec__edicion-content">
+      <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Resultados reales de la 1.ª edición{% endtrans %}</h2>
+      <p class="aei-rec__section-desc aei-rec__section-desc--center">
+        {% trans %}Expediente SC/ICV/0156/2023 (dic. 2023 — jun. 2025). Estos son los datos oficiales auditados por el Servicio Andaluz de Empleo.{% endtrans %}
+      </p>
+      <div class="aei-rec__edicion-stats">
+        <div class="aei-rec__edicion-stat">
+          <span class="aei-rec__edicion-stat-value">50</span>
+          <span class="aei-rec__edicion-stat-label">{% trans %}personas atendidas{% endtrans %}</span>
+        </div>
+        <div class="aei-rec__edicion-stat">
+          <span class="aei-rec__edicion-stat-value">23</span>
+          <span class="aei-rec__edicion-stat-label">{% trans %}personas insertadas{% endtrans %}</span>
+        </div>
+        <div class="aei-rec__edicion-stat aei-rec__edicion-stat--highlight">
+          <span class="aei-rec__edicion-stat-value">46%</span>
+          <span class="aei-rec__edicion-stat-label">{% trans %}tasa de inserción real{% endtrans %}</span>
+        </div>
+      </div>
+      {# P2-14: Gráfico visual de resultados 1ª edición #}
+      <div class="aei-rec__edicion-chart" aria-label="{% trans %}Gráfico de resultados{% endtrans %}">
+        <div class="aei-rec__edicion-chart-row">
+          <span class="aei-rec__edicion-chart-label">{% trans %}Atendidos{% endtrans %}</span>
+          <div class="aei-rec__edicion-chart-bar-wrap">
+            <div class="aei-rec__edicion-chart-bar" style="width:100%">
+              <span>50</span>
+            </div>
+          </div>
+        </div>
+        <div class="aei-rec__edicion-chart-row">
+          <span class="aei-rec__edicion-chart-label">{% trans %}Insertados{% endtrans %}</span>
+          <div class="aei-rec__edicion-chart-bar-wrap">
+            <div class="aei-rec__edicion-chart-bar aei-rec__edicion-chart-bar--success" style="width:46%">
+              <span>23</span>
+            </div>
+          </div>
+        </div>
+        <div class="aei-rec__edicion-chart-row">
+          <span class="aei-rec__edicion-chart-label">{% trans %}Objetivo{% endtrans %}</span>
+          <div class="aei-rec__edicion-chart-bar-wrap">
+            <div class="aei-rec__edicion-chart-bar aei-rec__edicion-chart-bar--target" style="width:40%">
+              <span>40%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="aei-rec__edicion-footnote">
+        {% trans %}Superamos el objetivo del 40% con un 46% de inserción laboral verificada. Ahora, en la 2.ª edición, queremos superarlo.{% endtrans %}
+      </p>
     </div>
   </div>
 </section>
@@ -364,6 +639,26 @@
           q: '¿Dónde se imparte el programa?'|t,
           a: 'Tenemos sedes en Málaga (15 plazas, Centro de Negocios Málaga) y Sevilla (30 plazas, Edificio Hermes). La formación combina sesiones presenciales con contenido online (máximo 20% online). Puedes elegir la sede más cercana a tu domicilio.'|t,
         },
+        {
+          q: '¿Cómo me inscribo en T-Acompañamos?'|t,
+          a: 'Rellena el formulario de solicitud en esta página (2 minutos). Nuestro equipo te contacta en menos de 48 horas para verificar los requisitos y agendar la entrevista de acogida. Solo necesitas estar inscrito/a como demandante de empleo en el SAE.'|t,
+        },
+        {
+          q: '¿Qué es un PIIL (Proyecto Integral para la Inserción Laboral)?'|t,
+          a: 'Un PIIL es un programa público de empleo financiado por la Junta de Andalucía y el FSE+ que ofrece un itinerario completo: orientación personalizada, formación certificada e inserción laboral con seguimiento. A diferencia de un curso aislado, el PIIL abarca todas las fases hasta la contratación y el seguimiento post-inserción durante 6 meses.'|t,
+        },
+        {
+          q: '¿Cuándo empieza T-Acompañamos 2026?'|t,
+          a: 'La 2.ª edición comienza oficialmente en diciembre de 2025 (expediente SC/ICV/0111/2025). La fase de acogida y diagnóstico se realiza entre enero y febrero de 2026, seguida de la orientación personalizada (febrero–abril 2026), la formación certificada (marzo–julio 2026) y la inserción laboral (junio 2026–junio 2027).'|t,
+        },
+        {
+          q: '¿Se puede hacer el programa online o es solo presencial?'|t,
+          a: 'La formación es principalmente presencial en nuestras sedes de Málaga y Sevilla. Parte del contenido formativo (hasta un 20%) se imparte en formato online. Las sesiones de orientación personalizada son siempre presenciales para garantizar la calidad del acompañamiento individual.'|t,
+        },
+        {
+          q: '¿Qué pasa si no completo el programa o abandono?'|t,
+          a: 'Puedes abandonar el programa sin penalización. Sin embargo, el incentivo de 528 € se abona al completar el itinerario formativo (mínimo 75% de asistencia a las 50 horas de formación + 10 horas de orientación). Si necesitas pausar temporalmente, hablamos contigo para adaptar el calendario a tu situación.'|t,
+        },
       ] %}
       {% for faq in faqs %}
         <details class="aei-rec__faq-item">
@@ -372,24 +667,78 @@
         </details>
       {% endfor %}
     </div>
+    <div class="aei-rec__faq-escape">
+      <p>{% trans %}¿Aún no estás seguro/a?{% endtrans %}</p>
+      <div class="aei-rec__faq-escape-actions">
+        <a href="{{ guia_url }}" class="aei-rec__cta aei-rec__cta--secondary aei-rec__cta--escape">
+          {% trans %}Descarga la guía y decide con calma{% endtrans %}
+        </a>
+        <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
+           class="aei-rec__cta aei-rec__cta--whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+          {% trans %}Pregúntanos por WhatsApp{% endtrans %}
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
-{# === CTA FINAL === #}
+{# === CTA FINAL: Cierre de conversión === #}
 <section class="aei-rec__cta-final" aria-label="{% trans %}Solicitar plaza{% endtrans %}">
   <div class="aei-rec__container">
-    <h2 class="aei-rec__cta-final-title">{% trans %}Solo quedan{% endtrans %} {{ programa.participantes }} {% trans %}plazas{% endtrans %}</h2>
+    <h2 class="aei-rec__cta-final-title">{% trans %}Tu siguiente paso hacia el empleo empieza aquí{% endtrans %}</h2>
     <p class="aei-rec__cta-final-desc">
-      {% trans %}Fórmate gratis, cobra 528 € y recibe acompañamiento hasta tu contratación. Compatible con tu subsidio por desempleo.{% endtrans %}
+      {% trans %}Formación certificada, orientación individual, mentoría con IA y 528 € de incentivo. Todo gratuito. Compatible con tu prestación por desempleo.{% endtrans %}
     </p>
-    <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary aei-rec__cta--large">
-      {% trans %}Solicitar plaza ahora{% endtrans %}
+
+    {# Refuerzo visual: 3 puntos clave antes del botón #}
+    <ul class="aei-rec__cta-final-checks" aria-label="{% trans %}Beneficios incluidos{% endtrans %}">
+      <li class="aei-rec__cta-final-check">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ej-verde-innovacion, #00A9A5)" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>{% trans %}100% gratuito — sin coste oculto{% endtrans %}</span>
+      </li>
+      <li class="aei-rec__cta-final-check">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ej-verde-innovacion, #00A9A5)" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>{% trans %}528 € de incentivo al completar{% endtrans %}</span>
+      </li>
+      <li class="aei-rec__cta-final-check">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ej-verde-innovacion, #00A9A5)" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>{% trans %}Solo {{ programa.participantes }} plazas entre Málaga y Sevilla{% endtrans %}</span>
+      </li>
+    </ul>
+
+    <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__cta--large aei-rec__cta-final-btn">
+      {% trans %}Solicitar mi plaza ahora{% endtrans %}
     </a>
+    <p class="aei-rec__cta-final-note">
+      {% trans %}Formulario en 2 minutos. Sin compromiso. Te contactamos en menos de 48 horas.{% endtrans %}
+    </p>
+
+    {# Alternativa de contacto directo #}
+    <div class="aei-rec__cta-final-alt">
+      <span class="aei-rec__cta-final-alt-sep">{% trans %}o si lo prefieres{% endtrans %}</span>
+      <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
+         class="aei-rec__cta-final-whatsapp" target="_blank" rel="noopener noreferrer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+        {% trans %}Escríbenos por WhatsApp{% endtrans %}
+      </a>
+    </div>
+
     <p class="aei-rec__cta-final-legal">
       {% trans %}Programa PIIL — Convocatoria Colectivos Vulnerables 2025. Financiado por la Junta de Andalucía y el Fondo Social Europeo Plus (FSE+).{% endtrans %}
     </p>
   </div>
 </section>
+
+{# === WHATSAPP FLOATING BUTTON === #}
+<a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
+   class="aei-rec__whatsapp-fab"
+   target="_blank" rel="noopener noreferrer"
+   aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+</a>
 
 {# === SCHEMA.ORG: EducationalOccupationalProgram inyectado via hook_page_attachments() === #}
 {# Incluye: location con GeoCoordinates (sedes), funder, offers, provider con NAP === #}

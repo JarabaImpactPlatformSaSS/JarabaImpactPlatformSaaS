@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * Parcial: Widget de documentos pendientes de firma.
+ *
+ * Sprint 2 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Variables:
+ * - pendientes: array — Lista de documentos pendientes de firma.
+ * - count: int — Número de documentos pendientes.
+ *
+ * Se incluye en el portal del participante para mostrar
+ * documentos que requieren su firma.
+ */
+#}
+
+{% if count > 0 %}
+<div class="firma-pendientes" role="region" aria-label="{% trans %}Documentos pendientes de firma{% endtrans %}">
+  <div class="firma-pendientes__header">
+    <h3 class="firma-pendientes__title">
+      {% trans %}Firmas pendientes{% endtrans %}
+    </h3>
+    <span class="firma-pendientes__badge" aria-label="{% trans %}{{ count }} documentos pendientes{% endtrans %}">
+      {{ count }}
+    </span>
+  </div>
+
+  <ul class="firma-pendientes__list">
+    {% for doc in pendientes %}
+      <li class="firma-pendientes__item">
+        <span class="firma-pendientes__doc-title">
+          {{ doc.titulo }}
+        </span>
+        <button type="button"
+                class="firma-pendientes__btn-firmar"
+                data-firma-documento-id="{{ doc.documento_id }}"
+                aria-label="{% trans %}Firmar {{ doc.titulo }}{% endtrans %}">
+          {% trans %}Firmar{% endtrans %}
+        </button>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

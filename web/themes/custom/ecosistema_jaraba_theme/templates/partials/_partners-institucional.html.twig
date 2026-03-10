@@ -2,73 +2,81 @@
 /**
  * @file _partners-institucional.html.twig
  *
- * Logos de instituciones que han trabajado con Jose Jaraba / PED.
- * Solo se muestra en el meta-sitio corporativo PED.
+ * Logos reales de instituciones y entidades que han trabajado con el equipo.
+ * Componente reutilizable para todos los meta-sitios del ecosistema.
+ *
+ * Variables:
+ *   - theme_path: Path del tema (default: ecosistema_jaraba_theme).
+ *   - partners_variant: 'full' (default) | 'compact' — nivel de detalle.
  *
  * DIRECTRICES:
  * - i18n: {% trans %}
- * - A11y: aria-label
- * - ICON-CONVENTION-001: jaraba_icon() con variante duotone
- * - ICON-COLOR-001: Solo colores de la paleta Jaraba
- * - CSS: BEM .ped-partners__*
+ * - A11y: aria-labelledby, role, alt en imgs
+ * - CSS-VAR-ALL-COLORS-001: solo var(--ej-*)
+ * - TWIG-INCLUDE-ONLY-001: usar con `only`
+ * - BEM: .ped-partners__*
  */
 #}
 
+{% set base_path = theme_path|default('themes/custom/ecosistema_jaraba_theme') %}
+{% set variant = partners_variant|default('full') %}
+
 <section class="ped-partners" aria-labelledby="partners-title">
-  <h2 id="partners-title">{% trans %}Han confiado en nosotros{% endtrans %}</h2>
-  <div class="ped-partners__grid">
-    {# Instituciones supranacionales y nacionales #}
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Union Europea{% endtrans %}</span>
+  <div class="ped-partners__container">
+    <h2 class="ped-partners__title" id="partners-title">{% trans %}Han confiado en nosotros{% endtrans %}</h2>
+    <p class="ped-partners__subtitle">
+      {% trans %}Administraciones públicas, fundaciones e instituciones de investigación con las que hemos colaborado en proyectos de desarrollo territorial, emprendimiento y empleabilidad.{% endtrans %}
+    </p>
+
+    {# --- Fila 1: Instituciones y Diputaciones (máxima autoridad) --- #}
+    <div class="ped-partners__tier">
+      <span class="ped-partners__tier-label">{% trans %}Instituciones{% endtrans %}</span>
+      <div class="ped-partners__logos ped-partners__logos--tier1">
+        <img src="/{{ base_path }}/images/trust-logos/logo-famp.webp"
+             alt="FAMP — Federación Andaluza de Municipios y Provincias" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-diputacion-malaga.webp"
+             alt="Diputación de Málaga" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-diputacion-caceres.webp"
+             alt="Diputación de Cáceres" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-lifewatch-eric.webp"
+             alt="LifeWatch ERIC — European Research Infrastructure" loading="lazy">
+      </div>
     </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Estado Espanol{% endtrans %}</span>
+
+    {# --- Fila 2: Ayuntamientos --- #}
+    <div class="ped-partners__tier">
+      <span class="ped-partners__tier-label">{% trans %}Ayuntamientos{% endtrans %}</span>
+      <div class="ped-partners__logos ped-partners__logos--tier2">
+        <img src="/{{ base_path }}/images/trust-logos/logo-ayto-granada.webp"
+             alt="Ayuntamiento de Granada" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-ayto-malaga-imfe.webp"
+             alt="Ayuntamiento de Málaga — IMFE" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-ayto-almeria.webp"
+             alt="Ayuntamiento de Almería" loading="lazy">
+        <img src="/{{ base_path }}/images/trust-logos/logo-ayto-alcala.webp"
+             alt="Ayuntamiento de Alcalá de Guadaíra" loading="lazy">
+        {% if variant == 'full' %}
+          <img src="/{{ base_path }}/images/trust-logos/logo-ayto-alhaurin.webp"
+               alt="Ayuntamiento de Alhaurín el Grande" loading="lazy">
+          <img src="/{{ base_path }}/images/trust-logos/logo-ayto-ponferrada.webp"
+               alt="Ayuntamiento de Ponferrada" loading="lazy">
+        {% endif %}
+      </div>
     </div>
-    {# Comunidades autonomas #}
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Junta de Andalucia{% endtrans %}</span>
-    </div>
-    {# Diputaciones #}
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Diputacion de Malaga{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'institution', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Diputacion de Caceres{% endtrans %}</span>
-    </div>
-    {# Ayuntamientos #}
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Ayto. Alhaurin el Grande{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Ayto. Alcala de Guadaira{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Ayto. Almendralejo{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Ayto. Ponferrada{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Ayto. Puente Genil{% endtrans %}</span>
-    </div>
-    {# Universidades y fundaciones #}
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('education', 'graduation-cap', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Universidad de Cordoba{% endtrans %}</span>
-    </div>
-    <div class="ped-partners__badge">
-      {{ jaraba_icon('business', 'handshake', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
-      <span>{% trans %}Fundacion MADECA{% endtrans %}</span>
-    </div>
+
+    {% if variant == 'full' %}
+      {# --- Fila 3: Partners tecnológicos e innovación --- #}
+      <div class="ped-partners__tier">
+        <span class="ped-partners__tier-label">{% trans %}Partners{% endtrans %}</span>
+        <div class="ped-partners__logos ped-partners__logos--tier3">
+          <img src="/{{ base_path }}/images/trust-logos/logo-smart-city-cluster.webp"
+               alt="Smart City Cluster" loading="lazy">
+          <img src="/{{ base_path }}/images/trust-logos/logo-uspace.webp"
+               alt="Urban Space" loading="lazy">
+          <img src="/{{ base_path }}/images/trust-logos/logo-food-intelligence.webp"
+               alt="The Food Intelligence Company" loading="lazy">
+        </div>
+      </div>
+    {% endif %}
   </div>
 </section>

@@ -109,9 +109,48 @@ class AndaluciaEiLandingController extends ControllerBase {
         'Junta de Andalucía — Servicio Andaluz de Empleo (SAE)',
         'Fondo Social Europeo Plus (FSE+) — 85%',
       ],
+      // P2-9: Sectores de empleo objetivo.
+      'sectores' => [
+        'Hostelería y turismo',
+        'Comercio y distribución',
+        'Servicios a empresas',
+        'Logística y transporte',
+        'Tecnología e informática',
+        'Industria agroalimentaria',
+        'Servicios sociales y sanitarios',
+        'Construcción y mantenimiento',
+      ],
       'equipo' => [
-        ['nombre' => 'José Jaraba Muñoz', 'titulo' => 'Coordinador — Licenciado en Derecho, Máster', 'sede' => 'Sevilla'],
-        ['nombre' => 'Remedios Estévez Palomino', 'titulo' => 'Técnica — Licenciada en Economía', 'sede' => 'Málaga'],
+        [
+          'nombre' => 'José Jaraba Muñoz',
+          'cargo' => 'Coordinador del Programa',
+          'foto' => 'equipo-pepe-jaraba.webp',
+          'iniciales' => 'JJ',
+          'bio' => 'Jurista especializado en Derecho Comunitario con más de 30 años de experiencia dirigiendo entidades públicas y privadas. Ha gestionado más de 100 millones de euros en fondos europeos y diseñado planes estratégicos para provincias enteras. Creador del Método Jaraba™ de transformación digital con IA aplicada a programas de empleo.',
+          'badges' => [
+            ['icono' => 'briefcase', 'texto' => '+30 años de experiencia'],
+            ['icono' => 'euro', 'texto' => '+100M€ en fondos europeos'],
+            ['icono' => 'users', 'texto' => '+500 proyectos acompañados'],
+          ],
+          'cita' => 'Mi trabajo es construir el puente entre los grandes recursos y las personas que realmente los necesitan.',
+          'sede' => 'Sevilla',
+          'linkedin' => 'https://www.linkedin.com/in/pepejaraba/',
+        ],
+        [
+          'nombre' => 'Remedios Estévez Palomino',
+          'cargo' => 'Técnica de Empleabilidad',
+          'foto' => 'equipo-remedios-estevez.webp',
+          'iniciales' => 'RE',
+          'bio' => 'Licenciada en Economía (UNED) y Máster MBA en Servicios Sociales. Desde 2005 dirige una empresa pública municipal dedicada al desarrollo económico local, la formación para el empleo y el acompañamiento al emprendimiento. Formadora habilitada para docencia en FP con más de 20 años de experiencia en gestión de subvenciones, empleabilidad y servicios públicos en Andalucía.',
+          'badges' => [
+            ['icono' => 'briefcase', 'texto' => '+20 años en empleo público'],
+            ['icono' => 'chart', 'texto' => 'MBA Servicios Sociales'],
+            ['icono' => 'users', 'texto' => 'Formadora habilitada FP'],
+          ],
+          'cita' => 'Cada persona tiene un potencial profesional único; mi labor es ayudarle a descubrirlo y ponerlo en valor.',
+          'sede' => 'Málaga',
+          'linkedin' => 'https://www.linkedin.com/in/remedios-est%C3%A9vez-palomino/',
+        ],
       ],
     ];
 

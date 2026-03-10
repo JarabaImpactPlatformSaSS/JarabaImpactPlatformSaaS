@@ -141,11 +141,18 @@ class FaseTransitionManager
     {
         switch ($nueva_fase) {
             case 'diagnostico':
+                // Prerrequisito: Acuerdo de Participación firmado.
+                if (method_exists($participante, 'isAcuerdoParticipacionFirmado') && !$participante->isAcuerdoParticipacionFirmado()) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('El Acuerdo de Participación debe estar firmado antes de pasar a Diagnóstico.'),
+                    ];
+                }
                 // Prerrequisito: DACI firmado.
                 if (method_exists($participante, 'isDaciFirmado') && !$participante->isDaciFirmado()) {
                     return [
                         'success' => FALSE,
-                        'message' => t('El DACI debe estar firmado antes de pasar a Diagnóstico.'),
+                        'message' => t('El DACI (Aceptación de Compromisos) debe estar firmado antes de pasar a Diagnóstico.'),
                     ];
                 }
                 break;

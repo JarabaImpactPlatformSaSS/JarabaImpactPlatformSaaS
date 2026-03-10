@@ -610,10 +610,11 @@ function _jaraba_page_builder_inject_schema_org(array &$attachments, $page, stri
   $templateId = $page->get('template_id')->value ?? '';
   $contentData = json_decode($page->get('content_data')->value ?? '{}', TRUE) ?: [];
 
-  // Breadcrumb siempre presente.
+  // Breadcrumb siempre presente (2-level: Home → Current page).
+  $pathAlias = $page->get('path_alias')->value ?? '/page/' . $page->id();
   $breadcrumbs = [
     ['title' => 'Inicio', 'url' => $baseUrl],
-    ['title' => $title, 'url' => ''],
+    ['title' => $title, 'url' => $baseUrl . $pathAlias],
   ];
   $breadcrumbJson = $schemaOrg->generateBreadcrumbSchema($breadcrumbs);
   if ($breadcrumbJson) {
@@ -686,6 +687,90 @@ function _jaraba_page_builder_inject_schema_org(array &$attachments, $page, stri
       'schema_specific_' . str_replace(['_', '-'], '', $templateId),
     ];
   }
+
+  // Person schema for team/equipo pages (co-founders).
+  $pathAlias = $page->get('path_alias')->value ?? '';
+  if (str_contains($pathAlias, '/equipo')) {
+    $personSchemas = _jaraba_page_builder_generate_cofounders_schema($baseUrl);
+    if ($personSchemas) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => $personSchemas,
+        ],
+        'schema_person_cofounders',
+      ];
+    }
+  }
+}
+
+/**
+ * Genera Person schema JSON-LD para los cofundadores de PED.
+ *
+ * @param string $baseUrl
+ *   URL base del sitio.
+ *
+ * @return string
+ *   JSON-LD string con @graph de Person schemas.
+ */
+function _jaraba_page_builder_generate_cofounders_schema(string $baseUrl): string {
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@graph' => [
+      [
+        '@type' => 'Person',
+        'name' => 'Jose Jaraba Munoz',
+        'jobTitle' => 'Cofundador y CEO',
+        'worksFor' => [
+          '@type' => 'Corporation',
+          'name' => 'Plataforma de Ecosistemas Digitales S.L.',
+          'url' => 'https://plataformadeecosistemas.es',
+        ],
+        'url' => 'https://pepejaraba.com',
+        'image' => $baseUrl . '/themes/custom/ecosistema_jaraba_theme/images/equipo-pepe-jaraba.webp',
+        'sameAs' => [
+          'https://www.linkedin.com/in/pepejaraba/',
+          'https://pepejaraba.com',
+        ],
+        'alumniOf' => [
+          ['@type' => 'CollegeOrUniversity', 'name' => 'Universidad de Cordoba'],
+          ['@type' => 'CollegeOrUniversity', 'name' => 'Universidad Politecnica de Madrid'],
+        ],
+        'knowsAbout' => [
+          'Derecho Comunitario',
+          'Fondos Europeos',
+          'Desarrollo Rural Territorial',
+          'Inteligencia Artificial aplicada',
+        ],
+        'description' => 'Jurista especializado en Derecho Comunitario con mas de 30 anos de experiencia en transformacion territorial. Ha gestionado +100M EUR en fondos europeos y acompanado +500 proyectos de emprendimiento y empleo.',
+      ],
+      [
+        '@type' => 'Person',
+        'name' => 'Remedios Estevez Palomino',
+        'jobTitle' => 'Cofundadora y COO',
+        'worksFor' => [
+          '@type' => 'Corporation',
+          'name' => 'Plataforma de Ecosistemas Digitales S.L.',
+          'url' => 'https://plataformadeecosistemas.es',
+        ],
+        'image' => $baseUrl . '/themes/custom/ecosistema_jaraba_theme/images/equipo-remedios-estevez.webp',
+        'sameAs' => [
+          'https://www.linkedin.com/in/remedios-est%C3%A9vez-palomino/',
+        ],
+        'knowsAbout' => [
+          'Desarrollo Economico Local',
+          'Gestion de Servicios Publicos',
+          'Formacion Profesional',
+          'Emprendimiento',
+        ],
+        'description' => 'Economista con mas de 20 anos de experiencia en gestion de servicios publicos, desarrollo economico local y formacion profesional. Gerencia una empresa municipal de desarrollo economico local.',
+      ],
+    ],
+  ];
+
+  return json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 }
 
 /**

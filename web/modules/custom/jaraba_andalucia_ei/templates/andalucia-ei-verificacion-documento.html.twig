@@ -1,0 +1,96 @@
+{#
+/**
+ * @file
+ * Template para la verificación pública de documento firmado.
+ *
+ * Accesible vía QR code embebido en PDFs firmados.
+ * Ruta: /verificar/{hash}
+ *
+ * Variables:
+ * - valido: boolean — Si el documento fue encontrado y es auténtico.
+ * - documento: array|null — Datos del documento (titulo, categoria, firma_fecha, etc.).
+ * - hash: string — Hash de verificación consultado.
+ */
+#}
+
+<div class="verificacion-documento" role="main">
+  <div class="verificacion-documento__card">
+
+    {% if valido and documento %}
+      <div class="verificacion-documento__status verificacion-documento__status--valido" aria-live="polite">
+        <span class="verificacion-documento__icon" aria-hidden="true">&#10003;</span>
+        <h1 class="verificacion-documento__title">
+          {% trans %}Documento verificado{% endtrans %}
+        </h1>
+        <p class="verificacion-documento__subtitle">
+          {% trans %}Este documento ha sido firmado electrónicamente y su autenticidad ha sido verificada.{% endtrans %}
+        </p>
+      </div>
+
+      <dl class="verificacion-documento__details">
+        <div class="verificacion-documento__detail-row">
+          <dt>{% trans %}Título{% endtrans %}</dt>
+          <dd>{{ documento.titulo }}</dd>
+        </div>
+        <div class="verificacion-documento__detail-row">
+          <dt>{% trans %}Categoría{% endtrans %}</dt>
+          <dd>{{ documento.categoria }}</dd>
+        </div>
+        {% if documento.firma_fecha %}
+          <div class="verificacion-documento__detail-row">
+            <dt>{% trans %}Fecha de firma{% endtrans %}</dt>
+            <dd>{{ documento.firma_fecha }}</dd>
+          </div>
+        {% endif %}
+        {% if documento.firma_metodo %}
+          <div class="verificacion-documento__detail-row">
+            <dt>{% trans %}Método de firma{% endtrans %}</dt>
+            <dd>
+              {% if documento.firma_metodo == 'tactil' %}
+                {% trans %}Firma manuscrita táctil{% endtrans %}
+              {% elseif documento.firma_metodo == 'autofirma' %}
+                {% trans %}Certificado digital (AutoFirma){% endtrans %}
+              {% elseif documento.firma_metodo == 'sello_empresa' %}
+                {% trans %}Sello de empresa{% endtrans %}
+              {% else %}
+                {{ documento.firma_metodo }}
+              {% endif %}
+            </dd>
+          </div>
+        {% endif %}
+        {% if documento.hash_documento %}
+          <div class="verificacion-documento__detail-row">
+            <dt>{% trans %}Hash del documento{% endtrans %}</dt>
+            <dd class="verificacion-documento__hash">{{ documento.hash_documento }}</dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      <div class="verificacion-documento__footer">
+        <p class="verificacion-documento__disclaimer">
+          {% trans %}Verificación realizada por la Plataforma de Ecosistemas Jaraba. Esta página confirma que el documento referenciado fue firmado electrónicamente en la fecha indicada.{% endtrans %}
+        </p>
+      </div>
+
+    {% else %}
+      <div class="verificacion-documento__status verificacion-documento__status--invalido" aria-live="polite">
+        <span class="verificacion-documento__icon" aria-hidden="true">&#10007;</span>
+        <h1 class="verificacion-documento__title">
+          {% trans %}Documento no encontrado{% endtrans %}
+        </h1>
+        <p class="verificacion-documento__subtitle">
+          {% trans %}No se ha encontrado ningún documento firmado con el código de verificación proporcionado. Esto puede significar que el documento no existe, ha sido modificado o el enlace no es válido.{% endtrans %}
+        </p>
+      </div>
+
+      {% if hash %}
+        <div class="verificacion-documento__hash-info">
+          <p>
+            <strong>{% trans %}Código consultado{% endtrans %}:</strong>
+            <code class="verificacion-documento__hash">{{ hash }}</code>
+          </p>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>

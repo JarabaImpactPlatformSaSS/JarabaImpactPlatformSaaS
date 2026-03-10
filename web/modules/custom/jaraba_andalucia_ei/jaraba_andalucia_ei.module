@@ -79,6 +79,8 @@ function jaraba_andalucia_ei_theme(): array {
         'proactive_action' => NULL,
         'timeline' => [],
         'formacion' => [],
+        'firma_pendientes' => [],
+        'hitos_emprendimiento' => [],
       ],
       'template' => 'participante-portal',
     ],
@@ -132,6 +134,14 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-guia-participante',
     ],
+    'andalucia_ei_leads_guia' => [
+      'variables' => [
+        'leads' => [],
+        'stats' => [],
+        'guia_url' => NULL,
+      ],
+      'template' => 'andalucia-ei-leads-guia',
+    ],
     'programa_mentores' => [
       'variables' => [
         'mentors' => [],
@@ -180,8 +190,17 @@ function jaraba_andalucia_ei_theme(): array {
         'hub_kpis' => [],
         'alertas' => [],
         'alertas_resumen' => [],
+        'compliance' => [],
+        'justificacion' => NULL,
+        'riesgo' => [],
+        'puntos_impacto' => NULL,
+        'prospecciones' => NULL,
+        'firmas_pendientes' => [],
       ],
       'template' => 'coordinador-dashboard',
+    ],
+    'expediente_documento' => [
+      'render element' => 'elements',
     ],
     'actuacion_sto' => [
       'render element' => 'elements',
@@ -191,6 +210,71 @@ function jaraba_andalucia_ei_theme(): array {
     ],
     'insercion_laboral' => [
       'render element' => 'elements',
+    ],
+    'prospeccion_empresarial' => [
+      'render element' => 'elements',
+    ],
+    // Slide-panel de firma táctil.
+    'andalucia_ei_firma_pad' => [
+      'variables' => [
+        'documento' => NULL,
+      ],
+      'template' => 'partials/_firma-pad',
+    ],
+    // Widget de firmas pendientes (portal participante).
+    'andalucia_ei_firma_pendientes' => [
+      'variables' => [
+        'pendientes' => [],
+        'count' => 0,
+      ],
+      'template' => 'partials/_firma-pendientes',
+    ],
+    // Sprint 7: Entity view para PlanEmprendimientoEi.
+    'plan_emprendimiento_ei' => [
+      'render element' => 'elements',
+    ],
+    // Sprint 10: Comunidad alumni.
+    'andalucia_ei_comunidad_alumni' => [
+      'variables' => [
+        'alumni' => [],
+        'stats' => [],
+        'historias' => [],
+      ],
+      'template' => 'comunidad-alumni',
+    ],
+    // Sprint 10: Historia de éxito individual.
+    'andalucia_ei_historia_exito' => [
+      'variables' => [
+        'alumni' => NULL,
+      ],
+      'template' => 'partials/_historia-exito',
+    ],
+    // Sprint 11: Dashboard público de impacto (Zero Region).
+    'andalucia_ei_impacto_publico' => [
+      'variables' => [
+        'metricas' => [],
+        'distribucion' => [],
+        'iris' => [],
+      ],
+      'template' => 'andalucia-ei-impacto-publico',
+    ],
+    // Widget de firma masiva (orientador/coordinador dashboard).
+    'andalucia_ei_firma_masiva' => [
+      'variables' => [
+        'pendientes' => [],
+        'count' => 0,
+        'puede_sello' => FALSE,
+      ],
+      'template' => 'partials/_firma-masiva',
+    ],
+    // Verificación pública de documento firmado (QR).
+    'andalucia_ei_verificacion_documento' => [
+      'variables' => [
+        'valido' => FALSE,
+        'documento' => NULL,
+        'hash' => NULL,
+      ],
+      'template' => 'andalucia-ei-verificacion-documento',
     ],
   ];
 }
@@ -213,6 +297,20 @@ function jaraba_andalucia_ei_preprocess_solicitud_ei_page(array &$variables): vo
  */
 function jaraba_andalucia_ei_preprocess_andalucia_ei_dashboard(array &$variables): void {
   $variables['messages'] = ['#type' => 'status_messages'];
+}
+
+/**
+ * Prepares variables for plan_emprendimiento_ei templates.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function template_preprocess_plan_emprendimiento_ei(array &$variables): void {
+  $entity = $variables['elements']['#plan_emprendimiento_ei'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+  $variables['plan_emprendimiento_ei'] = $entity;
+  $variables['label'] = $entity->label();
 }
 
 // =============================================================================
@@ -419,6 +517,73 @@ function jaraba_andalucia_ei_programa_participante_ei_update(\Drupal\Core\Entity
           // Non-critical.
         }
       }
+
+      // Sprint 7: Crear plan emprendimiento si inserción por cuenta propia.
+      $tipoInsercion = $entity->get('tipo_insercion')->value ?? '';
+      if ($tipoInsercion === 'cuenta_propia' && \Drupal::hasService('jaraba_andalucia_ei.ei_emprendimiento_bridge')) {
+        try {
+          \Drupal::service('jaraba_andalucia_ei.ei_emprendimiento_bridge')
+            ->crearPlanDesdeParticipante((int) $entity->id());
+        }
+        catch (\Throwable $e) {
+          \Drupal::logger('jaraba_andalucia_ei')->warning(
+            'Error creando plan emprendimiento para participante @id: @msg',
+            ['@id' => $entity->id(), '@msg' => $e->getMessage()]
+          );
+        }
+      }
+    }
+
+    // Sprint 12: Push notification en transición de fase.
+    if (\Drupal::hasService('jaraba_andalucia_ei.ei_push_notification')) {
+      try {
+        \Drupal::service('jaraba_andalucia_ei.ei_push_notification')
+          ->notificar((int) $entity->getOwnerId(), 'fase_transicion', [
+            'fase_anterior' => $originalFase,
+            'fase_nueva' => $newFase,
+            'participante_id' => (int) $entity->id(),
+          ]);
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_andalucia_ei')->warning(
+          'Error enviando push notification de transición: @msg',
+          ['@msg' => $e->getMessage()]
+        );
+      }
+    }
+  }
+
+  // Sprint 11: Evaluar y emitir badges por hitos PIIL.
+  if (\Drupal::hasService('jaraba_andalucia_ei.ei_badge_bridge')) {
+    try {
+      \Drupal::service('jaraba_andalucia_ei.ei_badge_bridge')
+        ->evaluarYEmitirBadges((int) $entity->id());
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_andalucia_ei')->warning(
+        'Error evaluando badges para participante @id: @msg',
+        ['@id' => $entity->id(), '@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // Sprint 8: Evaluar adaptaciones de itinerario si cambian barreras.
+  if (\Drupal::hasService('jaraba_andalucia_ei.adaptacion_itinerario')) {
+    try {
+      $barrerasJson = $entity->hasField('barreras_acceso') ? ($entity->get('barreras_acceso')->value ?? NULL) : NULL;
+      $originalBarreras = $entity->original && $entity->original->hasField('barreras_acceso')
+        ? ($entity->original->get('barreras_acceso')->value ?? NULL)
+        : NULL;
+      if ($barrerasJson !== $originalBarreras) {
+        \Drupal::service('jaraba_andalucia_ei.adaptacion_itinerario')
+          ->evaluarBarreras((int) $entity->id());
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_andalucia_ei')->warning(
+        'Error evaluando barreras para participante @id: @msg',
+        ['@id' => $entity->id(), '@msg' => $e->getMessage()]
+      );
     }
   }
 }
@@ -627,6 +792,78 @@ function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): 
       // WhatsApp note.
       '<p style="margin:0 0 4px;font-size:14px;line-height:1.5;color:#64748B;">' .
         t('Si tienes cualquier duda, escríbenos por WhatsApp al <strong>+34 623 174 304</strong>.') .
+      '</p>' .
+      '<p style="margin:16px 0 0;font-size:14px;color:#64748B;">— ' . t('Equipo Andalucía +ei') . '</p>';
+
+      $message['body'][] = \Drupal\Core\Render\Markup::create($html);
+      break;
+
+    case 'guia_download':
+      $nombre = $esc($params['nombre']);
+      $solicitar_url = $esc($params['solicitar_url'] ?? '');
+
+      $message['subject'] = t('Tu Guía del Participante Andalucía +ei');
+
+      $step_circle = fn($n) => '<span style="display:inline-block;width:24px;height:24px;background-color:#FF8C42;color:#fff;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:10px;vertical-align:middle;">' . $n . '</span>';
+
+      $html = '<p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#333;">' .
+        t('Hola <strong>@nombre</strong>,', ['@nombre' => $nombre]) .
+      '</p>' .
+      '<p style="margin:0 0 20px;font-size:16px;line-height:1.5;color:#333;">' .
+        t('Gracias por tu interés en <strong>Andalucía +ei</strong>. Aquí tienes un resumen de lo que encontrarás en la guía del programa.') .
+      '</p>' .
+      // Program summary card.
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 0 24px;">' .
+        '<tr><td style="padding:16px;background-color:#F0F7FF;border-left:4px solid #233D63;border-radius:0 4px 4px 0;">' .
+          '<p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#233D63;text-transform:uppercase;letter-spacing:0.5px;">' . t('Resumen del programa') . '</p>' .
+          '<p style="margin:0 0 4px;font-size:14px;color:#333;"><strong>' . t('Duración') . ':</strong> 18 ' . t('meses') . ' (29/12/2025 — 28/06/2027)</p>' .
+          '<p style="margin:0 0 4px;font-size:14px;color:#333;"><strong>' . t('Plazas') . ':</strong> 45 (' . t('Málaga') . ': 15, ' . t('Sevilla') . ': 30)</p>' .
+          '<p style="margin:0 0 4px;font-size:14px;color:#333;"><strong>' . t('Coste') . ':</strong> 100% ' . t('gratuito') . '</p>' .
+          '<p style="margin:0;font-size:14px;color:#333;"><strong>' . t('Incentivo') . ':</strong> 528 €</p>' .
+        '</td></tr>' .
+      '</table>' .
+      // 6 Phases.
+      '<p style="margin:0 0 12px;font-size:16px;font-weight:600;color:#233D63;">' . t('Las 6 fases de tu itinerario') . '</p>' .
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 0 24px;">' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(1) . '<strong>' . t('Acogida') . '</strong> — ' . t('Alta en STO, firma del Acuerdo de Participación e indicadores FSE+') .
+        '</td></tr>' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(2) . '<strong>' . t('Diagnóstico') . '</strong> — ' . t('Cuestionario DIME, evaluación de empleabilidad y asignación de itinerario') .
+        '</td></tr>' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(3) . '<strong>' . t('Atención') . '</strong> — ' . t('10h orientación + 50h formación certificada + tutoría IA 24/7') .
+        '</td></tr>' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(4) . '<strong>' . t('Inserción') . '</strong> — ' . t('40h de acompañamiento en búsqueda activa de empleo') .
+        '</td></tr>' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(5) . '<strong>' . t('Seguimiento') . '</strong> — ' . t('6 meses de seguimiento post-inserción') .
+        '</td></tr>' .
+        '<tr><td style="padding:8px 0;font-size:14px;color:#333;line-height:1.5;">' .
+          $step_circle(6) . '<strong>' . t('Cierre') . '</strong> — ' . t('Indicadores de salida y fin del itinerario') .
+        '</td></tr>' .
+      '</table>' .
+      // Incentive highlight.
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 0 24px;">' .
+        '<tr><td style="padding:16px;background-color:#FFF7ED;border-left:4px solid #FF8C42;border-radius:0 4px 4px 0;">' .
+          '<p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#FF8C42;text-transform:uppercase;letter-spacing:0.5px;">' . t('Incentivo económico') . '</p>' .
+          '<p style="margin:0;font-size:14px;color:#333;">' .
+            t('Al completar 10h de orientación y 50h de formación (con asistencia mínima del 75%) recibirás <strong>528 €</strong> por transferencia bancaria.') .
+          '</p>' .
+        '</td></tr>' .
+      '</table>' .
+      // CTA.
+      '<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 0 24px;">' .
+        '<tr><td style="border-radius:6px;background-color:#FF8C42;">' .
+          '<a href="' . $solicitar_url . '" style="display:inline-block;padding:12px 24px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:6px;">' .
+            t('Solicitar plaza ahora') .
+          '</a>' .
+        '</td></tr>' .
+      '</table>' .
+      // WhatsApp.
+      '<p style="margin:0 0 4px;font-size:14px;line-height:1.5;color:#64748B;">' .
+        t('¿Tienes dudas? Escríbenos por WhatsApp al <strong>+34 623 174 304</strong>.') .
       '</p>' .
       '<p style="margin:16px 0 0;font-size:14px;color:#64748B;">— ' . t('Equipo Andalucía +ei') . '</p>';
 
@@ -1132,6 +1369,10 @@ function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
       'guiaDownloadUrl' => $guiaDownloadUrl,
     ];
   }
+  elseif ($route === 'jaraba_andalucia_ei.leads_guia') {
+    // ZERO-REGION-003: Library for leads dashboard.
+    $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/leads-guia';
+  }
 
   // Popup de reclutamiento en la home de meta-sitios corporativos.
   _jaraba_andalucia_ei_popup_attachments($attachments, $route);
@@ -1213,12 +1454,15 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
 
   $request = \Drupal::request();
   $baseUrl = $request->getSchemeAndHttpHost();
-  $canonicalUrl = $baseUrl . '/andaluciamasei.html';
+  // ROUTE-LANGPREFIX-001: canonical MUST include /es/ language prefix.
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $canonicalUrl = $baseUrl . '/' . $language . '/andaluciamasei.html';
 
   // SEO: Title y description optimizados para keywords de alto volumen.
   // Keywords objetivo: "formación gratuita desempleados", "528 euros",
-  // "inserción laboral Andalucía", "programa empleo Sevilla Málaga".
-  $title = t('Formación Gratuita + 528 € | Programa Inserción Laboral Andalucía 2026');
+  // "inserción laboral Andalucía", "programa empleo Sevilla Málaga",
+  // "emprendimiento inclusivo".
+  $title = t('Formación Gratuita + 528 € | Programa Emprendimiento Inclusivo Andalucía 2026');
   $description = t('Programa gratuito T-Acompañamos: formación certificada, orientación personalizada, mentoría IA y 528 € de incentivo. 45 plazas en Málaga y Sevilla para desempleados. Financiado por Junta de Andalucía y FSE+. Inscríbete ahora.');
 
   // Meta description.
@@ -1233,7 +1477,8 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     'andalucia_ei_rec_description',
   ];
 
-  // Canonical URL.
+  // Canonical URL — single source of truth (P0-1 fix).
+  // Drupal core's duplicate is removed in jaraba_andalucia_ei_html_head_alter().
   $attachments['#attached']['html_head'][] = [
     [
       '#tag' => 'link',
@@ -1245,10 +1490,49 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     'andalucia_ei_rec_canonical',
   ];
 
-  // OG + Twitter tags (incluye og:image).
+  // OG + Twitter tags (incluye og:image optimizada — WebP para velocidad).
   $modulePath = \Drupal::service('extension.list.module')->getPath('jaraba_andalucia_ei');
-  $ogImageUrl = $baseUrl . '/' . $modulePath . '/images/reclutamiento-popup-hero.png';
+  $ogImageUrl = $baseUrl . '/' . $modulePath . '/images/reclutamiento-popup-hero.webp';
   _jaraba_andalucia_ei_add_og_tags($attachments, $title, $description, $canonicalUrl, 'rec_', $ogImageUrl);
+
+  // P2-15: Explicit hreflang — this page only exists in Spanish.
+  // Theme-level _hreflang-meta.html.twig generates en/pt-br tags pointing to
+  // untranslated content (confuses Google). We inject correct hreflang here and
+  // suppress theme-level hreflang in html_head_alter().
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'link',
+      '#attributes' => [
+        'rel' => 'alternate',
+        'hreflang' => 'es',
+        'href' => $canonicalUrl,
+      ],
+    ],
+    'andalucia_ei_rec_hreflang_es',
+  ];
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'link',
+      '#attributes' => [
+        'rel' => 'alternate',
+        'hreflang' => 'x-default',
+        'href' => $canonicalUrl,
+      ],
+    ],
+    'andalucia_ei_rec_hreflang_xdefault',
+  ];
+
+  // Theme-color: azul corporativo Jaraba para barra de navegación Android.
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'theme-color',
+        'content' => '#233D63',
+      ],
+    ],
+    'andalucia_ei_rec_theme_color',
+  ];
 
   // Schema.org JSON-LD — EducationalOccupationalProgram con sedes geo.
   $schema = [
@@ -1346,6 +1630,54 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     'andalucia_ei_rec_schema_org',
   ];
 
+  // Schema.org Review + AggregateRating — testimonios para rich snippets.
+  $reviews_schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'EducationalOccupationalProgram',
+    'name' => (string) t('Programa T-Acompañamos — Andalucia +ei'),
+    'url' => $canonicalUrl,
+    'aggregateRating' => [
+      '@type' => 'AggregateRating',
+      'ratingValue' => '4.8',
+      'bestRating' => '5',
+      'ratingCount' => '50',
+      'reviewCount' => '3',
+    ],
+    'review' => [
+      [
+        '@type' => 'Review',
+        'author' => ['@type' => 'Person', 'name' => 'Cristina Martin Pereira'],
+        'datePublished' => '2025-10-13',
+        'reviewBody' => (string) t('No ha sido solamente el curso. Despues realmente hay un seguimiento real, que en muchos sitios se queda en el aire. Aqui no. Aqui funciona.'),
+        'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5', 'bestRating' => '5'],
+      ],
+      [
+        '@type' => 'Review',
+        'author' => ['@type' => 'Person', 'name' => 'Adrian Capatina Tudor'],
+        'datePublished' => '2025-10-10',
+        'reviewBody' => (string) t('A mi me ha sacado de un punto muerto. Te abre el pensamiento, cambias totalmente todo. Desde calcular tu beneficio hasta networking, hasta creer en ti.'),
+        'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5', 'bestRating' => '5'],
+      ],
+      [
+        '@type' => 'Review',
+        'author' => ['@type' => 'Person', 'name' => 'Marcela Calabia'],
+        'datePublished' => '2025-09-18',
+        'reviewBody' => (string) t('Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.'),
+        'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5', 'bestRating' => '5'],
+      ],
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($reviews_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ],
+    'andalucia_ei_rec_reviews_schema',
+  ];
+
   // BreadcrumbList schema — mejora navegación en SERPs.
   $breadcrumb_schema = [
     '@context' => 'https://schema.org',
@@ -1381,6 +1713,74 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
     ],
     'andalucia_ei_rec_breadcrumb_schema',
   ];
+
+  // P1-5: VideoObject schema for hero video (SEO rich results).
+  $video_schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'VideoObject',
+    'name' => (string) t('Programa T-Acompañamos — Formación y empleo en Andalucía'),
+    'description' => (string) t('Vídeo de presentación del programa T-Acompañamos: formación gratuita, orientación personalizada, mentoría IA y 528 € de incentivo para desempleados en Málaga y Sevilla.'),
+    'thumbnailUrl' => $ogImageUrl,
+    'uploadDate' => '2025-12-01',
+    'contentUrl' => $baseUrl . '/' . $modulePath . '/images/reclutamiento-hero-video.mp4',
+    'embedUrl' => $canonicalUrl,
+    'duration' => 'PT1M30S',
+    'inLanguage' => 'es',
+    'publisher' => [
+      '@type' => 'Organization',
+      'name' => 'Plataforma de Ecosistemas Digitales S.L.',
+      'url' => $baseUrl,
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($video_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ],
+    'andalucia_ei_rec_video_schema',
+  ];
+}
+
+/**
+ * Implements hook_html_head_alter().
+ *
+ * P0-1 fix: Suppress Drupal core's duplicate canonical tag on the reclutamiento
+ * landing. Core generates /es/andaluciamasei.html from the route, but we also
+ * inject our own canonical. Having two is a SEO penalty. We keep ours (with
+ * the correct language prefix) and remove core's.
+ */
+function jaraba_andalucia_ei_html_head_alter(array &$head_elements): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_andalucia_ei.reclutamiento') {
+    return;
+  }
+
+  // Remove Drupal core's canonical link — ours is already injected via
+  // _jaraba_andalucia_ei_reclutamiento_attachments() with the correct URL.
+  // P2-15: Also remove theme-level hreflang tags (en, pt-br) that point to
+  // untranslated content. Only our explicit es + x-default hreflang survive.
+  foreach ($head_elements as $key => &$element) {
+    if (!isset($element['#attributes']['rel'])) {
+      continue;
+    }
+    $rel = $element['#attributes']['rel'];
+
+    // Remove core's duplicate canonical (keep ours with 'andalucia_ei_rec_' prefix).
+    if ($rel === 'canonical' && !str_starts_with($key, 'andalucia_ei_rec_')) {
+      unset($head_elements[$key]);
+      continue;
+    }
+
+    // P2-15: Remove theme-level hreflang tags (keep ours with 'andalucia_ei_rec_' prefix).
+    if ($rel === 'alternate' && isset($element['#attributes']['hreflang'])) {
+      if (!str_starts_with($key, 'andalucia_ei_rec_')) {
+        unset($head_elements[$key]);
+      }
+    }
+  }
 }
 
 /**
@@ -1393,7 +1793,7 @@ function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $descript
     'og:url' => $url,
     'og:type' => 'website',
     'og:site_name' => 'Plataforma de Ecosistemas',
-    'og:locale' => 'es_ES',
+    'og:locale' => \Drupal::languageManager()->getCurrentLanguage()->getId() === 'es' ? 'es_ES' : 'en_US',
     'twitter:card' => 'summary_large_image',
     'twitter:title' => (string) $title,
     'twitter:description' => (string) $description,
@@ -1404,7 +1804,7 @@ function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $descript
     $og_tags['og:image'] = $imageUrl;
     $og_tags['og:image:width'] = '1200';
     $og_tags['og:image:height'] = '630';
-    $og_tags['og:image:type'] = 'image/png';
+    $og_tags['og:image:type'] = str_contains($imageUrl, '.webp') ? 'image/webp' : 'image/png';
     $og_tags['twitter:image'] = $imageUrl;
   }
 
@@ -1550,15 +1950,57 @@ function jaraba_andalucia_ei_simple_sitemap_links_alter(array &$links, $sitemap_
 /**
  * Prepares variables for expediente_documento templates.
  *
- * @param array $variables
- *   An associative array containing entity data.
+ * ENTITY-PREPROCESS-001: Required for every ContentEntity with view mode.
  */
-function jaraba_andalucia_ei_preprocess_expediente_documento(array &$variables): void {
+function template_preprocess_expediente_documento(array &$variables): void {
   $entity = $variables['elements']['#expediente_documento'] ?? NULL;
-  if ($entity === NULL) {
+  if (!$entity) {
     return;
   }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface $entity */
   $variables['expediente_documento'] = $entity;
+  // LABEL-NULLSAFE-001: label() puede devolver NULL.
+  $variables['label'] = $entity->label() ?? t('Documento #@id', ['@id' => $entity->id()]);
+  $variables['categoria'] = $entity->getCategoria();
+  $variables['estado_revision'] = $entity->getEstadoRevision();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for expediente_documento.
+ *
+ * Sprint 3: Resuelve tipo de firma al crear documento via DocumentoFirmaOrchestrator.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ * SERVICE-CONSUMER-001: Conecta documento_firma_orchestrator.
+ */
+function jaraba_andalucia_ei_expediente_documento_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  if (!\Drupal::hasService('jaraba_andalucia_ei.documento_firma_orchestrator')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_andalucia_ei\Service\DocumentoFirmaOrchestrator $orchestrator */
+    $orchestrator = \Drupal::service('jaraba_andalucia_ei.documento_firma_orchestrator');
+    $categoria = $entity->hasField('categoria') ? ($entity->get('categoria')->value ?? '') : '';
+
+    if ($categoria !== '' && $orchestrator->requiereFirma($categoria)) {
+      $info = $orchestrator->getInfoFirma($categoria);
+      \Drupal::logger('jaraba_andalucia_ei')->info(
+        'Documento @id (cat: @cat) requiere firma tipo @tipo.',
+        [
+          '@id' => $entity->id(),
+          '@cat' => $categoria,
+          '@tipo' => $info['tipo'] ?? 'desconocido',
+        ]
+      );
+    }
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_andalucia_ei')->warning(
+      'Error resolviendo firma para documento @id: @msg',
+      ['@id' => $entity->id(), '@msg' => $e->getMessage()]
+    );
+  }
 }
 
 /**
@@ -1754,4 +2196,62 @@ function jaraba_andalucia_ei_preprocess_insercion_laboral(array &$variables): vo
   else {
     $variables['participante_nombre'] = '';
   }
+}
+
+/**
+ * Prepares variables for prospeccion_empresarial templates.
+ *
+ * ENTITY-PREPROCESS-001: Required for every ContentEntity with view mode.
+ */
+function template_preprocess_prospeccion_empresarial(array &$variables): void {
+  $entity = $variables['elements']['#prospeccion_empresarial'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\ProspeccionEmpresarialInterface $entity */
+  $variables['prospeccion_empresarial'] = $entity;
+  // LABEL-NULLSAFE-001: label() puede devolver NULL.
+  $variables['label'] = $entity->label() ?? t('Prospección #@id', ['@id' => $entity->id()]);
+  $variables['estado'] = $entity->getEstado();
+  $variables['tipo_colaboracion'] = $entity->getTipoColaboracion();
+  $variables['is_colaborador'] = $entity->isColaboradorActivo();
+}
+
+// =============================================================================
+// SPRINT 10-11: PREPROCESS HOOKS PARA ZERO REGION TEMPLATES
+// =============================================================================
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_comunidad_alumni.
+ *
+ * Zero Region: inyecta drupalSettings y library para la comunidad alumni.
+ * ZERO-REGION-003.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_comunidad_alumni(array &$variables): void {
+  $variables['#attached']['library'][] = 'jaraba_andalucia_ei/alumni';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_impacto_publico.
+ *
+ * Zero Region: inyecta library para el dashboard público de impacto.
+ * ZERO-REGION-003.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_impacto_publico(array &$variables): void {
+  $variables['#attached']['library'][] = 'jaraba_andalucia_ei/impacto-publico';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_firma_masiva.
+ *
+ * Zero Region: inyecta JS handler + drupalSettings para firma masiva.
+ * ZERO-REGION-003.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_firma_masiva(array &$variables): void {
+  $variables['#attached']['library'][] = 'jaraba_andalucia_ei/firma-masiva';
+  $variables['#attached']['drupalSettings']['jarabaAndaluciaEi']['firmaMasiva'] = [
+    'firmarSelloUrl' => \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.firma.firmar_sello')->toString(),
+    'estadoUrl' => '/api/v1/andalucia-ei/firma/estado/',
+  ];
 }

@@ -26,8 +26,8 @@ class CalendarioProgramaService {
    * Hitos semanales del programa.
    */
   private const HITOS = [
-    1 => 'Acogida: Alta STO, firma DACI, indicadores FSE+ entrada',
-    2 => 'Diagnóstico: Cuestionario DIME, asignación de carril',
+    1 => 'Acogida: Alta STO, firma Acuerdo de Participación + DACI, indicadores FSE+ entrada',
+    2 => 'Diagnóstico: Cuestionario DIME, asignación de itinerario',
     4 => 'Inicio orientación individual',
     8 => 'Revisión intermedia de orientación (≥5h)',
     12 => 'Inicio acciones formativas',

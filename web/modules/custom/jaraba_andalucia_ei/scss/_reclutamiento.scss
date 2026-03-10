@@ -10,6 +10,144 @@
  */
 
 // =============================================================================
+// STICKY URGENCY BAR
+// =============================================================================
+
+.aei-rec__sticky-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  background: var(--ej-azul-corporativo, #233D63);
+  transform: translateY(-100%);
+  transition: transform 300ms ease;
+
+  &--visible {
+    transform: translateY(0);
+  }
+}
+
+.aei-rec__sticky-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.625rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__sticky-bar-text {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 90%, transparent);
+
+  strong {
+    color: var(--ej-naranja-impulso, #FF8C42);
+    font-weight: 800;
+  }
+}
+
+.aei-rec__sticky-bar-cta {
+  display: inline-flex;
+  padding: 0.4rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--ej-naranja-impulso, #FF8C42);
+  color: var(--ej-bg-surface, #fff);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: transform 150ms ease;
+  white-space: nowrap;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+
+// =============================================================================
+// SCROLL REVEAL ANIMATIONS
+// =============================================================================
+
+.aei-rec--reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.aei-rec--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// Stagger children.
+@for $i from 1 through 12 {
+  .aei-rec--reveal:nth-child(#{$i}) {
+    transition-delay: #{($i - 1) * 80}ms;
+  }
+}
+
+// =============================================================================
+// FAQ SMOOTH ANIMATION
+// =============================================================================
+
+.aei-rec__faq-answer {
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 300ms ease;
+}
+
+// =============================================================================
+// WHATSAPP FLOATING BUTTON
+// =============================================================================
+
+.aei-rec__whatsapp-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1030;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--aei-whatsapp, #25D366);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-whatsapp, #25D366) 40%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  text-decoration: none;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--aei-whatsapp, #25D366) 50%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// =============================================================================
+// FOCUS RING — WCAG 2.4.7
+// =============================================================================
+
+.aei-rec__cta:focus-visible,
+.aei-rec__sticky-bar-cta:focus-visible,
+.aei-rec__whatsapp-fab:focus-visible,
+.aei-rec__faq-question:focus-visible {
+  outline: 3px solid var(--ej-naranja-impulso, #FF8C42);
+  outline-offset: 2px;
+}
+
+// =============================================================================
 // PUBLICIDAD OFICIAL (obligatorio normativa subvenciones)
 // =============================================================================
 
@@ -71,6 +209,11 @@
   line-height: 1.6;
   max-width: 680px;
   margin: 0;
+
+  &--center {
+    text-align: center;
+    margin: 0 auto 2rem;
+  }
 }
 
 .aei-rec__cta {
@@ -183,7 +326,7 @@
   margin: 0 0 1.25rem;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  color: #fff;
+  color: var(--ej-bg-surface, #fff);
   text-shadow: 0 2px 8px color-mix(in srgb, black 50%, transparent);
 }
 
@@ -535,58 +678,360 @@
 }
 
 // =============================================================================
-// EQUIPO
+// EQUIPO — Premium mentor cards
 // =============================================================================
 
 .aei-rec__equipo {
   padding: 5rem 0;
+  background: var(--ej-color-background, #F9FAFB);
+}
+
+// Impact banner — combined team stats.
+.aei-rec__equipo-impacto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  background: var(--ej-azul-corporativo, #233D63);
+  border-radius: 0.75rem;
+  max-width: 720px;
+  margin-inline: auto;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.aei-rec__equipo-impacto-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.aei-rec__equipo-impacto-valor {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--ej-naranja-impulso, #FF8C42);
+  line-height: 1.1;
+}
+
+.aei-rec__equipo-impacto-label {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 80%, transparent);
+  margin-top: 0.25rem;
+  max-width: 160px;
+  line-height: 1.4;
+}
+
+.aei-rec__equipo-impacto-sep {
+  width: 1px;
+  height: 2.5rem;
+  background: color-mix(in srgb, var(--ej-bg-surface, #fff) 20%, transparent);
+  flex-shrink: 0;
+
+  @media (max-width: 600px) {
+    width: 3rem;
+    height: 1px;
+  }
+}
+
+// CTA within equipo section.
+.aei-rec__equipo-cta-wrap {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.aei-rec__equipo-cta {
+  font-size: 1.05rem;
+  padding: 0.875rem 2.5rem;
+}
+
+.aei-rec__equipo-cta-sub {
+  font-size: 0.82rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0.75rem 0 0;
+}
+
+// Trust logos — institutional + client logos.
+.aei-rec__trust-logos {
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
+}
+
+.aei-rec__trust-logos-title {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ej-color-text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 1.25rem;
+
+  &--secondary {
+    margin-top: 2rem;
+  }
+}
+
+.aei-rec__trust-logos-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+
+  &--main {
+    margin-bottom: 0.5rem;
+  }
+
+  &--clients {
+    gap: 2.5rem;
+
+    img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      filter: grayscale(100%) opacity(0.55);
+      transition: filter 0.3s ease;
+
+      &:hover {
+        filter: grayscale(0%) opacity(1);
+      }
+    }
+
+    @media (max-width: 600px) {
+      gap: 1.5rem;
+
+      img {
+        height: 36px;
+      }
+    }
+  }
+}
+
+.aei-rec__trust-logos-banner {
+  max-width: 100%;
+  height: auto;
+  max-height: 50px;
+  object-fit: contain;
+
+  @media (max-width: 600px) {
+    max-height: 36px;
+  }
 }
 
 .aei-rec__equipo-grid {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem;
   margin-top: 2.5rem;
-  flex-wrap: wrap;
+  max-width: 960px;
+  margin-inline: auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    gap: 2rem;
+  }
 }
 
 .aei-rec__equipo-card {
-  text-align: center;
-  max-width: 260px;
+  background: var(--ej-color-surface, #fff);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent),
+              0 4px 16px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 5%, transparent);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 12%, transparent),
+                0 8px 32px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+    transform: translateY(-2px);
+  }
 }
 
-.aei-rec__equipo-avatar {
-  width: 4rem;
-  height: 4rem;
+.aei-rec__equipo-foto-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 2rem 0;
+}
+
+.aei-rec__equipo-foto {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 12%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
+}
+
+// P2-8: CSS initials avatar for team members without photo.
+.aei-rec__equipo-iniciales {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
-  color: var(--ej-azul-corporativo, #233D63);
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  margin: 0 auto 1rem;
+  background: linear-gradient(
+    135deg,
+    var(--ej-azul-corporativo, #233D63),
+    color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 70%, var(--ej-verde-innovacion, #00A9A5))
+  );
+  color: var(--ej-bg-surface, #fff);
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  border: 4px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 12%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
+  user-select: none;
+}
+
+// P2-8: Compact card variant for team members without extended bios/quotes.
+.aei-rec__equipo-card--compact {
+  .aei-rec__equipo-bio {
+    font-size: 0.85rem;
+  }
+}
+
+.aei-rec__equipo-sede-badge {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 2rem;
+  background: var(--ej-naranja-impulso, #FF8C42);
+  color: var(--ej-bg-surface, #fff);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.aei-rec__equipo-body {
+  padding: 1.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .aei-rec__equipo-nombre {
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: var(--ej-azul-corporativo, #233D63);
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.125rem;
+  text-align: center;
 }
 
-.aei-rec__equipo-titulo {
+.aei-rec__equipo-cargo {
   font-size: 0.85rem;
-  color: var(--ej-color-text-secondary, #6B7280);
-  margin: 0 0 0.375rem;
-  line-height: 1.5;
-}
-
-.aei-rec__equipo-sede {
-  font-size: 0.8rem;
   font-weight: 600;
   color: var(--ej-naranja-impulso, #FF8C42);
+  margin: 0 0 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aei-rec__equipo-bio {
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+}
+
+.aei-rec__equipo-badges {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.aei-rec__equipo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent);
+  color: var(--ej-azul-corporativo, #233D63);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.aei-rec__equipo-badge-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &--briefcase {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23233D63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='7' width='20' height='14' rx='2'/%3E%3Cpath d='M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2'/%3E%3C/svg%3E");
+  }
+
+  &--euro {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23233D63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M7 12h8M7 9h8M15.5 6A5 5 0 0010 8.5v7A5 5 0 0015.5 18'/%3E%3C/svg%3E");
+  }
+
+  &--users {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23233D63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75'/%3E%3C/svg%3E");
+  }
+
+  &--chart {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23233D63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 18 12 15 21 9 3 6 12 2 12'/%3E%3C/svg%3E");
+  }
+}
+
+.aei-rec__equipo-cita {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent);
+  border-left: 3px solid var(--ej-verde-innovacion, #00A9A5);
+  border-radius: 0 0.5rem 0.5rem 0;
+
+  p {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--ej-azul-corporativo, #233D63);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.aei-rec__equipo-linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-azul-corporativo, #233D63);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: auto;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--ej-naranja-impulso, #FF8C42);
+  }
+}
+
+.aei-rec__equipo-linkedin-icon {
+  flex-shrink: 0;
+  opacity: 0.8;
 }
 
 // =============================================================================
@@ -641,6 +1086,242 @@
   font-size: 0.85rem;
   color: var(--ej-color-text-secondary, #6B7280);
   line-height: 1.4;
+}
+
+// =============================================================================
+// TESTIMONIOS
+// =============================================================================
+
+.aei-rec__testimonios {
+  padding: 5rem 0;
+}
+
+.aei-rec__testimonios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+}
+
+.aei-rec__testimonio-card {
+  padding: 2rem;
+  background: var(--ej-color-surface, #fff);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: var(--ej-radius-lg, 12px);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+
+  &:hover {
+    box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-color-shadow, black) 8%, transparent);
+    transform: translateY(-2px);
+  }
+}
+
+.aei-rec__testimonio-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.aei-rec__testimonio-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 20%, transparent);
+  flex-shrink: 0;
+}
+
+.aei-rec__testimonio-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.aei-rec__testimonio-nombre {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ej-azul-corporativo, #233D63);
+}
+
+.aei-rec__testimonio-rol {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.3;
+}
+
+.aei-rec__testimonio-sede {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+.aei-rec__testimonio-cita {
+  flex: 1;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  position: relative;
+
+  &::before {
+    content: '\201C';
+    font-size: 3rem;
+    font-family: Georgia, serif;
+    color: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 25%, transparent);
+    line-height: 1;
+    position: absolute;
+    top: -0.5rem;
+    left: -0.25rem;
+  }
+
+  p {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-size: 0.92rem;
+    color: var(--ej-color-text-primary, #1F2937);
+    line-height: 1.65;
+    font-style: italic;
+  }
+}
+
+.aei-rec__testimonio-resultado {
+  padding-top: 1rem;
+  border-top: 1px solid var(--ej-color-border, #E5E7EB);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aei-rec__testimonio-resultado-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-verde-innovacion, #00A9A5);
+  white-space: nowrap;
+}
+
+.aei-rec__testimonio-resultado-text {
+  font-size: 0.82rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.4;
+}
+
+// =============================================================================
+// RESULTADOS 1ª EDICIÓN
+// =============================================================================
+
+.aei-rec__edicion-anterior {
+  padding: 5rem 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 5%, transparent) 0%,
+    color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent) 100%
+  );
+}
+
+.aei-rec__edicion-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.aei-rec__edicion-stat {
+  text-align: center;
+  min-width: 120px;
+}
+
+.aei-rec__edicion-stat-value {
+  display: block;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--ej-azul-corporativo, #233D63);
+  line-height: 1.1;
+}
+
+.aei-rec__edicion-stat-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-top: 0.25rem;
+}
+
+.aei-rec__edicion-stat--highlight .aei-rec__edicion-stat-value {
+  color: var(--ej-verde-innovacion, #00A9A5);
+  font-size: 3.5rem;
+}
+
+.aei-rec__edicion-footnote {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  font-style: italic;
+}
+
+// =============================================================================
+// FAQ ESCAPE CTA
+// =============================================================================
+
+.aei-rec__faq-escape {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ej-color-border, #E5E7EB);
+
+  p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-text-primary, #1F2937);
+    margin: 0 0 1rem;
+  }
+}
+
+.aei-rec__faq-escape-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__cta--escape {
+  color: var(--ej-azul-corporativo, #233D63);
+  border-color: var(--ej-azul-corporativo, #233D63);
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+  }
+}
+
+.aei-rec__cta--whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--aei-whatsapp, #25D366);
+  color: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-md, 8px);
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--aei-whatsapp, #25D366) 35%, transparent);
+  }
 }
 
 // =============================================================================
@@ -748,6 +1429,8 @@
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 900;
   margin: 0 0 1rem;
+  color: var(--ej-bg-surface, #fff);
+  text-shadow: 0 2px 8px color-mix(in srgb, black 50%, transparent);
 }
 
 .aei-rec__cta-final-desc {
@@ -758,10 +1441,429 @@
   color: color-mix(in srgb, var(--ej-bg-surface, #fff) 85%, transparent);
 }
 
+// Checklist de beneficios antes del botón.
+.aei-rec__cta-final-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 2rem;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aei-rec__cta-final-check {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ej-bg-surface, #fff);
+  text-align: left;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// Botón CTA principal — premium, grande, con glow y espacio.
+.aei-rec__cta-final-btn {
+  display: inline-block;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 1.25rem 3.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 100px;
+  background: var(--ej-naranja-impulso, #FF8C42);
+  color: var(--ej-bg-surface, #fff);
+  text-decoration: none;
+  box-shadow:
+    0 4px 20px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 45%, transparent),
+    0 0 0 0 color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 0%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 8px 32px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 55%, transparent),
+      0 0 0 4px color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 15%, transparent);
+  }
+
+  &:active {
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Alternativa de contacto directo.
+.aei-rec__cta-final-alt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.aei-rec__cta-final-alt-sep {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 55%, transparent);
+}
+
+.aei-rec__cta-final-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ej-bg-surface, #fff);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--ej-bg-surface, #fff) 40%, transparent);
+  transition: border-color 200ms ease, color 200ms ease;
+
+  &:hover {
+    border-color: var(--aei-whatsapp, #25D366);
+    color: var(--aei-whatsapp, #25D366);
+  }
+}
+
 .aei-rec__cta-final-legal {
   font-size: 0.8rem;
   color: color-mix(in srgb, var(--ej-bg-surface, #fff) 50%, transparent);
   margin: 2rem 0 0;
+}
+
+// =============================================================================
+// P2-10: PHONE CTA
+// =============================================================================
+
+.aei-rec__cta--whatsapp-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--aei-whatsapp, #25D366);
+  color: var(--ej-bg-surface, #fff);
+  border: 2px solid var(--aei-whatsapp, #25D366);
+  font-size: 0.9rem;
+  padding: 0.65rem 1.5rem;
+
+  &:hover {
+    background: color-mix(in srgb, var(--aei-whatsapp, #25D366) 85%, black);
+    border-color: color-mix(in srgb, var(--aei-whatsapp, #25D366) 85%, black);
+  }
+}
+
+// =============================================================================
+// P2-6: FOMO ACTIVITY INDICATOR
+// =============================================================================
+
+.aei-rec__hero-fomo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 70%, transparent);
+}
+
+.aei-rec__hero-fomo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ej-verde-innovacion, #00A9A5);
+  animation: aei-fomo-pulse 2s ease-in-out infinite;
+}
+
+@keyframes aei-fomo-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+// =============================================================================
+// P2-9: SECTORES DE EMPLEO
+// =============================================================================
+
+.aei-rec__sectores {
+  padding: 4rem 0;
+}
+
+.aei-rec__sectores-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.aei-rec__sector-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ej-azul-corporativo, #233D63);
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 12%, transparent);
+  border-radius: 100px;
+  transition: background 200ms ease, transform 150ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 12%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+// =============================================================================
+// P2-2: SEDE MAP LINK
+// =============================================================================
+
+.aei-rec__sede-map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ej-azul-corporativo, #233D63);
+  text-decoration: none;
+  transition: color 200ms ease;
+
+  &:hover {
+    color: var(--ej-naranja-impulso, #FF8C42);
+  }
+}
+
+// =============================================================================
+// P1-4: SOCIAL PROOF — Scope tag
+// =============================================================================
+
+.aei-rec__social-proof-scope {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.aei-rec__social-proof-scope-tag {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+  color: var(--ej-azul-corporativo, #233D63);
+  border-radius: 100px;
+}
+
+.aei-rec__social-proof-card--highlight {
+  border: 2px solid var(--ej-naranja-impulso, #FF8C42);
+  position: relative;
+
+  &::before {
+    content: '★';
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    background: var(--ej-naranja-impulso, #FF8C42);
+    color: var(--ej-bg-surface, #fff);
+    border-radius: 50%;
+  }
+}
+
+// =============================================================================
+// P2-14: VISUAL CHART — 1ª Edición Resultados
+// =============================================================================
+
+.aei-rec__edicion-chart {
+  max-width: 540px;
+  margin: 2rem auto;
+}
+
+.aei-rec__edicion-chart-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.aei-rec__edicion-chart-label {
+  flex-shrink: 0;
+  width: 80px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ej-color-text-secondary, #6B7280);
+  text-align: right;
+}
+
+.aei-rec__edicion-chart-bar-wrap {
+  flex: 1;
+  height: 32px;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+  border-radius: var(--ej-radius-md, 8px);
+  overflow: hidden;
+}
+
+.aei-rec__edicion-chart-bar {
+  height: 100%;
+  background: var(--ej-azul-corporativo, #233D63);
+  border-radius: var(--ej-radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.75rem;
+  transition: width 1000ms ease;
+
+  span {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--ej-bg-surface, #fff);
+  }
+
+  &--success {
+    background: var(--ej-verde-innovacion, #00A9A5);
+  }
+
+  &--target {
+    background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 60%, transparent);
+    border: 2px dashed var(--ej-naranja-impulso, #FF8C42);
+
+    span {
+      color: var(--ej-color-text-primary, #1F2937);
+      font-size: 0.72rem;
+    }
+  }
+}
+
+// =============================================================================
+// P0-4: COUNTDOWN DEADLINE
+// =============================================================================
+
+.aei-rec__hero-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: color-mix(in srgb, var(--ej-bg-surface, #fff) 12%, transparent);
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--ej-bg-surface, #fff);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.aei-rec__hero-deadline-label {
+  font-weight: 500;
+}
+
+.aei-rec__hero-deadline-date {
+  font-weight: 700;
+}
+
+.aei-rec__hero-deadline-countdown {
+  font-weight: 800;
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+.aei-rec__sticky-bar-deadline {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ej-naranja-impulso, #FF8C42);
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// =============================================================================
+// P1-3: VIDEO PLAY/PAUSE CONTROL
+// =============================================================================
+
+.aei-rec__hero-video-wrapper {
+  position: relative;
+}
+
+.aei-rec__hero-video-control {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, black 50%, transparent);
+  border: 2px solid color-mix(in srgb, var(--ej-bg-surface, #fff) 40%, transparent);
+  border-radius: 50%;
+  color: var(--ej-bg-surface, #fff);
+  cursor: pointer;
+  transition: background 200ms ease;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+
+  &:hover {
+    background: color-mix(in srgb, black 70%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--ej-naranja-impulso, #FF8C42);
+    outline-offset: 2px;
+  }
+}
+
+.aei-rec__cta-final-note {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--ej-bg-surface, #fff) 65%, transparent);
+  margin: 0.75rem 0 0;
+  text-align: center;
+}
+
+// =============================================================================
+// P1-1: PREFERS-REDUCED-MOTION
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .aei-rec--reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .aei-rec__sticky-bar {
+    transition: none;
+  }
+
+  .aei-rec__faq-answer {
+    transition: none;
+  }
+
+  .aei-rec__beneficio-card,
+  .aei-rec__social-proof-card,
+  .aei-rec__testimonio-card,
+  .aei-rec__equipo-card,
+  .aei-rec__whatsapp-fab,
+  .aei-rec__cta {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .aei-rec__hero-video {
+    // Ensure poster is visible when video is paused.
+    object-fit: cover;
+  }
 }
 
 // =============================================================================
@@ -802,5 +1904,33 @@
   .aei-rec__hero-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .aei-rec__sticky-bar-inner {
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .aei-rec__edicion-stats {
+    gap: 1.5rem;
+  }
+
+  .aei-rec__edicion-stat-value {
+    font-size: 2.25rem;
+  }
+
+  .aei-rec__edicion-stat--highlight .aei-rec__edicion-stat-value {
+    font-size: 2.75rem;
+  }
+
+  .aei-rec__faq-escape-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aei-rec__hero-deadline {
+    font-size: 0.78rem;
+    padding: 0.4rem 1rem;
   }
 }

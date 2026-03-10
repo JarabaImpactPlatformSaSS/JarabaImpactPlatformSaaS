@@ -10,6 +10,11 @@ use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
+use Drupal\jaraba_andalucia_ei\Service\JustificacionEconomicaService;
+use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
+use Drupal\jaraba_andalucia_ei\Service\ProspeccionService;
+use Drupal\jaraba_andalucia_ei\Service\PuntosImpactoEiService;
+use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -31,6 +36,11 @@ class CoordinadorDashboardController extends ControllerBase {
     protected LoggerInterface $logger,
     protected ?CoordinadorHubService $hubService = NULL,
     protected ?AlertasNormativasService $alertasService = NULL,
+    protected ?JustificacionEconomicaService $justificacionService = NULL,
+    protected ?RiesgoAbandonoService $riesgoService = NULL,
+    protected ?PuntosImpactoEiService $puntosImpactoService = NULL,
+    protected ?ProspeccionService $prospeccionService = NULL,
+    protected ?FirmaWorkflowService $firmaWorkflowService = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -46,6 +56,16 @@ class CoordinadorDashboardController extends ControllerBase {
       $container->get('jaraba_andalucia_ei.coordinador_hub'),
       $container->has('jaraba_andalucia_ei.alertas_normativas')
         ? $container->get('jaraba_andalucia_ei.alertas_normativas') : NULL,
+      $container->has('jaraba_andalucia_ei.justificacion_economica')
+        ? $container->get('jaraba_andalucia_ei.justificacion_economica') : NULL,
+      $container->has('jaraba_andalucia_ei.riesgo_abandono')
+        ? $container->get('jaraba_andalucia_ei.riesgo_abandono') : NULL,
+      $container->has('jaraba_andalucia_ei.puntos_impacto')
+        ? $container->get('jaraba_andalucia_ei.puntos_impacto') : NULL,
+      $container->has('jaraba_andalucia_ei.prospeccion')
+        ? $container->get('jaraba_andalucia_ei.prospeccion') : NULL,
+      $container->has('jaraba_andalucia_ei.firma_workflow')
+        ? $container->get('jaraba_andalucia_ei.firma_workflow') : NULL,
     );
   }
 
@@ -61,6 +81,7 @@ class CoordinadorDashboardController extends ControllerBase {
     $phaseDistribution = $this->getPhaseDistribution($tenantId);
     $mentorUtilization = $this->getMentorUtilization($tenantId);
     $recentActivity = $this->getRecentActivity($tenantId);
+    $compliance = $this->buildComplianceMetrics($tenantId);
 
     // Hub KPIs via CoordinadorHubService.
     $hubKpis = $this->hubService ? $this->hubService->getHubKpis($tenantId) : $stats;
@@ -77,8 +98,46 @@ class CoordinadorDashboardController extends ControllerBase {
       }
     }
 
+    // Justificación económica PIIL (202.500€).
+    $justificacion = $this->justificacionService
+      ? $this->safeCall(fn() => $this->justificacionService->getResumenJustificacion($tenantId))
+      : NULL;
+
+    // Participantes en riesgo de abandono.
+    $riesgo = $this->riesgoService
+      ? $this->safeCall(fn() => $this->riesgoService->getParticipantesEnRiesgo($tenantId, 'medio'))
+      : [];
+
+    // KPIs de impacto global del programa.
+    $puntosImpacto = $this->puntosImpactoService
+      ? $this->safeCall(fn() => $this->puntosImpactoService->getImpactoGlobalPrograma($tenantId))
+      : NULL;
+
+    // Estadísticas de prospecciones empresariales.
+    $prospecciones = $this->prospeccionService
+      ? $this->safeCall(fn() => $this->prospeccionService->getEstadisticas($tenantId))
+      : NULL;
+
+    // Firma electrónica: documentos pendientes de firma masiva (Sprint 4).
+    $firmasPendientes = $this->firmaWorkflowService
+      ? $this->safeCall(fn() => $this->firmaWorkflowService->getDocumentosPendientes(
+          (int) $this->currentUser()->id(),
+          $tenantId,
+        ))
+      : [];
+
     // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.
     $apiUrls = $this->resolveHubApiUrls();
+
+    // Phase labels for JS (translatable).
+    $phaseLabels = [
+      'acogida' => $this->t('Acogida'),
+      'diagnostico' => $this->t('Diagnóstico'),
+      'atencion' => $this->t('Atención'),
+      'insercion' => $this->t('Inserción'),
+      'seguimiento' => $this->t('Seguimiento'),
+      'baja' => $this->t('Baja'),
+    ];
 
     return [
       '#theme' => 'coordinador_dashboard',
@@ -89,6 +148,12 @@ class CoordinadorDashboardController extends ControllerBase {
       '#hub_kpis' => $hubKpis,
       '#alertas' => $alertas,
       '#alertas_resumen' => $alertasResumen,
+      '#compliance' => $compliance,
+      '#justificacion' => $justificacion,
+      '#riesgo' => $riesgo,
+      '#puntos_impacto' => $puntosImpacto,
+      '#prospecciones' => $prospecciones,
+      '#firmas_pendientes' => $firmasPendientes ?? [],
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/dashboard',
@@ -99,8 +164,14 @@ class CoordinadorDashboardController extends ControllerBase {
           'jarabaAndaluciaEi' => [
             'hub' => [
               'kpis' => $hubKpis,
+              'justificacion' => $justificacion,
+              'riesgo' => $riesgo,
+              'puntosImpacto' => $puntosImpacto,
+              'prospecciones' => $prospecciones,
+              'firmasPendientes' => $firmasPendientes ?? [],
               'apiUrls' => $apiUrls,
               'phases' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'],
+              'phaseLabels' => array_map('strval', $phaseLabels),
               'estados' => ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'],
             ],
           ],
@@ -112,6 +183,21 @@ class CoordinadorDashboardController extends ControllerBase {
         'max-age' => 600,
       ],
     ];
+  }
+
+  /**
+   * Safely calls a service method, catching any exceptions.
+   *
+   * PRESAVE-RESILIENCE-001: Optional services wrapped in try-catch.
+   */
+  protected function safeCall(callable $fn): mixed {
+    try {
+      return $fn();
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Dashboard service error: @msg', ['@msg' => $e->getMessage()]);
+      return NULL;
+    }
   }
 
   /**
@@ -129,6 +215,9 @@ class CoordinadorDashboardController extends ControllerBase {
       'sessions' => 'jaraba_andalucia_ei.api.hub.sessions',
       'kpis' => 'jaraba_andalucia_ei.api.hub.kpis',
       'stoExport' => 'jaraba_andalucia_ei.sto_export',
+      'documentacion' => 'jaraba_andalucia_ei.api.hub.documentacion',
+      'firmaSello' => 'jaraba_andalucia_ei.firma.firmar_sello',
+      'firmaPendientes' => 'jaraba_andalucia_ei.firma.pendientes',
     ];
 
     $urls = [];
@@ -304,6 +393,129 @@ class CoordinadorDashboardController extends ControllerBase {
     }
     catch (\Throwable $e) {
       return [];
+    }
+  }
+
+  /**
+   * Builds compliance metrics for the dashboard.
+   *
+   * Tracks TWO separate documents:
+   * - Acuerdo de Participación (Acuerdo_participacion_ICV25.odt): bilateral agreement.
+   * - DACI (Anexo_DACI_ICV25.odt): Documento de Aceptación de Compromisos e Información.
+   *
+   * @return array<string, mixed>
+   *   Compliance data: acuerdo_rate, daci_rate, fse_entrada_rate, fse_salida_rate,
+   *   incentivo_rate (pagados + renunciados / total).
+   */
+  protected function buildComplianceMetrics(?int $tenantId): array {
+    try {
+      $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
+
+      // Active participants (not baja).
+      $activeQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=');
+      $this->addTenantCondition($activeQuery, $tenantId);
+      $activeIds = $activeQuery->execute();
+      $activeCount = count($activeIds);
+
+      $emptyMetrics = [
+        'acuerdo_rate' => 0,
+        'acuerdo_signed' => 0,
+        'acuerdo_total' => 0,
+        'daci_rate' => 0,
+        'daci_signed' => 0,
+        'daci_total' => 0,
+        'fse_entrada_rate' => 0,
+        'fse_entrada_done' => 0,
+        'fse_entrada_total' => 0,
+        'fse_salida_rate' => 0,
+        'fse_salida_done' => 0,
+        'fse_salida_total' => 0,
+        'incentivo_rate' => 0,
+        'incentivo_gestionados' => 0,
+        'incentivo_total' => 0,
+        'incentivo_pagados' => 0,
+        'incentivo_renunciados' => 0,
+      ];
+
+      if ($activeCount === 0) {
+        return $emptyMetrics;
+      }
+
+      // Acuerdos de Participación firmados.
+      $acuerdoQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('acuerdo_participacion_firmado', TRUE);
+      $this->addTenantCondition($acuerdoQuery, $tenantId);
+      $acuerdoSigned = count($acuerdoQuery->execute());
+
+      // DACI firmados.
+      $daciQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('daci_firmado', TRUE);
+      $this->addTenantCondition($daciQuery, $tenantId);
+      $daciSigned = count($daciQuery->execute());
+
+      // FSE+ entrada.
+      $fseEntradaQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('fse_entrada_completado', TRUE);
+      $this->addTenantCondition($fseEntradaQuery, $tenantId);
+      $fseEntradaDone = count($fseEntradaQuery->execute());
+
+      // FSE+ salida (only relevant for insercion/seguimiento phases).
+      $fseSalidaBaseQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', ['insercion', 'seguimiento'], 'IN');
+      $this->addTenantCondition($fseSalidaBaseQuery, $tenantId);
+      $fseSalidaTotal = count($fseSalidaBaseQuery->execute());
+
+      $fseSalidaDone = 0;
+      if ($fseSalidaTotal > 0) {
+        $fseSalidaQuery = $storage->getQuery()->accessCheck(TRUE)
+          ->condition('fase_actual', ['insercion', 'seguimiento'], 'IN')
+          ->condition('fse_salida_completado', TRUE);
+        $this->addTenantCondition($fseSalidaQuery, $tenantId);
+        $fseSalidaDone = count($fseSalidaQuery->execute());
+      }
+
+      // Incentivo €528: pagados + renunciados = gestionados.
+      $incentivoPagadoQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('incentivo_recibido', TRUE);
+      $this->addTenantCondition($incentivoPagadoQuery, $tenantId);
+      $incentivoPagados = count($incentivoPagadoQuery->execute());
+
+      $incentivoRenunciaQuery = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('incentivo_renuncia', TRUE);
+      $this->addTenantCondition($incentivoRenunciaQuery, $tenantId);
+      $incentivoRenunciados = count($incentivoRenunciaQuery->execute());
+
+      $incentivoGestionados = $incentivoPagados + $incentivoRenunciados;
+
+      return [
+        'acuerdo_rate' => round(($acuerdoSigned / $activeCount) * 100, 1),
+        'acuerdo_signed' => $acuerdoSigned,
+        'acuerdo_total' => $activeCount,
+        'daci_rate' => round(($daciSigned / $activeCount) * 100, 1),
+        'daci_signed' => $daciSigned,
+        'daci_total' => $activeCount,
+        'fse_entrada_rate' => round(($fseEntradaDone / $activeCount) * 100, 1),
+        'fse_entrada_done' => $fseEntradaDone,
+        'fse_entrada_total' => $activeCount,
+        'fse_salida_rate' => $fseSalidaTotal > 0 ? round(($fseSalidaDone / $fseSalidaTotal) * 100, 1) : 0,
+        'fse_salida_done' => $fseSalidaDone,
+        'fse_salida_total' => $fseSalidaTotal,
+        'incentivo_rate' => round(($incentivoGestionados / $activeCount) * 100, 1),
+        'incentivo_gestionados' => $incentivoGestionados,
+        'incentivo_total' => $activeCount,
+        'incentivo_pagados' => $incentivoPagados,
+        'incentivo_renunciados' => $incentivoRenunciados,
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error building compliance metrics: @msg', ['@msg' => $e->getMessage()]);
+      return $emptyMetrics;
     }
   }
 

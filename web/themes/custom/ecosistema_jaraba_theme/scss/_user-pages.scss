@@ -531,6 +531,115 @@
       0 1px 2px rgba(0, 0, 0, 0.02),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
+
+  // ── Badges (fase del participante) ──────────────────────────────────────
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-xs;
+    margin-bottom: $ej-spacing-md;
+  }
+
+  &__fase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+
+    &--acogida {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--diagnostico {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 12%, transparent);
+      color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--insercion {
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+
+    &--seguimiento {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 12%, transparent);
+      color: var(--ej-color-success, #10B981);
+    }
+
+    &--cierre {
+      background: color-mix(in srgb, var(--ej-color-muted, #64748b) 12%, transparent);
+      color: var(--ej-color-muted, #64748b);
+    }
+  }
+
+  // ── Stats row (mini-dashboard por rol) ──────────────────────────────────
+  &__stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-lg;
+  }
+
+  &__stat {
+    flex: 1;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: $ej-spacing-md;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 4%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    // Alerta: firmas pendientes, hojas sin firmar, etc.
+    &--alert {
+      background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, transparent);
+      border-color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 18%, transparent);
+    }
+
+    // Éxito: compliance alto, inserción lograda.
+    &--success {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 8%, transparent);
+      border-color: color-mix(in srgb, var(--ej-color-success, #10B981) 18%, transparent);
+    }
+  }
+
+  &__stat-value {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ej-color-headings, #1a202c);
+    line-height: 1;
+
+    .quick-access-section__stat--alert & {
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+
+    .quick-access-section__stat--success & {
+      color: var(--ej-color-success, #10B981);
+    }
+  }
+
+  &__stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ej-color-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
 }
 
 // =============================================================================
@@ -1385,4 +1494,40 @@ button[type="submit"],
     color: var(--ej-color-muted, #{$ej-color-muted});
     font-size: 0.75rem;
   }
+}
+
+// =============================================================================
+// REDUCED MOTION — WCAG 2.1 AA (prefers-reduced-motion)
+// =============================================================================
+@media (prefers-reduced-motion: reduce) {
+  .page-user {
+    .profile-hero,
+    .account-info,
+    .quick-access-section,
+    .quick-access__card,
+    .user-wrapper,
+    .user-content-area fieldset.fieldgroup,
+    .user-content-area details.js-form-wrapper {
+      animation: none !important;
+    }
+
+    .quick-access__card,
+    .quick-access-section__stat,
+    .account-info__card {
+      transition: none !important;
+    }
+  }
+}
+
+// =============================================================================
+// FOCUS-VISIBLE — Keyboard navigation (P1/P2)
+// =============================================================================
+.quick-access__card:focus-visible {
+  outline: 3px solid var(--ej-color-primary, #4F46E5);
+  outline-offset: 2px;
+}
+
+.quick-access-section__stat:focus-visible {
+  outline: 3px solid var(--ej-color-primary, #4F46E5);
+  outline-offset: 2px;
 }

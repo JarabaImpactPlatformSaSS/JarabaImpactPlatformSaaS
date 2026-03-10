@@ -85,8 +85,10 @@ class ExpedienteServiceTest extends UnitTestCase {
     $this->assertEquals(0, $result['porcentaje']);
     $this->assertEquals(0, $result['completados']);
     // STO categories (excluding sto_otros): sto_dni, sto_empadronamiento,
-    // sto_vida_laboral, sto_demanda_empleo, sto_prestaciones, sto_titulo_academico.
-    $this->assertEquals(6, $result['total_requeridos']);
+    // sto_vida_laboral, sto_demanda_empleo, sto_prestaciones, sto_titulo_academico,
+    // sto_acuerdo_participacion, sto_daci, sto_recibi_incentivo,
+    // sto_renuncia_incentivo, sto_recibo_actuaciones.
+    $this->assertEquals(11, $result['total_requeridos']);
     $this->assertNotEmpty($result['por_categoria']);
   }
 
@@ -139,7 +141,11 @@ class ExpedienteServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function verificarDocumentosCompletosReturnsTrueWhenComplete(): void {
-    $stoCategories = ['sto_dni', 'sto_empadronamiento', 'sto_vida_laboral', 'sto_demanda_empleo', 'sto_prestaciones', 'sto_titulo_academico'];
+    $stoCategories = [
+      'sto_dni', 'sto_empadronamiento', 'sto_vida_laboral', 'sto_demanda_empleo',
+      'sto_prestaciones', 'sto_titulo_academico', 'sto_acuerdo_participacion', 'sto_daci',
+      'sto_recibi_incentivo', 'sto_renuncia_incentivo', 'sto_recibo_actuaciones',
+    ];
     $docs = [];
     foreach ($stoCategories as $cat) {
       $docs[] = $this->createDocMock($cat, 'aprobado');
@@ -149,7 +155,7 @@ class ExpedienteServiceTest extends UnitTestCase {
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
-    $query->method('execute')->willReturn(range(1, 6));
+    $query->method('execute')->willReturn(range(1, 11));
 
     $this->storage->method('getQuery')->willReturn($query);
     $this->storage->method('loadMultiple')->willReturn($docs);

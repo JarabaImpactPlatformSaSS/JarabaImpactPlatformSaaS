@@ -131,7 +131,10 @@
 
     {# 8. TRUST BAR + PARTNERS — Credibilidad post-social-proof #}
     {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
-    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+      theme_path: directory,
+      partners_variant: 'full',
+    } only %}
 
     {# 9. LEAD MAGNET — Accion #}
     {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
@@ -195,6 +198,13 @@
 
     {# TESTIMONIOS — Casos de éxito reales #}
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
+    {# TRUST BAR + PARTNERS — Credibilidad post-social-proof #}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+      theme_path: directory,
+      partners_variant: 'full',
+    } only %}
 
   {% endif %}
 

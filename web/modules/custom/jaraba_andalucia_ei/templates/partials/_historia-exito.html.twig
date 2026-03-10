@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * Parcial: Historia de éxito de un alumni.
+ *
+ * Sprint 10 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Variables:
+ * - alumni: array — Datos del alumni: nombre, sector, tipo_insercion,
+ *   horas_formacion, meses_programa, testimonial, foto.
+ *
+ * TWIG-INCLUDE-ONLY-001: Incluir con 'only'.
+ */
+#}
+
+<article class="historia-exito" aria-labelledby="historia-{{ alumni.id|default('unknown') }}">
+  {% if alumni.foto %}
+    <img src="{{ alumni.foto }}"
+         alt="{% trans %}Foto de {{ alumni.nombre }}{% endtrans %}"
+         loading="lazy"
+         width="200"
+         height="200"
+         class="historia-exito__foto">
+  {% endif %}
+  <h3 id="historia-{{ alumni.id|default('unknown') }}" class="historia-exito__nombre">
+    {{ alumni.nombre }}
+  </h3>
+  <p class="historia-exito__sector">{{ alumni.sector }}</p>
+  <p class="historia-exito__tipo">
+    {% if alumni.tipo_insercion == 'cuenta_propia' %}
+      {% trans %}Emprendedor/a{% endtrans %}
+    {% else %}
+      {% trans %}Insertado/a laboralmente{% endtrans %}
+    {% endif %}
+  </p>
+  <p class="historia-exito__impacto">
+    {% trans %}{{ alumni.horas_formacion|default(0) }}h de formación{% endtrans %}
+    &middot;
+    {% trans %}{{ alumni.meses_programa|default(0) }} meses en el programa{% endtrans %}
+  </p>
+  {% if alumni.testimonial %}
+    <blockquote class="historia-exito__testimonial">
+      {{ alumni.testimonial }}
+    </blockquote>
+  {% endif %}
+</article>

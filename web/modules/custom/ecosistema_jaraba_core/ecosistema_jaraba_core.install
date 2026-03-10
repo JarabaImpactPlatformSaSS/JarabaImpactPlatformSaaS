@@ -2906,3 +2906,81 @@ function ecosistema_jaraba_core_update_9035(): string {
 
   return 'Installed fields on saas_plan: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
 }
+
+/**
+ * TRANSLATABLE-FIELDS-INSTALL-001: Install content_translation tracking fields
+ * for all translatable entities missing them.
+ *
+ * When an entity has translatable = TRUE, the content_translation module
+ * provides 6 tracking fields via hook_entity_base_field_info(), but they
+ * are NOT installed automatically — each requires installFieldStorageDefinition().
+ */
+function ecosistema_jaraba_core_update_9036(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $fieldManager = \Drupal::service('entity_field.manager');
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $translationFields = [
+    'content_translation_source',
+    'content_translation_outdated',
+    'content_translation_uid',
+    'content_translation_status',
+    'content_translation_created',
+    'content_translation_changed',
+  ];
+
+  $messages = [];
+  $definitions = $entityTypeManager->getDefinitions();
+
+  foreach ($definitions as $entityTypeId => $entityType) {
+    // Only process translatable content entities from custom modules.
+    if (!$entityType->isTranslatable()) {
+      continue;
+    }
+    $provider = $entityType->getProvider();
+    if (!str_starts_with($provider, 'jaraba_') && !str_starts_with($provider, 'ecosistema_jaraba')) {
+      continue;
+    }
+    if (!$entityType->entityClassImplements(\Drupal\Core\Entity\ContentEntityInterface::class)) {
+      continue;
+    }
+
+    // Check if content_translation fields are already installed.
+    $existing = $updateManager->getFieldStorageDefinition('content_translation_source', $entityTypeId);
+    if ($existing) {
+      continue;
+    }
+
+    // Install content_translation tracking fields.
+    $fieldManager->clearCachedFieldDefinitions();
+    $fieldStorageDefs = $fieldManager->getFieldStorageDefinitions($entityTypeId);
+    $installed = [];
+
+    foreach ($translationFields as $fieldName) {
+      if (!isset($fieldStorageDefs[$fieldName])) {
+        continue;
+      }
+      try {
+        $fieldDef = $fieldStorageDefs[$fieldName];
+        $fieldDef->setName($fieldName);
+        $fieldDef->setTargetEntityTypeId($entityTypeId);
+        $existingField = $updateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+        if (!$existingField) {
+          $updateManager->installFieldStorageDefinition(
+            $fieldName, $entityTypeId, $fieldDef->getProvider(), $fieldDef
+          );
+          $installed[] = $fieldName;
+        }
+      }
+      catch (\Throwable $e) {
+        $messages[] = "$entityTypeId.$fieldName: ERROR " . $e->getMessage();
+      }
+    }
+
+    if (!empty($installed)) {
+      $messages[] = "$entityTypeId: installed " . count($installed) . " translation fields";
+    }
+  }
+
+  return empty($messages) ? 'All translatable entities already have content_translation fields.' : implode('; ', $messages);
+}

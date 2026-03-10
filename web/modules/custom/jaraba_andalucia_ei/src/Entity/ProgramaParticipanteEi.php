@@ -28,9 +28,9 @@ use Drupal\user\EntityOwnerTrait;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_andalucia_ei\ProgramaParticipanteEiListBuilder",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_andalucia_ei\Form\ProgramaParticipanteEiForm",
+ *       "add" = "Drupal\jaraba_andalucia_ei\Form\ProgramaParticipanteEiForm",
+ *       "edit" = "Drupal\jaraba_andalucia_ei\Form\ProgramaParticipanteEiForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_andalucia_ei\ProgramaParticipanteEiAccessControlHandler",
@@ -155,6 +155,46 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
     /**
      * {@inheritdoc}
      */
+    public function getIncentivoFechaPago(): ?string
+    {
+        return $this->get('incentivo_fecha_pago')->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasRenunciadoIncentivo(): bool
+    {
+        return (bool) ($this->get('incentivo_renuncia')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIncentivoRenunciaFecha(): ?string
+    {
+        return $this->get('incentivo_renuncia_fecha')->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAcuerdoParticipacionFirmado(): bool
+    {
+        return (bool) ($this->get('acuerdo_participacion_firmado')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAcuerdoParticipacionFecha(): ?string
+    {
+        return $this->get('acuerdo_participacion_fecha')->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isDaciFirmado(): bool
     {
         return (bool) ($this->get('daci_firmado')->value ?? FALSE);
@@ -182,6 +222,73 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
     public function getMotivoBaja(): string
     {
         return $this->get('motivo_baja')->value ?? '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDimeScore(): ?int
+    {
+        $value = $this->get('dime_score')->value;
+        return $value !== NULL ? (int) $value : NULL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHorasOrientacionInsercion(): float
+    {
+        return (float) ($this->get('horas_orientacion_insercion')->value ?? 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAsistenciaPorcentaje(): float
+    {
+        return (float) ($this->get('asistencia_porcentaje')->value ?? 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPersonaAtendida(): bool
+    {
+        return (bool) ($this->get('es_persona_atendida')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPersonaInsertada(): bool
+    {
+        return (bool) ($this->get('es_persona_insertada')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAlumni(): bool
+    {
+        return (bool) ($this->get('is_alumni')->value ?? FALSE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCandidateProfileId(): ?int
+    {
+        $value = $this->get('candidate_profile_id')->value;
+        return $value !== NULL ? (int) $value : NULL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCanvasId(): ?int
+    {
+        $value = $this->get('canvas_id')->value;
+        return $value !== NULL ? (int) $value : NULL;
     }
 
     /**
@@ -377,6 +484,39 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        $fields['incentivo_fecha_pago'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Pago Incentivo'))
+            ->setDescription(t('Fecha en que se pagó el incentivo económico de €528.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayOptions('form', [
+                'type' => 'datetime_default',
+                'weight' => 6,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['incentivo_renuncia'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Renuncia al Incentivo'))
+            ->setDescription(t('Indica si el participante ha renunciado al incentivo económico de €528.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 7,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['incentivo_renuncia_fecha'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Renuncia Incentivo'))
+            ->setDescription(t('Fecha en que el participante formalizó la renuncia al incentivo.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayOptions('form', [
+                'type' => 'datetime_default',
+                'weight' => 8,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // === INSERCIÓN LABORAL ===
 
         $fields['tipo_insercion'] = BaseFieldDefinition::create('list_string')
@@ -415,11 +555,36 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
-        // === DACI Y FSE+ ===
+        // === ACUERDO DE PARTICIPACIÓN ===
+        // Documento bilateral: Acuerdo_participacion_ICV25.odt
+        // Firmado por el participante al inicio del programa.
+
+        $fields['acuerdo_participacion_firmado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Acuerdo de Participación Firmado'))
+            ->setDescription(t('Indica si se ha firmado el Acuerdo de Participación bilateral (Acuerdo_participacion_ICV25).'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 11,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['acuerdo_participacion_fecha'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Firma Acuerdo de Participación'))
+            ->setDescription(t('Fecha en que se firmó el Acuerdo de Participación.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === DACI (Documento de Aceptación de Compromisos e Información) ===
+        // Anexo normativo: Anexo_DACI_ICV25.odt
+        // El participante acepta compromisos y es informado de sus derechos.
+        // Documento DISTINTO del Acuerdo de Participación.
 
         $fields['daci_firmado'] = BaseFieldDefinition::create('boolean')
             ->setLabel(t('DACI Firmado'))
-            ->setDescription(t('Indica si se ha firmado el Documento de Aceptación de Compromisos e Información.'))
+            ->setDescription(t('Indica si se ha firmado el DACI (Documento de Aceptación de Compromisos e Información, Anexo_DACI_ICV25).'))
             ->setDefaultValue(FALSE)
             ->setDisplayOptions('form', [
                 'type' => 'boolean_checkbox',
@@ -430,10 +595,12 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
 
         $fields['daci_fecha_firma'] = BaseFieldDefinition::create('datetime')
             ->setLabel(t('Fecha Firma DACI'))
-            ->setDescription(t('Fecha en que se firmó el DACI.'))
+            ->setDescription(t('Fecha en que se firmó el DACI (Anexo_DACI_ICV25).'))
             ->setSetting('datetime_type', 'date')
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
+
+        // === FSE+ ===
 
         $fields['fse_entrada_completado'] = BaseFieldDefinition::create('boolean')
             ->setLabel(t('FSE+ Entrada Completado'))
@@ -498,6 +665,103 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
+
+        // === DIAGNÓSTICO DIME ===
+
+        $fields['dime_score'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Score DIME'))
+            ->setDescription(t('Puntuación del diagnóstico DIME (0-20). Sincronizado desde Copilot v2.'))
+            ->setSetting('unsigned', TRUE)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['dime_fecha'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Diagnóstico DIME'))
+            ->setDescription(t('Fecha en que se completó el diagnóstico DIME.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === HORAS ORIENTACIÓN PARA INSERCIÓN ===
+
+        $fields['horas_orientacion_insercion'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Horas Orientación Inserción'))
+            ->setDescription(t('Horas de orientación específicas para inserción laboral (de las 40h requeridas para módulo inserción).'))
+            ->setDefaultValue(0)
+            ->setSetting('precision', 8)
+            ->setSetting('scale', 2)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['asistencia_porcentaje'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Porcentaje de Asistencia'))
+            ->setDescription(t('Porcentaje de asistencia calculado sobre actuaciones programadas.'))
+            ->setDefaultValue(0)
+            ->setSetting('precision', 5)
+            ->setSetting('scale', 2)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === MÓDULOS ECONÓMICOS (computed) ===
+
+        $fields['es_persona_atendida'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('¿Persona Atendida?'))
+            ->setDescription(t('Cumple requisitos de persona atendida: ≥10h orientación (≥2h individual) + ≥50h formación + ≥75% asistencia.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['es_persona_insertada'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('¿Persona Insertada?'))
+            ->setDescription(t('Cumple requisitos de persona insertada: persona atendida + ≥40h orientación inserción + ≥4 meses alta SS.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === INTEGRACIÓN CROSS-VERTICAL ===
+        // ENTITY-FK-001: FKs cross-módulo como integer (no entity_reference).
+
+        $fields['candidate_profile_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Perfil de Candidato'))
+            ->setDescription(t('ID del CandidateProfile en jaraba_candidate (cross-vertical).'))
+            ->setSetting('unsigned', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['canvas_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Business Model Canvas'))
+            ->setDescription(t('ID del BusinessModelCanvas en jaraba_business_tools (solo carril Acelera, cross-vertical).'))
+            ->setSetting('unsigned', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === ALUMNI ===
+
+        $fields['is_alumni'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('¿Alumni?'))
+            ->setDescription(t('El participante ha completado el programa con éxito y forma parte del Club Alumni.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['alumni_fecha'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Alumni'))
+            ->setDescription(t('Fecha en que se convirtió en alumni.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['alumni_disponible_mentoria'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Disponible para Mentoría Alumni'))
+            ->setDescription(t('El alumni está disponible para mentorizar a participantes de futuras ediciones.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === SPRINT 8: BARRERAS DE ACCESO ===
+
+        // Sprint 8 — Motor de Adaptación por Colectivo y Barreras.
+        // JSON estructurado con 8 tipos de barrera: idioma, brecha_digital,
+        // carga_cuidados, situacion_administrativa, vivienda, salud_mental,
+        // violencia_genero, movilidad_geografica.
+        $fields['barreras_acceso'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Barreras de acceso'))
+            ->setDescription(t('JSON con tipos de barrera y niveles para adaptación del itinerario.'))
+            ->setDisplayConfigurable('form', TRUE);
 
         // === CAMPOS DE SISTEMA ===
 

@@ -212,6 +212,145 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
+   * Documentacion: estado documental por participante.
+   *
+   * Filtros: ?estado_doc=completo|incompleto|pendiente_revision
+   *          &search=DNI/NIE
+   *          &limit=20&offset=0
+   * TENANT-001: filtrado por tenant.
+   */
+  public function listDocumentacion(Request $request): JsonResponse {
+    try {
+      $tenantId = $this->resolveTenantId();
+      $limit = min((int) ($request->query->get('limit') ?: 20), 100);
+      $offset = max((int) ($request->query->get('offset') ?: 0), 0);
+      $estadoDoc = $request->query->get('estado_doc') ?: '';
+      $search = $request->query->get('search') ?: '';
+
+      // API-WHITELIST-001.
+      $allowedEstados = ['', 'completo', 'incompleto', 'pendiente_revision'];
+      if (!in_array($estadoDoc, $allowedEstados, TRUE)) {
+        $estadoDoc = '';
+      }
+
+      $partStorage = $this->entityTypeManager->getStorage('programa_participante_ei');
+      $docStorage = $this->entityTypeManager->getStorage('expediente_documento');
+
+      // Build participant query (active only).
+      $countQuery = $partStorage->getQuery()->accessCheck(TRUE)
+        ->condition('fase_actual', 'baja', '!=');
+      if ($tenantId) {
+        $countQuery->condition('tenant_id', $tenantId);
+      }
+      if ($search) {
+        $countQuery->condition('dni_nie', '%' . $search . '%', 'LIKE');
+      }
+      $total = (int) (clone $countQuery)->count()->execute();
+
+      $idsQuery = (clone $countQuery)
+        ->sort('changed', 'DESC')
+        ->range($offset, $limit);
+      $ids = $idsQuery->execute();
+
+      $items = [];
+      if (!empty($ids)) {
+        $participantes = $partStorage->loadMultiple($ids);
+
+        foreach ($participantes as $p) {
+          $pid = (int) $p->id();
+          $owner = $p->getOwner();
+          $nombre = $owner ? ($owner->getDisplayName() ?? $owner->getAccountName()) : ($p->get('dni_nie')->value ?? "#{$pid}");
+
+          // Count docs per participant.
+          $docsQuery = $docStorage->getQuery()->accessCheck(TRUE)
+            ->condition('participante_id', $pid)
+            ->condition('status', TRUE);
+          $docIds = $docsQuery->execute();
+          $docs = !empty($docIds) ? $docStorage->loadMultiple($docIds) : [];
+
+          $totalDocs = count($docs);
+          $aprobados = 0;
+          $pendientesRevision = 0;
+          $rechazados = 0;
+          $stoCompletos = 0;
+          $stoRequeridos = 0;
+
+          foreach ($docs as $doc) {
+            $estado = $doc->getEstadoRevision();
+            if ($estado === 'aprobado') {
+              $aprobados++;
+            }
+            elseif ($estado === 'pendiente') {
+              $pendientesRevision++;
+            }
+            elseif ($estado === 'rechazado') {
+              $rechazados++;
+            }
+            if ($doc->isRequeridoSto()) {
+              $stoRequeridos++;
+              if ($estado === 'aprobado') {
+                $stoCompletos++;
+              }
+            }
+          }
+
+          // Determine doc status.
+          $docStatus = 'incompleto';
+          if ($stoRequeridos > 0 && $stoCompletos >= $stoRequeridos) {
+            $docStatus = 'completo';
+          }
+          if ($pendientesRevision > 0) {
+            $docStatus = 'pendiente_revision';
+          }
+
+          // Apply filter.
+          if ($estadoDoc && $docStatus !== $estadoDoc) {
+            $total--;
+            continue;
+          }
+
+          $completitud = $stoRequeridos > 0
+            ? (int) round(($stoCompletos / $stoRequeridos) * 100)
+            : 0;
+
+          $items[] = [
+            'id' => $pid,
+            'nombre' => $nombre,
+            'dni_nie' => $p->get('dni_nie')->value ?? '',
+            'fase_actual' => $p->get('fase_actual')->value ?? 'acogida',
+            'total_docs' => $totalDocs,
+            'aprobados' => $aprobados,
+            'pendientes_revision' => $pendientesRevision,
+            'rechazados' => $rechazados,
+            'sto_completos' => $stoCompletos,
+            'sto_requeridos' => $stoRequeridos,
+            'completitud' => $completitud,
+            'doc_status' => $docStatus,
+            'acuerdo_firmado' => (bool) ($p->get('acuerdo_participacion_firmado')->value ?? FALSE),
+            'daci_firmado' => (bool) ($p->get('daci_firmado')->value ?? FALSE),
+            'incentivo_recibido' => (bool) ($p->get('incentivo_recibido')->value ?? FALSE),
+          ];
+        }
+      }
+
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'items' => $items,
+          'total' => $total,
+        ],
+      ]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error listing documentacion: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Error loading documentacion.',
+      ], 500);
+    }
+  }
+
+  /**
    * Resuelve tenant Group ID del contexto actual.
    */
   private function resolveTenantId(): ?int {

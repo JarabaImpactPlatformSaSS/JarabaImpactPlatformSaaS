@@ -1,0 +1,103 @@
+{#
+/**
+ * @file
+ * Template: Dashboard público de impacto Andalucía +ei.
+ *
+ * Sprint 11 — Plan Maestro Andalucía +ei Clase Mundial.
+ *
+ * Página pública (Zero Region, sin login) que muestra datos agregados
+ * anonimizados del programa. NO contiene datos personales (RGPD).
+ *
+ * Variables:
+ * - metricas: array — Métricas agregadas (total_atendidos, inserciones, etc).
+ * - distribucion: array — Distribución por colectivo y tipo.
+ * - iris: array — Indicadores IRIS+ mapeados.
+ */
+#}
+
+<div class="impacto-publico" role="main">
+  <header class="impacto-publico__hero">
+    <h1>{% trans %}Impacto del Programa Andalucía +ei{% endtrans %}</h1>
+    <p class="impacto-publico__subtitulo">
+      {% trans %}Emprendimiento inclusivo con datos reales y verificables.{% endtrans %}
+    </p>
+  </header>
+
+  {% if metricas %}
+    <section class="impacto-publico__metricas" aria-label="{% trans %}Métricas de impacto{% endtrans %}">
+      <div class="impacto-publico__metric-grid">
+        <div class="impacto-publico__metric" role="figure" aria-label="{% trans %}Personas atendidas{% endtrans %}">
+          <span class="impacto-publico__metric-value">{{ metricas.total_atendidos|default(0) }}</span>
+          <span class="impacto-publico__metric-label">{% trans %}Personas atendidas{% endtrans %}</span>
+        </div>
+        <div class="impacto-publico__metric" role="figure" aria-label="{% trans %}Inserciones laborales{% endtrans %}">
+          <span class="impacto-publico__metric-value">{{ metricas.total_inserciones|default(0) }}</span>
+          <span class="impacto-publico__metric-label">{% trans %}Inserciones laborales{% endtrans %}</span>
+        </div>
+        <div class="impacto-publico__metric" role="figure" aria-label="{% trans %}Emprendimientos lanzados{% endtrans %}">
+          <span class="impacto-publico__metric-value">{{ metricas.total_emprendimientos|default(0) }}</span>
+          <span class="impacto-publico__metric-label">{% trans %}Emprendimientos lanzados{% endtrans %}</span>
+        </div>
+        <div class="impacto-publico__metric" role="figure" aria-label="{% trans %}Horas de formación{% endtrans %}">
+          <span class="impacto-publico__metric-value">{{ metricas.horas_formacion|default(0)|number_format(0, ',', '.') }}</span>
+          <span class="impacto-publico__metric-label">{% trans %}Horas de formación{% endtrans %}</span>
+        </div>
+      </div>
+    </section>
+
+    {% if metricas.sroi %}
+      <section class="impacto-publico__sroi" aria-label="{% trans %}Retorno social de la inversión{% endtrans %}">
+        <h2>{% trans %}Retorno Social (SROI){% endtrans %}</h2>
+        <p class="impacto-publico__sroi-value">
+          {{ metricas.sroi.ratio|default('N/D') }}
+        </p>
+        <p class="impacto-publico__sroi-desc">
+          {% trans %}Euros de retorno social por cada euro invertido.{% endtrans %}
+        </p>
+      </section>
+    {% endif %}
+  {% endif %}
+
+  {% if iris|length > 0 %}
+    <section class="impacto-publico__iris" aria-label="{% trans %}Indicadores IRIS+{% endtrans %}">
+      <h2>{% trans %}Alineación con estándares IRIS+ (GIIN){% endtrans %}</h2>
+      <table class="impacto-publico__iris-table" role="grid">
+        <thead>
+          <tr>
+            <th scope="col">{% trans %}Código{% endtrans %}</th>
+            <th scope="col">{% trans %}Indicador{% endtrans %}</th>
+            <th scope="col">{% trans %}Descripción{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for indicador in iris %}
+            <tr>
+              <td><code>{{ indicador.codigo }}</code></td>
+              <td>{{ indicador.nombre }}</td>
+              <td>{{ indicador.descripcion }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% endif %}
+
+  {% if metricas.ods is defined %}
+    <section class="impacto-publico__ods" aria-label="{% trans %}Objetivos de Desarrollo Sostenible{% endtrans %}">
+      <h2>{% trans %}Alineación con los ODS{% endtrans %}</h2>
+      <div class="impacto-publico__ods-list">
+        {% for ods in metricas.ods %}
+          <span class="impacto-publico__ods-badge" aria-label="{% trans %}ODS {{ ods }}{% endtrans %}">
+            {% trans %}ODS {{ ods }}{% endtrans %}
+          </span>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <footer class="impacto-publico__footer">
+    <p class="impacto-publico__disclaimer">
+      {% trans %}Datos agregados y anonimizados. No se muestran datos personales de los participantes.{% endtrans %}
+    </p>
+  </footer>
+</div>

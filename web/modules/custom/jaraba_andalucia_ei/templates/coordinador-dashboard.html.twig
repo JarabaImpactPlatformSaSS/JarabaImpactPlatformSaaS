@@ -1,94 +1,341 @@
 {#
 /**
  * @file
- * Hub unificado del coordinador para Andalucía +ei.
+ * Hub unificado del coordinador para Andalucia +ei — Clase Mundial.
  *
  * Variables:
  *   - stats: {total_participants, active_participants, insertion_phase,
  *             completed_sessions, pending_solicitudes, insertion_rate}.
- *   - phase_distribution: {atencion: N, insercion: N, baja: N}.
+ *   - phase_distribution: {acogida, diagnostico, atencion, insercion, seguimiento, baja}.
  *   - mentor_utilization: Array de mentores con stats.
- *   - recent_activity: Array de actividad reciente.
+ *   - recent_activity: Array de actividad reciente con timestamp.
  *   - hub_kpis: KPIs desde CoordinadorHubService.
+ *   - alertas: Array de alertas normativas.
+ *   - alertas_resumen: {critico, alto, medio, info}.
+ *   - compliance: {daci_rate, fse_entrada_rate, fse_salida_rate, ...}.
+ *
+ * Directrices aplicadas:
+ *   - ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001
+ *   - CSS-VAR-ALL-COLORS-001
+ *   - INNERHTML-XSS-001 (via JS Drupal.checkPlain)
+ *   - Textos {% trans %} para i18n
  */
 #}
 
 <div class="hub-coordinador" data-coordinador-hub>
 
-  {# === HEADER === #}
-  <section class="hub-coordinador__header" aria-labelledby="coord-title">
-    <h1 id="coord-title" class="hub-coordinador__title">
-      {% trans %}Hub de Coordinación{% endtrans %}
-    </h1>
-    <p class="hub-coordinador__subtitle">
-      {% trans %}Centro de operaciones del programa Andalucía +ei.{% endtrans %}
-    </p>
-  </section>
+  {# === PREMIUM HEADER (user-section-header pattern) === #}
+  <header class="hub-coordinador__header" aria-labelledby="coord-title">
+    <div class="hub-coordinador__header-hero">
+      <div class="hub-coordinador__header-icon">
+        {{ jaraba_icon('analytics', 'dashboard', { variant: 'duotone', color: 'azul-corporativo', size: '64px' }) }}
+      </div>
+      <div class="hub-coordinador__header-text">
+        <h1 id="coord-title" class="hub-coordinador__title">
+          {% trans %}Hub de Coordinacion{% endtrans %}
+        </h1>
+        <p class="hub-coordinador__subtitle">
+          {% trans %}Centro de operaciones del programa Andalucia +ei — PIIL CV 2025{% endtrans %}
+        </p>
+      </div>
+    </div>
 
-  {# === KPI CARDS === #}
-  <section class="hub-coordinador__kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
-    <div class="hub-coordinador__kpi-card">
-      <span class="hub-coordinador__kpi-value" data-kpi="active_participants">{{ stats.active_participants }}</span>
-      <span class="hub-coordinador__kpi-label">{% trans %}Activos{% endtrans %}</span>
+    {# Quick Actions — aei-action pattern #}
+    <div class="hub-coordinador__actions-grid">
+      <a href="{{ path('entity.programa_participante_ei.add_form') }}" class="hub-coordinador__action-card hub-coordinador__action-card--primary" data-slide-panel>
+        <span class="hub-coordinador__action-icon hub-coordinador__action-icon--add">
+          {{ jaraba_icon('actions', 'plus', { variant: 'outline', color: 'white', size: '24px' }) }}
+        </span>
+        <span class="hub-coordinador__action-content">
+          <span class="hub-coordinador__action-title">{% trans %}Nuevo participante{% endtrans %}</span>
+          <span class="hub-coordinador__action-desc">{% trans %}Registrar alta en programa{% endtrans %}</span>
+        </span>
+        <span class="hub-coordinador__action-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a href="{{ path('jaraba_andalucia_ei.sto_export') }}" class="hub-coordinador__action-card hub-coordinador__action-card--secondary">
+        <span class="hub-coordinador__action-icon hub-coordinador__action-icon--export">
+          {{ jaraba_icon('actions', 'export', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+        </span>
+        <span class="hub-coordinador__action-content">
+          <span class="hub-coordinador__action-title">{% trans %}Exportar STO{% endtrans %}</span>
+          <span class="hub-coordinador__action-desc">{% trans %}Descarga seguimiento tecnico{% endtrans %}</span>
+        </span>
+        <span class="hub-coordinador__action-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a href="{{ path('jaraba_andalucia_ei.leads_guia') }}" class="hub-coordinador__action-card hub-coordinador__action-card--secondary">
+        <span class="hub-coordinador__action-icon hub-coordinador__action-icon--leads">
+          {{ jaraba_icon('business', 'talent-search', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+        </span>
+        <span class="hub-coordinador__action-content">
+          <span class="hub-coordinador__action-title">{% trans %}Leads{% endtrans %}</span>
+          <span class="hub-coordinador__action-desc">{% trans %}Gestion de candidatos{% endtrans %}</span>
+        </span>
+        <span class="hub-coordinador__action-arrow" aria-hidden="true">&rarr;</span>
+      </a>
     </div>
-    <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--alert">
-      <span class="hub-coordinador__kpi-value" data-kpi="pending_solicitudes">{{ stats.pending_solicitudes }}</span>
-      <span class="hub-coordinador__kpi-label">{% trans %}Solicitudes Pendientes{% endtrans %}</span>
-    </div>
-    <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--highlight">
-      <span class="hub-coordinador__kpi-value" data-kpi="insertion_rate">{{ stats.insertion_rate }}%</span>
-      <span class="hub-coordinador__kpi-label">{% trans %}Tasa de Inserción{% endtrans %}</span>
-    </div>
-    <div class="hub-coordinador__kpi-card">
-      <span class="hub-coordinador__kpi-value" data-kpi="completed_sessions">{{ stats.completed_sessions }}</span>
-      <span class="hub-coordinador__kpi-label">{% trans %}Sesiones Completadas{% endtrans %}</span>
-    </div>
-    <div class="hub-coordinador__kpi-card">
-      <span class="hub-coordinador__kpi-value" data-kpi="total_participants">{{ stats.total_participants }}</span>
-      <span class="hub-coordinador__kpi-label">{% trans %}Total Participantes{% endtrans %}</span>
-    </div>
-  </section>
+  </header>
 
   {# === ALERTAS NORMATIVAS PIIL === #}
-  {% if alertas is not empty %}
-    <section class="hub-coordinador__alertas" aria-label="{% trans %}Alertas normativas{% endtrans %}">
+  <section class="hub-coordinador__alertas" aria-label="{% trans %}Alertas normativas{% endtrans %}">
+    <div class="hub-coordinador__alertas-header">
+      {{ jaraba_icon('compliance', 'alert-bell', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
       <h2 class="hub-coordinador__alertas-title">
         {% trans %}Alertas Normativas{% endtrans %}
-        {% if alertas_resumen.critico > 0 %}
-          <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--critico">{{ alertas_resumen.critico }}</span>
-        {% endif %}
-        {% if alertas_resumen.alto > 0 %}
-          <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--alto">{{ alertas_resumen.alto }}</span>
-        {% endif %}
       </h2>
-      <ul class="hub-coordinador__alertas-list">
-        {% for alerta in alertas|slice(0, 10) %}
+      {% if alertas is not empty %}
+        <div class="hub-coordinador__alertas-badges">
+          {% if alertas_resumen.critico > 0 %}
+            <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--critico">{{ alertas_resumen.critico }} {% trans %}criticas{% endtrans %}</span>
+          {% endif %}
+          {% if alertas_resumen.alto > 0 %}
+            <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--alto">{{ alertas_resumen.alto }} {% trans %}altas{% endtrans %}</span>
+          {% endif %}
+          {% if alertas_resumen.medio > 0 %}
+            <span class="hub-coordinador__alerta-badge hub-coordinador__alerta-badge--medio">{{ alertas_resumen.medio }} {% trans %}medias{% endtrans %}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+    {% if alertas is not empty %}
+      <ul class="hub-coordinador__alertas-list" role="list">
+        {% for alerta in alertas|slice(0, 8) %}
           <li class="hub-coordinador__alerta-item hub-coordinador__alerta-item--{{ alerta.nivel }}">
-            <span class="hub-coordinador__alerta-nivel">{{ alerta.nivel }}</span>
-            <span class="hub-coordinador__alerta-msg">{{ alerta.mensaje }}</span>
-            <span class="hub-coordinador__alerta-accion">{{ alerta.accion }}</span>
+            <span class="hub-coordinador__alerta-icon">
+              {% if alerta.nivel == 'critico' %}
+                {{ jaraba_icon('status', 'x-circle', { variant: 'duotone', color: 'naranja-impulso', size: '16px' }) }}
+              {% else %}
+                {{ jaraba_icon('status', 'alert-circle', { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+              {% endif %}
+            </span>
+            <div class="hub-coordinador__alerta-body">
+              <span class="hub-coordinador__alerta-msg">{{ alerta.mensaje }}</span>
+              <span class="hub-coordinador__alerta-accion">{{ alerta.accion }}</span>
+            </div>
           </li>
         {% endfor %}
       </ul>
+    {% else %}
+      <div class="hub-coordinador__empty-state">
+        {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+        <p>{% trans %}Sin alertas normativas. Todo en orden.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# === RIESGO DE ABANDONO === #}
+  <section class="hub-coordinador__riesgo" aria-label="{% trans %}Riesgo de abandono{% endtrans %}">
+    <div class="hub-coordinador__riesgo-header">
+      {{ jaraba_icon('status', 'alert-triangle', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+      <h2 class="hub-coordinador__riesgo-title">
+        {% trans %}Participantes en Riesgo de Abandono{% endtrans %}
+        {% if riesgo is not empty %}
+          <span class="hub-coordinador__riesgo-count">{{ riesgo|length }}</span>
+        {% endif %}
+      </h2>
+    </div>
+    {% if riesgo is not empty %}
+      <div class="hub-coordinador__riesgo-grid">
+        {% for p in riesgo|slice(0, 6) %}
+          <div class="hub-coordinador__riesgo-card hub-coordinador__riesgo-card--{{ p.riesgo.nivel }}">
+            <div class="hub-coordinador__riesgo-top">
+              <span class="hub-coordinador__riesgo-nombre">{{ p.nombre }}</span>
+              <span class="hub-coordinador__badge hub-coordinador__badge--{{ p.riesgo.nivel }}">{{ p.riesgo.nivel }}</span>
+            </div>
+            <div class="hub-coordinador__riesgo-meta">
+              <span>{% trans %}Fase:{% endtrans %} {{ p.fase_actual }}</span>
+              <span>{% trans %}Semana{% endtrans %} {{ p.semana_actual }}</span>
+              <span>{% trans %}Score:{% endtrans %} {{ p.riesgo.score }}</span>
+            </div>
+            {% if p.riesgo.factores is not empty %}
+              <ul class="hub-coordinador__riesgo-factores">
+                {% for factor in p.riesgo.factores|slice(0, 3) %}
+                  <li>{{ factor.descripcion }} <small>(+{{ factor.puntos }})</small></li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="hub-coordinador__empty-state">
+        {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+        <p>{% trans %}Ningun participante en riesgo de abandono detectado.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# === KPI CARDS (Premium glassmorphism + shine — clickable) === #}
+  <section class="hub-coordinador__kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
+    <button type="button" class="hub-coordinador__kpi-card" data-kpi-target="participantes" aria-label="{% trans %}Ver participantes activos{% endtrans %}">
+      <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
+      <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--activos">
+        {{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
+      <div class="hub-coordinador__kpi-data">
+        <span class="hub-coordinador__kpi-value" data-kpi="active_participants">{{ stats.active_participants }}</span>
+        <span class="hub-coordinador__kpi-label">{% trans %}Participantes activos{% endtrans %}</span>
+      </div>
+      <span class="hub-coordinador__kpi-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+
+    <button type="button" class="hub-coordinador__kpi-card hub-coordinador__kpi-card--alert" data-kpi-target="solicitudes" data-kpi-filter-key="estado" data-kpi-filter-value="pendiente" aria-label="{% trans %}Ver solicitudes pendientes{% endtrans %}">
+      <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
+      <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--pendientes">
+        {{ jaraba_icon('ui', 'inbox', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+      </div>
+      <div class="hub-coordinador__kpi-data">
+        <span class="hub-coordinador__kpi-value" data-kpi="pending_solicitudes">{{ stats.pending_solicitudes }}</span>
+        <span class="hub-coordinador__kpi-label">{% trans %}Solicitudes pendientes{% endtrans %}</span>
+      </div>
+      <span class="hub-coordinador__kpi-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+
+    <button type="button" class="hub-coordinador__kpi-card hub-coordinador__kpi-card--highlight" data-kpi-target="participantes" data-kpi-filter-key="fase" data-kpi-filter-value="insercion" aria-label="{% trans %}Ver participantes en insercion{% endtrans %}">
+      <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
+      <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--insercion">
+        {{ jaraba_icon('analytics', 'trophy', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+      </div>
+      <div class="hub-coordinador__kpi-data">
+        <span class="hub-coordinador__kpi-value" data-kpi="insertion_rate">{{ stats.insertion_rate }}%</span>
+        <span class="hub-coordinador__kpi-label">{% trans %}Tasa de insercion{% endtrans %}</span>
+      </div>
+      <span class="hub-coordinador__kpi-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+
+    <button type="button" class="hub-coordinador__kpi-card" data-kpi-target="sesiones" aria-label="{% trans %}Ver sesiones completadas{% endtrans %}">
+      <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
+      <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--sesiones">
+        {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
+      <div class="hub-coordinador__kpi-data">
+        <span class="hub-coordinador__kpi-value" data-kpi="completed_sessions">{{ stats.completed_sessions }}</span>
+        <span class="hub-coordinador__kpi-label">{% trans %}Sesiones completadas{% endtrans %}</span>
+      </div>
+      <span class="hub-coordinador__kpi-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+
+    <button type="button" class="hub-coordinador__kpi-card" data-kpi-target="participantes" aria-label="{% trans %}Ver todos los participantes{% endtrans %}">
+      <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
+      <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--total">
+        {{ jaraba_icon('ui', 'user', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
+      <div class="hub-coordinador__kpi-data">
+        <span class="hub-coordinador__kpi-value" data-kpi="total_participants">{{ stats.total_participants }}</span>
+        <span class="hub-coordinador__kpi-label">{% trans %}Total participantes{% endtrans %}</span>
+      </div>
+      <span class="hub-coordinador__kpi-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+  </section>
+
+  {# === COMPLIANCE SUMMARY === #}
+  {% if compliance %}
+    <section class="hub-coordinador__compliance" aria-label="{% trans %}Cumplimiento normativo{% endtrans %}">
+      <h2 class="hub-coordinador__section-title">
+        {{ jaraba_icon('compliance', 'shield-check', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        {% trans %}Cumplimiento PIIL{% endtrans %}
+      </h2>
+      <div class="hub-coordinador__compliance-grid">
+        <div class="hub-coordinador__compliance-card">
+          <div class="hub-coordinador__compliance-ring" data-percent="{{ compliance.acuerdo_rate }}" style="--ring-percent: {{ compliance.acuerdo_rate }}; --ring-color: var(--ej-color-azul-corporativo, #233D63);">
+            <svg viewBox="0 0 36 36" class="hub-coordinador__compliance-svg" aria-hidden="true">
+              <path class="hub-coordinador__compliance-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="hub-coordinador__compliance-fill" stroke-dasharray="{{ compliance.acuerdo_rate }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="hub-coordinador__compliance-percent">{{ compliance.acuerdo_rate }}%</span>
+          </div>
+          <div class="hub-coordinador__compliance-info">
+            <span class="hub-coordinador__compliance-label">{% trans %}Acuerdos de Participacion{% endtrans %}</span>
+            <span class="hub-coordinador__compliance-detail">{{ compliance.acuerdo_signed }}/{{ compliance.acuerdo_total }}</span>
+          </div>
+        </div>
+
+        <div class="hub-coordinador__compliance-card">
+          <div class="hub-coordinador__compliance-ring" data-percent="{{ compliance.daci_rate }}" style="--ring-percent: {{ compliance.daci_rate }}; --ring-color: var(--ej-color-naranja-impulso, #FF8C42);">
+            <svg viewBox="0 0 36 36" class="hub-coordinador__compliance-svg" aria-hidden="true">
+              <path class="hub-coordinador__compliance-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="hub-coordinador__compliance-fill" stroke-dasharray="{{ compliance.daci_rate }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="hub-coordinador__compliance-percent">{{ compliance.daci_rate }}%</span>
+          </div>
+          <div class="hub-coordinador__compliance-info">
+            <span class="hub-coordinador__compliance-label">{% trans %}DACI (Compromisos){% endtrans %}</span>
+            <span class="hub-coordinador__compliance-detail">{{ compliance.daci_signed }}/{{ compliance.daci_total }}</span>
+          </div>
+        </div>
+
+        <div class="hub-coordinador__compliance-card">
+          <div class="hub-coordinador__compliance-ring" data-percent="{{ compliance.fse_entrada_rate }}" style="--ring-percent: {{ compliance.fse_entrada_rate }}; --ring-color: var(--ej-color-verde-innovacion, #00A9A5);">
+            <svg viewBox="0 0 36 36" class="hub-coordinador__compliance-svg" aria-hidden="true">
+              <path class="hub-coordinador__compliance-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="hub-coordinador__compliance-fill" stroke-dasharray="{{ compliance.fse_entrada_rate }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="hub-coordinador__compliance-percent">{{ compliance.fse_entrada_rate }}%</span>
+          </div>
+          <div class="hub-coordinador__compliance-info">
+            <span class="hub-coordinador__compliance-label">{% trans %}FSE+ entrada{% endtrans %}</span>
+            <span class="hub-coordinador__compliance-detail">{{ compliance.fse_entrada_done }}/{{ compliance.fse_entrada_total }}</span>
+          </div>
+        </div>
+
+        <div class="hub-coordinador__compliance-card">
+          <div class="hub-coordinador__compliance-ring" data-percent="{{ compliance.fse_salida_rate }}" style="--ring-percent: {{ compliance.fse_salida_rate }}; --ring-color: var(--ej-color-naranja-impulso, #FF8C42);">
+            <svg viewBox="0 0 36 36" class="hub-coordinador__compliance-svg" aria-hidden="true">
+              <path class="hub-coordinador__compliance-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="hub-coordinador__compliance-fill" stroke-dasharray="{{ compliance.fse_salida_rate }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="hub-coordinador__compliance-percent">{{ compliance.fse_salida_rate }}%</span>
+          </div>
+          <div class="hub-coordinador__compliance-info">
+            <span class="hub-coordinador__compliance-label">{% trans %}FSE+ salida{% endtrans %}</span>
+            <span class="hub-coordinador__compliance-detail">{{ compliance.fse_salida_done }}/{{ compliance.fse_salida_total }}</span>
+          </div>
+        </div>
+
+        {# Incentivo €528 — pagados + renunciados #}
+        <div class="hub-coordinador__compliance-card">
+          <div class="hub-coordinador__compliance-ring" data-percent="{{ compliance.incentivo_rate }}" style="--ring-percent: {{ compliance.incentivo_rate }}; --ring-color: var(--ej-color-verde-innovacion, #00A9A5);">
+            <svg viewBox="0 0 36 36" class="hub-coordinador__compliance-svg" aria-hidden="true">
+              <path class="hub-coordinador__compliance-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="hub-coordinador__compliance-fill" stroke-dasharray="{{ compliance.incentivo_rate }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="hub-coordinador__compliance-percent">{{ compliance.incentivo_rate }}%</span>
+          </div>
+          <div class="hub-coordinador__compliance-info">
+            <span class="hub-coordinador__compliance-label">{% trans %}Incentivo €528{% endtrans %}</span>
+            <span class="hub-coordinador__compliance-detail">{{ compliance.incentivo_gestionados }}/{{ compliance.incentivo_total }}</span>
+            {% if compliance.incentivo_renunciados > 0 %}
+              <span class="hub-coordinador__compliance-note">{% trans %}({{ compliance.incentivo_renunciados }} renuncias){% endtrans %}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </section>
   {% endif %}
 
   {# === TAB NAVIGATION === #}
   <nav class="hub-coordinador__tabs" role="tablist" aria-label="{% trans %}Secciones del hub{% endtrans %}">
     <button class="hub-coordinador__tab hub-coordinador__tab--active" role="tab" aria-selected="true" aria-controls="panel-solicitudes" id="tab-solicitudes" data-tab="solicitudes">
+      {{ jaraba_icon('ui', 'inbox', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
       {% trans %}Solicitudes{% endtrans %}
       {% if stats.pending_solicitudes > 0 %}
         <span class="hub-coordinador__tab-badge">{{ stats.pending_solicitudes }}</span>
       {% endif %}
     </button>
     <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-participantes" id="tab-participantes" data-tab="participantes">
+      {{ jaraba_icon('ui', 'users', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
       {% trans %}Participantes{% endtrans %}
     </button>
     <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-sesiones" id="tab-sesiones" data-tab="sesiones">
+      {{ jaraba_icon('ui', 'calendar', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
       {% trans %}Sesiones{% endtrans %}
     </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-documentacion" id="tab-documentacion" data-tab="documentacion">
+      {{ jaraba_icon('ui', 'folder', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+      {% trans %}Documentacion{% endtrans %}
+    </button>
     <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-metricas" id="tab-metricas" data-tab="metricas">
-      {% trans %}Métricas{% endtrans %}
+      {{ jaraba_icon('analytics', 'chart-line', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+      {% trans %}Metricas{% endtrans %}
     </button>
   </nav>
 
@@ -98,7 +345,11 @@
     {# --- Panel: Solicitudes --- #}
     <div class="hub-coordinador__panel hub-coordinador__panel--active" role="tabpanel" id="panel-solicitudes" aria-labelledby="tab-solicitudes" data-panel="solicitudes">
       <div class="hub-coordinador__panel-header">
-        <h2 class="hub-coordinador__panel-title">{% trans %}Gestión de Solicitudes{% endtrans %}</h2>
+        <h2 class="hub-coordinador__panel-title">{% trans %}Gestion de Solicitudes{% endtrans %}</h2>
+        <button type="button" class="hub-coordinador__export-btn" data-export="solicitudes" aria-label="{% trans %}Exportar solicitudes CSV{% endtrans %}">
+          {{ jaraba_icon('actions', 'export', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+          {% trans %}CSV{% endtrans %}
+        </button>
         <div class="hub-coordinador__filters">
           <select class="hub-coordinador__filter-select" data-filter="estado" aria-label="{% trans %}Filtrar por estado{% endtrans %}">
             <option value="">{% trans %}Todos los estados{% endtrans %}</option>
@@ -123,7 +374,13 @@
             </tr>
           </thead>
           <tbody data-tbody="solicitudes">
-            <tr><td colspan="6" class="hub-coordinador__loading">{% trans %}Cargando solicitudes...{% endtrans %}</td></tr>
+            <tr><td colspan="6" class="hub-coordinador__loading">
+              <div class="hub-coordinador__skeleton">
+                <div class="hub-coordinador__skeleton-line"></div>
+                <div class="hub-coordinador__skeleton-line hub-coordinador__skeleton-line--short"></div>
+                <div class="hub-coordinador__skeleton-line"></div>
+              </div>
+            </td></tr>
           </tbody>
         </table>
       </div>
@@ -133,12 +390,19 @@
     {# --- Panel: Participantes --- #}
     <div class="hub-coordinador__panel" role="tabpanel" id="panel-participantes" aria-labelledby="tab-participantes" data-panel="participantes" hidden>
       <div class="hub-coordinador__panel-header">
-        <h2 class="hub-coordinador__panel-title">{% trans %}Gestión de Participantes{% endtrans %}</h2>
+        <h2 class="hub-coordinador__panel-title">{% trans %}Gestion de Participantes{% endtrans %}</h2>
+        <button type="button" class="hub-coordinador__export-btn" data-export="participantes" aria-label="{% trans %}Exportar participantes CSV{% endtrans %}">
+          {{ jaraba_icon('actions', 'export', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+          {% trans %}CSV{% endtrans %}
+        </button>
         <div class="hub-coordinador__filters">
           <select class="hub-coordinador__filter-select" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
             <option value="">{% trans %}Todas las fases{% endtrans %}</option>
-            <option value="atencion">{% trans %}Atención{% endtrans %}</option>
-            <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
+            <option value="acogida">{% trans %}Acogida{% endtrans %}</option>
+            <option value="diagnostico">{% trans %}Diagnostico{% endtrans %}</option>
+            <option value="atencion">{% trans %}Atencion{% endtrans %}</option>
+            <option value="insercion">{% trans %}Insercion{% endtrans %}</option>
+            <option value="seguimiento">{% trans %}Seguimiento{% endtrans %}</option>
             <option value="baja">{% trans %}Baja{% endtrans %}</option>
           </select>
           <input type="search" class="hub-coordinador__search" data-filter="search" placeholder="{{ 'Buscar por DNI/NIE'|t }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
@@ -151,12 +415,18 @@
               <th>{% trans %}DNI/NIE{% endtrans %}</th>
               <th>{% trans %}Nombre{% endtrans %}</th>
               <th>{% trans %}Fase{% endtrans %}</th>
-              <th>{% trans %}Última actividad{% endtrans %}</th>
+              <th>{% trans %}Ultima actividad{% endtrans %}</th>
               <th>{% trans %}Acciones{% endtrans %}</th>
             </tr>
           </thead>
           <tbody data-tbody="participantes">
-            <tr><td colspan="5" class="hub-coordinador__loading">{% trans %}Cargando participantes...{% endtrans %}</td></tr>
+            <tr><td colspan="5" class="hub-coordinador__loading">
+              <div class="hub-coordinador__skeleton">
+                <div class="hub-coordinador__skeleton-line"></div>
+                <div class="hub-coordinador__skeleton-line hub-coordinador__skeleton-line--short"></div>
+                <div class="hub-coordinador__skeleton-line"></div>
+              </div>
+            </td></tr>
           </tbody>
         </table>
       </div>
@@ -166,43 +436,111 @@
     {# --- Panel: Sesiones --- #}
     <div class="hub-coordinador__panel" role="tabpanel" id="panel-sesiones" aria-labelledby="tab-sesiones" data-panel="sesiones" hidden>
       <div class="hub-coordinador__panel-header">
-        <h2 class="hub-coordinador__panel-title">{% trans %}Sesiones de Mentoría{% endtrans %}</h2>
+        <h2 class="hub-coordinador__panel-title">{% trans %}Sesiones de Mentoria{% endtrans %}</h2>
+        <button type="button" class="hub-coordinador__export-btn" data-export="sesiones" aria-label="{% trans %}Exportar sesiones CSV{% endtrans %}">
+          {{ jaraba_icon('actions', 'export', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+          {% trans %}CSV{% endtrans %}
+        </button>
       </div>
       <div class="hub-coordinador__table-wrapper">
         <table class="hub-coordinador__table" data-table="sesiones">
           <thead>
             <tr>
-              <th>{% trans %}Sesión{% endtrans %}</th>
+              <th>{% trans %}Sesion{% endtrans %}</th>
               <th>{% trans %}Mentor{% endtrans %}</th>
               <th>{% trans %}Participante{% endtrans %}</th>
               <th>{% trans %}Estado{% endtrans %}</th>
             </tr>
           </thead>
           <tbody data-tbody="sesiones">
-            <tr><td colspan="4" class="hub-coordinador__loading">{% trans %}Cargando sesiones...{% endtrans %}</td></tr>
+            <tr><td colspan="4" class="hub-coordinador__loading">
+              <div class="hub-coordinador__skeleton">
+                <div class="hub-coordinador__skeleton-line"></div>
+                <div class="hub-coordinador__skeleton-line hub-coordinador__skeleton-line--short"></div>
+              </div>
+            </td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    {# --- Panel: Métricas --- #}
-    <div class="hub-coordinador__panel" role="tabpanel" id="panel-metricas" aria-labelledby="tab-metricas" data-panel="metricas" hidden>
-      <h2 class="hub-coordinador__panel-title">{% trans %}Métricas del Programa{% endtrans %}</h2>
+    {# --- Panel: Documentacion --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-documentacion" aria-labelledby="tab-documentacion" data-panel="documentacion" hidden>
+      <div class="hub-coordinador__panel-header">
+        <h2 class="hub-coordinador__panel-title">{% trans %}Estado Documental{% endtrans %}</h2>
+        <button type="button" class="hub-coordinador__export-btn" data-export="documentacion" aria-label="{% trans %}Exportar documentacion CSV{% endtrans %}">
+          {{ jaraba_icon('actions', 'export', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+          {% trans %}CSV{% endtrans %}
+        </button>
+        <div class="hub-coordinador__filters">
+          <select class="hub-coordinador__filter-select" data-filter="estado_doc" aria-label="{% trans %}Filtrar por estado documental{% endtrans %}">
+            <option value="">{% trans %}Todos{% endtrans %}</option>
+            <option value="completo">{% trans %}Completo{% endtrans %}</option>
+            <option value="incompleto">{% trans %}Incompleto{% endtrans %}</option>
+            <option value="pendiente_revision">{% trans %}Pendiente de revision{% endtrans %}</option>
+          </select>
+          <input type="search" class="hub-coordinador__search" data-filter="search_doc" placeholder="{{ 'Buscar por DNI/NIE'|t }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
+        </div>
+      </div>
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="documentacion">
+          <thead>
+            <tr>
+              <th>{% trans %}Participante{% endtrans %}</th>
+              <th>{% trans %}Fase{% endtrans %}</th>
+              <th>{% trans %}Docs STO{% endtrans %}</th>
+              <th>{% trans %}Completitud{% endtrans %}</th>
+              <th>{% trans %}Acuerdo{% endtrans %}</th>
+              <th>{% trans %}DACI{% endtrans %}</th>
+              <th>{% trans %}Incentivo{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-tbody="documentacion">
+            <tr><td colspan="8" class="hub-coordinador__loading">
+              <div class="hub-coordinador__skeleton">
+                <div class="hub-coordinador__skeleton-line"></div>
+                <div class="hub-coordinador__skeleton-line hub-coordinador__skeleton-line--short"></div>
+                <div class="hub-coordinador__skeleton-line"></div>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hub-coordinador__pagination" data-pagination="documentacion"></div>
+    </div>
 
-      {# Distribución por fase #}
+    {# --- Panel: Metricas --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-metricas" aria-labelledby="tab-metricas" data-panel="metricas" hidden>
+      <h2 class="hub-coordinador__panel-title">{% trans %}Metricas del Programa{% endtrans %}</h2>
+
+      {# Distribucion por fase — TODAS las 6 fases #}
       <div class="hub-coordinador__metric-section">
-        <h3 class="hub-coordinador__metric-title">{% trans %}Distribución por Fase{% endtrans %}</h3>
+        <h3 class="hub-coordinador__metric-title">
+          {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', color: 'azul-corporativo', size: '18px' }) }}
+          {% trans %}Distribucion por Fase{% endtrans %}
+        </h3>
         <div class="hub-coordinador__phases">
-          {% set total = phase_distribution.atencion + phase_distribution.insercion + phase_distribution.baja %}
+          {% set total_phases = 0 %}
           {% for phase, count in phase_distribution %}
-            {% set percent = total > 0 ? ((count / total) * 100)|round : 0 %}
+            {% set total_phases = total_phases + count %}
+          {% endfor %}
+
+          {% set phase_labels = {
+            'acogida': 'Acogida'|t,
+            'diagnostico': 'Diagnostico'|t,
+            'atencion': 'Atencion'|t,
+            'insercion': 'Insercion'|t,
+            'seguimiento': 'Seguimiento'|t,
+            'baja': 'Baja'|t
+          } %}
+
+          {% for phase, count in phase_distribution %}
+            {% set percent = total_phases > 0 ? ((count / total_phases) * 100)|round : 0 %}
             <div class="hub-coordinador__phase-bar">
               <div class="hub-coordinador__phase-label">
                 <span class="hub-coordinador__phase-name hub-coordinador__phase-name--{{ phase }}">
-                  {% if phase == 'atencion' %}{% trans %}Atención{% endtrans %}
-                  {% elseif phase == 'insercion' %}{% trans %}Inserción{% endtrans %}
-                  {% elseif phase == 'baja' %}{% trans %}Baja{% endtrans %}
-                  {% endif %}
+                  {{ phase_labels[phase]|default(phase) }}
                 </span>
                 <span class="hub-coordinador__phase-count">{{ count }} ({{ percent }}%)</span>
               </div>
@@ -217,7 +555,10 @@
       {# Actividad de Mentores #}
       {% if mentor_utilization|length > 0 %}
         <div class="hub-coordinador__metric-section">
-          <h3 class="hub-coordinador__metric-title">{% trans %}Actividad de Mentores{% endtrans %}</h3>
+          <h3 class="hub-coordinador__metric-title">
+            {{ jaraba_icon('ui', 'badge-check', { variant: 'duotone', color: 'verde-innovacion', size: '18px' }) }}
+            {% trans %}Actividad de Mentores{% endtrans %}
+          </h3>
           <div class="hub-coordinador__table-wrapper">
             <table class="hub-coordinador__table">
               <thead>
@@ -231,14 +572,28 @@
               <tbody>
                 {% for mentor in mentor_utilization %}
                   <tr>
-                    <td>{{ mentor.name }}</td>
+                    <td>
+                      <div class="hub-coordinador__mentor-name">
+                        {{ jaraba_icon('ui', 'user', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+                        {{ mentor.name }}
+                      </div>
+                    </td>
                     <td>{{ mentor.total_sessions }}</td>
-                    <td>{{ mentor.average_rating > 0 ? mentor.average_rating|number_format(1) : '-' }}</td>
+                    <td>
+                      {% if mentor.average_rating > 0 %}
+                        <span class="hub-coordinador__rating">
+                          {{ jaraba_icon('ui', 'star', { variant: 'duotone', color: 'naranja-impulso', size: '14px' }) }}
+                          {{ mentor.average_rating|number_format(1) }}
+                        </span>
+                      {% else %}
+                        <span class="hub-coordinador__rating hub-coordinador__rating--empty">-</span>
+                      {% endif %}
+                    </td>
                     <td>
                       {% if mentor.is_available %}
-                        <span class="hub-coordinador__badge hub-coordinador__badge--success">{% trans %}Sí{% endtrans %}</span>
+                        <span class="hub-coordinador__badge hub-coordinador__badge--success">{% trans %}Disponible{% endtrans %}</span>
                       {% else %}
-                        <span class="hub-coordinador__badge hub-coordinador__badge--inactive">{% trans %}No{% endtrans %}</span>
+                        <span class="hub-coordinador__badge hub-coordinador__badge--inactive">{% trans %}No disponible{% endtrans %}</span>
                       {% endif %}
                     </td>
                   </tr>
@@ -249,10 +604,118 @@
         </div>
       {% endif %}
 
+      {# Justificacion Economica PIIL #}
+      {% if justificacion %}
+        <div class="hub-coordinador__metric-section">
+          <h3 class="hub-coordinador__metric-title">
+            {{ jaraba_icon('business', 'wallet', { variant: 'duotone', color: 'verde-innovacion', size: '18px' }) }}
+            {% trans %}Justificacion Economica PIIL{% endtrans %}
+          </h3>
+          <div class="hub-coordinador__justificacion">
+            <div class="hub-coordinador__justificacion-progress">
+              <div class="hub-coordinador__justificacion-bar">
+                <div class="hub-coordinador__justificacion-fill" style="width: {{ justificacion.porcentaje }}%"></div>
+              </div>
+              <div class="hub-coordinador__justificacion-labels">
+                <span>{{ justificacion.total_justificado|number_format(0, ',', '.') }} €</span>
+                <span>{{ justificacion.total_presupuesto|number_format(0, ',', '.') }} €</span>
+              </div>
+              <span class="hub-coordinador__justificacion-percent">{{ justificacion.porcentaje|number_format(1) }}% {% trans %}justificado{% endtrans %}</span>
+            </div>
+            {% if justificacion.desglose_por_modulo is not empty %}
+              <div class="hub-coordinador__justificacion-desglose">
+                {% if justificacion.desglose_por_modulo.atendidos is defined %}
+                  <div class="hub-coordinador__justificacion-modulo">
+                    <span class="hub-coordinador__justificacion-modulo-label">{% trans %}Personas Atendidas{% endtrans %}</span>
+                    <span class="hub-coordinador__justificacion-modulo-count">{{ justificacion.desglose_por_modulo.atendidos.count }}</span>
+                    <span class="hub-coordinador__justificacion-modulo-importe">{{ justificacion.desglose_por_modulo.atendidos.importe|number_format(0, ',', '.') }} €</span>
+                  </div>
+                {% endif %}
+                {% if justificacion.desglose_por_modulo.insertados is defined %}
+                  <div class="hub-coordinador__justificacion-modulo">
+                    <span class="hub-coordinador__justificacion-modulo-label">{% trans %}Personas Insertadas{% endtrans %}</span>
+                    <span class="hub-coordinador__justificacion-modulo-count">{{ justificacion.desglose_por_modulo.insertados.count }}</span>
+                    <span class="hub-coordinador__justificacion-modulo-importe">{{ justificacion.desglose_por_modulo.insertados.importe|number_format(0, ',', '.') }} €</span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Puntos de Impacto del Programa #}
+      {% if puntos_impacto %}
+        <div class="hub-coordinador__metric-section">
+          <h3 class="hub-coordinador__metric-title">
+            {{ jaraba_icon('analytics', 'trophy', { variant: 'duotone', color: 'naranja-impulso', size: '18px' }) }}
+            {% trans %}Impacto del Programa{% endtrans %}
+          </h3>
+          <div class="hub-coordinador__impacto-grid">
+            <div class="hub-coordinador__impacto-stat">
+              <span class="hub-coordinador__impacto-value">{{ puntos_impacto.total_puntos }}</span>
+              <span class="hub-coordinador__impacto-label">{% trans %}Puntos totales{% endtrans %}</span>
+            </div>
+            <div class="hub-coordinador__impacto-stat">
+              <span class="hub-coordinador__impacto-value">{{ puntos_impacto.media_puntos|number_format(1) }}</span>
+              <span class="hub-coordinador__impacto-label">{% trans %}Media por participante{% endtrans %}</span>
+            </div>
+            <div class="hub-coordinador__impacto-stat">
+              <span class="hub-coordinador__impacto-value">{{ puntos_impacto.max_puntos }}</span>
+              <span class="hub-coordinador__impacto-label">{% trans %}Maximo{% endtrans %}</span>
+            </div>
+            <div class="hub-coordinador__impacto-stat">
+              <span class="hub-coordinador__impacto-value">{{ puntos_impacto.participantes_evaluados }}</span>
+              <span class="hub-coordinador__impacto-label">{% trans %}Evaluados{% endtrans %}</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Prospecciones Empresariales #}
+      {% if prospecciones %}
+        <div class="hub-coordinador__metric-section">
+          <h3 class="hub-coordinador__metric-title">
+            {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', color: 'azul-corporativo', size: '18px' }) }}
+            {% trans %}Prospecciones Empresariales{% endtrans %}
+          </h3>
+          <div class="hub-coordinador__prospeccion-grid">
+            <div class="hub-coordinador__prospeccion-stat">
+              <span class="hub-coordinador__prospeccion-value">{{ prospecciones.total }}</span>
+              <span class="hub-coordinador__prospeccion-label">{% trans %}Total empresas{% endtrans %}</span>
+            </div>
+            {% if prospecciones.por_estado is defined %}
+              <div class="hub-coordinador__prospeccion-stat">
+                <span class="hub-coordinador__prospeccion-value">{{ prospecciones.por_estado.colaborando|default(0) }}</span>
+                <span class="hub-coordinador__prospeccion-label">{% trans %}Colaborando{% endtrans %}</span>
+              </div>
+            {% endif %}
+            <div class="hub-coordinador__prospeccion-stat">
+              <span class="hub-coordinador__prospeccion-value">{{ prospecciones.puestos_ofertados|default(0) }}</span>
+              <span class="hub-coordinador__prospeccion-label">{% trans %}Puestos ofertados{% endtrans %}</span>
+            </div>
+            <div class="hub-coordinador__prospeccion-stat">
+              <span class="hub-coordinador__prospeccion-value">{{ prospecciones.puestos_cubiertos|default(0) }}</span>
+              <span class="hub-coordinador__prospeccion-label">{% trans %}Puestos cubiertos{% endtrans %}</span>
+            </div>
+          </div>
+          {% if prospecciones.por_estado is defined %}
+            <div class="hub-coordinador__prospeccion-estados">
+              {% for estado, count in prospecciones.por_estado %}
+                <span class="hub-coordinador__badge hub-coordinador__badge--prospeccion-{{ estado }}">{{ estado }}: {{ count }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
       {# Actividad reciente #}
       {% if recent_activity|length > 0 %}
         <div class="hub-coordinador__metric-section">
-          <h3 class="hub-coordinador__metric-title">{% trans %}Actividad Reciente{% endtrans %}</h3>
+          <h3 class="hub-coordinador__metric-title">
+            {{ jaraba_icon('ui', 'clock', { variant: 'duotone', color: 'azul-corporativo', size: '18px' }) }}
+            {% trans %}Actividad Reciente{% endtrans %}
+          </h3>
           <div class="hub-coordinador__activity-list">
             {% for item in recent_activity %}
               <div class="hub-coordinador__activity-item hub-coordinador__activity-item--{{ item.type }}">
@@ -262,6 +725,11 @@
                   {% if item.detail %}
                     <span class="hub-coordinador__activity-detail">{{ item.detail }}</span>
                   {% endif %}
+                  {% if item.timestamp %}
+                    <time class="hub-coordinador__activity-time" datetime="{{ item.timestamp|date('Y-m-d\\TH:i:s') }}">
+                      {{ item.timestamp|date('d/m/Y H:i') }}
+                    </time>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}
@@ -270,6 +738,28 @@
       {% endif %}
     </div>
 
+  </div>
+
+  {# === MODAL DIALOG (reutilizable por JS) === #}
+  <div class="hub-coordinador__modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" data-modal hidden>
+    <div class="hub-coordinador__modal-backdrop" data-modal-close></div>
+    <div class="hub-coordinador__modal-content">
+      <div class="hub-coordinador__modal-header">
+        <h3 class="hub-coordinador__modal-title" id="modal-title" data-modal-title></h3>
+        <button class="hub-coordinador__modal-close" data-modal-close aria-label="{% trans %}Cerrar{% endtrans %}">
+          {{ jaraba_icon('actions', 'close', { variant: 'outline', color: 'neutral', size: '20px' }) }}
+        </button>
+      </div>
+      <div class="hub-coordinador__modal-body" data-modal-body></div>
+      <div class="hub-coordinador__modal-footer">
+        <button class="hub-coordinador__action-btn hub-coordinador__action-btn--secondary" data-modal-close>
+          {% trans %}Cancelar{% endtrans %}
+        </button>
+        <button class="hub-coordinador__action-btn hub-coordinador__action-btn--primary" data-modal-confirm>
+          {% trans %}Confirmar{% endtrans %}
+        </button>
+      </div>
+    </div>
   </div>
 
   {# ARIA live region para notificaciones de acciones #}

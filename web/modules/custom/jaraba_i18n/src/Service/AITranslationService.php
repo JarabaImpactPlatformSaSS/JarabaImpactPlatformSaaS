@@ -84,21 +84,23 @@ PROMPT;
     /**
      * Constructor del servicio.
      *
-     * @param \Drupal\jaraba_ai_agents\Service\AgentOrchestrator $orchestrator
-     *   Orquestador de agentes IA para ejecutar traducciones.
-     * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService $modelRouter
-     *   Router de modelos para seleccionar modelo óptimo.
+     * @param \Drupal\jaraba_ai_agents\Service\AgentOrchestrator|null $orchestrator
+     *   Orquestador de agentes IA para ejecutar traducciones (opcional).
+     * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService|null $modelRouter
+     *   Router de modelos para seleccionar modelo óptimo (opcional).
      * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
      *   Fábrica de configuración para opciones del módulo.
      * @param \Psr\Log\LoggerInterface $logger
      *   Logger para registro de operaciones y errores.
+     * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService|null $tenantContext
+     *   Servicio de contexto de tenant para Brand Voice (opcional).
      */
     public function __construct(
-        protected AgentOrchestrator $orchestrator,
-        protected ModelRouterService $modelRouter,
+        protected ?AgentOrchestrator $orchestrator,
+        protected ?ModelRouterService $modelRouter,
         protected ConfigFactoryInterface $configFactory,
         protected LoggerInterface $logger,
-        protected TenantContextService $tenantContext,
+        protected ?TenantContextService $tenantContext = NULL,
     ) {
     }
 
@@ -137,6 +139,10 @@ PROMPT;
 
         if ($sourceLang === $targetLang) {
             return $text;
+        }
+
+        if ($this->orchestrator === NULL) {
+            throw new \RuntimeException('AITranslationService requiere jaraba_ai_agents.orchestrator. Verifica que el módulo jaraba_ai_agents esté habilitado.');
         }
 
         // Construir el prompt.
@@ -258,6 +264,10 @@ PROMPT;
             return [];
         }
 
+        if ($this->orchestrator === NULL) {
+            throw new \RuntimeException('AITranslationService requiere jaraba_ai_agents.orchestrator. Verifica que el módulo jaraba_ai_agents esté habilitado.');
+        }
+
         // Para lotes grandes, construimos un formato estructurado.
         $batchText = "TEXTOS A TRADUCIR (formato JSON):\n";
         $batchText .= json_encode($texts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -361,7 +371,7 @@ PROMPT;
      */
     protected function getBrandContext(?string $tenantId): string
     {
-        $tenant = $this->tenantContext->getCurrentTenant();
+        $tenant = $this->tenantContext?->getCurrentTenant();
         if ($tenant) {
             $siteName = $tenant->label() ?? '';
             $slogan = $tenant->get('slogan')->value ?? '';

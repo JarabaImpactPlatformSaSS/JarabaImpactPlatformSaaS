@@ -7,7 +7,6 @@ analytics-tracker:
   js:
     js/analytics-tracker.js:
       preprocess: false
-      weight: -100
   dependencies:
     - core/drupal
     - core/drupalSettings
@@ -38,7 +37,6 @@ consent-banner:
   js:
     js/consent-banner.js:
       preprocess: false
-      weight: -90
   dependencies:
     - core/drupal
     - core/drupalSettings

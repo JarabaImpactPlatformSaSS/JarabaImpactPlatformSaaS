@@ -104,7 +104,52 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
     public function hasReceivedIncentivo(): bool;
 
     /**
-     * Indica si el DACI ha sido firmado.
+     * Obtiene la fecha de pago del incentivo económico.
+     *
+     * @return string|null
+     *   Fecha en formato 'Y-m-d' o NULL si no se ha pagado.
+     */
+    public function getIncentivoFechaPago(): ?string;
+
+    /**
+     * Indica si el participante ha renunciado al incentivo económico.
+     *
+     * @return bool
+     *   TRUE si ha renunciado al incentivo de €528.
+     */
+    public function hasRenunciadoIncentivo(): bool;
+
+    /**
+     * Obtiene la fecha de renuncia al incentivo económico.
+     *
+     * @return string|null
+     *   Fecha en formato 'Y-m-d' o NULL si no ha renunciado.
+     */
+    public function getIncentivoRenunciaFecha(): ?string;
+
+    /**
+     * Indica si el Acuerdo de Participación bilateral ha sido firmado.
+     *
+     * Documento oficial: Acuerdo_participacion_ICV25.odt
+     *
+     * @return bool
+     *   TRUE si el participante ha firmado el Acuerdo de Participación.
+     */
+    public function isAcuerdoParticipacionFirmado(): bool;
+
+    /**
+     * Obtiene la fecha de firma del Acuerdo de Participación.
+     *
+     * @return string|null
+     *   Fecha Y-m-d o NULL si no firmado.
+     */
+    public function getAcuerdoParticipacionFecha(): ?string;
+
+    /**
+     * Indica si el DACI (Documento de Aceptación de Compromisos e Información) ha sido firmado.
+     *
+     * Documento oficial: Anexo_DACI_ICV25.odt
+     * DISTINTO del Acuerdo de Participación.
      *
      * @return bool
      *   TRUE si el participante ha firmado el DACI.
@@ -134,5 +179,73 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
      *   Motivo de baja o cadena vacía si no aplica.
      */
     public function getMotivoBaja(): string;
+
+    /**
+     * Obtiene la puntuación del diagnóstico DIME.
+     *
+     * @return int|null
+     *   Score 0-20 o NULL si no se ha completado.
+     */
+    public function getDimeScore(): ?int;
+
+    /**
+     * Obtiene las horas de orientación específicas para inserción.
+     *
+     * @return float
+     *   Horas acumuladas (de las 40h requeridas para módulo inserción).
+     */
+    public function getHorasOrientacionInsercion(): float;
+
+    /**
+     * Obtiene el porcentaje de asistencia calculado.
+     *
+     * @return float
+     *   Porcentaje 0-100.
+     */
+    public function getAsistenciaPorcentaje(): float;
+
+    /**
+     * Indica si cumple requisitos de persona atendida (módulo económico 3.500€).
+     *
+     * Requisitos: ≥10h orientación (≥2h individual) + ≥50h formación + ≥75% asistencia.
+     *
+     * @return bool
+     *   TRUE si cumple.
+     */
+    public function isPersonaAtendida(): bool;
+
+    /**
+     * Indica si cumple requisitos de persona insertada (módulo económico 2.500€).
+     *
+     * Requisitos: persona atendida + ≥40h orientación inserción + ≥4 meses alta SS.
+     *
+     * @return bool
+     *   TRUE si cumple.
+     */
+    public function isPersonaInsertada(): bool;
+
+    /**
+     * Indica si el participante es alumni del programa.
+     *
+     * @return bool
+     *   TRUE si completó el programa y forma parte del Club Alumni.
+     */
+    public function isAlumni(): bool;
+
+    /**
+     * Obtiene el ID del CandidateProfile cross-vertical.
+     *
+     * @return int|null
+     *   ID en jaraba_candidate o NULL si no vinculado.
+     */
+    public function getCandidateProfileId(): ?int;
+
+    /**
+     * Obtiene el ID del BusinessModelCanvas cross-vertical.
+     *
+     * @return int|null
+     *   ID en jaraba_business_tools o NULL si no vinculado (solo carril Acelera).
+     */
+    public function getCanvasId(): ?int;
 
 }

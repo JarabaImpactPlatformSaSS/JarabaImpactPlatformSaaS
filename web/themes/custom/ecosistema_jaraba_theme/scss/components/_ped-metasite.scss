@@ -434,75 +434,8 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PARTNERS — Logos institucionales
+// PARTNERS — Migrado a components/_partners-institucional.scss
 // ═══════════════════════════════════════════════════════════════════════
-.ped-partners {
-  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
-  background: var(--ej-bg-surface, #fff);
-
-  h2 {
-    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    font-weight: 700;
-    text-align: center;
-    color: $ped-azul;
-    margin: 0 0 var(--ej-space-xl, 3rem);
-  }
-
-  &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: var(--ej-space-lg, 2rem);
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  &__logo {
-    max-height: 48px;
-    width: auto;
-    filter: grayscale(100%) opacity(0.6);
-    transition: all 0.3s ease;
-
-    &:hover {
-      filter: grayscale(0%) opacity(1);
-      transform: scale(1.08);
-    }
-  }
-
-  img {
-    max-height: 48px;
-    width: auto;
-    filter: grayscale(100%) opacity(0.6);
-    transition: all 0.3s ease;
-
-    &:hover {
-      filter: grayscale(0%) opacity(1);
-      transform: scale(1.08);
-    }
-  }
-
-  &__badge {
-    display: flex;
-    align-items: center;
-    gap: var(--ej-space-sm, 0.75rem);
-    padding: var(--ej-space-sm, 0.75rem) var(--ej-space-md, 1.5rem);
-    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
-    backdrop-filter: blur(12px);
-    border-radius: var(--ej-radius-pill, 50rem);
-    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
-    font-size: var(--ej-text-sm, 0.875rem);
-    font-weight: 600;
-    color: var(--ej-color-corporate, $ped-azul);
-    transition: all 0.2s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.1));
-    }
-  }
-}
 
 // ═══════════════════════════════════════════════════════════════════════
 // VERTICAL HIGHLIGHT — Seccion destacada de vertical individual
@@ -1260,6 +1193,104 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     color: var(--ej-text-muted, #6b7280);
     line-height: 1.4;
   }
+
+  // Badges de competencias (reclutamiento + equipo corporativo)
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 var(--ej-space-md, 1.5rem);
+
+    @media (max-width: 768px) {
+      justify-content: center;
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, $ped-azul);
+    background: color-mix(in srgb, $ped-azul 6%, transparent);
+    border: 1px solid color-mix(in srgb, $ped-azul 12%, transparent);
+    border-radius: var(--ej-radius-pill, 50rem);
+    white-space: nowrap;
+  }
+}
+
+// Founder card variant (sobre-nosotros grid de 2 cofundadores)
+.ped-card--founder {
+  text-align: center;
+  padding: var(--ej-space-xl, 3rem) var(--ej-space-lg, 2rem);
+  background: var(--ej-surface-card, #fff);
+  border-radius: var(--ej-radius-lg, 1rem);
+  box-shadow: 0 4px 24px color-mix(in srgb, $ped-azul 8%, transparent);
+  border-top: 4px solid $ped-dorado;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px color-mix(in srgb, $ped-azul 15%, transparent);
+  }
+
+  .ped-founder__photo-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 var(--ej-space-md, 1.5rem);
+  }
+
+  .ped-founder__photo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .ped-founder__name {
+    font-size: 1.5rem;
+  }
+
+  .ped-founder__bio {
+    text-align: left;
+  }
+
+  .ped-founder__social {
+    justify-content: center;
+  }
+}
+
+// Impact banner section (equipo — cifras conjuntas)
+.ped-section--impact {
+  background: linear-gradient(135deg, var(--ej-color-corporate, $ped-azul), color-mix(in srgb, $ped-azul 85%, transparent));
+  padding: var(--ej-space-xl, 3rem) 0;
+
+  // White text on dark impact banner
+  .ped-kpi__value {
+    color: var(--ej-text-inverse, #fff); // sass-lint:disable-line no-color-literals
+  }
+
+  .ped-kpi__label {
+    color: color-mix(in srgb, var(--ej-text-inverse, #fff) 75%, transparent); // sass-lint:disable-line no-color-literals
+  }
+
+  .ped-kpi__value--green {
+    color: var(--ej-color-innovation, #00A9A5);
+  }
+
+  .ped-kpi__value--gold {
+    color: $ped-dorado;
+  }
+}
+
+// Intro paragraph for sections
+.ped-section__intro {
+  font-size: 1.1rem;
+  color: var(--ej-text-muted, #6b7280);
+  max-width: 700px;
+  margin: 0 auto var(--ej-space-xl, 3rem);
+  text-align: center;
+  line-height: 1.7;
 }
 
 // Table premium

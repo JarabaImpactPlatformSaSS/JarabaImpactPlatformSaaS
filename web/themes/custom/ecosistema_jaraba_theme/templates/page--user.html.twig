@@ -186,6 +186,86 @@
                 </div>
               {% endif %}
 
+              {# Andalucia +ei: widgets contextuales por rol #}
+              {% if section.id == 'andalucia_ei_programa' %}
+                {# Fase badge del participante #}
+                {% if section.fase_badge is defined %}
+                  <div class="quick-access-section__badges">
+                    <span class="quick-access-section__fase-badge quick-access-section__fase-badge--{{ section.fase_badge.color }}">
+                      {{ section.fase_badge.label }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {# Stats mini-dashboard por rol — aria-live para screen readers #}
+                {% if section.participante_stats is defined %}
+                  <div class="quick-access-section__stats-row" role="group" aria-label="{% trans %}Estadisticas del participante{% endtrans %}">
+                    <div class="quick-access-section__stat{% if section.participante_stats.completitud_pct == 100 %} quick-access-section__stat--success{% endif %}">
+                      <span class="quick-access-section__stat-value">{{ section.participante_stats.completitud_pct }}%</span>
+                      <span class="quick-access-section__stat-label">{% trans %}Expediente{% endtrans %}</span>
+                    </div>
+                    <div class="quick-access-section__stat{% if section.participante_stats.firmas_pendientes > 0 %} quick-access-section__stat--alert{% elseif section.participante_stats.firmas_pendientes == 0 %} quick-access-section__stat--success{% endif %}">
+                      <span class="quick-access-section__stat-value">
+                        {%- if section.participante_stats.firmas_pendientes == 0 -%}
+                          &#10003;
+                        {%- else -%}
+                          {{ section.participante_stats.firmas_pendientes }}
+                        {%- endif -%}
+                      </span>
+                      <span class="quick-access-section__stat-label">
+                        {%- if section.participante_stats.firmas_pendientes == 0 -%}
+                          {% trans %}Todo firmado{% endtrans %}
+                        {%- else -%}
+                          {% trans %}Firmas pendientes{% endtrans %}
+                        {%- endif -%}
+                      </span>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if section.orientador_stats is defined %}
+                  <div class="quick-access-section__stats-row" role="group" aria-label="{% trans %}Estadisticas del orientador{% endtrans %}">
+                    <div class="quick-access-section__stat{% if section.orientador_stats.hojas_pendientes > 0 %} quick-access-section__stat--alert{% elseif section.orientador_stats.hojas_pendientes == 0 %} quick-access-section__stat--success{% endif %}">
+                      <span class="quick-access-section__stat-value">
+                        {%- if section.orientador_stats.hojas_pendientes == 0 -%}
+                          &#10003;
+                        {%- else -%}
+                          {{ section.orientador_stats.hojas_pendientes }}
+                        {%- endif -%}
+                      </span>
+                      <span class="quick-access-section__stat-label">
+                        {%- if section.orientador_stats.hojas_pendientes == 0 -%}
+                          {% trans %}Hojas al dia{% endtrans %}
+                        {%- else -%}
+                          {% trans %}Hojas por firmar{% endtrans %}
+                        {%- endif -%}
+                      </span>
+                    </div>
+                    <div class="quick-access-section__stat">
+                      <span class="quick-access-section__stat-value">{{ section.orientador_stats.sesiones_proximas }}</span>
+                      <span class="quick-access-section__stat-label">{% trans %}Sesiones proximas{% endtrans %}</span>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if section.coordinador_stats is defined %}
+                  <div class="quick-access-section__stats-row" role="group" aria-label="{% trans %}Estadisticas del coordinador{% endtrans %}">
+                    <div class="quick-access-section__stat">
+                      <span class="quick-access-section__stat-value">{{ section.coordinador_stats.participantes_activos }}</span>
+                      <span class="quick-access-section__stat-label">{% trans %}Activos{% endtrans %}</span>
+                    </div>
+                    <div class="quick-access-section__stat{% if section.coordinador_stats.solicitudes_pendientes > 0 %} quick-access-section__stat--alert{% endif %}">
+                      <span class="quick-access-section__stat-value">{{ section.coordinador_stats.solicitudes_pendientes }}</span>
+                      <span class="quick-access-section__stat-label">{% trans %}Solicitudes{% endtrans %}</span>
+                    </div>
+                    <div class="quick-access-section__stat{% if section.coordinador_stats.compliance_pct >= 80 %} quick-access-section__stat--success{% elseif section.coordinador_stats.compliance_pct < 50 %} quick-access-section__stat--alert{% endif %}">
+                      <span class="quick-access-section__stat-value">{{ section.coordinador_stats.compliance_pct }}%</span>
+                      <span class="quick-access-section__stat-label">{% trans %}Compliance{% endtrans %}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+
               {% if section.links is not empty %}
                 <div class="quick-access-section__grid">
                   {% for link in section.links %}

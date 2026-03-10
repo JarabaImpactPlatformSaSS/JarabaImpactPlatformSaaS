@@ -1,0 +1,190 @@
+// === Dashboard Público de Impacto — Sprint 11 ===
+// CSS-VAR-ALL-COLORS-001: Todos los colores via var(--ej-*).
+// SCSS-COLORMIX-001: Alpha via color-mix(), no rgba().
+
+.impacto-publico {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-xl, 2rem);
+}
+
+.impacto-publico__hero {
+  text-align: center;
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+
+  h1 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem;
+  }
+}
+
+.impacto-publico__subtitulo {
+  font-size: 1.125rem;
+  color: var(--ej-text-secondary, #6B7280);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+// Métricas grid
+.impacto-publico__metricas {
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.impacto-publico__metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.impacto-publico__metric {
+  background: var(--ej-color-surface, #FFFFFF);
+  border-radius: var(--ej-radius-md, 8px);
+  border: 1px solid var(--ej-border-color, #E5E7EB);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  }
+}
+
+.impacto-publico__metric-value {
+  display: block;
+  font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ej-color-corporate, #233D63);
+  line-height: 1.2;
+}
+
+.impacto-publico__metric-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #6B7280);
+  margin-top: 0.25rem;
+}
+
+// SROI section
+.impacto-publico__sroi {
+  text-align: center;
+  padding: var(--ej-spacing-xl, 2rem);
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+  background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 5%, transparent);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 20%, transparent);
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.5rem;
+  }
+}
+
+.impacto-publico__sroi-value {
+  font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--ej-color-innovation, #00A9A5);
+  margin: 0 0 0.25rem;
+}
+
+.impacto-publico__sroi-desc {
+  font-size: 0.9375rem;
+  color: var(--ej-text-secondary, #6B7280);
+  margin: 0;
+}
+
+// IRIS+ table
+.impacto-publico__iris {
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+  }
+}
+
+.impacto-publico__iris-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th {
+    text-align: left;
+    padding: 0.75rem;
+    background: var(--ej-color-surface-alt, #F9FAFB);
+    color: var(--ej-text-secondary, #6B7280);
+    font-weight: 600;
+    border-bottom: 2px solid var(--ej-border-color, #E5E7EB);
+  }
+
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+    color: var(--ej-text-primary, #1F2937);
+  }
+
+  code {
+    font-size: 0.8125rem;
+    padding: 0.125rem 0.375rem;
+    background: var(--ej-color-surface-alt, #F3F4F6);
+    border-radius: var(--ej-radius-sm, 6px);
+    color: var(--ej-color-corporate, #233D63);
+    font-weight: 500;
+  }
+}
+
+// ODS badges
+.impacto-publico__ods {
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 var(--ej-spacing-md, 1rem);
+  }
+}
+
+.impacto-publico__ods-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.impacto-publico__ods-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--ej-radius-sm, 6px);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  color: var(--ej-color-corporate, #233D63);
+}
+
+// Footer
+.impacto-publico__footer {
+  text-align: center;
+  padding-top: var(--ej-spacing-lg, 1.5rem);
+  border-top: 1px solid var(--ej-border-color, #E5E7EB);
+}
+
+.impacto-publico__disclaimer {
+  font-size: 0.8125rem;
+  color: var(--ej-text-tertiary, #9CA3AF);
+  line-height: 1.6;
+  margin: 0;
+}

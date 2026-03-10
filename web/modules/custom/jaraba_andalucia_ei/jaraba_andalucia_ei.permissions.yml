@@ -98,3 +98,77 @@ create insercion laboral:
 edit insercion laboral:
   title: 'Editar inserciones laborales'
   description: 'Permite modificar inserciones laborales existentes.'
+
+# === PROSPECCIÓN EMPRESARIAL ===
+view prospeccion empresarial:
+  title: 'Ver prospección empresarial'
+  description: 'Permite ver la lista de prospecciones empresariales.'
+
+create prospeccion empresarial:
+  title: 'Crear prospección empresarial'
+  description: 'Permite registrar nuevas prospecciones empresariales.'
+
+edit prospeccion empresarial:
+  title: 'Editar prospección empresarial'
+  description: 'Permite modificar prospecciones empresariales existentes.'
+
+# === PERMISOS POR ROL PIIL CV 2025 ===
+
+# Participante: acceso a su portal y expediente propio.
+access andalucia ei participante portal:
+  title: 'Acceder al portal de participante Andalucía +ei'
+  description: 'Permite al participante ver su portal, progreso y expediente.'
+
+# Coordinador: gestión completa del programa.
+access andalucia ei coordinador dashboard:
+  title: 'Acceder al dashboard de coordinador Andalucía +ei'
+  description: 'Permite gestionar participantes, solicitudes, alertas y KPIs.'
+
+manage andalucia ei solicitudes:
+  title: 'Gestionar solicitudes Andalucía +ei'
+  description: 'Permite aprobar, rechazar y gestionar solicitudes de participación.'
+
+manage andalucia ei fases:
+  title: 'Gestionar transiciones de fase'
+  description: 'Permite cambiar la fase de participantes en el itinerario PIIL.'
+
+view andalucia ei justificacion economica:
+  title: 'Ver justificación económica'
+  description: 'Permite ver el resumen de justificación del módulo económico.'
+
+view andalucia ei riesgo abandono:
+  title: 'Ver riesgo de abandono'
+  description: 'Permite ver participantes en riesgo de abandonar el programa.'
+
+# Orientador: atención directa a participantes.
+access andalucia ei orientador dashboard:
+  title: 'Acceder al dashboard de orientador Andalucía +ei'
+  description: 'Permite ver participantes asignados y registrar actuaciones.'
+
+register andalucia ei actuacion:
+  title: 'Registrar actuaciones en itinerario'
+  description: 'Permite registrar orientación, formación y mentoría.'
+
+sign andalucia ei hoja servicio:
+  title: 'Firmar hojas de servicio'
+  description: 'Permite firmar hojas de servicio de mentoría y orientación.'
+
+# Formador: acceso a formación y asistencia.
+access andalucia ei formador:
+  title: 'Acceder como formador Andalucía +ei'
+  description: 'Permite ver participantes inscritos y registrar asistencia.'
+
+# Alumni: acceso al club alumni.
+access andalucia ei alumni:
+  title: 'Acceder al Club Alumni Andalucía +ei'
+  description: 'Permite acceder a recursos y mentoría del Club Alumni.'
+
+# === FIRMA ELECTRÓNICA (Sprint 1) ===
+use digital signature:
+  title: 'Usar firma electrónica'
+  description: 'Permite firmar documentos mediante certificado digital (AutoFirma/PAdES).'
+
+# === MATCHING EMPRESARIAL (Sprint 9) ===
+view andalucia ei matching anonimizado:
+  title: 'Ver matching anonimizado de candidatos'
+  description: 'Permite a empresas ver perfiles anonimizados de candidatos compatibles.'

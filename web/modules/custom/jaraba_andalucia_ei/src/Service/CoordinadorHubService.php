@@ -167,6 +167,17 @@ class CoordinadorHubService {
 
       $participante->save();
 
+      // Generar Acuerdo de Participación automáticamente al alta (PRESAVE-RESILIENCE-001).
+      if (\Drupal::hasService('jaraba_andalucia_ei.acuerdo_participacion')) {
+        try {
+          \Drupal::service('jaraba_andalucia_ei.acuerdo_participacion')
+            ->generarAcuerdo((int) $participante->id());
+        }
+        catch (\Throwable) {
+          // Acuerdo generation failure must not block admission.
+        }
+      }
+
       // Generar DACI automáticamente al alta (PRESAVE-RESILIENCE-001).
       if (\Drupal::hasService('jaraba_andalucia_ei.daci')) {
         try {

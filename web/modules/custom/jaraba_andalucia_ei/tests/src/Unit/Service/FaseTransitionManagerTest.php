@@ -145,13 +145,33 @@ class FaseTransitionManagerTest extends UnitTestCase {
   }
 
   /**
-   * Prerrequisito DACI: acogida -> diagnostico sin DACI firmado.
+   * Prerrequisito Acuerdo: acogida -> diagnostico sin Acuerdo firmado falla.
+   *
+   * @covers ::transitarFase
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function transitarADiagnosticoSinAcuerdoFirmadoFalla(): void {
+    $participante = $this->createParticipanteMock('acogida', [
+      'isAcuerdoParticipacionFirmado' => FALSE,
+      'isDaciFirmado' => TRUE,
+    ]);
+    $this->storage->method('load')->with(1)->willReturn($participante);
+
+    $result = $this->service->transitarFase(1, 'diagnostico');
+
+    $this->assertFalse($result['success']);
+    $this->assertStringContainsString('Acuerdo de Participaci', $result['message']->getUntranslatedString());
+  }
+
+  /**
+   * Prerrequisito DACI: acogida -> diagnostico sin DACI firmado falla.
    *
    * @covers ::transitarFase
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function transitarADiagnosticoSinDaciFirmadoFalla(): void {
     $participante = $this->createParticipanteMock('acogida', [
+      'isAcuerdoParticipacionFirmado' => TRUE,
       'isDaciFirmado' => FALSE,
     ]);
     $this->storage->method('load')->with(1)->willReturn($participante);
@@ -163,13 +183,14 @@ class FaseTransitionManagerTest extends UnitTestCase {
   }
 
   /**
-   * Prerrequisito DACI: acogida -> diagnostico con DACI firmado pasa.
+   * Prerrequisito: acogida -> diagnostico con ambos documentos firmados pasa.
    *
    * @covers ::transitarFase
    */
   #[\PHPUnit\Framework\Attributes\Test]
-  public function transitarADiagnosticoConDaciFirmadoExito(): void {
+  public function transitarADiagnosticoConAcuerdoYDaciFirmadosExito(): void {
     $participante = $this->createParticipanteMock('acogida', [
+      'isAcuerdoParticipacionFirmado' => TRUE,
       'isDaciFirmado' => TRUE,
     ]);
     $this->storage->method('load')->with(1)->willReturn($participante);
@@ -444,6 +465,10 @@ class FaseTransitionManagerTest extends UnitTestCase {
 
       public function setFaseActual(string $fase): void {
         // No-op para test.
+      }
+
+      public function isAcuerdoParticipacionFirmado(): bool {
+        return $this->options['isAcuerdoParticipacionFirmado'] ?? FALSE;
       }
 
       public function isDaciFirmado(): bool {

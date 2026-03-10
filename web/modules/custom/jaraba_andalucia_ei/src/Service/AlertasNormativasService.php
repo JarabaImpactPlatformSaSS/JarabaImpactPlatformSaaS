@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
  * Servicio de alertas normativas para coordinadores.
  *
  * Detecta participantes en riesgo de incumplimiento normativo:
- * - Sin DACI firmado después de la primera semana
+ * - Sin Acuerdo de Participacion firmado despues de la primera semana
  * - Sin indicadores FSE+ de entrada después de la segunda semana
  * - Sin carril asignado después de 3 semanas
  * - Horas insuficientes próximos a fin de programa
@@ -37,9 +37,21 @@ class AlertasNormativasService {
   /**
    * Obtiene todas las alertas activas para un tenant.
    *
+   * TENANT-001: tenantId es obligatorio. Sin él devuelve array vacío
+   * y loguea warning para detectar llamadores no adaptados.
+   *
+   * @param int|null $tenantId
+   *   The tenant (group) ID. NULL returns empty array.
+   *
    * @return array<int, array{tipo: string, nivel: string, mensaje: string, participante_id: int, accion: string}>
    */
   public function getAlertas(?int $tenantId = NULL): array {
+    // TENANT-001: Sin tenant no cargamos datos — previene fuga cross-tenant.
+    if (!$tenantId) {
+      $this->logger->warning('getAlertas() called without tenantId — returning empty.');
+      return [];
+    }
+
     $alertas = [];
 
     try {
@@ -48,11 +60,8 @@ class AlertasNormativasService {
       // Participantes activos (no en baja).
       $query = $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('fase_actual', 'baja', '!=');
-
-      if ($tenantId) {
-        $query->condition('tenant_id', $tenantId);
-      }
+        ->condition('fase_actual', 'baja', '!=')
+        ->condition('tenant_id', $tenantId);
 
       $ids = $query->execute();
       $participantes = $storage->loadMultiple($ids);
@@ -63,12 +72,23 @@ class AlertasNormativasService {
         $semana = (int) ($participante->get('semana_actual')->value ?? 0);
         $nombre = $participante->label() ?? "Participante #$pid";
 
-        // 1. DACI no firmado después de semana 1.
+        // 1. Acuerdo de Participación no firmado después de semana 1.
+        if ($semana >= 1 && !((bool) ($participante->get('acuerdo_participacion_firmado')->value ?? FALSE))) {
+          $alertas[] = [
+            'tipo' => 'acuerdo_participacion_pendiente',
+            'nivel' => $semana >= 2 ? self::NIVEL_CRITICO : self::NIVEL_ALTO,
+            'mensaje' => sprintf('%s: Acuerdo de Participación sin firmar (semana %d).', $nombre, $semana),
+            'participante_id' => $pid,
+            'accion' => 'Generar y firmar Acuerdo de Participación inmediatamente.',
+          ];
+        }
+
+        // 1b. DACI (Aceptación de Compromisos e Información) no firmado después de semana 1.
         if ($semana >= 1 && !((bool) ($participante->get('daci_firmado')->value ?? FALSE))) {
           $alertas[] = [
             'tipo' => 'daci_pendiente',
             'nivel' => $semana >= 2 ? self::NIVEL_CRITICO : self::NIVEL_ALTO,
-            'mensaje' => sprintf('%s: DACI sin firmar (semana %d).', $nombre, $semana),
+            'mensaje' => sprintf('%s: DACI (Aceptación de Compromisos) sin firmar (semana %d).', $nombre, $semana),
             'participante_id' => $pid,
             'accion' => 'Generar y firmar DACI inmediatamente.',
           ];
@@ -127,16 +147,14 @@ class AlertasNormativasService {
       }
 
       // 5. Formación sin VoBo SAE.
+      // TENANT-001: $tenantId ya garantizado non-null por el guard clause inicial.
       if ($this->entityTypeManager->hasDefinition('actuacion_sto')) {
         $actQuery = $this->entityTypeManager->getStorage('actuacion_sto')
           ->getQuery()
           ->accessCheck(FALSE)
           ->condition('tipo_actuacion', 'formacion')
-          ->condition('vobo_sae_status', 'pendiente');
-
-        if ($tenantId) {
-          $actQuery->condition('tenant_id', $tenantId);
-        }
+          ->condition('vobo_sae_status', 'pendiente')
+          ->condition('tenant_id', $tenantId);
 
         $pendientes = (int) $actQuery->count()->execute();
         if ($pendientes > 0) {

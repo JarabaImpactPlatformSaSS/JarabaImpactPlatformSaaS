@@ -8,6 +8,137 @@ declare(strict_types=1);
  */
 
 /**
+ * Implements hook_requirements().
+ *
+ * Runtime health checks for Andalucía +ei (PIIL CV 2025).
+ * Visible at /admin/reports/status.
+ */
+function jaraba_andalucia_ei_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // CHECK 1: Entity types installed.
+  $expectedEntities = [
+    'programa_participante_ei',
+    'solicitud_ei',
+    'expediente_documento',
+    'actuacion_sto',
+    'indicador_fse_plus',
+    'insercion_laboral',
+    'prospeccion_empresarial',
+  ];
+
+  $missingEntities = [];
+  foreach ($expectedEntities as $entityTypeId) {
+    if (!$entityTypeManager->hasDefinition($entityTypeId)) {
+      $missingEntities[] = $entityTypeId;
+    }
+  }
+
+  $requirements['jaraba_andalucia_ei_entities'] = [
+    'title' => t('Andalucía +ei: Entidades'),
+    'severity' => $missingEntities ? REQUIREMENT_ERROR : REQUIREMENT_OK,
+    'value' => $missingEntities
+      ? t('@count entidades faltantes: @list', [
+        '@count' => count($missingEntities),
+        '@list' => implode(', ', $missingEntities),
+      ])
+      : t('@count/7 entidades instaladas', ['@count' => count($expectedEntities)]),
+  ];
+
+  // CHECK 2: Critical services available.
+  $criticalServices = [
+    'jaraba_andalucia_ei.fase_transition_manager',
+    'jaraba_andalucia_ei.expediente',
+    'jaraba_andalucia_ei.acuerdo_participacion',
+    'jaraba_andalucia_ei.daci',
+    'jaraba_andalucia_ei.alertas_normativas',
+    'jaraba_andalucia_ei.calendario_programa',
+    'jaraba_andalucia_ei.coordinador_hub',
+  ];
+
+  $missingServices = [];
+  foreach ($criticalServices as $serviceId) {
+    if (!\Drupal::hasService($serviceId)) {
+      $missingServices[] = $serviceId;
+    }
+  }
+
+  $requirements['jaraba_andalucia_ei_services'] = [
+    'title' => t('Andalucía +ei: Servicios críticos'),
+    'severity' => $missingServices ? REQUIREMENT_ERROR : REQUIREMENT_OK,
+    'value' => $missingServices
+      ? t('@count servicios no disponibles: @list', [
+        '@count' => count($missingServices),
+        '@list' => implode(', ', $missingServices),
+      ])
+      : t('@count/7 servicios operativos', ['@count' => count($criticalServices)]),
+  ];
+
+  // CHECK 3: Active participants count and phase distribution.
+  try {
+    $storage = $entityTypeManager->getStorage('programa_participante_ei');
+    $totalQuery = $storage->getQuery()->accessCheck(FALSE)->count();
+    $total = (int) $totalQuery->execute();
+
+    $activeQuery = $storage->getQuery()->accessCheck(FALSE)
+      ->condition('fase_actual', 'baja', '!=')->count();
+    $active = (int) $activeQuery->execute();
+
+    $requirements['jaraba_andalucia_ei_participants'] = [
+      'title' => t('Andalucía +ei: Participantes'),
+      'severity' => REQUIREMENT_INFO,
+      'value' => t('@active activos de @total totales', [
+        '@active' => $active,
+        '@total' => $total,
+      ]),
+    ];
+  }
+  catch (\Throwable) {
+    $requirements['jaraba_andalucia_ei_participants'] = [
+      'title' => t('Andalucía +ei: Participantes'),
+      'severity' => REQUIREMENT_WARNING,
+      'value' => t('No se pudo consultar participantes.'),
+    ];
+  }
+
+  // CHECK 4: Acuerdo/DACI fields exist (separation check).
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $acuerdoField = $updateManager->getFieldStorageDefinition('acuerdo_participacion_firmado', 'programa_participante_ei');
+    $daciField = $updateManager->getFieldStorageDefinition('daci_firmado', 'programa_participante_ei');
+
+    $bothExist = $acuerdoField && $daciField;
+    $requirements['jaraba_andalucia_ei_acuerdo_daci'] = [
+      'title' => t('Andalucía +ei: Acuerdo/DACI separados'),
+      'severity' => $bothExist ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+      'value' => $bothExist
+        ? t('Campos acuerdo_participacion_firmado y daci_firmado instalados correctamente.')
+        : t('Ejecutar drush updatedb para instalar campos de separación Acuerdo/DACI.'),
+    ];
+  }
+  catch (\Throwable) {
+    // Skip if entity definition update manager fails.
+  }
+
+  // CHECK 5: Logger channel available.
+  $requirements['jaraba_andalucia_ei_logger'] = [
+    'title' => t('Andalucía +ei: Logger'),
+    'severity' => \Drupal::hasService('logger.channel.jaraba_andalucia_ei') ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => \Drupal::hasService('logger.channel.jaraba_andalucia_ei')
+      ? t('Canal de log operativo.')
+      : t('Canal de log no disponible.'),
+  ];
+
+  return $requirements;
+}
+
+/**
  * Implements hook_schema().
  */
 function jaraba_andalucia_ei_schema(): array {
@@ -56,6 +187,134 @@ function jaraba_andalucia_ei_schema(): array {
     'primary key' => ['id'],
     'indexes' => [
       'participante_fecha' => ['participante_id', 'fecha'],
+    ],
+  ];
+
+  // Tabla de auditoría de firma electrónica (inmutable, no rota).
+  // Sprint 1 — Plan Maestro Andalucía +ei Clase Mundial.
+  $schema['jaraba_andalucia_ei_firma_audit'] = [
+    'description' => 'Auditoría inmutable del ciclo de firma electrónica (FSE+ / PIIL).',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'documento_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'FK a expediente_documento.id.',
+      ],
+      'participante_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'FK a programa_participante_ei.id.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'FK al grupo tenant.',
+      ],
+      'accion' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'firma_solicitada, firma_completada, firma_rechazada, sello_aplicado, verificacion.',
+      ],
+      'actor_uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'UID del actor.',
+      ],
+      'actor_nombre' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Nombre del actor (desnormalizado para auditoría).',
+      ],
+      'metodo_firma' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'tactil, autofirma, sello_empresa.',
+      ],
+      'hash_documento' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'SHA-256 del PDF firmado.',
+      ],
+      'certificado_cn' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'CN del certificado.',
+      ],
+      'certificado_issuer' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Issuer del certificado.',
+      ],
+      'certificado_serial' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Serial number del certificado.',
+      ],
+      'ip_address' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'IP del firmante.',
+      ],
+      'user_agent' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'User-Agent del firmante.',
+      ],
+      'motivo_rechazo' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Motivo si acción = firma_rechazada.',
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'size' => 'normal',
+        'not null' => FALSE,
+        'description' => 'Datos adicionales en JSON.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'idx_documento_id' => ['documento_id'],
+      'idx_participante_id' => ['participante_id'],
+      'idx_tenant_id' => ['tenant_id'],
+      'idx_accion_created' => ['accion', 'created'],
+      'idx_hash_documento' => ['hash_documento'],
     ],
   ];
 
@@ -409,4 +668,636 @@ function jaraba_andalucia_ei_update_10009(): string {
   catch (\Throwable $e) {
     return 'Error installing insercion_laboral: ' . $e->getMessage();
   }
+}
+
+/**
+ * Install 11 new fields on programa_participante_ei + update expediente_documento categorías.
+ *
+ * New fields: dime_score, dime_fecha, horas_orientacion_insercion, asistencia_porcentaje,
+ * es_persona_atendida, es_persona_insertada, candidate_profile_id, canvas_id,
+ * is_alumni, alumni_fecha, alumni_disponible_mentoria.
+ *
+ * ExpedienteDocumento: update categoria allowed_values with 11 new categories.
+ *
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each definition.
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10010(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeId = 'programa_participante_ei';
+  $messages = [];
+
+  try {
+    // === 1. Install new fields on programa_participante_ei ===
+
+    $newFields = [
+      'dime_score' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+        ->setName('dime_score')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Score DIME'))
+        ->setDescription(t('Puntuación del diagnóstico DIME (0-20).'))
+        ->setSetting('unsigned', TRUE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'dime_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('dime_fecha')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Diagnóstico DIME'))
+        ->setDescription(t('Fecha en que se completó el diagnóstico DIME.'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'horas_orientacion_insercion' => \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+        ->setName('horas_orientacion_insercion')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Horas Orientación Inserción'))
+        ->setDescription(t('Horas de orientación específicas para inserción laboral.'))
+        ->setDefaultValue(0)
+        ->setSetting('precision', 8)
+        ->setSetting('scale', 2)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'asistencia_porcentaje' => \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+        ->setName('asistencia_porcentaje')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Porcentaje de Asistencia'))
+        ->setDescription(t('Porcentaje de asistencia calculado sobre actuaciones programadas.'))
+        ->setDefaultValue(0)
+        ->setSetting('precision', 5)
+        ->setSetting('scale', 2)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'es_persona_atendida' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('es_persona_atendida')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('¿Persona Atendida?'))
+        ->setDescription(t('Cumple requisitos de persona atendida (módulo económico 3.500€).'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'es_persona_insertada' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('es_persona_insertada')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('¿Persona Insertada?'))
+        ->setDescription(t('Cumple requisitos de persona insertada (módulo económico 2.500€).'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'candidate_profile_id' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+        ->setName('candidate_profile_id')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Perfil de Candidato'))
+        ->setDescription(t('ID del CandidateProfile en jaraba_candidate (cross-vertical).'))
+        ->setSetting('unsigned', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'canvas_id' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+        ->setName('canvas_id')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Business Model Canvas'))
+        ->setDescription(t('ID del BusinessModelCanvas en jaraba_business_tools (cross-vertical).'))
+        ->setSetting('unsigned', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'is_alumni' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('is_alumni')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('¿Alumni?'))
+        ->setDescription(t('El participante forma parte del Club Alumni.'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'alumni_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('alumni_fecha')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Alumni'))
+        ->setDescription(t('Fecha en que se convirtió en alumni.'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('view', TRUE),
+
+      'alumni_disponible_mentoria' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('alumni_disponible_mentoria')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Disponible para Mentoría Alumni'))
+        ->setDescription(t('Disponible para mentorizar en futuras ediciones.'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+    ];
+
+    foreach ($newFields as $fieldName => $definition) {
+      $existing = $updateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+      if (!$existing) {
+        $updateManager->installFieldStorageDefinition($fieldName, $entityTypeId, 'jaraba_andalucia_ei', $definition);
+        $messages[] = $fieldName . ': installed.';
+      }
+      else {
+        $messages[] = $fieldName . ': already exists, skipped.';
+      }
+    }
+
+    // === 2. Update expediente_documento categoria allowed_values ===
+
+    $expedienteEntityTypeId = 'expediente_documento';
+    if ($updateManager->getEntityType($expedienteEntityTypeId)) {
+      $existingCategoria = $updateManager->getFieldStorageDefinition('categoria', $expedienteEntityTypeId);
+      if ($existingCategoria) {
+        $newAllowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+        $existingCategoria->setSetting('allowed_values', $newAllowed);
+        $updateManager->updateFieldStorageDefinition($existingCategoria);
+        $messages[] = 'expediente_documento.categoria: updated with 11 new categories.';
+      }
+    }
+
+    return 'update_10010 complete: ' . implode(' ', $messages);
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10010: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install the prospeccion_empresarial entity type.
+ *
+ * Prospección e intermediación con empresas para inserción laboral
+ * de participantes del programa Andalucía +ei (PIIL CV 2025).
+ *
+ * UPDATE-HOOK-REQUIRED-001: New ContentEntity needs installEntityType().
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10011(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('prospeccion_empresarial', FALSE);
+    if ($entityType && !$entityDefinitionUpdateManager->getEntityType('prospeccion_empresarial')) {
+      $entityDefinitionUpdateManager->installEntityType($entityType);
+      return 'Entidad ProspeccionEmpresarial instalada correctamente.';
+    }
+
+    return 'ProspeccionEmpresarial ya instalada o definición no encontrada.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing prospeccion_empresarial: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Separate Acuerdo de Participación from DACI: install new fields + data migration.
+ *
+ * The code previously conflated the Acuerdo de Participación (Acuerdo_participacion_ICV25.odt)
+ * with the DACI (Anexo_DACI_ICV25.odt). They are TWO distinct official PIIL CV 2025 documents.
+ *
+ * This hook:
+ * 1. Installs acuerdo_participacion_firmado (boolean) and acuerdo_participacion_fecha (datetime).
+ * 2. Migrates existing daci_firmado/daci_fecha_firma data → acuerdo_participacion_* fields
+ *    (because historical data actually tracked Acuerdo signatures, not DACI).
+ * 3. Resets daci_firmado = FALSE and daci_fecha_firma = NULL so DACI tracking starts clean.
+ * 4. Updates expediente_documento categoria with new sto_acuerdo_participacion category.
+ *
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each definition.
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10012(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeId = 'programa_participante_ei';
+  $messages = [];
+
+  try {
+    // === 1. Install new Acuerdo de Participación fields ===
+
+    $acuerdoFields = [
+      'acuerdo_participacion_firmado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('acuerdo_participacion_firmado')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Acuerdo de Participación Firmado'))
+        ->setDescription(t('Indica si se ha firmado el Acuerdo de Participación (Acuerdo_participacion_ICV25.odt).'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'acuerdo_participacion_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('acuerdo_participacion_fecha')
+        ->setTargetEntityTypeId($entityTypeId)
+        ->setLabel(t('Fecha Firma Acuerdo de Participación'))
+        ->setDescription(t('Fecha en que se firmó el Acuerdo de Participación.'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+    ];
+
+    foreach ($acuerdoFields as $fieldName => $definition) {
+      $existing = $updateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+      if (!$existing) {
+        $updateManager->installFieldStorageDefinition($fieldName, $entityTypeId, 'jaraba_andalucia_ei', $definition);
+        $messages[] = $fieldName . ': installed.';
+      }
+      else {
+        $messages[] = $fieldName . ': already exists, skipped.';
+      }
+    }
+
+    // === 2. Data migration: daci_firmado → acuerdo_participacion_firmado ===
+    // Historical data in daci_firmado actually tracked Acuerdo de Participación signatures.
+
+    $database = \Drupal::database();
+    $table = $entityTypeId;
+
+    if ($database->schema()->fieldExists($table, 'daci_firmado')
+      && $database->schema()->fieldExists($table, 'acuerdo_participacion_firmado')) {
+
+      // Copy daci_firmado → acuerdo_participacion_firmado.
+      $migrated = $database->update($table)
+        ->expression('acuerdo_participacion_firmado', 'daci_firmado')
+        ->execute();
+      $messages[] = 'acuerdo_participacion_firmado: migrated ' . $migrated . ' rows from daci_firmado.';
+
+      // Copy daci_fecha_firma → acuerdo_participacion_fecha.
+      if ($database->schema()->fieldExists($table, 'daci_fecha_firma')
+        && $database->schema()->fieldExists($table, 'acuerdo_participacion_fecha')) {
+        $database->update($table)
+          ->expression('acuerdo_participacion_fecha', 'daci_fecha_firma')
+          ->execute();
+        $messages[] = 'acuerdo_participacion_fecha: migrated from daci_fecha_firma.';
+      }
+
+      // === 3. Reset DACI fields (clean slate for real DACI tracking) ===
+
+      $database->update($table)
+        ->fields([
+          'daci_firmado' => 0,
+          'daci_fecha_firma' => NULL,
+        ])
+        ->execute();
+      $messages[] = 'daci_firmado + daci_fecha_firma: reset to default (clean DACI tracking).';
+    }
+    else {
+      $messages[] = 'Data migration skipped: fields not yet in schema.';
+    }
+
+    // === 4. Update expediente_documento categoria with sto_acuerdo_participacion ===
+
+    $expedienteEntityTypeId = 'expediente_documento';
+    if ($updateManager->getEntityType($expedienteEntityTypeId)) {
+      $existingCategoria = $updateManager->getFieldStorageDefinition('categoria', $expedienteEntityTypeId);
+      if ($existingCategoria) {
+        $newAllowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+        $existingCategoria->setSetting('allowed_values', $newAllowed);
+        $updateManager->updateFieldStorageDefinition($existingCategoria);
+        $messages[] = 'expediente_documento.categoria: updated with sto_acuerdo_participacion.';
+      }
+    }
+
+    return 'update_10012 (Acuerdo/DACI separation) complete: ' . implode(' ', $messages);
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10012: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Update programa_participante_ei entity type definition (form handlers).
+ *
+ * The entity annotation changed from ContentEntityForm to
+ * ProgramaParticipanteEiForm (PREMIUM-FORMS-PATTERN-001 compliance).
+ * Drupal caches entity type definitions — this hook forces the update.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Entity type definition change.
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10013(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('programa_participante_ei', FALSE);
+    if ($entityType) {
+      $entityDefinitionUpdateManager->updateEntityType($entityType);
+      return 'programa_participante_ei: entity type definition updated (form handlers → PremiumEntityFormBase).';
+    }
+
+    return 'programa_participante_ei definition not found.';
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10013: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Add incentivo tracking fields to programa_participante_ei.
+ *
+ * New fields: incentivo_fecha_pago, incentivo_renuncia, incentivo_renuncia_fecha.
+ * Required by PIIL ICV25 annexes: Recibi_Incentivo_ICV25, Renuncia_Incentivo_ICV25.
+ */
+function jaraba_andalucia_ei_update_10014(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+    $newFields = [
+      'incentivo_fecha_pago' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('incentivo_fecha_pago')
+        ->setTargetEntityTypeId('programa_participante_ei')
+        ->setLabel(t('Fecha Pago Incentivo'))
+        ->setDescription(t('Fecha en que se pagó el incentivo económico de €528.'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'incentivo_renuncia' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('incentivo_renuncia')
+        ->setTargetEntityTypeId('programa_participante_ei')
+        ->setLabel(t('Renuncia al Incentivo'))
+        ->setDescription(t('Indica si el participante ha renunciado al incentivo económico de €528.'))
+        ->setDefaultValue(FALSE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+
+      'incentivo_renuncia_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+        ->setName('incentivo_renuncia_fecha')
+        ->setTargetEntityTypeId('programa_participante_ei')
+        ->setLabel(t('Fecha Renuncia Incentivo'))
+        ->setDescription(t('Fecha en que el participante formalizó la renuncia al incentivo.'))
+        ->setSetting('datetime_type', 'date')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+    ];
+
+    foreach ($newFields as $fieldName => $fieldDefinition) {
+      if (!$entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'programa_participante_ei')) {
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'programa_participante_ei',
+          'jaraba_andalucia_ei',
+          $fieldDefinition,
+        );
+        $messages[] = "Installed field: $fieldName";
+      }
+      else {
+        $messages[] = "Field already exists: $fieldName";
+      }
+    }
+
+    // Update entity type definition for ExpedienteDocumento (new CATEGORIAS values).
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $expedienteType = $entityTypeManager->getDefinition('expediente_documento', FALSE);
+    if ($expedienteType) {
+      $entityDefinitionUpdateManager->updateEntityType($expedienteType);
+      $messages[] = 'expediente_documento: entity type definition updated (new CATEGORIAS).';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10014: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Add firma workflow fields to expediente_documento + create audit table.
+ *
+ * Sprint 1 — Plan Maestro Andalucía +ei Clase Mundial.
+ * New fields: estado_firma, firma_solicitada_fecha, firma_solicitante_uid,
+ * firma_ip, firma_user_agent, firma_metodo, firma_hash_documento,
+ * co_firmante_uid, co_firma_fecha, co_firma_metodo, verificacion_hash,
+ * verificacion_qr_uri.
+ * New table: jaraba_andalucia_ei_firma_audit.
+ *
+ * UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId.
+ * UPDATE-HOOK-CATCH-001: \Throwable.
+ */
+function jaraba_andalucia_ei_update_10015(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+    // === Nuevos campos de firma en expediente_documento ===
+    $newFields = [];
+
+    $newFields['estado_firma'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setName('estado_firma')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Estado de firma'))
+      ->setDescription(t('Estado en la máquina de estados de firma electrónica.'))
+      ->setSetting('allowed_values', [
+        'borrador' => 'Borrador',
+        'pendiente_firma' => 'Pendiente de firma',
+        'pendiente_firma_tecnico' => 'Pendiente firma técnico',
+        'pendiente_firma_participante' => 'Pendiente firma participante',
+        'firmado_parcial' => 'Firmado parcialmente',
+        'firmado' => 'Firmado',
+        'rechazado' => 'Rechazado',
+        'caducado' => 'Caducado',
+      ])
+      ->setDefaultValue('borrador')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_solicitada_fecha'] = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      ->setName('firma_solicitada_fecha')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Fecha solicitud de firma'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_solicitante_uid'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setName('firma_solicitante_uid')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Firmante principal'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_ip'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('firma_ip')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('IP del firmante'))
+      ->setSetting('max_length', 45)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_user_agent'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('firma_user_agent')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('User-Agent'))
+      ->setSetting('max_length', 512)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_metodo'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setName('firma_metodo')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Método de firma'))
+      ->setSetting('allowed_values', [
+        'tactil' => 'Firma táctil',
+        'autofirma' => 'AutoFirma (certificado digital)',
+        'sello_empresa' => 'Sello de empresa',
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['firma_hash_documento'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('firma_hash_documento')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Hash del documento'))
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['co_firmante_uid'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setName('co_firmante_uid')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Co-firmante'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['co_firma_fecha'] = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      ->setName('co_firma_fecha')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Fecha de co-firma'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['co_firma_metodo'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setName('co_firma_metodo')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Método de co-firma'))
+      ->setSetting('allowed_values', [
+        'tactil' => 'Firma táctil',
+        'autofirma' => 'AutoFirma (certificado digital)',
+        'sello_empresa' => 'Sello de empresa',
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['verificacion_hash'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('verificacion_hash')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('Hash de verificación'))
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $newFields['verificacion_qr_uri'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('verificacion_qr_uri')
+      ->setTargetEntityTypeId('expediente_documento')
+      ->setLabel(t('URI del QR'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('view', TRUE);
+
+    foreach ($newFields as $fieldName => $fieldDefinition) {
+      if (!$entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'expediente_documento')) {
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'expediente_documento',
+          'jaraba_andalucia_ei',
+          $fieldDefinition,
+        );
+        $messages[] = "Installed field: $fieldName";
+      }
+      else {
+        $messages[] = "Field already exists: $fieldName";
+      }
+    }
+
+    // Update entity type definition.
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $expedienteType = $entityTypeManager->getDefinition('expediente_documento', FALSE);
+    if ($expedienteType) {
+      $entityDefinitionUpdateManager->updateEntityType($expedienteType);
+      $messages[] = 'expediente_documento: entity type definition updated (firma workflow fields).';
+    }
+
+    // === Crear tabla de auditoría de firma ===
+    $database = \Drupal::database();
+    if (!$database->schema()->tableExists('jaraba_andalucia_ei_firma_audit')) {
+      $schema = jaraba_andalucia_ei_schema();
+      $database->schema()->createTable(
+        'jaraba_andalucia_ei_firma_audit',
+        $schema['jaraba_andalucia_ei_firma_audit'],
+      );
+      $messages[] = 'Created table: jaraba_andalucia_ei_firma_audit.';
+    }
+    else {
+      $messages[] = 'Table jaraba_andalucia_ei_firma_audit already exists.';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10015: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 7: Install PlanEmprendimientoEi entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva entity DEBE tener installEntityType().
+ */
+function jaraba_andalucia_ei_update_10016(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    // Instalar PlanEmprendimientoEi.
+    $planType = $entityTypeManager->getDefinition('plan_emprendimiento_ei', FALSE);
+    if ($planType) {
+      $entityDefinitionUpdateManager->installEntityType($planType);
+      $messages[] = 'Installed entity type: plan_emprendimiento_ei.';
+    }
+    else {
+      $messages[] = 'WARNING: plan_emprendimiento_ei entity type not found. Module cache may need clearing.';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10016: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 8: Add barreras_acceso field to ProgramaParticipanteEi.
+ *
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() obligatorios.
+ */
+function jaraba_andalucia_ei_update_10017(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+    // Verificar que no existe ya el campo.
+    $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+      'barreras_acceso',
+      'programa_participante_ei'
+    );
+
+    if (!$existing) {
+      $field = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+        ->setName('barreras_acceso')
+        ->setTargetEntityTypeId('programa_participante_ei')
+        ->setLabel(t('Barreras de acceso'))
+        ->setDescription(t('JSON estructurado con 8 tipos de barrera y niveles.'))
+        ->setDisplayConfigurable('form', TRUE);
+
+      $entityDefinitionUpdateManager->installFieldStorageDefinition(
+        'barreras_acceso',
+        'programa_participante_ei',
+        'jaraba_andalucia_ei',
+        $field
+      );
+      $messages[] = 'Installed field: barreras_acceso on programa_participante_ei.';
+    }
+    else {
+      $messages[] = 'Field barreras_acceso already exists.';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10017: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
 }
