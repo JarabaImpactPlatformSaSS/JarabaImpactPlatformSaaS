@@ -578,6 +578,29 @@ function jaraba_page_builder_update_9009(): string {
 }
 
 /**
+ * Expand page_content.meta_title from varchar(70) to varchar(255).
+ *
+ * Translated meta_title via AI can exceed 70 chars.
+ */
+function jaraba_page_builder_update_9010(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $fieldDef = $updateManager->getFieldStorageDefinition('meta_title', 'page_content');
+    if ($fieldDef) {
+      $fieldDef->setName('meta_title');
+      $fieldDef->setTargetEntityTypeId('page_content');
+      $fieldDef->setSetting('max_length', 255);
+      $updateManager->updateFieldStorageDefinition($fieldDef);
+      return 'Expanded page_content.meta_title to varchar(255).';
+    }
+    return 'Field meta_title not found.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_page_builder_requirements(string $phase): array {

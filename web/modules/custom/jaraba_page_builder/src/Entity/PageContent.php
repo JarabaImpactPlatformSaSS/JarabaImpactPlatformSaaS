@@ -321,7 +321,7 @@ class PageContent extends ContentEntityBase implements PageContentInterface, Ent
             ->setDescription(t('Título para SEO (máx 60 caracteres).'))
             ->setRevisionable(TRUE)
             ->setTranslatable(TRUE)
-            ->setSetting('max_length', 70)
+            ->setSetting('max_length', 255)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
                 'weight' => 10,

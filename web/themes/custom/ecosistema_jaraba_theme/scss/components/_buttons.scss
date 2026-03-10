@@ -1,97 +1,145 @@
 /**
  * @file
  * Buttons - Ecosistema Jaraba Theme.
+ *
+ * Premium world-class design system:
+ * - Pill shape, generous padding, bold weight
+ * - Gradient backgrounds with glow shadows
+ * - Micro-interactions: translateY hover, scale active
+ * - Glassmorphism in dark contexts
+ * - BTN-CONTRAST-DARK-001: WCAG 2.1 AA on dark backgrounds
  */
 
 @use '../variables' as *;
+
+// =============================================================================
+// BASE — Every button inherits premium DNA
+// =============================================================================
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--ej-spacing-xs);
-    padding: var(--ej-spacing-sm) var(--ej-spacing-md);
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border-radius: var(--ej-btn-radius, 8px);
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--ej-font-body, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    border-radius: var(--ej-radius-pill, 50rem);
     border: none;
     cursor: pointer;
-    transition: transform 150ms ease, box-shadow 150ms ease, background 200ms ease, color 200ms ease, border-color 200ms ease, filter 200ms ease;
     text-decoration: none;
+    position: relative;
+    isolation: isolate;
+    transition:
+        transform 200ms ease,
+        box-shadow 250ms ease,
+        background 200ms ease,
+        color 200ms ease,
+        border-color 200ms ease,
+        filter 200ms ease;
 
-    // Micro-interaction: click pulse
+    // Micro-interaction: lift on hover
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    // Micro-interaction: press on click
     &:active:not(:disabled) {
-        transform: scale(0.97);
+        transform: translateY(0) scale(0.97);
     }
 
     &:disabled {
-        opacity: 0.5;
+        opacity: 0.45;
         cursor: not-allowed;
+        transform: none;
     }
 }
 
-// Primary
+// =============================================================================
+// PRIMARY — Hero CTA, main conversion actions
+// =============================================================================
+
 .btn--primary {
-    background: var(--ej-btn-primary-bg, #FF8C42);
+    background: linear-gradient(135deg, var(--ej-btn-primary-bg, #FF8C42) 0%, color-mix(in srgb, var(--ej-btn-primary-bg, #FF8C42) 75%, var(--ej-bg-surface, #fff)) 100%);
     color: var(--ej-btn-primary-text, #FFFFFF);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 25%, transparent);
 
     &:hover:not(:disabled) {
-        filter: brightness(1.1);
+        box-shadow: 0 8px 25px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 40%, transparent);
+        filter: brightness(1.05);
     }
 }
 
-// Secondary
+// =============================================================================
+// SECONDARY — Complementary actions
+// =============================================================================
+
 .btn--secondary {
-    background: var(--ej-btn-secondary-bg, #00A9A5);
+    background: linear-gradient(135deg, var(--ej-btn-secondary-bg, #00A9A5) 0%, color-mix(in srgb, var(--ej-btn-secondary-bg, #00A9A5) 75%, var(--ej-bg-surface, #fff)) 100%);
     color: var(--ej-btn-secondary-text, #FFFFFF);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--ej-color-secondary, #00A9A5) 25%, transparent);
 
     &:hover:not(:disabled) {
-        filter: brightness(1.1);
+        box-shadow: 0 8px 25px color-mix(in srgb, var(--ej-color-secondary, #00A9A5) 40%, transparent);
+        filter: brightness(1.05);
     }
 }
 
-// Outline
+// =============================================================================
+// OUTLINE — Secondary actions on light backgrounds
+// =============================================================================
+
 .btn--outline {
     background: transparent;
     border: 2px solid var(--ej-color-primary, #FF8C42);
     color: var(--ej-color-primary, #FF8C42);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 10%, transparent);
 
     &:hover:not(:disabled) {
         background: var(--ej-color-primary, #FF8C42);
         color: var(--ej-bg-surface, #fff);
+        box-shadow: 0 6px 20px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 30%, transparent);
     }
 }
 
-// Ghost
+// =============================================================================
+// GHOST — Tertiary, minimal visual weight
+// =============================================================================
+
 .btn--ghost {
     background: transparent;
     color: var(--ej-color-primary, #FF8C42);
 
     &:hover:not(:disabled) {
-        background: rgba(255, 140, 66, 0.1);
+        background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 8%, transparent);
     }
 }
 
-// Sizes
+// =============================================================================
+// SIZES
+// =============================================================================
+
 .btn--sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.8125rem;
 }
 
 .btn--lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.9rem 2.25rem;
+    font-size: 1.0625rem;
 }
 
 .btn--xl {
-    padding: 1rem 2rem;
+    padding: 1.1rem 2.75rem;
     font-size: 1.125rem;
 }
 
 // Icon only
 .btn--icon {
-    padding: var(--ej-spacing-sm);
+    padding: 0.65rem;
     border-radius: 50%;
 }
 
@@ -101,8 +149,6 @@
 // This covers both BEM (.btn--*) and legacy page-builder (.btn-ghost, .btn-gold).
 // =============================================================================
 
-// Utility class: add .ej-dark-context to any dark parent container.
-// Also auto-applied via attribute selector for page-builder dark variants.
 .ej-dark-context,
 [class*="--dark"],
 .static-page__cta-card,
@@ -112,54 +158,90 @@
 .ped-cta-saas,
 .ped-page-header {
 
-    // BEM buttons
+    // Outline: glassmorphism pill
     .btn--outline {
-        border-color: var(--ej-bg-surface, #fff);
+        border-color: rgba(255, 255, 255, 0.4);
         color: var(--ej-bg-surface, #fff);
-
-        &:hover:not(:disabled) {
-            background: var(--ej-bg-surface, #fff);
-            color: var(--ej-color-corporate, #233D63);
-        }
-    }
-
-    .btn--ghost {
-        color: var(--ej-bg-surface, #fff);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 
         &:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.7);
+            color: var(--ej-bg-surface, #fff);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    // Ghost: glassmorphism pill
+    .btn--ghost {
+        color: var(--ej-bg-surface, #fff);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(8px);
+
+        &:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
             color: var(--ej-bg-surface, #fff);
         }
     }
 
+    // Secondary: brighter glow on dark
     .btn--secondary {
         &:hover:not(:disabled) {
             filter: brightness(1.15);
+            box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-color-secondary, #00A9A5) 50%, transparent);
         }
     }
 
-    // Legacy page-builder buttons
+    // Primary: brighter glow on dark
+    .btn--primary {
+        &:hover:not(:disabled) {
+            box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 50%, transparent);
+        }
+    }
+
+    // Legacy page-builder .btn-ghost — glassmorphism pill
     .btn-ghost,
     a.btn-ghost {
         color: var(--ej-bg-surface, #fff);
         border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.85rem 2rem;
+        border-radius: var(--ej-radius-pill, 50rem);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s ease;
 
         &:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
             color: var(--ej-bg-surface, #fff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
         }
     }
 
+    // Legacy .btn-secondary on dark
     .btn-secondary,
     a.btn-secondary {
         color: var(--ej-bg-surface, #fff);
         border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.85rem 2rem;
+        border-radius: var(--ej-radius-pill, 50rem);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s ease;
 
         &:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
             color: var(--ej-bg-surface, #fff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
         }
     }
 }

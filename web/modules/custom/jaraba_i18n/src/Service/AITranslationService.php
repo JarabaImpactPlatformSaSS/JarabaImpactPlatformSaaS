@@ -150,9 +150,9 @@ PROMPT;
 
         try {
             // Usar el orquestador para ejecutar la traducción.
-            // El agente 'smart_marketing_agent' soporta traducciones con Brand Voice.
+            // El agente 'smart_marketing' soporta traducciones con Brand Voice.
             $result = $this->orchestrator->execute(
-                'smart_marketing_agent',
+                'smart_marketing',
                 'generate_content',  // Acción genérica de generación
                 [
                     'prompt' => $prompt,
@@ -234,8 +234,9 @@ PROMPT;
         // Traducir en lote.
         $translations = $this->translateBatch($textsToTranslate, $sourceLang, $targetLang);
 
-        // Aplicar traducciones a la entidad.
+        // Aplicar traducciones a la entidad con sanitización.
         foreach ($translations as $fieldName => $translatedValue) {
+            $translatedValue = $this->sanitizeTranslatedValue($fieldName, $translatedValue, $entity);
             $entity->set($fieldName, $translatedValue);
         }
 
@@ -278,7 +279,7 @@ PROMPT;
 
         try {
             $result = $this->orchestrator->execute(
-                'smart_marketing_agent',
+                'smart_marketing',
                 'generate_content',
                 [
                     'prompt' => $prompt,
@@ -343,6 +344,7 @@ PROMPT;
             'fr' => 'francés',
             'de' => 'alemán',
             'pt' => 'portugués',
+            'pt-br' => 'portugués brasileño',
         ];
 
         $prompt = self::TRANSLATION_PROMPT;
@@ -484,6 +486,85 @@ PROMPT;
         }
 
         return $results;
+    }
+
+    /**
+     * Sanitizes a translated value based on field type.
+     *
+     * Detects AI hallucinations (model returning reasoning instead of translation)
+     * and enforces field-specific constraints (path_alias format, max_length).
+     */
+    protected function sanitizeTranslatedValue(string $fieldName, string $value, ContentEntityInterface $entity): string {
+        // Detect AI hallucination: model returned its thinking instead of translating.
+        $hallucinationPatterns = [
+            'I\'m ready to',
+            'I\'ll translate',
+            'I don\'t see',
+            'please provide',
+            'However, I notice',
+            'Could you please',
+            'I\'ll deliver only',
+        ];
+        foreach ($hallucinationPatterns as $pattern) {
+            if (stripos($value, $pattern) !== false) {
+                $this->logger->warning('AI hallucination detected for field @field. Falling back to original.', [
+                    '@field' => $fieldName,
+                ]);
+                // Return original value as fallback.
+                $original = $entity->getUntranslated();
+                if ($original->hasField($fieldName)) {
+                    $origField = $original->get($fieldName);
+                    return $origField->value ?? $origField->getString();
+                }
+                return '';
+            }
+        }
+
+        // path_alias: enforce URL-safe format.
+        if ($fieldName === 'path_alias') {
+            // Remove double slashes.
+            $value = preg_replace('#/{2,}#', '/', $value);
+            // Ensure starts with /.
+            if (!str_starts_with($value, '/')) {
+                $value = '/' . $value;
+            }
+            // Slugify: lowercase, replace non-alphanumeric with hyphens.
+            $parts = explode('/', $value);
+            $parts = array_map(function ($part) {
+                if ($part === '') {
+                    return '';
+                }
+                $slug = mb_strtolower($part);
+                $slug = preg_replace('/[^a-z0-9\-]/', '-', $slug);
+                $slug = preg_replace('/-+/', '-', $slug);
+                return trim($slug, '-');
+            }, $parts);
+            $value = implode('/', $parts);
+            // Remove trailing slashes.
+            $value = rtrim($value, '/');
+            if ($value === '') {
+                $value = '/';
+            }
+            // Max 255 chars.
+            if (mb_strlen($value) > 255) {
+                $value = mb_substr($value, 0, 255);
+            }
+        }
+
+        // Enforce max_length from field definition.
+        if ($entity->hasField($fieldName)) {
+            $definition = $entity->getFieldDefinition($fieldName);
+            $maxLength = $definition?->getSetting('max_length');
+            if ($maxLength && mb_strlen($value) > (int) $maxLength) {
+                $value = mb_substr($value, 0, (int) $maxLength);
+                $this->logger->info('Truncated field @field to @max chars after translation.', [
+                    '@field' => $fieldName,
+                    '@max' => $maxLength,
+                ]);
+            }
+        }
+
+        return $value;
     }
 
     /**
