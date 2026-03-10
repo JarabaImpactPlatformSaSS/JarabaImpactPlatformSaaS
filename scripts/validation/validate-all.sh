@@ -175,6 +175,21 @@ if [ "$MODE" = "full" ]; then
   run_check "ENTITY-SCHEMA-SYNC-001" "Entity schema sync (computed orphans, translatable fields, Twig url())" \
     php "$SCRIPT_DIR/validate-entity-schema-sync.php"
 
+  run_check "BTN-CONTRAST-DARK-001" "Button contrast on dark backgrounds" \
+    php "$SCRIPT_DIR/validate-btn-contrast-dark.php"
+
+  # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
+  # Only runs if drush is available (skipped in pure-PHP CI).
+  if command -v drush &>/dev/null; then
+    run_check "DIACRITICS-ES-001" "Spanish diacritics in page_content canvas_data" \
+      drush php:script "$SCRIPT_DIR/validate-spanish-diacritics.php"
+  else
+    skip_check "DIACRITICS-ES-001" "Spanish diacritics (requires drush)"
+  fi
+
+  run_check "DEPLOY-READY-001" "Production deploy readiness (domains, settings, nginx)" \
+    php "$SCRIPT_DIR/validate-deploy-readiness.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -185,6 +200,9 @@ else
   skip_check "TEST-COVERAGE-MAP-001" "Test coverage map"
   skip_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection"
   skip_check "ENTITY-SCHEMA-SYNC-001" "Entity schema sync (computed orphans, translatable fields, Twig url())"
+  skip_check "BTN-CONTRAST-DARK-001" "Button contrast on dark backgrounds"
+  skip_check "DIACRITICS-ES-001" "Spanish diacritics in page_content"
+  skip_check "DEPLOY-READY-001" "Production deploy readiness"
 fi
 
 fi  # End of non-checklist mode guard.

@@ -94,3 +94,72 @@
     padding: var(--ej-spacing-sm);
     border-radius: 50%;
 }
+
+// =============================================================================
+// DARK CONTEXT — BTN-CONTRAST-DARK-001
+// Buttons on dark backgrounds MUST have white/light text for WCAG 2.1 AA contrast.
+// This covers both BEM (.btn--*) and legacy page-builder (.btn-ghost, .btn-gold).
+// =============================================================================
+
+// Utility class: add .ej-dark-context to any dark parent container.
+// Also auto-applied via attribute selector for page-builder dark variants.
+.ej-dark-context,
+[class*="--dark"],
+.static-page__cta-card,
+.jaraba-cta-section,
+.jaraba-hero,
+.ped-hero,
+.ped-cta-saas,
+.ped-page-header {
+
+    // BEM buttons
+    .btn--outline {
+        border-color: var(--ej-bg-surface, #fff);
+        color: var(--ej-bg-surface, #fff);
+
+        &:hover:not(:disabled) {
+            background: var(--ej-bg-surface, #fff);
+            color: var(--ej-color-corporate, #233D63);
+        }
+    }
+
+    .btn--ghost {
+        color: var(--ej-bg-surface, #fff);
+
+        &:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--ej-bg-surface, #fff);
+        }
+    }
+
+    .btn--secondary {
+        &:hover:not(:disabled) {
+            filter: brightness(1.15);
+        }
+    }
+
+    // Legacy page-builder buttons
+    .btn-ghost,
+    a.btn-ghost {
+        color: var(--ej-bg-surface, #fff);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: var(--ej-bg-surface, #fff);
+        }
+    }
+
+    .btn-secondary,
+    a.btn-secondary {
+        color: var(--ej-bg-surface, #fff);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: var(--ej-bg-surface, #fff);
+        }
+    }
+}
