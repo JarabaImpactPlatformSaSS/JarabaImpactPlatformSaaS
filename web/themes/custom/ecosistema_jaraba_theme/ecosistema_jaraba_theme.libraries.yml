@@ -495,6 +495,7 @@ route-tenant-settings:
   js:
     /modules/custom/ecosistema_jaraba_core/js/tenant-settings.js: {}
     /modules/custom/ecosistema_jaraba_core/js/tenant-dashboard-particles.js: {}
+    /modules/custom/ecosistema_jaraba_core/js/domain-guide.js: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - core/drupal

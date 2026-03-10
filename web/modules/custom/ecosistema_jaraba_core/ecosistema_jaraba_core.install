@@ -262,6 +262,107 @@ function ecosistema_jaraba_core_requirements($phase) {
     catch (\Throwable $e) {
       // Silently skip if not available.
     }
+
+    // ─────────────────────────────────────────────────────────
+    // DEPLOY-READY-001: Domain entities para hostnames de produccion.
+    // ─────────────────────────────────────────────────────────
+    try {
+      $required_hostnames = [
+        'plataformadeecosistemas.com' => 'SaaS base domain',
+        'plataformadeecosistemas.es'  => 'Meta-sitio corporativo PED S.L.',
+        'pepejaraba.com'              => 'Marca personal Pepe Jaraba',
+        'jarabaimpact.com'            => 'Jaraba Impact B2B',
+      ];
+
+      if (\Drupal::hasService('entity_type.manager')) {
+        $domain_storage = \Drupal::entityTypeManager()->getStorage('domain');
+        $all_domains = $domain_storage->loadMultiple();
+        $existing_hostnames = [];
+        foreach ($all_domains as $domain) {
+          $existing_hostnames[] = $domain->getHostname();
+        }
+
+        $missing = [];
+        foreach ($required_hostnames as $hostname => $desc) {
+          if (!in_array($hostname, $existing_hostnames, TRUE)) {
+            $missing[] = "$hostname ($desc)";
+          }
+        }
+
+        if (!empty($missing)) {
+          $requirements['ecosistema_jaraba_domain_entities'] = [
+            'title' => t('Ecosistema Jaraba - Domain Entities'),
+            'value' => t('@count hostname(s) sin Domain entity', ['@count' => count($missing)]),
+            'description' => t('DOMAIN-ROUTE-CACHE-001: Faltan Domain entities para: @list. Sin Domain entity, RouteProvider cachea rutas con clave incorrecta y path processors no se ejecutan. Crear via admin o drush.', [
+              '@list' => implode(', ', $missing),
+            ]),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+        else {
+          $requirements['ecosistema_jaraba_domain_entities'] = [
+            'title' => t('Ecosistema Jaraba - Domain Entities'),
+            'value' => t('Todos los @count hostnames de produccion tienen Domain entity', ['@count' => count($required_hostnames)]),
+            'severity' => REQUIREMENT_OK,
+          ];
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      // Domain module may not be installed yet.
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // DEPLOY-READY-001: jaraba_base_domain debe estar configurado.
+    // ─────────────────────────────────────────────────────────
+    $base_domain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
+    if ($base_domain === 'jaraba-saas.lndo.site') {
+      $requirements['ecosistema_jaraba_base_domain'] = [
+        'title' => t('Ecosistema Jaraba - Base Domain'),
+        'value' => t('Usando dominio Lando por defecto'),
+        'description' => t('jaraba_base_domain no esta configurado para produccion. Los CNAME targets de tenants apuntaran a jaraba-saas.lndo.site. Incluir config/deploy/settings.production.php desde settings.local.php.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_base_domain'] = [
+        'title' => t('Ecosistema Jaraba - Base Domain'),
+        'value' => $base_domain,
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // DEPLOY-READY-001: trusted_host_patterns debe cubrir todos los dominios.
+    // ─────────────────────────────────────────────────────────
+    $trusted_patterns = \Drupal\Core\Site\Settings::get('trusted_host_patterns', []);
+    if (empty($trusted_patterns)) {
+      $requirements['ecosistema_jaraba_trusted_hosts'] = [
+        'title' => t('Ecosistema Jaraba - Trusted Hosts'),
+        'value' => t('No configurado'),
+        'description' => t('trusted_host_patterns esta vacio. Drupal aceptara requests de cualquier hostname, lo cual es un riesgo de seguridad.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $current_host = \Drupal::request()->getHost();
+      $matched = FALSE;
+      foreach ($trusted_patterns as $pattern) {
+        if (preg_match('/' . $pattern . '/', $current_host)) {
+          $matched = TRUE;
+          break;
+        }
+      }
+      $requirements['ecosistema_jaraba_trusted_hosts'] = [
+        'title' => t('Ecosistema Jaraba - Trusted Hosts'),
+        'value' => t('@count patron(es) configurado(s), host actual: @host (@status)', [
+          '@count' => count($trusted_patterns),
+          '@host' => $current_host,
+          '@status' => $matched ? 'OK' : 'NO MATCH',
+        ]),
+        'severity' => $matched ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+      ];
+    }
   }
 
   return $requirements;

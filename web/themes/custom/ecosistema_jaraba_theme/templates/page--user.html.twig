@@ -207,7 +207,7 @@
                     <div class="quick-access-section__stat{% if section.participante_stats.firmas_pendientes > 0 %} quick-access-section__stat--alert{% elseif section.participante_stats.firmas_pendientes == 0 %} quick-access-section__stat--success{% endif %}">
                       <span class="quick-access-section__stat-value">
                         {%- if section.participante_stats.firmas_pendientes == 0 -%}
-                          &#10003;
+                          {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '18px' }) }}
                         {%- else -%}
                           {{ section.participante_stats.firmas_pendientes }}
                         {%- endif -%}
@@ -228,7 +228,7 @@
                     <div class="quick-access-section__stat{% if section.orientador_stats.hojas_pendientes > 0 %} quick-access-section__stat--alert{% elseif section.orientador_stats.hojas_pendientes == 0 %} quick-access-section__stat--success{% endif %}">
                       <span class="quick-access-section__stat-value">
                         {%- if section.orientador_stats.hojas_pendientes == 0 -%}
-                          &#10003;
+                          {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '18px' }) }}
                         {%- else -%}
                           {{ section.orientador_stats.hojas_pendientes }}
                         {%- endif -%}

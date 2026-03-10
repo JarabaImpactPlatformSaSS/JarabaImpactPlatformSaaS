@@ -1,0 +1,11 @@
+uuid: f4a1b8c2-3d5e-4f6a-9b7c-8e1d2a3f4c5b
+langcode: es
+status: true
+dependencies: {  }
+id: plataformadeecosistemas_com
+domain_id: 0
+hostname: plataformadeecosistemas.com
+name: 'Jaraba Impact Platform SaaS'
+scheme: https
+weight: -10
+is_default: true
