@@ -1,76 +1,74 @@
-# 🎨 Arquitectura de Theming SaaS: Estándar Maestro
+# Arquitectura de Theming SaaS: Estandar Maestro
 
 > **Tipo:** Documento de Arquitectura
-> **Versión:** 2.1 (Consolidación SCSS Completada)
-> **Fecha:** 2026-02-05 18:45
-> **Estado:** Vigente ✅
-> **Alcance:** Patrón "Federated Design Tokens" para SaaS de clase mundial
+> **Version:** 3.0 (Unificacion Multi-Tenant + Sprint 13)
+> **Fecha original:** 2026-02-05 | **Actualizado:** 2026-03-11
+> **Estado:** Vigente
+> **Alcance:** Patron "Federated Design Tokens" + Resolucion Multi-Tenant Unificada
 
 ---
 
-## 📑 Tabla de Contenidos
+## Tabla de Contenidos
 
-1. [Visión Arquitectónica](#1-visión-arquitectónica)
+1. [Vision Arquitectonica](#1-vision-arquitectonica)
 2. [Principios Fundamentales](#2-principios-fundamentales)
-3. [Jerarquía de 5 Capas](#3-jerarquía-de-5-capas)
-4. [Estructura de Archivos](#4-estructura-de-archivos)
-5. [Patrón de Compilación](#5-patrón-de-compilación)
-6. [Mixins y Utilidades](#6-mixins-y-utilidades)
-7. [Tabla de Referencias Técnicas](#7-tabla-de-referencias-técnicas)
-8. [Checklist de Cumplimiento](#8-checklist-de-cumplimiento)
-9. [Migración de Código Legado](#9-migración-de-código-legado)
-10. [Roadmap de Consolidación](#10-roadmap-de-consolidación)
-11. [Registro de Cambios](#11-registro-de-cambios)
+3. [Jerarquia de 5 Capas](#3-jerarquia-de-5-capas)
+4. [Resolucion Multi-Tenant Unificada](#4-resolucion-multi-tenant-unificada)
+5. [Estructura de Archivos](#5-estructura-de-archivos)
+6. [Patron de Compilacion](#6-patron-de-compilacion)
+7. [Mixins, Utilidades y Funciones de Color](#7-mixins-utilidades-y-funciones-de-color)
+8. [CSS Custom Properties — Catalogo](#8-css-custom-properties--catalogo)
+9. [TenantThemeConfig — Entity de Personalizacion](#9-tenantthemeconfig--entity-de-personalizacion)
+10. [Inventario SCSS](#10-inventario-scss)
+11. [Checklist de Cumplimiento](#11-checklist-de-cumplimiento)
+12. [Directrices Criticas (Reglas Nombradas)](#12-directrices-criticas-reglas-nombradas)
+13. [Registro de Cambios](#13-registro-de-cambios)
 
 ---
 
-## 1. Visión Arquitectónica
+## 1. Vision Arquitectonica
 
-### 1.1 Problema Identificado
+### 1.1 Problema Original (Resuelto)
 
-En un SaaS multi-tenant con 57+ archivos SCSS distribuidos en 6+ módulos, la duplicación de variables SCSS genera:
+En un SaaS multi-tenant con cientos de archivos SCSS distribuidos en 55+ modulos, la duplicacion de variables SCSS generaba inconsistencia visual entre modulos, builds descentralizados y dificultad para cambios globales de paleta.
 
-| Problema | Impacto |
-|----------|---------|
-| Variables duplicadas | Inconsistencia visual entre módulos |
-| Build descentralizado | Mayor superficie de error en compilación |
-| Sin package.json | Comandos manuales, difícil CI/CD |
-| Fragmentación | Dificultad para cambios globales de paleta |
-
-### 1.2 Solución: Federated Design Tokens
+### 1.2 Solucion: Federated Design Tokens
 
 ```mermaid
 graph TD
     subgraph "SINGLE SOURCE OF TRUTH"
         A["ecosistema_jaraba_core<br/>scss/_variables.scss<br/>scss/_injectable.scss"]
     end
-    
-    subgraph "TEMA (Compilación Centralizada)"
-        B["ecosistema_jaraba_theme<br/>scss/main.scss"]
-        C["css/main.css"]
+
+    subgraph "TEMA (Compilacion Centralizada)"
+        B["ecosistema_jaraba_theme<br/>scss/main.scss + routes/ + bundles/"]
+        C["css/*.css + css/routes/ + css/bundles/"]
         B --> C
     end
-    
-    subgraph "MÓDULOS SATÉLITE (Solo CSS Vars)"
-        D["jaraba_page_builder"]
-        E["jaraba_i18n"]
-        F["jaraba_interactive"]
-        G["jaraba_*"]
+
+    subgraph "RESOLUCION RUNTIME"
+        D["UnifiedThemeResolverService<br/>5-level cascade"]
+        E["TenantThemeConfig entity<br/>47 campos, generateCssVariables()"]
+        F["ThemeTokenService<br/>CSS generation + fonts"]
+        D --> E --> F
     end
-    
-    A -.->|"@forward tokens"| B
-    A -.->|":root injection"| D
-    A -.->|":root injection"| E
-    A -.->|":root injection"| F
-    A -.->|":root injection"| G
+
+    subgraph "MODULOS SATELITE (Solo CSS Vars)"
+        G["55 modulos con SCSS"]
+    end
+
+    A -.->|"@use tokens"| B
+    F -.->|":root injection"| G
+    A -.->|"var(--ej-*) fallbacks"| G
 ```
 
-### 1.3 Beneficios Esperados
+### 1.3 Beneficios Logrados
 
-1. **Consistencia Visual**: Un solo punto de verdad para tokens
-2. **Personalización Runtime**: Cambios de branding sin recompilar
-3. **Time-to-Market**: Nuevos módulos heredan estilos automáticamente
-4. **Mantenibilidad**: Cambio de color en 1 archivo, no en 57
+1. **Consistencia Visual**: 290 CSS custom properties con prefijo `--ej-*`
+2. **Personalizacion Runtime**: Cambios de branding sin recompilar — 70+ opciones desde UI
+3. **Multi-Tenancy**: Cada tenant personaliza visual independientemente via TenantThemeConfig
+4. **Presets Verticales**: 6 paletas industriales predefinidas con aplicacion en 1 clic
+5. **Mantenibilidad**: 488 archivos SCSS, 44 modulos con package.json
 
 ---
 
@@ -78,518 +76,486 @@ graph TD
 
 ### 2.1 Single Source of Truth (SSOT)
 
-| Componente | Ubicación | Responsabilidad |
+| Componente | Ubicacion | Responsabilidad |
 |------------|-----------|-----------------|
-| **Variables SCSS** | `ecosistema_jaraba_core/scss/_variables.scss` | Fallbacks de compilación |
+| **Variables SCSS** | `ecosistema_jaraba_core/scss/_variables.scss` | Fallbacks de compilacion (184 lineas) |
 | **CSS Custom Properties** | `ecosistema_jaraba_core/scss/_injectable.scss` | `:root` tokens inyectables |
-| **Mixins** | `ecosistema_jaraba_core/scss/_mixins.scss` | Funciones reutilizables |
+| **Mixins** | `ecosistema_jaraba_core/scss/_mixins.scss` | css-var(), respond-to(), rtl |
+| **Theme Variables** | `ecosistema_jaraba_theme/scss/_variables.scss` | Forward + extensiones del tema |
 
-### 2.2 Regla de Oro: Módulos Solo Consumen
+### 2.2 Regla de Oro: Modulos Solo Consumen
 
-> ⛔ **REGLA INQUEBRANTABLE**
-> 
-> Los módulos satélite **NO DEBEN** definir variables SCSS.
+> **REGLA INQUEBRANTABLE**
+>
+> Los modulos satelite **NO DEBEN** definir variables SCSS.
 > Solo consumen CSS Custom Properties con fallbacks inline.
 
-**Ejemplo CORRECTO:**
 ```scss
-// ✅ Solo CSS vars con fallback inline
+// CORRECTO: Solo CSS vars con fallback inline
 .my-component {
     color: var(--ej-color-corporate, #233D63);
     background: var(--ej-bg-surface, #fff);
     padding: var(--ej-spacing-md, 1rem);
 }
-```
 
-**Ejemplo INCORRECTO:**
-```scss
-// ❌ NUNCA duplicar variables SCSS en módulos
+// INCORRECTO: NUNCA duplicar variables SCSS en modulos
 $ej-color-corporate: #233D63;  // NO hacer esto
-$ej-spacing-md: 1rem;          // NO hacer esto
 ```
 
-### 2.3 Inyección de Variables
+### 2.3 SSOT Dual (SSOT-THEME-001)
 
-El tema inyecta variables personalizadas en runtime:
+| Entidad | Responsabilidad | Scope |
+|---------|-----------------|-------|
+| **TenantThemeConfig** | Visual SSOT: colores, tipografia, CTA, footer, botones, cards | Per-tenant |
+| **SiteConfig** | Structural SSOT: layout, nombre, logo, nav, legal | Per-domain |
 
-```php
-// En hook_preprocess_html()
-$variables['#attached']['html_head'][] = [
-  [
-    '#type' => 'html_tag',
-    '#tag' => 'style',
-    '#value' => ':root { --ej-color-primary: #FF8C42; }',
-  ],
-  'ecosistema_jaraba_custom_vars',
-];
-```
+SiteConfig (Level 5) es FALLBACK — `applySiteConfigOverrides()` verifica `empty($overrides['field'])` antes de aplicar. NO es un override.
 
 ---
 
-## 3. Jerarquía de 5 Capas
+## 3. Jerarquia de 5 Capas
 
-| Capa | Nombre | Ubicación | Propósito | Personalizable |
+| Capa | Nombre | Ubicacion | Proposito | Personalizable |
 |------|--------|-----------|-----------|----------------|
-| 1 | **SCSS Tokens** | `_variables.scss` | Valores de compilación, fallbacks | No (build time) |
-| 2 | **CSS Custom Properties** | `_injectable.scss` → `:root` | Base de tokens | Por defecto |
+| 1 | **SCSS Tokens** | `_variables.scss` | Valores de compilacion, fallbacks | No (build time) |
+| 2 | **CSS Custom Properties** | `_injectable.scss` -> `:root` | Base de tokens globales | Por defecto |
 | 3 | **Component Tokens** | Parciales SCSS | Tokens con scope local | Por componente |
-| 4 | **Tenant Override** | `hook_preprocess_html()` | Inyección desde Drupal UI | Por tenant |
-| 5 | **Vertical Presets** | Config Entity | Paletas predefinidas por vertical | Por vertical |
+| 4 | **Tenant Override** | `TenantThemeConfig.generateCssVariables()` | Inyeccion desde Drupal UI | Por tenant |
+| 5 | **Meta-Site Fallback** | `SiteConfig` entity | Fallback estructural por dominio | Por dominio |
 
-### 3.1 Flujo de Resolución
+### 3.1 Flujo de Resolucion CSS
 
 ```
 CSS Cascade:
-:root (L2) → .component (L3) → [data-tenant] (L4) → .vertical-* (L5)
+:root (L2) -> .component (L3) -> TenantThemeConfig :root (L4) -> SiteConfig fallback (L5)
+```
+
+### 3.2 Flujo de Resolucion PHP
+
+```
+UnifiedThemeResolverService:
+  1. Platform defaults (ecosistema_jaraba_theme.settings)
+  2. Vertical preset (IndustryPresetService)
+  3. Plan features (reservado)
+  4. TenantThemeConfig (per-tenant)
+  5. SiteConfig (per-domain fallback)
 ```
 
 ---
 
-## 4. Estructura de Archivos
+## 4. Resolucion Multi-Tenant Unificada
 
-### 4.1 Módulo Core (ecosistema_jaraba_core)
+### 4.1 UnifiedThemeResolverService (THEMING-UNIFY-001)
+
+**Servicio:** `ecosistema_jaraba_core.unified_theme_resolver`
+**Ubicacion:** `ecosistema_jaraba_core/src/Service/UnifiedThemeResolverService.php`
+
+Resolver unico para todas las peticiones. Estrategia dual:
+
+| Contexto | Estrategia | Metodo |
+|----------|-----------|--------|
+| **Anonimo** | Hostname -> MetaSiteResolverService -> SiteConfig | `resolveByHostname()` |
+| **Autenticado** | TenantContextService -> TenantThemeConfig | `resolveByUser()` |
+
+**Cache:** Static `$resolvedContext` por peticion HTTP (previene N+1 queries).
+
+### 4.2 ThemeTokenService
+
+**Servicio:** `jaraba_theming.token_service`
+**Ubicacion:** `jaraba_theming/src/Service/ThemeTokenService.php`
+
+Responsabilidades:
+- Resuelve TenantThemeConfig activa por tenant
+- Genera CSS completo: `@font-face` + `:root { --ej-*: value; }`
+- Gestiona Google Fonts vs. custom font URLs (WOFF2 + @import)
+- 6 presets verticales: platform, empleabilidad, emprendimiento, agroconecta, comercio, servicios
+
+### 4.3 Inyeccion en Runtime
+
+La inyeccion de variables CSS se consolida en `jaraba_theming_page_attachments()`:
+
+```php
+// ThemeTokenService genera el CSS completo
+$css = $themeTokenService->generateCss($tenantId);
+// Se inyecta como <style> en <head>
+$attachments['#attached']['html_head'][] = [
+  ['#type' => 'html_tag', '#tag' => 'style', '#value' => $css],
+  'jaraba_theming_tokens',
+];
+```
+
+### 4.4 Reglas de Cache Multi-Tenant
+
+| Regla | Descripcion |
+|-------|-------------|
+| **DOMAIN-ROUTE-CACHE-001** | Cada hostname DEBE tener Domain entity. RouteProvider cachea por `[domain]` key — sin Domain entity, cache HIT sirve rutas del default |
+| **VARY-HOST-001** | `SecurityHeadersSubscriber` appends `Vary: Host` a prioridad -10 para CDN/reverse proxy |
+
+---
+
+## 5. Estructura de Archivos
+
+### 5.1 Modulo Core (ecosistema_jaraba_core) — 59 archivos SCSS
 
 ```
-web/modules/custom/ecosistema_jaraba_core/
-├── scss/
-│   ├── _variables.scss      ← Paleta Jaraba, spacing, shadows
-│   ├── _injectable.scss     ← :root con CSS Custom Properties
-│   ├── _mixins.scss         ← css-var(), responsive-bp(), etc.
-│   ├── _components.scss     ← Componentes base compartidos
-│   ├── main.scss            ← Entry point único (37 parciales)
-│   └── [feature].scss       ← Un parcial por dashboard/feature
-├── css/
-│   └── ecosistema-jaraba-core.css  ← Output compilado
-└── package.json             ← Scripts de build
+web/modules/custom/ecosistema_jaraba_core/scss/
+  _variables.scss         <- SSOT: Paleta Jaraba, spacing, shadows, breakpoints
+  _injectable.scss        <- SSOT: :root con 290 CSS Custom Properties
+  _mixins.scss            <- css-var(), respond-to(), rtl
+  _components.scss        <- Componentes base compartidos
+  main.scss               <- Entry point
+  _admin-center-*.scss    <- 7 parciales Admin Center
+  _admin-forms.scss       <- Premium forms
+  _admin-premium.scss     <- Premium admin UI
+  _*-dashboard.scss       <- 13 dashboards verticales
+  _premium-card-pattern.scss <- Card effects (glassmorphism, shine)
+  _premium-forms.scss     <- PREMIUM-FORMS-PATTERN-001
+  _preset-picker.scss     <- PRESET-PICKER-001
+  ... (36 parciales features)
 ```
 
-### 4.2 Tema (ecosistema_jaraba_theme)
+### 5.2 Tema (ecosistema_jaraba_theme) — 107 archivos SCSS
 
 ```
 web/themes/custom/ecosistema_jaraba_theme/
-├── scss/
-│   ├── _variables.scss      ← Forward desde core + extensiones
-│   ├── main.scss            ← Importa core + componentes tema
-│   ├── components/          ← Partials de UI (header, hero, cards)
-│   │   ├── _header.scss
-│   │   ├── _footer.scss
-│   │   └── _grapesjs-canvas.scss
-│   └── features/            ← Dark mode, promo-banner
-├── css/
-│   └── main.css             ← Output compilado
-└── package.json             ← Scripts de build
+  scss/
+    _variables.scss        <- Forward desde core + extensiones (184 lineas)
+    main.scss              <- Entry point principal
+    admin-settings.scss    <- Entry point admin
+    _base.scss, _layout.scss, _typography.scss, _accessibility.scss
+    _slide-panel.scss, _auth.scss, _content-hub.scss, ...
+
+    components/            <- 59 parciales UI
+      _header.scss, _footer.scss, _hero.scss, _cards.scss,
+      _buttons.scss, _forms.scss, _glass-utilities.scss,
+      _landing-page.scss, _landing-sections.scss, _lead-magnet.scss,
+      _consent-banner.scss, _notification-panel.scss, _toasts.scss, ...
+
+    routes/                <- 16 route SCSS (compilacion independiente)
+      coordinador-hub.scss, dashboard.scss, content-hub.scss,
+      page-builder.scss, auth.scss, landing.scss, empleabilidad.scss,
+      ai-features.scss, ai-compliance.scss, emprendimiento.scss,
+      formacion.scss, legal-pages.scss, tenant-dashboard.scss,
+      tenant-settings.scss, autonomous-agents.scss, causal-analytics.scss
+
+    bundles/               <- 8 bundles (compilacion independiente)
+      ai-dashboard.scss, agent-dashboard.scss, auth.scss,
+      content-hub.scss, employability-pages.scss,
+      jobseeker-dashboard.scss, page-builder-dashboard.scss, support.scss
+
+    features/              <- 3 utilidades
+      _back-to-top.scss, _dark-mode.scss, _promo-banner.scss
+
+  css/                     <- Output compilado
+    ecosistema-jaraba-theme.css  <- main.scss output
+    admin-settings.css
+    routes/*.css           <- 16 CSS de ruta
+    bundles/*.css          <- 8 CSS de bundle
+
+  js/dist/                 <- 28 JS minificados
+  package.json             <- Build scripts (build:css + build:routes + build:bundles + build:js)
 ```
 
-### 4.3 Módulos Satélite
+### 5.3 Modulo de Theming (jaraba_theming)
 
 ```
-web/modules/custom/jaraba_page_builder/
-├── scss/
-│   ├── _canvas-editor.scss  ← Estilos del editor (usa var(--ej-*))
-│   ├── _canvas-content.scss ← Contenido renderizado
-│   ├── page-builder-blocks.scss ← Entry point para bloques
-│   └── blocks/              ← Parciales de bloques
-│       ├── _features.scss
-│       └── _recommended-courses.scss
-├── css/
-│   ├── jaraba-page-builder.css
-│   └── canvas-editor.css
-└── package.json             ← Scripts de build (OBLIGATORIO)
+web/modules/custom/jaraba_theming/
+  src/
+    Entity/TenantThemeConfig.php     <- 47 campos, generateCssVariables()
+    Service/ThemeTokenService.php     <- CSS generation + font management
+    Service/IndustryPresetService.php <- 6 presets verticales
+    Form/TenantThemeCustomizerForm.php <- 10 vertical tabs, 70+ opciones
+    Form/TenantThemeConfigForm.php    <- PREMIUM-FORMS-PATTERN-001
 ```
+
+### 5.4 Modulos Satelite — 55 modulos con SCSS
+
+| Tier | Modulos | Archivos SCSS |
+|------|---------|--------------|
+| **Heavy (15+)** | ecosistema_jaraba_core(59), jaraba_page_builder(28), jaraba_agroconecta_core(18), jaraba_andalucia_ei(14), jaraba_site_builder(14) | 133 |
+| **Moderate (5-12)** | jaraba_support(12), jaraba_comercio_conecta(12), jaraba_messaging(11), jaraba_legal_intelligence(11), y 13 modulos mas | ~130 |
+| **Light (1-4)** | 36 modulos con SCSS minimo | ~60 |
 
 ---
 
-## 5. Patrón de Compilación
+## 6. Patron de Compilacion
 
-### 5.1 Package.json Estándar
+### 6.1 Entorno de Desarrollo: Lando
 
-Todo módulo con SCSS **DEBE** tener un `package.json`:
+```bash
+# Tema principal (compila main + routes + bundles + JS)
+cd web/themes/custom/ecosistema_jaraba_theme && npm run build
+
+# Modulo individual
+cd web/modules/custom/ecosistema_jaraba_core && npm run build
+
+# Route SCSS individual (si no esta en build:routes)
+npx sass scss/routes/coordinador-hub.scss css/routes/coordinador-hub.css --style=compressed
+```
+
+### 6.2 Package.json del Tema (Referencia)
 
 ```json
 {
-    "name": "jaraba-[module-name]",
-    "version": "1.0.0",
-    "description": "Estilos SCSS para [módulo]",
     "scripts": {
-        "build": "sass scss/main.scss:css/[output].css --style=compressed",
-        "build:all": "npm run build && echo '✅ Build completado'",
-        "watch": "sass --watch scss:css --style=compressed"
-    },
-    "devDependencies": {
-        "sass": "^1.71.0"
+        "lint:scss": "node scripts/check-scss-orphans.js",
+        "build:css": "sass scss/main.scss css/ecosistema-jaraba-theme.css --style=compressed",
+        "build:admin": "sass scss/admin-settings.scss css/admin-settings.css --style=compressed",
+        "build:routes": "sass scss/routes/dashboard.scss css/routes/dashboard.css --style=compressed && ...",
+        "build:bundles": "sass scss/bundles/ai-dashboard.scss css/bundles/ai-dashboard.css --style=compressed && ...",
+        "build:js": "node scripts/minify-js.js",
+        "build": "npm run lint:scss && npm run build:css && npm run build:admin && npm run build:routes && npm run build:bundles && npm run build:js"
     }
 }
 ```
 
-### 5.2 Comandos de Compilación
+### 6.3 Patron Route SCSS
 
-#### Desde Docker (Ambiente de desarrollo)
+Cada ruta compleja tiene su propio SCSS/CSS compilado independientemente:
 
+```
+scss/routes/{name}.scss -> css/routes/{name}.css -> library route-{name}
+  -> hook_page_attachments_alter() adjunta la library para esa ruta
+```
+
+### 6.4 Patron Bundle SCSS
+
+Bundles agrupan estilos para features multi-ruta:
+
+```
+scss/bundles/{name}.scss -> css/bundles/{name}.css -> library bundle-{name}
+```
+
+### 6.5 Verificacion Post-Compilacion (SCSS-COMPILE-VERIFY-001)
+
+Tras CADA edicion SCSS, SIEMPRE recompilar y verificar:
 ```bash
-# Módulo individual
-docker exec jarabasaas_appserver_1 bash -c \
-  "cd /app/web/modules/custom/jaraba_page_builder && npx sass scss/page-builder-blocks.scss css/jaraba-page-builder.css --style=compressed"
-
-# Tema principal
-docker exec jarabasaas_appserver_1 bash -c \
-  "cd /app/web/themes/custom/ecosistema_jaraba_theme && npm run build"
-
-# Core module
-docker exec jarabasaas_appserver_1 bash -c \
-  "cd /app/web/modules/custom/ecosistema_jaraba_core && npm run build"
+# Timestamp CSS DEBE ser > timestamp SCSS
+ls -la scss/routes/coordinador-hub.scss css/routes/coordinador-hub.css
 ```
 
-#### Desde PowerShell (Windows directo)
+### 6.6 Huerfanos SCSS
 
-```powershell
-# Navegar al módulo
-cd z:\home\PED\JarabaImpactPlatformSaaS\web\modules\custom\jaraba_page_builder
-
-# Compilar con Dart Sass
-npx sass scss/page-builder-blocks.scss:css/jaraba-page-builder.css --style=compressed
-```
-
-### 5.3 Header de Documentación SCSS
-
-Cada archivo SCSS principal debe incluir:
-
-```scss
-/**
- * @file
- * [Descripción del archivo]
- *
- * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
- *
- * COMPILACIÓN:
- * docker exec jarabasaas_appserver_1 bash -c \
- *   "cd /app/web/modules/custom/[module] && npx sass scss/[file].scss css/[output].css --style=compressed"
- */
-```
+`scripts/check-scss-orphans.js` detecta parciales sin `@use` en main.scss. Bloquea build si encuentra huerfanos.
 
 ---
 
-## 6. Mixins y Utilidades
+## 7. Mixins, Utilidades y Funciones de Color
 
-### 6.1 Mixin Obligatorio: `css-var`
-
-Definido en `ecosistema_jaraba_core/scss/_mixins.scss`:
+### 7.1 Mixin css-var
 
 ```scss
-/// Aplica una propiedad CSS usando variable inyectable con fallback
-/// @param {String} $property - Propiedad CSS (color, background, etc.)
-/// @param {String} $var-name - Nombre de la variable sin prefijo --ej-
-/// @param {*} $fallback - Valor de fallback SCSS
 @mixin css-var($property, $var-name, $fallback) {
     #{$property}: var(--ej-#{$var-name}, $fallback);
 }
+```
 
-// Uso
-.stat-card {
-    @include css-var(background, 'bg-surface', $ej-bg-surface);
-    @include css-var(border-color, 'border-color', $ej-border-color);
-    @include css-var(color, 'text-primary', $ej-text-primary);
+### 7.2 Mixin respond-to (Breakpoints)
+
+```scss
+// Breakpoints definidos en _variables.scss
+$ej-breakpoint-sm: 640px;
+$ej-breakpoint-md: 768px;
+$ej-breakpoint-lg: 1024px;
+$ej-breakpoint-xl: 1280px;
+
+@mixin respond-to($bp) {
+    @media (max-width: map-get($breakpoints, $bp)) { @content; }
 }
 ```
 
-### 6.2 Funciones de Color (Dart Sass)
+### 7.3 Funciones de Color — Dart Sass Moderno
 
 ```scss
 @use 'sass:color';
 
-// ✅ CORRECTO: Usar sass:color
+// CORRECTO: sass:color para compile-time (variables SCSS estaticas)
 .button-hover {
     background: color.adjust($ej-color-primary, $lightness: -10%);
 }
 
-// ❌ INCORRECTO: Funciones deprecadas
-.button-hover {
-    background: darken($ej-color-primary, 10%);  // NO usar
+// CORRECTO: color-mix() para runtime (CSS custom properties)
+// SCSS-COLORMIX-001
+.card-overlay {
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent);
+}
+
+// INCORRECTO: rgba() con CSS vars NO funciona
+.bad {
+    background: rgba(var(--ej-color-primary), 0.15); // NO compilara
 }
 ```
 
-### 6.3 Variables Inyectables Disponibles
+### 7.4 SCSS-COMPILETIME-001
 
-| Variable | Propósito | Fallback |
-|----------|-----------|----------|
-| `--ej-color-primary` | Color principal de marca | `$ej-color-primary-fallback` |
-| `--ej-color-secondary` | Color secundario | `$ej-color-secondary-fallback` |
-| `--ej-color-accent` | Color de acento | `$ej-color-accent-fallback` |
-| `--ej-font-family` | Tipografía principal | `$ej-font-family-fallback` |
-| `--ej-bg-surface` | Fondo de tarjetas | `#ffffff` |
-| `--ej-text-primary` | Texto principal | `$ej-gray-900` |
-| `--ej-spacing-md` | Espaciado medio | `1rem` |
+Variables SCSS que alimentan `color.scale/adjust/change` DEBEN ser hex estatico, NUNCA `var()`. Para runtime alpha con CSS custom properties, usar `color-mix()`.
 
 ---
 
-## 7. Tabla de Referencias Técnicas
+## 8. CSS Custom Properties — Catalogo
 
-### 7.1 Archivos de Especificación
+### 8.1 Prefijo Unico: `--ej-*`
 
-| Archivo | Ubicación | Descripción |
-|---------|-----------|-------------|
-| `_variables.scss` | `ecosistema_jaraba_core/scss/` | Paleta completa Jaraba |
-| `_injectable.scss` | `ecosistema_jaraba_core/scss/` | CSS Custom Properties |
-| `_mixins.scss` | `ecosistema_jaraba_core/scss/` | Mixins reutilizables |
-| `main.scss` | `ecosistema_jaraba_core/scss/` | Entry point core (37 imports) |
-| `main.scss` | `ecosistema_jaraba_theme/scss/` | Entry point tema |
+**290 CSS custom properties unicas** con prefijo `--ej-*`. NUNCA usar `--jaraba-*` ni hex hardcodeado (CSS-VAR-ALL-COLORS-001).
 
-### 7.2 Documentos Relacionados
+### 8.2 Categorias Principales
 
-| Documento | Ubicación | Descripción |
-|-----------|-----------|-------------|
-| Branding & Theming | `KI/standards/branding_and_theming.md` | Paleta y tokens de diseño |
-| SCSS Workflow | `.agent/workflows/scss-estilos.md` | Directrices de compilación |
-| Standards Overview | `KI/standards/standards_overview.md` | Estándares generales |
-| Premium Card | `KI/standards/premium_card_standards.md` | Patrón de cards premium |
+| Categoria | Ejemplos | Cantidad aprox. |
+|-----------|----------|----------------|
+| **Colores de marca** | `--ej-color-azul-corporativo`, `--ej-color-naranja-impulso`, `--ej-color-verde-innovacion` | 3 core |
+| **Colores extendidos** | `--ej-color-{blue,violet,indigo,green,orange,red,neutral,...}` | 20+ |
+| **Colores semanticos** | `--ej-color-primary`, `--ej-color-secondary`, `--ej-color-accent`, `--ej-color-danger`, `--ej-color-success`, `--ej-color-warning` | 10+ |
+| **Fondos** | `--ej-bg-{body,surface,card,dark,primary,glass,input,...}` | 12+ |
+| **Texto** | `--ej-color-{heading,text,text-secondary,text-tertiary,muted}` | 8+ |
+| **Bordes/Radios** | `--ej-border-{color,radius}, --ej-radius-{sm,md,lg,pill}` | 8+ |
+| **Tipografia** | `--ej-font-{family-headings,family-body,size-base,size-xs,...,size-2xl}` | 10+ |
+| **Spacing** | `--ej-spacing-{xs,sm,md,lg,xl,2xl}` | 6 |
+| **Sombras** | `--ej-shadow-{sm,md,lg}` | 3 |
+| **Componentes** | `--ej-btn-*`, `--ej-card-*`, `--ej-input-*`, `--ej-chart-*` | 30+ |
 
-### 7.3 Inventario Completo SCSS (Feb 2026)
+### 8.3 Colores de Marca Canonicos
 
-> **Total: 102 archivos SCSS** (57 en modules/custom + 45 en themes/custom)
+| Token | Nombre | Hex |
+|-------|--------|-----|
+| `--ej-color-azul-corporativo` | Azul Corporativo | `#233D63` |
+| `--ej-color-naranja-impulso` | Naranja Impulso | `#FF8C42` |
+| `--ej-color-verde-innovacion` | Verde Innovacion | `#00A9A5` |
 
-#### 7.3.1 Tema Principal
+---
 
-| Componente | Archivos SCSS | Tiene package.json | Cumple SSOT |
-|------------|---------------|-------------------|-------------|
-| `ecosistema_jaraba_theme` | **45** | ✅ Sí | ✅ Sí |
-| ├─ scss/ (raíz) | 15 | - | - |
-| ├─ scss/components/ | 24 | - | - |
-| ├─ scss/features/ | 3 | - | - |
-| └─ components/ (SDC) | 2 | - | - |
+## 9. TenantThemeConfig — Entity de Personalizacion
 
-#### 7.3.2 Módulo Core (SSOT)
+### 9.1 Entity (jaraba_theming)
 
-| Módulo | Archivos SCSS | Tiene package.json | Cumple SSOT |
-|--------|---------------|-------------------|-------------|
-| `ecosistema_jaraba_core` | **27** | ✅ Sí | ✅ **ES SSOT** |
-| ├─ _variables.scss | - | - | Paleta completa |
-| ├─ _injectable.scss | - | - | CSS Custom Props |
-| ├─ _mixins.scss | - | - | Utilidades |
-| └─ 24 parciales feature | - | - | Dashboards |
+**Tipo:** Content Entity (`tenant_theme_config`)
+**Campos:** 47 totales
+**Metodo clave:** `generateCssVariables()` — genera `:root { --ej-*: value; }` desde campos de la entity
 
-#### 7.3.3 Módulos Satélite (Migración Completada)
+### 9.2 Campos por Grupo
 
-| Módulo | Archivos SCSS | Tiene package.json | Cumple SSOT | Estado |
-|--------|---------------|-------------------|-------------|--------|
-| `jaraba_page_builder` | 7 | ✅ Sí | ✅ Sí | ✅ Completado |
-| `jaraba_foc` | 3 | ✅ Sí | ✅ Sí | ✅ Migrado darken→color.adjust |
-| `jaraba_site_builder` | 2 | ✅ Sí | ✅ Sí | ✅ Completado |
-| `jaraba_i18n` | 2 | ✅ Sí | ⏳ Parcial | ✅ Completado |
-| `jaraba_interactive` | 2 | ✅ Sí | ⏳ Parcial | ✅ Completado |
-| `jaraba_self_discovery` | 1 | ✅ Sí | ⏳ Parcial | ✅ Completado |
-| `jaraba_credentials` | 1 | ✅ Sí | ⏳ Parcial | ✅ Completado |
-| `jaraba_candidate` | 1 | ✅ Sí | ⏳ Parcial | ✅ Completado |
+| Grupo | Campos |
+|-------|--------|
+| **Identidad** | name, tenant_id, vertical, site_name, site_slogan, logo, logo_alt, favicon |
+| **Colores (10)** | color_primary, color_secondary, color_accent, color_dark, color_success, color_warning, color_error, color_bg_body, color_bg_surface, color_text |
+| **Tipografia (7)** | font_headings, font_body, font_size_base, font_heading_url, font_heading_family, font_body_url, font_body_family |
+| **Header (5)** | header_variant, header_sticky, header_cta_enabled, header_cta_text, header_cta_url |
+| **Hero (2)** | hero_variant, hero_overlay |
+| **Cards (3)** | card_style, card_border_radius, card_hover_effect |
+| **Botones (2)** | button_style, button_border_radius |
+| **Footer (2)** | footer_variant, footer_copyright |
+| **Social (5)** | social_facebook, social_twitter, social_linkedin, social_instagram, social_youtube |
+| **Avanzado (4)** | dark_mode_enabled, animations_enabled, back_to_top_enabled, custom_css |
+| **Sistema (3)** | is_active, created, changed |
 
-#### 7.3.4 Detalle por Módulo
+### 9.3 Theme Customizer Form
 
-<details>
-<summary><strong>ecosistema_jaraba_core (27 archivos)</strong></summary>
+**Form:** `TenantThemeCustomizerForm` (1.011 lineas)
+**Ruta:** Acceso via Tenant Settings Hub
+**10 Vertical Tabs, 70+ opciones:**
 
-| Archivo | Propósito |
-|---------|-----------|
-| `main.scss` | Entry point |
-| `_variables.scss` | **SSOT - Paleta** |
-| `_injectable.scss` | **SSOT - CSS Vars** |
-| `_mixins.scss` | Utilidades |
-| `_components.scss` | Base components |
-| `_marketplace.scss` | Marketplace UI |
-| `_tenant-dashboard.scss` | Admin tenant |
-| `_pixel-manager.scss` | Analytics config |
-| `_diagnostic-wizard.scss` | Emprendimiento wizard |
-| `_admin-forms.scss` | Forms premium |
-| `_health-dashboard.scss` | Service monitoring |
-| `_revision-diff.scss` | Diff visual |
-| `_rag-dashboard.scss` | KB analytics |
-| `_diagnostic.scss` | TTV diagnostic |
-| `_canvas-list.scss` | BMC listing |
-| `_contextual-copilot.scss` | AI FAB |
-| `_onboarding.scss` | User onboarding |
-| `_ai-field-generator.scss` | Field AI |
-| `_agent-fab.scss` | Agent button |
-| `_skills-dashboard.scss` | AI Skills UI |
-| `_vertical-landing.scss` | Landing pages |
-| `_crm-dashboard.scss` | CRM panel |
-| `_journey-dashboard.scss` | Journey UI |
-| `_recruiter-dashboard.scss` | Employer panel |
-| `_lms-catalog.scss` | Course catalog |
-| `_career-dashboard.scss` | Candidate panel |
-| `_mobile-menu.scss` | Responsive menu |
-| `_finops-dashboard.scss` | Cost dashboard |
-| `_premium-card-pattern.scss` | Card effects |
-| `_experiments-dashboard.scss` | A/B testing |
-| `_path-catalog.scss` | Learning paths |
-| `_employability-menu.scss` | Role menu |
+1. Ajuste Predefinido por Sector (preset picker con lightbox y filtros)
+2. Identidad de Marca (nombre, slogan, logo, favicon)
+3. Colores (10 color pickers HTML5)
+4. Tipografia (9 Google Fonts + custom WOFF2 URLs)
+5. Encabezado (5 variantes visuales: classic, centered, hero, split, minimal)
+6. Hero Section (5 variantes + overlay)
+7. Tarjetas (4 estilos: elevated, outlined, flat, glass)
+8. Botones (4 estilos: solid, outline, ghost, gradient)
+9. Pie de Pagina (4 variantes: minimal, standard, mega, split)
+10. Opciones Avanzadas (dark mode, animaciones, back-to-top, CSS custom)
 
-</details>
+---
 
-<details>
-<summary><strong>ecosistema_jaraba_theme (45 archivos)</strong></summary>
+## 10. Inventario SCSS
 
-**scss/ (raíz):**
-- `main.scss`, `admin-settings.scss`
-- `_accessibility.scss`, `_ai-dashboard.scss`, `_analytics-dashboard.scss`
-- `_auth.scss`, `_base.scss`, `_content-hub.scss`, `_layout.scss`
-- `_page-builder-dashboard.scss`, `_site-builder.scss`, `_slide-panel.scss`
-- `_typography.scss`, `_variables.scss`
+### 10.1 Estadisticas Globales (Marzo 2026)
 
-**scss/components/ (24):**
-- `_analytics-dashboard.scss`, `_autofirma.scss`, `_breadcrumbs.scss`
-- `_buttons.scss`, `_cards.scss`, `_commerce-product-geo.scss`
-- `_consent-banner.scss`, `_features.scss`, `_footer.scss`
-- `_forms.scss`, `_glass-utilities.scss`, `_grapesjs-canvas.scss`
-- `_header.scss`, `_heatmap-dashboard.scss`, `_hero-landing.scss`
-- `_hero.scss`, `_landing-page.scss`, `_media-browser.scss`
-- `_mobile-menu.scss`, `_page-builder.scss`, `_page-premium.scss`
-- `_revision-diff.scss`, `_section-editor.scss`, `_sidebar.scss`
-- `_template-picker.scss`, `_template-preview-premium.scss`
+| Metrica | Valor |
+|---------|-------|
+| **Total archivos SCSS** | **488** |
+| Tema (ecosistema_jaraba_theme) | 107 |
+| Core (ecosistema_jaraba_core) | 59 |
+| Modulos satelite | 322 |
+| Modulos con SCSS | 55 |
+| Modulos con package.json | 44 |
+| CSS Custom Properties | 290 |
+| Instancias color-mix() | 30+ |
 
-**scss/features/ (3):**
-- `_back-to-top.scss`, `_dark-mode.scss`, `_promo-banner.scss`
+### 10.2 Cobertura package.json
 
-**components/ SDC (2):**
-- `card/card.scss`, `hero/hero.scss`
+44 de 55 modulos con SCSS tienen package.json.
 
-</details>
+Modulos sin package.json (pendiente):
+- jaraba_agent_flows, jaraba_facturae, jaraba_legal, jaraba_privacy, jaraba_rag
 
-<details>
-<summary><strong>jaraba_page_builder (7 archivos)</strong></summary>
+---
 
-- `page-builder-blocks.scss` (entry)
-- `_canvas-editor.scss`
-- `_canvas-content.scss`
-- `_canvas-hot-swap.scss`
-- `_ai-field-generator.scss`
-- `blocks/_features.scss`
-- `blocks/_recommended-courses.scss`
+## 11. Checklist de Cumplimiento
 
-</details>
-
-<details>
-<summary><strong>Otros módulos satélite</strong></summary>
-
-| Módulo | Archivos |
-|--------|----------|
-| **jaraba_foc** | `main.scss`, `_foc-dashboard.scss`, `_foc-variables.scss` ⚠️ |
-| **jaraba_site_builder** | `main.scss`, `_site-tree.scss` |
-| **jaraba_i18n** | `_i18n-dashboard.scss`, `_i18n-selector.scss` |
-| **jaraba_interactive** | `player.scss`, `dashboard.scss` |
-| **jaraba_self_discovery** | `self-discovery.scss` |
-| **jaraba_credentials** | `_credentials.scss` |
-| **jaraba_candidate** | `_dashboard.scss` |
-
-</details>
-
-## 8. Checklist de Cumplimiento
-
-### 8.1 Al crear un nuevo módulo con SCSS
+### 11.1 Al Crear Nuevo Modulo con SCSS
 
 - [ ] NO definir variables `$ej-*` localmente
 - [ ] Usar solo `var(--ej-*, $fallback)` inline
-- [ ] Crear `package.json` con scripts de compilación
-- [ ] Documentar comando de build en header del SCSS principal
-- [ ] Registrar librería en `[module].libraries.yml`
-- [ ] Añadir dependencia a `ecosistema_jaraba_theme/global` si corresponde
+- [ ] `@use '../variables' as *;` en cada parcial (SCSS-001)
+- [ ] Crear `package.json` con scripts de compilacion
+- [ ] Registrar library en `[module].libraries.yml`
+- [ ] Si route SCSS: anadir a `build:routes` en package.json del tema
+- [ ] Compilar y verificar timestamp (SCSS-COMPILE-VERIFY-001)
 
-### 8.2 Al editar SCSS existente
+### 11.2 Al Editar SCSS Existente
 
-- [ ] Verificar que no hay hex hardcodeados (usar tokens)
-- [ ] Usar mixins del core cuando existan
-- [ ] Compilar con Dart Sass (no LibSass)
-- [ ] Ejecutar `drush cr` después de cambios
-- [ ] Verificar en navegador que los estilos aplican
+- [ ] Verificar que no hay hex hardcodeados (CSS-VAR-ALL-COLORS-001)
+- [ ] Usar `color-mix()` para alpha sobre CSS vars (SCSS-COLORMIX-001)
+- [ ] Funciones color.adjust/scale solo con hex estatico (SCSS-COMPILETIME-001)
+- [ ] No crear name.scss + _name.scss en mismo dir (SCSS-ENTRY-CONSOLIDATION-001)
+- [ ] Compilar con Dart Sass y verificar timestamp
+- [ ] Limpiar cache Drupal tras cambios
 
-### 8.3 Al añadir un nuevo token
+### 11.3 Al Anadir Nuevo Token
 
 1. Definir variable SCSS en `_variables.scss`
-2. Añadir CSS Custom Property en `_injectable.scss`
-3. Documentar en esta tabla de referencias
-4. Actualizar tema si requiere inyección desde UI
+2. Anadir CSS Custom Property en `_injectable.scss`
+3. Si debe ser personalizable por tenant: anadir campo en `TenantThemeConfig`
+4. Si es color de vertical: actualizar `IndustryPresetService`
 
 ---
 
-## 9. Migración de Código Legado
+## 12. Directrices Criticas (Reglas Nombradas)
 
-### 9.1 Proceso de Migración
-
-Para módulos que actualmente duplican variables:
-
-```bash
-# Paso 1: Identificar duplicación
-grep -r '\$ej-' web/modules/custom/[module]/scss/
-
-# Paso 2: Eliminar definiciones y reemplazar por CSS vars
-# Ejemplo de transformación:
-```
-
-**Antes:**
-```scss
-$ej-color-corporate: #233D63;
-
-.my-component {
-    color: $ej-color-corporate;
-}
-```
-
-**Después:**
-```scss
-.my-component {
-    color: var(--ej-color-corporate, #233D63);
-}
-```
-
-### 9.2 Comandos de Verificación
-
-```bash
-# Verificar compilación
-docker exec jarabasaas_appserver_1 bash -c \
-  "cd /app/web/modules/custom/[module] && npx sass scss/main.scss css/output.css --style=compressed"
-
-# Limpiar cache
-docker exec jarabasaas_appserver_1 drush cr
-
-# Verificar en navegador
-# https://jaraba-saas.lndo.site/[ruta]
-```
+| Regla | Descripcion |
+|-------|-------------|
+| **CSS-VAR-ALL-COLORS-001** (P0) | CADA color en SCSS DEBE ser `var(--ej-*, fallback)`. Sin excepciones. NUNCA hex hardcoded |
+| **SCSS-001** | `@use` crea scope aislado. Cada parcial DEBE incluir `@use '../variables' as *;` |
+| **SCSS-COMPILE-VERIFY-001** (P0) | Tras CADA edicion .scss, SIEMPRE recompilar y verificar timestamp CSS > SCSS |
+| **SCSS-COLORMIX-001** | Migrar `rgba()` a `color-mix(in srgb, {token} {pct}%, transparent)` |
+| **SCSS-COMPILETIME-001** | Variables para `color.scale/adjust/change` DEBEN ser hex estatico, NUNCA `var()` |
+| **SCSS-ENTRY-CONSOLIDATION-001** | Si existen `name.scss` y `_name.scss` en mismo directorio, Dart Sass falla. Consolidar |
+| **THEMING-UNIFY-001** | `UnifiedThemeResolverService` = single resolver, 5-level cascade |
+| **SSOT-THEME-001** | TenantThemeConfig = visual SSOT, SiteConfig = structural SSOT (fallback) |
+| **DOMAIN-ROUTE-CACHE-001** | Cada hostname multi-tenant DEBE tener Domain entity |
+| **VARY-HOST-001** | `Vary: Host` en respuestas HTTP para CDN multi-tenant |
+| **OVERFLOW-CLIP-STICKY-001** | `overflow-x: hidden` rompe `position: sticky`. Usar `overflow-x: clip` |
+| **CSS-ANIM-INLINE-001** | `animation` en inline style sobreescribe class-based. Usar multi-animation en CSS class |
+| **ICON-CONVENTION-001** | Iconos via `jaraba_icon('category', 'name', { variant, color, size })` |
+| **ICON-DUOTONE-001** | Variante default: duotone. Solo outline para contextos minimalistas |
+| **ICON-COLOR-001** | Colores SOLO de paleta: azul-corporativo, naranja-impulso, verde-innovacion, white, neutral |
 
 ---
 
-## 10. Roadmap de Consolidación
+## 13. Registro de Cambios
 
-### 10.1 Fases de Implementación
-
-| Fase | Módulos | Esfuerzo | Estado |
-|------|---------|----------|--------|
-| **Fase 1** | `jaraba_page_builder`, `jaraba_foc` | 1-2h | ✅ Completado |
-| **Fase 2** | `jaraba_i18n`, `jaraba_interactive` | 30m | ✅ Completado |
-| **Fase 3** | `jaraba_site_builder`, `jaraba_self_discovery` | 30m | ✅ Completado |
-| **Fase 4** | `jaraba_credentials`, `jaraba_candidate` | 30m | ✅ Completado |
-| **Fase 5** | Auditoría final + documentación | 1h | ✅ Completado |
-
-### 10.2 Criterios de Completitud
-
-- [x] 100% módulos con `package.json` (8/8)
-- [x] 0 funciones `darken()`/`lighten()` deprecadas
-- [x] Documentación actualizada
-- [ ] 0 definiciones `$ej-*` fuera de core (parcial)
-- [ ] 100% uso de `var(--ej-*, $fallback)` (parcial)
-- [ ] CI/CD integrado para compilación SCSS (futuro)
-
----
-
-## 11. Registro de Cambios
-
-| Fecha | Versión | Autor | Descripción |
-|-------|---------|-------|-------------|
-| 2026-02-05 | 2.0 | Antigravity | Creación inicial con patrón Federated Design Tokens |
-
----
-
-> **Nota:** Este documento es la fuente de verdad para la arquitectura de theming.
-> Cualquier desviación debe documentarse con justificación técnica.
+| Fecha | Version | Descripcion |
+|-------|---------|-------------|
+| 2026-02-05 | 2.0 | Creacion inicial con patron Federated Design Tokens |
+| 2026-02-05 | 2.1 | Consolidacion SCSS completada (8 modulos migrados) |
+| 2026-03-11 | 3.0 | Actualizacion mayor: UnifiedThemeResolverService, TenantThemeConfig (47 campos), ThemeTokenService, inventario actualizado (488 SCSS, 55 modulos), 16 route SCSS + 8 bundles, color-mix(), directrices nombradas, entorno Lando |
 
 ---
 
 ## Referencias Cruzadas
 
-- [00_DIRECTRICES_PROYECTO.md](../00_DIRECTRICES_PROYECTO.md) - Directrices maestras
-- [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](../00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) - Arquitectura general
-- [branding_and_theming.md](../../.gemini/knowledge/.../branding_and_theming.md) - Paleta y tokens (KI)
+- [00_DIRECTRICES_PROYECTO.md](../00_DIRECTRICES_PROYECTO.md) — Directrices maestras del proyecto
+- [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](../00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) — Arquitectura general
+- [CLAUDE.md](../../CLAUDE.md) — Seccion THEMING con todas las reglas nombradas
+- `memory/theming-unify.md` — Detalles de implementacion de la unificacion
+- `memory/preset-picker.md` — Detalles del preset picker
