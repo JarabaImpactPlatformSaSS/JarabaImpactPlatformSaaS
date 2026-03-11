@@ -6,22 +6,24 @@
  * Zero Region Policy: No usa page.content ni bloques.
  * Orden optimizado para conversion:
  * Hero > Stats > Features > Content > Testimonials > FAQ > CTA
+ *
+ * i18n: {% trans %} bloques para texto inline, |t solo dentro de {% set %} arrays.
  */
 #}
 
 {# === HERO: Gancho emocional + CTA primario === #}
-<section class="aei-landing__hero" data-effect="fade-up" aria-label="{{ 'Programa Andalucia +ei'|t }}">
+<section class="aei-landing__hero" data-effect="fade-up" aria-label="{% trans %}Programa Andalucia +ei{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__hero-content">
-      <span class="aei-landing__eyebrow">{{ 'Andalucia +ei'|t }}</span>
-      <h1 class="aei-landing__title">{{ 'Emprendimiento e Insercion Laboral Aumentado con IA'|t }}</h1>
-      <p class="aei-landing__subtitle">{{ 'Programa gratuito con mentoria IA, formacion adaptativa, expediente digital seguro, evaluacion automatica de perfil e insercion laboral real. 100% subvencionado por la Junta de Andalucia y el FSE.'|t }}</p>
+      <span class="aei-landing__eyebrow">{% trans %}Andalucia +ei{% endtrans %}</span>
+      <h1 class="aei-landing__title">{% trans %}Emprendimiento e Insercion Laboral Aumentado con IA{% endtrans %}</h1>
+      <p class="aei-landing__subtitle">{% trans %}Programa gratuito con mentoria IA, formacion adaptativa, expediente digital seguro, evaluacion automatica de perfil e insercion laboral real. 100% subvencionado por la Junta de Andalucia y el FSE+.{% endtrans %}</p>
       <div class="aei-landing__actions">
         <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary">
-          {{ 'Solicitar plaza'|t }}
+          {% trans %}Solicitar plaza{% endtrans %}
         </a>
         <a href="#como-funciona" class="aei-landing__cta aei-landing__cta--secondary">
-          {{ 'Conocer programa'|t }}
+          {% trans %}Conocer programa{% endtrans %}
         </a>
       </div>
     </div>
@@ -33,17 +35,17 @@
   </div>
 </section>
 
-{# === STATS: Credibilidad con numeros === #}
-<section class="aei-landing__stats" data-effect="fade-up" aria-label="{{ 'Resultados del programa'|t }}">
+{# === STATS: Datos reales verificables (1a edicion auditada + capacidad plataforma) === #}
+<section class="aei-landing__stats" data-effect="fade-up" aria-label="{% trans %}Datos del programa{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__stats-grid">
       {% set stats = [
-        { value: '+200', label: 'Participantes activos'|t, icon: 'users' },
-        { value: '85%', label: 'Tasa de insercion laboral'|t, icon: 'trending-up' },
-        { value: '4.8/5', label: 'Satisfaccion media'|t, icon: 'star' },
-        { value: '+500h', label: 'Mentoria IA acumulada'|t, icon: 'cpu' },
-        { value: '10', label: 'Servicios integrados'|t, icon: 'grid' },
-        { value: '<48h', label: 'Evaluacion de perfil'|t, icon: 'clock' },
+        { value: '50', label: 'Personas atendidas (1.ª edicion)'|t, icon: 'users' },
+        { value: '46%', label: 'Tasa de insercion verificada'|t, icon: 'trending-up' },
+        { value: '45', label: 'Plazas 2.ª edicion (Malaga + Sevilla)'|t, icon: 'target' },
+        { value: '528 €', label: 'Incentivo por participante'|t, icon: 'gift' },
+        { value: '10', label: 'Servicios integrados en la plataforma'|t, icon: 'grid' },
+        { value: '<48h', label: 'Evaluacion IA de tu perfil'|t, icon: 'clock' },
       ] %}
       {% for stat in stats %}
         <div class="aei-landing__stat-card" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
@@ -58,12 +60,12 @@
   </div>
 </section>
 
-{# === FEATURES: Beneficios — 3 tracks === #}
-<section class="aei-landing__features" data-effect="fade-up" aria-label="{{ 'Beneficios del programa'|t }}">
+{# === FEATURES: Beneficios — 10 herramientas === #}
+<section class="aei-landing__features" data-effect="fade-up" aria-label="{% trans %}Beneficios del programa{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__section-header">
-      <span class="aei-landing__eyebrow">{{ 'Que incluye'|t }}</span>
-      <h2 class="aei-landing__section-title">{{ '10 herramientas reales para tu insercion laboral'|t }}</h2>
+      <span class="aei-landing__eyebrow">{% trans %}Que incluye{% endtrans %}</span>
+      <h2 class="aei-landing__section-title">{% trans %}10 herramientas reales para tu insercion laboral{% endtrans %}</h2>
     </div>
     <div class="aei-landing__features-grid">
       {% set features = [
@@ -142,12 +144,12 @@
 </section>
 
 {# === CONTENT: Como funciona — paso a paso === #}
-<section id="como-funciona" class="aei-landing__content" data-effect="fade-up" aria-label="{{ 'Como funciona'|t }}">
+<section id="como-funciona" class="aei-landing__content" data-effect="fade-up" aria-label="{% trans %}Como funciona{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__content-grid">
       <div class="aei-landing__content-text">
-        <span class="aei-landing__eyebrow">{{ 'Como funciona'|t }}</span>
-        <h2 class="aei-landing__section-title">{{ 'Tu camino hacia el empleo en 4 pasos'|t }}</h2>
+        <span class="aei-landing__eyebrow">{% trans %}Como funciona{% endtrans %}</span>
+        <h2 class="aei-landing__section-title">{% trans %}Tu camino hacia el empleo en 4 pasos{% endtrans %}</h2>
         <div class="aei-landing__steps">
           {% set steps = [
             { num: '1', title: 'Solicita tu plaza'|t, desc: 'Rellena el formulario en 2 minutos. La IA evalua tu perfil en menos de 48h y te asigna el itinerario mas adecuado automaticamente.'|t },
@@ -168,7 +170,7 @@
       </div>
       <div class="aei-landing__content-sidebar">
         <div class="aei-landing__eligibility-card">
-          <h3 class="aei-landing__eligibility-title">{{ 'Requisitos de elegibilidad'|t }}</h3>
+          <h3 class="aei-landing__eligibility-title">{% trans %}Requisitos de elegibilidad{% endtrans %}</h3>
           <ul class="aei-landing__eligibility-list">
             {% set criteria = [
               'Residir en Andalucia'|t,
@@ -184,36 +186,36 @@
               </li>
             {% endfor %}
           </ul>
-          <p class="aei-landing__eligibility-note">{{ 'Colectivos prioritarios: jovenes 18-29, mayores de 45, desempleados de larga duracion y migrantes.'|t }}</p>
+          <p class="aei-landing__eligibility-note">{% trans %}Colectivos prioritarios: jovenes 18-29, mayores de 45, desempleados de larga duracion y migrantes.{% endtrans %}</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-{# === TESTIMONIALS: Prueba social === #}
-<section class="aei-landing__testimonials" data-effect="fade-up" aria-label="{{ 'Testimonios de participantes'|t }}">
+{# === TESTIMONIALS: Prueba social con participantes reales 1a edicion === #}
+<section class="aei-landing__testimonials" data-effect="fade-up" aria-label="{% trans %}Testimonios de participantes{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__section-header">
-      <span class="aei-landing__eyebrow">{{ 'Testimonios'|t }}</span>
-      <h2 class="aei-landing__section-title">{{ 'Lo que dicen nuestros participantes'|t }}</h2>
+      <span class="aei-landing__eyebrow">{% trans %}Testimonios{% endtrans %}</span>
+      <h2 class="aei-landing__section-title">{% trans %}Lo que dicen quienes ya lo han vivido{% endtrans %}</h2>
     </div>
     <div class="aei-landing__testimonials-grid">
       {% set testimonials = [
         {
-          quote: 'Gracias al programa encontre trabajo en 3 meses. La mentoria con IA me ayudo a preparar entrevistas de una forma que nunca habia imaginado.'|t,
-          name: 'Maria G.',
-          role: 'Impulso Digital — Sevilla'|t,
+          quote: 'No ha sido solamente el curso. Despues realmente hay un seguimiento real, que en muchos sitios se queda en el aire. Aqui no. Aqui funciona.'|t,
+          name: 'Cristina M. P.',
+          role: 'Emprendedora — Malaga'|t,
         },
         {
-          quote: 'La formacion en competencias digitales me abrio puertas que llevaba anos tocando. El equipo de orientacion es excepcional.'|t,
-          name: 'Ahmed K.',
-          role: 'Acelera Pro — Malaga'|t,
+          quote: 'A mi me ha sacado de un punto muerto. Te abre el pensamiento, cambias totalmente todo. Desde calcular tu beneficio hasta networking, hasta creer en ti.'|t,
+          name: 'Adrian C. T.',
+          role: 'Produccion audiovisual — Malaga'|t,
         },
         {
-          quote: 'Monte mi propio negocio online con el apoyo del programa. El tutor IA esta disponible 24/7 y eso marca la diferencia.'|t,
-          name: 'Carmen R.',
-          role: 'Hibrido — Granada'|t,
+          quote: 'Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.'|t,
+          name: 'Marcela C.',
+          role: 'Coach de comunicacion — Sevilla'|t,
         },
       ] %}
       {% for testimonial in testimonials %}
@@ -233,27 +235,27 @@
 </section>
 
 {# === FAQ: Manejo de objeciones === #}
-<section class="aei-landing__faq" data-effect="fade-up" aria-label="{{ 'Preguntas frecuentes'|t }}">
+<section class="aei-landing__faq" data-effect="fade-up" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__section-header">
       {{ jaraba_icon('ui', 'help', { variant: 'duotone', size: '48px' }) }}
-      <span class="aei-landing__eyebrow">{{ 'FAQ'|t }}</span>
-      <h2 class="aei-landing__section-title">{{ 'Preguntas frecuentes'|t }}</h2>
+      <span class="aei-landing__eyebrow">{% trans %}FAQ{% endtrans %}</span>
+      <h2 class="aei-landing__section-title">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
     </div>
     <div class="aei-landing__faq-list">
       {% set faqs = [
-        { q: 'Es realmente gratuito?'|t, a: 'Si, el programa esta 100% subvencionado por la Junta de Andalucia y el Fondo Social Europeo. No tiene ningun coste para los participantes.'|t },
-        { q: 'Que es la mentoria con IA?'|t, a: 'Tendras acceso a un tutor virtual basado en inteligencia artificial que te ayuda con tu CV, preparacion de entrevistas, plan de negocio y orientacion profesional personalizada. Disponible 24/7 con sesiones ilimitadas en el plan Profesional.'|t },
-        { q: 'Cuanto dura el programa?'|t, a: 'La fase de Atencion incluye un minimo de 50 horas de formacion y 10 horas de orientacion. La duracion total depende de tu ritmo y objetivos. El motor de dificultad adaptativa ajusta el contenido a tu nivel.'|t },
-        { q: 'Puedo participar si soy autonomo?'|t, a: 'El programa esta dirigido a personas desempleadas inscritas como demandantes de empleo. Si eres autonomo pero no estas facturando, consulta tu caso concreto.'|t },
-        { q: 'Obtengo algun certificado?'|t, a: 'Si, al completar la formacion recibes un certificado oficial de competencias. Ademas, puedes generar informes PDF personalizados con tus logros y el programa queda registrado en tu historial del STO.'|t },
-        { q: 'Que pasa si encuentro trabajo durante el programa?'|t, a: 'Transitas a la Fase de Insercion y el equipo te acompana en la incorporacion laboral. Es el objetivo del programa.'|t },
-        { q: 'Que es el expediente digital?'|t, a: 'Tu expediente digital organiza toda tu documentacion en 18 categorias: CV, certificados, evaluaciones, contratos y mas. Se almacena con cifrado y firma digital, y solo tu y tus mentores autorizados tienen acceso.'|t },
-        { q: 'Como funciona la evaluacion IA de mi perfil?'|t, a: 'Al enviar tu solicitud, la IA analiza tu experiencia, formacion y objetivos para asignarte el itinerario mas adecuado. El proceso tarda menos de 48 horas y recibiras una notificacion con los resultados y recomendaciones.'|t },
-        { q: 'Que es el health score?'|t, a: 'Es una puntuacion en tiempo real que refleja tu progreso en el programa: asistencia, formacion completada, participacion en mentoria y avance hacia la insercion. Te ayuda a identificar areas donde puedes mejorar.'|t },
-        { q: 'Puedo comunicarme directamente con mi mentor?'|t, a: 'Si, la plataforma incluye mensajeria integrada con tus mentores y orientadores. Las conversaciones quedan vinculadas a tu expediente para un seguimiento continuo y documentado.'|t },
-        { q: 'Mis datos estan seguros?'|t, a: 'Absolutamente. Toda la informacion se almacena con cifrado AES-256, cumplimiento RGPD completo y acceso controlado por roles. Solo tu y los profesionales autorizados del programa pueden acceder a tu expediente.'|t },
-        { q: 'Que es la sincronizacion STO?'|t, a: 'Tu progreso en el programa se sincroniza automaticamente con el Sistema Telematico de Orientacion de la Junta de Andalucia. No necesitas hacer tramites adicionales: los certificados y horas quedan registrados oficialmente.'|t },
+        { q: '¿Es realmente gratuito?'|t, a: 'Si, el programa esta 100% subvencionado por la Junta de Andalucia y el Fondo Social Europeo Plus (FSE+). No tiene ningun coste para los participantes. Ademas recibes 528 € de incentivo al completar la formacion.'|t },
+        { q: '¿Que es la mentoria con IA?'|t, a: 'Tendras acceso a un tutor virtual basado en inteligencia artificial que te ayuda con tu CV, preparacion de entrevistas, plan de negocio y orientacion profesional personalizada. Disponible 24/7.'|t },
+        { q: '¿Cuanto dura el programa?'|t, a: 'El programa dura hasta 18 meses. Incluye minimo 10 horas de orientacion personalizada, 50 horas de formacion certificada y 40 horas de acompanamiento a la insercion. Tu itinerario se adapta a tu perfil y tu ritmo.'|t },
+        { q: '¿Puedo participar si soy autonomo?'|t, a: 'El programa esta dirigido a personas desempleadas inscritas como demandantes de empleo en el SAE. Si eres autonomo pero no estas facturando, consulta tu caso concreto.'|t },
+        { q: '¿Obtengo algun certificado?'|t, a: 'Si, al completar la formacion recibes un certificado oficial de competencias. Ademas, puedes generar informes PDF personalizados con tus logros y el programa queda registrado en tu historial del STO.'|t },
+        { q: '¿Que pasa si encuentro trabajo durante el programa?'|t, a: 'Transitas a la Fase de Insercion y el equipo te acompana en la incorporacion laboral. Es el objetivo del programa. El seguimiento post-contratacion dura 6 meses.'|t },
+        { q: '¿Que es el expediente digital?'|t, a: 'Tu expediente digital organiza toda tu documentacion en 18 categorias: CV, certificados, evaluaciones, contratos y mas. Se almacena con cifrado AES-256 y firma digital, y solo tu y tus mentores autorizados tienen acceso.'|t },
+        { q: '¿Como funciona la evaluacion IA de mi perfil?'|t, a: 'Al enviar tu solicitud, la IA analiza tu experiencia, formacion y objetivos para asignarte el itinerario mas adecuado. El proceso tarda menos de 48 horas y recibiras una notificacion con los resultados y recomendaciones.'|t },
+        { q: '¿Necesito estar apuntado en el SAE?'|t, a: 'Si, es un requisito imprescindible. Debes estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo en el momento del alta en el programa.'|t },
+        { q: '¿Puedo comunicarme directamente con mi mentor?'|t, a: 'Si, la plataforma incluye mensajeria integrada con tus mentores y orientadores. Las conversaciones quedan vinculadas a tu expediente para un seguimiento continuo y documentado.'|t },
+        { q: '¿Mis datos estan seguros?'|t, a: 'Absolutamente. Toda la informacion se almacena con cifrado AES-256, cumplimiento RGPD completo y acceso controlado por roles. Solo tu y los profesionales autorizados del programa pueden acceder a tu expediente.'|t },
+        { q: '¿Que es la sincronizacion STO?'|t, a: 'Tu progreso en el programa se sincroniza automaticamente con el Sistema Telematico de Orientacion de la Junta de Andalucia. No necesitas hacer tramites adicionales: los certificados y horas quedan registrados oficialmente.'|t },
       ] %}
       {% for faq in faqs %}
         <details class="aei-landing__faq-item" data-effect="fade-up" data-delay="{{ loop.index0 * 80 }}">
@@ -266,17 +268,37 @@
 </section>
 
 {# === CTA FINAL: Conversion === #}
-<section class="aei-landing__cta-section" data-effect="fade-up" aria-label="{{ 'Solicitar plaza'|t }}">
+<section class="aei-landing__cta-section" data-effect="fade-up" aria-label="{% trans %}Solicitar plaza{% endtrans %}">
   <div class="aei-landing__container">
     <div class="aei-landing__cta-content">
-      <h2 class="aei-landing__cta-title">{{ 'Solicita tu plaza ahora'|t }}</h2>
-      <p class="aei-landing__cta-subtitle">{{ 'Plazas limitadas. 10 herramientas reales, mentoria IA, expediente digital seguro y formacion adaptativa. 100% gratuito.'|t }}</p>
+      <h2 class="aei-landing__cta-title">{% trans %}Solicita tu plaza ahora{% endtrans %}</h2>
+      <p class="aei-landing__cta-subtitle">{% trans %}45 plazas entre Malaga y Sevilla. Mentoria IA, expediente digital seguro, formacion adaptativa y 528 € de incentivo. 100% gratuito.{% endtrans %}</p>
       <div class="aei-landing__cta-actions">
         <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary aei-landing__cta--large">
-          {{ 'Solicitar plaza'|t }}
+          {% trans %}Solicitar plaza{% endtrans %}
         </a>
       </div>
-      <p class="aei-landing__cta-footer">{{ 'Financiado por la Junta de Andalucia y el Fondo Social Europeo.'|t }}</p>
+      <p class="aei-landing__cta-footer">{% trans %}Financiado por la Junta de Andalucia y el Fondo Social Europeo Plus (FSE+).{% endtrans %}</p>
     </div>
   </div>
 </section>
+
+{# === FAQPage Schema para rich results en Google === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in faqs %}
+    {
+      "@type": "Question",
+      "name": "{{ faq.q|e('html_attr') }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ faq.a|e('html_attr') }}"
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

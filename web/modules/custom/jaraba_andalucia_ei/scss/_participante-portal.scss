@@ -1357,7 +1357,7 @@
 // DATA-EFFECT FADE-UP (IntersectionObserver driven)
 // =============================================================================
 
-[data-effect="fade-up"] {
+.aei-portal [data-effect="fade-up"] {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -1458,7 +1458,7 @@
 // =============================================================================
 
 @media (prefers-reduced-motion: reduce) {
-  [data-effect="fade-up"] {
+  .aei-portal [data-effect="fade-up"] {
     opacity: 1;
     transform: none;
     transition: none;

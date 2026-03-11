@@ -3,8 +3,46 @@
  * SCSS para la landing page de conversion Andalucia +ei.
  *
  * 7 secciones: Hero > Stats > Features > Content > Testimonials > FAQ > CTA
- * Reutiliza tokens --aei-* de _dashboard.scss.
+ *
+ * DIRECTRIZ: CSS-VAR-ALL-COLORS-001 — Solo var(--ej-*) y var(--aei-*).
+ * Los tokens --aei-* se definen aqui para la landing (no depende de
+ * .andalucia-ei-dashboard que solo existe en el dashboard).
  */
+
+// =============================================================================
+// LANDING TOKENS — Mismos tokens que _dashboard.scss para consistencia
+// Definidos en .aei-landing (wrapper del <main> en page template)
+// =============================================================================
+
+.main-content--andalucia-ei,
+.aei-landing {
+  // Core palette
+  --aei-primary: var(--ej-color-impulse, #FF8C42);
+  --aei-secondary: var(--ej-color-innovation, #00A9A5);
+  --aei-corporate: var(--ej-color-corporate, #233D63);
+  --aei-azul-profundo: var(--ej-color-azul-profundo, #003366);
+
+  // Surfaces
+  --aei-surface: var(--ej-bg-surface, #ffffff);
+  --aei-bg-body: var(--ej-bg-body, #f0f2f5);
+  --aei-bg-subtle: var(--ej-bg-subtle, #f1f5f9);
+  --aei-bg-hover: var(--ej-bg-hover, #f8fafc);
+
+  // Text
+  --aei-text: var(--ej-text-primary, #334155);
+  --aei-text-muted: var(--ej-text-secondary, #64748b);
+
+  // Borders & Shadows
+  --aei-border: var(--ej-border-color, #e5e7eb);
+  --aei-radius: var(--ej-radius-xl, 16px);
+  --aei-radius-sm: var(--ej-radius-base, 12px);
+  --aei-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --aei-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --aei-shadow-card-hover: 0 20px 40px rgba(35, 61, 99, 0.12), 0 8px 16px rgba(35, 61, 99, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+
+  // Font
+  --aei-font-headings: var(--ej-font-headings, 'Outfit', sans-serif);
+}
 
 // =============================================================================
 // LANDING SHARED

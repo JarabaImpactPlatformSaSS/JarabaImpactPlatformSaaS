@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Landing page de conversión para Andalucía +ei.
@@ -33,28 +34,16 @@ class AndaluciaEiLandingController extends ControllerBase {
   }
 
   /**
-   * Renders the landing page.
+   * Redirects to the canonical reclutamiento landing.
    *
-   * @return array
-   *   Render array.
+   * /andalucia-ei/programa was a duplicate of /andaluciamasei.html with less
+   * content. Consolidated into a single landing to avoid keyword cannibalization
+   * and double maintenance. 301 = permanent redirect for SEO.
    */
-  public function landing(): array {
-    $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
+  public function landing(): RedirectResponse {
+    $url = Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
 
-    return [
-      '#theme' => 'andalucia_ei_landing',
-      '#solicitar_url' => $solicitarUrl,
-      '#attached' => [
-        'library' => [
-          'jaraba_andalucia_ei/dashboard',
-        ],
-      ],
-      '#cache' => [
-        'contexts' => ['url.path'],
-        'tags' => ['config:jaraba_andalucia_ei.settings'],
-        'max-age' => 3600,
-      ],
-    ];
+    return new RedirectResponse($url, 301);
   }
 
   /**
