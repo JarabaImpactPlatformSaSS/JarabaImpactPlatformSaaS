@@ -321,3 +321,54 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
     tags:
       - { name: ecosistema_jaraba_core.user_profile_section }
+
+  # ===================================================================
+  # Sprint 13: Diseño del Programa Formativo
+  # ===================================================================
+
+  # Fase 2: Workflow VoBo SAE con máquina de 8 estados
+  jaraba_andalucia_ei.vobo_sae_workflow:
+    class: Drupal\jaraba_andalucia_ei\Service\VoboSaeWorkflowService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.expediente'
+
+  # Fase 6: Servicio de acciones formativas
+  jaraba_andalucia_ei.accion_formativa:
+    class: Drupal\jaraba_andalucia_ei\Service\AccionFormativaService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.vobo_sae_workflow'
+
+  # Fase 4: Servicio de sesiones programadas
+  jaraba_andalucia_ei.sesion_programada:
+    class: Drupal\jaraba_andalucia_ei\Service\SesionProgramadaService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Fase 5: Servicio de inscripciones a sesiones
+  jaraba_andalucia_ei.inscripcion_sesion:
+    class: Drupal\jaraba_andalucia_ei\Service\InscripcionSesionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.actuacion_sto'
+
+  # Fase 6b: Acceso vertical temporal para participantes del programa
+  jaraba_andalucia_ei.programa_vertical_access:
+    class: Drupal\jaraba_andalucia_ei\Service\ProgramaVerticalAccessService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@state'
+
+  # Fase 6c: Indicadores ESF+ para justificación ante financiador
+  jaraba_andalucia_ei.indicadores_esf:
+    class: Drupal\jaraba_andalucia_ei\Service\IndicadoresEsfService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@database'

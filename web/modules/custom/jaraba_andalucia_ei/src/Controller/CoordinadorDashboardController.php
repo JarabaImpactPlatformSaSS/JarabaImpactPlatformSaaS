@@ -8,13 +8,17 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
+use Drupal\jaraba_andalucia_ei\Service\IndicadoresEsfService;
 use Drupal\jaraba_andalucia_ei\Service\JustificacionEconomicaService;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Drupal\jaraba_andalucia_ei\Service\ProspeccionService;
 use Drupal\jaraba_andalucia_ei\Service\PuntosImpactoEiService;
 use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
+use Drupal\jaraba_andalucia_ei\Service\SesionProgramadaService;
+use Drupal\jaraba_andalucia_ei\Service\VoboSaeWorkflowService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -41,6 +45,10 @@ class CoordinadorDashboardController extends ControllerBase {
     protected ?PuntosImpactoEiService $puntosImpactoService = NULL,
     protected ?ProspeccionService $prospeccionService = NULL,
     protected ?FirmaWorkflowService $firmaWorkflowService = NULL,
+    protected ?AccionFormativaService $accionFormativaService = NULL,
+    protected ?SesionProgramadaService $sesionProgramadaService = NULL,
+    protected ?VoboSaeWorkflowService $voboSaeService = NULL,
+    protected ?IndicadoresEsfService $indicadoresEsfService = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -66,6 +74,14 @@ class CoordinadorDashboardController extends ControllerBase {
         ? $container->get('jaraba_andalucia_ei.prospeccion') : NULL,
       $container->has('jaraba_andalucia_ei.firma_workflow')
         ? $container->get('jaraba_andalucia_ei.firma_workflow') : NULL,
+      $container->has('jaraba_andalucia_ei.accion_formativa')
+        ? $container->get('jaraba_andalucia_ei.accion_formativa') : NULL,
+      $container->has('jaraba_andalucia_ei.sesion_programada')
+        ? $container->get('jaraba_andalucia_ei.sesion_programada') : NULL,
+      $container->has('jaraba_andalucia_ei.vobo_sae_workflow')
+        ? $container->get('jaraba_andalucia_ei.vobo_sae_workflow') : NULL,
+      $container->has('jaraba_andalucia_ei.indicadores_esf')
+        ? $container->get('jaraba_andalucia_ei.indicadores_esf') : NULL,
     );
   }
 
@@ -126,6 +142,18 @@ class CoordinadorDashboardController extends ControllerBase {
         ))
       : [];
 
+    // Sprint 13: Formación y VoBo SAE.
+    $formacionStats = $this->buildFormacionStats($tenantId);
+    $voboPendientes = $this->voboSaeService
+      ? $this->safeCall(fn() => count($this->voboSaeService->getAccionesPendientesVobo($tenantId)))
+      : 0;
+    $sesionesProximas = $this->sesionProgramadaService
+      ? $this->safeCall(fn() => $this->sesionProgramadaService->getSesionesFuturas($tenantId, 7))
+      : [];
+    $indicadoresEsf = $this->indicadoresEsfService
+      ? $this->safeCall(fn() => $this->indicadoresEsfService->getKpisGlobales($tenantId))
+      : NULL;
+
     // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.
     $apiUrls = $this->resolveHubApiUrls();
 
@@ -154,6 +182,10 @@ class CoordinadorDashboardController extends ControllerBase {
       '#puntos_impacto' => $puntosImpacto,
       '#prospecciones' => $prospecciones,
       '#firmas_pendientes' => $firmasPendientes ?? [],
+      '#formacion_stats' => $formacionStats,
+      '#vobo_pendientes' => $voboPendientes ?? 0,
+      '#sesiones_proximas' => $sesionesProximas ?? [],
+      '#indicadores_esf' => $indicadoresEsf,
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/dashboard',
@@ -169,6 +201,10 @@ class CoordinadorDashboardController extends ControllerBase {
               'puntosImpacto' => $puntosImpacto,
               'prospecciones' => $prospecciones,
               'firmasPendientes' => $firmasPendientes ?? [],
+              'formacionStats' => $formacionStats,
+              'voboPendientes' => $voboPendientes ?? 0,
+              'sesionesProximas' => $sesionesProximas ?? [],
+              'indicadoresEsf' => $indicadoresEsf,
               'apiUrls' => $apiUrls,
               'phases' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'],
               'phaseLabels' => array_map('strval', $phaseLabels),
@@ -179,7 +215,14 @@ class CoordinadorDashboardController extends ControllerBase {
       ],
       '#cache' => [
         'contexts' => ['user', 'url.site'],
-        'tags' => ['programa_participante_ei_list', 'mentoring_session_list', 'solicitud_ei_list'],
+        'tags' => [
+          'programa_participante_ei_list',
+          'mentoring_session_list',
+          'solicitud_ei_list',
+          'accion_formativa_ei_list',
+          'sesion_programada_ei_list',
+          'plan_formativo_ei_list',
+        ],
         'max-age' => 600,
       ],
     ];
@@ -218,6 +261,11 @@ class CoordinadorDashboardController extends ControllerBase {
       'documentacion' => 'jaraba_andalucia_ei.api.hub.documentacion',
       'firmaSello' => 'jaraba_andalucia_ei.firma.firmar_sello',
       'firmaPendientes' => 'jaraba_andalucia_ei.firma.pendientes',
+      // Sprint 13 API URLs:
+      'accionesFormativas' => 'jaraba_andalucia_ei.api.hub.acciones_formativas',
+      'sesionesFormativas' => 'jaraba_andalucia_ei.api.hub.sesiones_formativas',
+      'planesFormativos' => 'jaraba_andalucia_ei.api.hub.planes_formativos',
+      'indicadoresEsf' => 'jaraba_andalucia_ei.api.hub.indicadores_esf',
     ];
 
     $urls = [];
@@ -517,6 +565,78 @@ class CoordinadorDashboardController extends ControllerBase {
       $this->logger->error('Error building compliance metrics: @msg', ['@msg' => $e->getMessage()]);
       return $emptyMetrics;
     }
+  }
+
+  /**
+   * Builds formacion stats for Sprint 13 integration.
+   *
+   * @return array<string, mixed>
+   *   Stats: total_acciones, en_ejecucion, vobo_pendiente,
+   *   sesiones_programadas, planes_activos, horas_formacion_previstas.
+   */
+  protected function buildFormacionStats(?int $tenantId): array {
+    $defaults = [
+      'total_acciones' => 0,
+      'en_ejecucion' => 0,
+      'vobo_pendiente' => 0,
+      'sesiones_programadas' => 0,
+      'planes_activos' => 0,
+      'horas_formacion_previstas' => 0.0,
+    ];
+
+    try {
+      if (!$this->entityTypeManager->hasDefinition('accion_formativa_ei')) {
+        return $defaults;
+      }
+
+      $accionStorage = $this->entityTypeManager->getStorage('accion_formativa_ei');
+
+      // Total acciones formativas (TENANT-001).
+      $totalQuery = $accionStorage->getQuery()->accessCheck(TRUE);
+      $this->addTenantCondition($totalQuery, $tenantId);
+      $defaults['total_acciones'] = (int) (clone $totalQuery)->count()->execute();
+
+      // En ejecucion.
+      $ejecQuery = $accionStorage->getQuery()->accessCheck(TRUE)
+        ->condition('estado', 'en_ejecucion')
+        ->count();
+      $this->addTenantCondition($ejecQuery, $tenantId);
+      $defaults['en_ejecucion'] = (int) $ejecQuery->execute();
+
+      // VoBo pendiente.
+      $voboQuery = $accionStorage->getQuery()->accessCheck(TRUE)
+        ->condition('estado', ['pendiente_vobo', 'vobo_enviado'], 'IN')
+        ->count();
+      $this->addTenantCondition($voboQuery, $tenantId);
+      $defaults['vobo_pendiente'] = (int) $voboQuery->execute();
+
+      // Sesiones programadas futuras.
+      if ($this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+        $sesQuery = $this->entityTypeManager->getStorage('sesion_programada_ei')
+          ->getQuery()
+          ->accessCheck(TRUE)
+          ->condition('estado', 'cancelada', '<>')
+          ->count();
+        $this->addTenantCondition($sesQuery, $tenantId);
+        $defaults['sesiones_programadas'] = (int) $sesQuery->execute();
+      }
+
+      // Planes formativos activos.
+      if ($this->entityTypeManager->hasDefinition('plan_formativo_ei')) {
+        $planQuery = $this->entityTypeManager->getStorage('plan_formativo_ei')
+          ->getQuery()
+          ->accessCheck(TRUE)
+          ->condition('estado', 'borrador', '<>')
+          ->count();
+        $this->addTenantCondition($planQuery, $tenantId);
+        $defaults['planes_activos'] = (int) $planQuery->execute();
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error building formacion stats: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $defaults;
   }
 
   /**

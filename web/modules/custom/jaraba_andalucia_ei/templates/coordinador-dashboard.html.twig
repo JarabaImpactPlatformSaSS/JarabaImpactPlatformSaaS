@@ -13,6 +13,11 @@
  *   - alertas: Array de alertas normativas.
  *   - alertas_resumen: {critico, alto, medio, info}.
  *   - compliance: {daci_rate, fse_entrada_rate, fse_salida_rate, ...}.
+ *   - formacion_stats: {total_acciones, en_ejecucion, vobo_pendiente,
+ *                       sesiones_programadas, planes_activos}.
+ *   - vobo_pendientes: int.
+ *   - sesiones_proximas: Array de SesionProgramadaEi (max 7 dias).
+ *   - indicadores_esf: {tasa_asistencia, horas_totales, participantes_activos}.
  *
  * Directrices aplicadas:
  *   - ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001
@@ -333,6 +338,21 @@
       {{ jaraba_icon('ui', 'folder', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
       {% trans %}Documentacion{% endtrans %}
     </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-formacion" id="tab-formacion" data-tab="formacion">
+      {{ jaraba_icon('education', 'book-open', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+      {% trans %}Formacion{% endtrans %}
+      {% if formacion_stats.vobo_pendiente > 0 %}
+        <span class="hub-coordinador__tab-badge hub-coordinador__tab-badge--warning">{{ formacion_stats.vobo_pendiente }}</span>
+      {% endif %}
+    </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-planes" id="tab-planes" data-tab="planes">
+      {{ jaraba_icon('education', 'clipboard-list', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+      {% trans %}Planes{% endtrans %}
+    </button>
+    <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-esf" id="tab-esf" data-tab="esf">
+      {{ jaraba_icon('analytics', 'target', { variant: 'outline', color: 'verde-innovacion', size: '16px' }) }}
+      {% trans %}ESF+{% endtrans %}
+    </button>
     <button class="hub-coordinador__tab" role="tab" aria-selected="false" aria-controls="panel-metricas" id="tab-metricas" data-tab="metricas">
       {{ jaraba_icon('analytics', 'chart-line', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
       {% trans %}Metricas{% endtrans %}
@@ -508,6 +528,201 @@
         </table>
       </div>
       <div class="hub-coordinador__pagination" data-pagination="documentacion"></div>
+    </div>
+
+    {# --- Panel: Formación (Sprint 13) --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-formacion" aria-labelledby="tab-formacion" data-panel="formacion" hidden>
+      <h2 class="hub-coordinador__panel-title">{% trans %}Acciones Formativas y Sesiones{% endtrans %}</h2>
+
+      {# KPI Cards de formación #}
+      <div class="hub-coordinador__formacion-kpis">
+        <div class="hub-coordinador__kpi-card">
+          <span class="hub-coordinador__kpi-value">{{ formacion_stats.total_acciones }}</span>
+          <span class="hub-coordinador__kpi-label">{% trans %}Acciones Formativas{% endtrans %}</span>
+        </div>
+        <div class="hub-coordinador__kpi-card">
+          <span class="hub-coordinador__kpi-value">{{ formacion_stats.en_ejecucion }}</span>
+          <span class="hub-coordinador__kpi-label">{% trans %}En Ejecucion{% endtrans %}</span>
+        </div>
+        <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--{{ formacion_stats.vobo_pendiente > 0 ? 'warning' : 'ok' }}">
+          <span class="hub-coordinador__kpi-value">{{ formacion_stats.vobo_pendiente }}</span>
+          <span class="hub-coordinador__kpi-label">{% trans %}VoBo Pendiente{% endtrans %}</span>
+        </div>
+        <div class="hub-coordinador__kpi-card">
+          <span class="hub-coordinador__kpi-value">{{ formacion_stats.sesiones_programadas }}</span>
+          <span class="hub-coordinador__kpi-label">{% trans %}Sesiones Programadas{% endtrans %}</span>
+        </div>
+      </div>
+
+      {# Tabla de acciones formativas — cargada via JS #}
+      <div class="hub-coordinador__section-header">
+        <h3 class="hub-coordinador__section-title">
+          {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '18px' }) }}
+          {% trans %}Acciones Formativas{% endtrans %}
+        </h3>
+        <div class="hub-coordinador__filters" data-filters="formacion">
+          <select class="hub-coordinador__filter-select" data-filter="carril" aria-label="{% trans %}Filtrar por carril{% endtrans %}">
+            <option value="">{% trans %}Todos los carriles{% endtrans %}</option>
+            <option value="impulso_digital">{% trans %}Impulso Digital{% endtrans %}</option>
+            <option value="acelera_pro">{% trans %}Acelera Pro{% endtrans %}</option>
+            <option value="hibrido">{% trans %}Hibrido{% endtrans %}</option>
+            <option value="comun">{% trans %}Comun{% endtrans %}</option>
+          </select>
+          <select class="hub-coordinador__filter-select" data-filter="estado-formacion" aria-label="{% trans %}Filtrar por estado{% endtrans %}">
+            <option value="">{% trans %}Todos los estados{% endtrans %}</option>
+            <option value="borrador">{% trans %}Borrador{% endtrans %}</option>
+            <option value="pendiente_vobo">{% trans %}Pendiente VoBo{% endtrans %}</option>
+            <option value="vobo_enviado">{% trans %}VoBo Enviado{% endtrans %}</option>
+            <option value="vobo_aprobado">{% trans %}VoBo Aprobado{% endtrans %}</option>
+            <option value="en_ejecucion">{% trans %}En Ejecucion{% endtrans %}</option>
+            <option value="finalizada">{% trans %}Finalizada{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="formacion">
+          <thead>
+            <tr>
+              <th>{% trans %}Titulo{% endtrans %}</th>
+              <th>{% trans %}Tipo{% endtrans %}</th>
+              <th>{% trans %}Carril{% endtrans %}</th>
+              <th>{% trans %}Horas{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}VoBo{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-content="formacion">
+            <tr><td colspan="6" class="hub-coordinador__loading">{% trans %}Cargando...{% endtrans %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hub-coordinador__pagination" data-pagination="formacion"></div>
+
+      {# Próximas sesiones #}
+      {% if sesiones_proximas|length > 0 %}
+        <div class="hub-coordinador__section-header" style="margin-top: var(--ej-spacing-lg, 1.5rem)">
+          <h3 class="hub-coordinador__section-title">
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'naranja-impulso', size: '18px' }) }}
+            {% trans %}Proximas Sesiones (7 dias){% endtrans %}
+          </h3>
+        </div>
+        <div class="hub-coordinador__sesiones-grid">
+          {% for sesion in sesiones_proximas[:6] %}
+            <div class="hub-coordinador__sesion-card">
+              <div class="hub-coordinador__sesion-fecha">
+                {{ sesion.getFecha() }}
+              </div>
+              <div class="hub-coordinador__sesion-info">
+                <strong>{{ sesion.getTitulo() }}</strong>
+                <span class="hub-coordinador__sesion-hora">
+                  {{ sesion.getHoraInicio() }} - {{ sesion.getHoraFin() }}
+                </span>
+                <span class="hub-coordinador__sesion-tipo hub-coordinador__sesion-tipo--{{ sesion.getTipoSesion() }}">
+                  {{ sesion.getTipoSesion()|replace({'_': ' '})|capitalize }}
+                </span>
+              </div>
+              <div class="hub-coordinador__sesion-plazas">
+                {{ sesion.get('plazas_ocupadas').value ?? 0 }}/{{ sesion.get('plazas_maximas').value ?? 0 }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# --- Panel: Planes Formativos (Sprint 13) --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-planes" aria-labelledby="tab-planes" data-panel="planes" hidden>
+      <h2 class="hub-coordinador__panel-title">{% trans %}Planes Formativos{% endtrans %}</h2>
+
+      <div class="hub-coordinador__section-header">
+        <h3 class="hub-coordinador__section-title">
+          {{ jaraba_icon('education', 'clipboard-list', { variant: 'duotone', color: 'azul-corporativo', size: '18px' }) }}
+          {% trans %}Planes por Carril{% endtrans %}
+        </h3>
+        <div class="hub-coordinador__filters" data-filters="planes">
+          <select class="hub-coordinador__filter-select" data-filter="carril-plan" aria-label="{% trans %}Filtrar por carril{% endtrans %}">
+            <option value="">{% trans %}Todos los carriles{% endtrans %}</option>
+            <option value="impulso_digital">{% trans %}Impulso Digital{% endtrans %}</option>
+            <option value="acelera_pro">{% trans %}Acelera Pro{% endtrans %}</option>
+            <option value="hibrido">{% trans %}Hibrido{% endtrans %}</option>
+          </select>
+        </div>
+      </div>
+      <div class="hub-coordinador__table-wrapper">
+        <table class="hub-coordinador__table" data-table="planes">
+          <thead>
+            <tr>
+              <th>{% trans %}Titulo{% endtrans %}</th>
+              <th>{% trans %}Carril{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+              <th>{% trans %}Formacion{% endtrans %}</th>
+              <th>{% trans %}Orientacion{% endtrans %}</th>
+              <th>{% trans %}Total{% endtrans %}</th>
+              <th>{% trans %}Cumple{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-content="planes">
+            <tr><td colspan="7" class="hub-coordinador__loading">{% trans %}Cargando...{% endtrans %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hub-coordinador__pagination" data-pagination="planes"></div>
+    </div>
+
+    {# --- Panel: ESF+ Indicadores (Sprint 13) --- #}
+    <div class="hub-coordinador__panel" role="tabpanel" id="panel-esf" aria-labelledby="tab-esf" data-panel="esf" hidden>
+      <h2 class="hub-coordinador__panel-title">{% trans %}Indicadores ESF+ para Financiador{% endtrans %}</h2>
+
+      {% if indicadores_esf %}
+        <div class="hub-coordinador__esf-kpis">
+          <div class="hub-coordinador__kpi-card">
+            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.tasa_asistencia|default(0)|number_format(1) }}%</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}Tasa de Asistencia{% endtrans %}</span>
+          </div>
+          <div class="hub-coordinador__kpi-card">
+            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.horas_totales|default(0)|number_format(1) }}h</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}Horas Totales{% endtrans %}</span>
+          </div>
+          <div class="hub-coordinador__kpi-card">
+            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.participantes_activos|default(0) }}</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}Participantes Activos{% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="hub-coordinador__esf-tables">
+          {# Tabla cargada via API — datos completos por JS #}
+          <div class="hub-coordinador__section-header">
+            <h3 class="hub-coordinador__section-title">
+              {{ jaraba_icon('analytics', 'target', { variant: 'duotone', color: 'verde-innovacion', size: '18px' }) }}
+              {% trans %}Indicadores de Realizacion (CO01-CO14) y Resultado (CR01-CR06){% endtrans %}
+            </h3>
+            <button class="hub-coordinador__action-btn hub-coordinador__action-btn--secondary" data-esf-refresh aria-label="{% trans %}Actualizar indicadores{% endtrans %}">
+              {{ jaraba_icon('actions', 'refresh', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+              {% trans %}Actualizar{% endtrans %}
+            </button>
+          </div>
+          <div class="hub-coordinador__table-wrapper">
+            <table class="hub-coordinador__table" data-table="esf-indicadores">
+              <thead>
+                <tr>
+                  <th>{% trans %}Codigo{% endtrans %}</th>
+                  <th>{% trans %}Indicador{% endtrans %}</th>
+                  <th>{% trans %}Valor{% endtrans %}</th>
+                  <th>{% trans %}Tipo{% endtrans %}</th>
+                </tr>
+              </thead>
+              <tbody data-content="esf-indicadores">
+                <tr><td colspan="4" class="hub-coordinador__loading">{% trans %}Cargando...{% endtrans %}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="hub-coordinador__empty-state">
+          {{ jaraba_icon('analytics', 'target', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+          <p>{% trans %}Los indicadores ESF+ estaran disponibles cuando haya participantes activos.{% endtrans %}</p>
+        </div>
+      {% endif %}
     </div>
 
     {# --- Panel: Metricas --- #}

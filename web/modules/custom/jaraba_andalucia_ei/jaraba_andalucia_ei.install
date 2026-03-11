@@ -31,6 +31,11 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
     'indicador_fse_plus',
     'insercion_laboral',
     'prospeccion_empresarial',
+    // Sprint 13:
+    'accion_formativa_ei',
+    'sesion_programada_ei',
+    'inscripcion_sesion_ei',
+    'plan_formativo_ei',
   ];
 
   $missingEntities = [];
@@ -48,7 +53,7 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
         '@count' => count($missingEntities),
         '@list' => implode(', ', $missingEntities),
       ])
-      : t('@count/7 entidades instaladas', ['@count' => count($expectedEntities)]),
+      : t('@count/11 entidades instaladas', ['@count' => count($expectedEntities)]),
   ];
 
   // CHECK 2: Critical services available.
@@ -60,6 +65,14 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
     'jaraba_andalucia_ei.alertas_normativas',
     'jaraba_andalucia_ei.calendario_programa',
     'jaraba_andalucia_ei.coordinador_hub',
+    // Sprint 13:
+    'jaraba_andalucia_ei.vobo_sae_workflow',
+    'jaraba_andalucia_ei.accion_formativa',
+    'jaraba_andalucia_ei.sesion_programada',
+    'jaraba_andalucia_ei.inscripcion_sesion',
+    'jaraba_andalucia_ei.programa_vertical_access',
+    'jaraba_andalucia_ei.indicadores_esf',
+    'jaraba_andalucia_ei.plan_formativo',
   ];
 
   $missingServices = [];
@@ -1361,6 +1374,190 @@ function jaraba_andalucia_ei_update_10018(): string {
   }
   catch (\Throwable $e) {
     return 'Error in update_10018: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 13: Install AccionFormativaEi entity type (with revision support).
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva ContentEntity requiere installEntityType().
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable.
+ */
+function jaraba_andalucia_ei_update_10019(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    // Install the entity type definition.
+    $entityType = $entityTypeManager->getDefinition('accion_formativa_ei');
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    $messages[] = 'Installed entity type: accion_formativa_ei (with revision table).';
+
+    // Install all field storage definitions.
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('accion_formativa_ei');
+
+    foreach ($fieldStorageDefinitions as $fieldName => $fieldDefinition) {
+      // Skip fields already managed by entity type install.
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+        $fieldName,
+        'accion_formativa_ei'
+      );
+      if (!$existing) {
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId obligatorios.
+        $fieldDefinition->setName($fieldName);
+        $fieldDefinition->setTargetEntityTypeId('accion_formativa_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'accion_formativa_ei',
+          'jaraba_andalucia_ei',
+          $fieldDefinition
+        );
+        $messages[] = "Installed field: $fieldName.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10019: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 13: Install SesionProgramadaEi entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva ContentEntity requiere installEntityType().
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable.
+ */
+function jaraba_andalucia_ei_update_10020(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('sesion_programada_ei');
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    $messages[] = 'Installed entity type: sesion_programada_ei.';
+
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('sesion_programada_ei');
+
+    foreach ($fieldStorageDefinitions as $fieldName => $fieldDefinition) {
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+        $fieldName,
+        'sesion_programada_ei'
+      );
+      if (!$existing) {
+        $fieldDefinition->setName($fieldName);
+        $fieldDefinition->setTargetEntityTypeId('sesion_programada_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'sesion_programada_ei',
+          'jaraba_andalucia_ei',
+          $fieldDefinition
+        );
+        $messages[] = "Installed field: $fieldName.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10020: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 13: Install InscripcionSesionEi entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva ContentEntity requiere installEntityType().
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable.
+ */
+function jaraba_andalucia_ei_update_10021(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('inscripcion_sesion_ei');
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    $messages[] = 'Installed entity type: inscripcion_sesion_ei.';
+
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('inscripcion_sesion_ei');
+
+    foreach ($fieldStorageDefinitions as $fieldName => $fieldDefinition) {
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+        $fieldName,
+        'inscripcion_sesion_ei'
+      );
+      if (!$existing) {
+        $fieldDefinition->setName($fieldName);
+        $fieldDefinition->setTargetEntityTypeId('inscripcion_sesion_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'inscripcion_sesion_ei',
+          'jaraba_andalucia_ei',
+          $fieldDefinition
+        );
+        $messages[] = "Installed field: $fieldName.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10021: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 13: Install PlanFormativoEi entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva ContentEntity requiere installEntityType().
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable.
+ */
+function jaraba_andalucia_ei_update_10022(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('plan_formativo_ei');
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    $messages[] = 'Installed entity type: plan_formativo_ei.';
+
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('plan_formativo_ei');
+
+    foreach ($fieldStorageDefinitions as $fieldName => $fieldDefinition) {
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+        $fieldName,
+        'plan_formativo_ei'
+      );
+      if (!$existing) {
+        $fieldDefinition->setName($fieldName);
+        $fieldDefinition->setTargetEntityTypeId('plan_formativo_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'plan_formativo_ei',
+          'jaraba_andalucia_ei',
+          $fieldDefinition
+        );
+        $messages[] = "Installed field: $fieldName.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10022: ' . $e->getMessage();
   }
 
   return implode(' | ', $messages);

@@ -81,6 +81,8 @@ function jaraba_andalucia_ei_theme(): array {
         'formacion' => [],
         'firma_pendientes' => [],
         'hitos_emprendimiento' => [],
+        'mis_sesiones' => [],
+        'vertical_access' => [],
       ],
       'template' => 'participante-portal',
     ],
@@ -228,6 +230,19 @@ function jaraba_andalucia_ei_theme(): array {
         'count' => 0,
       ],
       'template' => 'partials/_firma-pendientes',
+    ],
+    // Sprint 13: Entity views para programa formativo.
+    'accion_formativa_ei' => [
+      'render element' => 'elements',
+    ],
+    'sesion_programada_ei' => [
+      'render element' => 'elements',
+    ],
+    'inscripcion_sesion_ei' => [
+      'render element' => 'elements',
+    ],
+    'plan_formativo_ei' => [
+      'render element' => 'elements',
     ],
     // Sprint 7: Entity view para PlanEmprendimientoEi.
     'plan_emprendimiento_ei' => [
@@ -2249,4 +2264,56 @@ function jaraba_andalucia_ei_preprocess_andalucia_ei_firma_masiva(array &$variab
     'firmarSelloUrl' => \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.firma.firmar_sello')->toString(),
     'estadoUrl' => '/api/v1/andalucia-ei/firma/estado/',
   ];
+}
+
+/**
+ * Implements template_preprocess_HOOK() for accion_formativa_ei.
+ *
+ * ENTITY-PREPROCESS-001: Toda ContentEntity con view mode necesita preprocess.
+ */
+function jaraba_andalucia_ei_preprocess_accion_formativa_ei(array &$variables): void {
+  $entity = $variables['elements']['#accion_formativa_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['accion_formativa_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for sesion_programada_ei.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_sesion_programada_ei(array &$variables): void {
+  $entity = $variables['elements']['#sesion_programada_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sesion_programada_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for inscripcion_sesion_ei.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_inscripcion_sesion_ei(array &$variables): void {
+  $entity = $variables['elements']['#inscripcion_sesion_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['inscripcion_sesion_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for plan_formativo_ei.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function jaraba_andalucia_ei_preprocess_plan_formativo_ei(array &$variables): void {
+  $entity = $variables['elements']['#plan_formativo_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['plan_formativo_ei'] = $entity;
 }

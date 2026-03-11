@@ -13,6 +13,8 @@ use Drupal\jaraba_andalucia_ei\Service\EiEmprendimientoBridgeService;
 use Drupal\jaraba_andalucia_ei\Service\ExpedienteService;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Drupal\jaraba_andalucia_ei\Service\InformeProgresoPdfService;
+use Drupal\jaraba_andalucia_ei\Service\InscripcionSesionService;
+use Drupal\jaraba_andalucia_ei\Service\ProgramaVerticalAccessInterface;
 use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -45,6 +47,8 @@ class ParticipantePortalController extends ControllerBase {
     protected ?RiesgoAbandonoService $riesgoService = NULL,
     protected ?FirmaWorkflowService $firmaWorkflow = NULL,
     protected ?EiEmprendimientoBridgeService $emprendimientoBridge = NULL,
+    protected ?InscripcionSesionService $inscripcionSesionService = NULL,
+    protected ?ProgramaVerticalAccessInterface $verticalAccessService = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -83,6 +87,12 @@ class ParticipantePortalController extends ControllerBase {
         : NULL,
       $container->has('jaraba_andalucia_ei.ei_emprendimiento_bridge')
         ? $container->get('jaraba_andalucia_ei.ei_emprendimiento_bridge')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.inscripcion_sesion')
+        ? $container->get('jaraba_andalucia_ei.inscripcion_sesion')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.programa_vertical_access')
+        ? $container->get('jaraba_andalucia_ei.programa_vertical_access')
         : NULL,
     );
   }
@@ -136,6 +146,12 @@ class ParticipantePortalController extends ControllerBase {
       }
     }
 
+    // Sprint 13: Sesiones inscritas del participante.
+    $misSesiones = $this->getMisSesiones($participante);
+
+    // Sprint 13: Acceso cross-vertical y expiración.
+    $verticalAccess = $this->getVerticalAccessData($participante);
+
     $libraries = ['jaraba_andalucia_ei/participante-portal'];
     if (!empty($firmaPendientes)) {
       $libraries[] = 'jaraba_andalucia_ei/firma-electronica';
@@ -153,12 +169,14 @@ class ParticipantePortalController extends ControllerBase {
       '#formacion' => $formacion,
       '#firma_pendientes' => $firmaPendientes,
       '#hitos_emprendimiento' => $hitosEmprendimiento,
+      '#mis_sesiones' => $misSesiones,
+      '#vertical_access' => $verticalAccess,
       '#attached' => [
         'library' => $libraries,
       ],
       '#cache' => [
         'contexts' => ['user'],
-        'tags' => ['programa_participante_ei_list'],
+        'tags' => ['programa_participante_ei_list', 'inscripcion_sesion_ei_list', 'sesion_programada_ei_list'],
         'max-age' => 300,
       ],
     ];
@@ -483,6 +501,100 @@ class ParticipantePortalController extends ControllerBase {
     }
 
     return $grouped;
+  }
+
+  /**
+   * Gets upcoming sessions the participant is inscribed in.
+   *
+   * @param \Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface $participante
+   *   The participant.
+   *
+   * @return array
+   *   List of session data arrays.
+   */
+  protected function getMisSesiones(ProgramaParticipanteEiInterface $participante): array {
+    if (!$this->inscripcionSesionService) {
+      return [];
+    }
+
+    try {
+      $inscripciones = $this->inscripcionSesionService->getInscripcionesPorParticipante(
+        (int) $participante->id()
+      );
+
+      $sesiones = [];
+      $storage = $this->entityTypeManager->getStorage('sesion_programada_ei');
+
+      foreach ($inscripciones as $inscripcion) {
+        $sesionId = $inscripcion->get('sesion_id')->target_id ?? NULL;
+        if (!$sesionId) {
+          continue;
+        }
+        $sesion = $storage->load($sesionId);
+        if (!$sesion) {
+          continue;
+        }
+
+        // Solo sesiones futuras o de hoy.
+        $fecha = $sesion->getFecha();
+        if ($fecha && $fecha < date('Y-m-d')) {
+          continue;
+        }
+
+        $sesiones[] = [
+          'id' => (int) $sesion->id(),
+          'titulo' => $sesion->getTitulo(),
+          'fecha' => $fecha,
+          'hora_inicio' => $sesion->getHoraInicio(),
+          'hora_fin' => $sesion->getHoraFin(),
+          'tipo_sesion' => $sesion->getTipoSesion(),
+          'modalidad' => $sesion->getModalidad(),
+          'estado_inscripcion' => $inscripcion->get('estado')->value ?? 'inscrito',
+        ];
+      }
+
+      // Ordenar por fecha + hora.
+      usort($sesiones, fn($a, $b) => ($a['fecha'] . $a['hora_inicio']) <=> ($b['fecha'] . $b['hora_inicio']));
+
+      return array_slice($sesiones, 0, 10);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error loading mis sesiones: @msg', ['@msg' => $e->getMessage()]);
+      return [];
+    }
+  }
+
+  /**
+   * Gets vertical access data and expiration info.
+   *
+   * @param \Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface $participante
+   *   The participant.
+   *
+   * @return array
+   *   Access data: active_verticals, is_expired, dias_restantes.
+   */
+  protected function getVerticalAccessData(ProgramaParticipanteEiInterface $participante): array {
+    $data = [
+      'active_verticals' => [],
+      'is_expired' => FALSE,
+      'dias_restantes' => -1,
+    ];
+
+    if (!$this->verticalAccessService) {
+      return $data;
+    }
+
+    try {
+      $pid = (int) $participante->id();
+      $data['active_verticals'] = $this->verticalAccessService->getActiveVerticals($pid);
+      $data['is_expired'] = $this->verticalAccessService->isExpired($pid);
+      $data['dias_restantes'] = $this->verticalAccessService->getDiasRestantes($pid);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error loading vertical access: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $data;
   }
 
   /**

@@ -172,3 +172,93 @@ use digital signature:
 view andalucia ei matching anonimizado:
   title: 'Ver matching anonimizado de candidatos'
   description: 'Permite a empresas ver perfiles anonimizados de candidatos compatibles.'
+
+# === SPRINT 13: ACCIONES FORMATIVAS ===
+
+view accion formativa ei:
+  title: 'Ver acciones formativas'
+  description: 'Permite ver la lista de acciones formativas del programa.'
+
+create accion formativa ei:
+  title: 'Crear acciones formativas'
+  description: 'Permite definir nuevas acciones formativas (coordinador).'
+
+edit accion formativa ei:
+  title: 'Editar acciones formativas'
+  description: 'Permite modificar acciones formativas existentes.'
+
+delete accion formativa ei:
+  title: 'Eliminar acciones formativas'
+  description: 'Permite eliminar acciones formativas del programa.'
+  restrict access: true
+
+# === SESIONES PROGRAMADAS ===
+
+view sesion programada ei:
+  title: 'Ver sesiones programadas'
+  description: 'Permite ver la lista de sesiones programadas del programa.'
+
+create sesion programada ei:
+  title: 'Crear sesiones programadas'
+  description: 'Permite programar nuevas sesiones (coordinador/orientador).'
+
+edit sesion programada ei:
+  title: 'Editar sesiones programadas'
+  description: 'Permite modificar sesiones programadas existentes.'
+
+delete sesion programada ei:
+  title: 'Eliminar sesiones programadas'
+  description: 'Permite eliminar sesiones programadas del programa.'
+  restrict access: true
+
+mark attendance sesion ei:
+  title: 'Registrar asistencia en sesiones'
+  description: 'Permite marcar asistencia de participantes en sesiones.'
+
+# === INSCRIPCIONES A SESIONES ===
+
+view inscripcion sesion ei:
+  title: 'Ver inscripciones a sesiones'
+  description: 'Permite ver inscripciones de participantes en sesiones.'
+
+create inscripcion sesion ei:
+  title: 'Crear inscripciones a sesiones'
+  description: 'Permite inscribir participantes en sesiones.'
+
+edit inscripcion sesion ei:
+  title: 'Editar inscripciones a sesiones'
+  description: 'Permite modificar inscripciones existentes.'
+
+delete inscripcion sesion ei:
+  title: 'Eliminar inscripciones a sesiones'
+  description: 'Permite eliminar inscripciones de participantes.'
+  restrict access: true
+
+self inscribe sesion ei:
+  title: 'Auto-inscribirse en sesiones'
+  description: 'Permite a participantes inscribirse ellos mismos en sesiones.'
+
+# === PLANES FORMATIVOS ===
+
+view plan formativo ei:
+  title: 'Ver planes formativos'
+  description: 'Permite ver los planes formativos del programa.'
+
+create plan formativo ei:
+  title: 'Crear planes formativos'
+  description: 'Permite definir nuevos planes formativos por carril.'
+
+edit plan formativo ei:
+  title: 'Editar planes formativos'
+  description: 'Permite modificar planes formativos existentes.'
+
+delete plan formativo ei:
+  title: 'Eliminar planes formativos'
+  description: 'Permite eliminar planes formativos del programa.'
+  restrict access: true
+
+# === INDICADORES ESF+ ===
+
+view andalucia ei esf indicators:
+  title: 'Ver indicadores ESF+'
+  description: 'Permite acceder al dashboard de indicadores del Fondo Social Europeo Plus.'

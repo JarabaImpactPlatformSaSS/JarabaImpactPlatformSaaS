@@ -18,3 +18,31 @@ entity.solicitud_ei.add_form:
   route_name: entity.solicitud_ei.add_form
   appears_on:
     - entity.solicitud_ei.collection
+
+# === SPRINT 13: ACCIONES FORMATIVAS ===
+entity.accion_formativa_ei.add_form:
+  title: 'Crear Acción Formativa'
+  route_name: entity.accion_formativa_ei.add_form
+  appears_on:
+    - entity.accion_formativa_ei.collection
+
+# === SESIONES PROGRAMADAS ===
+entity.sesion_programada_ei.add_form:
+  title: 'Programar Sesión'
+  route_name: entity.sesion_programada_ei.add_form
+  appears_on:
+    - entity.sesion_programada_ei.collection
+
+# === INSCRIPCIONES A SESIONES ===
+entity.inscripcion_sesion_ei.add_form:
+  title: 'Nueva Inscripción'
+  route_name: entity.inscripcion_sesion_ei.add_form
+  appears_on:
+    - entity.inscripcion_sesion_ei.collection
+
+# === PLANES FORMATIVOS ===
+entity.plan_formativo_ei.add_form:
+  title: 'Crear Plan Formativo'
+  route_name: entity.plan_formativo_ei.add_form
+  appears_on:
+    - entity.plan_formativo_ei.collection

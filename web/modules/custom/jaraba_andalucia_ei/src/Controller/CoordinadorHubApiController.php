@@ -6,7 +6,10 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
+use Drupal\jaraba_andalucia_ei\Service\IndicadoresEsfService;
+use Drupal\jaraba_andalucia_ei\Service\SesionProgramadaService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,11 +39,27 @@ class CoordinadorHubApiController extends ControllerBase {
    */
   private const ALLOWED_ESTADOS = ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'];
 
+  /**
+   * Carriles validos (API-WHITELIST-001).
+   */
+  private const ALLOWED_CARRILES = ['impulso_digital', 'acelera_pro', 'hibrido', 'comun'];
+
+  /**
+   * Estados VoBo validos (API-WHITELIST-001).
+   */
+  private const ALLOWED_VOBO_ESTADOS = [
+    'borrador', 'pendiente_vobo', 'vobo_enviado', 'vobo_aprobado',
+    'vobo_rechazado', 'en_subsanacion', 'en_ejecucion', 'finalizada',
+  ];
+
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     protected readonly CoordinadorHubService $hubService,
     protected readonly LoggerInterface $logger,
     protected readonly ?object $tenantContext = NULL,
+    protected readonly ?AccionFormativaService $accionFormativaService = NULL,
+    protected readonly ?SesionProgramadaService $sesionProgramadaService = NULL,
+    protected readonly ?IndicadoresEsfService $indicadoresEsfService = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -54,6 +73,12 @@ class CoordinadorHubApiController extends ControllerBase {
       $container->get('jaraba_andalucia_ei.coordinador_hub'),
       $container->get('logger.channel.jaraba_andalucia_ei'),
       $container->get('ecosistema_jaraba_core.tenant_context', ContainerInterface::NULL_ON_INVALID_REFERENCE),
+      $container->has('jaraba_andalucia_ei.accion_formativa')
+        ? $container->get('jaraba_andalucia_ei.accion_formativa') : NULL,
+      $container->has('jaraba_andalucia_ei.sesion_programada')
+        ? $container->get('jaraba_andalucia_ei.sesion_programada') : NULL,
+      $container->has('jaraba_andalucia_ei.indicadores_esf')
+        ? $container->get('jaraba_andalucia_ei.indicadores_esf') : NULL,
     );
   }
 
@@ -347,6 +372,198 @@ class CoordinadorHubApiController extends ControllerBase {
         'success' => FALSE,
         'message' => 'Error loading documentacion.',
       ], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/andalucia-ei/hub/acciones-formativas
+   *
+   * Lista acciones formativas del tenant con filtros opcionales.
+   */
+  public function listAccionesFormativas(Request $request): JsonResponse {
+    try {
+      $tenantId = $this->resolveTenantId();
+      $carril = $request->query->get('carril', '');
+      $estado = $request->query->get('estado', '');
+      $limit = min((int) $request->query->get('limit', '20'), 100);
+      $offset = max((int) $request->query->get('offset', '0'), 0);
+
+      // API-WHITELIST-001.
+      if ($carril !== '' && !in_array($carril, self::ALLOWED_CARRILES, TRUE)) {
+        return new JsonResponse(['success' => FALSE, 'message' => 'Carril no valido.'], 400);
+      }
+      if ($estado !== '' && !in_array($estado, self::ALLOWED_VOBO_ESTADOS, TRUE)) {
+        return new JsonResponse(['success' => FALSE, 'message' => 'Estado no valido.'], 400);
+      }
+
+      $storage = $this->entityTypeManager->getStorage('accion_formativa_ei');
+      $query = $storage->getQuery()->accessCheck(TRUE);
+      if ($tenantId) {
+        $query->condition('tenant_id', $tenantId);
+      }
+      if ($carril) {
+        $query->condition('carril', $carril);
+      }
+      if ($estado) {
+        $query->condition('estado', $estado);
+      }
+
+      $total = (int) (clone $query)->count()->execute();
+      $ids = $query->sort('changed', 'DESC')->range($offset, $limit)->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($ids) as $accion) {
+        $items[] = [
+          'id' => (int) $accion->id(),
+          'titulo' => $accion->getTitulo(),
+          'tipo_formacion' => $accion->getTipoFormacion(),
+          'carril' => $accion->getCarril(),
+          'horas_previstas' => $accion->getHorasPrevistas(),
+          'estado' => $accion->getEstado(),
+          'modalidad' => $accion->getModalidad(),
+          'requiere_vobo' => $accion->requiereVoboSae(),
+        ];
+      }
+
+      return new JsonResponse(['success' => TRUE, 'data' => ['items' => $items, 'total' => $total]]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error listing acciones formativas: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'message' => 'Error interno.'], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/andalucia-ei/hub/sesiones-formativas
+   *
+   * Lista sesiones programadas del tenant.
+   */
+  public function listSesionesFormativas(Request $request): JsonResponse {
+    try {
+      $tenantId = $this->resolveTenantId();
+      $limit = min((int) $request->query->get('limit', '20'), 100);
+      $offset = max((int) $request->query->get('offset', '0'), 0);
+      $futuras = $request->query->get('futuras', '0') === '1';
+
+      $storage = $this->entityTypeManager->getStorage('sesion_programada_ei');
+      $query = $storage->getQuery()->accessCheck(TRUE);
+      if ($tenantId) {
+        $query->condition('tenant_id', $tenantId);
+      }
+      if ($futuras) {
+        $query->condition('fecha', date('Y-m-d'), '>=');
+      }
+      $query->condition('estado', 'cancelada', '<>');
+
+      $total = (int) (clone $query)->count()->execute();
+      $ids = $query->sort('fecha', 'ASC')->sort('hora_inicio', 'ASC')
+        ->range($offset, $limit)->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($ids) as $sesion) {
+        $items[] = [
+          'id' => (int) $sesion->id(),
+          'titulo' => $sesion->getTitulo(),
+          'tipo_sesion' => $sesion->getTipoSesion(),
+          'fecha' => $sesion->getFecha(),
+          'hora_inicio' => $sesion->getHoraInicio(),
+          'hora_fin' => $sesion->getHoraFin(),
+          'estado' => $sesion->getEstado(),
+          'plazas_maximas' => (int) ($sesion->get('plazas_maximas')->value ?? 0),
+          'plazas_ocupadas' => (int) ($sesion->get('plazas_ocupadas')->value ?? 0),
+          'modalidad' => $sesion->getModalidad(),
+        ];
+      }
+
+      return new JsonResponse(['success' => TRUE, 'data' => ['items' => $items, 'total' => $total]]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error listing sesiones formativas: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'message' => 'Error interno.'], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/andalucia-ei/hub/planes-formativos
+   *
+   * Lista planes formativos del tenant.
+   */
+  public function listPlanesFormativos(Request $request): JsonResponse {
+    try {
+      $tenantId = $this->resolveTenantId();
+      $carril = $request->query->get('carril', '');
+      $limit = min((int) $request->query->get('limit', '20'), 100);
+      $offset = max((int) $request->query->get('offset', '0'), 0);
+
+      // API-WHITELIST-001.
+      if ($carril !== '' && !in_array($carril, self::ALLOWED_CARRILES, TRUE)) {
+        return new JsonResponse(['success' => FALSE, 'message' => 'Carril no valido.'], 400);
+      }
+
+      $storage = $this->entityTypeManager->getStorage('plan_formativo_ei');
+      $query = $storage->getQuery()->accessCheck(TRUE);
+      if ($tenantId) {
+        $query->condition('tenant_id', $tenantId);
+      }
+      if ($carril) {
+        $query->condition('carril', $carril);
+      }
+
+      $total = (int) (clone $query)->count()->execute();
+      $ids = $query->sort('changed', 'DESC')->range($offset, $limit)->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($ids) as $plan) {
+        $items[] = [
+          'id' => (int) $plan->id(),
+          'titulo' => $plan->getTitulo(),
+          'carril' => $plan->getCarril(),
+          'estado' => $plan->getEstado(),
+          'horas_formacion' => $plan->getHorasFormacionPrevistas(),
+          'horas_orientacion' => $plan->getHorasOrientacionPrevistas(),
+          'horas_totales' => $plan->getHorasTotalesPrevistas(),
+          'cumple_formacion' => $plan->cumpleMinimosFormacion(),
+          'cumple_orientacion' => $plan->cumpleMinimosOrientacion(),
+          'cumple_minimos' => $plan->cumpleMinimos(),
+        ];
+      }
+
+      return new JsonResponse(['success' => TRUE, 'data' => ['items' => $items, 'total' => $total]]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error listing planes formativos: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'message' => 'Error interno.'], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/andalucia-ei/hub/indicadores-esf
+   *
+   * Indicadores ESF+ (CO01-CO14, CR01-CR06) para financiador.
+   */
+  public function getIndicadoresEsf(): JsonResponse {
+    try {
+      $tenantId = $this->resolveTenantId();
+      if (!$this->indicadoresEsfService) {
+        return new JsonResponse(['success' => FALSE, 'message' => 'Servicio no disponible.'], 503);
+      }
+
+      $output = $this->indicadoresEsfService->getIndicadoresOutput($tenantId);
+      $resultado = $this->indicadoresEsfService->getIndicadoresResultado($tenantId);
+      $kpis = $this->indicadoresEsfService->getKpisGlobales($tenantId);
+
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'output' => $output,
+          'resultado' => $resultado,
+          'kpis' => $kpis,
+        ],
+      ]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error getting ESF indicators: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'message' => 'Error interno.'], 500);
     }
   }
 

@@ -12,6 +12,8 @@
  * - proactive_action: Proactive nudge data or null
  * - timeline: { atencion: { steps }, insercion: { steps } }
  * - formacion: { horas, meta, porcentaje, milestones }
+ * - mis_sesiones: Array de sesiones inscritas (Sprint 13)
+ * - vertical_access: { active_verticals, is_expired, dias_restantes }
  */
 #}
 
@@ -25,6 +27,34 @@
     participante: participante,
     health_score: health_score,
   } only %}
+
+  {# === BANNER DE EXPIRACION (Sprint 13) === #}
+  {% if vertical_access is defined and vertical_access.dias_restantes >= 0 and vertical_access.dias_restantes <= 30 %}
+    <div class="aei-portal__expiration-banner aei-portal__expiration-banner--{{ vertical_access.dias_restantes <= 7 ? 'critical' : 'warning' }}" role="alert">
+      {{ jaraba_icon('ui', 'alert-triangle', { variant: 'outline', color: vertical_access.dias_restantes <= 7 ? 'white' : 'naranja-impulso', size: '20px' }) }}
+      <div class="aei-portal__expiration-text">
+        {% if vertical_access.dias_restantes == 0 %}
+          <strong>{% trans %}Tu acceso al ecosistema expira hoy.{% endtrans %}</strong>
+        {% elseif vertical_access.dias_restantes == 1 %}
+          <strong>{% trans %}Tu acceso al ecosistema expira manana.{% endtrans %}</strong>
+        {% else %}
+          <strong>{% trans %}Tu acceso al ecosistema expira en {{ vertical_access.dias_restantes }} dias.{% endtrans %}</strong>
+        {% endif %}
+        <span>{% trans %}Aprovecha las herramientas disponibles mientras tu acceso este activo.{% endtrans %}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {# === BANNER ACCESO EXPIRADO === #}
+  {% if vertical_access is defined and vertical_access.is_expired %}
+    <div class="aei-portal__expiration-banner aei-portal__expiration-banner--expired" role="alert">
+      {{ jaraba_icon('ui', 'lock', { variant: 'outline', color: 'white', size: '20px' }) }}
+      <div class="aei-portal__expiration-text">
+        <strong>{% trans %}Tu acceso al ecosistema ha expirado.{% endtrans %}</strong>
+        <span>{% trans %}Contacta con tu coordinador/a para mas informacion.{% endtrans %}</span>
+      </div>
+    </div>
+  {% endif %}
 
   <div class="aei-portal__grid">
 
@@ -56,6 +86,41 @@
         timeline: timeline,
       } only %}
 
+      {# === MIS SESIONES (Sprint 13) === #}
+      {% if mis_sesiones is defined and mis_sesiones|length > 0 %}
+        <section class="aei-portal__sesiones" data-effect="fade-up" aria-label="{% trans %}Mis proximas sesiones{% endtrans %}">
+          <h3 class="aei-portal__section-title">
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+            {% trans %}Mis Proximas Sesiones{% endtrans %}
+            <span class="aei-portal__count-badge">{{ mis_sesiones|length }}</span>
+          </h3>
+          <div class="aei-portal__sesiones-list">
+            {% for sesion in mis_sesiones %}
+              <div class="aei-portal__sesion-item aei-portal__sesion-item--{{ sesion.estado_inscripcion }}">
+                <div class="aei-portal__sesion-date">
+                  <span class="aei-portal__sesion-day">{{ sesion.fecha|date('d') }}</span>
+                  <span class="aei-portal__sesion-month">{{ sesion.fecha|date('M') }}</span>
+                </div>
+                <div class="aei-portal__sesion-details">
+                  <strong class="aei-portal__sesion-titulo">{{ sesion.titulo }}</strong>
+                  <span class="aei-portal__sesion-hora">
+                    {{ jaraba_icon('ui', 'clock', { variant: 'outline', color: 'neutral', size: '14px' }) }}
+                    {{ sesion.hora_inicio }} - {{ sesion.hora_fin }}
+                  </span>
+                  <div class="aei-portal__sesion-meta">
+                    <span class="aei-portal__sesion-tipo">{{ sesion.tipo_sesion|replace({'_': ' '})|capitalize }}</span>
+                    <span class="aei-portal__sesion-modalidad">{{ sesion.modalidad|capitalize }}</span>
+                  </div>
+                </div>
+                <span class="aei-portal__sesion-estado aei-portal__sesion-estado--{{ sesion.estado_inscripcion }}">
+                  {{ sesion.estado_inscripcion|replace({'_': ' '})|capitalize }}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
     </div>
 
     <div class="aei-portal__sidebar">
@@ -64,6 +129,39 @@
       {% include '@jaraba_andalucia_ei/partials/_participante-acciones.html.twig' with {
         participante: participante,
       } only %}
+
+      {# === VERTICALES ACTIVOS (Sprint 13) === #}
+      {% if vertical_access is defined and vertical_access.active_verticals|length > 0 %}
+        {% set vertical_labels = {
+          'empleabilidad': 'Empleabilidad'|t,
+          'emprendimiento': 'Emprendimiento'|t,
+          'comercioconecta': 'ComercioConecta'|t,
+          'agroconecta': 'AgroConecta'|t,
+          'jarabalex': 'JarabaLex'|t,
+          'serviciosconecta': 'ServiciosConecta'|t,
+          'formacion': 'Formacion'|t,
+        } %}
+        <section class="aei-portal__verticals" data-effect="fade-up" aria-label="{% trans %}Herramientas disponibles{% endtrans %}">
+          <h3 class="aei-portal__section-title">
+            {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+            {% trans %}Herramientas Activas{% endtrans %}
+          </h3>
+          <div class="aei-portal__verticals-list">
+            {% for vertical in vertical_access.active_verticals %}
+              <div class="aei-portal__vertical-chip">
+                {{ jaraba_icon('verticals', vertical, { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+                <span>{{ vertical_labels[vertical]|default(vertical|capitalize) }}</span>
+              </div>
+            {% endfor %}
+          </div>
+          {% if vertical_access.dias_restantes >= 0 %}
+            <p class="aei-portal__verticals-expiry">
+              {{ jaraba_icon('ui', 'clock', { variant: 'outline', color: 'neutral', size: '14px' }) }}
+              {% trans %}Acceso activo: {{ vertical_access.dias_restantes }} dias restantes{% endtrans %}
+            </p>
+          {% endif %}
+        </section>
+      {% endif %}
 
       {# === PUENTES CROSS-VERTICAL === #}
       {% if bridges is not empty %}

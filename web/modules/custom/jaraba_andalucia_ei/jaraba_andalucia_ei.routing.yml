@@ -911,3 +911,209 @@ jaraba_andalucia_ei.empresa_candidatos:
   requirements:
     _permission: 'view andalucia ei matching anonimizado'
     prospeccion_empresarial: \d+
+
+# ===================================================================
+# === SPRINT 13: ACCIONES FORMATIVAS ===
+# ===================================================================
+
+# === ACCION FORMATIVA: COLECCIÓN ADMIN ===
+entity.accion_formativa_ei.collection:
+  path: '/admin/content/acciones-formativas-ei'
+  defaults:
+    _entity_list: 'accion_formativa_ei'
+    _title: 'Acciones Formativas'
+  requirements:
+    _permission: 'view accion formativa ei'
+
+# === ACCION FORMATIVA: CRUD ===
+entity.accion_formativa_ei.canonical:
+  path: '/admin/content/acciones-formativas-ei/{accion_formativa_ei}'
+  defaults:
+    _entity_view: 'accion_formativa_ei'
+    _title: 'Ver Acción Formativa'
+  requirements:
+    _permission: 'view accion formativa ei'
+
+entity.accion_formativa_ei.add_form:
+  path: '/admin/content/acciones-formativas-ei/add'
+  defaults:
+    _entity_form: 'accion_formativa_ei.add'
+    _title: 'Crear Acción Formativa'
+  requirements:
+    _permission: 'create accion formativa ei'
+
+entity.accion_formativa_ei.edit_form:
+  path: '/admin/content/acciones-formativas-ei/{accion_formativa_ei}/edit'
+  defaults:
+    _entity_form: 'accion_formativa_ei.edit'
+    _title: 'Editar Acción Formativa'
+  requirements:
+    _permission: 'edit accion formativa ei'
+
+entity.accion_formativa_ei.delete_form:
+  path: '/admin/content/acciones-formativas-ei/{accion_formativa_ei}/delete'
+  defaults:
+    _entity_form: 'accion_formativa_ei.delete'
+    _title: 'Eliminar Acción Formativa'
+  requirements:
+    _permission: 'delete accion formativa ei'
+
+# === ACCION FORMATIVA: SETTINGS (Field UI) ===
+entity.accion_formativa_ei.settings:
+  path: '/admin/structure/accion-formativa-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\AccionFormativaEiSettingsForm'
+    _title: 'Configuración Acciones Formativas'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === SESION PROGRAMADA: SETTINGS (Field UI) ===
+entity.sesion_programada_ei.settings:
+  path: '/admin/structure/sesion-programada-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\SesionProgramadaEiSettingsForm'
+    _title: 'Configuración Sesiones Programadas'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# ===================================================================
+# === SPRINT 13: INSCRIPCIONES A SESIONES ===
+# ===================================================================
+
+entity.inscripcion_sesion_ei.collection:
+  path: '/admin/content/inscripciones-sesion-ei'
+  defaults:
+    _entity_list: 'inscripcion_sesion_ei'
+    _title: 'Inscripciones a Sesiones'
+  requirements:
+    _permission: 'view inscripcion sesion ei'
+
+entity.inscripcion_sesion_ei.canonical:
+  path: '/admin/content/inscripciones-sesion-ei/{inscripcion_sesion_ei}'
+  defaults:
+    _entity_view: 'inscripcion_sesion_ei'
+    _title: 'Ver Inscripción'
+  requirements:
+    _permission: 'view inscripcion sesion ei'
+
+entity.inscripcion_sesion_ei.add_form:
+  path: '/admin/content/inscripciones-sesion-ei/add'
+  defaults:
+    _entity_form: 'inscripcion_sesion_ei.add'
+    _title: 'Nueva Inscripción'
+  requirements:
+    _permission: 'create inscripcion sesion ei'
+
+entity.inscripcion_sesion_ei.edit_form:
+  path: '/admin/content/inscripciones-sesion-ei/{inscripcion_sesion_ei}/edit'
+  defaults:
+    _entity_form: 'inscripcion_sesion_ei.edit'
+    _title: 'Editar Inscripción'
+  requirements:
+    _permission: 'edit inscripcion sesion ei'
+
+entity.inscripcion_sesion_ei.delete_form:
+  path: '/admin/content/inscripciones-sesion-ei/{inscripcion_sesion_ei}/delete'
+  defaults:
+    _entity_form: 'inscripcion_sesion_ei.delete'
+    _title: 'Eliminar Inscripción'
+  requirements:
+    _permission: 'delete inscripcion sesion ei'
+
+entity.inscripcion_sesion_ei.settings:
+  path: '/admin/structure/inscripcion-sesion-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\InscripcionSesionEiSettingsForm'
+    _title: 'Configuración Inscripciones a Sesiones'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# ===================================================================
+# === SPRINT 13: PLANES FORMATIVOS ===
+# ===================================================================
+
+entity.plan_formativo_ei.collection:
+  path: '/admin/content/planes-formativos-ei'
+  defaults:
+    _entity_list: 'plan_formativo_ei'
+    _title: 'Planes Formativos'
+  requirements:
+    _permission: 'view plan formativo ei'
+
+entity.plan_formativo_ei.canonical:
+  path: '/admin/content/planes-formativos-ei/{plan_formativo_ei}'
+  defaults:
+    _entity_view: 'plan_formativo_ei'
+    _title: 'Ver Plan Formativo'
+  requirements:
+    _permission: 'view plan formativo ei'
+
+entity.plan_formativo_ei.add_form:
+  path: '/admin/content/planes-formativos-ei/add'
+  defaults:
+    _entity_form: 'plan_formativo_ei.add'
+    _title: 'Crear Plan Formativo'
+  requirements:
+    _permission: 'create plan formativo ei'
+
+entity.plan_formativo_ei.edit_form:
+  path: '/admin/content/planes-formativos-ei/{plan_formativo_ei}/edit'
+  defaults:
+    _entity_form: 'plan_formativo_ei.edit'
+    _title: 'Editar Plan Formativo'
+  requirements:
+    _permission: 'edit plan formativo ei'
+
+entity.plan_formativo_ei.delete_form:
+  path: '/admin/content/planes-formativos-ei/{plan_formativo_ei}/delete'
+  defaults:
+    _entity_form: 'plan_formativo_ei.delete'
+    _title: 'Eliminar Plan Formativo'
+  requirements:
+    _permission: 'delete plan formativo ei'
+
+entity.plan_formativo_ei.settings:
+  path: '/admin/structure/plan-formativo-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\PlanFormativoEiSettingsForm'
+    _title: 'Configuración Planes Formativos'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === SPRINT 13: API HUB FORMACIÓN ===
+
+jaraba_andalucia_ei.api.hub.acciones_formativas:
+  path: '/api/v1/andalucia-ei/hub/acciones-formativas'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listAccionesFormativas'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.sesiones_formativas:
+  path: '/api/v1/andalucia-ei/hub/sesiones-formativas'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listSesionesFormativas'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.planes_formativos:
+  path: '/api/v1/andalucia-ei/hub/planes-formativos'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::listPlanesFormativos'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.indicadores_esf:
+  path: '/api/v1/andalucia-ei/hub/indicadores-esf'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::getIndicadoresEsf'
+  methods: [GET]
+  requirements:
+    _permission: 'view andalucia ei esf indicators'
+    _format: 'json'

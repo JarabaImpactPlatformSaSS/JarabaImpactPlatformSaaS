@@ -146,7 +146,7 @@ class AlertasNormativasService {
         }
       }
 
-      // 5. Formación sin VoBo SAE.
+      // 5. Formación sin VoBo SAE (actuaciones STO legacy).
       // TENANT-001: $tenantId ya garantizado non-null por el guard clause inicial.
       if ($this->entityTypeManager->hasDefinition('actuacion_sto')) {
         $actQuery = $this->entityTypeManager->getStorage('actuacion_sto')
@@ -165,6 +165,67 @@ class AlertasNormativasService {
             'participante_id' => 0,
             'accion' => 'Gestionar VoBo SAE para las acciones formativas.',
           ];
+        }
+      }
+
+      // 6. Sprint 13: VoBo SAE timeout en acciones formativas.
+      if ($this->entityTypeManager->hasDefinition('accion_formativa_ei')) {
+        $accionStorage = $this->entityTypeManager->getStorage('accion_formativa_ei');
+        $voboQuery = $accionStorage->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('estado', ['pendiente_vobo', 'vobo_enviado'], 'IN')
+          ->condition('tenant_id', $tenantId);
+        $voboIds = $voboQuery->execute();
+
+        if (!empty($voboIds)) {
+          $now = time();
+          foreach ($accionStorage->loadMultiple($voboIds) as $accion) {
+            $changed = (int) ($accion->get('changed')->value ?? $now);
+            $diasPendiente = (int) round(($now - $changed) / 86400);
+
+            if ($diasPendiente >= 30) {
+              $alertas[] = [
+                'tipo' => 'vobo_sae_timeout_critico',
+                'nivel' => self::NIVEL_CRITICO,
+                'mensaje' => sprintf('Acción "%s": VoBo SAE pendiente hace %d días (límite: 30).', $accion->getTitulo(), $diasPendiente),
+                'participante_id' => 0,
+                'accion' => 'Resolver VoBo SAE inmediatamente o contactar con SAE.',
+              ];
+            }
+            elseif ($diasPendiente >= 15) {
+              $alertas[] = [
+                'tipo' => 'vobo_sae_timeout',
+                'nivel' => self::NIVEL_ALTO,
+                'mensaje' => sprintf('Acción "%s": VoBo SAE pendiente hace %d días (alerta: 15).', $accion->getTitulo(), $diasPendiente),
+                'participante_id' => 0,
+                'accion' => 'Hacer seguimiento del VoBo SAE con el organismo correspondiente.',
+              ];
+            }
+          }
+        }
+      }
+
+      // 7. Sprint 13: Indicadores ESF+ de salida pendientes en seguimiento.
+      foreach ($participantes as $participante) {
+        $pid = (int) $participante->id();
+        $fase = $participante->get('fase_actual')->value ?? 'acogida';
+        $nombre = $participante->label() ?? "Participante #$pid";
+
+        if (in_array($fase, ['insercion', 'seguimiento'], TRUE)) {
+          if (!((bool) ($participante->get('fse_salida_completado')->value ?? FALSE))) {
+            $changed = (int) ($participante->get('changed')->value ?? 0);
+            $diasEnFase = $changed > 0 ? (int) round((time() - $changed) / 86400) : 0;
+
+            if ($diasEnFase >= 30) {
+              $alertas[] = [
+                'tipo' => 'fse_salida_pendiente',
+                'nivel' => $diasEnFase >= 60 ? self::NIVEL_CRITICO : self::NIVEL_ALTO,
+                'mensaje' => sprintf('%s: Indicadores FSE+ de salida pendientes en fase %s (%d días).', $nombre, $fase, $diasEnFase),
+                'participante_id' => $pid,
+                'accion' => 'Completar recogida de indicadores FSE+ de salida para justificación ante financiador.',
+              ];
+            }
+          }
         }
       }
 
