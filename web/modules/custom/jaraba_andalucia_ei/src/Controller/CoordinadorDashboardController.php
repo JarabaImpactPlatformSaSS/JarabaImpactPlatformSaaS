@@ -214,7 +214,7 @@ class CoordinadorDashboardController extends ControllerBase {
         ],
       ],
       '#cache' => [
-        'contexts' => ['user', 'url.site'],
+        'contexts' => ['user', 'url.site', 'route.group'],
         'tags' => [
           'programa_participante_ei_list',
           'mentoring_session_list',

@@ -90,7 +90,7 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
         '@count' => count($missingServices),
         '@list' => implode(', ', $missingServices),
       ])
-      : t('@count/7 servicios operativos', ['@count' => count($criticalServices)]),
+      : t('@count/@total servicios operativos', ['@count' => count($criticalServices), '@total' => count($criticalServices)]),
   ];
 
   // CHECK 3: Active participants count and phase distribution.

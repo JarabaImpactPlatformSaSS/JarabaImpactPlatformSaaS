@@ -425,7 +425,8 @@
             <option value="seguimiento">{% trans %}Seguimiento{% endtrans %}</option>
             <option value="baja">{% trans %}Baja{% endtrans %}</option>
           </select>
-          <input type="search" class="hub-coordinador__search" data-filter="search" placeholder="{{ 'Buscar por DNI/NIE'|t }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
+          {% set placeholder_buscar %}{% trans %}Buscar por DNI/NIE{% endtrans %}{% endset %}
+          <input type="search" class="hub-coordinador__search" data-filter="search" placeholder="{{ placeholder_buscar }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
         </div>
       </div>
       <div class="hub-coordinador__table-wrapper">
@@ -499,7 +500,8 @@
             <option value="incompleto">{% trans %}Incompleto{% endtrans %}</option>
             <option value="pendiente_revision">{% trans %}Pendiente de revision{% endtrans %}</option>
           </select>
-          <input type="search" class="hub-coordinador__search" data-filter="search_doc" placeholder="{{ 'Buscar por DNI/NIE'|t }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
+          {% set placeholder_buscar_doc %}{% trans %}Buscar por DNI/NIE{% endtrans %}{% endset %}
+          <input type="search" class="hub-coordinador__search" data-filter="search_doc" placeholder="{{ placeholder_buscar_doc }}" aria-label="{% trans %}Buscar participante{% endtrans %}">
         </div>
       </div>
       <div class="hub-coordinador__table-wrapper">

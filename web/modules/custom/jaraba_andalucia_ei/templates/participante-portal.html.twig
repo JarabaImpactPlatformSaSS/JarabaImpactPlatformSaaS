@@ -132,14 +132,21 @@
 
       {# === VERTICALES ACTIVOS (Sprint 13) === #}
       {% if vertical_access is defined and vertical_access.active_verticals|length > 0 %}
+        {% set lbl_empleabilidad %}{% trans %}Empleabilidad{% endtrans %}{% endset %}
+        {% set lbl_emprendimiento %}{% trans %}Emprendimiento{% endtrans %}{% endset %}
+        {% set lbl_comercioconecta %}{% trans %}ComercioConecta{% endtrans %}{% endset %}
+        {% set lbl_agroconecta %}{% trans %}AgroConecta{% endtrans %}{% endset %}
+        {% set lbl_jarabalex %}{% trans %}JarabaLex{% endtrans %}{% endset %}
+        {% set lbl_serviciosconecta %}{% trans %}ServiciosConecta{% endtrans %}{% endset %}
+        {% set lbl_formacion %}{% trans %}Formacion{% endtrans %}{% endset %}
         {% set vertical_labels = {
-          'empleabilidad': 'Empleabilidad'|t,
-          'emprendimiento': 'Emprendimiento'|t,
-          'comercioconecta': 'ComercioConecta'|t,
-          'agroconecta': 'AgroConecta'|t,
-          'jarabalex': 'JarabaLex'|t,
-          'serviciosconecta': 'ServiciosConecta'|t,
-          'formacion': 'Formacion'|t,
+          'empleabilidad': lbl_empleabilidad,
+          'emprendimiento': lbl_emprendimiento,
+          'comercioconecta': lbl_comercioconecta,
+          'agroconecta': lbl_agroconecta,
+          'jarabalex': lbl_jarabalex,
+          'serviciosconecta': lbl_serviciosconecta,
+          'formacion': lbl_formacion,
         } %}
         <section class="aei-portal__verticals" data-effect="fade-up" aria-label="{% trans %}Herramientas disponibles{% endtrans %}">
           <h3 class="aei-portal__section-title">
@@ -165,10 +172,11 @@
 
       {# === PUENTES CROSS-VERTICAL === #}
       {% if bridges is not empty %}
-        <section class="aei-portal__bridges" data-effect="fade-up" aria-label="{{ 'Descubre el ecosistema'|t }}">
+        {% set lbl_descubre %}{% trans %}Descubre el ecosistema{% endtrans %}{% endset %}
+    <section class="aei-portal__bridges" data-effect="fade-up" aria-label="{{ lbl_descubre }}">
           <h3 class="aei-portal__section-title">
             {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', size: '24px' }) }}
-            {{ 'Descubre el ecosistema'|t }}
+            {% trans %}Descubre el ecosistema{% endtrans %}
           </h3>
           <div class="aei-portal__bridges-list">
             {% for bridge in bridges %}
@@ -191,7 +199,8 @@
 
   {# === FAB PROACTIVO IA === #}
   {% if proactive_action %}
-    <div class="aei-portal__fab" data-proactive='{{ proactive_action|json_encode }}' aria-label="{{ 'Sugerencia del programa'|t }}">
+    {% set lbl_sugerencia %}{% trans %}Sugerencia del programa{% endtrans %}{% endset %}
+    <div class="aei-portal__fab" data-proactive='{{ proactive_action|json_encode }}' aria-label="{{ lbl_sugerencia }}">
       <button type="button" class="aei-portal__fab-trigger" aria-expanded="false">
         {{ jaraba_icon('ai', 'sparkle', { variant: 'duotone', size: '24px' }) }}
       </button>
@@ -199,7 +208,8 @@
         <p class="aei-portal__fab-message">{{ proactive_action.message }}</p>
         {% if proactive_action.cta_url %}
           <a href="{{ proactive_action.cta_url }}" class="aei-portal__fab-cta">
-            {{ proactive_action.cta_label|default('Ver más'|t) }}
+            {% set lbl_ver_mas %}{% trans %}Ver más{% endtrans %}{% endset %}
+            {{ proactive_action.cta_label|default(lbl_ver_mas) }}
           </a>
         {% endif %}
       </div>

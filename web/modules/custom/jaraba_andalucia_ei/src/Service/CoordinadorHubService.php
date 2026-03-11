@@ -214,11 +214,19 @@ class CoordinadorHubService {
    *
    * @return array{success: bool, message: string}
    */
-  public function rejectSolicitud(int $solicitudId, string $reason): array {
+  public function rejectSolicitud(int $solicitudId, string $reason, ?int $tenantId = NULL): array {
     try {
       $solicitud = $this->entityTypeManager->getStorage('solicitud_ei')->load($solicitudId);
       if (!$solicitud) {
         return ['success' => FALSE, 'message' => 'Solicitud no encontrada.'];
+      }
+
+      // TENANT-001: Verificar que la solicitud pertenece al tenant.
+      if ($tenantId && $solicitud->hasField('tenant_id')) {
+        $entityTenant = (int) ($solicitud->get('tenant_id')->target_id ?? 0);
+        if ($entityTenant && $entityTenant !== $tenantId) {
+          return ['success' => FALSE, 'message' => 'Solicitud no encontrada.'];
+        }
       }
 
       $solicitud->set('estado', 'rechazado');

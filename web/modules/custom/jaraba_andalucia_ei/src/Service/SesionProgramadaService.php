@@ -139,54 +139,51 @@ class SesionProgramadaService {
 
     for ($i = 1; $i <= $count; $i++) {
       try {
-        $nuevaFecha = (new \DateTimeImmutable($fechaBase))
-          ->modify($interval . ' * ' . $i < 2 ? '' : '')
-          ;
         // Calcular la nueva fecha sumando el intervalo i veces.
         $nuevaFecha = new \DateTimeImmutable($fechaBase);
         for ($j = 0; $j < $i; $j++) {
           $nuevaFecha = $nuevaFecha->modify($interval);
         }
+
+        // Verificar que no exista ya una sesión hija para esta fecha.
+        $existentes = $storage->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('sesion_padre_id', $sesionPadre->id())
+          ->condition('fecha', $nuevaFecha->format('Y-m-d'))
+          ->execute();
+
+        if (!empty($existentes)) {
+          continue;
+        }
+
+        /** @var \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface $sesionHija */
+        $sesionHija = $storage->create([
+          'titulo' => $sesionPadre->getTitulo() . ' (' . ($i + 1) . ')',
+          'tenant_id' => $sesionPadre->get('tenant_id')->target_id,
+          'uid' => $sesionPadre->getOwnerId(),
+          'accion_formativa_id' => $sesionPadre->get('accion_formativa_id')->target_id,
+          'tipo_sesion' => $sesionPadre->getTipoSesion(),
+          'fase_programa' => $sesionPadre->getFasePrograma(),
+          'fecha' => $nuevaFecha->format('Y-m-d'),
+          'hora_inicio' => $sesionPadre->getHoraInicio(),
+          'hora_fin' => $sesionPadre->getHoraFin(),
+          'modalidad' => $sesionPadre->getModalidad(),
+          'lugar_descripcion' => $sesionPadre->get('lugar_descripcion')->value,
+          'lugar_url' => $sesionPadre->get('lugar_url')->value,
+          'facilitador_id' => $sesionPadre->get('facilitador_id')->target_id,
+          'facilitador_nombre' => $sesionPadre->get('facilitador_nombre')->value,
+          'max_plazas' => $sesionPadre->getMaxPlazas(),
+          'estado' => 'programada',
+          'es_recurrente' => FALSE,
+          'sesion_padre_id' => $sesionPadre->id(),
+        ]);
+
+        $sesionHija->save();
+        $sesionesGeneradas[] = $sesionHija;
       }
       catch (\Throwable) {
         continue;
       }
-
-      // Verificar que no exista ya una sesión hija para esta fecha.
-      $existentes = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('sesion_padre_id', $sesionPadre->id())
-        ->condition('fecha', $nuevaFecha->format('Y-m-d'))
-        ->execute();
-
-      if (!empty($existentes)) {
-        continue;
-      }
-
-      /** @var \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface $sesionHija */
-      $sesionHija = $storage->create([
-        'titulo' => $sesionPadre->getTitulo() . ' (' . ($i + 1) . ')',
-        'tenant_id' => $sesionPadre->get('tenant_id')->target_id,
-        'uid' => $sesionPadre->getOwnerId(),
-        'accion_formativa_id' => $sesionPadre->get('accion_formativa_id')->target_id,
-        'tipo_sesion' => $sesionPadre->getTipoSesion(),
-        'fase_programa' => $sesionPadre->getFasePrograma(),
-        'fecha' => $nuevaFecha->format('Y-m-d'),
-        'hora_inicio' => $sesionPadre->getHoraInicio(),
-        'hora_fin' => $sesionPadre->getHoraFin(),
-        'modalidad' => $sesionPadre->getModalidad(),
-        'lugar_descripcion' => $sesionPadre->get('lugar_descripcion')->value,
-        'lugar_url' => $sesionPadre->get('lugar_url')->value,
-        'facilitador_id' => $sesionPadre->get('facilitador_id')->target_id,
-        'facilitador_nombre' => $sesionPadre->get('facilitador_nombre')->value,
-        'max_plazas' => $sesionPadre->getMaxPlazas(),
-        'estado' => 'programada',
-        'es_recurrente' => FALSE,
-        'sesion_padre_id' => $sesionPadre->id(),
-      ]);
-
-      $sesionHija->save();
-      $sesionesGeneradas[] = $sesionHija;
     }
 
     $this->logger->info('Expansión de recurrencia: sesión @id generó @count sesiones hijas.', [

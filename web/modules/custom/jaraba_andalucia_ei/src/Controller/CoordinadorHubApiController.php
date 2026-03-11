@@ -135,7 +135,9 @@ class CoordinadorHubApiController extends ControllerBase {
       $reason = mb_substr(strip_tags((string) $data['reason']), 0, 1000);
     }
 
-    $result = $this->hubService->rejectSolicitud($id, $reason);
+    // TENANT-001: Pasar tenantId para filtrar solicitud por tenant.
+    $tenantId = $this->resolveTenantId();
+    $result = $this->hubService->rejectSolicitud($id, $reason, $tenantId);
 
     return new JsonResponse([
       'success' => $result['success'],
@@ -287,9 +289,13 @@ class CoordinadorHubApiController extends ControllerBase {
           $nombre = $owner ? ($owner->getDisplayName() ?? $owner->getAccountName()) : ($p->get('dni_nie')->value ?? "#{$pid}");
 
           // Count docs per participant.
+          // TENANT-001: Filtrar documentos por tenant.
           $docsQuery = $docStorage->getQuery()->accessCheck(TRUE)
             ->condition('participante_id', $pid)
             ->condition('status', TRUE);
+          if ($tenantId) {
+            $docsQuery->condition('tenant_id', $tenantId);
+          }
           $docIds = $docsQuery->execute();
           $docs = !empty($docIds) ? $docStorage->loadMultiple($docIds) : [];
 
@@ -469,7 +475,7 @@ class CoordinadorHubApiController extends ControllerBase {
           'hora_inicio' => $sesion->getHoraInicio(),
           'hora_fin' => $sesion->getHoraFin(),
           'estado' => $sesion->getEstado(),
-          'plazas_maximas' => (int) ($sesion->get('plazas_maximas')->value ?? 0),
+          'plazas_maximas' => (int) ($sesion->get('max_plazas')->value ?? 0),
           'plazas_ocupadas' => (int) ($sesion->get('plazas_ocupadas')->value ?? 0),
           'modalidad' => $sesion->getModalidad(),
         ];
