@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-10
-**Versión:** 114.0.0 (NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion + Post-Edit-Lint Price Detection + aprendizaje #176)
+**Fecha:** 2026-03-11
+**Versión:** 115.0.0 (Sprint 13 Diseño Programa Formativo Andalucía +ei — 4 entities + 7 services + VoBo SAE + ESF+ + aprendizaje #177)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -926,6 +926,24 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   EiEmprendimientoBridge, AdaptacionItinerario, EiMatchingBridge,     │
 │   EiAlumniBridge, EiBadgeBridge, EiPushNotification + 7 previos       │
 │   100+ ficheros, 231 tests OK                                          │
+│                                                                         │
+│   PARTE III — Diseño Programa Formativo (Sprint 13):                   │
+│   └── Sprint 13: AccionFormativaEi (20 campos, revisiones, VoBo SAE) │
+│       + SesionProgramadaEi (25 campos, recurrencia, plazas)           │
+│       + InscripcionSesionEi (18 campos, asistencia, ActuaciónSto)     │
+│       + PlanFormativoEi (32 campos, computed stored para Views)        │
+│       + VoboSaeWorkflowService (8 estados state machine)               │
+│       + IndicadoresEsfService (14 output + 6 resultado FSE+)          │
+│       + ProgramaVerticalAccessService (carril→verticales temporal)     │
+│       + 4 API endpoints Hub, Portal participante, Alertas normativas  │
+│       + 25 tests nuevos, 16 permisos, 351 tests total                 │
+│                                                                         │
+│   Entidades Sprint 13: AccionFormativaEi, SesionProgramadaEi,          │
+│   InscripcionSesionEi, PlanFormativoEi                                 │
+│   Servicios Sprint 13 (7): AccionFormativa, VoboSaeWorkflow,           │
+│   SesionProgramada, InscripcionSesion, ProgramaVerticalAccess,         │
+│   IndicadoresEsf, PlanFormativo                                        │
+│   53 ficheros, 351 tests OK                                             │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 

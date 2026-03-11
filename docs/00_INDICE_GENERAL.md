@@ -3,9 +3,14 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-10
-**Versión:** 155.0.0 (NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion + Post-Edit-Lint Price Detection + aprendizaje #176)
+**Última actualización:** 2026-03-11
+**Versión:** 156.0.0 (Sprint 13 Diseño Programa Formativo Andalucía +ei — 4 entities + 7 services + VoBo SAE + ESF+ + aprendizaje #177)
 
+> **📋 SPRINT 13 DISEÑO PROGRAMA FORMATIVO ANDALUCÍA +ei — v127 DIRECTRICES + v115 ARQUITECTURA** (2026-03-11)
+> - **Contexto:** Sprint 13 completo del Plan Maestro Andalucía +ei. 4 ContentEntities nuevas (AccionFormativaEi con revisiones y VoBo SAE workflow, SesionProgramadaEi con recurrencia JSON y plazas, InscripcionSesionEi con asistencia e integración ActuaciónSto, PlanFormativoEi con computed fields stored para Views). 7 servicios nuevos (VoboSaeWorkflowService state machine 8 estados, IndicadoresEsfService 14 output CO01-CO14 + 6 resultado CR01-CR06, ProgramaVerticalAccessService carril→verticales temporal). Integración completa: 4 API endpoints Hub coordinador, formacion_stats, VoBo pendientes, sesiones próximas, ESF+ dashboard. Portal Participante con mis_sesiones y vertical_access. Alertas normativas VoBo timeout y FSE+ salida. 25 tests nuevos (351 total). 3 fixes TENANT-001 post-reviewer. I18N |t→{% trans %}. Bug fix expandirRecurrencia dead code PHP 8.4. 16 permisos nuevos.
+> - **Aprendizaje:** #177 — Reviewer independiente SIEMPRE post-implementación: dead code, campo incorrecto y tenant leaks solo detectables por revisión cruzada.
+> - **Cross-refs:** Directrices v127.0.0, Arquitectura v115.0.0, Indice v156.0.0, Flujo v80.0.0.
+>
 > **📋 NO-HARDCODE-PRICE-001 DYNAMIC PRICING + 23 SCRIPTS VALIDACION — v126 DIRECTRICES + v114 ARQUITECTURA** (2026-03-11)
 > - **Contexto:** Eliminacion de precios EUR hardcodeados en 4 templates Twig. Todos los precios propios ahora provienen de MetaSitePricingService (SaasPlan entities). Homepage PED: comparativa JarabaLex, hero legal subtitle, pricing hub overview — todos dinamicos con fallbacks. Script #23 validate-no-hardcoded-prices.php detecta precios hardcodeados. Post-edit-lint hook detecta en tiempo real. Fix contraste h1 hero PED (color blanco sobre fondo azul oscuro).
 > - **Aprendizaje:** #176 — Precios SIEMPRE desde sistema de planes, NUNCA hardcodeados en templates. MetaSitePricingService como SSOT de precios frontend.

@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-10
-**Version:** 79.0.0 (NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion + Post-Edit-Lint Price Detection + regla de oro #117 + aprendizaje #176)
+**Ultima actualizacion:** 2026-03-11
+**Version:** 80.0.0 (Sprint 13 Diseño Programa Formativo Andalucía +ei — 4 entities + 7 services + VoBo SAE + ESF+ + regla de oro #118 + aprendizaje #177)
 
 ---
 ## 1. Inicio de Sesion
