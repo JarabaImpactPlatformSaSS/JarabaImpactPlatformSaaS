@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\jaraba_andalucia_ei\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -58,7 +60,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.plan_formativo_ei.settings",
  * )
  */
-class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterface {
+class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterface, EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;
