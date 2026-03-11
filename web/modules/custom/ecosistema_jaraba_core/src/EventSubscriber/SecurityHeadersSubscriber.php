@@ -116,12 +116,27 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
 
         // ═══════════════════════════════════════════════════
         // CSP (Content Security Policy)
-        // Política base que permite scripts de CDNs conocidos
-        // y estilos inline necesarios para Drupal.
+        // CSP-POLICY-001: Built as structured directives for maintainability.
+        // Admin UI override (csp.policy config) takes full precedence.
+        //
+        // Domains justified:
+        //   google/gstatic: reCAPTCHA v3 (captcha.captcha_point.user_login_form)
+        //   stripe: Embedded Checkout + webhooks (STRIPE-CHECKOUT-001)
+        //   googleapis: Google Fonts + Gemini API
+        //   jsdelivr/unpkg: GrapesJS + vendor libs
+        //   unsplash: stock images in Page Builder
         // ═══════════════════════════════════════════════════
         $cspEnabled = $config->get('csp.enabled') ?? TRUE;
         if ($cspEnabled) {
-            $cspPolicy = $config->get('csp.policy') ?: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: *.stripe.com images.unsplash.com; connect-src 'self' api.stripe.com api.openai.com api.anthropic.com; frame-src 'self' js.stripe.com";
+            $cspPolicy = $config->get('csp.policy') ?: implode('; ', [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com www.google.com www.gstatic.com",
+                "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
+                "font-src 'self' fonts.gstatic.com",
+                "img-src 'self' data: blob: *.stripe.com images.unsplash.com www.gstatic.com",
+                "connect-src 'self' api.stripe.com api.openai.com api.anthropic.com generativelanguage.googleapis.com www.google.com",
+                "frame-src 'self' js.stripe.com www.google.com",
+            ]);
             $response->headers->set('Content-Security-Policy', $cspPolicy);
         }
 

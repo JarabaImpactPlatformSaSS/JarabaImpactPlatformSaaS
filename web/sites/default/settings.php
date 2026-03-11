@@ -931,6 +931,32 @@ if ($redis_host && extension_loaded('redis') && class_exists('Redis')) {
   $settings['cache']['bins']['copilot_responses'] = 'cache.backend.redis';
 }
 
+
+// ============================================================================
+// ENV-BOOTSTRAP-001: Early environment variable loader.
+// MUST load FIRST — before CDN, secrets, or any file that uses getenv().
+// In production, CI/CD generates this file with putenv() calls for all
+// API keys (AI, reCAPTCHA, Stripe, OAuth, SMTP).
+// In Lando, .env is loaded via env_file in .lando.yml (putenv unnecessary).
+// ============================================================================
+if (file_exists($app_root . '/../config/deploy/settings.env.php')) {
+  include $app_root . '/../config/deploy/settings.env.php';
+}
+
+// CSRF-LOGIN-FIX-001: Production reverse proxy + session hardening.
+// IONOS shared hosting sits behind a reverse proxy (access*.webspace-data.io).
+// Without these settings, Drupal misreads the protocol (HTTP vs HTTPS),
+// causing CSRF token mismatch on login forms.
+if (getenv('LANDO') !== 'ON') {
+  $settings['reverse_proxy'] = TRUE;
+  $settings['reverse_proxy_addresses'] = ['127.0.0.1'];
+  $settings['reverse_proxy_trusted_headers'] =
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO;
+}
+
 // AUDIT-PERF-N14: CDN configuration for static assets.
 // Reads CDN_BASE_URL from environment to rewrite public file URLs.
 // Must load before settings.local.php so local overrides take precedence.
@@ -939,9 +965,8 @@ if (file_exists($app_root . '/' . $site_path . '/settings.cdn.php')) {
 }
 
 // SECRET-MGMT-001: Config overrides from environment variables.
-// Loads OAuth, SMTP, reCAPTCHA, and Stripe secrets without storing them
-// in the database or config/sync. Must load BEFORE settings.local.php
-// so local overrides take precedence.
+// Maps getenv() to $config overrides for OAuth, SMTP, reCAPTCHA, Stripe.
+// Requires settings.env.php loaded FIRST (ENV-BOOTSTRAP-001).
 if (file_exists($app_root . '/../config/deploy/settings.secrets.php')) {
   include $app_root . '/../config/deploy/settings.secrets.php';
 }
@@ -954,8 +979,8 @@ if (file_exists($app_root . '/../config/deploy/settings.ai-queues.php')) {
 /**
  * Load local development override configuration, if available.
  *
- * En producción (IONOS): settings.local.php contiene credenciales BD,
- * trusted_host_patterns adicionales, y configuración específica del servidor.
+ * En producción (IONOS): settings.local.php contiene SOLO credenciales BD
+ * y configuración específica del servidor. API keys están en settings.env.php.
  * En Lando: opcionalmente permite overrides locales.
  *
  * IMPORTANTE: Este include DEBE estar al final del archivo para que
