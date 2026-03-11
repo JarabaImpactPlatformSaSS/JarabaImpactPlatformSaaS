@@ -14,17 +14,19 @@
  * - nav_items: fallback array de { text, url } (para meta-sitios sin megamenu)
  * - theme_settings: configuración completa del tema
  * - available_languages, current_langcode: para selector de idioma
+ * - language_prefix: "" for default lang, "/en" or "/pt-br" for others (I18N-NAVPREFIX-001)
  */
 #}
 {% set ts = theme_settings|default({}) %}
 {% set show_auth = ts.header_show_auth|default(true) %}
 {% set use_megamenu = ts.header_megamenu|default(false) %}
+{% set lp = language_prefix|default('') %}
 
 <header class="landing-header landing-header--classic{{ use_megamenu ? ' header--mega' : '' }}" role="banner">
   <div class="landing-header__container header__container">
 
     {# ── Logo + Branding ── #}
-    <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
+    <a href="{{ lp }}/" class="landing-header__brand" rel="home">
       {% if logo %}
         <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
       {% endif %}
@@ -55,13 +57,13 @@
                   <h3 class="mega-panel__title">{% trans %}Para Profesionales{% endtrans %}</h3>
                   <ul class="mega-panel__list">
                     <li>
-                      <a href="/empleabilidad" class="mega-panel__link">
+                      <a href="{{ lp }}/empleabilidad" class="mega-panel__link">
                         <strong>{% trans %}Empleabilidad{% endtrans %}</strong>
                         <small>{% trans %}Impulsa tu carrera profesional{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/talento" class="mega-panel__link">
+                      <a href="{{ lp }}/talento" class="mega-panel__link">
                         <strong>{% trans %}Talento{% endtrans %}</strong>
                         <small>{% trans %}Conecta con oportunidades{% endtrans %}</small>
                       </a>
@@ -74,31 +76,31 @@
                   <h3 class="mega-panel__title">{% trans %}Para Empresas{% endtrans %}</h3>
                   <ul class="mega-panel__list">
                     <li>
-                      <a href="/emprendimiento" class="mega-panel__link">
+                      <a href="{{ lp }}/emprendimiento" class="mega-panel__link">
                         <strong>{% trans %}Emprendimiento{% endtrans %}</strong>
                         <small>{% trans %}De la idea al negocio{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/jarabalex" class="mega-panel__link">
+                      <a href="{{ lp }}/jarabalex" class="mega-panel__link">
                         <strong>{% trans %}JarabaLex{% endtrans %}</strong>
                         <small>{% trans %}Inteligencia legal con IA{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/comercioconecta" class="mega-panel__link">
+                      <a href="{{ lp }}/comercioconecta" class="mega-panel__link">
                         <strong>{% trans %}ComercioConecta{% endtrans %}</strong>
                         <small>{% trans %}Comercio local digital{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/agroconecta" class="mega-panel__link">
+                      <a href="{{ lp }}/agroconecta" class="mega-panel__link">
                         <strong>{% trans %}AgroConecta{% endtrans %}</strong>
                         <small>{% trans %}Marketplace agroalimentario{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/serviciosconecta" class="mega-panel__link">
+                      <a href="{{ lp }}/serviciosconecta" class="mega-panel__link">
                         <strong>{% trans %}ServiciosConecta{% endtrans %}</strong>
                         <small>{% trans %}Servicios profesionales{% endtrans %}</small>
                       </a>
@@ -111,13 +113,13 @@
                   <h3 class="mega-panel__title">{% trans %}Para Instituciones{% endtrans %}</h3>
                   <ul class="mega-panel__list">
                     <li>
-                      <a href="/instituciones" class="mega-panel__link">
+                      <a href="{{ lp }}/instituciones" class="mega-panel__link">
                         <strong>{% trans %}Instituciones{% endtrans %}</strong>
                         <small>{% trans %}Impulsa tu territorio{% endtrans %}</small>
                       </a>
                     </li>
                     <li>
-                      <a href="/andalucia-ei" class="mega-panel__link">
+                      <a href="{{ lp }}/andalucia-ei" class="mega-panel__link">
                         <strong>{% trans %}Andalucía +ei{% endtrans %}</strong>
                         <small>{% trans %}Programa de empleo institucional{% endtrans %}</small>
                       </a>
@@ -127,7 +129,7 @@
                   <div class="mega-panel__promo" style="margin-top: 1rem;">
                     <h4>{% trans %}¿No sabes cuál elegir?{% endtrans %}</h4>
                     <p>{% trans %}Haz nuestro test de 1 minuto y te recomendamos la mejor solución.{% endtrans %}</p>
-                    <a href="/user/register" class="btn-primary btn-primary--sm">
+                    <a href="{{ lp }}/user/register" class="btn-primary btn-primary--sm">
                       {% trans %}Empezar gratis{% endtrans %} →
                     </a>
                   </div>
@@ -140,10 +142,10 @@
 
         {# Links directos (fuera del megamenu) #}
         <li class="header__menu-item">
-          <a href="/planes" class="header__menu-link">{% trans %}Precios{% endtrans %}</a>
+          <a href="{{ lp }}/planes" class="header__menu-link">{% trans %}Precios{% endtrans %}</a>
         </li>
         <li class="header__menu-item">
-          <a href="/casos-de-exito" class="header__menu-link">{% trans %}Casos de Éxito{% endtrans %}</a>
+          <a href="{{ lp }}/casos-de-exito" class="header__menu-link">{% trans %}Casos de Éxito{% endtrans %}</a>
         </li>
       </ul>
 
@@ -151,7 +153,7 @@
       {# Fallback: navegación plana para meta-sitios #}
       <ul class="landing-nav">
         {% for item in nav_items|default([]) %}
-          <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+          <li><a href="{{ lp }}{{ item.url }}">{{ item.text }}</a></li>
         {% endfor %}
       </ul>
       {% endif %}
@@ -164,21 +166,22 @@
         {% include '@ecosistema_jaraba_theme/partials/_language-switcher.html.twig' with {
           available_languages: available_languages,
           current_langcode: current_langcode|default('es'),
+          language_links: language_links|default({}),
         } only %}
       {% endif %}
 
       {# Auth actions #}
       {% if show_auth %}
         {% if logged_in %}
-          <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+          <a href="{{ lp }}/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
         {% else %}
-          <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+          <a href="{{ lp }}/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
         {% endif %}
       {% endif %}
 
       {# CTA principal — respeta enable_header_cta de theme settings / SiteConfig #}
       {% if ts.enable_header_cta|default(false) %}
-        <a href="{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
+        <a href="{{ lp }}{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
           {{ ts.header_cta_text|default('Empieza gratis'|t) }} →
         </a>
       {% endif %}

@@ -8,11 +8,13 @@
  * Todo el menú accesible vía hamburguesa.
  */
 #}
+{% set lp = language_prefix|default('') %}
+
 <header class="landing-header landing-header--minimal" role="banner">
   <div class="landing-header__container">
-    
+
     {# Logo + Branding #}
-    <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
+    <a href="{{ lp }}/" class="landing-header__brand" rel="home">
       {% if logo %}
         <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
       {% endif %}
@@ -25,7 +27,7 @@
     {# Acciones Usuario (siempre visibles en minimal) #}
     <div class="landing-header__actions landing-header__actions--minimal">
       {% if logged_in %}
-        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+        <a href="{{ lp }}/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
       {% endif %}
     </div>
 

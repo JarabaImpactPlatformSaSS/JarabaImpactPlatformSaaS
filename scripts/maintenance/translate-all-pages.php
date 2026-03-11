@@ -294,10 +294,18 @@ foreach ($ids as $id) {
           $aliasText = str_replace(['/', '-'], [' ', ' '], trim($alias, '/'));
           if (!empty($aliasText)) {
             $translatedAlias = ai_translate($aliasText, 'es', $lang, $provider, $model_id, $lang_names);
-            $translatedAlias = '/' . preg_replace('/[^a-z0-9]+/', '-', mb_strtolower($translatedAlias));
-            $translatedAlias = '/' . trim($translatedAlias, '-');
-            // Truncate to fit path_alias column (varchar 255).
-            $translatedAlias = mb_substr($translatedAlias, 0, 255);
+            // SAFEGUARD-ALIAS-001: Slugify, enforce single leading slash, max 80 chars.
+            $slug = preg_replace('/[^a-z0-9]+/', '-', mb_strtolower($translatedAlias));
+            $slug = trim($slug, '-');
+            // Detect AI hallucinations (slug too long or contains sentence patterns).
+            if (strlen($slug) > 80 || str_contains($slug, 'translate') || str_contains($slug, 'ready-to')) {
+              // Fallback: slugify from the translated title.
+              $titleForSlug = $translation->get('title')->value ?? $aliasText;
+              $slug = preg_replace('/[^a-z0-9]+/', '-', mb_strtolower($titleForSlug));
+              $slug = trim($slug, '-');
+              echo "!";
+            }
+            $translatedAlias = '/' . mb_substr($slug, 0, 80);
             $translation->set('path_alias', $translatedAlias);
             echo "A";
           }
@@ -347,6 +355,19 @@ foreach ($ids as $id) {
         }
       }
 
+      // SAFEGUARD: Verify translation canvas hasn't been corrupted (cross-page swap).
+      // The translated canvas should be roughly the same size as the original (±50%).
+      $esCanvas = $original->get('canvas_data')->value ?? '{}';
+      $trCanvas = $translation->get('canvas_data')->value ?? '{}';
+      $esLen = strlen($esCanvas);
+      $trLen = strlen($trCanvas);
+      if ($esLen > 500 && ($trLen < $esLen * 0.4 || $trLen > $esLen * 1.6)) {
+        echo " ABORT (canvas size mismatch: ES=$esLen, $lang=$trLen — possible corruption)\n";
+        $errors++;
+        $storage->resetCache([$id]);
+        continue;
+      }
+
       // Save.
       $page->setSyncing(TRUE);
       $page->save();
@@ -355,8 +376,17 @@ foreach ($ids as $id) {
       echo " OK\n";
       $translated_count++;
 
-      // Clear entity cache to free memory.
+      // CRITICAL: Reload entity after save to avoid cross-language contamination.
+      // Without this, the next language iteration reuses a stale entity object
+      // that may carry over modifications from the previous translation save.
       $storage->resetCache([$id]);
+      $page = $storage->load($id);
+      $original = $page ? $page->getUntranslated() : NULL;
+      if (!$page || !$original) {
+        echo "  [ERROR] Page $id — failed to reload after save\n";
+        $errors++;
+        break;
+      }
 
     }
     catch (\Throwable $e) {

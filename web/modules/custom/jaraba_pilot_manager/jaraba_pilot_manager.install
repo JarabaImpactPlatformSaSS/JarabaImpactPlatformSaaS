@@ -103,3 +103,43 @@ function jaraba_pilot_manager_update_10003(): string {
     return 'Error: ' . $e->getMessage();
   }
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_pilot_manager_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['pilot_feedback', 'pilot_program', 'pilot_tenant'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_pilot_manager_entities'] = [
+      'title' => t('Jaraba pilot manager: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_pilot_manager_entities'] = [
+      'title' => t('Jaraba pilot manager: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

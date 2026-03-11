@@ -212,12 +212,14 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
         $query->condition('tenant_id', $tenantId);
       }
 
-      // Filtrar por idioma actual si hay más de uno disponible.
-      $currentLangcode = $this->languageManager->getCurrentLanguage()->getId();
-      if (count($this->languageManager->getLanguages()) > 1) {
-        $query->condition('langcode', [$currentLangcode, 'und'], 'IN');
-      }
-
+      // I18N-PATHPROCESSOR-001: Do NOT filter by langcode here.
+      // page_content path_alias is translatable — the same entity can have
+      // different aliases per language (e.g., /equipo in ES, /team in EN).
+      // The PathProcessor's job is only to resolve path → entity ID.
+      // Drupal's EntityConverter + EntityRepository will load the correct
+      // translation based on the negotiated content language.
+      // Filtering by langcode would prevent /en/equipo from finding the entity
+      // when the EN translation has path_alias=/team (different from /equipo).
       $ids = $query->execute();
 
       if (!empty($ids)) {

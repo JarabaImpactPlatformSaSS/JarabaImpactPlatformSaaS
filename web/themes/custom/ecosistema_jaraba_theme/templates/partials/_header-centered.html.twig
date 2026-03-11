@@ -7,11 +7,13 @@
  * Mobile: Hamburguesa que se transforma en X.
  */
 #}
+{% set lp = language_prefix|default('') %}
+
 <header class="landing-header landing-header--centered" role="banner">
   <div class="landing-header__container landing-header__container--centered">
-    
+
     {# Logo + Branding centrado #}
-    <a href="{{ path('<front>') }}" class="landing-header__brand landing-header__brand--centered" rel="home">
+    <a href="{{ lp }}/" class="landing-header__brand landing-header__brand--centered" rel="home">
       {% if logo %}
         <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
       {% endif %}
@@ -24,7 +26,7 @@
     <nav class="landing-header__nav landing-header__nav--centered" aria-label="{% trans %}Main navigation{% endtrans %}">
       <ul class="landing-nav">
         {% for item in nav_items|default([]) %}
-          <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+          <li><a href="{{ lp }}{{ item.url }}">{{ item.text }}</a></li>
         {% endfor %}
       </ul>
     </nav>
@@ -32,16 +34,16 @@
     {# Acciones Usuario #}
     <div class="landing-header__actions">
       {% if logged_in %}
-        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+        <a href="{{ lp }}/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+        <a href="{{ lp }}/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
       {% else %}
-        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+        <a href="{{ lp }}/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
         {% if theme_settings.enable_header_cta %}
-          <a href="{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
+          <a href="{{ lp }}{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
             {{ theme_settings.header_cta_text|default('Empezar gratis'|t) }}
           </a>
         {% else %}
-          <a href="/user/register" class="btn-primary btn-primary--glow">
+          <a href="{{ lp }}/user/register" class="btn-primary btn-primary--glow">
             {% trans %}Empezar gratis{% endtrans %}
           </a>
         {% endif %}

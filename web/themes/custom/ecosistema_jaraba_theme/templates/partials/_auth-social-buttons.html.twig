@@ -3,13 +3,19 @@
  * @file
  * _auth-social-buttons.html.twig
  *
- * Botones OAuth para Google, LinkedIn y Microsoft via social_auth contrib.
+ * Botones OAuth para Google, LinkedIn y Microsoft.
+ * Google: custom controller (ecosistema_jaraba_core).
+ * LinkedIn/Microsoft: social_auth contrib.
+ *
  * Se incluye en page--auth.html.twig para login y registro.
  *
  * Variables:
  * - auth_type: 'login' | 'register'
+ * - lp: language prefix (e.g., '/es' or '')
  */
 #}
+
+{% set lp = lp|default('') %}
 
 <div class="auth-social" role="group" aria-label="{% trans %}Acceso con redes sociales{% endtrans %}">
   <div class="auth-social__divider">
@@ -23,8 +29,8 @@
   </div>
 
   <div class="auth-social__buttons">
-    {# Google OAuth #}
-    <a href="/user/login/google" class="auth-social__btn auth-social__btn--google"
+    {# Google OAuth — ROUTE-LANGPREFIX-001 #}
+    <a href="{{ lp }}/user/login/google" class="auth-social__btn auth-social__btn--google"
        data-track-cta="social_auth_google"
        data-track-position="auth_form">
       <svg class="auth-social__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -36,8 +42,8 @@
       <span>Google</span>
     </a>
 
-    {# LinkedIn OAuth #}
-    <a href="/user/login/linkedin" class="auth-social__btn auth-social__btn--linkedin"
+    {# LinkedIn OAuth — ROUTE-LANGPREFIX-001 #}
+    <a href="{{ lp }}/user/login/linkedin" class="auth-social__btn auth-social__btn--linkedin"
        data-track-cta="social_auth_linkedin"
        data-track-position="auth_form">
       <svg class="auth-social__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -46,8 +52,8 @@
       <span>LinkedIn</span>
     </a>
 
-    {# Microsoft OAuth #}
-    <a href="/user/login/microsoft" class="auth-social__btn auth-social__btn--microsoft"
+    {# Microsoft OAuth — ROUTE-LANGPREFIX-001 #}
+    <a href="{{ lp }}/user/login/microsoft" class="auth-social__btn auth-social__btn--microsoft"
        data-track-cta="social_auth_microsoft"
        data-track-position="auth_form">
       <svg class="auth-social__icon" viewBox="0 0 24 24" aria-hidden="true">

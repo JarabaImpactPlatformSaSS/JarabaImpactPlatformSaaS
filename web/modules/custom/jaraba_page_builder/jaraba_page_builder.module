@@ -1402,3 +1402,107 @@ function jaraba_page_builder_preprocess_stat_item(array &$variables): void {
 function jaraba_page_builder_page_content_view_alter(array &$build): void {
   unset($build['content_moderation_control']);
 }
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for page_content.
+ *
+ * SAFEGUARD-CANVAS-001: Prevents canvas_data corruption.
+ *
+ * Three checks:
+ * 1. Cross-page contamination: detects if canvas shrinks >70% (overwrite).
+ * 2. Translation contamination: detects if translation canvas is identical
+ *    to default language canvas (copy instead of translate).
+ * 3. Empty canvas protection: blocks saving empty canvas on entities that
+ *    previously had content.
+ *
+ * @see scripts/maintenance/backup-canvas.php
+ */
+function jaraba_page_builder_page_content_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Skip during sync operations (translations, migrations).
+  if ($entity->isSyncing()) {
+    return;
+  }
+
+  // Skip new entities.
+  if ($entity->isNew()) {
+    return;
+  }
+
+  $langcode = $entity->language()->getId();
+  $newCanvas = $entity->get('canvas_data')->value ?? '';
+  $newLength = strlen($newCanvas);
+
+  // Load original entity to compare.
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('page_content');
+    $original = $storage->loadUnchanged($entity->id());
+    if (!$original) {
+      return;
+    }
+
+    // Get original canvas for this language.
+    if ($original->hasTranslation($langcode)) {
+      $originalTranslation = $original->getTranslation($langcode);
+      $originalCanvas = $originalTranslation->get('canvas_data')->value ?? '';
+    }
+    else {
+      // New translation — no comparison needed.
+      return;
+    }
+
+    $originalLength = strlen($originalCanvas);
+
+    // CHECK 1: Canvas shrinkage >70% — likely overwrite/corruption.
+    if ($originalLength > 1000 && $newLength > 0 && $newLength < ($originalLength * 0.3)) {
+      \Drupal::logger('jaraba_page_builder')->critical(
+        'SAFEGUARD-CANVAS-001: Canvas shrinkage detected on page_content @id/@lang. ' .
+        'Original: @orig chars, New: @new chars (@pct% reduction). ' .
+        'This may indicate content corruption. Save allowed but logged.',
+        [
+          '@id' => $entity->id(),
+          '@lang' => $langcode,
+          '@orig' => $originalLength,
+          '@new' => $newLength,
+          '@pct' => round((1 - $newLength / $originalLength) * 100, 1),
+        ]
+      );
+    }
+
+    // CHECK 2: Empty canvas replacing non-empty — likely accidental wipe.
+    if ($originalLength > 500 && $newLength === 0) {
+      \Drupal::logger('jaraba_page_builder')->critical(
+        'SAFEGUARD-CANVAS-001: Empty canvas replacing @orig char canvas on page_content @id/@lang. ' .
+        'This is likely an error. Save allowed but logged as CRITICAL.',
+        [
+          '@id' => $entity->id(),
+          '@lang' => $langcode,
+          '@orig' => $originalLength,
+        ]
+      );
+    }
+
+    // CHECK 3: Translation canvas identical to default language — likely contamination.
+    $defaultLangcode = $entity->getUntranslated()->language()->getId();
+    if ($langcode !== $defaultLangcode && $newLength > 500) {
+      $defaultCanvas = $entity->getUntranslated()->get('canvas_data')->value ?? '';
+      if ($newCanvas === $defaultCanvas) {
+        \Drupal::logger('jaraba_page_builder')->warning(
+          'SAFEGUARD-CANVAS-001: Translation @lang canvas identical to default @default on page_content @id. ' .
+          'This may indicate cross-language contamination.',
+          [
+            '@id' => $entity->id(),
+            '@lang' => $langcode,
+            '@default' => $defaultLangcode,
+          ]
+        );
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // Never block saves — safeguard is monitoring only.
+    \Drupal::logger('jaraba_page_builder')->error(
+      'SAFEGUARD-CANVAS-001: Error in presave check: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}

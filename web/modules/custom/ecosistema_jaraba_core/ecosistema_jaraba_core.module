@@ -788,6 +788,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     'pricing_hub_page' => [
       'variables' => [
         'verticals' => [],
+        'overview_tiers' => [],
         'page_title' => '',
         'page_subtitle' => '',
         'guarantee_text' => '',

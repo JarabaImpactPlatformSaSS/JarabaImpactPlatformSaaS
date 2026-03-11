@@ -51,6 +51,9 @@
   } only %}
 {% endif %}
 
+{# I18N-NAVPREFIX-001: language_prefix = "" for default lang, "/en" or "/pt-br" for others #}
+{% set lp = language_prefix|default('') %}
+
 {# Incluir sub-partial según layout validado — pasamos nav_items parseados #}
 {% include '@ecosistema_jaraba_theme/partials/_header-' ~ layout ~ '.html.twig' with {
   site_name: site_name,
@@ -61,6 +64,8 @@
   theme_settings: theme_settings,
   available_languages: available_languages|default([]),
   current_langcode: current_langcode|default('es'),
+  language_prefix: lp,
+  language_links: language_links|default({}),
 } %}
 
 {# Mobile Menu Overlay (compartido por todos los layouts) #}
@@ -74,39 +79,39 @@
     <details class="mobile-menu-group" open>
       <summary class="mobile-menu-group__title">{% trans %}Para Profesionales{% endtrans %}</summary>
       <ul class="mobile-menu-list">
-        <li><a href="/empleabilidad">{% trans %}Empleabilidad{% endtrans %}</a></li>
-        <li><a href="/talento">{% trans %}Talento{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/empleabilidad">{% trans %}Empleabilidad{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/talento">{% trans %}Talento{% endtrans %}</a></li>
       </ul>
     </details>
     {# Grupo: Para Empresas #}
     <details class="mobile-menu-group">
       <summary class="mobile-menu-group__title">{% trans %}Para Empresas{% endtrans %}</summary>
       <ul class="mobile-menu-list">
-        <li><a href="/emprendimiento">{% trans %}Emprendimiento{% endtrans %}</a></li>
-        <li><a href="/despachos">{% trans %}Despachos{% endtrans %}</a></li>
-        <li><a href="/comercioconecta">{% trans %}ComercioConecta{% endtrans %}</a></li>
-        <li><a href="/agroconecta">{% trans %}AgroConecta{% endtrans %}</a></li>
-        <li><a href="/serviciosconecta">{% trans %}ServiciosConecta{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/emprendimiento">{% trans %}Emprendimiento{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/despachos">{% trans %}Despachos{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/comercioconecta">{% trans %}ComercioConecta{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/agroconecta">{% trans %}AgroConecta{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/serviciosconecta">{% trans %}ServiciosConecta{% endtrans %}</a></li>
       </ul>
     </details>
     {# Grupo: Para Instituciones #}
     <details class="mobile-menu-group">
       <summary class="mobile-menu-group__title">{% trans %}Para Instituciones{% endtrans %}</summary>
       <ul class="mobile-menu-list">
-        <li><a href="/instituciones">{% trans %}Instituciones{% endtrans %}</a></li>
-        <li><a href="/andalucia-ei">{% trans %}Andalucía +ei{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/instituciones">{% trans %}Instituciones{% endtrans %}</a></li>
+        <li><a href="{{ lp }}/andalucia-ei">{% trans %}Andalucía +ei{% endtrans %}</a></li>
       </ul>
     </details>
     {# Links directos #}
     <ul class="mobile-menu-list mobile-menu-list--direct">
-      <li><a href="/planes">{% trans %}Precios{% endtrans %}</a></li>
-      <li><a href="/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
+      <li><a href="{{ lp }}/planes">{% trans %}Precios{% endtrans %}</a></li>
+      <li><a href="{{ lp }}/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
     </ul>
     {% else %}
     {# Navegación plana (meta-sitios) — usa nav_items inyectados por MetaSiteResolverService #}
     <ul class="mobile-menu-list">
       {% for item in nav_items %}
-        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+        <li><a href="{{ lp }}{{ item.url }}">{{ item.text }}</a></li>
       {% endfor %}
     </ul>
     {% endif %}
@@ -124,10 +129,10 @@
 
   <div class="mobile-menu-actions">
     {% if logged_in %}
-      <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+      <a href="{{ lp }}/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
     {% else %}
-      <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-      <a href="/user/register" class="btn-primary btn-primary--glow">{% trans %}Empieza gratis{% endtrans %} →</a>
+      <a href="{{ lp }}/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+      <a href="{{ lp }}/user/register" class="btn-primary btn-primary--glow">{% trans %}Empieza gratis{% endtrans %} →</a>
     {% endif %}
   </div>
 

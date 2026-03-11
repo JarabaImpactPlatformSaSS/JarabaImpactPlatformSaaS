@@ -166,3 +166,43 @@ function jaraba_verifactu_uninstall(): void {
   // Eliminar configuracion del modulo.
   \Drupal::configFactory()->getEditable('jaraba_verifactu.settings')->delete();
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_verifactu_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['verifactu_event_log', 'verifactu_invoice_record', 'verifactu_remision_batch', 'verifactu_tenant_config'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_verifactu_entities'] = [
+      'title' => t('Jaraba verifactu: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_verifactu_entities'] = [
+      'title' => t('Jaraba verifactu: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

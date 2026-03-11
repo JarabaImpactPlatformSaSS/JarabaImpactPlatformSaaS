@@ -137,7 +137,7 @@
       highlight_comparison: [
         { name: 'Aranzadi', price: '300+ EUR/mes'|t, description: 'Solo base de datos'|t },
         { name: 'vLex', price: '150+ EUR/mes'|t, description: 'Solo busqueda'|t },
-        { name: 'JarabaLex', price: '59 EUR/mes'|t, description: 'TODO integrado con IA'|t, is_jaraba: true },
+        { name: 'JarabaLex', price: (ped_pricing.jarabalex.professional_price|default(59) ~ ' EUR/mes')|t, description: 'TODO integrado con IA'|t, is_jaraba: true },
       ],
       highlight_cta_text: 'Prueba JarabaLex gratis 14 dias'|t,
       highlight_cta_url: ped_urls.jarabalex|default('/jarabalex'),

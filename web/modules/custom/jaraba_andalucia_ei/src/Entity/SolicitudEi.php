@@ -435,6 +435,142 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // === ACCESO DIGITAL Y DISPONIBILIDAD ===
+
+        $fields['nivel_digital'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Nivel de competencias digitales'))
+            ->setDescription(t('Autoevaluación según marco DigComp 2.2.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'ninguno' => t('Ninguno — No uso ordenador ni móvil'),
+                'basico' => t('Básico — Email, WhatsApp, navegación web'),
+                'intermedio' => t('Intermedio — Ofimática, redes sociales, apps'),
+                'avanzado' => t('Avanzado — Herramientas profesionales, edición, gestión online'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 0,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 0,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['conoce_ia'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Conocimiento de Inteligencia Artificial'))
+            ->setDescription(t('Nivel de familiaridad con herramientas de IA.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'no_conozco' => t('No conozco — No sé qué es la IA'),
+                'he_oido' => t('He oído hablar — Sé que existe pero no la he usado'),
+                'uso_basico' => t('Uso básico — He usado ChatGPT o similar alguna vez'),
+                'uso_habitual' => t('Uso habitual — Utilizo IA regularmente en mi día a día'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 1,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 1,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['acceso_ordenador'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Acceso a ordenador'))
+            ->setDescription(t('Disponibilidad de equipo informático para uso personal.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'no_tengo' => t('No tengo acceso a ordenador'),
+                'compartido' => t('Comparto ordenador con otras personas'),
+                'propio_antiguo' => t('Tengo ordenador propio (antiguo o limitado)'),
+                'propio_reciente' => t('Tengo ordenador propio (reciente, funciona bien)'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 2,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 2,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['acceso_internet'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Acceso a Internet'))
+            ->setDescription(t('Tipo de conexión a Internet disponible.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'sin_acceso' => t('Sin acceso a Internet en casa'),
+                'movil_solo' => t('Solo datos móviles'),
+                'wifi_inestable' => t('Wi-Fi en casa (inestable o lento)'),
+                'fibra_estable' => t('Fibra o conexión estable en casa'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 3,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 3,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['disponibilidad_horaria'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Disponibilidad horaria'))
+            ->setDescription(t('Franja horaria preferente para participar en el programa.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'mananas' => t('Mañanas (9:00–14:00)'),
+                'tardes' => t('Tardes (16:00–20:00)'),
+                'flexible' => t('Flexible — Puedo adaptarme a cualquier horario'),
+                'fines_semana' => t('Solo fines de semana'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 4,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 4,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['como_conocio'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('¿Cómo conociste el programa?'))
+            ->setDescription(t('Canal por el que el candidato supo del programa Andalucía +ei.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'redes_sociales' => t('Redes sociales (Instagram, Facebook, TikTok...)'),
+                'web' => t('Buscando en Internet / página web'),
+                'conocido' => t('Me lo recomendó un conocido/a'),
+                'sae' => t('Servicio Andaluz de Empleo (SAE)'),
+                'ayuntamiento' => t('Ayuntamiento u otra administración pública'),
+                'otro' => t('Otro'),
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 5,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 5,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // === CAMPOS ADMINISTRATIVOS ===
 
         $fields['estado'] = BaseFieldDefinition::create('list_string')

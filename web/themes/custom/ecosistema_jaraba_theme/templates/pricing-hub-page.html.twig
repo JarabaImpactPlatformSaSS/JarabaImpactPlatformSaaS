@@ -86,29 +86,43 @@
       {% trans %}Todos los verticales ofrecen 3 planes adaptados a tu nivel de necesidad.{% endtrans %}
     </p>
 
+    {# NO-HARDCODE-PRICE-001: Tiers dinámicos desde MetaSitePricingService #}
     <div class="pricing-hub-overview__tiers">
-      <div class="pricing-hub-overview__tier">
-        <h3 class="pricing-hub-overview__tier-name">{% trans %}Starter{% endtrans %}</h3>
-        <p class="pricing-hub-overview__tier-price">{% trans %}Gratis{% endtrans %}</p>
-        <p class="pricing-hub-overview__tier-desc">
-          {% trans %}Explora la plataforma sin compromiso. Perfecto para evaluar y empezar.{% endtrans %}
-        </p>
-      </div>
-      <div class="pricing-hub-overview__tier pricing-hub-overview__tier--recommended">
-        <span class="pricing-hub-overview__tier-badge">{% trans %}Más popular{% endtrans %}</span>
-        <h3 class="pricing-hub-overview__tier-name">{% trans %}Profesional{% endtrans %}</h3>
-        <p class="pricing-hub-overview__tier-price">{% trans %}Desde 29€/mes + IVA{% endtrans %}</p>
-        <p class="pricing-hub-overview__tier-desc">
-          {% trans %}Para profesionales y negocios en crecimiento. IA integrada y analytics.{% endtrans %}
-        </p>
-      </div>
-      <div class="pricing-hub-overview__tier">
-        <h3 class="pricing-hub-overview__tier-name">{% trans %}Empresa{% endtrans %}</h3>
-        <p class="pricing-hub-overview__tier-price">{% trans %}A medida{% endtrans %}</p>
-        <p class="pricing-hub-overview__tier-desc">
-          {% trans %}Para instituciones y organizaciones. SLA, soporte dedicado y onboarding.{% endtrans %}
-        </p>
-      </div>
+      {% for tier in overview_tiers %}
+        <div class="pricing-hub-overview__tier{% if tier.is_recommended %} pricing-hub-overview__tier--recommended{% endif %}">
+          {% if tier.is_recommended %}
+            <span class="pricing-hub-overview__tier-badge">{% trans %}Más popular{% endtrans %}</span>
+          {% endif %}
+          <h3 class="pricing-hub-overview__tier-name">{{ tier.label }}</h3>
+          <p class="pricing-hub-overview__tier-price">
+            {% if tier.price_monthly == 0 %}
+              {% trans %}Gratis{% endtrans %}
+            {% elseif tier.price_monthly > 0 %}
+              {% trans %}Desde {{ tier.price_monthly|number_format(0) }}€/mes + IVA{% endtrans %}
+            {% else %}
+              {% trans %}A medida{% endtrans %}
+            {% endif %}
+          </p>
+          {% if tier.description %}
+            <p class="pricing-hub-overview__tier-desc">{{ tier.description }}</p>
+          {% endif %}
+        </div>
+      {% else %}
+        {# Fallback si no hay tiers configurados #}
+        <div class="pricing-hub-overview__tier">
+          <h3 class="pricing-hub-overview__tier-name">{% trans %}Starter{% endtrans %}</h3>
+          <p class="pricing-hub-overview__tier-price">{% trans %}Gratis{% endtrans %}</p>
+        </div>
+        <div class="pricing-hub-overview__tier pricing-hub-overview__tier--recommended">
+          <span class="pricing-hub-overview__tier-badge">{% trans %}Más popular{% endtrans %}</span>
+          <h3 class="pricing-hub-overview__tier-name">{% trans %}Profesional{% endtrans %}</h3>
+          <p class="pricing-hub-overview__tier-price">{% trans %}Contactar{% endtrans %}</p>
+        </div>
+        <div class="pricing-hub-overview__tier">
+          <h3 class="pricing-hub-overview__tier-name">{% trans %}Empresa{% endtrans %}</h3>
+          <p class="pricing-hub-overview__tier-price">{% trans %}A medida{% endtrans %}</p>
+        </div>
+      {% endfor %}
     </div>
   </div>
 </section>

@@ -18,6 +18,7 @@
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 {% set ts = theme_settings|default({}) %}
 {% set footer_layout = ts.footer_layout|default('standard') %}
+{% set lp = language_prefix|default('') %}
 
 <footer class="landing-footer landing-footer--{{ footer_layout }}" role="contentinfo">
   <div class="landing-footer__container">
@@ -39,7 +40,7 @@
               {% for line in ts.footer_widget2_content|split('\n') %}
                 {% set parts = line|split('|') %}
                 {% if parts|length == 2 %}
-                  <li><a href="{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
+                  <li><a href="{{ lp }}{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
                 {% endif %}
               {% endfor %}
             </ul>
@@ -54,7 +55,7 @@
               {% for line in ts.footer_widget3_content|split('\n') %}
                 {% set parts = line|split('|') %}
                 {% if parts|length == 2 %}
-                  <li><a href="{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
+                  <li><a href="{{ lp }}{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
                 {% endif %}
               {% endfor %}
             </ul>
@@ -87,7 +88,7 @@
             {% for line in col1_links|split("\n") %}
               {% set parts = line|split('|') %}
               {% if parts|length >= 2 %}
-                <li><a href="{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
+                <li><a href="{{ lp }}{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
               {% endif %}
             {% endfor %}
           </ul>
@@ -100,7 +101,7 @@
             {% for line in col2_links|split("\n") %}
               {% set parts = line|split('|') %}
               {% if parts|length >= 2 %}
-                <li><a href="{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
+                <li><a href="{{ lp }}{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
               {% endif %}
             {% endfor %}
           </ul>
@@ -113,7 +114,7 @@
             {% for line in col3_links|split("\n") %}
               {% set parts = line|split('|') %}
               {% if parts|length >= 2 %}
-                <li><a href="{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
+                <li><a href="{{ lp }}{{ parts[1]|trim }}">{{ parts[0]|trim }}</a></li>
               {% endif %}
             {% endfor %}
             {# RGPD Art. 7.3: Retirar consentimiento con misma facilidad que otorgarlo #}

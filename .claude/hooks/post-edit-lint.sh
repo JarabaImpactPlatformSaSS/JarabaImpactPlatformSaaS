@@ -129,6 +129,22 @@ case "$EXT" in
     if [ -n "$UNTRANS" ]; then
       ERRORS="${ERRORS:+$ERRORS\n}I18N: Posibles textos sin {% trans %} detectados. Verificar:\n$UNTRANS"
     fi
+
+    # 3. Detectar precios EUR hardcodeados (NO-HARDCODE-PRICE-001)
+    # Excluir: competidores (Aranzadi, vLex), comentarios, variables dinamicas, agent-dashboard
+    BASENAME=$(basename "$FILE_PATH")
+    if [ "$BASENAME" != "page--agent-dashboard.html.twig" ]; then
+      HARDCODED_PRICES=$(grep -nE '\b[1-9][0-9]*[.,]?[0-9]*\s*(€|EUR)\b' "$FILE_PATH" 2>/dev/null | \
+        grep -v 'Aranzadi\|vLex\|Wolters' | \
+        grep -v '^\s*{#' | \
+        grep -v 'ped_pricing\.\|tier\.price\|from_price\|price_monthly\|number_format' | \
+        grep -v '\b0\s*€' | \
+        head -3) || true
+
+      if [ -n "$HARDCODED_PRICES" ]; then
+        ERRORS="${ERRORS:+$ERRORS\n}NO-HARDCODE-PRICE-001: Precios EUR hardcodeados detectados. Usar MetaSitePricingService:\n$HARDCODED_PRICES"
+      fi
+    fi
     ;;
 esac
 

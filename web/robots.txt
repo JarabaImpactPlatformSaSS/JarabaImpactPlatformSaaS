@@ -1,13 +1,20 @@
 #
 # robots.txt
 #
-# Jaraba Impact Platform — robots.txt optimizado para SEO.
-# Última actualización: 2026-03-06
+# This file is to prevent the crawling and indexing of certain parts
+# of your site by web crawlers and spiders run by sites like Yahoo!
+# and Google. By telling these "robots" where not to go on your site,
+# you save bandwidth and server resources.
 #
+# This file will be ignored unless it is at the root of your host:
+# Used:    http://example.com/robots.txt
+# Ignored: http://example.com/site/robots.txt
+#
+# For more information about the robots.txt standard, see:
+# http://www.robotstxt.org/robotstxt.html
 
 User-agent: *
-
-# CSS, JS, Images — permitir indexación de assets
+# CSS, JS, Images
 Allow: /core/*.css$
 Allow: /core/*.css?
 Allow: /core/*.js$
@@ -26,63 +33,40 @@ Allow: /profiles/*.jpg
 Allow: /profiles/*.jpeg
 Allow: /profiles/*.png
 Allow: /profiles/*.svg
-Allow: /themes/*.css$
-Allow: /themes/*.css?
-Allow: /themes/*.js$
-Allow: /themes/*.js?
-Allow: /themes/*.png
-Allow: /themes/*.jpg
-Allow: /themes/*.svg
-Allow: /themes/*.webp
-
-# Directorios internos de Drupal
+# Directories
 Disallow: /core/
 Disallow: /profiles/
-Disallow: /vendor/
-
-# Archivos internos
+# Files
 Disallow: /README.md
-Disallow: /composer/
+Disallow: /composer/Metapackage/README.txt
+Disallow: /composer/Plugin/ProjectMessage/README.md
+Disallow: /composer/Plugin/Scaffold/README.md
+Disallow: /composer/Plugin/VendorHardening/README.txt
+Disallow: /composer/Template/README.txt
 Disallow: /modules/README.txt
 Disallow: /sites/README.txt
 Disallow: /themes/README.txt
-Disallow: /INSTALL.txt
-Disallow: /CHANGELOG.txt
-Disallow: /UPDATE.txt
-Disallow: /web.config
-
-# Rutas de admin y sistema
+# Paths (clean URLs)
 Disallow: /admin/
-Disallow: /batch
 Disallow: /comment/reply/
 Disallow: /filter/tips
 Disallow: /node/add/
 Disallow: /search/
-Disallow: /media/oembed
-Disallow: /*/media/oembed
-
-# Autenticación
 Disallow: /user/register
 Disallow: /user/password
 Disallow: /user/login
 Disallow: /user/logout
-
-# APIs internas (no indexar)
-Disallow: /api/v1/
-Disallow: /jsonapi/
-Disallow: /session/token
-
-# Rutas SaaS internas
-Disallow: /dashboard
-Disallow: /productor/dashboard
-Disallow: /comercio/dashboard
-Disallow: /empleo/dashboard
-Disallow: /tenant/
-Disallow: /checkout/
-Disallow: /stripe/
-
-# index.php duplicates
-Disallow: /index.php/
-
-# Sitemap
-Sitemap: https://plataformadeecosistemas.es/sitemap.xml
+Disallow: /media/oembed
+Disallow: /*/media/oembed
+# Paths (no clean URLs)
+Disallow: /index.php/admin/
+Disallow: /index.php/comment/reply/
+Disallow: /index.php/filter/tips
+Disallow: /index.php/node/add/
+Disallow: /index.php/search/
+Disallow: /index.php/user/password
+Disallow: /index.php/user/register
+Disallow: /index.php/user/login
+Disallow: /index.php/user/logout
+Disallow: /index.php/media/oembed
+Disallow: /index.php/*/media/oembed

@@ -136,6 +136,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - SVG en canvas_data: hex explicito en stroke/fill, NUNCA currentColor (ICON-CANVAS-INLINE-001)
 - NO emojis Unicode como iconos visuales en Page Builder (ICON-EMOJI-001)
 
+### Precios y Valores Configurables (NO-HARDCODE-PRICE-001)
+- NUNCA hardcodear precios EUR en templates Twig. SIEMPRE desde MetaSitePricingService
+- Inyectar en preprocess: `$variables['ped_pricing']` via `ecosistema_jaraba_core.metasite_pricing`
+- En Twig: `{{ ped_pricing.{vertical}.professional_price|default(fallback) }}`
+- Competidores (Aranzadi, vLex) son excepcion: referencia externa no controlable
+- Validacion: `php scripts/validation/validate-no-hardcoded-prices.php` + post-edit-lint hook
+- Admin: `/admin/structure/saas-plan`
+
 ## FRONTEND — ZERO REGION PATTERN
 
 ### Paginas Frontend Limpias
@@ -239,12 +247,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v121.0.0
-- ARQUITECTURA: v109.0.0
-- INDICE: v150.0.0
-- FLUJO: v74.0.0
-- Ultimo aprendizaje: #171
-- Ultima golden rule: #111
+- DIRECTRICES: v126.0.0
+- ARQUITECTURA: v114.0.0
+- INDICE: v155.0.0
+- FLUJO: v79.0.0
+- Ultimo aprendizaje: #176
+- Ultima golden rule: #117
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:

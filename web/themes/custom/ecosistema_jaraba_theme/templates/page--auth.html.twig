@@ -214,21 +214,24 @@
         {{ auth_form }}
 
         {# Botones de OAuth Social Auth (login y registro) #}
+        {# TWIG-INCLUDE-ONLY-001: pass language_prefix explicitly as lp #}
         {% if auth_form_type in ['login', 'register'] %}
           {% include '@ecosistema_jaraba_theme/partials/_auth-social-buttons.html.twig' with {
             auth_type: auth_form_type,
+            lp: language_prefix|default(''),
           } only %}
         {% endif %}
 
-        {# Enlaces secundarios - Traducibles #}
+        {# Enlaces secundarios - ROUTE-LANGPREFIX-001: prepend language prefix #}
+        {% set lp = language_prefix|default('') %}
         <div class="auth-links">
           {% if auth_form_type == 'login' %}
-            <a href="/user/register" class="auth-links__primary">{% trans %}No tienes cuenta? Registrate{% endtrans %}</a>
-            <a href="/user/password" class="auth-links__secondary">{% trans %}Olvidaste tu contrasena?{% endtrans %}</a>
+            <a href="{{ lp }}/user/register" class="auth-links__primary">{% trans %}No tienes cuenta? Registrate{% endtrans %}</a>
+            <a href="{{ lp }}/user/password" class="auth-links__secondary">{% trans %}Olvidaste tu contrasena?{% endtrans %}</a>
           {% elseif auth_form_type == 'register' %}
-            <a href="/user/login" class="auth-links__primary">{% trans %}Ya tienes cuenta? Inicia sesion{% endtrans %}</a>
+            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Ya tienes cuenta? Inicia sesion{% endtrans %}</a>
           {% elseif auth_form_type == 'password' %}
-            <a href="/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesion{% endtrans %}</a>
+            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesion{% endtrans %}</a>
           {% elseif auth_form_type == 'logout' %}
             <a href="{{ path('<front>') }}" class="auth-links__primary">{% trans %}Volver al inicio{% endtrans %}</a>
           {% endif %}

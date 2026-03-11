@@ -317,9 +317,25 @@ class PricingController extends ControllerBase
             ];
         }
 
+        // NO-HARDCODE-PRICE-001: Overview tiers with dynamic prices.
+        $overviewTiers = [];
+        if ($this->pricingService) {
+            $defaultTiers = $this->pricingService->getPricingPreview('_default');
+            foreach ($defaultTiers as $tier) {
+                $overviewTiers[] = [
+                    'label' => $tier['label'],
+                    'tier_key' => $tier['tier_key'],
+                    'price_monthly' => $tier['price_monthly'],
+                    'is_recommended' => $tier['is_recommended'],
+                    'description' => $tier['description'],
+                ];
+            }
+        }
+
         return [
             '#theme' => 'pricing_hub_page',
             '#verticals' => $verticals,
+            '#overview_tiers' => $overviewTiers,
             '#page_title' => $this->t('Elige tu vertical y encuentra el plan perfecto'),
             '#page_subtitle' => $this->t('7 soluciones verticalizadas. Todas empiezan gratis. Sin permanencia.'),
             '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),

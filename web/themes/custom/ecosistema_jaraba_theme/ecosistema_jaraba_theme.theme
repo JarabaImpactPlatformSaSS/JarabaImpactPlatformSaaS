@@ -2617,6 +2617,14 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $language_manager = \Drupal::languageManager();
   $current_language = $language_manager->getCurrentLanguage();
   $variables['current_langcode'] = $current_language->getId();
+  $defaultLangcode = $language_manager->getDefaultLanguage()->getId();
+
+  // I18N-NAVPREFIX-001: Language prefix for all navigation links.
+  // Non-default languages get "/{langcode}" prefix; default language gets "".
+  // Templates MUST prepend {{ language_prefix }} to ALL hardcoded paths.
+  $variables['language_prefix'] = ($current_language->getId() !== $defaultLangcode)
+    ? '/' . $current_language->getId()
+    : '';
 
   // Build language switch links for the current page.
   $route_match = \Drupal::routeMatch();
@@ -2624,8 +2632,30 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $route_params = $route_match->getRawParameters()->all();
 
   $language_links = [];
+
+  // I18N-LANGSWITCHER-001: For page_content routes, use the translated
+  // path_alias directly instead of Url::fromRoute() which generates /page/ID.
+  // page_content has no outbound path processor, so the language switcher
+  // must build friendly URLs manually using each translation's path_alias.
+  $page_content = NULL;
+  if ($route_name === 'entity.page_content.canonical') {
+    $page_content = $route_match->getParameter('page_content');
+  }
+
   foreach ($language_manager->getLanguages() as $langcode => $language) {
     try {
+      if ($page_content && $page_content->hasTranslation($langcode)) {
+        $translation = $page_content->getTranslation($langcode);
+        $alias = $translation->get('path_alias')->value ?? '';
+        if (!empty($alias)) {
+          // Build URL with language prefix (skip prefix for default language).
+          $prefix = ($langcode !== $defaultLangcode) ? '/' . $langcode : '';
+          $language_links[$langcode] = $prefix . $alias;
+          continue;
+        }
+      }
+
+      // Generic route-based URL generation for non-page_content routes.
       $url = \Drupal\Core\Url::fromRoute($route_name ?: '<front>', $route_params, [
         'language' => $language,
       ]);
@@ -2871,6 +2901,43 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         }
         catch (\Throwable) {
           $variables['ped_urls'][$key] = $path;
+        }
+      }
+
+      // =====================================================================
+      // DYNAMIC PRICING — PLAN-RESOLVER-001 + NO-HARDCODE-PRICE-001
+      // Inyectar precios desde MetaSitePricingService para eliminar valores
+      // hardcodeados en templates. Cada vertical resuelve sus propios precios.
+      // =====================================================================
+      $variables['ped_pricing'] = [];
+      if (\Drupal::hasService('ecosistema_jaraba_core.metasite_pricing')) {
+        try {
+          /** @var \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService $pricingService */
+          $pricingService = \Drupal::service('ecosistema_jaraba_core.metasite_pricing');
+
+          // JarabaLex pricing (para comparativa y hero legal).
+          $jarabalexTiers = $pricingService->getPricingPreview('jarabalex');
+          $jarabalexFromPrice = $pricingService->getFromPrice('jarabalex');
+          $variables['ped_pricing']['jarabalex'] = [
+            'tiers' => $jarabalexTiers,
+            'from_price' => $jarabalexFromPrice,
+            // Precio del tier professional para la comparativa.
+            'professional_price' => 0.0,
+          ];
+          foreach ($jarabalexTiers as $tier) {
+            if ($tier['tier_key'] === 'professional') {
+              $variables['ped_pricing']['jarabalex']['professional_price'] = $tier['price_monthly'];
+              break;
+            }
+          }
+
+          // Empleabilidad pricing (para hero empleo).
+          $variables['ped_pricing']['empleabilidad'] = [
+            'from_price' => $pricingService->getFromPrice('empleabilidad'),
+          ];
+        }
+        catch (\Throwable) {
+          // PRESAVE-RESILIENCE-001: pricing es no-critico.
         }
       }
     }

@@ -73,3 +73,43 @@ function jaraba_tenant_export_update_10001(): void {
     }
   }
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_tenant_export_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['tenant_export_record'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_tenant_export_entities'] = [
+      'title' => t('Jaraba tenant export: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_tenant_export_entities'] = [
+      'title' => t('Jaraba tenant export: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

@@ -47,7 +47,7 @@
   'legal': {
     'eyebrow': '+154.000 abogados en Espana aun sin IA en su despacho'|t,
     'title': 'Tu despacho merece inteligencia legal de verdad — a precio de autonomo'|t,
-    'subtitle': 'Busca en CENDOJ, BOE y EUR-Lex con IA. Gestiona expedientes, agenda, facturacion y LexNET. Desde 29 EUR/mes.'|t,
+    'subtitle': ('Busca en CENDOJ, BOE y EUR-Lex con IA. Gestiona expedientes, agenda, facturacion y LexNET. ' ~ ped_pricing.jarabalex.from_price.from_label|default('Desde 29 EUR/mes') ~ '.')|t,
     'cta_primary_text': 'Prueba JarabaLex gratis'|t,
     'cta_primary_url': urls.jarabalex|default('/jarabalex'),
     'cta_secondary_text': 'Ver demo de 2 minutos'|t,

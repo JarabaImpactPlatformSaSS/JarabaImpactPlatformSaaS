@@ -231,3 +231,43 @@ function jaraba_business_tools_uninstall(): void {
     ->condition('name', 'jaraba_canvas_changes_%', 'LIKE')
     ->execute();
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_business_tools_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['business_model_canvas', 'canvas_block', 'canvas_version', 'financial_projection', 'mvp_hypothesis'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_business_tools_entities'] = [
+      'title' => t('Jaraba business tools: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_business_tools_entities'] = [
+      'title' => t('Jaraba business tools: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

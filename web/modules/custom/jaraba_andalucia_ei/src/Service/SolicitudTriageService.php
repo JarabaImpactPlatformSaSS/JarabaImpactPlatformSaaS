@@ -143,20 +143,98 @@ class SolicitudTriageService
         $colectivoKey = $solicitud->getColectivoInferido();
         $colectivo = $colectivos[$colectivoKey] ?? 'Sin determinar';
 
+        $nivelesDigitales = [
+            'ninguno' => 'Ninguno (no usa ordenador ni móvil)',
+            'basico' => 'Básico (email, WhatsApp, navegación)',
+            'intermedio' => 'Intermedio (ofimática, redes, apps)',
+            'avanzado' => 'Avanzado (herramientas profesionales)',
+        ];
+
+        $nivelesIA = [
+            'no_conozco' => 'No conoce la IA',
+            'he_oido' => 'Ha oído hablar pero no la ha usado',
+            'uso_basico' => 'Uso básico (ChatGPT o similar alguna vez)',
+            'uso_habitual' => 'Uso habitual (IA regularmente)',
+        ];
+
+        $accesoOrdenador = [
+            'no_tengo' => 'Sin acceso a ordenador',
+            'compartido' => 'Ordenador compartido',
+            'propio_antiguo' => 'Ordenador propio (antiguo/limitado)',
+            'propio_reciente' => 'Ordenador propio (reciente)',
+        ];
+
+        $accesoInternet = [
+            'sin_acceso' => 'Sin Internet en casa',
+            'movil_solo' => 'Solo datos móviles',
+            'wifi_inestable' => 'Wi-Fi inestable',
+            'fibra_estable' => 'Fibra/conexión estable',
+        ];
+
+        $disponibilidades = [
+            'mananas' => 'Mañanas (9-14h)',
+            'tardes' => 'Tardes (16-20h)',
+            'flexible' => 'Flexible',
+            'fines_semana' => 'Solo fines de semana',
+        ];
+
+        $canales = [
+            'redes_sociales' => 'Redes sociales',
+            'web' => 'Búsqueda web',
+            'conocido' => 'Recomendación personal',
+            'sae' => 'SAE',
+            'ayuntamiento' => 'Ayuntamiento/admin pública',
+            'otro' => 'Otro',
+        ];
+
+        $nivelDigitalKey = $solicitud->get('nivel_digital')->value ?? '';
+        $conoceIaKey = $solicitud->get('conoce_ia')->value ?? '';
+        $accesoOrdKey = $solicitud->get('acceso_ordenador')->value ?? '';
+        $accesoIntKey = $solicitud->get('acceso_internet')->value ?? '';
+        $dispKey = $solicitud->get('disponibilidad_horaria')->value ?? '';
+        $canalKey = $solicitud->get('como_conocio')->value ?? '';
+
+        // Pre-resolve for heredoc (no ?? inside heredoc).
+        $nivelDigitalLabel = $nivelesDigitales[$nivelDigitalKey] ?? 'No indicado';
+        $conoceIaLabel = $nivelesIA[$conoceIaKey] ?? 'No indicado';
+        $accesoOrdLabel = $accesoOrdenador[$accesoOrdKey] ?? 'No indicado';
+        $accesoIntLabel = $accesoInternet[$accesoIntKey] ?? 'No indicado';
+        $dispLabel = $disponibilidades[$dispKey] ?? 'No indicada';
+        $canalLabel = $canales[$canalKey] ?? 'No indicado';
+        $municipio = $solicitud->get('municipio')->value ?? '';
+        $situacionLaboral = $solicitud->get('situacion_laboral')->value ?? '';
+        $tiempoDesempleo = $solicitud->get('tiempo_desempleo')->value ?? '';
+        $nivelEstudios = $solicitud->get('nivel_estudios')->value ?? '';
+        $esMigrante = $this->boolToStr((bool) $solicitud->get('es_migrante')->value);
+        $percibePrestacion = $this->boolToStr((bool) $solicitud->get('percibe_prestacion')->value);
+        $experiencia = $solicitud->get('experiencia_sector')->value ?? '';
+        $motivacion = $solicitud->get('motivacion')->value ?? '';
+        $nombre = $solicitud->getNombre();
+
         return <<<PROMPT
 DATOS DE LA SOLICITUD:
-- Nombre: {$solicitud->getNombre()}
+- Nombre: {$nombre}
 - Edad: {$edad}
 - Provincia: {$provincia}
-- Municipio: {$solicitud->get('municipio')->value}
-- Situación laboral: {$solicitud->get('situacion_laboral')->value}
-- Tiempo en desempleo: {$solicitud->get('tiempo_desempleo')->value}
-- Nivel de estudios: {$solicitud->get('nivel_estudios')->value}
-- Es migrante: {$this->boolToStr((bool) $solicitud->get('es_migrante')->value)}
-- Percibe prestación/subsidio/RAI: {$this->boolToStr((bool) $solicitud->get('percibe_prestacion')->value)}
+- Municipio: {$municipio}
+- Situación laboral: {$situacionLaboral}
+- Tiempo en desempleo: {$tiempoDesempleo}
+- Nivel de estudios: {$nivelEstudios}
+- Es migrante: {$esMigrante}
+- Percibe prestación/subsidio/RAI: {$percibePrestacion}
 - Colectivo inferido: {$colectivo}
-- Experiencia profesional: {$solicitud->get('experiencia_sector')->value}
-- Motivación: {$solicitud->get('motivacion')->value}
+- Experiencia profesional: {$experiencia}
+
+ACCESO DIGITAL:
+- Competencias digitales: {$nivelDigitalLabel}
+- Conocimiento de IA: {$conoceIaLabel}
+- Acceso a ordenador: {$accesoOrdLabel}
+- Acceso a Internet: {$accesoIntLabel}
+
+DISPONIBILIDAD Y MOTIVACIÓN:
+- Disponibilidad horaria: {$dispLabel}
+- Canal de conocimiento: {$canalLabel}
+- Motivación: {$motivacion}
 
 Evalúa esta solicitud para el programa Andalucía +ei de emprendimiento.
 PROMPT;
@@ -176,13 +254,20 @@ Tu tarea es evaluar solicitudes de participación y proporcionar:
 3. Una RECOMENDACIÓN: "admitir", "revisar" o "rechazar"
 
 CRITERIOS DE EVALUACIÓN:
-- Pertenencia a colectivo prioritario (larga duración, mayores 45, migrantes, perceptores): +20 puntos
-- Situación de desempleo: +15 puntos
+- Pertenencia a colectivo prioritario (larga duración, mayores 45, migrantes, perceptores): +15 puntos
+- Situación de desempleo: +10 puntos
 - Motivación clara y articulada: +15 puntos
 - Experiencia profesional relevante: +10 puntos
-- Residencia en Andalucía (todas las provincias son elegibles): +10 puntos
-- Nivel formativo (se valora más a quien más necesita el programa): +10 puntos
-- Coherencia general de la solicitud: +20 puntos
+- Residencia en Andalucía (todas las provincias son elegibles): +5 puntos
+- Nivel formativo (se valora más a quien más necesita el programa): +5 puntos
+- Acceso digital (se valora que NECESITE formación digital; sin acceso o nivel bajo = más necesidad = más puntos): +10 puntos
+- Disponibilidad horaria (flexible o mañanas aporta más que solo fines de semana): +5 puntos
+- Coherencia general de la solicitud: +15 puntos
+- Brecha digital como oportunidad: candidatos con bajo nivel digital pero alta motivación DEBEN puntuarse alto (el programa existe para cerrar esa brecha)
+
+NOTA IMPORTANTE sobre acceso digital:
+Un nivel digital bajo NO es motivo de penalización. Al contrario, indica mayor necesidad del programa.
+Lo que SÍ penaliza es la incoherencia (ej: dice nivel avanzado pero motivación vacía o genérica).
 
 UMBRALES:
 - Score ≥ 70: recomendación "admitir"

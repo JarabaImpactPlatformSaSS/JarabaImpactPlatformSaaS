@@ -84,3 +84,43 @@ function jaraba_legal_lexnet_update_10001(): void {
     }
   }
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_legal_lexnet_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['lexnet_notification', 'lexnet_submission'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_legal_lexnet_entities'] = [
+      'title' => t('Jaraba legal lexnet: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_legal_lexnet_entities'] = [
+      'title' => t('Jaraba legal lexnet: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

@@ -125,8 +125,14 @@ fi
 run_check "ROUTE-CTRL-001" "Route-Controller method validation" \
   php "$SCRIPT_DIR/validate-routing.php"
 
+run_check "I18N-NAVPREFIX-001" "Navigation links use language_prefix" \
+  php "$SCRIPT_DIR/validate-nav-i18n.php"
+
 run_check "QUERY-CHAIN-001" "Dangerous query method chaining" \
   php "$SCRIPT_DIR/validate-query-chains.php"
+
+run_check "NO-HARDCODE-PRICE-001" "No hardcoded EUR prices in templates" \
+  php "$SCRIPT_DIR/validate-no-hardcoded-prices.php"
 
 run_check "CONTAINER-DEPS-001" "Container dependency integrity (fast)" \
   php "$SCRIPT_DIR/validate-container-deps.php"
@@ -183,12 +189,19 @@ if [ "$MODE" = "full" ]; then
   if command -v drush &>/dev/null; then
     run_check "DIACRITICS-ES-001" "Spanish diacritics in page_content canvas_data" \
       drush php:script "$SCRIPT_DIR/validate-spanish-diacritics.php"
+
+    run_check "TRANSLATION-INTEG-001" "Translation integrity (cross-page dup, NULL titles, AI fences)" \
+      drush php:script "$SCRIPT_DIR/validate-translation-integrity.php"
   else
     skip_check "DIACRITICS-ES-001" "Spanish diacritics (requires drush)"
+    skip_check "TRANSLATION-INTEG-001" "Translation integrity (requires drush)"
   fi
 
   run_check "DEPLOY-READY-001" "Production deploy readiness (domains, settings, nginx)" \
     php "$SCRIPT_DIR/validate-deploy-readiness.php"
+
+  run_check "ENV-PARITY-001" "Dev/Prod environment parity (PHP, DB, Redis, OPcache, SSL)" \
+    php "$SCRIPT_DIR/validate-env-parity.php"
 
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
@@ -199,10 +212,14 @@ else
   skip_check "TENANT-CHECK-001" "Tenant isolation verification"
   skip_check "TEST-COVERAGE-MAP-001" "Test coverage map"
   skip_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection"
+  skip_check "CONTROLLER-READONLY-001" "Controller readonly inherited property detection"
+  skip_check "PRESAVE-RESILIENCE-001" "Presave hook resilience detection"
   skip_check "ENTITY-SCHEMA-SYNC-001" "Entity schema sync (computed orphans, translatable fields, Twig url())"
   skip_check "BTN-CONTRAST-DARK-001" "Button contrast on dark backgrounds"
   skip_check "DIACRITICS-ES-001" "Spanish diacritics in page_content"
+  skip_check "TRANSLATION-INTEG-001" "Translation integrity"
   skip_check "DEPLOY-READY-001" "Production deploy readiness"
+  skip_check "ENV-PARITY-001" "Dev/Prod environment parity"
 fi
 
 fi  # End of non-checklist mode guard.

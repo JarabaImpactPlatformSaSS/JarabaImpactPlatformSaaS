@@ -1301,3 +1301,67 @@ function jaraba_andalucia_ei_update_10017(): string {
 
   return implode(' | ', $messages);
 }
+
+/**
+ * Install 6 new digital access fields on solicitud_ei entity.
+ *
+ * Fields: nivel_digital, conoce_ia, acceso_ordenador, acceso_internet,
+ * disponibilidad_horaria, como_conocio.
+ */
+function jaraba_andalucia_ei_update_10018(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    // UPDATE-HOOK-FIELDABLE-001: Use getFieldStorageDefinitions (NOT getBaseFieldDefinitions).
+    $entityType = $entityTypeManager->getDefinition('solicitud_ei');
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('solicitud_ei');
+
+    // Update entity type first.
+    $entityDefinitionUpdateManager->updateFieldableEntityType($entityType, $fieldStorageDefinitions);
+    $messages[] = 'Updated solicitud_ei entity type definition.';
+
+    // Install each new field individually.
+    $newFields = [
+      'nivel_digital',
+      'conoce_ia',
+      'acceso_ordenador',
+      'acceso_internet',
+      'disponibilidad_horaria',
+      'como_conocio',
+    ];
+
+    foreach ($newFields as $fieldName) {
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition(
+        $fieldName,
+        'solicitud_ei'
+      );
+
+      if (!$existing && isset($fieldStorageDefinitions[$fieldName])) {
+        $field = $fieldStorageDefinitions[$fieldName];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId obligatorios.
+        $field->setName($fieldName);
+        $field->setTargetEntityTypeId('solicitud_ei');
+
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName,
+          'solicitud_ei',
+          'jaraba_andalucia_ei',
+          $field
+        );
+        $messages[] = "Installed field: $fieldName.";
+      }
+      else {
+        $messages[] = "Field $fieldName already exists or not in definitions.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10018: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}

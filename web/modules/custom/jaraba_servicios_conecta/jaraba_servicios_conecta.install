@@ -343,3 +343,43 @@ function jaraba_servicios_conecta_update_10004(): string {
 
   return implode('. ', $messages);
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_servicios_conecta_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['availability_slot', 'booking', 'provider_profile', 'review_servicios', 'service_offering', 'service_package'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_servicios_conecta_entities'] = [
+      'title' => t('Jaraba servicios conecta: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_servicios_conecta_entities'] = [
+      'title' => t('Jaraba servicios conecta: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

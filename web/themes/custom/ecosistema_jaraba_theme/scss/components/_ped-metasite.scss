@@ -83,6 +83,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     font-size: clamp(1.8rem, 4vw, 3rem);
     font-weight: 800;
     line-height: 1.15;
+    color: var(--ej-bg-surface, #fff); // BTN-CONTRAST-DARK-001: override _base.scss h1 color on dark bg
     margin: 0 0 var(--ej-space-md, 1.5rem);
     animation: fadeInUp 0.8s ease 0.2s both;
 

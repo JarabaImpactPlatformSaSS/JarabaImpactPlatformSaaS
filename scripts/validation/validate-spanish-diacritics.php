@@ -21,7 +21,8 @@
 
 declare(strict_types=1);
 
-$fix_mode = in_array('--fix', $argv ?? [], TRUE);
+$fix_mode = in_array('--fix', $argv ?? [], TRUE)
+  || in_array('--fix', $extra ?? [], TRUE);
 
 // =========================================================================
 // DICTIONARY: unaccented → accented (word-boundary safe, complete words only)

@@ -237,11 +237,84 @@ class SolicitudEiPublicForm extends FormBase
             '#attributes' => ['placeholder' => $this->t('Describe brevemente tu experiencia...')],
         ];
 
-        // === MOTIVACIÓN ===
+        // === ACCESO DIGITAL ===
+        $form['acceso_digital'] = [
+            '#type' => 'fieldset',
+            '#title' => $this->t('Acceso digital'),
+            '#description' => $this->t('Estas preguntas nos ayudan a adaptar el programa a tu situación real. No hay respuestas correctas o incorrectas.'),
+            '#attributes' => ['class' => ['aei-solicitud-form__section']],
+        ];
+
+        $form['acceso_digital']['nivel_digital'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿Cuál es tu nivel de competencias digitales?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona tu nivel -'),
+            '#options' => [
+                'ninguno' => $this->t('Ninguno — No uso ordenador ni móvil'),
+                'basico' => $this->t('Básico — Email, WhatsApp, navegación web'),
+                'intermedio' => $this->t('Intermedio — Ofimática, redes sociales, apps'),
+                'avanzado' => $this->t('Avanzado — Herramientas profesionales, edición, gestión online'),
+            ],
+        ];
+
+        $form['acceso_digital']['conoce_ia'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿Conoces la Inteligencia Artificial?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona -'),
+            '#options' => [
+                'no_conozco' => $this->t('No conozco — No sé qué es la IA'),
+                'he_oido' => $this->t('He oído hablar — Sé que existe pero no la he usado'),
+                'uso_basico' => $this->t('Uso básico — He usado ChatGPT o similar alguna vez'),
+                'uso_habitual' => $this->t('Uso habitual — Utilizo IA regularmente en mi día a día'),
+            ],
+        ];
+
+        $form['acceso_digital']['acceso_ordenador'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿Tienes acceso a un ordenador?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona -'),
+            '#options' => [
+                'no_tengo' => $this->t('No tengo acceso a ordenador'),
+                'compartido' => $this->t('Comparto ordenador con otras personas'),
+                'propio_antiguo' => $this->t('Tengo ordenador propio (antiguo o limitado)'),
+                'propio_reciente' => $this->t('Tengo ordenador propio (reciente, funciona bien)'),
+            ],
+        ];
+
+        $form['acceso_digital']['acceso_internet'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿Qué tipo de conexión a Internet tienes?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona -'),
+            '#options' => [
+                'sin_acceso' => $this->t('Sin acceso a Internet en casa'),
+                'movil_solo' => $this->t('Solo datos móviles'),
+                'wifi_inestable' => $this->t('Wi-Fi en casa (inestable o lento)'),
+                'fibra_estable' => $this->t('Fibra o conexión estable en casa'),
+            ],
+        ];
+
+        // === DISPONIBILIDAD Y MOTIVACIÓN ===
         $form['motivacion_wrapper'] = [
             '#type' => 'fieldset',
-            '#title' => $this->t('Tu motivación'),
+            '#title' => $this->t('Disponibilidad y motivación'),
             '#attributes' => ['class' => ['aei-solicitud-form__section']],
+        ];
+
+        $form['motivacion_wrapper']['disponibilidad_horaria'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿En qué horario podrías participar?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona tu disponibilidad -'),
+            '#options' => [
+                'mananas' => $this->t('Mañanas (9:00–14:00)'),
+                'tardes' => $this->t('Tardes (16:00–20:00)'),
+                'flexible' => $this->t('Flexible — Puedo adaptarme a cualquier horario'),
+                'fines_semana' => $this->t('Solo fines de semana'),
+            ],
         ];
 
         $form['motivacion_wrapper']['motivacion'] = [
@@ -250,6 +323,21 @@ class SolicitudEiPublicForm extends FormBase
             '#required' => TRUE,
             '#rows' => 4,
             '#attributes' => ['placeholder' => $this->t('Cuéntanos tu interés en emprender o trabajar por cuenta propia...')],
+        ];
+
+        $form['motivacion_wrapper']['como_conocio'] = [
+            '#type' => 'select',
+            '#title' => $this->t('¿Cómo conociste el programa?'),
+            '#required' => TRUE,
+            '#empty_option' => $this->t('- Selecciona -'),
+            '#options' => [
+                'redes_sociales' => $this->t('Redes sociales (Instagram, Facebook, TikTok...)'),
+                'web' => $this->t('Buscando en Internet / página web'),
+                'conocido' => $this->t('Me lo recomendó un conocido/a'),
+                'sae' => $this->t('Servicio Andaluz de Empleo (SAE)'),
+                'ayuntamiento' => $this->t('Ayuntamiento u otra administración pública'),
+                'otro' => $this->t('Otro'),
+            ],
         ];
 
         // === PRIVACIDAD ===
@@ -373,6 +461,12 @@ class SolicitudEiPublicForm extends FormBase
             'es_migrante' => (bool) $form_state->getValue('es_migrante'),
             'percibe_prestacion' => (bool) $form_state->getValue('percibe_prestacion'),
             'experiencia_sector' => $form_state->getValue('experiencia_sector'),
+            'nivel_digital' => $form_state->getValue('nivel_digital'),
+            'conoce_ia' => $form_state->getValue('conoce_ia'),
+            'acceso_ordenador' => $form_state->getValue('acceso_ordenador'),
+            'acceso_internet' => $form_state->getValue('acceso_internet'),
+            'disponibilidad_horaria' => $form_state->getValue('disponibilidad_horaria'),
+            'como_conocio' => $form_state->getValue('como_conocio'),
             'motivacion' => $form_state->getValue('motivacion'),
             'estado' => 'pendiente',
             'ip_address' => $this->getRequest()->getClientIp() ?? '',

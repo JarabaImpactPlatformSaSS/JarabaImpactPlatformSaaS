@@ -35,11 +35,17 @@ class SolicitudEiAdminForm extends PremiumEntityFormBase {
         'description' => $this->t('Employment and education details.'),
         'fields' => ['situacion_laboral', 'tiempo_desempleo', 'nivel_estudios', 'es_migrante', 'percibe_prestacion', 'experiencia_sector'],
       ],
+      'acceso_digital' => [
+        'label' => $this->t('Digital Access'),
+        'icon' => ['category' => 'ui', 'name' => 'monitor'],
+        'description' => $this->t('Digital skills, equipment, and connectivity.'),
+        'fields' => ['nivel_digital', 'conoce_ia', 'acceso_ordenador', 'acceso_internet'],
+      ],
       'motivation' => [
-        'label' => $this->t('Motivation'),
+        'label' => $this->t('Availability & Motivation'),
         'icon' => ['category' => 'ui', 'name' => 'edit'],
-        'description' => $this->t('Applicant motivation.'),
-        'fields' => ['motivacion'],
+        'description' => $this->t('Schedule, motivation, and referral channel.'),
+        'fields' => ['disponibilidad_horaria', 'motivacion', 'como_conocio'],
       ],
       'admin' => [
         'label' => $this->t('Admin'),

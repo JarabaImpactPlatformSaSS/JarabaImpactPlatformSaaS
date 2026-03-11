@@ -384,3 +384,43 @@ function jaraba_mentoring_update_10007(): string {
     return 'Error installing tenant_id on mentoring_session: ' . $e->getMessage();
   }
 }
+
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_mentoring_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $entityTypes = ['availability_slot', 'mentor_profile', 'mentoring_engagement', 'mentoring_package', 'mentoring_session', 'session_notes', 'session_review', 'session_task'];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $missing = [];
+
+  foreach ($entityTypes as $typeId) {
+    if (!$updateManager->getEntityType($typeId)) {
+      $missing[] = $typeId;
+    }
+  }
+
+  if (!empty($missing)) {
+    $requirements['jaraba_mentoring_entities'] = [
+      'title' => t('Jaraba mentoring: Entity Types'),
+      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
+      'description' => t('Run drush entity:updates to install missing entity types.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_mentoring_entities'] = [
+      'title' => t('Jaraba mentoring: Entity Types'),
+      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}
