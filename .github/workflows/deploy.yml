@@ -319,7 +319,7 @@ jobs:
 
       - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && php scripts/maintenance/patch-settings-csrf.php'
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
 
       - name: Pull code and install dependencies
         run: |
