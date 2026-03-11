@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-10
-**Versión:** 111.0.0 (Anti-Spam Stack Consolidation + Coordinador Dashboard Clase Mundial + Reclutamiento Landing Elevation SEO + 312 Unit Tests + aprendizaje #173)
+**Versión:** 114.0.0 (NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion + Post-Edit-Lint Price Detection + aprendizaje #176)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2264,15 +2264,30 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │              AUTOMATED ARCHITECTURAL VALIDATION SYSTEM                    │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   6 Scripts (scripts/validation/):                                      │
+│   18 Scripts (scripts/validation/):                                     │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
-│   │  validate-services-di.php    DI type mismatches YAML↔PHP       │  │
-│   │  validate-routing.php        Route→Controller existence        │  │
-│   │  validate-entity-integrity   ENTITY-001, AUDIT-CONS-001,       │  │
-│   │                  .php        ECA-EVENT-001 + 3 more checks     │  │
-│   │  validate-query-chains.php   QUERY-CHAIN-001 detection         │  │
-│   │  validate-config-sync.sh     config/install vs config/sync     │  │
-│   │  validate-all.sh             Orchestrator --fast / --full      │  │
+│   │  validate-services-di.php       DI type mismatches YAML↔PHP    │  │
+│   │  validate-routing.php           Route→Controller existence     │  │
+│   │  validate-entity-integrity.php  ENTITY-001 + 6 checks         │  │
+│   │  validate-query-chains.php      QUERY-CHAIN-001 detection      │  │
+│   │  validate-config-sync.sh        config/install vs config/sync  │  │
+│   │  validate-container-deps.php    Container DI integrity         │  │
+│   │  validate-circular-deps.php     Circular reference detection   │  │
+│   │  validate-logger-injection.php  Logger DI consistency          │  │
+│   │  validate-service-consumers.php Orphan service detection       │  │
+│   │  validate-compiled-assets.php   SCSS→CSS freshness             │  │
+│   │  validate-tenant-isolation.php  Tenant query filter            │  │
+│   │  validate-test-coverage-map.php Test coverage mapping          │  │
+│   │  validate-optional-deps.php     Cross-module @? enforcement    │  │
+│   │  validate-controller-readonly   Controller inherited props     │  │
+│   │  validate-presave-resilience    Presave hook try-catch         │  │
+│   │  validate-entity-schema-sync    Orphan computed + translatable │  │
+│   │  validate-btn-contrast-dark     Button contrast dark bg        │  │
+│   │  validate-nav-i18n.php          I18N hardcoded path detection  │  │
+│   │  validate-deploy-readiness.php  Production deploy checks       │  │
+│   │  validate-env-parity.php        Dev/Prod parity (14 checks)    │  │
+│   │  validate-no-hardcoded-prices   EUR price hardcoding in Twig   │  │
+│   │  validate-all.sh                Orchestrator --fast / --full   │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 │   4 Integration Points:                                                 │
@@ -2914,6 +2929,9 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-11 | **114.0.0** | **NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion:** Sistema de precios dinamicos en frontend conectado a MetaSitePricingService. Homepage PED: comparativa JarabaLex lee professional_price de SaasPlan entity, hero legal subtitle usa from_label, pricing hub overview renderiza 3 tiers desde getPricingPreview('_default'). 4 templates migrados de precios hardcodeados a variables dinamicas con fallbacks. PricingController: +overview_tiers render variable. hook_theme: +overview_tiers en pricing_hub_page. Script #23 validate-no-hardcoded-prices.php (regex EUR/€ en Twig, excepciones competidores/mock/comentarios). Post-edit-lint hook: deteccion de precios EUR en .twig en tiempo real (seccion 3 en case twig). validate-all.sh +NO-HARDCODE-PRICE-001 en fast mode. Fix BTN-CONTRAST-DARK-001: color blanco explicito en .ped-hero h1 (override _base.scss headings color). CSS compilado. Regla de oro #117. Aprendizaje #176. |
+| 2026-03-11 | **113.0.0** | **ENV-PARITY-001 Dev/Prod Parity + 18 Scripts Validacion:** Seccion 10.8.1 actualizada de 6 a 18 scripts de validacion (lista completa). Nuevo script validate-env-parity.php (~900 LOC, 14 checks: PHP version 6 fuentes, 14 ext-* composer.json, MariaDB, Redis, PHP config, MariaDB my.cnf, OPcache invalidation, Supervisor, filesystem, multi-domain, code paths, composer.lock, reverse proxy, wildcard SSL). config/deploy/mariadb/my.cnf creado (InnoDB 16G escalable 40G, NVMe I/O 4000 IOPS, max_connections 300, max_allowed_packet 256M para canvas_data). deploy.yml +OPcache invalidation (`drush php:eval "opcache_reset()"` post-cache-rebuild). composer.json +12 ext-* declarations (bcmath, curl, dom, fileinfo, gd, intl, json, mbstring, pdo_mysql, sodium, xml, zip). php.ini +max_input_vars 5000. validate-all.sh +ENV-PARITY-001 full mode + 3 skip_checks faltantes. Analisis runbook AMD EPYC Zen 5 AE12-128 NVMe. Regla de oro #116. Aprendizaje #175. |
+| 2026-03-10 | **112.0.0** | **I18N Navigation + Canvas Safeguard 4 Capas:** I18N-NAVPREFIX-001 (language_prefix inyectado en preprocess_page, 5 headers + footer prefijados con `{{ lp }}`). I18N-PATHPROCESSOR-001 (eliminado filtro langcode en PathProcessorPageContent — entity ID es único cross-language). I18N-LANGSWITCHER-001 (language switcher usa path_alias traducido para page_content). SAFEGUARD-CANVAS-001 (4 capas: backup-canvas.php backup/restore, presave hook shrinkage/empty/contamination detection, translation script entity reload + size mismatch, validate-translation-integrity.php). SAFEGUARD-ALIAS-001 (hallucination detection >80 chars + sentence patterns, 68 double-slash + 1 hallucination corregidos). validate-nav-i18n.php integrado en validate-all.sh fast mode. Regla de oro #115. Aprendizaje #174. |
 | 2026-03-06 | **106.0.0** | **Theming Multi-Tenant Fixes:** SSOT-THEME-001 corregido (SiteConfig es fallback nivel 5, no override). Visual Customizer convertido de modal centrado a slide-panel lateral (480px, z-index 1050, live-update). overflow-x:clip para preservar position:sticky. CSS-ANIM-INLINE-001 (animation inline mata class-based animations). Sticky action bar con glassmorphism. Hostname-first tenant resolution en TenantThemeCustomizerForm. Aprendizaje #168. |
 | 2026-03-06 | **105.0.0** | **Theming Unificado Multi-Tenant (THEMING-UNIFY-001 + SSOT-THEME-001):** ecosistema_jaraba_core: +UnifiedThemeResolverService (cascada 5 niveles: Plataforma→Vertical→Plan→Tenant→Meta-sitio, resolucion por hostname para anonimos via MetaSiteResolverService + fallback usuario autenticado via TenantContextService, cache por request). jaraba_theming: TenantThemeConfig +header_cta_url campo (BaseFieldDefinition string 255, update_10002 installFieldStorageDefinition), jaraba_theming_page_attachments() usa UnifiedThemeResolverService para resolver tenant_id por hostname (fix CSS tokens anonimos). ecosistema_jaraba_theme.theme: META-SITIO OVERRIDE block (130 lineas) reemplazado por llamada unificada a resolveForCurrentRequest() (80 lineas), bloque duplicado jaraba-tenant-tokens eliminado de hook_preprocess_html. SSOT: TenantThemeConfig=visual (colores, fuentes, CTA, layout, footer, redes sociales), SiteConfig=estructural (nombre, logo, nav, legal, SEO). SiteConfig Nivel 5 FALLBACK (applySiteConfigOverrides verifica empty() antes de aplicar — NO override). 6 tests unitarios (34 assertions). 2 reglas nuevas: THEMING-UNIFY-001, SSOT-THEME-001. Aprendizaje #166. |
 | 2026-03-05 | **104.0.0** | **Stripe Embedded Checkout Self-Service (STRIPE-CHECKOUT-001):** Nueva seccion STRIPE EMBEDDED CHECKOUT con ASCII box. jaraba_billing: +StripeProductSyncService (SaasPlan→Stripe Product/Price, idempotente con lock, archiva precios obsoletos), +CheckoutSessionService (ui_mode embedded, return_url), +CheckoutController (4 handlers zero-region), +stripe-checkout.js (carga Stripe.js dinamicamente, CSRF, POST session, initEmbeddedCheckout), +presave hook auto-sync. SaasPlan entity +2 campos (stripe_product_id, stripe_price_yearly_id) + hook_update_9035. Templates: page--checkout.html.twig (zero-region), checkout-page (2 columnas), checkout-success (SVG animado), checkout-cancel (warning). SCSS: _checkout.scss BEM + var(--ej-*). MetaSitePricingService +saas_plan_id en getPricingPreview(). pricing-page.html.twig: CTAs checkout directos si saas_plan_id existe. pricing-toggle.js: sync ?cycle= param. ecosistema_jaraba_theme.theme: +body class page-checkout + theme suggestion page__checkout. Drush: StripeSyncCommands (jaraba:stripe:sync-plans). 4 rutas, 3 templates checkout, 1 JS, 1 SCSS. Aprendizaje #165. |
