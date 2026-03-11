@@ -317,10 +317,6 @@ jobs:
             fi
           EOFCLEAN
 
-      - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
-
       - name: Pull code and install dependencies
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
@@ -357,6 +353,10 @@ jobs:
             # Instalar dependencias
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
           EOF
+
+      - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
 
       - name: Fix .htaccess for IONOS (after composer scaffold)
         run: |
