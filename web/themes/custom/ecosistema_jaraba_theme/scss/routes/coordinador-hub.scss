@@ -1651,6 +1651,30 @@
     align-items: stretch;
   }
 
+  .hub-coordinador__panel-title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ej-spacing-xs, 0.5rem);
+  }
+
+  .hub-coordinador__panel-actions {
+    width: 100%;
+
+    .hub-coordinador__action-btn {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  .hub-coordinador__formacion-kpis,
+  .hub-coordinador__esf-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hub-coordinador__sesiones-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hub-coordinador__filters {
     flex-direction: column;
   }
@@ -1696,6 +1720,259 @@
     box-shadow: none;
     border: 1px solid var(--ej-color-border, #D1D5DB);
   }
+}
+
+// ─── Panel Header Premium (Sprint 13) ────────────────────────────────────
+.hub-coordinador__panel-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.75rem);
+}
+
+.hub-coordinador__panel-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ej-radius-md, 10px);
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
+  flex-shrink: 0;
+
+  &--esf {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  }
+}
+
+.hub-coordinador__panel-subtitle {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: 0.125rem 0 0;
+}
+
+.hub-coordinador__panel-actions {
+  display: flex;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+}
+
+// ─── Formación KPIs Grid (Sprint 13) ─────────────────────────────────────
+.hub-coordinador__formacion-kpis,
+.hub-coordinador__esf-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.hub-coordinador__kpi-icon {
+  &--formacion {
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent);
+  }
+
+  &--ejecucion {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  }
+
+  &--vobo {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent);
+  }
+
+  &--asistencia {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  }
+
+  &--horas {
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent);
+  }
+
+  &--participantes {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent);
+  }
+}
+
+// ─── Section Header — spaced variant ─────────────────────────────────────
+.hub-coordinador__section-header--spaced {
+  margin-top: var(--ej-spacing-lg, 1.5rem);
+  padding-top: var(--ej-spacing-lg, 1.5rem);
+  border-top: 1px solid var(--ej-color-border-light, #E5E7EB);
+}
+
+.hub-coordinador__section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 700;
+}
+
+// ─── Sesiones Timeline Cards (Sprint 13) ─────────────────────────────────
+.hub-coordinador__sesiones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.hub-coordinador__sesion-card {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-md, 1rem);
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border-light, #E5E7EB);
+  border-radius: var(--ej-radius-lg, 12px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  animation: hub-fade-up 0.3s ease both;
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.04 * $i}s;
+    }
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 25%, transparent);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
+    transform: translateY(-2px);
+  }
+}
+
+.hub-coordinador__sesion-date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 0.75rem);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent),
+    color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 5%, transparent)
+  );
+  border-radius: var(--ej-radius-md, 8px);
+  flex-shrink: 0;
+}
+
+.hub-coordinador__sesion-day {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+  line-height: 1;
+}
+
+.hub-coordinador__sesion-month {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 600;
+  color: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 70%, var(--ej-color-text, #1F2937));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hub-coordinador__sesion-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.hub-coordinador__sesion-title {
+  font-weight: 600;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-heading, var(--ej-color-azul-corporativo, #233D63));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hub-coordinador__sesion-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+}
+
+.hub-coordinador__sesion-hora {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.hub-coordinador__sesion-tipo {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--ej-radius-sm, 4px);
+  font-size: var(--ej-font-size-xs, 0.7rem);
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &--presencial {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
+    color: var(--ej-color-verde-innovacion, #00A9A5);
+  }
+
+  &--online {
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, transparent);
+    color: var(--ej-color-azul-corporativo, #233D63);
+  }
+
+  &--hibrida {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+    color: var(--ej-color-naranja-impulso, #FF8C42);
+  }
+}
+
+.hub-coordinador__sesion-plazas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 0 var(--ej-spacing-xs, 0.5rem);
+  flex-shrink: 0;
+}
+
+.hub-coordinador__sesion-plazas-num {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 700;
+  color: var(--ej-color-heading, var(--ej-color-azul-corporativo, #233D63));
+}
+
+.hub-coordinador__sesion-plazas-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.hub-coordinador__sesion-plazas-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--ej-color-border-light, #E5E7EB);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.hub-coordinador__sesion-plazas-fill {
+  height: 100%;
+  background: var(--ej-color-verde-innovacion, #00A9A5);
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: hub-bar-grow 0.8s ease both;
+}
+
+// ─── ESF+ Tables Section (Sprint 13) ─────────────────────────────────────
+.hub-coordinador__esf-tables {
+  margin-top: var(--ej-spacing-md, 1rem);
 }
 
 // ─── Empty state (P0: secciones sin datos) ────────────────────────────────

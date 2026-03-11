@@ -534,25 +534,69 @@
 
     {# --- Panel: Formación (Sprint 13) --- #}
     <div class="hub-coordinador__panel" role="tabpanel" id="panel-formacion" aria-labelledby="tab-formacion" data-panel="formacion" hidden>
-      <h2 class="hub-coordinador__panel-title">{% trans %}Acciones Formativas y Sesiones{% endtrans %}</h2>
+      <div class="hub-coordinador__panel-header">
+        <div class="hub-coordinador__panel-title-group">
+          <div class="hub-coordinador__panel-title-icon">
+            {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+          </div>
+          <div>
+            <h2 class="hub-coordinador__panel-title">{% trans %}Acciones Formativas y Sesiones{% endtrans %}</h2>
+            <p class="hub-coordinador__panel-subtitle">{% trans %}Gestion del itinerario formativo del programa{% endtrans %}</p>
+          </div>
+        </div>
+        <div class="hub-coordinador__panel-actions">
+          <a href="{{ path('entity.accion_formativa_ei.add_form') }}" class="hub-coordinador__action-btn hub-coordinador__action-btn--primary" data-slide-panel>
+            {{ jaraba_icon('actions', 'plus', { variant: 'outline', color: 'white', size: '14px' }) }}
+            {% trans %}Nueva Accion Formativa{% endtrans %}
+          </a>
+          <a href="{{ path('entity.sesion_programada_ei.add_form') }}" class="hub-coordinador__action-btn hub-coordinador__action-btn--secondary" data-slide-panel>
+            {{ jaraba_icon('actions', 'plus', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+            {% trans %}Nueva Sesion{% endtrans %}
+          </a>
+        </div>
+      </div>
 
-      {# KPI Cards de formación #}
+      {# KPI Cards de formación — premium pattern con iconos #}
       <div class="hub-coordinador__formacion-kpis">
-        <div class="hub-coordinador__kpi-card">
-          <span class="hub-coordinador__kpi-value">{{ formacion_stats.total_acciones }}</span>
-          <span class="hub-coordinador__kpi-label">{% trans %}Acciones Formativas{% endtrans %}</span>
+        <div class="hub-coordinador__kpi-card" tabindex="0">
+          <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--formacion">
+            {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+          </div>
+          <div class="hub-coordinador__kpi-data">
+            <span class="hub-coordinador__kpi-value">{{ formacion_stats.total_acciones|default(0) }}</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}Acciones Formativas{% endtrans %}</span>
+          </div>
+          <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
         </div>
-        <div class="hub-coordinador__kpi-card">
-          <span class="hub-coordinador__kpi-value">{{ formacion_stats.en_ejecucion }}</span>
-          <span class="hub-coordinador__kpi-label">{% trans %}En Ejecucion{% endtrans %}</span>
+        <div class="hub-coordinador__kpi-card" tabindex="0">
+          <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--ejecucion">
+            {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+          </div>
+          <div class="hub-coordinador__kpi-data">
+            <span class="hub-coordinador__kpi-value">{{ formacion_stats.en_ejecucion|default(0) }}</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}En Ejecucion{% endtrans %}</span>
+          </div>
+          <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
         </div>
-        <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--{{ formacion_stats.vobo_pendiente > 0 ? 'warning' : 'ok' }}">
-          <span class="hub-coordinador__kpi-value">{{ formacion_stats.vobo_pendiente }}</span>
-          <span class="hub-coordinador__kpi-label">{% trans %}VoBo Pendiente{% endtrans %}</span>
+        <div class="hub-coordinador__kpi-card hub-coordinador__kpi-card--{{ formacion_stats.vobo_pendiente|default(0) > 0 ? 'alert' : '' }}" tabindex="0">
+          <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--vobo">
+            {{ jaraba_icon('compliance', 'shield-check', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+          </div>
+          <div class="hub-coordinador__kpi-data">
+            <span class="hub-coordinador__kpi-value">{{ formacion_stats.vobo_pendiente|default(0) }}</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}VoBo Pendiente{% endtrans %}</span>
+          </div>
+          <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
         </div>
-        <div class="hub-coordinador__kpi-card">
-          <span class="hub-coordinador__kpi-value">{{ formacion_stats.sesiones_programadas }}</span>
-          <span class="hub-coordinador__kpi-label">{% trans %}Sesiones Programadas{% endtrans %}</span>
+        <div class="hub-coordinador__kpi-card" tabindex="0">
+          <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--sesiones">
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+          </div>
+          <div class="hub-coordinador__kpi-data">
+            <span class="hub-coordinador__kpi-value">{{ formacion_stats.sesiones_programadas|default(0) }}</span>
+            <span class="hub-coordinador__kpi-label">{% trans %}Sesiones Programadas{% endtrans %}</span>
+          </div>
+          <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
         </div>
       </div>
 
@@ -600,31 +644,44 @@
       </div>
       <div class="hub-coordinador__pagination" data-pagination="formacion"></div>
 
-      {# Próximas sesiones #}
+      {# Próximas sesiones — premium timeline cards #}
       {% if sesiones_proximas|length > 0 %}
-        <div class="hub-coordinador__section-header" style="margin-top: var(--ej-spacing-lg, 1.5rem)">
+        <div class="hub-coordinador__section-header hub-coordinador__section-header--spaced">
           <h3 class="hub-coordinador__section-title">
-            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'naranja-impulso', size: '18px' }) }}
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
             {% trans %}Proximas Sesiones (7 dias){% endtrans %}
           </h3>
+          <span class="hub-coordinador__section-count">{{ sesiones_proximas|length }}</span>
         </div>
         <div class="hub-coordinador__sesiones-grid">
           {% for sesion in sesiones_proximas[:6] %}
             <div class="hub-coordinador__sesion-card">
-              <div class="hub-coordinador__sesion-fecha">
-                {{ sesion.getFecha() }}
+              <div class="hub-coordinador__sesion-date-block">
+                <span class="hub-coordinador__sesion-day">{{ sesion.getFecha()|date('d') }}</span>
+                <span class="hub-coordinador__sesion-month">{{ sesion.getFecha()|date('M') }}</span>
               </div>
-              <div class="hub-coordinador__sesion-info">
-                <strong>{{ sesion.getTitulo() }}</strong>
-                <span class="hub-coordinador__sesion-hora">
-                  {{ sesion.getHoraInicio() }} - {{ sesion.getHoraFin() }}
-                </span>
-                <span class="hub-coordinador__sesion-tipo hub-coordinador__sesion-tipo--{{ sesion.getTipoSesion() }}">
-                  {{ sesion.getTipoSesion()|replace({'_': ' '})|capitalize }}
-                </span>
+              <div class="hub-coordinador__sesion-body">
+                <span class="hub-coordinador__sesion-title">{{ sesion.getTitulo() }}</span>
+                <div class="hub-coordinador__sesion-meta">
+                  <span class="hub-coordinador__sesion-hora">
+                    {{ jaraba_icon('ui', 'clock', { variant: 'outline', color: 'neutral', size: '12px' }) }}
+                    {{ sesion.getHoraInicio() }} - {{ sesion.getHoraFin() }}
+                  </span>
+                  <span class="hub-coordinador__sesion-tipo hub-coordinador__sesion-tipo--{{ sesion.getTipoSesion() }}">
+                    {{ sesion.getTipoSesion()|replace({'_': ' '})|capitalize }}
+                  </span>
+                </div>
               </div>
               <div class="hub-coordinador__sesion-plazas">
-                {{ sesion.get('plazas_ocupadas').value ?? 0 }}/{{ sesion.get('plazas_maximas').value ?? 0 }}
+                {% set ocupadas = sesion.get('plazas_ocupadas').value ?? 0 %}
+                {% set maximas = sesion.get('max_plazas').value ?? 0 %}
+                <span class="hub-coordinador__sesion-plazas-num">{{ ocupadas }}/{{ maximas }}</span>
+                <span class="hub-coordinador__sesion-plazas-label">{% trans %}plazas{% endtrans %}</span>
+                {% if maximas > 0 %}
+                  <div class="hub-coordinador__sesion-plazas-bar">
+                    <div class="hub-coordinador__sesion-plazas-fill" style="width: {{ ((ocupadas / maximas) * 100)|round }}%"></div>
+                  </div>
+                {% endif %}
               </div>
             </div>
           {% endfor %}
@@ -634,7 +691,23 @@
 
     {# --- Panel: Planes Formativos (Sprint 13) --- #}
     <div class="hub-coordinador__panel" role="tabpanel" id="panel-planes" aria-labelledby="tab-planes" data-panel="planes" hidden>
-      <h2 class="hub-coordinador__panel-title">{% trans %}Planes Formativos{% endtrans %}</h2>
+      <div class="hub-coordinador__panel-header">
+        <div class="hub-coordinador__panel-title-group">
+          <div class="hub-coordinador__panel-title-icon">
+            {{ jaraba_icon('education', 'clipboard-list', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+          </div>
+          <div>
+            <h2 class="hub-coordinador__panel-title">{% trans %}Planes Formativos{% endtrans %}</h2>
+            <p class="hub-coordinador__panel-subtitle">{% trans %}Gestiona los planes de formacion por carril{% endtrans %}</p>
+          </div>
+        </div>
+        <div class="hub-coordinador__panel-actions">
+          <a href="{{ path('entity.plan_formativo_ei.add_form') }}" class="hub-coordinador__action-btn hub-coordinador__action-btn--primary" data-slide-panel>
+            {{ jaraba_icon('actions', 'plus', { variant: 'outline', color: 'white', size: '14px' }) }}
+            {% trans %}Nuevo Plan Formativo{% endtrans %}
+          </a>
+        </div>
+      </div>
 
       <div class="hub-coordinador__section-header">
         <h3 class="hub-coordinador__section-title">
@@ -673,26 +746,53 @@
 
     {# --- Panel: ESF+ Indicadores (Sprint 13) --- #}
     <div class="hub-coordinador__panel" role="tabpanel" id="panel-esf" aria-labelledby="tab-esf" data-panel="esf" hidden>
-      <h2 class="hub-coordinador__panel-title">{% trans %}Indicadores ESF+ para Financiador{% endtrans %}</h2>
+      <div class="hub-coordinador__panel-header">
+        <div class="hub-coordinador__panel-title-group">
+          <div class="hub-coordinador__panel-title-icon hub-coordinador__panel-title-icon--esf">
+            {{ jaraba_icon('analytics', 'target', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+          </div>
+          <div>
+            <h2 class="hub-coordinador__panel-title">{% trans %}Indicadores ESF+ para Financiador{% endtrans %}</h2>
+            <p class="hub-coordinador__panel-subtitle">{% trans %}Metricas de realizacion y resultado del programa{% endtrans %}</p>
+          </div>
+        </div>
+      </div>
 
       {% if indicadores_esf %}
         <div class="hub-coordinador__esf-kpis">
-          <div class="hub-coordinador__kpi-card">
-            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.tasa_asistencia|default(0)|number_format(1) }}%</span>
-            <span class="hub-coordinador__kpi-label">{% trans %}Tasa de Asistencia{% endtrans %}</span>
+          <div class="hub-coordinador__kpi-card" tabindex="0">
+            <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--asistencia">
+              {{ jaraba_icon('ui', 'badge-check', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+            </div>
+            <div class="hub-coordinador__kpi-data">
+              <span class="hub-coordinador__kpi-value">{{ indicadores_esf.tasa_asistencia|default(0)|number_format(1) }}%</span>
+              <span class="hub-coordinador__kpi-label">{% trans %}Tasa de Asistencia{% endtrans %}</span>
+            </div>
+            <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
           </div>
-          <div class="hub-coordinador__kpi-card">
-            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.horas_totales|default(0)|number_format(1) }}h</span>
-            <span class="hub-coordinador__kpi-label">{% trans %}Horas Totales{% endtrans %}</span>
+          <div class="hub-coordinador__kpi-card" tabindex="0">
+            <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--horas">
+              {{ jaraba_icon('ui', 'clock', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+            </div>
+            <div class="hub-coordinador__kpi-data">
+              <span class="hub-coordinador__kpi-value">{{ indicadores_esf.horas_totales|default(0)|number_format(1) }}h</span>
+              <span class="hub-coordinador__kpi-label">{% trans %}Horas Totales{% endtrans %}</span>
+            </div>
+            <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
           </div>
-          <div class="hub-coordinador__kpi-card">
-            <span class="hub-coordinador__kpi-value">{{ indicadores_esf.participantes_activos|default(0) }}</span>
-            <span class="hub-coordinador__kpi-label">{% trans %}Participantes Activos{% endtrans %}</span>
+          <div class="hub-coordinador__kpi-card" tabindex="0">
+            <div class="hub-coordinador__kpi-icon hub-coordinador__kpi-icon--participantes">
+              {{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+            </div>
+            <div class="hub-coordinador__kpi-data">
+              <span class="hub-coordinador__kpi-value">{{ indicadores_esf.participantes_activos|default(0) }}</span>
+              <span class="hub-coordinador__kpi-label">{% trans %}Participantes Activos{% endtrans %}</span>
+            </div>
+            <span class="hub-coordinador__kpi-shine" aria-hidden="true"></span>
           </div>
         </div>
 
         <div class="hub-coordinador__esf-tables">
-          {# Tabla cargada via API — datos completos por JS #}
           <div class="hub-coordinador__section-header">
             <h3 class="hub-coordinador__section-title">
               {{ jaraba_icon('analytics', 'target', { variant: 'duotone', color: 'verde-innovacion', size: '18px' }) }}
@@ -743,13 +843,19 @@
             {% set total_phases = total_phases + count %}
           {% endfor %}
 
+          {% set lbl_acogida %}{% trans %}Acogida{% endtrans %}{% endset %}
+          {% set lbl_diagnostico %}{% trans %}Diagnostico{% endtrans %}{% endset %}
+          {% set lbl_atencion %}{% trans %}Atencion{% endtrans %}{% endset %}
+          {% set lbl_insercion %}{% trans %}Insercion{% endtrans %}{% endset %}
+          {% set lbl_seguimiento %}{% trans %}Seguimiento{% endtrans %}{% endset %}
+          {% set lbl_baja %}{% trans %}Baja{% endtrans %}{% endset %}
           {% set phase_labels = {
-            'acogida': 'Acogida'|t,
-            'diagnostico': 'Diagnostico'|t,
-            'atencion': 'Atencion'|t,
-            'insercion': 'Insercion'|t,
-            'seguimiento': 'Seguimiento'|t,
-            'baja': 'Baja'|t
+            'acogida': lbl_acogida,
+            'diagnostico': lbl_diagnostico,
+            'atencion': lbl_atencion,
+            'insercion': lbl_insercion,
+            'seguimiento': lbl_seguimiento,
+            'baja': lbl_baja
           } %}
 
           {% for phase, count in phase_distribution %}
