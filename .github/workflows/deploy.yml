@@ -319,53 +319,7 @@ jobs:
 
       - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && php -r '"'"'
-            $s = "web/sites/default/settings.php";
-            $v = "web/sites/default/services.yml";
-            chmod("web/sites/default", 0755);
-
-            // --- Patch settings.php ---
-            $c = file_get_contents($s);
-            if (strpos($c, "ENV-BOOTSTRAP-001") === false) {
-              chmod($s, 0644);
-              $block = "\n"
-                . "// ENV-BOOTSTRAP-001: Early environment variable loader.\n"
-                . "if (file_exists(\$app_root . \"/../config/deploy/settings.env.php\")) {\n"
-                . "  include \$app_root . \"/../config/deploy/settings.env.php\";\n"
-                . "}\n\n"
-                . "// CSRF-LOGIN-FIX-001: Production reverse proxy.\n"
-                . "if (getenv(\"LANDO\") !== \"ON\") {\n"
-                . "  \$settings[\"reverse_proxy\"] = TRUE;\n"
-                . "  \$settings[\"reverse_proxy_addresses\"] = [\"127.0.0.1\"];\n"
-                . "  \$settings[\"reverse_proxy_trusted_headers\"] =\n"
-                . "    \\Symfony\\Component\\HttpFoundation\\Request::HEADER_X_FORWARDED_FOR |\n"
-                . "    \\Symfony\\Component\\HttpFoundation\\Request::HEADER_X_FORWARDED_HOST |\n"
-                . "    \\Symfony\\Component\\HttpFoundation\\Request::HEADER_X_FORWARDED_PORT |\n"
-                . "    \\Symfony\\Component\\HttpFoundation\\Request::HEADER_X_FORWARDED_PROTO;\n"
-                . "}\n\n";
-              $c = str_replace("// AUDIT-PERF-N14: CDN configuration", $block . "// AUDIT-PERF-N14: CDN configuration", $c);
-              file_put_contents($s, $c);
-              chmod($s, 0444);
-              echo "settings.php patched\n";
-            } else {
-              echo "settings.php already patched\n";
-            }
-
-            // --- Patch services.yml ---
-            $c = file_get_contents($v);
-            if (strpos($c, "cookie_secure") === false) {
-              chmod($v, 0644);
-              $c = str_replace("cookie_samesite: Lax", "cookie_samesite: Lax\n    cookie_secure: true", $c);
-              file_put_contents($v, $c);
-              chmod($v, 0444);
-              echo "services.yml patched\n";
-            } else {
-              echo "services.yml already patched\n";
-            }
-
-            chmod("web/sites/default", 0555);
-            echo "Done\n";
-          '"'"''
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && php scripts/maintenance/patch-settings-csrf.php'
 
       - name: Pull code and install dependencies
         run: |
