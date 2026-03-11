@@ -78,7 +78,7 @@ class EmailVerificationController extends ControllerBase {
 
     // Redirect to dashboard if logged in, login page if not.
     if ($this->currentUser()->isAuthenticated()) {
-      $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant_dashboard', [], ['absolute' => TRUE])->toString();
+      $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard', [], ['absolute' => TRUE])->toString();
     }
     else {
       $redirectUrl = Url::fromRoute('user.login', [], ['absolute' => TRUE])->toString();

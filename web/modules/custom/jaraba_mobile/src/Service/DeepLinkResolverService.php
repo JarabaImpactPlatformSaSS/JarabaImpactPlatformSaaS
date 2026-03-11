@@ -30,7 +30,7 @@ class DeepLinkResolverService {
     'products' => ['route' => 'jaraba_agroconecta_core.product_detail', 'param' => 'product_agro'],
     'notifications' => ['route' => 'jaraba_mobile.push_history', 'param' => ''],
     'profile' => ['route' => 'entity.user.canonical', 'param' => 'user'],
-    'dashboard' => ['route' => 'ecosistema_jaraba_core.tenant_dashboard', 'param' => ''],
+    'dashboard' => ['route' => 'ecosistema_jaraba_core.tenant.dashboard', 'param' => ''],
   ];
 
   /**

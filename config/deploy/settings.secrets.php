@@ -20,6 +20,14 @@
  *
  * @see .env.example for the complete list of required variables.
  */
+// ============================================================================
+// OAUTH-REDIRECT-URI-001: Canonical base URL for OAuth callbacks.
+// MUST match exactly what is registered in provider consoles.
+// ============================================================================
+if ($oauth_base = getenv('OAUTH_CALLBACK_BASE_URL')) {
+  $settings['oauth_callback_base_url'] = $oauth_base;
+}
+
 
 // ============================================================================
 // SOCIAL AUTH — OAuth Providers

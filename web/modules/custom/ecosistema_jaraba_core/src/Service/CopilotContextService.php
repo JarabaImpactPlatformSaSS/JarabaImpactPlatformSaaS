@@ -58,7 +58,7 @@ class CopilotContextService
         'jaraba_copilot_v2.entrepreneur_dashboard' => 'entrepreneur',
         'ecosistema_jaraba_core.producer_dashboard' => 'producer',
         'jaraba_mentoring.mentor_dashboard' => 'mentor',
-        'ecosistema_jaraba_core.tenant_dashboard' => 'admin',
+        'ecosistema_jaraba_core.tenant.dashboard' => 'admin',
     ];
 
     /**

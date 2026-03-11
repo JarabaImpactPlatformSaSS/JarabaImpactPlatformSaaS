@@ -4456,7 +4456,7 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'ecosistema_jaraba_core.tenant_self_service.api_keys' => ['ecosistema_jaraba_theme/route-tenant-settings'],
     'ecosistema_jaraba_core.tenant_self_service.webhooks' => ['ecosistema_jaraba_theme/route-tenant-settings'],
     'ecosistema_jaraba_core.tenant_self_service.dashboard' => ['ecosistema_jaraba_theme/route-tenant-dashboard'],
-    'ecosistema_jaraba_core.tenant_dashboard' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'ecosistema_jaraba_core.tenant.dashboard' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'ecosistema_jaraba_core.tenant_analytics' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'jaraba_content_hub.' => ['ecosistema_jaraba_theme/route-content-hub', 'ecosistema_jaraba_theme/bundle-content-hub'],
     'entity.content_article.' => ['ecosistema_jaraba_theme/route-content-hub', 'ecosistema_jaraba_theme/bundle-content-hub'],

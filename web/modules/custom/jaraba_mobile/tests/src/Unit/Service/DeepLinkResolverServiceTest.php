@@ -137,7 +137,7 @@ class DeepLinkResolverServiceTest extends UnitTestCase {
     $result = $this->service->resolve('jaraba://dashboard');
 
     $this->assertTrue($result['valid']);
-    $this->assertSame('ecosistema_jaraba_core.tenant_dashboard', $result['route']);
+    $this->assertSame('ecosistema_jaraba_core.tenant.dashboard', $result['route']);
     $this->assertEmpty($result['params']);
   }
 
@@ -199,7 +199,7 @@ class DeepLinkResolverServiceTest extends UnitTestCase {
    * @covers ::generateLink
    */
   public function testGenerateLinkForDashboard(): void {
-    $link = $this->service->generateLink('ecosistema_jaraba_core.tenant_dashboard');
+    $link = $this->service->generateLink('ecosistema_jaraba_core.tenant.dashboard');
 
     $this->assertSame('jaraba://dashboard', $link);
   }

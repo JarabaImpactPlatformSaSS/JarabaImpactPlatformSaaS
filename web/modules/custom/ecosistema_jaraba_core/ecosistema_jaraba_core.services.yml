@@ -1764,6 +1764,15 @@ services:
       - '@file_system'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # OAUTH-REDIRECT-URI-001: Normalize OAuth callback URLs.
+  # Forces default language prefix + canonical base URL on all OAuth callbacks.
+  # Prevents redirect_uri_mismatch from Google/LinkedIn/Microsoft.
+  ecosistema_jaraba_core.path_processor.oauth_callback:
+    class: Drupal\ecosistema_jaraba_core\PathProcessor\PathProcessorOAuthCallback
+    arguments: ['@language_manager']
+    tags:
+      - { name: path_processor_outbound, priority: 400 }
+
   # P2-05: Google OAuth 2.0 service.
   ecosistema_jaraba_core.google_oauth:
     class: Drupal\ecosistema_jaraba_core\Service\GoogleOAuthService

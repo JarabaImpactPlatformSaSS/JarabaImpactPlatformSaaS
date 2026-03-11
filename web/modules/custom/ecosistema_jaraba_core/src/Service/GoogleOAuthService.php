@@ -148,6 +148,14 @@ class GoogleOAuthService {
   /**
    * Gets the callback redirect URI.
    *
+   * OAuth redirect_uri MUST be a fixed, deterministic string matching
+   * exactly what is registered in the provider console.
+   *
+   * Language normalization is handled by PathProcessorOAuthCallback
+   * (OAUTH-REDIRECT-URI-001) which forces the default language prefix
+   * on all OAuth callback paths. This ensures the URI is always the
+   * same regardless of the user's current browsing language.
+   *
    * @return string
    *   Absolute URL for the OAuth callback.
    */

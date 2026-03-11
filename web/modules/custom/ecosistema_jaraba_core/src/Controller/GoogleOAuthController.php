@@ -181,7 +181,7 @@ class GoogleOAuthController extends ControllerBase
       return new RedirectResponse($destination);
     }
 
-    $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant_dashboard', [], ['absolute' => TRUE])->toString();
+    $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard', [], ['absolute' => TRUE])->toString();
     return new RedirectResponse($redirectUrl);
   }
 
