@@ -134,6 +134,7 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?jaraba_andalucia_ei.fase_transition_manager'
+      - '@?jaraba_andalucia_ei.ei_multichannel_notification'
 
   # Acuerdo de Participacion: documento bilateral (Acuerdo_participacion_ICV25.odt)
   jaraba_andalucia_ei.acuerdo_participacion:

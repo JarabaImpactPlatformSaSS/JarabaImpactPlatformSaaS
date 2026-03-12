@@ -30,6 +30,7 @@ class CoordinadorHubService {
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
     protected readonly ?object $faseTransitionManager = NULL,
+    protected readonly ?object $notificationService = NULL,
   ) {}
 
   /**
