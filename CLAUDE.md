@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-09 | Version: 1.4.0
+# Ultima actualizacion: 2026-03-12 | Version: 1.5.0
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -247,12 +247,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v128.0.0
-- ARQUITECTURA: v116.0.0
-- INDICE: v157.0.0
-- FLUJO: v81.0.0
-- Ultimo aprendizaje: #178
-- Ultima golden rule: #119
+- DIRECTRICES: v129.0.0
+- ARQUITECTURA: v117.0.0
+- INDICE: v158.0.0
+- FLUJO: v82.0.0
+- Ultimo aprendizaje: #179
+- Ultima golden rule: #120
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:

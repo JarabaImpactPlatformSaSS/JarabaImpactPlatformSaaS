@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-11
-**Versión:** 115.0.0 (Sprint 13 Diseño Programa Formativo Andalucía +ei — 4 entities + 7 services + VoBo SAE + ESF+ + aprendizaje #177)
+**Versión:** 117.0.0 (Sprint 15-18 Andalucía +ei Clase Mundial — 9 P0 normativos + 5 tools operacionales + 8 features clase mundial + WCAG AA + 432 tests + aprendizaje #179)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -944,6 +944,63 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   SesionProgramada, InscripcionSesion, ProgramaVerticalAccess,         │
 │   IndicadoresEsf, PlanFormativo                                        │
 │   53 ficheros, 351 tests OK                                             │
+│                                                                         │
+│   PARTE IV — Reestructuración Actuaciones PIIL (Sprint 14):            │
+│   └── Sprint 14: Alineación normativa BBRR Art. 2 + STO Manual ICV25 │
+│       14-A: SesionProgramadaEi 6 tipos PIIL (orient_lab_ind/grup,     │
+│       orient_ins_ind/grup, sesion_formativa, tutoria_seguimiento)       │
+│       + ActuacionSto 8 tipos + FASE_POR_TIPO + LEGACY_MAP             │
+│       + MaterialDidacticoEi entity (7 tipos, archivo+url)              │
+│       + fase_piil/contenido_sto/subcontenido_sto en 3 entities        │
+│       14-B: ActuacionComputeService (persona atendida: ≥10h orient    │
+│       + ≥2h ind + ≥50h form + ≥75% asist; persona insertada:          │
+│       atendida + ≥40h orient_ins + contrato ≥4m/RETA)                 │
+│       + CoordinadorHubService getEstadisticasPorFase/PIIL sessions    │
+│       + Migration script tipos legacy → PIIL                           │
+│       14-C: Dashboard PIIL tab (Fase Atención + Fase Inserción)        │
+│       + KPIs persona atendida/insertada + sesiones por fase            │
+│       14-D: 17 tests (constants + compute + entity)                    │
+│                                                                         │
+│   Entidades Sprint 14: MaterialDidacticoEi (nueva)                     │
+│   Entities modificadas: SesionProgramadaEi, AccionFormativaEi,         │
+│   ActuacionSto, PlanFormativoEi, InscripcionSesionEi                   │
+│   Servicios Sprint 14 (1 nuevo): ActuacionComputeService               │
+│   Servicios modificados: CoordinadorHubService                          │
+│   368 tests OK                                                          │
+│                                                                         │
+│   PARTE V — Sprint 15-18 Clase Mundial 10/10 (2026-03-12):            │
+│   └── Sprint 15: 9 correcciones normativas P0                         │
+│       15-A: PIIL-PROV-001 provincias FT_679 (solo Málaga+Sevilla)    │
+│       15-B: canTransitToInsercion 4 criterios (10h+2h+50h+75%)      │
+│       15-C: Reapertura desde baja + contrato temporal InsercionLaboral│
+│       15-D: Seguimiento ≥40h + STO plazo 15 días                     │
+│   └── Sprint 16: 5 herramientas operacionales                         │
+│       16-A: DIME auto-asignación carril (0-8/9-14/15-20)            │
+│       16-B: 4 alertas normativas (STO 15d, orient 2h, asist 75%,    │
+│       indicadores 6m) + hook_update_10025 indicadores_6m_completado  │
+│       16-C: BMC Validation Dashboard panel emprendimiento             │
+│   └── Sprint 17: 8 features elevación clase mundial                   │
+│       17-A: Advanced analytics (funnel PIIL, distribuciones,          │
+│       promedios horas vs objetivos normativos)                         │
+│       17-B: StoBidireccionalService (push/pull/reconciliación +       │
+│       dashboard widget 4 KPIs synced/pending/error/sin_estado)        │
+│       17-C: ICalExportService RFC 5545 (VTIMEZONE Europe/Madrid,      │
+│       HMAC-SHA256 auth, 3 endpoints feed tenant/orientador/subscribe) │
+│       17-D: EiMultichannelNotificationService (10 tipos × push+wa+   │
+│       app, GDPR acepta_whatsapp, @?WhatsAppApiService cross-module)  │
+│       17-E: Leaderboard gamificación top 10 + Club Alumni panel       │
+│       17-F: Copilot restricción por fase (11 modos × 6 fases PIIL)  │
+│   └── Sprint 18: Pulido final                                         │
+│       18-A: WCAG 2.1 AA (47 scope="col", contrast tokens, semantic)  │
+│       18-B: 432 tests OK (+17 nuevos: iCal, STO, multichannel,       │
+│       DIME, compute, constants)                                        │
+│                                                                         │
+│   Servicios Sprint 15-18 (3 nuevos): StoBidireccionalService,         │
+│   ICalExportService, EiMultichannelNotificationService                 │
+│   Controllers Sprint 17 (1 nuevo): ICalExportController               │
+│   Entities modificadas: ProgramaParticipanteEi, InsercionLaboral,     │
+│   SesionProgramadaEi, AccionFormativaEi, ActuacionSto                 │
+│   432 tests OK                                                         │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -2947,6 +3004,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-11 | **116.0.0** | **Sprint 14 Reestructuración Actuaciones PIIL — Normative Type Alignment + Persona Atendida/Insertada:** MaterialDidacticoEi entity nueva (7 tipos material, archivo+url_externa, TENANT-ISOLATION-ACCESS-001). ActuacionComputeService (cálculo persona atendida/insertada, triggered via InscripcionSesionEi::postSave con PRESAVE-RESILIENCE-001). SesionProgramadaEi: 6 tipos PIIL-aligned (orient_lab_ind/grup, orient_ins_ind/grup, sesion_formativa, tutoria_seguimiento) con FASE_POR_TIPO + TIPOS_SESION_LEGACY_MAP + preSave formativa→accion_formativa validation. ActuacionSto: 8 tipos con TIPOS_LEGACY_MAP. AccionFormativaEi: +contenido_sto +subcontenido_sto +materiales. PlanFormativoEi: +cumple_persona_atendida +cumple_persona_insertada. CoordinadorHubService: +getEstadisticasPorFase() +getUpcomingSessionsPiil(). Dashboard: tab PIIL con Fase Atención/Inserción + KPIs. Migration script. hook_update_10023. 17 tests (368 total). Regla de oro #119. Aprendizaje #178. |
 | 2026-03-11 | **114.0.0** | **NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion:** Sistema de precios dinamicos en frontend conectado a MetaSitePricingService. Homepage PED: comparativa JarabaLex lee professional_price de SaasPlan entity, hero legal subtitle usa from_label, pricing hub overview renderiza 3 tiers desde getPricingPreview('_default'). 4 templates migrados de precios hardcodeados a variables dinamicas con fallbacks. PricingController: +overview_tiers render variable. hook_theme: +overview_tiers en pricing_hub_page. Script #23 validate-no-hardcoded-prices.php (regex EUR/€ en Twig, excepciones competidores/mock/comentarios). Post-edit-lint hook: deteccion de precios EUR en .twig en tiempo real (seccion 3 en case twig). validate-all.sh +NO-HARDCODE-PRICE-001 en fast mode. Fix BTN-CONTRAST-DARK-001: color blanco explicito en .ped-hero h1 (override _base.scss headings color). CSS compilado. Regla de oro #117. Aprendizaje #176. |
 | 2026-03-11 | **113.0.0** | **ENV-PARITY-001 Dev/Prod Parity + 18 Scripts Validacion:** Seccion 10.8.1 actualizada de 6 a 18 scripts de validacion (lista completa). Nuevo script validate-env-parity.php (~900 LOC, 14 checks: PHP version 6 fuentes, 14 ext-* composer.json, MariaDB, Redis, PHP config, MariaDB my.cnf, OPcache invalidation, Supervisor, filesystem, multi-domain, code paths, composer.lock, reverse proxy, wildcard SSL). config/deploy/mariadb/my.cnf creado (InnoDB 16G escalable 40G, NVMe I/O 4000 IOPS, max_connections 300, max_allowed_packet 256M para canvas_data). deploy.yml +OPcache invalidation (`drush php:eval "opcache_reset()"` post-cache-rebuild). composer.json +12 ext-* declarations (bcmath, curl, dom, fileinfo, gd, intl, json, mbstring, pdo_mysql, sodium, xml, zip). php.ini +max_input_vars 5000. validate-all.sh +ENV-PARITY-001 full mode + 3 skip_checks faltantes. Analisis runbook AMD EPYC Zen 5 AE12-128 NVMe. Regla de oro #116. Aprendizaje #175. |
 | 2026-03-10 | **112.0.0** | **I18N Navigation + Canvas Safeguard 4 Capas:** I18N-NAVPREFIX-001 (language_prefix inyectado en preprocess_page, 5 headers + footer prefijados con `{{ lp }}`). I18N-PATHPROCESSOR-001 (eliminado filtro langcode en PathProcessorPageContent — entity ID es único cross-language). I18N-LANGSWITCHER-001 (language switcher usa path_alias traducido para page_content). SAFEGUARD-CANVAS-001 (4 capas: backup-canvas.php backup/restore, presave hook shrinkage/empty/contamination detection, translation script entity reload + size mismatch, validate-translation-integrity.php). SAFEGUARD-ALIAS-001 (hallucination detection >80 chars + sentence patterns, 68 double-slash + 1 hallucination corregidos). validate-nav-i18n.php integrado en validate-all.sh fast mode. Regla de oro #115. Aprendizaje #174. |
