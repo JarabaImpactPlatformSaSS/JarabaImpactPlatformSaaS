@@ -397,6 +397,75 @@ class EiEmprendimientoBridgeService {
   }
 
   /**
+   * Gets emprendimiento stats for the coordinator dashboard.
+   *
+   * Sprint 15: BMC dashboard integration.
+   * TENANT-001: filters by tenant.
+   *
+   * @param int|null $tenantId
+   *   The tenant (group) ID.
+   *
+   * @return array{total_planes: int, por_fase: array, semaforo: array{verde: int, amarillo: int, rojo: int, pendiente: int}, planes_recientes: array}
+   */
+  public function getDashboardStats(?int $tenantId): array {
+    $result = [
+      'total_planes' => 0,
+      'por_fase' => [],
+      'semaforo' => ['verde' => 0, 'amarillo' => 0, 'rojo' => 0, 'pendiente' => 0],
+      'planes_recientes' => [],
+    ];
+
+    if (!$tenantId) {
+      return $result;
+    }
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('plan_emprendimiento_ei');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->condition('tenant_id', $tenantId)
+        ->execute();
+
+      $planes = $storage->loadMultiple($ids);
+      $result['total_planes'] = count($planes);
+
+      foreach ($planes as $plan) {
+        $fase = $plan->getFaseEmprendimiento();
+        $result['por_fase'][$fase] = ($result['por_fase'][$fase] ?? 0) + 1;
+
+        $viabilidad = $this->calcularViabilidad((int) $plan->id());
+        $color = match ($viabilidad['viabilidad']) {
+          'viable' => 'verde',
+          'viable_con_condiciones' => 'amarillo',
+          'no_viable' => 'rojo',
+          default => 'pendiente',
+        };
+        $result['semaforo'][$color]++;
+
+        $result['planes_recientes'][] = [
+          'plan_id' => (int) $plan->id(),
+          'label' => $plan->label() ?? '',
+          'fase' => $fase,
+          'viabilidad' => $viabilidad['viabilidad'],
+          'score' => $viabilidad['score'],
+        ];
+      }
+
+      // Sort by score descending, limit to 10.
+      usort($result['planes_recientes'], fn($a, $b) => $b['score'] <=> $a['score']);
+      $result['planes_recientes'] = array_slice($result['planes_recientes'], 0, 10);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error obteniendo dashboard emprendimiento: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+
+    return $result;
+  }
+
+  /**
    * Obtiene el plan activo de un participante.
    *
    * @param int $participanteId

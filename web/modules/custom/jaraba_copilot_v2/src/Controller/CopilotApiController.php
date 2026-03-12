@@ -117,12 +117,41 @@ class CopilotApiController extends ControllerBase
     {
         $modes = $this->featureUnlock->getAvailableCopilotModes();
 
+        // Sprint 17: Enrich modes with PIIL phase restrictions.
+        $context = $this->getEntrepreneurContext();
+        $verticalBridgeData = $this->copilotOrchestrator->preResolveVerticalContext($context);
+        $phaseRestrictions = $verticalBridgeData['_modos_permitidos'] ?? [];
+
+        $phaseInfo = NULL;
+        if (!empty($phaseRestrictions)) {
+            $fase = $verticalBridgeData['_fase_raw'] ?? NULL;
+            $phaseInfo = [
+                'phase' => $fase,
+                'phase_label' => self::PIIL_FASE_LABELS[$fase] ?? $fase,
+                'has_restrictions' => TRUE,
+            ];
+
+            // Mark modes as phase-restricted in the response.
+            foreach ($modes as $modeKey => &$modeData) {
+                $isBlocked = $this->isModeBlockedByPhase($modeKey, $phaseRestrictions);
+                $modeData['phase_restricted'] = $isBlocked;
+                if ($isBlocked) {
+                    $modeData['phase_restriction_reason'] = (string) $this->t(
+                        'No disponible en fase @fase',
+                        ['@fase' => $phaseInfo['phase_label']],
+                    );
+                }
+            }
+            unset($modeData);
+        }
+
         return new JsonResponse([
             'success' => TRUE,
             'data' => [
                 'modes' => $modes,
                 'total_modes' => count($modes),
-                'available_count' => count(array_filter($modes, fn($m) => $m['available'])),
+                'available_count' => count(array_filter($modes, fn($m) => $m['available'] && !($m['phase_restricted'] ?? FALSE))),
+                'piil_phase' => $phaseInfo,
             ],
         ]);
     }
@@ -237,9 +266,15 @@ class CopilotApiController extends ControllerBase
         // Obtener contexto del emprendedor
         $context = $this->getEntrepreneurContext();
 
+        // =====================================================================
+        // SPRINT 17: PRE-RESOLVER CONTEXTO VERTICAL (restricciones de fase PIIL)
+        // =====================================================================
+        $verticalBridgeData = $this->copilotOrchestrator->preResolveVerticalContext($context);
+        $phaseRestrictions = $verticalBridgeData['_modos_permitidos'] ?? [];
+
         // Si se especificó un modo, usarlo directamente
         if ($requestedMode !== NULL) {
-            // Verificar si el modo está disponible
+            // Verificar si el modo está disponible (desbloqueo por semanas)
             if (!$this->featureUnlock->isCopilotModeAvailable($requestedMode)) {
                 $modeConfig = FeatureUnlockService::COPILOT_MODES[$requestedMode] ?? [];
                 $unlockWeek = $modeConfig['unlock_week'] ?? 0;
@@ -255,6 +290,12 @@ class CopilotApiController extends ControllerBase
                 ], 403);
             }
 
+            // Sprint 17: Verificar restricción por fase PIIL
+            $phaseBlock = $this->checkPhaseRestriction($requestedMode, $phaseRestrictions, $verticalBridgeData);
+            if ($phaseBlock !== NULL) {
+                return $phaseBlock;
+            }
+
             // Llamar al orquestador con modo específico
             $response = $this->copilotOrchestrator->chat($message, $context, $requestedMode);
             $detectedMode = $requestedMode;
@@ -265,7 +306,7 @@ class CopilotApiController extends ControllerBase
             $detectedMode = $response['mode'] ?? 'consultor';
             $modeDetection = $response['mode_detection'] ?? NULL;
 
-            // Verificar si el modo detectado está disponible
+            // Verificar si el modo detectado está disponible (desbloqueo por semanas)
             if (!$this->featureUnlock->isCopilotModeAvailable($detectedMode)) {
                 $modeConfig = FeatureUnlockService::COPILOT_MODES[$detectedMode] ?? [];
                 $unlockWeek = $modeConfig['unlock_week'] ?? 0;
@@ -275,6 +316,20 @@ class CopilotApiController extends ControllerBase
                 $response = $this->copilotOrchestrator->chat($message, $context, $fallbackMode);
                 $detectedMode = $fallbackMode;
                 $modeDetection['fallback_reason'] = "Modo original '$detectedMode' bloqueado hasta semana $unlockWeek";
+            }
+
+            // Sprint 17: Si el modo detectado está restringido por fase PIIL, fallback
+            if (!empty($phaseRestrictions) && $this->isModeBlockedByPhase($detectedMode, $phaseRestrictions)) {
+                $allowedFallback = $this->findPhaseAllowedFallback($phaseRestrictions);
+                $fase = $verticalBridgeData['_fase_raw'] ?? 'actual';
+                $response = $this->copilotOrchestrator->chat($message, $context, $allowedFallback);
+                $modeDetection['phase_fallback_reason'] = sprintf(
+                    'Modo "%s" no disponible en fase "%s" del PIIL. Redirigido a "%s".',
+                    $detectedMode,
+                    $fase,
+                    $allowedFallback,
+                );
+                $detectedMode = $allowedFallback;
             }
         }
 
@@ -464,6 +519,130 @@ class CopilotApiController extends ControllerBase
 
         $decoded = json_decode($value, TRUE);
         return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
+     * Sprint 17: Mapeo de modos copilot v2 a categorías PIIL de fase.
+     *
+     * Los modos del copilot (coach, consultor, cfo, etc.) se mapean a
+     * categorías funcionales PIIL (orientacion_vocacional, formacion, etc.)
+     * para verificar si la fase actual los permite.
+     */
+    const MODE_TO_PIIL_CATEGORY = [
+        'coach' => 'informacion_programa',
+        'consultor' => 'informacion_programa',
+        'sparring' => 'orientacion_vocacional',
+        'cfo' => 'insercion',
+        'fiscal' => 'insercion',
+        'laboral' => 'insercion',
+        'devil' => 'orientacion_vocacional',
+        'vpc_designer' => 'orientacion_vocacional',
+        'customer_discovery' => 'orientacion_vocacional',
+        'pattern_expert' => 'formacion',
+        'pivot_advisor' => 'insercion',
+    ];
+
+    /**
+     * Fase labels para mensajes de usuario.
+     */
+    const PIIL_FASE_LABELS = [
+        'acogida' => 'Acogida',
+        'diagnostico' => 'Diagnóstico',
+        'atencion' => 'Atención',
+        'insercion' => 'Inserción',
+        'seguimiento' => 'Seguimiento',
+        'baja' => 'Baja',
+    ];
+
+    /**
+     * Verifica si un modo explícito está restringido por fase PIIL.
+     *
+     * @param string $mode
+     *   Modo solicitado.
+     * @param array $phaseRestrictions
+     *   Restricciones de fase (category => bool).
+     * @param array $bridgeData
+     *   Datos del bridge (incluye _fase_raw).
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse|null
+     *   Error response si bloqueado, NULL si permitido.
+     */
+    protected function checkPhaseRestriction(string $mode, array $phaseRestrictions, array $bridgeData): ?JsonResponse {
+        if (empty($phaseRestrictions)) {
+            return NULL;
+        }
+
+        if (!$this->isModeBlockedByPhase($mode, $phaseRestrictions)) {
+            return NULL;
+        }
+
+        $fase = $bridgeData['_fase_raw'] ?? 'actual';
+        $faseLabel = self::PIIL_FASE_LABELS[$fase] ?? $fase;
+        $modeConfig = FeatureUnlockService::COPILOT_MODES[$mode] ?? [];
+        $modeLabel = $modeConfig['label'] ?? $mode;
+
+        // Encontrar modos alternativos permitidos en esta fase.
+        $alternativas = $this->getPhaseAllowedModes($phaseRestrictions);
+
+        return new JsonResponse([
+            'success' => FALSE,
+            'error' => $this->t('El modo "@mode" no está disponible en tu fase actual (@fase) del programa PIIL.', [
+                '@mode' => $modeLabel,
+                '@fase' => $faseLabel,
+            ]),
+            'phase_restricted' => TRUE,
+            'current_phase' => $fase,
+            'current_phase_label' => $faseLabel,
+            'blocked_mode' => $mode,
+            'allowed_modes' => $alternativas,
+            'suggestion' => $this->t('En la fase de @fase puedes usar: @modos.', [
+                '@fase' => $faseLabel,
+                '@modos' => implode(', ', array_map(
+                    fn($m) => FeatureUnlockService::COPILOT_MODES[$m]['label'] ?? $m,
+                    $alternativas,
+                )),
+            ]),
+        ], 403);
+    }
+
+    /**
+     * Checks if a copilot mode is blocked by PIIL phase restrictions.
+     */
+    protected function isModeBlockedByPhase(string $mode, array $phaseRestrictions): bool {
+        $category = self::MODE_TO_PIIL_CATEGORY[$mode] ?? 'informacion_programa';
+        return isset($phaseRestrictions[$category]) && $phaseRestrictions[$category] === FALSE;
+    }
+
+    /**
+     * Gets copilot modes allowed in the current PIIL phase.
+     *
+     * @return string[]
+     *   Mode keys that are allowed.
+     */
+    protected function getPhaseAllowedModes(array $phaseRestrictions): array {
+        $allowed = [];
+        foreach (self::MODE_TO_PIIL_CATEGORY as $mode => $category) {
+            if (!isset($phaseRestrictions[$category]) || $phaseRestrictions[$category] === TRUE) {
+                $allowed[] = $mode;
+            }
+        }
+        return array_unique($allowed);
+    }
+
+    /**
+     * Finds the best fallback mode allowed in the current PIIL phase.
+     */
+    protected function findPhaseAllowedFallback(array $phaseRestrictions): string {
+        // Preference order for fallback.
+        $preferredFallbacks = ['consultor', 'coach', 'sparring'];
+
+        foreach ($preferredFallbacks as $fallback) {
+            if (!$this->isModeBlockedByPhase($fallback, $phaseRestrictions)) {
+                return $fallback;
+            }
+        }
+
+        return 'coach';
     }
 
 }

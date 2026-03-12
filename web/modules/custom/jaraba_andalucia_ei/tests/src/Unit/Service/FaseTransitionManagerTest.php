@@ -97,7 +97,7 @@ class FaseTransitionManagerTest extends UnitTestCase {
       'atencion permite insercion y baja' => ['atencion', ['insercion', 'baja']],
       'insercion permite seguimiento y baja' => ['insercion', ['seguimiento', 'baja']],
       'seguimiento solo permite baja' => ['seguimiento', ['baja']],
-      'baja es absorbente' => ['baja', []],
+      'baja permite reapertura a cualquier fase activa' => ['baja', ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento']],
       'fase inexistente devuelve vacio' => ['inexistente', []],
     ];
   }
@@ -134,14 +134,35 @@ class FaseTransitionManagerTest extends UnitTestCase {
    * @covers ::transitarFase
    */
   #[\PHPUnit\Framework\Attributes\Test]
-  public function transitarFaseDesdeBajaNoPermitida(): void {
+  public function transitarFaseDesdeBajaSinMotivoReaperturaFalla(): void {
     $participante = $this->createParticipanteMock('baja');
     $this->storage->method('load')->with(1)->willReturn($participante);
 
+    // Sprint 15: Baja ya no es absorbente, pero requiere motivo_reapertura.
     $result = $this->service->transitarFase(1, 'acogida');
 
     $this->assertFalse($result['success']);
-    $this->assertStringContainsString('no permitida', $result['message']->getUntranslatedString());
+    $this->assertStringContainsString('motivo documentado', $result['message']->getUntranslatedString());
+  }
+
+  /**
+   * Sprint 15: Reapertura desde baja con motivo documentado exitosa.
+   *
+   * @covers ::transitarFase
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function transitarFaseDesdeBajaConMotivoReaperturaExito(): void {
+    $participante = $this->createParticipanteMock('baja', [
+      'isAcuerdoParticipacionFirmado' => TRUE,
+      'isDaciFirmado' => TRUE,
+    ]);
+    $this->storage->method('load')->with(1)->willReturn($participante);
+
+    $result = $this->service->transitarFase(1, 'acogida', [
+      'motivo_reapertura' => 'Reincorporación tras abandono temporal',
+    ]);
+
+    $this->assertTrue($result['success']);
   }
 
   /**
@@ -253,7 +274,8 @@ class FaseTransitionManagerTest extends UnitTestCase {
     $result = $this->service->transitarFase(1, 'insercion', ['tipo_insercion' => 'cuenta_ajena']);
 
     $this->assertFalse($result['success']);
-    $this->assertStringContainsString('10h', $result['message']->getUntranslatedString());
+    // Sprint 15: Mensaje detalla los 4 criterios faltantes.
+    $this->assertStringContainsString('requisitos PIIL', $result['message']->getUntranslatedString());
   }
 
   /**
@@ -319,13 +341,38 @@ class FaseTransitionManagerTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function transitarASeguimientoConFseSalidaExito(): void {
     $participante = $this->createParticipanteMock('insercion', [
-      'fields' => ['fse_salida_completado' => TRUE],
+      // Sprint 15: Requiere FSE+ salida + ≥40h orientación inserción.
+      'fields' => [
+        'fse_salida_completado' => TRUE,
+        'horas_orientacion_insercion' => 42.0,
+      ],
     ]);
     $this->storage->method('load')->with(1)->willReturn($participante);
 
     $result = $this->service->transitarFase(1, 'seguimiento');
 
     $this->assertTrue($result['success']);
+  }
+
+  /**
+   * Sprint 15: insercion -> seguimiento sin 40h orientación inserción falla.
+   *
+   * @covers ::transitarFase
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function transitarASeguimientoSin40hInsercionFalla(): void {
+    $participante = $this->createParticipanteMock('insercion', [
+      'fields' => [
+        'fse_salida_completado' => TRUE,
+        'horas_orientacion_insercion' => 25.0,
+      ],
+    ]);
+    $this->storage->method('load')->with(1)->willReturn($participante);
+
+    $result = $this->service->transitarFase(1, 'seguimiento');
+
+    $this->assertFalse($result['success']);
+    $this->assertStringContainsString('40h', $result['message']->getUntranslatedString());
   }
 
   /**
@@ -367,12 +414,14 @@ class FaseTransitionManagerTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function canTransitToInsercionConHorasSuficientes(): void {
     // Usar stub SIN canTransitToInsercion() para forzar el fallback del servicio.
+    // Sprint 15: Ahora requiere los 4 criterios (incluyendo 2h ind + 75% asistencia).
     $participante = $this->createFieldOnlyParticipanteMock([
       'horas_orientacion_ind' => 5.0,
       'horas_orientacion_grup' => 3.0,
       'horas_mentoria_ia' => 1.0,
       'horas_mentoria_humana' => 2.0,
       'horas_formacion' => 55.0,
+      'asistencia_porcentaje' => 80.0,
     ]);
 
     $result = $this->service->canTransitToInsercion($participante);

@@ -11,6 +11,9 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
+use Drupal\jaraba_andalucia_ei\Service\EiAlumniBridgeService;
+use Drupal\jaraba_andalucia_ei\Service\EiEmprendimientoBridgeService;
+use Drupal\jaraba_andalucia_ei\Service\StoBidireccionalService;
 use Drupal\jaraba_andalucia_ei\Service\IndicadoresEsfService;
 use Drupal\jaraba_andalucia_ei\Service\JustificacionEconomicaService;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
@@ -49,6 +52,9 @@ class CoordinadorDashboardController extends ControllerBase {
     protected ?SesionProgramadaService $sesionProgramadaService = NULL,
     protected ?VoboSaeWorkflowService $voboSaeService = NULL,
     protected ?IndicadoresEsfService $indicadoresEsfService = NULL,
+    protected ?EiEmprendimientoBridgeService $emprendimientoBridge = NULL,
+    protected ?EiAlumniBridgeService $alumniBridge = NULL,
+    protected ?StoBidireccionalService $stoBidireccional = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -82,6 +88,12 @@ class CoordinadorDashboardController extends ControllerBase {
         ? $container->get('jaraba_andalucia_ei.vobo_sae_workflow') : NULL,
       $container->has('jaraba_andalucia_ei.indicadores_esf')
         ? $container->get('jaraba_andalucia_ei.indicadores_esf') : NULL,
+      $container->has('jaraba_andalucia_ei.ei_emprendimiento_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_emprendimiento_bridge') : NULL,
+      $container->has('jaraba_andalucia_ei.ei_alumni_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_alumni_bridge') : NULL,
+      $container->has('jaraba_andalucia_ei.sto_bidireccional')
+        ? $container->get('jaraba_andalucia_ei.sto_bidireccional') : NULL,
     );
   }
 
@@ -129,6 +141,11 @@ class CoordinadorDashboardController extends ControllerBase {
       ? $this->safeCall(fn() => $this->puntosImpactoService->getImpactoGlobalPrograma($tenantId))
       : NULL;
 
+    // Sprint 17: Leaderboard de gamificación (top 10).
+    $rankingImpacto = $this->puntosImpactoService
+      ? $this->safeCall(fn() => $this->puntosImpactoService->getRankingParticipantes($tenantId, 10))
+      : [];
+
     // Estadísticas de prospecciones empresariales.
     $prospecciones = $this->prospeccionService
       ? $this->safeCall(fn() => $this->prospeccionService->getEstadisticas($tenantId))
@@ -153,6 +170,35 @@ class CoordinadorDashboardController extends ControllerBase {
     $indicadoresEsf = $this->indicadoresEsfService
       ? $this->safeCall(fn() => $this->indicadoresEsfService->getKpisGlobales($tenantId))
       : NULL;
+
+    // Sprint 17: STO bidireccional — resumen de sincronización.
+    $stoResumen = $this->stoBidireccional
+      ? $this->safeCall(fn() => $this->stoBidireccional->getResumenSync($tenantId))
+      : NULL;
+
+    // Sprint 17: Advanced analytics (funnel, colectivo, provincia, burndown).
+    $advancedAnalytics = $this->buildAdvancedAnalytics($tenantId);
+
+    // Sprint 15: Emprendimiento BMC dashboard.
+    $emprendimientoStats = $this->emprendimientoBridge
+      ? $this->safeCall(fn() => $this->emprendimientoBridge->getDashboardStats($tenantId))
+      : NULL;
+
+    // Sprint 17: Club Alumni — estadísticas e historias de éxito.
+    $alumniStats = $this->alumniBridge
+      ? $this->safeCall(fn() => $this->alumniBridge->getAlumniStats($tenantId))
+      : NULL;
+    $historiasExito = $this->alumniBridge
+      ? $this->safeCall(fn() => $this->alumniBridge->getHistoriasExito($tenantId))
+      : [];
+
+    // Sprint 14: PIIL phase statistics and upcoming sessions.
+    $estadisticasPorFase = $this->hubService
+      ? $this->safeCall(fn() => $this->hubService->getEstadisticasPorFase($tenantId))
+      : [];
+    $sesionesProximasPiil = $this->hubService
+      ? $this->safeCall(fn() => $this->hubService->getUpcomingSessionsPiil($tenantId))
+      : [];
 
     // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.
     $apiUrls = $this->resolveHubApiUrls();
@@ -180,12 +226,20 @@ class CoordinadorDashboardController extends ControllerBase {
       '#justificacion' => $justificacion,
       '#riesgo' => $riesgo,
       '#puntos_impacto' => $puntosImpacto,
+      '#ranking_impacto' => $rankingImpacto,
       '#prospecciones' => $prospecciones,
       '#firmas_pendientes' => $firmasPendientes ?? [],
       '#formacion_stats' => $formacionStats,
       '#vobo_pendientes' => $voboPendientes ?? 0,
       '#sesiones_proximas' => $sesionesProximas ?? [],
       '#indicadores_esf' => $indicadoresEsf,
+      '#estadisticas_por_fase' => $estadisticasPorFase ?? [],
+      '#sesiones_proximas_piil' => $sesionesProximasPiil ?? [],
+      '#emprendimiento_stats' => $emprendimientoStats,
+      '#alumni_stats' => $alumniStats,
+      '#historias_exito' => $historiasExito ?? [],
+      '#sto_resumen' => $stoResumen,
+      '#advanced_analytics' => $advancedAnalytics,
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/dashboard',
@@ -205,6 +259,8 @@ class CoordinadorDashboardController extends ControllerBase {
               'voboPendientes' => $voboPendientes ?? 0,
               'sesionesProximas' => $sesionesProximas ?? [],
               'indicadoresEsf' => $indicadoresEsf,
+              'estadisticasPorFase' => $estadisticasPorFase ?? [],
+              'sesionesProximasPiil' => $sesionesProximasPiil ?? [],
               'apiUrls' => $apiUrls,
               'phases' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'],
               'phaseLabels' => array_map('strval', $phaseLabels),
@@ -266,6 +322,8 @@ class CoordinadorDashboardController extends ControllerBase {
       'sesionesFormativas' => 'jaraba_andalucia_ei.api.hub.sesiones_formativas',
       'planesFormativos' => 'jaraba_andalucia_ei.api.hub.planes_formativos',
       'indicadoresEsf' => 'jaraba_andalucia_ei.api.hub.indicadores_esf',
+      // Sprint 17: iCal feed subscription.
+      'calendarSubscribe' => 'jaraba_andalucia_ei.ical.subscribe_url',
     ];
 
     $urls = [];
@@ -637,6 +695,119 @@ class CoordinadorDashboardController extends ControllerBase {
     }
 
     return $defaults;
+  }
+
+  /**
+   * Builds advanced analytics for the metrics panel.
+   *
+   * Sprint 17: Funnel de conversión, distribución por colectivo/provincia,
+   * burndown de horas promedio por participante.
+   *
+   * @param int|null $tenantId
+   *   Tenant group ID. TENANT-001.
+   *
+   * @return array{funnel: array, por_colectivo: array, por_provincia: array, horas_promedio: array}
+   */
+  protected function buildAdvancedAnalytics(?int $tenantId): array {
+    $result = [
+      'funnel' => [],
+      'por_colectivo' => [],
+      'por_provincia' => [],
+      'horas_promedio' => [
+        'orientacion' => 0.0,
+        'formacion' => 0.0,
+        'orientacion_individual' => 0.0,
+        'asistencia_media' => 0.0,
+      ],
+    ];
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
+
+      // All participants.
+      $allQuery = $storage->getQuery()->accessCheck(FALSE);
+      $this->addTenantCondition($allQuery, $tenantId);
+      $allIds = $allQuery->execute();
+      $participantes = $storage->loadMultiple($allIds);
+      $total = count($participantes);
+
+      if ($total === 0) {
+        return $result;
+      }
+
+      // Funnel: count per phase (ordered).
+      $faseOrden = ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento'];
+      $faseCounts = array_fill_keys($faseOrden, 0);
+      $colectivoCounts = [];
+      $provinciaCounts = [];
+      $sumOrientacion = 0.0;
+      $sumFormacion = 0.0;
+      $sumOrientacionInd = 0.0;
+      $sumAsistencia = 0.0;
+      $countAsistencia = 0;
+
+      foreach ($participantes as $p) {
+        $fase = $p->get('fase_actual')->value ?? 'acogida';
+        if (isset($faseCounts[$fase])) {
+          $faseCounts[$fase]++;
+        }
+
+        $colectivo = $p->get('colectivo')->value ?? 'sin_colectivo';
+        $colectivoCounts[$colectivo] = ($colectivoCounts[$colectivo] ?? 0) + 1;
+
+        $provincia = $p->get('provincia_participacion')->value ?? 'sin_provincia';
+        $provinciaCounts[$provincia] = ($provinciaCounts[$provincia] ?? 0) + 1;
+
+        $sumOrientacion += (float) ($p->get('horas_orientacion_ind')->value ?? 0)
+          + (float) ($p->get('horas_orientacion_grup')->value ?? 0)
+          + (float) ($p->get('horas_mentoria_ia')->value ?? 0)
+          + (float) ($p->get('horas_mentoria_humana')->value ?? 0);
+        $sumFormacion += (float) ($p->get('horas_formacion')->value ?? 0);
+        $sumOrientacionInd += (float) ($p->get('horas_orientacion_ind')->value ?? 0);
+
+        $asist = $p->get('asistencia_porcentaje')->value ?? NULL;
+        if ($asist !== NULL) {
+          $sumAsistencia += (float) $asist;
+          $countAsistencia++;
+        }
+      }
+
+      // Funnel: acumulativo (cuántos llegaron a cada fase o más allá).
+      $acumulado = 0;
+      $funnelReverse = array_reverse($faseOrden);
+      $funnelAccum = [];
+      foreach ($funnelReverse as $fase) {
+        $acumulado += $faseCounts[$fase];
+        $funnelAccum[$fase] = $acumulado;
+      }
+      foreach ($faseOrden as $fase) {
+        $count = $funnelAccum[$fase];
+        $result['funnel'][] = [
+          'fase' => $fase,
+          'count' => $count,
+          'pct' => $total > 0 ? round(($count / $total) * 100, 1) : 0,
+        ];
+      }
+
+      arsort($colectivoCounts);
+      $result['por_colectivo'] = $colectivoCounts;
+
+      arsort($provinciaCounts);
+      $result['por_provincia'] = $provinciaCounts;
+
+      $activos = max(1, $total);
+      $result['horas_promedio'] = [
+        'orientacion' => round($sumOrientacion / $activos, 1),
+        'formacion' => round($sumFormacion / $activos, 1),
+        'orientacion_individual' => round($sumOrientacionInd / $activos, 1),
+        'asistencia_media' => $countAsistencia > 0 ? round($sumAsistencia / $countAsistencia, 1) : 0.0,
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error building advanced analytics: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $result;
   }
 
   /**

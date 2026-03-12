@@ -229,6 +229,114 @@ class AlertasNormativasService {
         }
       }
 
+      // 8. Sprint 15: Plazo 15 días para registro STO.
+      foreach ($participantes as $participante) {
+        $pid = (int) $participante->id();
+        $nombre = $participante->label() ?? "Participante #$pid";
+        $fechaInicio = $participante->get('fecha_inicio_programa')->value ?? '';
+        $fechaAltoSto = $participante->get('fecha_alta_sto')->value ?? '';
+
+        if ($fechaInicio !== '' && $fechaAltoSto === '') {
+          $inicioTs = strtotime(str_replace('T', ' ', $fechaInicio));
+          if ($inicioTs !== FALSE) {
+            $diasSinSto = (int) round((time() - $inicioTs) / 86400);
+            if ($diasSinSto >= 15) {
+              $alertas[] = [
+                'tipo' => 'sto_registro_plazo',
+                'nivel' => $diasSinSto >= 30 ? self::NIVEL_CRITICO : self::NIVEL_ALTO,
+                'mensaje' => sprintf('%s: %d días sin registro en STO (plazo normativo: 15 días).', $nombre, $diasSinSto),
+                'participante_id' => $pid,
+                'accion' => 'Registrar participante en STO inmediatamente (requisito PIIL BBRR).',
+              ];
+            }
+          }
+        }
+      }
+
+      // 9. Sprint 15: Orientación individual < 2h en fases avanzadas.
+      foreach ($participantes as $participante) {
+        $pid = (int) $participante->id();
+        $fase = $participante->get('fase_actual')->value ?? 'acogida';
+        $nombre = $participante->label() ?? "Participante #$pid";
+        $semana = (int) ($participante->get('semana_actual')->value ?? 0);
+
+        if (in_array($fase, ['atencion', 'insercion'], TRUE) && $semana >= 12) {
+          $horasInd = (float) ($participante->get('horas_orientacion_ind')->value ?? 0);
+          if ($horasInd < 2.0) {
+            $alertas[] = [
+              'tipo' => 'orientacion_individual_insuficiente',
+              'nivel' => $semana >= 20 ? self::NIVEL_CRITICO : self::NIVEL_MEDIO,
+              'mensaje' => sprintf('%s: %.1fh orientación individual de 2h requeridas (semana %d).', $nombre, $horasInd, $semana),
+              'participante_id' => $pid,
+              'accion' => 'Programar sesiones de orientación individual (requisito persona atendida Art. 6.2).',
+            ];
+          }
+        }
+      }
+
+      // 10. Sprint 15: Asistencia < 75% en formación activa.
+      foreach ($participantes as $participante) {
+        $pid = (int) $participante->id();
+        $fase = $participante->get('fase_actual')->value ?? 'acogida';
+        $nombre = $participante->label() ?? "Participante #$pid";
+        $semana = (int) ($participante->get('semana_actual')->value ?? 0);
+
+        if ($fase === 'atencion' && $semana >= 20) {
+          $asistencia = (float) ($participante->get('asistencia_porcentaje')->value ?? 0);
+          $horasFormacion = (float) ($participante->get('horas_formacion')->value ?? 0);
+          if ($horasFormacion > 0 && $asistencia < 75.0) {
+            $alertas[] = [
+              'tipo' => 'asistencia_insuficiente',
+              'nivel' => $semana >= 30 ? self::NIVEL_CRITICO : self::NIVEL_MEDIO,
+              'mensaje' => sprintf('%s: %.0f%% asistencia de 75%% requerido (semana %d).', $nombre, $asistencia, $semana),
+              'participante_id' => $pid,
+              'accion' => 'Contactar participante y reforzar compromiso de asistencia formativa.',
+            ];
+          }
+        }
+      }
+
+      // 11. Sprint 15: Seguimiento 6 meses post-salida FSE+.
+      // Participantes en baja o seguimiento con fse_salida_completado pero sin
+      // indicadores_6m_completado.
+      if ($this->entityTypeManager->hasDefinition('programa_participante_ei')) {
+        $bajaQuery = $storage->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('fse_salida_completado', TRUE)
+          ->condition('tenant_id', $tenantId);
+        $bajaSeguimientoIds = $bajaQuery->execute();
+
+        foreach ($storage->loadMultiple($bajaSeguimientoIds) as $participante) {
+          $pid = (int) $participante->id();
+          $nombre = $participante->label() ?? "Participante #$pid";
+          $indicadores6m = (bool) ($participante->get('indicadores_6m_completado')->value ?? FALSE);
+          if ($indicadores6m) {
+            continue;
+          }
+
+          $fechaSalida = $participante->get('fecha_fin_programa')->value ?? '';
+          if ($fechaSalida === '') {
+            continue;
+          }
+
+          $salidaTs = strtotime(str_replace('T', ' ', $fechaSalida));
+          if ($salidaTs === FALSE) {
+            continue;
+          }
+
+          $mesesPostSalida = (int) round((time() - $salidaTs) / (86400 * 30));
+          if ($mesesPostSalida >= 5) {
+            $alertas[] = [
+              'tipo' => 'indicadores_6m_pendientes',
+              'nivel' => $mesesPostSalida >= 6 ? self::NIVEL_CRITICO : self::NIVEL_ALTO,
+              'mensaje' => sprintf('%s: Indicadores FSE+ 6 meses post-salida pendientes (%d meses desde salida).', $nombre, $mesesPostSalida),
+              'participante_id' => $pid,
+              'accion' => 'Contactar participante para recogida de indicadores de resultado a los 6 meses.',
+            ];
+          }
+        }
+      }
+
       // Ordenar por nivel de gravedad.
       usort($alertas, function ($a, $b) {
         $orden = [self::NIVEL_CRITICO => 0, self::NIVEL_ALTO => 1, self::NIVEL_MEDIO => 2, self::NIVEL_INFO => 3];

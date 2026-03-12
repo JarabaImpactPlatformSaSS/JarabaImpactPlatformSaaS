@@ -65,15 +65,44 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
   use EntityOwnerTrait;
 
   /**
-   * Tipos de actuación válidos.
+   * Tipos de actuación válidos alineados con normativa PIIL (Sprint 14).
+   *
+   * Los tipos distinguen orientación laboral (Fase Atención) de
+   * orientación para la inserción (Fase Inserción).
    */
   public const TIPOS_ACTUACION = [
-    'orientacion_individual' => 'Orientación individual',
-    'orientacion_grupal' => 'Orientación grupal',
+    'orientacion_laboral_individual' => 'Orientación laboral individual',
+    'orientacion_laboral_grupal' => 'Orientación laboral grupal',
+    'orientacion_insercion_individual' => 'Orientación inserción individual',
+    'orientacion_insercion_grupal' => 'Orientación inserción grupal',
     'formacion' => 'Formación',
-    'tutoria' => 'Tutoría',
+    'tutoria' => 'Tutoría de seguimiento',
     'prospeccion' => 'Prospección empresarial',
     'intermediacion' => 'Intermediación laboral',
+  ];
+
+  /**
+   * Mapa de fase PIIL por tipo de actuación.
+   */
+  public const FASE_POR_TIPO = [
+    'orientacion_laboral_individual' => 'atencion',
+    'orientacion_laboral_grupal' => 'atencion',
+    'orientacion_insercion_individual' => 'insercion',
+    'orientacion_insercion_grupal' => 'insercion',
+    'formacion' => 'atencion',
+    'tutoria' => 'atencion',
+    'prospeccion' => 'insercion',
+    'intermediacion' => 'insercion',
+  ];
+
+  /**
+   * Legacy types migration map.
+   *
+   * @deprecated Solo para scripts de migración.
+   */
+  public const TIPOS_LEGACY_MAP = [
+    'orientacion_individual' => 'orientacion_laboral_individual',
+    'orientacion_grupal' => 'orientacion_laboral_grupal',
   ];
 
   /**
@@ -112,7 +141,17 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
    * Indica si es una actuación grupal.
    */
   public function isGrupal(): bool {
-    return $this->getTipoActuacion() === 'orientacion_grupal';
+    return in_array($this->getTipoActuacion(), [
+      'orientacion_laboral_grupal',
+      'orientacion_insercion_grupal',
+    ], TRUE);
+  }
+
+  /**
+   * Obtiene la fase PIIL de esta actuación.
+   */
+  public function getFasePiil(): string {
+    return self::FASE_POR_TIPO[$this->getTipoActuacion()] ?? 'atencion';
   }
 
   /**
@@ -259,6 +298,41 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => -1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // === SPRINT 14: FASE PIIL Y ALINEAMIENTO STO ===
+
+    $fields['fase_piil'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Fase PIIL'))
+      ->setDescription(t('Fase del itinerario PIIL a la que pertenece esta actuación. Calculado desde tipo_actuacion.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'atencion' => t('Fase de Atención'),
+        'insercion' => t('Fase de Inserción'),
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Contenido STO'))
+      ->setDescription(t('Contenido de la actuación según tipificación del STO.'))
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_contenidos_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['subcontenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Subcontenido STO'))
+      ->setDescription(t('Subcontenido según tipificación STO.'))
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_subcontenidos_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -2,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);

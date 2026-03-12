@@ -416,6 +416,159 @@ class CoordinadorHubService {
   }
 
   /**
+   * Sprint 14: Obtiene estadísticas de actuaciones por fase PIIL.
+   *
+   * @return array{atencion: array, insercion: array, personas: array}
+   */
+  public function getEstadisticasPorFase(?int $tenantId): array {
+    $result = [
+      'atencion' => [
+        'sesiones_orientacion' => 0,
+        'horas_orientacion' => 0.0,
+        'acciones_formativas' => 0,
+        'acciones_vobo_aprobado' => 0,
+        'sesiones_formativas' => 0,
+      ],
+      'insercion' => [
+        'sesiones_orientacion' => 0,
+        'horas_orientacion' => 0.0,
+        'prospecciones' => 0,
+      ],
+      'personas' => [
+        'atendidas' => 0,
+        'insertadas' => 0,
+      ],
+    ];
+
+    try {
+      // Sesiones de orientación laboral (Fase Atención).
+      if ($this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+        $sesionStorage = $this->entityTypeManager->getStorage('sesion_programada_ei');
+
+        $atencionQuery = $sesionStorage->getQuery()->accessCheck(TRUE)
+          ->condition('tipo_sesion', [
+            'orientacion_laboral_individual',
+            'orientacion_laboral_grupal',
+          ], 'IN')
+          ->count();
+        $this->addTenantCondition($atencionQuery, $tenantId);
+        $result['atencion']['sesiones_orientacion'] = (int) $atencionQuery->execute();
+
+        // Sesiones formativas.
+        $formativaQuery = $sesionStorage->getQuery()->accessCheck(TRUE)
+          ->condition('tipo_sesion', 'sesion_formativa')
+          ->count();
+        $this->addTenantCondition($formativaQuery, $tenantId);
+        $result['atencion']['sesiones_formativas'] = (int) $formativaQuery->execute();
+
+        // Sesiones de orientación inserción (Fase Inserción).
+        $insercionQuery = $sesionStorage->getQuery()->accessCheck(TRUE)
+          ->condition('tipo_sesion', [
+            'orientacion_insercion_individual',
+            'orientacion_insercion_grupal',
+          ], 'IN')
+          ->count();
+        $this->addTenantCondition($insercionQuery, $tenantId);
+        $result['insercion']['sesiones_orientacion'] = (int) $insercionQuery->execute();
+      }
+
+      // Acciones formativas y VoBo.
+      if ($this->entityTypeManager->hasDefinition('accion_formativa_ei')) {
+        $afStorage = $this->entityTypeManager->getStorage('accion_formativa_ei');
+
+        $totalQuery = $afStorage->getQuery()->accessCheck(TRUE)->count();
+        $this->addTenantCondition($totalQuery, $tenantId);
+        $result['atencion']['acciones_formativas'] = (int) $totalQuery->execute();
+
+        $voboQuery = $afStorage->getQuery()->accessCheck(TRUE)
+          ->condition('estado', 'vobo_aprobado')
+          ->count();
+        $this->addTenantCondition($voboQuery, $tenantId);
+        $result['atencion']['acciones_vobo_aprobado'] = (int) $voboQuery->execute();
+      }
+
+      // Prospecciones.
+      if ($this->entityTypeManager->hasDefinition('prospeccion_empresarial')) {
+        $prospQuery = $this->entityTypeManager->getStorage('prospeccion_empresarial')
+          ->getQuery()->accessCheck(TRUE)->count();
+        $this->addTenantCondition($prospQuery, $tenantId);
+        $result['insercion']['prospecciones'] = (int) $prospQuery->execute();
+      }
+
+      // Personas atendidas e insertadas.
+      $partStorage = $this->entityTypeManager->getStorage('programa_participante_ei');
+
+      $atendidaQuery = $partStorage->getQuery()->accessCheck(TRUE)
+        ->condition('es_persona_atendida', TRUE)
+        ->count();
+      $this->addTenantCondition($atendidaQuery, $tenantId);
+      $result['personas']['atendidas'] = (int) $atendidaQuery->execute();
+
+      $insertadaQuery = $partStorage->getQuery()->accessCheck(TRUE)
+        ->condition('es_persona_insertada', TRUE)
+        ->count();
+      $this->addTenantCondition($insertadaQuery, $tenantId);
+      $result['personas']['insertadas'] = (int) $insertadaQuery->execute();
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error getting estadísticas por fase: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $result;
+  }
+
+  /**
+   * Sprint 14: Obtiene sesiones próximas filtradas por fase PIIL.
+   *
+   * @return array<int, array<string, mixed>>
+   */
+  public function getUpcomingSessionsPiil(?int $tenantId, int $days = 14): array {
+    if (!$this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+      return [];
+    }
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('sesion_programada_ei');
+      $now = date('Y-m-d');
+      $future = date('Y-m-d', time() + ($days * 86400));
+
+      $query = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('estado', ['programada', 'confirmada'], 'IN')
+        ->condition('fecha', $now, '>=')
+        ->condition('fecha', $future, '<=')
+        ->sort('fecha', 'ASC')
+        ->range(0, 20);
+      $this->addTenantCondition($query, $tenantId);
+
+      $ids = $query->execute();
+      $sessions = [];
+
+      foreach ($storage->loadMultiple($ids) as $sesion) {
+        $sessions[] = [
+          'id' => (int) $sesion->id(),
+          'titulo' => $sesion->get('titulo')->value ?? '',
+          'tipo_sesion' => $sesion->get('tipo_sesion')->value ?? '',
+          'fase_piil' => $sesion->get('fase_piil')->value ?? '',
+          'fecha' => $sesion->get('fecha')->value ?? '',
+          'hora_inicio' => $sesion->get('hora_inicio')->value ?? '',
+          'hora_fin' => $sesion->get('hora_fin')->value ?? '',
+          'modalidad' => $sesion->get('modalidad')->value ?? '',
+          'max_plazas' => (int) ($sesion->get('max_plazas')->value ?? 20),
+          'plazas_ocupadas' => (int) ($sesion->get('plazas_ocupadas')->value ?? 0),
+          'estado' => $sesion->get('estado')->value ?? 'programada',
+          'contenido_sto' => $sesion->get('contenido_sto')->value ?? '',
+        ];
+      }
+
+      return $sessions;
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error fetching upcoming PIIL sessions: @msg', ['@msg' => $e->getMessage()]);
+      return [];
+    }
+  }
+
+  /**
    * Agrega condicion de tenant (TENANT-001).
    */
   private function addTenantCondition(QueryInterface $query, ?int $tenantId): void {

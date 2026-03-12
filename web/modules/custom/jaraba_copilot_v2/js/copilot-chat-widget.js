@@ -29,7 +29,8 @@
     customer_discovery: '#14b8a6',
     pattern_expert: '#a855f7',
     pivot_advisor: '#f59e0b',
-    landing_copilot: '#FF8C42'
+    landing_copilot: '#FF8C42',
+    phase_restricted: '#94a3b8'
   };
 
   /**
@@ -47,7 +48,8 @@
     customer_discovery: Drupal.t('Customer Discovery'),
     pattern_expert: Drupal.t('Pattern Expert'),
     pivot_advisor: Drupal.t('Pivot Advisor'),
-    landing_copilot: Drupal.t('Asesor Jaraba')
+    landing_copilot: Drupal.t('Asesor Jaraba'),
+    phase_restricted: Drupal.t('Modo restringido')
   };
 
   /**
@@ -200,6 +202,25 @@
 
       fetch(Drupal.url('api/v1/copilot/chat/stream'), fetchOptions).then(function (response) {
         if (!response.ok) {
+          // Sprint 17: Handle phase restriction (403) with informative message.
+          if (response.status === 403) {
+            return response.json().then(function (data) {
+              state.thinking = false;
+              state.streaming = false;
+              var errorText = data.error || Drupal.t('Modo no disponible.');
+              if (data.phase_restricted && data.suggestion) {
+                errorText += '\n\n' + data.suggestion;
+              }
+              state.messages.push({
+                role: 'assistant',
+                text: errorText,
+                mode: 'phase_restricted',
+                timestamp: Date.now()
+              });
+              renderMessages();
+              saveHistory();
+            });
+          }
           throw new Error('HTTP ' + response.status);
         }
 

@@ -19,6 +19,15 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@config.factory'
 
+  # Sprint 17: STO bidireccional (push + pull + reconciliación)
+  jaraba_andalucia_ei.sto_bidireccional:
+    class: Drupal\jaraba_andalucia_ei\Service\StoBidireccionalService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@config.factory'
+      - '@?jaraba_andalucia_ei.sto_export'
+
   jaraba_andalucia_ei.fase_transition_manager:
     class: Drupal\jaraba_andalucia_ei\Service\FaseTransitionManager
     arguments:
@@ -301,6 +310,16 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?ecosistema_jaraba_core.badge_award'
 
+  # Sprint 17: Orquestador multicanal (push + WhatsApp + in-app)
+  jaraba_andalucia_ei.ei_multichannel_notification:
+    class: Drupal\jaraba_andalucia_ei\Service\EiMultichannelNotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.ei_push_notification'
+      - '@?jaraba_agroconecta_core.whatsapp'
+      - '@?jaraba_notifications.notification'
+
   # Sprint 12: Push notifications programaticas para firma y programa
   jaraba_andalucia_ei.ei_push_notification:
     class: Drupal\jaraba_andalucia_ei\Service\EiPushNotificationService
@@ -349,6 +368,13 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
 
+  # Sprint 17: iCal export feeds para integración calendarios externos
+  jaraba_andalucia_ei.ical_export:
+    class: Drupal\jaraba_andalucia_ei\Service\ICalExportService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
   # Fase 5: Servicio de inscripciones a sesiones
   jaraba_andalucia_ei.inscripcion_sesion:
     class: Drupal\jaraba_andalucia_ei\Service\InscripcionSesionService
@@ -364,6 +390,13 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
       - '@state'
+
+  # Sprint 14: Cómputo de indicadores persona atendida/insertada
+  jaraba_andalucia_ei.actuacion_compute:
+    class: Drupal\jaraba_andalucia_ei\Service\ActuacionComputeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
 
   # Fase 6c: Indicadores ESF+ para justificación ante financiador
   jaraba_andalucia_ei.indicadores_esf:

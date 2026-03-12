@@ -36,6 +36,8 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
     'sesion_programada_ei',
     'inscripcion_sesion_ei',
     'plan_formativo_ei',
+    // Sprint 14:
+    'material_didactico_ei',
   ];
 
   $missingEntities = [];
@@ -1558,6 +1560,176 @@ function jaraba_andalucia_ei_update_10022(): string {
   }
   catch (\Throwable $e) {
     return 'Error in update_10022: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 14: Install MaterialDidacticoEi + new fields on existing entities.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New entity + new fields require hook_update_N().
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each field.
+ * UPDATE-HOOK-CATCH-001: catch(\Throwable) not catch(\Exception).
+ */
+function jaraba_andalucia_ei_update_10023(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+
+    // 1. Install new entity: material_didactico_ei.
+    $entityType = $entityTypeManager->getDefinition('material_didactico_ei');
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    $messages[] = 'Installed entity type: material_didactico_ei.';
+
+    // Install all fields for material_didactico_ei.
+    $fieldStorageDefinitions = $entityFieldManager->getFieldStorageDefinitions('material_didactico_ei');
+    foreach ($fieldStorageDefinitions as $fieldName => $fieldDefinition) {
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'material_didactico_ei');
+      if (!$existing) {
+        $fieldDefinition->setName($fieldName);
+        $fieldDefinition->setTargetEntityTypeId('material_didactico_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName, 'material_didactico_ei', 'jaraba_andalucia_ei', $fieldDefinition
+        );
+        $messages[] = "material_didactico_ei: installed field $fieldName.";
+      }
+    }
+
+    // 2. New fields on existing entities.
+    $newFieldsByEntity = [
+      'sesion_programada_ei' => ['fase_piil', 'contenido_sto', 'subcontenido_sto'],
+      'accion_formativa_ei' => ['contenido_sto', 'subcontenido_sto', 'materiales'],
+      'actuacion_sto' => ['fase_piil', 'contenido_sto', 'subcontenido_sto'],
+      'plan_formativo_ei' => ['horas_orientacion_insercion_previstas', 'cumple_persona_atendida', 'cumple_persona_insertada'],
+    ];
+
+    foreach ($newFieldsByEntity as $entityTypeId => $fieldNames) {
+      $fields = $entityFieldManager->getFieldStorageDefinitions($entityTypeId);
+      foreach ($fieldNames as $fieldName) {
+        if (!isset($fields[$fieldName])) {
+          $messages[] = "WARNING: $entityTypeId.$fieldName not in field definitions.";
+          continue;
+        }
+        $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+        if (!$existing) {
+          $field = $fields[$fieldName];
+          $field->setName($fieldName);
+          $field->setTargetEntityTypeId($entityTypeId);
+          $entityDefinitionUpdateManager->installFieldStorageDefinition(
+            $fieldName, $entityTypeId, 'jaraba_andalucia_ei', $field
+          );
+          $messages[] = "$entityTypeId: installed field $fieldName.";
+        }
+      }
+    }
+
+    $messages[] = 'Sprint 14 schema update complete.';
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10023: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 15: Correcciones normativas PIIL — campos InsercionLaboral + provincia.
+ *
+ * 1. Añade fecha_inicio_contrato y fecha_fin_contrato a insercion_laboral
+ *    (requeridos por ActuacionComputeService::tieneContratoValido para ≥4 meses).
+ * 2. Actualiza allowed_values de provincia_participacion en programa_participante_ei
+ *    (FT_679: solo Málaga + Sevilla autorizados).
+ */
+function jaraba_andalucia_ei_update_10024(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+
+    // 1. New fields on insercion_laboral: fecha_inicio_contrato, fecha_fin_contrato.
+    $fields = $entityFieldManager->getFieldStorageDefinitions('insercion_laboral');
+    foreach (['fecha_inicio_contrato', 'fecha_fin_contrato'] as $fieldName) {
+      if (!isset($fields[$fieldName])) {
+        $messages[] = "WARNING: insercion_laboral.$fieldName not in field definitions.";
+        continue;
+      }
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'insercion_laboral');
+      if (!$existing) {
+        $field = $fields[$fieldName];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId obligatorios.
+        $field->setName($fieldName);
+        $field->setTargetEntityTypeId('insercion_laboral');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName, 'insercion_laboral', 'jaraba_andalucia_ei', $field
+        );
+        $messages[] = "insercion_laboral: installed field $fieldName.";
+      }
+      else {
+        $messages[] = "insercion_laboral.$fieldName already exists.";
+      }
+    }
+
+    // 2. Update provincia_participacion allowed_values on programa_participante_ei.
+    $provField = $entityDefinitionUpdateManager->getFieldStorageDefinition('provincia_participacion', 'programa_participante_ei');
+    if ($provField) {
+      $provField->setName('provincia_participacion');
+      $provField->setTargetEntityTypeId('programa_participante_ei');
+      $entityDefinitionUpdateManager->updateFieldStorageDefinition($provField);
+      $messages[] = 'programa_participante_ei: updated provincia_participacion allowed_values (Málaga + Sevilla only).';
+    }
+
+    $messages[] = 'Sprint 15 normative corrections complete.';
+  }
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: \Throwable, not \Exception.
+    return 'Error in update_10024: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Sprint 15: Add indicadores_6m_completado field to programa_participante_ei.
+ *
+ * FSE+ requires collection of result indicators 6 months after exit.
+ * UPDATE-FIELD-DEF-001 + UPDATE-HOOK-CATCH-001.
+ */
+function jaraba_andalucia_ei_update_10025(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $fieldName = 'indicadores_6m_completado';
+
+    $fields = $entityFieldManager->getFieldStorageDefinitions('programa_participante_ei');
+    if (!isset($fields[$fieldName])) {
+      return "WARNING: programa_participante_ei.$fieldName not in field definitions.";
+    }
+
+    $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'programa_participante_ei');
+    if (!$existing) {
+      $field = $fields[$fieldName];
+      $field->setName($fieldName);
+      $field->setTargetEntityTypeId('programa_participante_ei');
+      $entityDefinitionUpdateManager->installFieldStorageDefinition(
+        $fieldName, 'programa_participante_ei', 'jaraba_andalucia_ei', $field
+      );
+      $messages[] = "programa_participante_ei: installed field $fieldName.";
+    }
+    else {
+      $messages[] = "programa_participante_ei.$fieldName already exists.";
+    }
+
+    $messages[] = 'Sprint 15: indicadores_6m_completado field installed.';
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10025: ' . $e->getMessage();
   }
 
   return implode(' | ', $messages);

@@ -196,12 +196,20 @@ function jaraba_andalucia_ei_theme(): array {
         'justificacion' => NULL,
         'riesgo' => [],
         'puntos_impacto' => NULL,
+        'ranking_impacto' => [],
         'prospecciones' => NULL,
         'firmas_pendientes' => [],
         'formacion_stats' => [],
         'vobo_pendientes' => [],
         'sesiones_proximas' => [],
         'indicadores_esf' => [],
+        'estadisticas_por_fase' => [],
+        'sesiones_proximas_piil' => [],
+        'emprendimiento_stats' => NULL,
+        'alumni_stats' => NULL,
+        'historias_exito' => [],
+        'sto_resumen' => NULL,
+        'advanced_analytics' => NULL,
       ],
       'template' => 'coordinador-dashboard',
     ],
@@ -294,6 +302,10 @@ function jaraba_andalucia_ei_theme(): array {
         'hash' => NULL,
       ],
       'template' => 'andalucia-ei-verificacion-documento',
+    ],
+    // Sprint 14: Material didáctico.
+    'material_didactico_ei' => [
+      'render element' => 'elements',
     ],
   ];
 }
@@ -2320,4 +2332,194 @@ function jaraba_andalucia_ei_preprocess_plan_formativo_ei(array &$variables): vo
     return;
   }
   $variables['plan_formativo_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for material_didactico_ei.
+ *
+ * ENTITY-PREPROCESS-001. Sprint 14.
+ */
+function jaraba_andalucia_ei_preprocess_material_didactico_ei(array &$variables): void {
+  $entity = $variables['elements']['#material_didactico_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['material_didactico_ei'] = $entity;
+}
+
+/**
+ * Provides allowed values for contenido_sto field.
+ *
+ * Sprint 14: Valores basados en los dropdowns del STO (Manual Gestión ICV25).
+ *
+ * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field storage definition.
+ * @param \Drupal\Core\Entity\FieldableEntityInterface|null $entity
+ *   The entity being created, if applicable.
+ *
+ * @return array
+ *   Allowed values.
+ */
+function jaraba_andalucia_ei_contenidos_sto(\Drupal\Core\Field\FieldStorageDefinitionInterface $definition, ?\Drupal\Core\Entity\FieldableEntityInterface $entity = NULL): array {
+  return [
+    'informacion' => t('Información'),
+    'diagnostico' => t('Diagnóstico'),
+    'diseno_planificacion' => t('Diseño/Planificación del itinerario'),
+    'desarrollo_competencias' => t('Desarrollo de competencias'),
+    'busqueda_activa_empleo' => t('Búsqueda activa de empleo'),
+    'seguimiento' => t('Seguimiento'),
+    'intermediacion' => t('Intermediación'),
+    'acompanamiento_insercion' => t('Acompañamiento a la inserción'),
+    'emprendimiento' => t('Emprendimiento'),
+    'club_empleo' => t('Club de empleo'),
+  ];
+}
+
+/**
+ * Provides allowed values for subcontenido_sto field.
+ *
+ * Sprint 14: Valores dependientes del contenido_sto.
+ * El filtrado dinámico por contenido seleccionado se hace via JS en el form.
+ *
+ * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field storage definition.
+ * @param \Drupal\Core\Entity\FieldableEntityInterface|null $entity
+ *   The entity being created, if applicable.
+ *
+ * @return array
+ *   Allowed values.
+ */
+function jaraba_andalucia_ei_subcontenidos_sto(\Drupal\Core\Field\FieldStorageDefinitionInterface $definition, ?\Drupal\Core\Entity\FieldableEntityInterface $entity = NULL): array {
+  return [
+    'entrevista_inicial' => t('Entrevista inicial'),
+    'balance_competencias' => t('Balance de competencias'),
+    'orientacion_profesional' => t('Orientación profesional'),
+    'cv_carta' => t('CV y carta de presentación'),
+    'preparacion_entrevistas' => t('Preparación de entrevistas'),
+    'competencias_digitales' => t('Competencias digitales'),
+    'competencias_transversales' => t('Competencias transversales'),
+    'marca_personal' => t('Marca personal y networking'),
+    'autoempleo' => t('Autoempleo y emprendimiento'),
+    'plan_empresa' => t('Plan de empresa'),
+    'seguimiento_insercion' => t('Seguimiento post-inserción'),
+    'contacto_empresas' => t('Contacto con empresas'),
+    'gestion_ofertas' => t('Gestión de ofertas'),
+  ];
+}
+
+/**
+ * Provides allowed values for contenido_sto field in formación actions.
+ *
+ * Sprint 14: Contenidos específicos de acciones formativas.
+ *
+ * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field storage definition.
+ * @param \Drupal\Core\Entity\FieldableEntityInterface|null $entity
+ *   The entity being created, if applicable.
+ *
+ * @return array
+ *   Allowed values.
+ */
+function jaraba_andalucia_ei_contenidos_formacion_sto(\Drupal\Core\Field\FieldStorageDefinitionInterface $definition, ?\Drupal\Core\Entity\FieldableEntityInterface $entity = NULL): array {
+  return [
+    'competencias_digitales' => t('Competencias digitales'),
+    'competencias_transversales' => t('Competencias transversales'),
+    'idiomas' => t('Idiomas'),
+    'sector_especifico' => t('Formación sectorial específica'),
+    'emprendimiento' => t('Emprendimiento y autoempleo'),
+    'empleabilidad' => t('Empleabilidad y búsqueda activa'),
+    'habilidades_blandas' => t('Habilidades blandas/soft skills'),
+    'certificacion_profesional' => t('Certificación profesional'),
+  ];
+}
+
+/**
+ * Provides allowed values for subcontenido_sto field in formación actions.
+ *
+ * Sprint 14.
+ *
+ * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $definition
+ *   The field storage definition.
+ * @param \Drupal\Core\Entity\FieldableEntityInterface|null $entity
+ *   The entity being created, if applicable.
+ *
+ * @return array
+ *   Allowed values.
+ */
+function jaraba_andalucia_ei_subcontenidos_formacion_sto(\Drupal\Core\Field\FieldStorageDefinitionInterface $definition, ?\Drupal\Core\Entity\FieldableEntityInterface $entity = NULL): array {
+  return [
+    'ofimatica_basica' => t('Ofimática básica'),
+    'internet_redes' => t('Internet y redes sociales'),
+    'programacion' => t('Programación/desarrollo'),
+    'diseno_digital' => t('Diseño digital'),
+    'marketing_digital' => t('Marketing digital'),
+    'ecommerce' => t('Comercio electrónico'),
+    'ia_datos' => t('Inteligencia artificial y datos'),
+    'ingles_profesional' => t('Inglés profesional'),
+    'trabajo_equipo' => t('Trabajo en equipo'),
+    'liderazgo' => t('Liderazgo'),
+    'comunicacion' => t('Comunicación'),
+    'plan_negocio' => t('Plan de negocio'),
+    'financiacion' => t('Financiación'),
+  ];
+}
+
+// =============================================================================
+// SPRINT 15: DIME AUTO-ASIGNACIÓN DE CARRIL
+// =============================================================================
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for programa_participante_ei.
+ *
+ * Sprint 15: Auto-asigna carril PIIL según score DIME cuando se establece.
+ * Rangos normativos: 0-8 impulso_digital, 9-14 hibrido, 15-20 acelera_pro.
+ *
+ * PRESAVE-RESILIENCE-001: try-catch con \Throwable.
+ */
+function jaraba_andalucia_ei_programa_participante_ei_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  try {
+    _jaraba_andalucia_ei_auto_asignar_carril_dime($entity);
+  }
+  catch (\Throwable) {
+  }
+}
+
+/**
+ * Auto-assigns PIIL track based on DIME score.
+ *
+ * Only assigns if:
+ * - dime_score has a value (not NULL).
+ * - carril is currently empty (not yet assigned).
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The programa_participante_ei entity.
+ */
+function _jaraba_andalucia_ei_auto_asignar_carril_dime(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $dimeScore = $entity->get('dime_score')->value;
+  if ($dimeScore === NULL || $dimeScore === '') {
+    return;
+  }
+
+  $carrilActual = $entity->get('carril')->value ?? '';
+  if ($carrilActual !== '') {
+    return;
+  }
+
+  $score = (int) $dimeScore;
+  if ($score <= 8) {
+    $carril = 'impulso_digital';
+  }
+  elseif ($score <= 14) {
+    $carril = 'hibrido';
+  }
+  else {
+    $carril = 'acelera_pro';
+  }
+
+  $entity->set('carril', $carril);
+
+  \Drupal::logger('jaraba_andalucia_ei')->info(
+    'Carril auto-asignado: @carril para participante #@id (DIME score: @score).',
+    ['@carril' => $carril, '@id' => $entity->id() ?? 'nuevo', '@score' => $score]
+  );
 }

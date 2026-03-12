@@ -35,7 +35,7 @@ const ROUTE_STRATEGIES = [
   { pattern: /\.(?:woff2?)$/, strategy: 'cache-first' },
   { pattern: /\.(?:css|js)$/, strategy: 'stale-while-revalidate' },
   { pattern: /\.(?:svg|png|jpg|webp)$/, strategy: 'cache-first' },
-  { pattern: /^\/(?:productor|comercio|legal|empleo)/, strategy: 'stale-while-revalidate' }
+  { pattern: /^\/(?:productor|comercio|legal|empleo|andalucia-ei)/, strategy: 'stale-while-revalidate' }
 ];
 
 // --- EVENTOS DEL SERVICE WORKER ---

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Access;
 
+use Drupal\Core\Cache\Context\CacheContextsManager;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -45,6 +47,15 @@ class ParticipanteAccessCheckTest extends UnitTestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // AccessResult::cachePerPermissions() / cachePerUser() / addCacheTags()
+    // llaman a Cache::mergeTags() que necesita cache_contexts_manager.
+    // Registrar un stub mínimo para evitar ContainerNotInitializedException.
+    $cacheContextsManager = $this->createMock(CacheContextsManager::class);
+    $cacheContextsManager->method('assertValidTokens')->willReturn(TRUE);
+    $container = new ContainerBuilder();
+    $container->set('cache_contexts_manager', $cacheContextsManager);
+    \Drupal::setContainer($container);
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->storage = $this->createMock(EntityStorageInterface::class);

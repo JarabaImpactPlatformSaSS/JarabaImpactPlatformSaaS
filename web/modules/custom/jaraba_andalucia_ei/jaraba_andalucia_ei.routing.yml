@@ -1080,6 +1080,15 @@ entity.plan_formativo_ei.settings:
   requirements:
     _permission: 'administer andalucia ei'
 
+# Sprint 15: FIELD-UI-SETTINGS-TAB-001 for MaterialDidacticoEi.
+entity.material_didactico_ei.settings:
+  path: '/admin/structure/material-didactico-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\MaterialDidacticoEiSettingsForm'
+    _title: 'Configuración Material Didáctico'
+  requirements:
+    _permission: 'administer andalucia ei'
+
 # === SPRINT 13: API HUB FORMACIÓN ===
 
 jaraba_andalucia_ei.api.hub.acciones_formativas:
@@ -1117,3 +1126,34 @@ jaraba_andalucia_ei.api.hub.indicadores_esf:
   requirements:
     _permission: 'view andalucia ei esf indicators'
     _format: 'json'
+
+# === SPRINT 17: ICAL CALENDAR FEEDS ===
+# Token-authenticated feeds for external calendar subscription.
+# No session required — HMAC token validates via hash_salt.
+
+jaraba_andalucia_ei.ical.tenant_feed:
+  path: '/api/v1/andalucia-ei/calendar/{tenant_id}/sesiones.ics'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ICalExportController::feedTenant'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    tenant_id: '\d+'
+
+jaraba_andalucia_ei.ical.orientador_feed:
+  path: '/api/v1/andalucia-ei/calendar/{tenant_id}/orientador/{uid}.ics'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ICalExportController::feedOrientador'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    tenant_id: '\d+'
+    uid: '\d+'
+
+jaraba_andalucia_ei.ical.subscribe_url:
+  path: '/api/v1/andalucia-ei/calendar/subscribe-url'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ICalExportController::getSubscribeUrl'
+  methods: [GET]
+  requirements:
+    _permission: 'view programa participante ei'

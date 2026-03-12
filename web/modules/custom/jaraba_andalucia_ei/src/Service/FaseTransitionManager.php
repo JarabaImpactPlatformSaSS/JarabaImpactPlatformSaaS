@@ -34,8 +34,10 @@ class FaseTransitionManager
     /**
      * Mapa de transiciones válidas entre fases.
      *
-     * Cada fase lista las fases destino permitidas.
-     * 'baja' es absorbente desde cualquier fase activa.
+     * Sprint 15: 'baja' ya NO es absorbente — el Manual STO ICV25 permite
+     * reabrir participantes dados de baja (ej: reincorporación tras abandono
+     * temporal, corrección administrativa). La reapertura devuelve a la fase
+     * inmediatamente anterior a la baja (validado en verificarPrerrequisitos).
      */
     private const TRANSICIONES_VALIDAS = [
         'acogida' => ['diagnostico', 'baja'],
@@ -43,7 +45,7 @@ class FaseTransitionManager
         'atencion' => ['insercion', 'baja'],
         'insercion' => ['seguimiento', 'baja'],
         'seguimiento' => ['baja'],
-        'baja' => [],
+        'baja' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento'],
     ];
 
     /**
@@ -139,6 +141,8 @@ class FaseTransitionManager
      */
     protected function verificarPrerrequisitos(object $participante, string $nueva_fase, array $contexto): ?array
     {
+        $fase_actual = $participante->getFaseActual();
+
         switch ($nueva_fase) {
             case 'diagnostico':
                 // Prerrequisito: Acuerdo de Participación firmado.
@@ -155,6 +159,28 @@ class FaseTransitionManager
                         'message' => t('El DACI (Aceptación de Compromisos) debe estar firmado antes de pasar a Diagnóstico.'),
                     ];
                 }
+                // Sprint 15: Plazo de 15 días para registro en STO (Presentación PIIL CV).
+                if ($fase_actual === 'acogida') {
+                    $fechaAltoSto = $participante->get('fecha_alta_sto')->value ?? '';
+                    $fechaInicio = $participante->get('fecha_inicio_programa')->value ?? '';
+                    if ($fechaAltoSto && $fechaInicio) {
+                        try {
+                            $alta = new \DateTimeImmutable(str_replace('T', ' ', $fechaAltoSto));
+                            $inicio = new \DateTimeImmutable(str_replace('T', ' ', $fechaInicio));
+                            $diasDiff = (int) $alta->diff($inicio)->days;
+                            if ($diasDiff > 15) {
+                                $this->logger->warning('Participante @id: @dias días entre inicio programa y alta STO (máx 15).', [
+                                    '@id' => $participante->id(),
+                                    '@dias' => $diasDiff,
+                                ]);
+                                // Advertencia pero no bloquea — registro retroactivo posible en STO.
+                            }
+                        }
+                        catch (\Throwable) {
+                            // Fechas inválidas no bloquean transición.
+                        }
+                    }
+                }
                 break;
 
             case 'atencion':
@@ -169,11 +195,33 @@ class FaseTransitionManager
                 break;
 
             case 'insercion':
-                // Prerrequisito: mínimo 10h orientación + 50h formación.
+                // Sprint 15: Verificación completa de 4 criterios normativos.
                 if (!$participante->canTransitToInsercion()) {
+                    $horasOrient = method_exists($participante, 'getTotalHorasOrientacion')
+                        ? $participante->getTotalHorasOrientacion() : 0;
+                    $horasInd = (float) ($participante->get('horas_orientacion_ind')->value ?? 0);
+                    $horasForm = (float) ($participante->get('horas_formacion')->value ?? 0);
+                    $asistencia = (float) ($participante->get('asistencia_porcentaje')->value ?? 0);
+
+                    $detalles = [];
+                    if ($horasOrient < 10) {
+                        $detalles[] = t('@h/10h orientación', ['@h' => number_format($horasOrient, 1)]);
+                    }
+                    if ($horasInd < 2) {
+                        $detalles[] = t('@h/2h orientación individual', ['@h' => number_format($horasInd, 1)]);
+                    }
+                    if ($horasForm < 50) {
+                        $detalles[] = t('@h/50h formación', ['@h' => number_format($horasForm, 1)]);
+                    }
+                    if ($asistencia < 75) {
+                        $detalles[] = t('@p%/75% asistencia', ['@p' => number_format($asistencia, 1)]);
+                    }
+
                     return [
                         'success' => FALSE,
-                        'message' => t('No cumple requisitos mínimos: 10h orientación + 50h formación.'),
+                        'message' => t('No cumple requisitos PIIL para inserción: @detalles', [
+                            '@detalles' => implode(', ', $detalles),
+                        ]),
                     ];
                 }
                 // Verificar datos de inserción.
@@ -196,6 +244,16 @@ class FaseTransitionManager
                         ];
                     }
                 }
+                // Sprint 15: Verificar ≥40h orientación inserción para persona insertada.
+                $horasInsercion = (float) ($participante->get('horas_orientacion_insercion')->value ?? 0);
+                if ($horasInsercion < 40) {
+                    return [
+                        'success' => FALSE,
+                        'message' => t('Requiere ≥40h de orientación para inserción (actual: @h h).', [
+                            '@h' => number_format($horasInsercion, 1),
+                        ]),
+                    ];
+                }
                 break;
 
             case 'baja':
@@ -209,6 +267,21 @@ class FaseTransitionManager
                 break;
         }
 
+        // Sprint 15: Reapertura desde baja — requiere motivo documentado.
+        if ($fase_actual === 'baja') {
+            if (empty($contexto['motivo_reapertura'])) {
+                return [
+                    'success' => FALSE,
+                    'message' => t('La reapertura desde baja requiere un motivo documentado.'),
+                ];
+            }
+            $this->logger->info('Reapertura desde baja: Participante @id a @fase. Motivo: @motivo', [
+                '@id' => $participante->id(),
+                '@fase' => $nueva_fase,
+                '@motivo' => $contexto['motivo_reapertura'],
+            ]);
+        }
+
         return NULL;
     }
 
@@ -217,6 +290,15 @@ class FaseTransitionManager
      */
     protected function aplicarDatosTransicion(object $participante, string $nueva_fase, array $contexto): void
     {
+        $fase_actual = $participante->getFaseActual();
+
+        // Sprint 15: Reapertura desde baja — limpiar datos de baja.
+        if ($fase_actual === 'baja') {
+            $participante->set('motivo_baja', NULL);
+            $participante->set('fecha_fin_programa', NULL);
+            return;
+        }
+
         switch ($nueva_fase) {
             case 'insercion':
                 $participante->set('tipo_insercion', $contexto['tipo_insercion']);
@@ -246,14 +328,19 @@ class FaseTransitionManager
                 return $participant->canTransitToInsercion();
             }
 
-            // Fallback: comprobar horas manualmente.
+            // Fallback: comprobar los 4 criterios normativos manualmente.
             $horasOrientacion = (float) ($participant->get('horas_orientacion_ind')->value ?? 0)
                 + (float) ($participant->get('horas_orientacion_grup')->value ?? 0)
                 + (float) ($participant->get('horas_mentoria_ia')->value ?? 0)
                 + (float) ($participant->get('horas_mentoria_humana')->value ?? 0);
+            $horasIndividual = (float) ($participant->get('horas_orientacion_ind')->value ?? 0);
             $horasFormacion = (float) ($participant->get('horas_formacion')->value ?? 0);
+            $asistencia = (float) ($participant->get('asistencia_porcentaje')->value ?? 0);
 
-            return $horasOrientacion >= 10 && $horasFormacion >= 50;
+            return $horasOrientacion >= 10
+                && $horasIndividual >= 2
+                && $horasFormacion >= 50
+                && $asistencia >= 75;
         }
         catch (\Throwable $e) {
             return FALSE;

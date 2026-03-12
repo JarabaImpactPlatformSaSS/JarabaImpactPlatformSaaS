@@ -153,6 +153,10 @@ class CopilotStreamController extends ControllerBase {
       }
     }
 
+    // Sprint 17: Pre-resolve vertical context for phase restrictions.
+    $verticalBridgeData = $this->orchestrator->preResolveVerticalContext($context);
+    $phaseRestrictions = $verticalBridgeData['_modos_permitidos'] ?? [];
+
     // 4. Detectar modo si no se especifica.
     $modeDetection = [];
     if (!$mode) {
@@ -164,6 +168,42 @@ class CopilotStreamController extends ControllerBase {
         'confidence' => $detection['confidence'],
         'emotion_score' => $detection['emotion_score'] ?? 0,
       ];
+    }
+
+    // Sprint 17: Check phase restriction on detected/requested mode.
+    if (!empty($phaseRestrictions)) {
+      $modeCategory = CopilotApiController::MODE_TO_PIIL_CATEGORY[$mode] ?? 'informacion_programa';
+      if (isset($phaseRestrictions[$modeCategory]) && $phaseRestrictions[$modeCategory] === FALSE) {
+        $fase = $verticalBridgeData['_fase_raw'] ?? 'actual';
+
+        // For explicit mode: return 403 error.
+        if ($data['mode'] ?? NULL) {
+          return new JsonResponse([
+            'success' => FALSE,
+            'error' => (string) $this->t('El modo "@mode" no está disponible en tu fase actual (@fase) del programa PIIL.', [
+              '@mode' => $mode,
+              '@fase' => $fase,
+            ]),
+            'phase_restricted' => TRUE,
+            'current_phase' => $fase,
+          ], 403);
+        }
+
+        // For auto-detected mode: fallback silently.
+        $originalMode = $mode;
+        $mode = 'consultor';
+        foreach (['consultor', 'coach'] as $fallback) {
+          $fbCategory = CopilotApiController::MODE_TO_PIIL_CATEGORY[$fallback] ?? 'informacion_programa';
+          if (!isset($phaseRestrictions[$fbCategory]) || $phaseRestrictions[$fbCategory] !== FALSE) {
+            $mode = $fallback;
+            break;
+          }
+        }
+        $modeDetection['phase_fallback_reason'] = sprintf(
+          'Modo "%s" no disponible en fase "%s". Redirigido a "%s".',
+          $originalMode, $fase, $mode,
+        );
+      }
     }
 
     $detectedMode = $mode;

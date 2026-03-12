@@ -362,6 +362,46 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setRevisionable(TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // === SPRINT 14: ALINEAMIENTO STO Y MATERIALES ===
+
+    $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Contenido STO'))
+      ->setDescription(t('Tipificación de contenido según STO para acciones formativas.'))
+      ->setRevisionable(TRUE)
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_contenidos_formacion_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['subcontenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Subcontenido STO'))
+      ->setDescription(t('Subcontenido formativo según tipificación STO.'))
+      ->setRevisionable(TRUE)
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_subcontenidos_formacion_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // ENTITY-FK-001: Same module = entity_reference.
+    $fields['materiales'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Materiales Didácticos'))
+      ->setDescription(t('Materiales y recursos vinculados a esta acción formativa.'))
+      ->setSetting('target_type', 'material_didactico_ei')
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // === REFERENCIAS CROSS-MODULE (ENTITY-FK-001: integer para cross-module) ===
 
     $fields['course_id'] = BaseFieldDefinition::create('integer')

@@ -185,16 +185,28 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-btn-contrast-dark.php"
 
   # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
-  # Only runs if drush is available (skipped in pure-PHP CI).
-  if command -v drush &>/dev/null; then
+  # Prefer lando drush (host drush may not have Drupal bootstrap).
+  # Only runs if drush with Drupal is available (skipped in pure-PHP CI).
+  DRUSH_CMD=""
+  if [ -f "$PROJECT_ROOT/.lando.yml" ] && command -v lando &>/dev/null; then
+    DRUSH_CMD="lando drush"
+  elif command -v drush &>/dev/null && drush status --field=drupal-version 2>/dev/null | grep -q "^[0-9]"; then
+    DRUSH_CMD="drush"
+  fi
+
+  if [ -n "$DRUSH_CMD" ]; then
+    # Use relative paths for lando (absolute host paths become /app/<abs-path> inside container).
+    DIACRITICS_SCRIPT="scripts/validation/validate-spanish-diacritics.php"
+    TRANSLATION_SCRIPT="scripts/validation/validate-translation-integrity.php"
+
     run_check "DIACRITICS-ES-001" "Spanish diacritics in page_content canvas_data" \
-      drush php:script "$SCRIPT_DIR/validate-spanish-diacritics.php"
+      $DRUSH_CMD php:script "$DIACRITICS_SCRIPT"
 
     run_check "TRANSLATION-INTEG-001" "Translation integrity (cross-page dup, NULL titles, AI fences)" \
-      drush php:script "$SCRIPT_DIR/validate-translation-integrity.php"
+      $DRUSH_CMD php:script "$TRANSLATION_SCRIPT"
   else
-    skip_check "DIACRITICS-ES-001" "Spanish diacritics (requires drush)"
-    skip_check "TRANSLATION-INTEG-001" "Translation integrity (requires drush)"
+    skip_check "DIACRITICS-ES-001" "Spanish diacritics (requires Drupal bootstrap via lando drush)"
+    skip_check "TRANSLATION-INTEG-001" "Translation integrity (requires Drupal bootstrap via lando drush)"
   fi
 
   run_check "DEPLOY-READY-001" "Production deploy readiness (domains, settings, nginx)" \

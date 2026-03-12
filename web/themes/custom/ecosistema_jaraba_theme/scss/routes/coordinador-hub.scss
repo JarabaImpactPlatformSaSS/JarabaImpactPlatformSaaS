@@ -16,6 +16,11 @@
   --hub-phase-insercion: var(--ej-color-verde-innovacion, #00A9A5);
   --hub-phase-seguimiento: var(--ej-color-azul-corporativo, #233D63);
   --hub-phase-baja: var(--ej-color-danger, #DC2626);
+
+  // WCAG 2.1 AA text contrast tokens: #FF8C42 on white = 3.38:1 (FAIL).
+  // Darkened 35% with black to reach ≥4.5:1. Same for #00A9A5 (3.12:1 FAIL).
+  --hub-text-naranja: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 65%, black);
+  --hub-text-verde: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 65%, black);
 }
 
 // ─── Animations ─────────────────────────────────────────────────────────────
@@ -268,7 +273,7 @@
 
   &--alto {
     background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent);
-    color: var(--ej-color-naranja-impulso, #FF8C42);
+    color: var(--hub-text-naranja);
   }
 
   &--medio {
@@ -880,24 +885,24 @@
   font-weight: 500;
   text-transform: capitalize;
 
-  // Solicitud estados
-  &--pendiente { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent); color: var(--ej-color-naranja-impulso, #FF8C42); }
+  // Solicitud estados — WCAG 2.1 AA: text colors darkened via --hub-text-* for ≥4.5:1 contrast
+  &--pendiente { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent); color: var(--hub-text-naranja); }
   &--contactado { background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent); color: var(--ej-color-azul-corporativo, #233D63); }
-  &--admitido, &--success { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--ej-color-verde-innovacion, #00A9A5); }
+  &--admitido, &--success { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--hub-text-verde); }
   &--rechazado { background: color-mix(in srgb, var(--ej-color-danger, #DC2626) 15%, transparent); color: var(--ej-color-danger, #DC2626); }
   &--lista_espera, &--inactive { background: color-mix(in srgb, var(--ej-color-text-secondary, #6B7280) 15%, transparent); color: var(--ej-color-text-secondary, #6B7280); }
 
-  // All 6 participant phases
+  // All 6 participant phases — naranja/verde darkened for WCAG AA text contrast
   &--acogida { background: color-mix(in srgb, var(--hub-phase-acogida) 15%, transparent); color: var(--hub-phase-acogida); }
   &--diagnostico { background: color-mix(in srgb, var(--hub-phase-diagnostico) 15%, transparent); color: var(--hub-phase-diagnostico); }
-  &--atencion { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent); color: var(--ej-color-naranja-impulso, #FF8C42); }
-  &--insercion { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--ej-color-verde-innovacion, #00A9A5); }
+  &--atencion { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent); color: var(--hub-text-naranja); }
+  &--insercion { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--hub-text-verde); }
   &--seguimiento { background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent); color: var(--ej-color-azul-corporativo, #233D63); }
   &--baja { background: color-mix(in srgb, var(--ej-color-danger, #DC2626) 15%, transparent); color: var(--ej-color-danger, #DC2626); }
 
   // Session statuses
   &--scheduled { background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent); color: var(--ej-color-azul-corporativo, #233D63); }
-  &--completed { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--ej-color-verde-innovacion, #00A9A5); }
+  &--completed { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent); color: var(--hub-text-verde); }
 }
 
 // ─── Action Buttons ─────────────────────────────────────────────────────────
@@ -1533,6 +1538,245 @@
   margin-top: 4px;
 }
 
+// ─── Sprint 17: Leaderboard Gamificación ────────────────────────────────────
+.hub-coordinador__leaderboard {
+  overflow-x: auto;
+}
+
+.hub-coordinador__leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+
+  th {
+    text-align: left;
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    font-weight: 600;
+    color: var(--ej-color-text-secondary, #6B7280);
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent);
+  }
+
+  td {
+    padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+    vertical-align: middle;
+    border-bottom: 1px solid color-mix(in srgb, var(--ej-color-border, #E5E7EB) 60%, transparent);
+  }
+}
+
+.hub-coordinador__leaderboard-row--top3 {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 4%, transparent);
+}
+
+.hub-coordinador__leaderboard-rank {
+  width: 40px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.hub-coordinador__leaderboard-points {
+  text-align: right;
+  white-space: nowrap;
+
+  strong {
+    font-size: var(--ej-font-size-md, 1rem);
+    color: var(--ej-color-naranja-impulso, #FF8C42);
+  }
+}
+
+.hub-coordinador__points-label {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-left: 2px;
+}
+
+.hub-coordinador__medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-surface, #ffffff);
+
+  &--gold {
+    background: linear-gradient(135deg, var(--ej-color-medal-gold, #FFD700), var(--ej-color-naranja-impulso, #FF8C42));
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-medal-gold, #FFD700) 30%, transparent);
+  }
+
+  &--silver {
+    background: linear-gradient(135deg, var(--ej-color-neutral-400, #C0C0C0), var(--ej-color-neutral-500, #A0A0A0));
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-neutral-400, #C0C0C0) 30%, transparent);
+  }
+
+  &--bronze {
+    background: linear-gradient(135deg, var(--ej-color-medal-bronze, #CD7F32), var(--ej-color-neutral-600, #A0522D));
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-medal-bronze, #CD7F32) 30%, transparent);
+  }
+}
+
+// ──────────────────────────────────────────────
+// Sprint 17: Club Alumni
+// ──────────────────────────────────────────────
+
+.hub-coordinador__alumni-distribution {
+  margin-top: var(--ej-spacing-lg, 1.5rem);
+}
+
+.hub-coordinador__alumni-subtitle {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--ej-color-text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--ej-spacing-sm, 0.5rem);
+}
+
+.hub-coordinador__alumni-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-xs, 0.375rem);
+}
+
+.hub-coordinador__alumni-bar-item {
+  display: grid;
+  grid-template-columns: 140px 1fr 40px;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.hub-coordinador__alumni-bar-label {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-primary, #1F2937);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hub-coordinador__alumni-bar-track {
+  height: 8px;
+  background: color-mix(in srgb, var(--ej-color-border, #E5E7EB) 40%, transparent);
+  border-radius: var(--ej-radius-full, 9999px);
+  overflow: hidden;
+}
+
+.hub-coordinador__alumni-bar-fill {
+  height: 100%;
+  border-radius: var(--ej-radius-full, 9999px);
+  background: var(--ej-color-verde-innovacion, #00A9A5);
+  min-width: 4px;
+  transition: width 0.4s ease;
+
+  &--sector {
+    background: var(--ej-color-azul-corporativo, #233D63);
+  }
+}
+
+.hub-coordinador__alumni-bar-value {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+  text-align: right;
+}
+
+// Historias de éxito cards
+.hub-coordinador__alumni-stories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+.hub-coordinador__alumni-story-card {
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--ej-color-border, #E5E7EB) 60%, transparent);
+  border-radius: var(--ej-radius-lg, 12px);
+  padding: var(--ej-spacing-md, 1rem);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--ej-color-verde-innovacion, #00A9A5);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  }
+}
+
+.hub-coordinador__alumni-story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ej-spacing-xs, 0.375rem);
+}
+
+.hub-coordinador__alumni-story-name {
+  font-weight: 600;
+  font-size: var(--ej-font-size-md, 1rem);
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.hub-coordinador__alumni-story-retention {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--ej-color-verde-innovacion, #00A9A5);
+  background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  padding: 2px 8px;
+  border-radius: var(--ej-radius-full, 9999px);
+}
+
+.hub-coordinador__alumni-story-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ej-spacing-xs, 0.375rem);
+  margin-bottom: var(--ej-spacing-sm, 0.5rem);
+}
+
+.hub-coordinador__alumni-story-tag {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  padding: 2px 8px;
+  border-radius: var(--ej-radius-sm, 4px);
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
+  color: var(--ej-color-azul-corporativo, #233D63);
+
+  &--tipo {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 10%, transparent);
+    color: var(--hub-text-naranja);
+  }
+
+  &--location {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+    color: var(--hub-text-verde);
+  }
+}
+
+.hub-coordinador__alumni-story-quote {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-style: italic;
+  color: var(--ej-color-text-secondary, #6B7280);
+  border-left: 3px solid var(--ej-color-verde-innovacion, #00A9A5);
+  padding-left: var(--ej-spacing-sm, 0.5rem);
+  margin: var(--ej-spacing-sm, 0.5rem) 0 0;
+  line-height: 1.5;
+}
+
+// ──────────────────────────────────────────────
+// Sprint 17: STO Sync notice
+// ──────────────────────────────────────────────
+
+.hub-coordinador__sto-notice {
+  margin-top: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 8%, transparent);
+  border-radius: var(--ej-radius-md, 8px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text-primary, #1F2937);
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 0.375rem);
+}
+
 // ─── Prospecciones Empresariales ────────────────────────────────────────────
 .hub-coordinador__prospeccion-grid {
   display: grid;
@@ -1571,8 +1815,8 @@
 }
 
 .hub-coordinador__badge--prospeccion-contactada { background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, transparent); color: var(--ej-color-azul-corporativo, #233D63); }
-.hub-coordinador__badge--prospeccion-colaborando { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent); color: var(--ej-color-verde-innovacion, #00A9A5); }
-.hub-coordinador__badge--prospeccion-negociando { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent); color: var(--ej-color-naranja-impulso, #FF8C42); }
+.hub-coordinador__badge--prospeccion-colaborando { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent); color: var(--hub-text-verde); }
+.hub-coordinador__badge--prospeccion-negociando { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent); color: var(--hub-text-naranja); }
 .hub-coordinador__badge--prospeccion-descartada { background: color-mix(in srgb, var(--ej-color-danger, #DC2626) 12%, transparent); color: var(--ej-color-danger, #DC2626); }
 
 // ─── Empty State ────────────────────────────────────────────────────────────
@@ -1916,7 +2160,7 @@
 
   &--presencial {
     background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
-    color: var(--ej-color-verde-innovacion, #00A9A5);
+    color: var(--hub-text-verde);
   }
 
   &--online {
@@ -1926,7 +2170,7 @@
 
   &--hibrida {
     background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
-    color: var(--ej-color-naranja-impulso, #FF8C42);
+    color: var(--hub-text-naranja);
   }
 }
 
@@ -2054,4 +2298,303 @@
 .hub-coordinador__modal [data-modal-confirm]:focus-visible {
   outline: 3px solid var(--ej-color-primary, #4F46E5);
   outline-offset: 2px;
+}
+
+// ─── Sprint 14: PIIL Panel ──────────────────────────────────────────────────
+
+.hub-coordinador__piil-personas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hub-coordinador__kpi-card--piil {
+  border-left: 4px solid var(--ej-color-verde-innovacion, #00A9A5);
+}
+
+.hub-coordinador__kpi-sublabel {
+  display: block;
+  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--ej-color-text, #1f2937) 60%, transparent);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.hub-coordinador__kpi-icon--atendida {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+}
+
+.hub-coordinador__kpi-icon--insertada {
+  background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
+}
+
+// Phase blocks
+.hub-coordinador__fase {
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid color-mix(in srgb, var(--ej-color-border, #e5e7eb) 80%, transparent);
+  background: var(--ej-color-surface, #ffffff);
+}
+
+.hub-coordinador__fase--atencion {
+  border-left: 4px solid var(--hub-phase-atencion);
+}
+
+.hub-coordinador__fase--insercion {
+  border-left: 4px solid var(--hub-phase-insercion);
+}
+
+.hub-coordinador__fase-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.hub-coordinador__fase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ej-color-white, #ffffff);
+}
+
+.hub-coordinador__fase-badge--atencion {
+  background: var(--hub-phase-atencion);
+}
+
+.hub-coordinador__fase-badge--insercion {
+  background: var(--hub-phase-insercion);
+}
+
+.hub-coordinador__fase-desc {
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--ej-color-text, #1f2937) 65%, transparent);
+}
+
+.hub-coordinador__fase-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hub-coordinador__fase-kpi {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ej-color-surface-alt, #f9fafb) 90%, transparent);
+}
+
+.hub-coordinador__fase-kpi-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-color-text, #1f2937);
+}
+
+.hub-coordinador__fase-kpi-label {
+  display: block;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--ej-color-text, #1f2937) 60%, transparent);
+  margin-top: 4px;
+}
+
+.hub-coordinador__fase-sesiones {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--ej-color-border, #e5e7eb) 50%, transparent);
+}
+
+.hub-coordinador__fase-sesiones-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ej-color-text, #1f2937);
+  margin-bottom: 10px;
+}
+
+.hub-coordinador__sesiones-grid--compact {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.hub-coordinador__sesion-card--fase-atencion {
+  border-left: 3px solid var(--hub-phase-atencion);
+}
+
+.hub-coordinador__sesion-card--fase-insercion {
+  border-left: 3px solid var(--hub-phase-insercion);
+}
+
+.hub-coordinador__panel-title-icon--piil {
+  background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
+}
+
+// ─── Sprint 15: Emprendimiento BMC Panel ──────────────────────────────────
+
+.hub-coordinador__emprendimiento-fases {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.hub-coordinador__emprendimiento-fase {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 20%, transparent);
+  font-size: 0.875rem;
+}
+
+.hub-coordinador__emprendimiento-fase-count {
+  font-weight: 700;
+  color: var(--ej-color-naranja-impulso, #FF8C42);
+  font-size: 1.125rem;
+}
+
+.hub-coordinador__emprendimiento-fase-label {
+  color: var(--ej-color-text, #1e293b);
+}
+
+.hub-coordinador__progress-mini {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 80px;
+}
+
+.hub-coordinador__progress-mini-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ej-color-verde-innovacion, #00A9A5);
+  min-width: 4px;
+  transition: width 0.3s ease;
+  flex: 1;
+}
+
+.hub-coordinador__progress-mini-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ej-color-text-muted, #64748b);
+  white-space: nowrap;
+}
+
+// Badge variants for emprendimiento fases.
+.hub-coordinador__badge--fase-ideacion {
+  background: color-mix(in srgb, var(--ej-color-info, #3B82F6) 15%, transparent);
+  color: var(--ej-color-info, #3B82F6);
+}
+
+.hub-coordinador__badge--fase-validacion {
+  background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent);
+  color: var(--hub-text-naranja);
+}
+
+.hub-coordinador__badge--fase-lanzamiento {
+  background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent);
+  color: var(--hub-text-verde);
+}
+
+.hub-coordinador__badge--fase-consolidacion {
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent);
+  color: var(--ej-color-azul-corporativo, #233D63);
+}
+
+// ─── Sprint 17: Funnel de conversión ──────────────────────────────────────
+
+.hub-coordinador__funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.hub-coordinador__funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hub-coordinador__funnel-bar-wrap {
+  flex: 1;
+  height: 28px;
+  background: color-mix(in srgb, var(--ej-color-border, #e2e8f0) 50%, transparent);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.hub-coordinador__funnel-bar {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  min-width: 30px;
+  transition: width 0.4s ease;
+
+  &--acogida { background: var(--hub-phase-acogida); }
+  &--diagnostico { background: var(--hub-phase-diagnostico); }
+  &--atencion { background: var(--hub-phase-atencion); }
+  &--insercion { background: var(--hub-phase-insercion); }
+  &--seguimiento { background: var(--hub-phase-seguimiento); }
+}
+
+.hub-coordinador__funnel-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ej-color-surface, #ffffff);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.hub-coordinador__funnel-label {
+  min-width: 140px;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-muted, #64748b);
+}
+
+// ─── Sprint 17: Distribution bars ─────────────────────────────────────────
+
+.hub-coordinador__distribution-bars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.hub-coordinador__distribution-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent);
+  font-size: 0.8125rem;
+}
+
+.hub-coordinador__distribution-label {
+  color: var(--ej-color-text, #1e293b);
+}
+
+.hub-coordinador__distribution-count {
+  font-weight: 700;
+  color: var(--ej-color-azul-corporativo, #233D63);
 }

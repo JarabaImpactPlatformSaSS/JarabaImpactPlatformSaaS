@@ -7,6 +7,7 @@ namespace Drupal\jaraba_andalucia_ei\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\EntityOwnerInterface;
@@ -107,6 +108,37 @@ class InscripcionSesionEi extends ContentEntityBase implements InscripcionSesion
   public function getActuacionStoId(): ?int {
     $value = $this->get('actuacion_sto_id')->target_id;
     return $value !== NULL ? (int) $value : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Sprint 14: Trigger recalculación de indicadores del participante
+   * cuando cambia el estado de la inscripción (asistencia).
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE): void {
+    parent::postSave($storage, $update);
+
+    // Si cambió el estado (especialmente a asistio/no_asistio), recalcular.
+    $estadoChanged = !$update
+      || !$this->original
+      || $this->get('estado')->value !== $this->original->get('estado')->value;
+
+    if ($estadoChanged) {
+      $participanteId = $this->get('participante_id')->target_id;
+      if ($participanteId && \Drupal::hasService('jaraba_andalucia_ei.actuacion_compute')) {
+        try {
+          \Drupal::service('jaraba_andalucia_ei.actuacion_compute')
+            ->recalcularIndicadores((int) $participanteId);
+        }
+        catch (\Throwable $e) {
+          \Drupal::logger('jaraba_andalucia_ei')->error(
+            'Error recalculando indicadores para participante @id: @message',
+            ['@id' => $participanteId, '@message' => $e->getMessage()]
+          );
+        }
+      }
+    }
   }
 
   /**

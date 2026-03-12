@@ -137,11 +137,20 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
      */
     public function canTransitToInsercion(): bool
     {
-        // Según Doc 45 § 4.3: mínimo 10h orientación + 50h formación.
+        // Sprint 15: Los 4 criterios normativos PIIL BBRR para persona atendida.
+        // 1. ≥10h orientación laboral (individual + grupal + mentoría).
         $horasOrientacion = $this->getTotalHorasOrientacion();
+        // 2. ≥2h orientación individual (normativa PIIL BBRR Art. 6.2).
+        $horasIndividual = (float) ($this->get('horas_orientacion_ind')->value ?? 0);
+        // 3. ≥50h formación.
         $horasFormacion = (float) ($this->get('horas_formacion')->value ?? 0);
+        // 4. ≥75% asistencia a sesiones formativas.
+        $asistencia = (float) ($this->get('asistencia_porcentaje')->value ?? 0);
 
-        return $horasOrientacion >= 10 && $horasFormacion >= 50;
+        return $horasOrientacion >= 10
+            && $horasIndividual >= 2
+            && $horasFormacion >= 50
+            && $asistencia >= 75;
     }
 
     /**
@@ -356,13 +365,13 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // Sprint 15: Restringido a Málaga + Sevilla según Ficha Técnica FT_679.
+        // 15 proyectos Málaga + 30 proyectos Sevilla = 45 total.
         $fields['provincia_participacion'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Provincia'))
-            ->setDescription(t('Provincia de inscripción en el STO.'))
+            ->setDescription(t('Provincia de inscripción en el STO (FT_679: Málaga 15 + Sevilla 30).'))
             ->setRequired(TRUE)
             ->setSetting('allowed_values', [
-                'cadiz' => t('Cádiz'),
-                'granada' => t('Granada'),
                 'malaga' => t('Málaga'),
                 'sevilla' => t('Sevilla'),
             ])
@@ -620,6 +629,17 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDisplayOptions('form', [
                 'type' => 'boolean_checkbox',
                 'weight' => 15,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['indicadores_6m_completado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Indicadores 6 Meses Completado'))
+            ->setDescription(t('Indicadores FSE+ de resultado a los 6 meses post-salida recogidos.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 16,
             ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);

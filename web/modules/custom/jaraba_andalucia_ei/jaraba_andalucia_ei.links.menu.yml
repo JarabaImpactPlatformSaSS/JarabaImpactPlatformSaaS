@@ -45,3 +45,18 @@ jaraba_andalucia_ei.plan_emprendimiento_ei.structure:
   route_name: entity.plan_emprendimiento_ei.settings
   parent: system.admin_structure
   weight: 33
+
+# Sprint 15: Material Didáctico EI
+jaraba_andalucia_ei.material_didactico_ei.admin:
+  title: 'Materiales Didácticos +ei'
+  description: 'Gestionar materiales didácticos del programa.'
+  route_name: entity.material_didactico_ei.collection
+  parent: system.admin_content
+  weight: 35
+
+jaraba_andalucia_ei.material_didactico_ei.structure:
+  title: 'Material Didáctico +ei'
+  description: 'Configurar campos y visualización de materiales didácticos.'
+  route_name: entity.material_didactico_ei.settings
+  parent: system.admin_structure
+  weight: 35

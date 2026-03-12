@@ -46,3 +46,10 @@ entity.plan_formativo_ei.add_form:
   route_name: entity.plan_formativo_ei.add_form
   appears_on:
     - entity.plan_formativo_ei.collection
+
+# === MATERIAL DIDÁCTICO ===
+entity.material_didactico_ei.add_form:
+  title: 'Crear Material Didáctico'
+  route_name: entity.material_didactico_ei.add_form
+  appears_on:
+    - entity.material_didactico_ei.collection

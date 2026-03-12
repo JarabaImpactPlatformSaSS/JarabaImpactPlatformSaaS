@@ -283,6 +283,30 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // Sprint 15: Fechas de contrato — requeridas por ActuacionComputeService
+    // para validar ≥4 meses (PIIL BBRR criterio persona insertada).
+    $fields['fecha_inicio_contrato'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Inicio Contrato'))
+      ->setDescription(t('Fecha de inicio del contrato laboral.'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 4.1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['fecha_fin_contrato'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Fin Contrato'))
+      ->setDescription(t('Fecha de fin del contrato laboral (vacío si indefinido).'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 4.2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['codigo_cuenta_cotizacion'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Código Cuenta Cotización'))
       ->setDescription(t('CCC de la empresa.'))

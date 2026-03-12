@@ -735,9 +735,13 @@ class CopilotOrchestratorService
             $legalCoherencePrompt = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::COHERENCE_PROMPT_SHORT;
         }
 
+        // Sprint 17: Inject vertical-specific system prompt addition (phase context).
+        $verticalPromptAddition = $this->getVerticalSystemPromptAddition();
+
         return implode("\n\n", array_filter([
             $identityRule,
             $legalCoherencePrompt,
+            $verticalPromptAddition,
             $basePrompt,
             $modePrompt,
             $contextPrompt,
@@ -1106,7 +1110,21 @@ PROMPT,
     }
 
     /**
+     * Structured data from the last vertical bridge resolution.
+     *
+     * Sprint 17: Stores _prefixed keys extracted during resolveVerticalBridgeContext()
+     * so they can be consumed by the controller for mode restrictions.
+     *
+     * @var array
+     */
+    protected array $lastVerticalBridgeData = [];
+
+    /**
      * GAP-COPILOT-5: Resolves vertical-specific context from bridge registry.
+     *
+     * Sprint 17: Extracts _prefixed keys as structured data before formatting
+     * the rest as text. These are stored in $lastVerticalBridgeData for the
+     * controller to consume (mode restrictions, system prompt additions, etc.).
      *
      * @param array $context
      *   The current copilot context.
@@ -1115,6 +1133,8 @@ PROMPT,
      *   Formatted vertical context, or NULL if no bridge available.
      */
     protected function resolveVerticalBridgeContext(array $context): ?string {
+        $this->lastVerticalBridgeData = [];
+
         if (!$this->bridgeRegistry) {
             return NULL;
         }
@@ -1147,15 +1167,46 @@ PROMPT,
                 return NULL;
             }
 
-            // Format as context section.
-            $lines = ["## Contexto del vertical: {$vertical}"];
+            // Sprint 17: Extract structured keys (_prefixed) before formatting.
+            $textData = [];
             foreach ($verticalData as $key => $value) {
+                if (str_starts_with($key, '_')) {
+                    $this->lastVerticalBridgeData[$key] = $value;
+                }
+                else {
+                    $textData[$key] = $value;
+                }
+            }
+
+            // Format text data as context section.
+            $lines = ["## Contexto del vertical: {$vertical}"];
+            foreach ($textData as $key => $value) {
                 if ($key === 'vertical') {
                     continue;
                 }
                 $formatted = is_bool($value) ? ($value ? 'sí' : 'no') : (string) $value;
                 $label = str_replace('_', ' ', ucfirst($key));
                 $lines[] = "- {$label}: {$formatted}";
+            }
+
+            // Sprint 17: Append phase instructions if present.
+            $instrucciones = $this->lastVerticalBridgeData['_instrucciones_fase'] ?? [];
+            if (!empty($instrucciones)) {
+                $lines[] = '';
+                $lines[] = '## Instrucciones prioritarias para esta fase';
+                foreach ($instrucciones as $instruccion) {
+                    $lines[] = "- {$instruccion}";
+                }
+            }
+
+            // Sprint 17: Append barrier instructions if present.
+            $barreraInstrucciones = $this->lastVerticalBridgeData['_instrucciones_barreras'] ?? [];
+            if (!empty($barreraInstrucciones)) {
+                $lines[] = '';
+                $lines[] = '## Instrucciones de sensibilidad (barreras de acceso)';
+                foreach ($barreraInstrucciones as $instruccion) {
+                    $lines[] = "- {$instruccion}";
+                }
             }
 
             // Append soft suggestion if available.
@@ -1175,6 +1226,47 @@ PROMPT,
             ]);
             return NULL;
         }
+    }
+
+    /**
+     * Gets phase-based mode restrictions from the last vertical bridge resolution.
+     *
+     * Sprint 17: Called by the controller AFTER chat/detectAndChat to apply
+     * phase-based restrictions on the detected mode.
+     *
+     * @return array<string, bool>
+     *   Mode restrictions (mode_key => allowed), or empty if no restrictions.
+     */
+    public function getVerticalModeRestrictions(): array {
+        return $this->lastVerticalBridgeData['_modos_permitidos'] ?? [];
+    }
+
+    /**
+     * Gets the vertical system prompt addition from the last bridge resolution.
+     *
+     * @return string
+     *   Additional system prompt text, or empty string.
+     */
+    public function getVerticalSystemPromptAddition(): string {
+        return $this->lastVerticalBridgeData['_system_prompt_addition'] ?? '';
+    }
+
+    /**
+     * Resolves vertical bridge context for a user and stores structured data.
+     *
+     * Sprint 17: Public entry point for the controller to pre-resolve
+     * vertical context before calling chat(), so restrictions are available.
+     *
+     * @param array $context
+     *   Copilot context array.
+     *
+     * @return array
+     *   Structured bridge data (keys without _ prefix stripped).
+     */
+    public function preResolveVerticalContext(array $context): array {
+        // Trigger resolution which populates lastVerticalBridgeData.
+        $this->resolveVerticalBridgeContext($context);
+        return $this->lastVerticalBridgeData;
     }
 
     /**

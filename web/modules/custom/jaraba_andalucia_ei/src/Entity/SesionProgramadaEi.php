@@ -146,7 +146,18 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
    */
   public function isGrupal(): bool {
     $tipo = $this->getTipoSesion();
-    return !in_array($tipo, ['orientacion_individual', 'tutoria'], TRUE);
+    return !in_array($tipo, [
+      'orientacion_laboral_individual',
+      'orientacion_insercion_individual',
+      'tutoria_seguimiento',
+    ], TRUE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFasePiil(): string {
+    return SesionProgramadaEiInterface::FASE_POR_TIPO[$this->getTipoSesion()] ?? 'transversal';
   }
 
   /**
@@ -197,6 +208,21 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
    */
   public function preSave(\Drupal\Core\Entity\EntityStorageInterface $storage): void {
     parent::preSave($storage);
+
+    // Sprint 14: Auto-compute fase_piil from tipo_sesion.
+    $tipo = $this->get('tipo_sesion')->value;
+    if ($tipo) {
+      $this->set('fase_piil', SesionProgramadaEiInterface::FASE_POR_TIPO[$tipo] ?? 'transversal');
+    }
+
+    // Sprint 14: Validate sesion_formativa requires accion_formativa_id.
+    if ($tipo === 'sesion_formativa' && empty($this->get('accion_formativa_id')->target_id)) {
+      throw new \InvalidArgumentException('Las sesiones formativas DEBEN estar vinculadas a una acción formativa.');
+    }
+    // Non-formativa sessions should not have accion_formativa_id.
+    if ($tipo && $tipo !== 'sesion_formativa') {
+      $this->set('accion_formativa_id', NULL);
+    }
 
     // Recalculate plazas_ocupadas from InscripcionSesionEi entities.
     // PRESAVE-RESILIENCE-001: Optional service with try-catch.
@@ -307,6 +333,41 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Sprint 14: Fase PIIL computada desde tipo_sesion.
+    $fields['fase_piil'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Fase PIIL'))
+      ->setDescription(t('Fase del itinerario PIIL: Atención, Inserción o Transversal. Calculado automáticamente desde el tipo de sesión.'))
+      ->setSetting('allowed_values', [
+        'atencion' => t('Fase de Atención'),
+        'insercion' => t('Fase de Inserción'),
+        'transversal' => t('Transversal'),
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Sprint 14: Contenido STO para alineamiento con sistema de gestión.
+    $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Contenido STO'))
+      ->setDescription(t('Contenido según tipificación del STO. Obligatorio para justificación FSE+.'))
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_contenidos_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Sprint 14: Subcontenido STO dependiente.
+    $fields['subcontenido_sto'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Subcontenido STO'))
+      ->setDescription(t('Subcontenido dependiente del contenido STO seleccionado.'))
+      ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_subcontenidos_sto')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -3,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);

@@ -88,10 +88,14 @@ interface ProgramaParticipanteEiInterface extends ContentEntityInterface, Entity
     /**
      * Verifica si el participante puede transitar a fase Inserción.
      *
-     * Según Doc 45 § 4.3: mínimo 10h orientación + 50h formación.
+     * Sprint 15: 4 criterios normativos PIIL BBRR completos:
+     * 1. ≥10h orientación laboral (individual + grupal + mentoría).
+     * 2. ≥2h orientación individual (Art. 6.2 PIIL BBRR).
+     * 3. ≥50h formación (Doc 45 § 4.3).
+     * 4. ≥75% asistencia a sesiones formativas.
      *
      * @return bool
-     *   TRUE si cumple requisitos mínimos.
+     *   TRUE si cumple los 4 requisitos mínimos.
      */
     public function canTransitToInsercion(): bool;
 

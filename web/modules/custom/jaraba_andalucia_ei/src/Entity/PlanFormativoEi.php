@@ -217,6 +217,13 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
     $this->set('horas_totales_previstas', number_format($horasFormacion + $horasOrientacion, 2, '.', ''));
     $this->set('cumple_minimo_formacion', $horasFormacion >= 50.0);
     $this->set('cumple_minimo_orientacion', $horasOrientacion >= 10.0);
+
+    // Sprint 14: Compute cumplimiento persona atendida/insertada.
+    $horasOrientacionInsercion = (float) ($this->get('horas_orientacion_insercion_previstas')->value ?? 0);
+    $this->set('cumple_persona_atendida', $horasOrientacion >= 10.0 && $horasFormacion >= 50.0);
+    $this->set('cumple_persona_insertada',
+      $horasOrientacion >= 10.0 && $horasFormacion >= 50.0 && $horasOrientacionInsercion >= 40.0
+    );
   }
 
   /**
@@ -348,6 +355,28 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDescription(t('TRUE cuando horas de orientacion >= 10h. Calculado automaticamente.'))
       ->setDefaultValue(FALSE)
       ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // === SPRINT 14: CUMPLIMIENTO PIIL (stored computed) ===
+
+    $fields['horas_orientacion_insercion_previstas'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Horas Orientación Inserción Previstas'))
+      ->setDescription(t('Horas de orientación para la inserción planificadas. Calculado automáticamente.'))
+      ->setDefaultValue('0.00')
+      ->setSetting('precision', 5)
+      ->setSetting('scale', 2)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['cumple_persona_atendida'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('¿Cumple persona atendida?'))
+      ->setDescription(t('TRUE cuando el plan cubre ≥10h orientación laboral + ≥50h formación.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['cumple_persona_insertada'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('¿Cumple persona insertada?'))
+      ->setDescription(t('TRUE cuando cumple persona atendida + ≥40h orientación inserción.'))
+      ->setDefaultValue(FALSE)
       ->setDisplayConfigurable('view', TRUE);
 
     // === CALENDARIO ===
