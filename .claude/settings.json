@@ -24,5 +24,9 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "php-lsp@claude-plugins-official": true,
+    "qodo-skills@claude-plugins-official": true
   }
 }

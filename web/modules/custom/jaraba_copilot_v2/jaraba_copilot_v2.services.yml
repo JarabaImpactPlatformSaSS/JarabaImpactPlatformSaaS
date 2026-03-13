@@ -91,12 +91,6 @@ services:
       - '@?jaraba_self_discovery.context'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@?jaraba_copilot_v2.semantic_cache'
-      - '@?jaraba_copilot_v2.copilot_session'
-      - '@?jaraba_copilot_v2.claude_api'
-      - '@?jaraba_copilot_v2.value_proposition_canvas'
-      - '@?jaraba_copilot_v2.business_pattern_detector'
-      - '@?jaraba_copilot_v2.pivot_detector'
-      - '@?jaraba_copilot_v2.customer_discovery_gamification'
     calls:
       - [setBridgeRegistry, ['@jaraba_copilot_v2.bridge_registry']]
 

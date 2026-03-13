@@ -118,4 +118,98 @@ class CoordinadorHubServiceTest extends UnitTestCase {
     $this->assertSame([], $result);
   }
 
+  /**
+   * @covers ::getCalendarEvents
+   */
+  public function testGetCalendarEventsReturnsEmptyWithoutEntity(): void {
+    $this->entityTypeManager->method('hasDefinition')
+      ->with('sesion_programada_ei')
+      ->willReturn(FALSE);
+
+    $result = $this->service->getCalendarEvents(NULL, '2026-03-01', '2026-03-31');
+    $this->assertSame([], $result);
+  }
+
+  /**
+   * @covers ::getCalendarEvents
+   */
+  public function testGetCalendarEventsHandlesException(): void {
+    $this->entityTypeManager->method('hasDefinition')
+      ->with('sesion_programada_ei')
+      ->willReturn(TRUE);
+
+    $this->entityTypeManager->method('getStorage')
+      ->with('sesion_programada_ei')
+      ->willThrowException(new \RuntimeException('Storage error'));
+
+    $result = $this->service->getCalendarEvents(1, '2026-03-01', '2026-03-31');
+    $this->assertSame([], $result);
+  }
+
+  /**
+   * @covers ::rescheduleSession
+   */
+  public function testRescheduleSessionNotFound(): void {
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->method('load')->with(999)->willReturn(NULL);
+    $this->entityTypeManager->method('getStorage')
+      ->with('sesion_programada_ei')
+      ->willReturn($storage);
+
+    $result = $this->service->rescheduleSession(999, '2026-04-01', '10:00', '11:00', NULL);
+    $this->assertFalse($result['success']);
+    $this->assertStringContainsString('no encontrada', $result['message']);
+  }
+
+  /**
+   * @covers ::rescheduleSession
+   */
+  public function testRescheduleSessionRejectsCompletedSessions(): void {
+    $sesion = new class () {
+      public function get(string $field): object {
+        return match ($field) {
+          'estado' => (object) ['value' => 'completada'],
+          'tenant_id' => (object) ['target_id' => NULL],
+          default => (object) ['value' => NULL],
+        };
+      }
+    };
+
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->method('load')->with(1)->willReturn($sesion);
+    $this->entityTypeManager->method('getStorage')
+      ->with('sesion_programada_ei')
+      ->willReturn($storage);
+
+    $result = $this->service->rescheduleSession(1, '2026-04-01', '10:00', '11:00', NULL);
+    $this->assertFalse($result['success']);
+    $this->assertStringContainsString('completadas o canceladas', $result['message']);
+  }
+
+  /**
+   * @covers ::rescheduleSession
+   */
+  public function testRescheduleSessionRejectsTenantMismatch(): void {
+    $sesion = new class () {
+      public function get(string $field): object {
+        return match ($field) {
+          'estado' => (object) ['value' => 'programada'],
+          'tenant_id' => (object) ['target_id' => 5],
+          default => (object) ['value' => NULL],
+        };
+      }
+    };
+
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->method('load')->with(1)->willReturn($sesion);
+    $this->entityTypeManager->method('getStorage')
+      ->with('sesion_programada_ei')
+      ->willReturn($storage);
+
+    // ACCESS-STRICT-001: tenant 10 !== entity tenant 5.
+    $result = $this->service->rescheduleSession(1, '2026-04-01', '10:00', '11:00', 10);
+    $this->assertFalse($result['success']);
+    $this->assertStringContainsString('no encontrada', $result['message']);
+  }
+
 }

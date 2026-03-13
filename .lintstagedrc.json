@@ -8,6 +8,9 @@
   "docs/00_*.md": [
     "bash scripts/maintenance/verify-doc-integrity.sh"
   ],
+  "web/**/*.html.twig": [
+    "php scripts/validation/validate-twig-ortografia.php"
+  ],
   "web/modules/custom/**/*.services.yml": [
     "bash scripts/validation/validate-all.sh --fast"
   ],

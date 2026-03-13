@@ -76,7 +76,15 @@ class PublicCopilotController extends ControllerBase
     {
         $copilotOrchestrator = NULL;
         if ($container->has('jaraba_copilot_v2.copilot_orchestrator')) {
-            $copilotOrchestrator = $container->get('jaraba_copilot_v2.copilot_orchestrator');
+            try {
+                $copilotOrchestrator = $container->get('jaraba_copilot_v2.copilot_orchestrator');
+            }
+            catch (\Throwable $e) {
+                \Drupal::logger('jaraba_copilot_v2')->error(
+                    'CopilotOrchestrator instantiation failed: @msg',
+                    ['@msg' => $e->getMessage()]
+                );
+            }
         }
 
         $queryLogger = NULL;
@@ -240,7 +248,7 @@ class PublicCopilotController extends ControllerBase
                     'sources' => [],
                 ];
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Drupal::logger('jaraba_copilot_v2')->warning(
                 'Public copilot orchestrator error: @error',
                 ['@error' => $e->getMessage()]

@@ -303,8 +303,11 @@ class JarabaRagService
 
     /**
      * Genera embedding de un texto usando OpenAI.
+     *
+     * Public porque es consumido por SemanticCacheService y otros servicios
+     * que necesitan generar embeddings via el proveedor configurado.
      */
-    protected function generateEmbedding(string $text): array
+    public function generateEmbedding(string $text): array
     {
         $config = $this->configFactory->get('jaraba_rag.settings');
         $model = $config->get('embeddings.model') ?? 'text-embedding-3-small';

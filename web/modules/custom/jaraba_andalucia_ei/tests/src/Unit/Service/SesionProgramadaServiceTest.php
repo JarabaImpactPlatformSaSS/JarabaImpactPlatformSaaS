@@ -91,7 +91,7 @@ class SesionProgramadaServiceTest extends UnitTestCase {
     $query = $this->createFluentQuery([]);
     $this->storage->method('getQuery')->willReturn($query);
 
-    $result = $this->service->getSesionesFuturas(1);
+    $result = $this->service->getSesionesFuturas(1, NULL, NULL);
 
     $this->assertSame([], $result, 'Debe devolver array vacio cuando no hay sesiones futuras.');
   }
@@ -110,7 +110,7 @@ class SesionProgramadaServiceTest extends UnitTestCase {
       ->with([10, 20])
       ->willReturn([10 => $sesion1, 20 => $sesion2]);
 
-    $result = $this->service->getSesionesFuturas(5);
+    $result = $this->service->getSesionesFuturas(5, NULL, NULL);
 
     $this->assertCount(2, $result, 'Debe devolver las sesiones encontradas.');
   }
@@ -136,7 +136,7 @@ class SesionProgramadaServiceTest extends UnitTestCase {
    *
    * @covers ::expandirRecurrencia
    */
-  public function testExpandirRecurrenciaMaxLimitIs52(): void {
+  public function testExpandirRecurrenciaSafetyLimitsPresent(): void {
     // Verificar que expandirRecurrencia es publico y accesible.
     $reflection = new \ReflectionMethod(SesionProgramadaService::class, 'expandirRecurrencia');
     $this->assertTrue(
@@ -144,37 +144,43 @@ class SesionProgramadaServiceTest extends UnitTestCase {
       'expandirRecurrencia() debe ser publico.'
     );
 
-    // Verificar via reflexion del source code que el limite es 52.
-    // La linea clave es: $count = min((int) ($patron['count'] ?? 4), 52);
+    // Verificar via reflexion del source code que los safety limits existen.
     $sourceFile = $reflection->getFileName();
     $this->assertNotFalse($sourceFile, 'Debe poder localizar el archivo fuente.');
 
     $source = file_get_contents($sourceFile);
     $this->assertNotFalse($source);
 
-    // Verificar que el limite 52 esta presente en el metodo.
+    // MAX_ABSOLUTE = 365 is the absolute ceiling for any type/range.
     $this->assertStringContainsString(
-      'min((int) ($patron[\'count\'] ?? 4), 52)',
+      'MAX_ABSOLUTE = 365',
       $source,
-      'El metodo debe aplicar min(count, 52) para limitar recurrencias.'
+      'Debe tener constante MAX_ABSOLUTE = 365 como limite absoluto.'
     );
 
-    // Verificar el mapa de intervalos soportados.
-    $this->assertStringContainsString("'weekly' => '+1 week'", $source);
-    $this->assertStringContainsString("'biweekly' => '+2 weeks'", $source);
-    $this->assertStringContainsString("'monthly' => '+1 month'", $source);
+    // Type-aware NO_END_LIMITS for "no_end" range.
+    $this->assertStringContainsString("'daily' => 365", $source);
+    $this->assertStringContainsString("'weekly' => 52", $source);
+    $this->assertStringContainsString("'monthly' => 24", $source);
+    $this->assertStringContainsString("'yearly' => 10", $source);
+
+    // All 4 recurrence types dispatched.
+    $this->assertStringContainsString("'daily' => \$this->calcularDiaria", $source);
+    $this->assertStringContainsString("'weekly' => \$this->calcularSemanal", $source);
+    $this->assertStringContainsString("'monthly' => \$this->calcularMensual", $source);
+    $this->assertStringContainsString("'yearly' => \$this->calcularAnual", $source);
   }
 
   /**
-   * Verifica que expandirRecurrencia con count alto se limita a 52.
+   * Verifica que expandirRecurrencia con count alto se limita a MAX_ABSOLUTE.
    *
    * El mock de storage no tiene create() configurado, por lo que
    * el servicio entra en catch y continua. Este test valida que
-   * el metodo no falla con counts superiores a 52.
+   * el metodo no falla con counts superiores a MAX_ABSOLUTE (365).
    *
    * @covers ::expandirRecurrencia
    */
-  public function testExpandirRecurrenciaWithHighCountLimitsTo52(): void {
+  public function testExpandirRecurrenciaWithHighCountLimitsToMaxAbsolute(): void {
     $fieldRecurrencia = new class {
       public ?string $value = '{"frequency":"weekly","count":100}';
     };

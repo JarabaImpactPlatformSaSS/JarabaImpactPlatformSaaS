@@ -216,9 +216,12 @@
             : Promise.resolve(null);
 
           tokenPromise.then(function (csrfToken) {
+            // ROUTE-LANGPREFIX-001: SIEMPRE usar Drupal.url() para incluir
+            // el prefijo de idioma (/es/). Sin él, Drupal redirige 301
+            // y el POST se convierte en GET, perdiendo el body.
             const endpoint = isAuthenticated
-              ? '/api/v1/copilot/chat?_format=json'
-              : '/api/v1/public-copilot/chat?_format=json';
+              ? Drupal.url('api/v1/copilot/chat') + '?_format=json'
+              : Drupal.url('api/v1/public-copilot/chat') + '?_format=json';
 
             const headers = {
               'Content-Type': 'application/json',
@@ -266,7 +269,10 @@
             .catch(error => {
               hideTypingIndicator();
               console.error('Copilot API error:', error);
-              addMessage('assistant', Drupal.t('Lo siento, no pude conectar con el servidor. Inténtalo de nuevo.'));
+              const userMsg = (error && error.message && error.message !== 'Failed to fetch')
+                ? error.message
+                : Drupal.t('Lo siento, no pude conectar con el servidor. Inténtalo de nuevo.');
+              addMessage('assistant', Drupal.checkPlain(userMsg));
             });
         }
 
@@ -343,7 +349,8 @@
                 rating.innerHTML = `<span class="rating-thanks">${Drupal.t('¡Gracias por tu feedback!')}</span>`;
 
                 // Send feedback to backend for AI learning
-                fetch('/api/v1/copilot/feedback', {
+                // ROUTE-LANGPREFIX-001: Drupal.url() para prefijo idioma.
+                fetch(Drupal.url('api/v1/copilot/feedback') + '?_format=json', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({

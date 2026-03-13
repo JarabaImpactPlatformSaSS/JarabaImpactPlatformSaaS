@@ -52,7 +52,12 @@ textarea {
     resize: vertical;
 }
 
-// Checkbox/Radio
+// ─── Premium Checkbox/Radio Cards ───────────────────────────────────────────
+// Elevated checkbox/radio styling for PremiumEntityFormBase forms.
+// Grid 2-col desktop, card-based options with custom visual indicators.
+// Scope: .jaraba-premium-form and .slide-panel__form contexts.
+
+// Default fallback for non-premium contexts.
 .form-checkbox,
 .form-radio {
     display: flex;
@@ -63,6 +68,133 @@ textarea {
     input {
         accent-color: var(--ej-color-primary, #FF8C42);
     }
+}
+
+// Premium card-based checkboxes/radios.
+// PremiumEntityFormBase adds class "premium-entity-form" on form root.
+// Drupal 11 form-element.html.twig uses "form-type-checkbox" (single hyphen).
+.premium-entity-form,
+.slide-panel__form {
+  .form-checkboxes,
+  .form-radios {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    // Drupal wraps each option in a div inside .fieldset-wrapper.
+    // DRUPAL-RADIOS-DOM-001: intermediate wrapper needs display:contents.
+    > .fieldset-wrapper > div,
+    > div {
+      display: contents;
+    }
+  }
+
+  .form-type-checkbox,
+  .form-type-radio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--ej-input-border, #D1D5DB);
+    border-radius: 8px;
+    background: var(--ej-color-surface, #ffffff);
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease;
+    min-height: 44px;
+
+    &:hover {
+      border-color: var(--ej-color-primary, #FF8C42);
+      background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 3%, white);
+    }
+
+    &:has(input:checked) {
+      border-color: var(--ej-color-primary, #FF8C42);
+      background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 6%, white);
+    }
+
+    &:has(input:focus-visible) {
+      outline: 3px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 40%, transparent);
+      outline-offset: 1px;
+    }
+
+    // Custom checkbox visual.
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border: 2px solid var(--ej-input-border, #D1D5DB);
+      border-radius: 4px;
+      background: var(--ej-color-surface, #ffffff);
+      cursor: pointer;
+      transition: background-color 150ms ease, border-color 150ms ease;
+      position: relative;
+
+      &:checked {
+        background: var(--ej-color-primary, #FF8C42);
+        border-color: var(--ej-color-primary, #FF8C42);
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 5px;
+          top: 1px;
+          width: 6px;
+          height: 11px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+    }
+
+    // Custom radio visual.
+    input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border: 2px solid var(--ej-input-border, #D1D5DB);
+      border-radius: 50%;
+      background: var(--ej-color-surface, #ffffff);
+      cursor: pointer;
+      transition: background-color 150ms ease, border-color 150ms ease;
+      position: relative;
+
+      &:checked {
+        border-color: var(--ej-color-primary, #FF8C42);
+        border-width: 2px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 3px;
+          top: 3px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--ej-color-primary, #FF8C42);
+        }
+      }
+    }
+
+    // Label styling.
+    label {
+      font-size: 0.9rem;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--ej-color-text, #1F2937);
+      cursor: pointer;
+      user-select: none;
+      margin: 0;
+    }
+  }
 }
 
 // Descriptions and errors

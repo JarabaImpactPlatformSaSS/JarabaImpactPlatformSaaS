@@ -1734,3 +1734,225 @@ function jaraba_andalucia_ei_update_10025(): string {
 
   return implode(' | ', $messages);
 }
+
+/**
+ * Update accion_formativa_ei field display options for course_id and interactive_content_id.
+ *
+ * These fields existed but lacked setDisplayOptions('form'), making them
+ * invisible in PremiumEntityFormBase sections.
+ */
+function jaraba_andalucia_ei_update_10026(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+
+    // UPDATE-HOOK-FIELDABLE-001: use getFieldStorageDefinitions, not getBaseFieldDefinitions.
+    $fields = $entityFieldManager->getFieldStorageDefinitions('accion_formativa_ei');
+
+    foreach (['course_id', 'interactive_content_id'] as $fieldName) {
+      if (!isset($fields[$fieldName])) {
+        $messages[] = "WARNING: accion_formativa_ei.$fieldName not found.";
+        continue;
+      }
+
+      $existing = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'accion_formativa_ei');
+      if ($existing) {
+        $field = $fields[$fieldName];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId required.
+        $field->setName($fieldName);
+        $field->setTargetEntityTypeId('accion_formativa_ei');
+        $entityDefinitionUpdateManager->updateFieldStorageDefinition($field);
+        $messages[] = "accion_formativa_ei: updated $fieldName display options.";
+      }
+      else {
+        $messages[] = "WARNING: accion_formativa_ei.$fieldName storage not installed.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: use \Throwable, not \Exception.
+    return 'Error in update_10026: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Migrate contenido_sto and subcontenido_sto to multi-value (cardinality -1).
+ *
+ * Changes storage schema: data moves from base table column to dedicated
+ * field data tables. Preserves existing single values as first delta.
+ */
+function jaraba_andalucia_ei_update_10027(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $database = \Drupal::database();
+
+    foreach (['contenido_sto', 'subcontenido_sto'] as $fieldName) {
+      // 1. Read existing single values from base table before schema change.
+      $existingValues = [];
+      $baseTable = 'accion_formativa_ei';
+      if ($database->schema()->fieldExists($baseTable, $fieldName)) {
+        $rows = $database->select($baseTable, 'b')
+          ->fields('b', ['id', $fieldName])
+          ->condition($fieldName, '', '<>')
+          ->isNotNull($fieldName)
+          ->execute();
+        foreach ($rows as $row) {
+          $existingValues[(int) $row->id] = $row->{$fieldName};
+        }
+      }
+
+      // 2. Uninstall old single-value field storage.
+      $existingDef = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, 'accion_formativa_ei');
+      if ($existingDef) {
+        $entityDefinitionUpdateManager->uninstallFieldStorageDefinition($existingDef);
+        $messages[] = "Uninstalled old $fieldName (cardinality 1).";
+      }
+
+      // 3. Install new multi-value field storage.
+      // UPDATE-HOOK-FIELDABLE-001: use getFieldStorageDefinitions.
+      \Drupal::entityTypeManager()->clearCachedDefinitions();
+      $fields = $entityFieldManager->getFieldStorageDefinitions('accion_formativa_ei');
+      if (isset($fields[$fieldName])) {
+        $field = $fields[$fieldName];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId required.
+        $field->setName($fieldName);
+        $field->setTargetEntityTypeId('accion_formativa_ei');
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName, 'accion_formativa_ei', 'jaraba_andalucia_ei', $field
+        );
+        $messages[] = "Installed $fieldName (cardinality unlimited).";
+      }
+
+      // 4. Re-insert existing values as first delta in new multi-value table.
+      if (!empty($existingValues)) {
+        $fieldTable = 'accion_formativa_ei__' . $fieldName;
+        $revisionTable = 'accion_formativa_ei_revision__' . $fieldName;
+        foreach ($existingValues as $entityId => $value) {
+          $record = [
+            'bundle' => 'accion_formativa_ei',
+            'deleted' => 0,
+            'entity_id' => $entityId,
+            'revision_id' => $entityId,
+            'langcode' => 'es',
+            'delta' => 0,
+            $fieldName . '_value' => $value,
+          ];
+          if ($database->schema()->tableExists($fieldTable)) {
+            $database->merge($fieldTable)
+              ->keys(['entity_id' => $entityId, 'delta' => 0, 'langcode' => 'es'])
+              ->fields($record)
+              ->execute();
+          }
+          if ($database->schema()->tableExists($revisionTable)) {
+            $database->merge($revisionTable)
+              ->keys(['entity_id' => $entityId, 'revision_id' => $entityId, 'delta' => 0, 'langcode' => 'es'])
+              ->fields($record)
+              ->execute();
+          }
+        }
+        $messages[] = "Migrated " . count($existingValues) . " existing $fieldName values.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: use \Throwable, not \Exception.
+    return 'Error in update_10027: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
+ * Migrate sesion_programada_ei contenido_sto/subcontenido_sto to multi-value.
+ *
+ * Same pattern as update_10027 but for sesion_programada_ei entity.
+ */
+function jaraba_andalucia_ei_update_10028(): string {
+  $messages = [];
+
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $database = \Drupal::database();
+    $entityTypeId = 'sesion_programada_ei';
+    $baseTable = 'sesion_programada_ei';
+
+    foreach (['contenido_sto', 'subcontenido_sto'] as $fieldName) {
+      // 1. Read existing single values before schema change.
+      $existingValues = [];
+      if ($database->schema()->fieldExists($baseTable, $fieldName)) {
+        $rows = $database->select($baseTable, 'b')
+          ->fields('b', ['id', $fieldName])
+          ->condition($fieldName, '', '<>')
+          ->isNotNull($fieldName)
+          ->execute();
+        foreach ($rows as $row) {
+          $existingValues[(int) $row->id] = $row->{$fieldName};
+        }
+      }
+
+      // 2. Uninstall old single-value field storage.
+      $existingDef = $entityDefinitionUpdateManager->getFieldStorageDefinition($fieldName, $entityTypeId);
+      if ($existingDef) {
+        $entityDefinitionUpdateManager->uninstallFieldStorageDefinition($existingDef);
+        $messages[] = "Uninstalled old $entityTypeId.$fieldName (cardinality 1).";
+      }
+
+      // 3. Install new multi-value field storage.
+      \Drupal::entityTypeManager()->clearCachedDefinitions();
+      $fields = $entityFieldManager->getFieldStorageDefinitions($entityTypeId);
+      if (isset($fields[$fieldName])) {
+        $field = $fields[$fieldName];
+        // UPDATE-FIELD-DEF-001.
+        $field->setName($fieldName);
+        $field->setTargetEntityTypeId($entityTypeId);
+        $entityDefinitionUpdateManager->installFieldStorageDefinition(
+          $fieldName, $entityTypeId, 'jaraba_andalucia_ei', $field
+        );
+        $messages[] = "Installed $entityTypeId.$fieldName (cardinality unlimited).";
+      }
+
+      // 4. Re-insert existing values as delta 0.
+      if (!empty($existingValues)) {
+        $fieldTable = $entityTypeId . '__' . $fieldName;
+        $revisionTable = $entityTypeId . '_revision__' . $fieldName;
+        foreach ($existingValues as $entityId => $value) {
+          $record = [
+            'bundle' => $entityTypeId,
+            'deleted' => 0,
+            'entity_id' => $entityId,
+            'revision_id' => $entityId,
+            'langcode' => 'es',
+            'delta' => 0,
+            $fieldName . '_value' => $value,
+          ];
+          if ($database->schema()->tableExists($fieldTable)) {
+            $database->merge($fieldTable)
+              ->keys(['entity_id' => $entityId, 'delta' => 0, 'langcode' => 'es'])
+              ->fields($record)
+              ->execute();
+          }
+          if ($database->schema()->tableExists($revisionTable)) {
+            $database->merge($revisionTable)
+              ->keys(['entity_id' => $entityId, 'revision_id' => $entityId, 'delta' => 0, 'langcode' => 'es'])
+              ->fields($record)
+              ->execute();
+          }
+        }
+        $messages[] = "Migrated " . count($existingValues) . " existing $entityTypeId.$fieldName values.";
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error in update_10028: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}

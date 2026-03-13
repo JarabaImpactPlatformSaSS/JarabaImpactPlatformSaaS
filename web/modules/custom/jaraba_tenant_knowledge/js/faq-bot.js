@@ -139,7 +139,7 @@
           showTypingIndicator();
 
           // Llamar API.
-          fetch('/api/v1/help/chat', {
+          fetch(Drupal.url('api/v1/help/chat'), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -251,7 +251,7 @@
                 var ratingValue = this.dataset.rating;
                 rating.innerHTML = '<span class="faq-bot__rating-thanks">' + Drupal.t('¡Gracias por tu feedback!') + '</span>';
 
-                fetch('/api/v1/help/chat/feedback', {
+                fetch(Drupal.url('api/v1/help/chat/feedback'), {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({

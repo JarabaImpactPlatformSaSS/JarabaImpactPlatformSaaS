@@ -143,6 +143,12 @@ run_check "CONTAINER-DEPS-002" "Circular reference detection (fast)" \
 run_check "LOGGER-INJECT-001" "Logger injection consistency (fast)" \
   php "$SCRIPT_DIR/validate-logger-injection.php"
 
+run_check "PHANTOM-ARG-001" "Phantom args in services.yml vs constructor params" \
+  php "$SCRIPT_DIR/validate-phantom-args.php"
+
+run_check "ORTOGRAFIA-TRANS-001" "Ortografia en textos traducibles Twig (tildes + ñ)" \
+  php "$SCRIPT_DIR/validate-twig-ortografia.php"
+
 # Full-only checks.
 if [ "$MODE" = "full" ]; then
   run_check "DI-TYPE-001" "Service DI type consistency" \

@@ -165,10 +165,10 @@ class CopilotOrchestratorService
         ?CopilotCacheService $cacheService = NULL,
         ?EntrepreneurContextService $entrepreneurContext = NULL,
         ?SelfDiscoveryContextService $selfDiscoveryContext = NULL,
-        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
-        ?SemanticCacheService $semanticCache = NULL, // S5-04: HAL-AI-25.
+        ?TenantContextService $tenantContext = NULL,
+        ?SemanticCacheService $semanticCache = NULL,
     ) {
-        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
+        $this->tenantContext = $tenantContext;
         $this->aiProvider = $aiProvider;
         $this->configFactory = $configFactory;
         $this->logger = $logger;
@@ -207,21 +207,25 @@ class CopilotOrchestratorService
         // ================================================================
         // S5-04: SEMANTIC CACHE — fuzzy matching via Qdrant embeddings.
         // Checks before exact cache for semantically similar past queries.
+        // FIX: Include current_page in semantic cache mode to prevent
+        // cross-context pollution (coordinador vs emprendedor same query).
         // ================================================================
         if ($this->semanticCache) {
             try {
                 $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-                $semanticHit = $this->semanticCache->get($message, $mode, $tenantId);
+                $currentPage = $context['current_page'] ?? '';
+                $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+                $semanticHit = $this->semanticCache->get($message, $semanticMode, $tenantId);
                 if ($semanticHit) {
                     $this->logger->debug('Copilot response served from semantic cache (mode=@mode)', [
-                        '@mode' => $mode,
+                        '@mode' => $semanticMode,
                     ]);
                     $semanticHit['cached'] = TRUE;
                     $semanticHit['cache_type'] = 'semantic';
                     return $semanticHit;
                 }
             }
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 $this->logger->notice('Semantic cache lookup failed: @error', ['@error' => $e->getMessage()]);
             }
         }
@@ -279,15 +283,20 @@ class CopilotOrchestratorService
                 if ($this->semanticCache) {
                     try {
                         $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-                        $this->semanticCache->set($message, $formattedResponse['text'] ?? '', $mode, $tenantId);
+                        $currentPage = $context['current_page'] ?? '';
+                        $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+                        $this->semanticCache->set($message, $formattedResponse['text'] ?? '', $semanticMode, $tenantId);
                     }
-                    catch (\Exception $e) {
+                    catch (\Throwable $e) {
                         $this->logger->notice('Semantic cache store failed: @error', ['@error' => $e->getMessage()]);
                     }
                 }
 
                 return $formattedResponse;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                // UPDATE-HOOK-CATCH-001: \Throwable captura TypeError (PHP 8.4
+                // TypeError extiende \Error, no \Exception). Sin esto, un
+                // TypeError en callProvider() mata el loop de failover.
                 $this->logger->warning('AI Provider @id failed: @error', [
                     '@id' => $providerId,
                     '@error' => $e->getMessage(),
@@ -394,6 +403,11 @@ class CopilotOrchestratorService
      */
     protected function callProvider(string $providerId, string $model, string $message, string $systemPrompt): array
     {
+        // Verificar si el AI Provider está inyectado (es @? en services.yml).
+        if (!$this->aiProvider) {
+            throw new \RuntimeException('AI Provider not available (module ai not installed or provider not configured)');
+        }
+
         // Verificar si el proveedor está disponible
         if (!$this->aiProvider->hasProvidersForOperationType('chat')) {
             throw new \RuntimeException('No chat providers available');
@@ -407,21 +421,38 @@ class CopilotOrchestratorService
             $model = $this->getGeminiModelForContext($model);
         }
 
-        // Configurar el system prompt si el proveedor lo soporta
+        // When the vertical bridge provides a full system prompt (e.g. coordinador),
+        // use lower temperature for more faithful instruction following.
+        // The default model temperature (1.0) causes training data recall to
+        // override system prompt instructions about the SaaS platform.
+        $hasVerticalPrompt = !empty($this->lastVerticalBridgeData['_system_prompt_addition']);
+        $temperature = $hasVerticalPrompt ? 0.3 : 0.7;
+        $maxTokens = $this->getMaxTokens();
+
+        // Set configuration on the provider via setConfiguration() (proxied
+        // through __call to AiProviderClientBase). This merges into the API
+        // payload via normalizeConfiguration → $payload + $this->configuration.
+        $provider->setConfiguration([
+            'temperature' => $temperature,
+            'max_tokens' => $maxTokens,
+        ]);
+
+        // Build ChatInput with system prompt embedded directly.
+        // Using ChatInput::setSystemPrompt() ensures the system prompt survives
+        // the ProviderProxy chain (wrapperCall syncs ChatInput → plugin at line
+        // 222 of ProviderProxy). Direct setChatSystemRole() on the proxy was
+        // found to lose the system prompt before reaching the API payload.
+        $chatMessage = new \Drupal\ai\OperationType\Chat\ChatMessage('user', $message, []);
+        $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([$chatMessage]);
+        $chatInput->setSystemPrompt($systemPrompt);
+
+        // Also set via setChatSystemRole for providers that read it directly.
         if (method_exists($provider, 'setChatSystemRole')) {
             $provider->setChatSystemRole($systemPrompt);
         }
 
-        // Usar ChatInput y ChatMessage para evitar bug de method_exists() en módulo AI
-        // El módulo AI contrib tiene un bug: method_exists($input, ...) falla si $input es array
-        $chatMessage = new \Drupal\ai\OperationType\Chat\ChatMessage('user', $message, []);
-        $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([$chatMessage]);
-
         // Llamar al LLM con ChatInput (objeto, no array)
-        $response = $provider->chat($chatInput, $model, [
-            'max_tokens' => $this->getMaxTokens(),
-            'temperature' => 0.7,
-        ]);
+        $response = $provider->chat($chatInput, $model, []);
 
         // ═══ TRACKING DE COSTES DE IA ═══
         $this->trackAiUsage($providerId, $model, $response);
@@ -738,12 +769,30 @@ class CopilotOrchestratorService
         // Sprint 17: Inject vertical-specific system prompt addition (phase context).
         $verticalPromptAddition = $this->getVerticalSystemPromptAddition();
 
+        // FIX: When a vertical bridge provides a full system prompt (e.g.
+        // coordinador context with 14 tools + 4-phase config), it REPLACES
+        // the generic base prompt. Otherwise the LLM receives contradictory
+        // identities ("Asistente de Coordinación" vs "Copiloto de
+        // Emprendimiento") and defaults to the generic one (recency bias).
+        $effectiveBasePrompt = $verticalPromptAddition ? '' : $basePrompt;
+
+        // Similarly, suppress generic mode prompt when vertical provides context.
+        // The bridge's _system_prompt_addition already contains role-appropriate
+        // instructions; the generic "emprendedor necesita..." mode prompts conflict.
+        $effectiveModePrompt = $verticalPromptAddition ? '' : $modePrompt;
+
+        $this->logger->debug('buildSystemPrompt: verticalAddition=@len chars, contextPrompt=@clen chars, lastBridgeKeys=@keys', [
+            '@len' => mb_strlen($verticalPromptAddition),
+            '@clen' => mb_strlen($contextPrompt),
+            '@keys' => implode(',', array_keys($this->lastVerticalBridgeData)),
+        ]);
+
         return implode("\n\n", array_filter([
             $identityRule,
             $legalCoherencePrompt,
             $verticalPromptAddition,
-            $basePrompt,
-            $modePrompt,
+            $effectiveBasePrompt,
+            $effectiveModePrompt,
             $contextPrompt,
             $selfDiscoveryPrompt,
             $upgradePrompt,
@@ -1090,23 +1139,32 @@ PROMPT,
      */
     protected function formatContextPrompt(array $context): string
     {
-        // v3: Enriquecer contexto con datos de BD si el servicio está disponible
-        if ($this->entrepreneurContext && empty($context['_v3_enriched'])) {
+        $parts = [];
+
+        // GAP-COPILOT-5: Vertical bridge context (coordinador, participante, etc.)
+        // Se ejecuta SIEMPRE primero — el bridge aporta _system_prompt_addition
+        // que redefine la identidad del copilot según el rol del usuario.
+        $verticalContext = $this->resolveVerticalBridgeContext($context);
+        if ($verticalContext) {
+            $parts[] = $verticalContext;
+        }
+
+        // v3: Enriquecer con datos de emprendedor si el bridge no aportó contexto.
+        if (empty($verticalContext) && $this->entrepreneurContext && empty($context['_v3_enriched'])) {
             $enrichedSummary = $this->entrepreneurContext->getContextSummaryForPrompt();
             if ($enrichedSummary) {
-                $contextPrompt = $enrichedSummary . "\n\n" . $this->formatBasicContext($context);
-                return $this->truncateContext($contextPrompt);
+                $parts[] = $enrichedSummary;
             }
         }
 
-        // GAP-COPILOT-5: Enrich with vertical-specific context from bridge.
-        $verticalContext = $this->resolveVerticalBridgeContext($context);
-        if ($verticalContext) {
-            $contextPrompt = $verticalContext . "\n\n" . $this->formatBasicContext($context);
-            return $this->truncateContext($contextPrompt);
+        // Contexto básico (current_page, datos de perfil, etc.)
+        $basicContext = $this->formatBasicContext($context);
+        if ($basicContext) {
+            $parts[] = $basicContext;
         }
 
-        return $this->truncateContext($this->formatBasicContext($context));
+        $fullContext = implode("\n\n", $parts);
+        return $this->truncateContext($fullContext ?: '');
     }
 
     /**
@@ -1135,6 +1193,12 @@ PROMPT,
     protected function resolveVerticalBridgeContext(array $context): ?string {
         $this->lastVerticalBridgeData = [];
 
+        $this->logger->debug('resolveVerticalBridgeContext: registry=@reg, context_keys=@keys, current_page=@page', [
+            '@reg' => $this->bridgeRegistry ? 'YES' : 'NO',
+            '@keys' => implode(',', array_keys($context)),
+            '@page' => $context['current_page'] ?? 'NOT_SET',
+        ]);
+
         if (!$this->bridgeRegistry) {
             return NULL;
         }
@@ -1150,6 +1214,16 @@ PROMPT,
                 // Tenant resolution failed, skip vertical context.
             }
         }
+
+        // Fallback: infer vertical from current_page path.
+        if (!$vertical && !empty($context['current_page'])) {
+            $vertical = $this->inferVerticalFromPath($context['current_page']);
+        }
+
+        $this->logger->debug('resolveVertical: resolved=@v, has_bridge=@b', [
+            '@v' => $vertical ?? 'NULL',
+            '@b' => ($vertical && $this->bridgeRegistry->has($vertical)) ? 'YES' : 'NO',
+        ]);
 
         if (!$vertical || !$this->bridgeRegistry->has($vertical)) {
             return NULL;
@@ -1317,6 +1391,45 @@ PROMPT,
     }
 
     /**
+     * Infiere el vertical a partir del path de la página actual.
+     *
+     * Mapea prefijos de ruta conocidos a los 10 verticales canónicos.
+     * Solo se usa como fallback cuando ni el contexto ni el tenant
+     * proporcionan el vertical.
+     *
+     * @param string $path
+     *   Path de la página (ej: /andalucia-ei/coordinador).
+     *
+     * @return string|null
+     *   Vertical key o NULL si no se puede inferir.
+     */
+    protected function inferVerticalFromPath(string $path): ?string {
+        // Normalizar: quitar prefijo de idioma (/es/, /en/).
+        $cleanPath = preg_replace('#^/[a-z]{2}/#', '/', $path);
+
+        $pathVerticalMap = [
+            '/andalucia-ei/' => 'andalucia_ei',
+            '/empleabilidad/' => 'empleabilidad',
+            '/emprendimiento/' => 'emprendimiento',
+            '/comercioconecta/' => 'comercioconecta',
+            '/agroconecta/' => 'agroconecta',
+            '/jarabalex/' => 'jarabalex',
+            '/serviciosconecta/' => 'serviciosconecta',
+            '/content-hub/' => 'jaraba_content_hub',
+            '/formacion/' => 'formacion',
+            '/demo/' => 'demo',
+        ];
+
+        foreach ($pathVerticalMap as $prefix => $vertical) {
+            if (str_starts_with($cleanPath, $prefix)) {
+                return $vertical;
+            }
+        }
+
+        return NULL;
+    }
+
+    /**
      * Formatea el contexto básico (datos pasados directamente).
      */
     protected function formatBasicContext(array $context): string
@@ -1327,6 +1440,9 @@ PROMPT,
 
         $lines = ["## CONTEXTO ADICIONAL"];
 
+        if (!empty($context['current_page'])) {
+            $lines[] = "- Página actual del usuario: {$context['current_page']}";
+        }
         if (!empty($context['name'])) {
             $lines[] = "- Nombre: {$context['name']}";
         }
@@ -1688,7 +1804,7 @@ PROMPT,
      */
     public function isConfigured(): bool
     {
-        return $this->aiProvider->hasProvidersForOperationType('chat');
+        return $this->aiProvider && $this->aiProvider->hasProvidersForOperationType('chat');
     }
 
     /**
@@ -1696,6 +1812,9 @@ PROMPT,
      */
     public function getAvailableProviders(): array
     {
+        if (!$this->aiProvider) {
+            return [];
+        }
         $providers = $this->aiProvider->getProvidersForOperationType('chat');
         $result = [];
 

@@ -106,7 +106,9 @@ class SemanticCacheService
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // UPDATE-HOOK-CATCH-001: \Throwable captura tanto \Exception como
+            // \Error (ej: Call to protected method, TypeError en PHP 8.4).
             $this->logger->warning('Semantic cache get failed: @msg', ['@msg' => $e->getMessage()]);
         }
 

@@ -91,7 +91,7 @@ class SecurityHeadersSettingsForm extends ConfigFormBase
             '#type' => 'textarea',
             '#title' => $this->t('Política CSP'),
             '#description' => $this->t('Política de seguridad de contenido. Se recomienda no modificar salvo necesidad.'),
-            '#default_value' => $config->get('csp.policy') ?: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: blob: *.stripe.com images.unsplash.com; connect-src 'self' api.stripe.com api.openai.com api.anthropic.com; frame-src 'self' js.stripe.com",
+            '#default_value' => $config->get('csp.policy') ?: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' data: fonts.gstatic.com; img-src 'self' data: blob: *.stripe.com images.unsplash.com; connect-src 'self' api.stripe.com api.openai.com api.anthropic.com; frame-src 'self' js.stripe.com",
             '#rows' => 4,
             '#states' => [
                 'visible' => [

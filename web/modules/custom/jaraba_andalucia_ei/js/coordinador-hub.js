@@ -278,6 +278,7 @@
       hubs.forEach(function (container) {
         initModal(container);
         initTabs(container);
+        initStickyTabs(container);
         initKpiNavigation(container);
         initCsvExport(container);
         loadSolicitudes(container, '', 0);
@@ -418,6 +419,55 @@
 
   // ─── Tabs ────────────────────────────────────────────────────────────────
 
+  /**
+   * Detects when the sticky tab bar is "stuck" and adds a shadow class.
+   *
+   * Uses a sentinel <div> placed just before the tabs. When the sentinel
+   * scrolls out of view (IntersectionObserver threshold 0), the tabs are
+   * stuck. Adds .hub-coordinador__tabs--stuck which enables the ::after
+   * shadow gradient.
+   */
+  /**
+   * Measures the sticky header height and sets --hub-sticky-offset on
+   * the hub container. The CSS uses this variable for the tabs'
+   * position:sticky top value so they sit just below the header.
+   *
+   * Recalculates on resize (header height changes on mobile/toolbar).
+   */
+  function syncStickyOffset(container) {
+    var header = document.querySelector('.landing-header');
+    if (!header) { return; }
+
+    function update() {
+      var h = header.getBoundingClientRect().height;
+      container.style.setProperty('--hub-sticky-offset', Math.round(h) + 'px');
+    }
+
+    update();
+    window.addEventListener('resize', update, { passive: true });
+  }
+
+  function initStickyTabs(container) {
+    var stickyWrapper = container.querySelector('.hub-coordinador__tabs-sticky');
+    if (!stickyWrapper) { return; }
+
+    // Set --hub-sticky-offset so tabs stick below the header.
+    syncStickyOffset(container);
+
+    // Create a zero-height sentinel element above the sticky wrapper.
+    var sentinel = document.createElement('div');
+    sentinel.className = 'hub-coordinador__tabs-sentinel';
+    sentinel.setAttribute('aria-hidden', 'true');
+    stickyWrapper.parentNode.insertBefore(sentinel, stickyWrapper);
+
+    var observer = new IntersectionObserver(function (entries) {
+      // When sentinel is NOT intersecting, the tabs are stuck at top.
+      stickyWrapper.classList.toggle('hub-coordinador__tabs-sticky--stuck', !entries[0].isIntersecting);
+    }, { threshold: 0 });
+
+    observer.observe(sentinel);
+  }
+
   function initTabs(container) {
     var tabs = container.querySelectorAll('[role="tab"]');
     var panels = container.querySelectorAll('[role="tabpanel"]');
@@ -450,6 +500,15 @@
         if (target === 'participantes') { loadParticipants(container, '', '', 0); }
         if (target === 'sesiones') { loadSessions(container); }
         if (target === 'documentacion') { loadDocumentacion(container, '', '', 0); }
+
+        // height:'auto' makes FullCalendar immune to hidden-container bugs,
+        // but updateSize() still needed if viewport changed while on another tab.
+        if (target === 'calendario') {
+          var calContainer = container.querySelector('[data-calendar-container]');
+          if (calContainer && calContainer._fcCalendar) {
+            calContainer._fcCalendar.updateSize();
+          }
+        }
       });
 
       // Keyboard navigation (arrows).

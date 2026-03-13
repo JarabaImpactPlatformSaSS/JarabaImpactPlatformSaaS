@@ -33,7 +33,7 @@ class CopilotStreamController extends ControllerBase {
    * Constructor.
    */
   public function __construct(
-    protected CopilotOrchestratorService $orchestrator,
+    protected ?CopilotOrchestratorService $orchestrator,
     protected ModeDetectorService $modeDetector,
     protected RateLimiterService $rateLimiter,
     protected AIUsageLimitService $aiUsageLimit,
@@ -47,8 +47,19 @@ class CopilotStreamController extends ControllerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
+    try {
+      $orchestrator = $container->get('jaraba_copilot_v2.copilot_orchestrator');
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_copilot_v2')->error(
+        'CopilotOrchestrator instantiation failed: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+      $orchestrator = NULL;
+    }
+
     return new static(
-      $container->get('jaraba_copilot_v2.copilot_orchestrator'),
+      $orchestrator,
       $container->get('jaraba_copilot_v2.mode_detector'),
       $container->get('ecosistema_jaraba_core.rate_limiter'),
       $container->get('ecosistema_jaraba_core.ai_usage_limit'),
@@ -72,6 +83,13 @@ class CopilotStreamController extends ControllerBase {
    * 4. Tenant context para aislamiento de datos.
    */
   public function stream(Request $request): StreamedResponse|JsonResponse {
+    if (!$this->orchestrator) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => 'El servicio de IA no está disponible en este momento.',
+      ], 503);
+    }
+
     // 1. Rate limiting.
     $userId = (string) $this->currentUser()->id();
     $rateLimitResult = $this->rateLimiter->consume($userId, 'ai');
@@ -129,6 +147,22 @@ class CopilotStreamController extends ControllerBase {
     $message = $data['message'];
     $context = $data['context'] ?? [];
     $mode = $data['mode'] ?? NULL;
+
+    // FIX: Ensure current_page is always available for vertical bridge resolution.
+    // The copilot-chat-widget.js sends drupalSettings.jarabaCopilot (no current_page).
+    // Fallback to Referer header which has the full URL of the page the user is on.
+    if (empty($context['current_page'])) {
+      $referer = $request->headers->get('Referer', '');
+      if ($referer) {
+        $parsed = parse_url($referer, PHP_URL_PATH);
+        if ($parsed) {
+          $context['current_page'] = $parsed;
+        }
+      }
+    }
+
+    // Ensure user_id is always in context for vertical bridge resolution.
+    $context['user_id'] = (int) $this->currentUser()->id();
 
     // GAP-AUD-013: Enrich context with image analysis if available.
     if ($imageAnalysis !== NULL) {

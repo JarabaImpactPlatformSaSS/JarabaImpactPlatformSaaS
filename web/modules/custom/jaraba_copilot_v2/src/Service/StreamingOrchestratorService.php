@@ -103,29 +103,35 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
           $actualModel = $this->getGeminiModelForContext($model);
         }
 
-        // Configurar system prompt.
-        if (method_exists($provider, 'setChatSystemRole')) {
-          $provider->setChatSystemRole($systemPrompt);
-        }
+        // Set configuration (temperature, max_tokens) on the provider.
+        $provider->setConfiguration([
+          'temperature' => 0.7,
+          'max_tokens' => $this->getMaxTokens(),
+        ]);
 
         // Habilitar streaming en el provider.
         if (method_exists($provider, 'streamedOutput')) {
           $provider->streamedOutput(TRUE);
         }
 
-        // Crear ChatInput con streaming habilitado.
+        // Build ChatInput with system prompt embedded directly.
+        // Using ChatInput::setSystemPrompt() ensures the system prompt survives
+        // the ProviderProxy chain. Direct setChatSystemRole() loses the prompt.
         $chatMessage = new ChatMessage('user', $enrichedMessage, []);
         $chatInput = new ChatInput([$chatMessage]);
+        $chatInput->setSystemPrompt($systemPrompt);
+
+        // Also set via setChatSystemRole for providers that read it directly.
+        if (method_exists($provider, 'setChatSystemRole')) {
+          $provider->setChatSystemRole($systemPrompt);
+        }
 
         if (method_exists($chatInput, 'setStreamedOutput')) {
           $chatInput->setStreamedOutput(TRUE);
         }
 
         // Llamada streaming al LLM.
-        $response = $provider->chat($chatInput, $actualModel, [
-          'max_tokens' => $this->getMaxTokens(),
-          'temperature' => 0.7,
-        ]);
+        $response = $provider->chat($chatInput, $actualModel, []);
 
         // Verificar si la respuesta es un iterador streamed.
         $normalized = $response->getNormalized();

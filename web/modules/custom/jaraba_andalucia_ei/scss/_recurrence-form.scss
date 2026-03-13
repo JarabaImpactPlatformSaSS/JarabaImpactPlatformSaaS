@@ -1,0 +1,605 @@
+/**
+ * @file
+ * Premium recurrence form — Outlook-style sub-panels & radio cards.
+ *
+ * CSS-VAR-ALL-COLORS-001: All colors via var(--ej-*) with inline fallbacks.
+ *
+ * Drupal 11 DOM structure for #type=radios with #prefix/#suffix wrapper:
+ *   .premium-radio-cards (our wrapper)
+ *     └ fieldset.fieldgroup.form-composite
+ *       └ legend > span.fieldset-legend
+ *       └ .fieldset-wrapper
+ *         └ .form-type-radio (individual radio items)
+ *
+ * For #type=checkboxes:
+ *   .recurrence-day-chips (our wrapper)
+ *     └ fieldset.fieldgroup.form-composite
+ *       └ .fieldset-wrapper
+ *         └ .form-checkboxes
+ *           └ .form-type-checkbox (individual checkbox items)
+ *
+ * The _premium-forms.scss from ecosistema_jaraba_core converts ALL
+ * checkboxes into toggle switches. Day chips must override this.
+ */
+
+// =============================================================================
+// 1. RECURRENCE SUB-PANELS
+// =============================================================================
+
+.premium-entity-form .recurrence-subpanel {
+  position: relative;
+  margin-top: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  background: var(--ej-color-surface-elevated, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #EEEEEE);
+  border-radius: var(--ej-border-radius-lg, 14px);
+  box-shadow: var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: recurrenceSubpanelIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+
+  &:hover {
+    box-shadow: var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.1));
+  }
+}
+
+.premium-entity-form .recurrence-subpanel--daily {
+  border-left: 4px solid var(--ej-color-corporate, #233D63);
+}
+
+.premium-entity-form .recurrence-subpanel--weekly {
+  border-left: 4px solid color-mix(
+    in srgb,
+    var(--ej-color-corporate, #233D63) 70%,
+    var(--ej-color-impulse, #FF8C42)
+  );
+}
+
+.premium-entity-form .recurrence-subpanel--monthly {
+  border-left: 4px solid var(--ej-color-impulse, #FF8C42);
+}
+
+.premium-entity-form .recurrence-subpanel--yearly {
+  border-left: 4px solid color-mix(
+    in srgb,
+    var(--ej-color-impulse, #FF8C42) 60%,
+    var(--ej-color-corporate, #233D63)
+  );
+}
+
+.premium-entity-form .recurrence-subpanel--range {
+  border-left: 4px solid var(--ej-color-info, #1976D2);
+}
+
+@keyframes recurrenceSubpanelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.premium-entity-form .recurrence-subpanel__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ej-border-color, #EEEEEE);
+}
+
+.premium-entity-form .recurrence-subpanel__title {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ej-color-text-muted, #757575);
+}
+
+// =============================================================================
+// 2. RECURRENCE TOGGLE CARD — "Es recurrente" activation switch
+// =============================================================================
+
+.premium-entity-form .recurrence-toggle-card {
+  margin-top: var(--ej-spacing-md, 1rem);
+  padding: 1rem 1.25rem;
+  background: color-mix(
+    in srgb,
+    var(--ej-color-impulse, #FF8C42) 6%,
+    var(--ej-color-surface-elevated, #FFFFFF)
+  );
+  border: 2px solid color-mix(
+    in srgb,
+    var(--ej-color-impulse, #FF8C42) 30%,
+    var(--ej-border-color, #E0E0E0)
+  );
+  border-radius: var(--ej-border-radius-lg, 14px);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:has(input:checked) {
+    border-color: var(--ej-color-impulse, #FF8C42);
+    box-shadow:
+      0 0 0 1px var(--ej-color-impulse, #FF8C42),
+      var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+    background: color-mix(
+      in srgb,
+      var(--ej-color-impulse, #FF8C42) 10%,
+      var(--ej-color-surface-elevated, #FFFFFF)
+    );
+  }
+
+  .form-item {
+    margin: 0;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--ej-color-text, #212121);
+    cursor: pointer;
+  }
+
+  .description {
+    margin-top: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--ej-color-text-muted, #757575);
+  }
+}
+
+// =============================================================================
+// 3. PREMIUM RADIO CARDS — Fieldset & grid layout
+//    The grid lives on .fieldset-wrapper (direct parent of .form-type-radio).
+//    The outer fieldset is stripped of default fieldset styling.
+// =============================================================================
+
+// Reset fieldset chrome inside our wrappers.
+.premium-entity-form .premium-radio-cards > fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+
+  > legend {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-text-muted, #757575);
+    margin-bottom: 0.5rem;
+    padding: 0;
+    float: none;
+    width: 100%;
+  }
+}
+
+// Grid on fieldset-wrapper.
+// Drupal 11 adds an extra wrapper div (e.g., #edit-tipo-recurrencia)
+// between .fieldset-wrapper and .form-type-radio items:
+//   .fieldset-wrapper > div#edit-X > .form-type-radio
+// We use display:contents on the intermediate div to flatten it.
+.premium-entity-form .premium-radio-cards .fieldset-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+
+  > div:not(.description) {
+    display: contents;
+  }
+}
+
+// Individual radio card item.
+.premium-entity-form .premium-radio-cards .form-type-radio,
+.premium-entity-form .premium-radio-cards .js-form-type-radio {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  background: var(--ej-color-surface-elevated, #FFFFFF);
+  border: 2px solid var(--ej-border-color, #E0E0E0);
+  border-radius: var(--ej-border-radius, 10px);
+  cursor: pointer;
+  transition:
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  min-height: 48px;
+
+  &:hover {
+    border-color: var(--ej-color-corporate, #233D63);
+    box-shadow: var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+    transform: translateY(-1px);
+  }
+
+  &:has(input:checked) {
+    border-color: var(--ej-color-corporate, #233D63);
+    background: color-mix(
+      in srgb,
+      var(--ej-color-corporate, #233D63) 8%,
+      var(--ej-color-surface-elevated, #FFFFFF)
+    );
+    box-shadow:
+      0 0 0 1px var(--ej-color-corporate, #233D63),
+      var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+  }
+
+  &:has(input:focus-visible) {
+    outline: 3px solid color-mix(
+      in srgb,
+      var(--ej-color-corporate, #233D63) 40%,
+      transparent
+    );
+    outline-offset: 1px;
+  }
+
+  // Custom radio dot replacing browser default.
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    flex-shrink: 0;
+    border: 2px solid var(--ej-border-color, #E0E0E0);
+    border-radius: 50%;
+    background: var(--ej-color-surface-elevated, #FFFFFF);
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    &:checked {
+      border-color: var(--ej-color-corporate, #233D63);
+      background: var(--ej-color-corporate, #233D63);
+      box-shadow: inset 0 0 0 3px var(--ej-color-surface-elevated, #FFFFFF);
+    }
+  }
+
+  label {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    color: var(--ej-color-text, #212121);
+    margin: 0;
+    padding: 0;
+    line-height: 1.3;
+    display: inline;
+  }
+}
+
+// =============================================================================
+// 4. TIPO RECURRENCIA — 4-column prominent card grid
+//    Hidden radio dot — entire card is the selection target.
+// =============================================================================
+
+.premium-entity-form .recurrence-tipo-selector .fieldset-wrapper {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.625rem;
+}
+
+.premium-entity-form .recurrence-tipo-selector .form-type-radio,
+.premium-entity-form .recurrence-tipo-selector .js-form-type-radio {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.125rem 0.75rem;
+  min-height: 72px;
+  justify-content: center;
+  gap: 0.25rem;
+
+  // Hide native radio — the card IS the control.
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+  }
+
+  // Stronger checked state for the primary type selector.
+  &:has(input:checked) {
+    background: color-mix(
+      in srgb,
+      var(--ej-color-corporate, #233D63) 12%,
+      var(--ej-color-surface-elevated, #FFFFFF)
+    );
+    border-color: var(--ej-color-corporate, #233D63);
+    box-shadow:
+      0 0 0 2px var(--ej-color-corporate, #233D63),
+      var(--ej-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.1));
+    transform: translateY(-2px);
+  }
+}
+
+// =============================================================================
+// 5. WEEKLY DAY CHECKBOXES — Pill-shaped chips
+//    Grid lives on .form-checkboxes (direct parent of .form-type-checkbox).
+//    MUST override the global toggle switch from _premium-forms.scss.
+// =============================================================================
+
+// Reset fieldset chrome.
+.premium-entity-form .recurrence-day-chips > fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+
+  > legend {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-text-muted, #757575);
+    margin-bottom: 0.5rem;
+    padding: 0;
+    float: none;
+    width: 100%;
+  }
+}
+
+// Flex container on .form-checkboxes (direct parent of checkbox items).
+.premium-entity-form .recurrence-day-chips .form-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+// Individual day pill.
+.premium-entity-form .recurrence-day-chips .form-type-checkbox,
+.premium-entity-form .recurrence-day-chips .js-form-type-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.875rem;
+  margin: 0;
+  background: var(--ej-color-surface-elevated, #FFFFFF);
+  border: 2px solid var(--ej-border-color, #E0E0E0);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  min-height: auto;
+
+  &:hover {
+    border-color: var(--ej-color-corporate, #233D63);
+    background: color-mix(
+      in srgb,
+      var(--ej-color-corporate, #233D63) 5%,
+      var(--ej-color-surface-elevated, #FFFFFF)
+    );
+  }
+
+  &:has(input:checked) {
+    background: var(--ej-color-corporate, #233D63);
+    border-color: var(--ej-color-corporate, #233D63);
+    box-shadow: var(--ej-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+  }
+
+  &:has(input:checked) label {
+    color: var(--ej-bg-surface, #FFFFFF);
+  }
+
+  // CRITICAL: Override toggle switch from _premium-forms.scss.
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 0;
+    height: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+
+    &::before {
+      display: none;
+      content: none;
+      width: 0;
+      height: 0;
+    }
+
+    &:checked {
+      background: transparent;
+    }
+  }
+
+  label {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ej-color-text, #212121);
+    margin: 0;
+    padding: 0;
+    display: inline;
+    line-height: 1.2;
+    transition: color 150ms ease;
+  }
+}
+
+// Description below the day chips.
+.premium-entity-form .recurrence-day-chips .fieldset-wrapper > .description,
+.premium-entity-form .recurrence-day-chips .description {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-muted, #757575);
+}
+
+// =============================================================================
+// 6. FIELD SUFFIX ALIGNMENT (e.g., "día(s)", "semana(s)")
+// =============================================================================
+
+.premium-entity-form .recurrence-subpanel .form-item:has(input[type="number"]) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  > label {
+    flex: 0 0 100%;
+  }
+
+  input[type="number"] {
+    max-width: 100px;
+    flex: 0 0 auto;
+  }
+
+  .field-suffix {
+    font-size: 0.875rem;
+    color: var(--ej-color-text-muted, #757575);
+    font-weight: 500;
+    flex: 0 0 auto;
+  }
+
+  .description {
+    flex: 0 0 100%;
+  }
+}
+
+// =============================================================================
+// 7. SECTION HEADINGS INSIDE SUB-PANELS
+// =============================================================================
+
+.premium-entity-form .recurrence-subpanel .form-item > label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-muted, #757575);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+// =============================================================================
+// 8. RESPONSIVE
+// =============================================================================
+
+@media (max-width: 640px) {
+  .premium-entity-form .recurrence-tipo-selector .fieldset-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .premium-entity-form .premium-radio-cards .fieldset-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .premium-entity-form .recurrence-subpanel {
+    padding: var(--ej-spacing-md, 1rem);
+  }
+}
+
+// =============================================================================
+// 9. SLIDE-PANEL OVERRIDES
+//    Boost specificity for slide-panel context.
+// =============================================================================
+
+.slide-panel__body {
+  .premium-entity-form .premium-radio-cards .fieldset-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+
+    > div:not(.description) {
+      display: contents;
+    }
+  }
+
+  .premium-entity-form .premium-radio-cards > fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .premium-entity-form .recurrence-tipo-selector .fieldset-wrapper {
+    grid-template-columns: repeat(4, 1fr);
+
+    @media (max-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .premium-entity-form .premium-radio-cards .form-type-radio,
+  .premium-entity-form .premium-radio-cards .js-form-type-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    background: var(--ej-color-surface-elevated, #FFFFFF);
+    border: 2px solid var(--ej-border-color, #E0E0E0);
+    border-radius: var(--ej-border-radius, 10px);
+    cursor: pointer;
+    min-height: 48px;
+
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      accent-color: unset;
+    }
+  }
+
+  .premium-entity-form .recurrence-tipo-selector .form-type-radio,
+  .premium-entity-form .recurrence-tipo-selector .js-form-type-radio {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.125rem 0.75rem;
+    min-height: 72px;
+    justify-content: center;
+    gap: 0.25rem;
+
+    input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+  }
+
+  .premium-entity-form .recurrence-day-chips > fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .premium-entity-form .recurrence-day-chips .form-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .premium-entity-form .recurrence-day-chips .form-type-checkbox,
+  .premium-entity-form .recurrence-day-chips .js-form-type-checkbox {
+    display: inline-flex;
+    padding: 0.5rem 0.875rem;
+    border: 2px solid var(--ej-border-color, #E0E0E0);
+    border-radius: 9999px;
+    margin: 0;
+
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 0;
+      height: 0;
+      min-width: 0;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+
+      &::before {
+        display: none;
+        content: none;
+      }
+    }
+  }
+}

@@ -132,7 +132,7 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
                 "default-src 'self'",
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com www.google.com www.gstatic.com",
                 "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
-                "font-src 'self' fonts.gstatic.com",
+                "font-src 'self' data: fonts.gstatic.com",
                 "img-src 'self' data: blob: *.stripe.com images.unsplash.com www.gstatic.com",
                 "connect-src 'self' api.stripe.com api.openai.com api.anthropic.com generativelanguage.googleapis.com www.google.com",
                 "frame-src 'self' js.stripe.com www.google.com",

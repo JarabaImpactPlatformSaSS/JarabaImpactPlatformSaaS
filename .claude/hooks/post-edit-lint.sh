@@ -130,7 +130,15 @@ case "$EXT" in
       ERRORS="${ERRORS:+$ERRORS\n}I18N: Posibles textos sin {% trans %} detectados. Verificar:\n$UNTRANS"
     fi
 
-    # 3. Detectar precios EUR hardcodeados (NO-HARDCODE-PRICE-001)
+    # 3. Detectar tildes faltantes en {% trans %} (ORTOGRAFIA-TRANS-001)
+    # Patron compacto: palabras -cion/-sion sin tilde + esdrujulas frecuentes
+    ORTOGRAFIA_ISSUES=$(grep -nP '{% trans %}[^{]*(Coordinacion|Documentacion|Formacion|Orientacion|Insercion|Atencion|Diagnostico|Participacion|Ejecucion|Distribucion|Realizacion|Justificacion|Gestion|Metricas|Economica|Sesion |Andalucia|Informacion|Configuracion|Evaluacion|Comunicacion|Seleccion|Descripcion|Notificacion|Navegacion|Publicacion|Administracion|Certificacion|Verificacion|Validacion|Planificacion|Seccion|Edicion|Historico|Tecnico|Tecnica|Numero|Pagina|Codigo|Catalogo|Articulo|Basico|Basica|Ultimo|Version|Credito|Espana|Espanol|Espanola|Ensenanza|Desempeno|Diseno|Companero|Companera|Compania|Contrasena|Acompanamiento|Campana|Tamano|Pequeno|Pequena|Resena)' "$FILE_PATH" 2>/dev/null | head -3) || true
+
+    if [ -n "$ORTOGRAFIA_ISSUES" ]; then
+      ERRORS="${ERRORS:+$ERRORS\n}ORTOGRAFIA-TRANS-001: Tildes faltantes en {% trans %}. Cada tilde incorrecta crea una clave de traduccion huerfana:\n$ORTOGRAFIA_ISSUES"
+    fi
+
+    # 4. Detectar precios EUR hardcodeados (NO-HARDCODE-PRICE-001)
     # Excluir: competidores (Aranzadi, vLex), comentarios, variables dinamicas, agent-dashboard
     BASENAME=$(basename "$FILE_PATH")
     if [ "$BASENAME" != "page--agent-dashboard.html.twig" ]; then

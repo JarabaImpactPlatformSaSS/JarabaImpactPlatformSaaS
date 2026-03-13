@@ -179,6 +179,44 @@
       box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
     }
   }
+
+  // Sprint 20: Formación action card — naranja-impulso accent.
+  &--formacion {
+    background: var(--ej-color-surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 30%, var(--ej-color-border, #D1D5DB));
+    color: var(--ej-color-text, #1F2937);
+
+    .hub-coordinador__action-icon {
+      background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--ej-color-naranja-impulso, #FF8C42);
+      background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 4%, var(--ej-color-surface, #ffffff));
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+    }
+  }
+
+  // Sprint 20: Sesión action card — verde-innovacion accent.
+  &--sesion {
+    background: var(--ej-color-surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 30%, var(--ej-color-border, #D1D5DB));
+    color: var(--ej-color-text, #1F2937);
+
+    .hub-coordinador__action-icon {
+      background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--ej-color-verde-innovacion, #00A9A5);
+      background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 4%, var(--ej-color-surface, #ffffff));
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
+    }
+  }
 }
 
 .hub-coordinador__action-icon {
@@ -196,6 +234,14 @@
 
   &--leads {
     background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 10%, transparent);
+  }
+
+  &--formacion {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, transparent);
+  }
+
+  &--sesion {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, transparent);
   }
 }
 
@@ -516,7 +562,9 @@
   margin: 0 0 var(--ej-spacing-md, 1rem);
 }
 
-// ─── Compliance Section ─────────────────────────────────────────────────────
+// ─── Compliance Section — Premium PIIL dashboard ────────────────────────────
+// Each card uses --ring-color (set inline in template) to tint its background,
+// ring track, and left accent border, creating unique identity per compliance item.
 .hub-coordinador__compliance {
   margin-bottom: var(--ej-spacing-xl, 2rem);
   animation: hub-fade-up 0.4s ease 0.3s both;
@@ -532,12 +580,26 @@
   display: flex;
   align-items: center;
   gap: var(--ej-spacing-md, 1rem);
-  background: color-mix(in srgb, var(--ej-color-surface, #ffffff) 90%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent);
+  // Background tinted by the card's --ring-color at 4% = subtle but visible identity.
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 4%, var(--ej-color-surface, #ffffff)),
+      var(--ej-color-surface, #ffffff) 60%
+    );
+  // Left accent border in ring color for fast visual scanning.
+  border-left: 3px solid color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 50%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 10%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 6%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 6%, transparent);
   border-radius: var(--ej-radius-lg, 12px);
   padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.25rem);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 12%, transparent);
+    transform: translateY(-1px);
+  }
 }
 
 .hub-coordinador__compliance-ring {
@@ -553,18 +615,22 @@
   transform: rotate(-90deg);
 }
 
+// Track: tinted with the ring's own color at 12% — NOT gray.
 .hub-coordinador__compliance-track {
   fill: none;
-  stroke: var(--ej-color-border-light, #E5E7EB);
-  stroke-width: 3;
+  stroke: color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 12%, var(--ej-color-surface, #ffffff));
+  stroke-width: 3.5;
 }
 
+// Fill: bold ring in the assigned color.
 .hub-coordinador__compliance-fill {
   fill: none;
   stroke: var(--ring-color, var(--ej-color-azul-corporativo, #233D63));
-  stroke-width: 3;
+  stroke-width: 3.5;
   stroke-linecap: round;
   animation: hub-ring-fill 1s ease both;
+  // Subtle glow for presence even at 0%.
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--ring-color, var(--ej-color-azul-corporativo, #233D63)) 30%, transparent));
 }
 
 .hub-coordinador__compliance-percent {
@@ -573,7 +639,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-size: 0.8125rem;
   font-weight: 700;
   color: var(--ej-color-heading, var(--ej-color-azul-corporativo, #233D63));
 }
@@ -581,22 +647,25 @@
 .hub-coordinador__compliance-info {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .hub-coordinador__compliance-label {
-  font-size: var(--ej-font-size-sm, 0.875rem);
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--ej-color-text, #1F2937);
+  line-height: 1.3;
 }
 
 .hub-coordinador__compliance-detail {
-  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--ej-color-text-secondary, #6B7280);
 }
 
 .hub-coordinador__compliance-note {
   display: block;
-  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-size: 0.6875rem;
   color: var(--ej-color-naranja-impulso, #FF8C42);
   font-style: italic;
   margin-top: 2px;
@@ -689,54 +758,131 @@
   color: var(--ej-color-azul-corporativo, #233D63);
 }
 
-// ─── Tabs ───────────────────────────────────────────────────────────────────
+// ─── Tabs — Sticky Wrapper ──────────────────────────────────────────────────
+// Sticky must be on an OUTER element that has NO overflow-x.
+// overflow-x:auto on the same element as sticky creates its own scroll
+// container, making sticky resolve against itself (invisible).
+//
+// top: var(--hub-sticky-offset) accounts for the sticky .landing-header
+// (position:sticky; top:0; z-index:1000). Without this offset the tabs
+// slide BEHIND the header and appear "not sticky" to the user.
+// JS measures the actual header height (incl. toolbar displacement) and
+// sets --hub-sticky-offset on the container. Fallback 73px = typical
+// header height (48px logo + 2×12px padding + 1px border).
+// ─── Tabs Sticky Rail — Premium navigation bar ──────────────────────────────
+// Solid contrasting background creates unmistakable navigation zone.
+// sticky offset set dynamically by JS syncStickyOffset() measuring header height.
+.hub-coordinador__tabs-sticky {
+  position: sticky;
+  top: var(--hub-sticky-offset, 73px);
+  z-index: 100;
+
+  // Solid tinted background: ~F5F7FA equivalent — clearly different from white page.
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 5%, var(--ej-color-surface, #ffffff));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  // Bottom separator: clean line below the tabs.
+  border-bottom: 1px solid var(--ej-color-border-light, #E5E7EB);
+
+  padding: var(--ej-spacing-xs, 0.375rem) 0 0;
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  // NO animation/transform — breaks position:sticky
+
+  // Drop shadow when stuck for floating effect.
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to bottom,
+      color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  &--stuck::after {
+    opacity: 1;
+  }
+}
+
+// Zero-height sentinel used by IntersectionObserver for sticky detection.
+.hub-coordinador__tabs-sentinel {
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  visibility: hidden;
+}
+
+// ─── Tabs — Inner scroll container (Clase Mundial) ─────────────────────────
 .hub-coordinador__tabs {
   display: flex;
-  gap: var(--ej-spacing-xs, 0.25rem);
-  border-bottom: 2px solid var(--ej-color-border-light, #E5E7EB);
-  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+  gap: var(--ej-spacing-xs, 0.375rem);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  animation: hub-fade-up 0.4s ease 0.35s both;
+  // Horizontal padding gives breathing room at edges.
+  padding: 0 var(--ej-spacing-md, 1rem);
 
   &::-webkit-scrollbar { display: none; }
 }
 
+// ─── Tab Button — Premium world-class style ─────────────────────────────────
+// Active tab = white pill on tinted rail = unmistakable active state.
+// Inactive = transparent, subdued text. Hover = gentle reveal.
 .hub-coordinador__tab {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--ej-spacing-xs, 0.375rem);
-  padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
-  font-size: var(--ej-font-size-sm, 0.875rem);
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 0.8125rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--ej-color-text-secondary, #6B7280);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
+  background: transparent;
+  // Transparent border reserves space — avoids layout shift on active.
+  border: 1.5px solid transparent;
+  border-radius: var(--ej-radius-md, 8px);
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  margin-bottom: -2px;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     color: var(--ej-color-azul-corporativo, #233D63);
+    background: color-mix(in srgb, var(--ej-color-surface, #ffffff) 70%, transparent);
+    border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, transparent);
   }
 
   &:focus-visible {
     outline: 2px solid var(--ej-color-focus, var(--ej-color-azul-corporativo, #233D63));
     outline-offset: -2px;
-    border-radius: var(--ej-radius-sm, 4px) var(--ej-radius-sm, 4px) 0 0;
   }
 
+  // ── Active: white pill with visible brand border ──
   &--active {
     color: var(--ej-color-azul-corporativo, #233D63);
-    border-bottom-color: var(--ej-color-azul-corporativo, #233D63);
+    background: var(--ej-color-surface, #ffffff);
     font-weight: 600;
+    // Solid brand border — clearly delineates the active tab.
+    border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 35%, transparent);
+    box-shadow:
+      0 1px 4px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 14%, transparent);
+  }
+
+  .jaraba-icon {
+    flex-shrink: 0;
   }
 }
 
+// ─── Tab Badges — Premium notification pills ───────────────────────────────
 .hub-coordinador__tab-badge {
   display: inline-flex;
   align-items: center;
@@ -744,12 +890,30 @@
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  font-size: var(--ej-font-size-xs, 0.75rem);
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 700;
   color: var(--ej-color-surface, #ffffff);
-  background: var(--ej-color-naranja-impulso, #FF8C42);
+  background: linear-gradient(135deg,
+    var(--ej-color-naranja-impulso, #FF8C42),
+    color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 80%, var(--ej-color-azul-corporativo, #233D63))
+  );
   border-radius: 10px;
   margin-left: var(--ej-spacing-xs, 0.25rem);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 30%, transparent);
+  animation: hub-badge-pulse 2s ease-in-out infinite;
+
+  &--warning {
+    background: linear-gradient(135deg,
+      var(--ej-color-warning, #F59E0B),
+      color-mix(in srgb, var(--ej-color-warning, #F59E0B) 75%, var(--ej-color-naranja-impulso, #FF8C42))
+    );
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-warning, #F59E0B) 30%, transparent);
+  }
+}
+
+@keyframes hub-badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 // ─── Panels ─────────────────────────────────────────────────────────────────
@@ -2597,4 +2761,907 @@
 .hub-coordinador__distribution-count {
   font-weight: 700;
   color: var(--ej-color-azul-corporativo, #233D63);
+}
+
+// ─── Sprint 19: Calendario Interactivo — Clase Mundial ──────────────────────
+// FullCalendar 6.x premium overrides + layout + event styling.
+// CSS-VAR-ALL-COLORS-001: All colors via var(--ej-*).
+
+// Hint text for user guidance.
+.hub-coordinador__calendar-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 0.375rem);
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748B);
+  padding: var(--ej-spacing-xs, 0.375rem) var(--ej-spacing-sm, 0.75rem);
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 4%, white);
+  border-radius: var(--ej-radius-md, 8px);
+  margin-bottom: var(--ej-spacing-md, 1rem);
+  border: 1px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 10%, transparent);
+}
+
+.hub-coordinador__calendar-layout {
+  display: flex;
+  gap: var(--ej-spacing-lg, 1.5rem);
+  min-height: 650px;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    min-height: auto;
+  }
+}
+
+// Sidebar: filters + legend — elevated card.
+.hub-coordinador__calendar-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--ej-spacing-md, 1rem);
+  align-self: flex-start;
+  background: var(--ej-color-surface, #ffffff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  padding: var(--ej-spacing-md, 1rem);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 6%, transparent);
+
+  @media (max-width: 767px) {
+    width: 100%;
+    position: static;
+    padding: var(--ej-spacing-sm, 0.75rem);
+  }
+}
+
+.hub-coordinador__calendar-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-xs, 0.375rem);
+  margin-bottom: var(--ej-spacing-md, 1rem);
+
+  .hub-coordinador__filter-select {
+    font-size: 0.8125rem;
+    padding: 6px 10px;
+  }
+
+  @media (max-width: 767px) {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.375rem) var(--ej-spacing-sm, 0.5rem);
+  }
+}
+
+.hub-coordinador__filter-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ej-color-muted, #64748B);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: var(--ej-spacing-xs, 0.375rem);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// Legend — premium card with colored swatches.
+.hub-coordinador__calendar-legend {
+  padding: var(--ej-spacing-sm, 0.75rem);
+  background: var(--ej-color-surface-alt, #F9FAFB);
+  border-radius: var(--ej-radius-md, 8px);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.hub-coordinador__calendar-legend-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--ej-color-muted, #64748B);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--ej-spacing-xs, 0.375rem);
+}
+
+.hub-coordinador__calendar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 0.375rem);
+  font-size: 0.8125rem;
+  color: var(--ej-color-text, #1F2937);
+  padding: 3px 0;
+}
+
+.hub-coordinador__calendar-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 15%, transparent);
+
+  &--presencial {
+    background: var(--ej-color-verde-innovacion, #00A9A5);
+  }
+  &--online {
+    background: var(--ej-color-azul-corporativo, #233D63);
+  }
+  &--mixta {
+    background: var(--ej-color-naranja-impulso, #FF8C42);
+  }
+}
+
+// Main calendar container.
+.hub-coordinador__calendar-main {
+  flex: 1;
+  min-width: 0;
+  background: var(--ej-color-surface, #ffffff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  padding: var(--ej-spacing-md, 1rem);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 5%, transparent);
+
+  // With height:'auto', day cells need minimum height for visual consistency.
+  .fc-daygrid-day-frame {
+    min-height: 100px;
+  }
+}
+
+// Skeleton loading.
+.hub-coordinador__calendar-skeleton {
+  .fc & { display: none; }
+}
+
+.hub-coordinador__skeleton-row {
+  height: 48px;
+  background: var(--ej-color-surface-alt, #F3F4F6);
+  border-radius: var(--ej-radius-md, 8px);
+  margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  animation: hub-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.hub-coordinador__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.hub-coordinador__skeleton-cell {
+  height: 100px;
+  background: var(--ej-color-surface-alt, #F3F4F6);
+  border-radius: 4px;
+  animation: hub-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+// ─── FullCalendar Override Layer — Premium ───────────────────────────────────
+// CSS custom properties + specificity targeting for world-class look.
+
+.hub-coordinador__calendar-main {
+  // FC CSS custom properties.
+  --fc-border-color: var(--ej-color-border, #E5E7EB);
+  --fc-today-bg-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 4%, white);
+  --fc-button-bg-color: var(--ej-color-azul-corporativo, #233D63);
+  --fc-button-border-color: var(--ej-color-azul-corporativo, #233D63);
+  --fc-button-hover-bg-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 85%, black);
+  --fc-button-hover-border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 85%, black);
+  --fc-button-active-bg-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 75%, black);
+  --fc-button-active-border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 75%, black);
+  --fc-event-bg-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, white);
+  --fc-event-border-color: transparent;
+  --fc-event-text-color: var(--ej-color-text, #1F2937);
+  --fc-list-event-hover-bg-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 6%, white);
+  --fc-page-bg-color: var(--ej-color-surface, #ffffff);
+  --fc-neutral-bg-color: var(--ej-color-surface-alt, #F9FAFB);
+  --fc-highlight-color: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, white);
+
+  // Header toolbar — premium spacing.
+  .fc-header-toolbar {
+    margin-bottom: var(--ej-spacing-md, 1rem) !important;
+    padding-bottom: var(--ej-spacing-sm, 0.75rem);
+    border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.25rem !important;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1A1A2E);
+    letter-spacing: -0.01em;
+  }
+
+  .fc-button {
+    border-radius: var(--ej-radius-md, 8px) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500;
+    padding: 7px 14px !important;
+    transition: all 0.15s ease;
+    text-transform: capitalize;
+
+    &:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 40%, transparent);
+      outline-offset: 1px;
+      box-shadow: none !important;
+    }
+  }
+
+  // Navigation buttons (prev/next) — pill shape.
+  // Override fcicons font (blocked by CSP data: font policy) with CSS-only arrows.
+  .fc-prev-button,
+  .fc-next-button {
+    width: 36px;
+    height: 36px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+
+    .fc-icon {
+      // Hide the font-icon glyph and replace with CSS arrow.
+      font-size: 0 !important;
+      position: relative;
+      width: 10px;
+      height: 10px;
+
+      &::before {
+        content: '' !important;
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-style: solid;
+        border-color: currentColor;
+        border-width: 0 2px 2px 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+    }
+  }
+
+  .fc-prev-button .fc-icon::before {
+    transform: translate(-30%, -50%) rotate(135deg);
+  }
+
+  .fc-next-button .fc-icon::before {
+    transform: translate(-70%, -50%) rotate(-45deg);
+  }
+
+  .fc-today-button {
+    border-radius: var(--ej-radius-md, 8px) !important;
+    font-weight: 600;
+  }
+
+  .fc-button-group .fc-button {
+    border-radius: 0 !important;
+
+    &:first-child {
+      border-radius: var(--ej-radius-md, 8px) 0 0 var(--ej-radius-md, 8px) !important;
+    }
+    &:last-child {
+      border-radius: 0 var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0 !important;
+    }
+  }
+
+  // Day header (Mon, Tue, etc.) — premium typography.
+  .fc-col-header-cell {
+    padding: 10px 0 !important;
+    background: var(--ej-color-surface-alt, #F9FAFB);
+    border-bottom: 2px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  .fc-col-header-cell-cushion {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-color-muted, #64748B);
+    text-decoration: none !important;
+  }
+
+  // Day cells — interactive feel.
+  .fc-daygrid-day {
+    position: relative;
+    transition: background 0.12s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 3%, white);
+    }
+
+    // "+" indicator on hover for creating events.
+    // Uses ::before on the day frame (not day-top) to avoid pushing day number.
+    &::after {
+      content: '+';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ej-color-surface, #ffffff);
+      background: var(--ej-color-naranja-impulso, #FF8C42);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &:hover::after {
+      opacity: 0.7;
+    }
+  }
+
+  // Today cell — elevated.
+  .fc-day-today {
+    .fc-daygrid-day-number {
+      background: var(--ej-color-azul-corporativo, #233D63);
+      color: var(--ej-color-surface, #ffffff);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+  }
+
+  .fc-daygrid-day-top {
+    padding: 4px 8px;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 2px 6px;
+    color: var(--ej-color-text, #1F2937);
+    text-decoration: none !important;
+  }
+
+  // Weekend columns — subtle differentiation.
+  .fc-day-sat,
+  .fc-day-sun {
+    background: color-mix(in srgb, var(--ej-color-surface-alt, #F9FAFB) 50%, white);
+  }
+
+  // Other month days — dimmed.
+  .fc-day-other .fc-daygrid-day-number {
+    opacity: 0.35;
+  }
+
+  // ── Events — Premium Cards ──────────────────────────────────────────────
+  // FullCalendar 6.x injects its own CSS from the global JS bundle as a
+  // <style> tag in <head>. This appears AFTER our external CSS, so it wins
+  // in cascade order. We MUST use higher specificity selectors to override.
+  //
+  // FC renders timed events as "dot-event" (compact flex row with a dot).
+  // We override this to render ALL events as visible card blocks.
+
+  // Force dot-events to look like block-events.
+  // Double-class specificity (.hub-coordinador__calendar-main .fc ...) beats
+  // the FC injected <style> which uses single-class (.fc .fc-daygrid-dot-event).
+  .fc .fc-daygrid-dot-event {
+    display: block !important;
+    padding: 4px 8px 4px 6px !important;
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, white) !important;
+    border-radius: 0 6px 6px 0 !important;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    // border-left preserved for JS modalidad color.
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent);
+      z-index: 2;
+      background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 18%, white) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-azul-corporativo, #233D63);
+      outline-offset: 1px;
+    }
+
+    // Event title — visible and readable.
+    .fc-event-title {
+      font-weight: 500;
+      flex-grow: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // Event time.
+    .fc-event-time {
+      font-weight: 700;
+      margin-right: 4px;
+    }
+  }
+
+  // Block events (multi-day / allDay) — same premium styling.
+  .fc .fc-daygrid-block-event {
+    border-radius: 0 6px 6px 0 !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, white) !important;
+
+    .fc-event-main {
+      padding: 4px 8px 4px 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--ej-color-text, #1F2937);
+    }
+  }
+
+  // Generic .fc-event overrides (applies to both dot and block).
+  .fc-event {
+    cursor: pointer;
+  }
+
+  // Ensure harness has margin for card separation.
+  .fc .fc-daygrid-event-harness {
+    margin: 1px 3px !important;
+  }
+
+  // Hide the FC native dot indicator — we use border-left for modalidad.
+  .fc .fc-daygrid-event-dot {
+    display: none !important;
+  }
+
+  // "More" link in day cells.
+  .fc-daygrid-more-link {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-color-azul-corporativo, #233D63);
+    padding: 2px 4px;
+
+    &:hover {
+      color: var(--ej-color-naranja-impulso, #FF8C42);
+    }
+  }
+
+  // Selection highlight — date range creation.
+  .fc-highlight {
+    border-radius: 4px;
+  }
+
+  // List view — premium rows.
+  .fc-list {
+    border-radius: var(--ej-radius-md, 8px);
+    overflow: hidden;
+  }
+
+  .fc-list-day-cushion {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ej-color-headings, #1A1A2E);
+    background: var(--ej-color-surface-alt, #F9FAFB) !important;
+  }
+
+  .fc-list-event {
+    cursor: pointer;
+
+    td {
+      padding: 10px 14px;
+      vertical-align: middle;
+    }
+  }
+
+  .fc-list-event-title a {
+    color: var(--ej-color-text, #1F2937);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      color: var(--ej-color-azul-corporativo, #233D63);
+    }
+  }
+
+  // Time grid — premium slots.
+  .fc-timegrid-slot {
+    height: 2.75rem;
+    border-color: color-mix(in srgb, var(--ej-color-border, #E5E7EB) 60%, transparent) !important;
+  }
+
+  .fc-timegrid-slot-label-cushion {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--ej-color-muted, #64748B);
+  }
+
+  // Now indicator — premium red line.
+  .fc-timegrid-now-indicator-line {
+    border-color: var(--ej-color-danger, #EF4444);
+    border-width: 2px;
+  }
+
+  .fc-timegrid-now-indicator-arrow {
+    border-color: var(--ej-color-danger, #EF4444);
+  }
+}
+
+// ─── Event Extras (appended via JS) ─────────────────────────────────────────
+
+// Modalidad icon badge.
+.hub-cal-event__modalidad-icon {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.625rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+// Facilitador initials badge.
+.hub-cal-event__facilitador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  color: var(--ej-color-surface, #ffffff);
+  background: var(--ej-color-azul-corporativo, #233D63);
+  border-radius: 50%;
+  margin-top: 2px;
+}
+
+// Capacity bar.
+.hub-cal-event__capacity-bar {
+  height: 3px;
+  background: color-mix(in srgb, var(--ej-color-border, #D1D5DB) 40%, transparent);
+  border-radius: 2px;
+  margin-top: 3px;
+  overflow: hidden;
+}
+
+.hub-cal-event__capacity-fill {
+  height: 100%;
+  background: var(--ej-color-verde-innovacion, #00A9A5);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+
+  &--warning {
+    background: var(--ej-color-naranja-impulso, #FF8C42);
+  }
+
+  &--critical {
+    background: var(--ej-color-danger, #DC2626);
+  }
+}
+
+// List view badges.
+.hub-cal-event__list-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  margin-left: var(--ej-spacing-xs, 0.375rem);
+  vertical-align: middle;
+
+  &--presencial {
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, white);
+    color: var(--hub-text-verde);
+  }
+  &--online {
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, white);
+    color: var(--ej-color-azul-corporativo, #233D63);
+  }
+  &--mixta {
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, white);
+    color: var(--hub-text-naranja);
+  }
+  &--estado {
+    background: color-mix(in srgb, var(--ej-color-muted, #64748B) 12%, white);
+    color: var(--ej-color-muted, #64748B);
+    text-transform: capitalize;
+  }
+}
+
+// ─── Event Modalidad Colors (applied via JS classList) ──────────────────────
+.hub-cal-event {
+  &--presencial {
+    border-left: 4px solid var(--ej-color-verde-innovacion, #00A9A5) !important;
+    background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 8%, white) !important;
+  }
+  &--online {
+    border-left: 4px solid var(--ej-color-azul-corporativo, #233D63) !important;
+    background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, white) !important;
+  }
+  &--mixta {
+    border-left: 4px solid var(--ej-color-naranja-impulso, #FF8C42) !important;
+    background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 8%, white) !important;
+  }
+
+  &--completada {
+    opacity: 0.55;
+  }
+  &--cancelada {
+    opacity: 0.35;
+    text-decoration: line-through;
+  }
+}
+
+// ─── Event Detail Popover — Premium ─────────────────────────────────────────
+.hub-cal-popover {
+  background: var(--ej-color-surface, #ffffff);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: var(--ej-radius-lg, 12px);
+  box-shadow:
+    0 4px 6px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 8%, transparent),
+    0 12px 32px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, transparent);
+  padding: 0;
+  min-width: 280px;
+  max-width: 360px;
+  animation: hub-fade-up 0.15s ease;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+    background: var(--ej-color-surface-alt, #F9FAFB);
+    border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  &__header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.375rem);
+    min-width: 0;
+
+    strong {
+      font-size: 0.9375rem;
+      color: var(--ej-color-headings, #1A1A2E);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__modalidad-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--ej-color-muted, #64748B);
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.12s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-muted, #64748B) 10%, transparent);
+      color: var(--ej-color-text, #1F2937);
+    }
+  }
+
+  &__time {
+    padding: var(--ej-spacing-xs, 0.375rem) var(--ej-spacing-md, 1rem);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-color-azul-corporativo, #233D63);
+    border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--ej-color-text, #1F2937);
+    padding: 4px 0;
+
+    &--capacity {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  &__label {
+    font-weight: 500;
+    color: var(--ej-color-muted, #64748B);
+    font-size: 0.75rem;
+  }
+
+  &__value {
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+
+  // Estado badge in popover.
+  &__badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    &--programada { background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 12%, white); color: var(--ej-color-azul-corporativo, #233D63); }
+    &--confirmada { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, white); color: var(--hub-text-verde); }
+    &--en_curso { background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 12%, white); color: var(--hub-text-naranja); }
+    &--completada { background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 12%, white); color: var(--hub-text-verde); }
+    &--cancelada { background: color-mix(in srgb, var(--ej-color-danger, #DC2626) 10%, white); color: var(--ej-color-danger, #DC2626); }
+    &--aplazada { background: color-mix(in srgb, var(--ej-color-muted, #64748B) 12%, white); color: var(--ej-color-muted, #64748B); }
+  }
+
+  // Capacity bar in popover.
+  &__capacity {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    width: 100%;
+
+    span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+
+  &__capacity-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--ej-color-border, #E5E7EB);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__capacity-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--ej-color-verde-innovacion, #00A9A5);
+    transition: width 0.3s ease;
+
+    &--ok { background: var(--ej-color-verde-innovacion, #00A9A5); }
+    &--warning { background: var(--ej-color-naranja-impulso, #FF8C42); }
+    &--critical { background: var(--ej-color-danger, #DC2626); }
+  }
+
+  // Action buttons in popover.
+  &__actions {
+    display: flex;
+    gap: var(--ej-spacing-xs, 0.375rem);
+    padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
+    border-top: 1px solid var(--ej-color-border, #E5E7EB);
+    background: var(--ej-color-surface-alt, #F9FAFB);
+  }
+
+  &__action {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--ej-radius-md, 8px);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.12s ease;
+    background: var(--ej-color-azul-corporativo, #233D63);
+    color: var(--ej-color-surface, #ffffff);
+    border: 1px solid var(--ej-color-azul-corporativo, #233D63);
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 85%, black);
+    }
+
+    &--secondary {
+      background: var(--ej-color-surface, #ffffff);
+      color: var(--ej-color-azul-corporativo, #233D63);
+      border: 1px solid var(--ej-color-border, #D1D5DB);
+
+      &:hover {
+        background: var(--ej-color-surface-alt, #F9FAFB);
+        border-color: var(--ej-color-azul-corporativo, #233D63);
+      }
+    }
+  }
+}
+
+// ─── Print Styles ───────────────────────────────────────────────────────────
+@media print {
+  .hub-coordinador__calendar-sidebar,
+  .hub-coordinador__calendar-actions,
+  .hub-coordinador__calendar-hint,
+  .hub-coordinador__tabs,
+  .hub-coordinador__header,
+  .hub-cal-popover {
+    display: none !important;
+  }
+
+  .hub-coordinador__calendar-layout {
+    display: block;
+  }
+
+  .hub-coordinador__calendar-main {
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+
+    .fc-event {
+      page-break-inside: avoid;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .fc-header-toolbar {
+      border-bottom: none !important;
+    }
+  }
+}
+
+// ─── Reduced Motion ─────────────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .hub-coordinador__calendar-main {
+    .fc-event {
+      transition: none;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    .fc-daygrid-day {
+      transition: none;
+    }
+  }
+
+  .hub-cal-popover {
+    animation: none;
+  }
+}
+
+// ─── Admin Collection Toggle Bar ────────────────────────────────────────────
+.hub-coordinador__calendar-toggle-bar {
+  display: flex;
+  gap: var(--ej-spacing-xs, 0.375rem);
+  margin-bottom: var(--ej-spacing-md, 1rem);
+  padding: 4px;
+  background: var(--ej-color-surface-alt, #F9FAFB);
+  border-radius: var(--ej-radius-md, 8px);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  display: inline-flex;
+
+  .hub-coordinador__action-btn--active {
+    background: var(--ej-color-azul-corporativo, #233D63);
+    color: white;
+    border-color: var(--ej-color-azul-corporativo, #233D63);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 20%, transparent);
+  }
 }

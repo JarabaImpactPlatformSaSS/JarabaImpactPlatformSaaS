@@ -74,13 +74,27 @@
         var form = nav.closest('.premium-entity-form');
         if (!form) return;
 
+        // Detect scroll container: slide-panel body or viewport.
+        // Inside a slide-panel, .slide-panel__body is the scroll container,
+        // NOT the viewport. IntersectionObserver must use it as root.
+        var scrollRoot = form.closest('.slide-panel__body') || null;
+
         // Click handler — smooth scroll to section.
         pills.forEach(function (pill) {
           pill.addEventListener('click', function () {
             var sectionId = pill.getAttribute('data-premium-section');
             var target = form.querySelector('#premium-section-' + sectionId);
             if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (scrollRoot) {
+                // Manual scroll for slide-panel context — more reliable
+                // than scrollIntoView inside overflow containers.
+                // Compensate for the sticky nav height.
+                var navHeight = nav.offsetHeight;
+                var targetTop = target.offsetTop - form.offsetTop - navHeight - 12;
+                scrollRoot.scrollTo({ top: targetTop, behavior: 'smooth' });
+              } else {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
             }
             // Set active state immediately.
             pills.forEach(function (p) { p.classList.remove('is-active'); });
@@ -103,7 +117,13 @@
               }
             });
           },
-          { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
+          {
+            // Use the slide-panel body as root when inside a panel.
+            // Default null = viewport (for full-page forms).
+            root: scrollRoot,
+            rootMargin: '-20% 0px -60% 0px',
+            threshold: 0
+          }
         );
 
         sections.forEach(function (section) {

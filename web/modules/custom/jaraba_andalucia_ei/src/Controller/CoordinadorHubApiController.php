@@ -40,6 +40,34 @@ class CoordinadorHubApiController extends ControllerBase {
   private const ALLOWED_ESTADOS = ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'];
 
   /**
+   * Tipos de sesion validos para filtro calendario (API-WHITELIST-001).
+   */
+  private const ALLOWED_TIPOS_SESION = [
+    'orientacion_laboral_individual', 'orientacion_laboral_grupal',
+    'orientacion_insercion_individual', 'orientacion_insercion_grupal',
+    'sesion_formativa', 'tutoria_seguimiento',
+  ];
+
+  /**
+   * Modalidades validas para filtro calendario (API-WHITELIST-001).
+   */
+  private const ALLOWED_MODALIDADES = ['presencial', 'online', 'mixta'];
+
+  /**
+   * Estados sesion validos para filtro calendario (API-WHITELIST-001).
+   */
+  private const ALLOWED_ESTADOS_SESION = [
+    'programada', 'confirmada', 'en_curso', 'completada', 'cancelada', 'aplazada',
+  ];
+
+  /**
+   * Fases programa validas para filtro calendario (API-WHITELIST-001).
+   */
+  private const ALLOWED_FASES = [
+    'acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'transversal',
+  ];
+
+  /**
    * Carriles validos (API-WHITELIST-001).
    */
   private const ALLOWED_CARRILES = ['impulso_digital', 'acelera_pro', 'hibrido', 'comun'];
@@ -571,6 +599,110 @@ class CoordinadorHubApiController extends ControllerBase {
       $this->logger->error('Error getting ESF indicators: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse(['success' => FALSE, 'message' => 'Error interno.'], 500);
     }
+  }
+
+  /**
+   * GET /api/v1/andalucia-ei/hub/calendar-events
+   *
+   * FullCalendar JSON event source. Returns flat array (no wrapper).
+   * API-WHITELIST-001: Validates all filter params.
+   */
+  public function calendarEvents(Request $request): JsonResponse {
+    $start = $request->query->get('start', '');
+    $end = $request->query->get('end', '');
+
+    if ($start === '' || $end === '') {
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Se requieren los parametros start y end.',
+      ], 400);
+    }
+
+    // Validate date format (Y-m-d or ISO datetime).
+    $startDate = substr($start, 0, 10);
+    $endDate = substr($end, 0, 10);
+
+    $filters = [];
+
+    $tipoSesion = $request->query->get('tipo_sesion', '');
+    if ($tipoSesion !== '' && !in_array($tipoSesion, self::ALLOWED_TIPOS_SESION, TRUE)) {
+      return new JsonResponse(['success' => FALSE, 'message' => 'Tipo de sesion no valido.'], 400);
+    }
+    if ($tipoSesion !== '') {
+      $filters['tipo_sesion'] = $tipoSesion;
+    }
+
+    $modalidad = $request->query->get('modalidad', '');
+    if ($modalidad !== '' && !in_array($modalidad, self::ALLOWED_MODALIDADES, TRUE)) {
+      return new JsonResponse(['success' => FALSE, 'message' => 'Modalidad no valida.'], 400);
+    }
+    if ($modalidad !== '') {
+      $filters['modalidad'] = $modalidad;
+    }
+
+    $estado = $request->query->get('estado', '');
+    if ($estado !== '' && !in_array($estado, self::ALLOWED_ESTADOS_SESION, TRUE)) {
+      return new JsonResponse(['success' => FALSE, 'message' => 'Estado no valido.'], 400);
+    }
+    if ($estado !== '') {
+      $filters['estado'] = $estado;
+    }
+
+    $fase = $request->query->get('fase_programa', '');
+    if ($fase !== '' && !in_array($fase, self::ALLOWED_FASES, TRUE)) {
+      return new JsonResponse(['success' => FALSE, 'message' => 'Fase no valida.'], 400);
+    }
+    if ($fase !== '') {
+      $filters['fase_programa'] = $fase;
+    }
+
+    $facilitador = $request->query->get('facilitador_id', '');
+    if ($facilitador !== '') {
+      $filters['facilitador_id'] = (int) $facilitador;
+    }
+
+    $tenantId = $this->resolveTenantId();
+    $events = $this->hubService->getCalendarEvents($tenantId, $startDate, $endDate, $filters);
+
+    // FullCalendar expects a flat array, not a wrapper object.
+    return new JsonResponse($events);
+  }
+
+  /**
+   * POST /api/v1/andalucia-ei/hub/session/{id}/reschedule
+   *
+   * CSRF-API-001: Protected via _csrf_request_header_token.
+   */
+  public function rescheduleSession(int $id, Request $request): JsonResponse {
+    $content = $request->getContent();
+    $data = json_decode($content, TRUE);
+
+    if (!is_array($data) || empty($data['newDate'])) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Se requiere el campo "newDate" (formato Y-m-d).',
+      ], 400);
+    }
+
+    $newDate = strip_tags((string) $data['newDate']);
+    $newStart = isset($data['newTimeStart']) ? strip_tags((string) $data['newTimeStart']) : NULL;
+    $newEnd = isset($data['newTimeEnd']) ? strip_tags((string) $data['newTimeEnd']) : NULL;
+
+    // Basic date format validation.
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $newDate)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Formato de fecha invalido. Usar Y-m-d.',
+      ], 400);
+    }
+
+    $tenantId = $this->resolveTenantId();
+    $result = $this->hubService->rescheduleSession($id, $newDate, $newStart, $newEnd, $tenantId);
+
+    return new JsonResponse([
+      'success' => $result['success'],
+      'message' => $result['message'],
+    ], $result['success'] ? 200 : 400);
   }
 
   /**

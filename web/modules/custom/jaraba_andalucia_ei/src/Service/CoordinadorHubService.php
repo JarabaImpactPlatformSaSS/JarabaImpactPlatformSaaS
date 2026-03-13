@@ -578,4 +578,153 @@ class CoordinadorHubService {
     }
   }
 
+  /**
+   * Obtiene eventos para el calendario interactivo.
+   *
+   * Retorna sesiones programadas en formato compatible con FullCalendar.
+   * TENANT-001: Filtrado obligatorio por tenant.
+   *
+   * @param int|null $tenantId
+   *   Tenant group ID.
+   * @param string $start
+   *   Fecha inicio ISO (Y-m-d).
+   * @param string $end
+   *   Fecha fin ISO (Y-m-d).
+   * @param array $filters
+   *   Filtros opcionales: orientador, tipo_sesion, fase_programa, modalidad, estado.
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de eventos en formato FullCalendar.
+   */
+  public function getCalendarEvents(?int $tenantId, string $start, string $end, array $filters = []): array {
+    if (!$this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+      return [];
+    }
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('sesion_programada_ei');
+      $query = $storage->getQuery()->accessCheck(TRUE)
+        ->condition('fecha', $start, '>=')
+        ->condition('fecha', $end, '<=')
+        ->sort('fecha', 'ASC')
+        ->sort('hora_inicio', 'ASC');
+
+      $this->addTenantCondition($query, $tenantId);
+
+      // Apply optional filters.
+      if (!empty($filters['tipo_sesion'])) {
+        $query->condition('tipo_sesion', $filters['tipo_sesion']);
+      }
+      if (!empty($filters['modalidad'])) {
+        $query->condition('modalidad', $filters['modalidad']);
+      }
+      if (!empty($filters['estado'])) {
+        $query->condition('estado', $filters['estado']);
+      }
+      if (!empty($filters['fase_programa'])) {
+        $query->condition('fase_programa', $filters['fase_programa']);
+      }
+      if (!empty($filters['facilitador_id'])) {
+        $query->condition('facilitador_id', (int) $filters['facilitador_id']);
+      }
+
+      $ids = $query->execute();
+      $events = [];
+
+      foreach ($storage->loadMultiple($ids) as $sesion) {
+        $fecha = $sesion->get('fecha')->value ?? '';
+        $horaInicio = $sesion->get('hora_inicio')->value ?? '09:00';
+        $horaFin = $sesion->get('hora_fin')->value ?? '10:00';
+        $modalidad = $sesion->get('modalidad')->value ?? 'presencial';
+        $estado = $sesion->get('estado')->value ?? 'programada';
+        $maxPlazas = (int) ($sesion->get('max_plazas')->value ?? 20);
+        $plazasOcupadas = (int) ($sesion->get('plazas_ocupadas')->value ?? 0);
+
+        // FullCalendar event format.
+        $events[] = [
+          'id' => (int) $sesion->id(),
+          'title' => $sesion->get('titulo')->value ?? '',
+          'start' => $fecha . 'T' . $horaInicio . ':00',
+          'end' => $fecha . 'T' . $horaFin . ':00',
+          'classNames' => [
+            'hub-cal-event--' . $modalidad,
+            'hub-cal-event--' . $estado,
+          ],
+          'extendedProps' => [
+            'tipo_sesion' => $sesion->get('tipo_sesion')->value ?? '',
+            'fase_programa' => $sesion->get('fase_programa')->value ?? '',
+            'modalidad' => $modalidad,
+            'estado' => $estado,
+            'max_plazas' => $maxPlazas,
+            'plazas_ocupadas' => $plazasOcupadas,
+            'plazas_disponibles' => max(0, $maxPlazas - $plazasOcupadas),
+            'facilitador_nombre' => $sesion->get('facilitador_nombre')->value ?? '',
+            'lugar_descripcion' => $sesion->get('lugar_descripcion')->value ?? '',
+          ],
+        ];
+      }
+
+      return $events;
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error fetching calendar events: @msg', ['@msg' => $e->getMessage()]);
+      return [];
+    }
+  }
+
+  /**
+   * Reprograma una sesion (drag-and-drop del calendario).
+   *
+   * ACCESS-STRICT-001: Comparacion tenant con ===.
+   * No permite reprogramar sesiones completadas o canceladas.
+   *
+   * @return array{success: bool, message: string}
+   */
+  public function rescheduleSession(int $sessionId, string $newDate, ?string $newStart, ?string $newEnd, ?int $tenantId): array {
+    try {
+      $sesion = $this->entityTypeManager->getStorage('sesion_programada_ei')->load($sessionId);
+      if (!$sesion) {
+        return ['success' => FALSE, 'message' => 'Sesion no encontrada.'];
+      }
+
+      // ACCESS-STRICT-001: Tenant match.
+      if ($tenantId) {
+        $entityTenant = (int) ($sesion->get('tenant_id')->target_id ?? 0);
+        if ($entityTenant !== 0 && $entityTenant !== $tenantId) {
+          return ['success' => FALSE, 'message' => 'Sesion no encontrada.'];
+        }
+      }
+
+      $estado = $sesion->get('estado')->value ?? 'programada';
+      if (in_array($estado, ['completada', 'cancelada'], TRUE)) {
+        return ['success' => FALSE, 'message' => 'No se pueden reprogramar sesiones completadas o canceladas.'];
+      }
+
+      $sesion->set('fecha', $newDate);
+      if ($newStart !== NULL) {
+        $sesion->set('hora_inicio', $newStart);
+      }
+      if ($newEnd !== NULL) {
+        $sesion->set('hora_fin', $newEnd);
+      }
+      $sesion->save();
+
+      $this->logger->info('Sesion #@id reprogramada a @date @start-@end', [
+        '@id' => $sessionId,
+        '@date' => $newDate,
+        '@start' => $newStart ?? '-',
+        '@end' => $newEnd ?? '-',
+      ]);
+
+      return ['success' => TRUE, 'message' => 'Sesion reprogramada correctamente.'];
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error rescheduling session #@id: @msg', [
+        '@id' => $sessionId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return ['success' => FALSE, 'message' => 'Error al reprogramar la sesion.'];
+    }
+  }
+
 }

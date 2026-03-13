@@ -40,7 +40,7 @@ class CopilotApiController extends ControllerBase
     /**
      * Copilot Orchestrator service.
      */
-    protected CopilotOrchestratorService $copilotOrchestrator;
+    protected ?CopilotOrchestratorService $copilotOrchestrator;
 
     /**
      * AI Usage Limit service.
@@ -63,7 +63,7 @@ class CopilotApiController extends ControllerBase
     public function __construct(
         FeatureUnlockService $featureUnlock,
         ExperimentLibraryService $experimentLibrary,
-        CopilotOrchestratorService $copilotOrchestrator,
+        ?CopilotOrchestratorService $copilotOrchestrator,
         AIUsageLimitService $aiUsageLimit,
         RateLimiterService $rateLimiter,
         TenantContextService $tenantContext
@@ -81,10 +81,21 @@ class CopilotApiController extends ControllerBase
      */
     public static function create(ContainerInterface $container)
     {
+        try {
+            $orchestrator = $container->get('jaraba_copilot_v2.copilot_orchestrator');
+        }
+        catch (\Throwable $e) {
+            \Drupal::logger('jaraba_copilot_v2')->error(
+                'CopilotOrchestrator instantiation failed: @msg',
+                ['@msg' => $e->getMessage()]
+            );
+            $orchestrator = NULL;
+        }
+
         return new static(
             $container->get('jaraba_copilot_v2.feature_unlock'),
             $container->get('jaraba_copilot_v2.experiment_library'),
-            $container->get('jaraba_copilot_v2.copilot_orchestrator'),
+            $orchestrator,
             $container->get('ecosistema_jaraba_core.ai_usage_limit'),
             $container->get('ecosistema_jaraba_core.rate_limiter'),
             $container->get('ecosistema_jaraba_core.tenant_context')
@@ -119,7 +130,9 @@ class CopilotApiController extends ControllerBase
 
         // Sprint 17: Enrich modes with PIIL phase restrictions.
         $context = $this->getEntrepreneurContext();
-        $verticalBridgeData = $this->copilotOrchestrator->preResolveVerticalContext($context);
+        $verticalBridgeData = $this->copilotOrchestrator
+            ? $this->copilotOrchestrator->preResolveVerticalContext($context)
+            : [];
         $phaseRestrictions = $verticalBridgeData['_modos_permitidos'] ?? [];
 
         $phaseInfo = NULL;
@@ -219,6 +232,13 @@ class CopilotApiController extends ControllerBase
      */
     public function chat(Request $request): JsonResponse
     {
+        if (!$this->copilotOrchestrator) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => 'El servicio de IA no está disponible en este momento.',
+            ], 503);
+        }
+
         // AI-01: Rate limiting por usuario para proteger contra abuso.
         $userId = (string) $this->currentUser()->id();
         $rateLimitResult = $this->rateLimiter->consume($userId, 'ai');
@@ -263,8 +283,31 @@ class CopilotApiController extends ControllerBase
             }
         }
 
-        // Obtener contexto del emprendedor
+        // Obtener contexto del emprendedor + contexto del frontend.
         $context = $this->getEntrepreneurContext();
+
+        // Enriquecer con contexto del frontend (current_page, avatar, agent).
+        $frontendContext = $content['context'] ?? [];
+        if (!empty($frontendContext['current_page'])) {
+            $context['current_page'] = $frontendContext['current_page'];
+        }
+        if (!empty($frontendContext['avatar'])) {
+            $context['avatar'] = $frontendContext['avatar'];
+        }
+
+        // FIX: Fallback to Referer for current_page when frontend doesn't send it.
+        if (empty($context['current_page'])) {
+            $referer = $request->headers->get('Referer', '');
+            if ($referer) {
+                $parsed = parse_url($referer, PHP_URL_PATH);
+                if ($parsed) {
+                    $context['current_page'] = $parsed;
+                }
+            }
+        }
+
+        // Ensure user_id is always in context for vertical bridge resolution.
+        $context['user_id'] = (int) $this->currentUser()->id();
 
         // =====================================================================
         // SPRINT 17: PRE-RESOLVER CONTEXTO VERTICAL (restricciones de fase PIIL)

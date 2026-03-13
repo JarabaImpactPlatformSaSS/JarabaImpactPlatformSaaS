@@ -351,10 +351,11 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
     // Sprint 14: Contenido STO para alineamiento con sistema de gestión.
     $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Contenido STO'))
-      ->setDescription(t('Contenido según tipificación del STO. Obligatorio para justificación FSE+.'))
+      ->setDescription(t('Contenido según tipificación del STO. Obligatorio para justificación FSE+. Selección múltiple.'))
+      ->setCardinality(-1)
       ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_contenidos_sto')
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'options_buttons',
         'weight' => -4,
       ])
       ->setDisplayConfigurable('form', TRUE)
@@ -363,10 +364,11 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
     // Sprint 14: Subcontenido STO dependiente.
     $fields['subcontenido_sto'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Subcontenido STO'))
-      ->setDescription(t('Subcontenido dependiente del contenido STO seleccionado.'))
+      ->setDescription(t('Subcontenido dependiente del contenido STO seleccionado. Selección múltiple.'))
+      ->setCardinality(-1)
       ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_subcontenidos_sto')
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'options_buttons',
         'weight' => -3,
       ])
       ->setDisplayConfigurable('form', TRUE)

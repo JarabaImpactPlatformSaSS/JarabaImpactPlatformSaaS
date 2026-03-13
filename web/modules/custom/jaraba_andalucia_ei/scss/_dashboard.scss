@@ -21,7 +21,7 @@
   width: 100% !important;
   left: auto !important;
   transform: none !important;
-  overflow-x: hidden;
+  overflow-x: clip; // OVERFLOW-CLIP-STICKY-001: clip (not hidden) preserves position:sticky
 }
 
 // =============================================================================
@@ -133,7 +133,7 @@
   font-family: var(--aei-font);
   background: var(--aei-bg-body);
   min-height: 100vh;
-  overflow-x: hidden; // Prevent particle canvas horizontal overflow
+  overflow-x: clip; // OVERFLOW-CLIP-STICKY-001: clip (not hidden) preserves position:sticky
   width: 100%;
 }
 

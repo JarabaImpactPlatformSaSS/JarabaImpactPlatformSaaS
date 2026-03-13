@@ -100,7 +100,7 @@ function _ecosistema_jaraba_theme_tab_title(string $icon_name, $label): string {
     'sparkles' => '✨',
     'building' => '🏢',
     'typography' => '🔤',
-    'layout-navbar' => '📌',
+    'layout-navbar' => '▬',
     'image' => '🖼️',
     'layout-cards' => '🃏',
     'layout-footer' => '📋',

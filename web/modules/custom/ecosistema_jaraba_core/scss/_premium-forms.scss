@@ -314,11 +314,18 @@
 }
 
 // ---------------------------------------------------------------------------
-// TOGGLE SWITCH — Checkbox Custom
+// TOGGLE SWITCH — Standalone boolean checkboxes ONLY
 // ---------------------------------------------------------------------------
+// Toggle switch applies to .form-type-boolean (Drupal boolean fields) and
+// standalone .form-type-checkbox that are NOT inside a .form-checkboxes list.
+// Multi-option lists (.form-checkboxes, .form-radios) get card-style instead.
 
 .premium-entity-form {
-  input[type="checkbox"] {
+
+  // ── Toggle switch: boolean fields + standalone checkboxes ─────────────
+  .form-type-boolean > input[type="checkbox"],
+  > .form-type-checkbox > input[type="checkbox"],
+  .premium-form__section > .form-type-checkbox > input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 44px;
@@ -358,15 +365,130 @@
     }
   }
 
-  // Align checkbox with label
-  .form-type-checkbox,
-  .form-type-boolean {
+  // Align standalone checkbox/boolean with label
+  .form-type-boolean,
+  > .form-type-checkbox,
+  .premium-form__section > .form-type-checkbox {
     display: flex;
     align-items: center;
     gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
 
     label {
       margin-bottom: 0;
+    }
+  }
+
+  // ── Multi-option lists: checkboxes & radios as selectable cards ───────
+  .form-checkboxes,
+  .form-radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .form-type-checkbox,
+    .form-type-radio {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      border: 2px solid var(--ej-border-color, #{$ej-border-color-fallback});
+      border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+      cursor: pointer;
+      transition: all $ej-transition-duration-fast $ej-transition-easing;
+      background: var(--ej-color-surface-elevated, #{$ej-color-surface-elevated-fallback});
+      min-height: 40px;
+
+      &:hover {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        background: color.adjust($ej-color-corporate-fallback, $alpha: -0.95);
+      }
+
+      // Card active state when child input is checked
+      &:has(input:checked) {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        background: color.adjust($ej-color-corporate-fallback, $alpha: -0.92);
+        box-shadow: 0 0 0 1px var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+      }
+
+      label {
+        margin-bottom: 0;
+        cursor: pointer;
+        font-weight: $ej-font-weight-normal;
+      }
+    }
+
+    // Styled checkbox inside multi-option list
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--ej-gray-400, #{$ej-gray-400});
+      border-radius: 4px;
+      background: var(--ej-bg-surface, #fff);
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+      &:checked {
+        background: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+
+        // Checkmark
+        &::after {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 5px;
+          width: 5px;
+          height: 9px;
+          border: solid #fff;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px color.adjust($ej-color-corporate-fallback, $alpha: -0.8);
+      }
+    }
+
+    // Styled radio inside multi-option list
+    input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--ej-gray-400, #{$ej-gray-400});
+      border-radius: 50%;
+      background: var(--ej-bg-surface, #fff);
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+      &:checked {
+        border-color: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+
+        // Inner dot
+        &::after {
+          content: '';
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--ej-color-corporate, #{$ej-color-corporate-fallback});
+        }
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px color.adjust($ej-color-corporate-fallback, $alpha: -0.8);
+      }
     }
   }
 }
@@ -651,4 +773,76 @@
 .slide-panel__body .premium-entity-form {
   max-width: 100%;
   padding: var(--ej-spacing-md, #{$ej-spacing-md}) 0;
+}
+
+// ---------------------------------------------------------------------------
+// SLIDE PANEL — Sticky Nav + Responsive Pills + Text Format Hide
+// ---------------------------------------------------------------------------
+// Inside slide-panel, the scroll container is .slide-panel__body (overflow-y: auto).
+// The nav must be sticky at the top, pills must be compact, and sections
+// need scroll-margin-top to compensate for the sticky nav height.
+
+.slide-panel__body {
+
+  // ── Sticky section nav — wrapping pills ───────────────────────────────
+  // All pills visible at once (flex-wrap), no hidden scroll.
+  // Sticky at top so the user can switch section at any scroll position.
+  .premium-form__nav {
+    position: sticky;
+    top: 0;
+    z-index: $ej-z-index-sticky;
+    background: color-mix(in srgb, var(--ej-bg-surface, #fff) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    // Extend to panel edges (negate body padding)
+    margin-left: calc(-1 * var(--ej-spacing-xl, #{$ej-spacing-xl}));
+    margin-right: calc(-1 * var(--ej-spacing-xl, #{$ej-spacing-xl}));
+    padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) var(--ej-spacing-xl, #{$ej-spacing-xl});
+    margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+    border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    // Override the base single-line scroll — wrap into rows
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 6px;
+  }
+
+  // ── Compact pills for narrower panel ──────────────────────────────────
+  .premium-form__pill {
+    padding: 6px 12px;
+    font-size: $ej-font-size-xs;
+    gap: 4px;
+  }
+
+  .premium-form__pill-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  // ── Section scroll offset for sticky nav ──────────────────────────────
+  // Nav height varies with wrap (2 rows ≈ 80px). Use generous value.
+  .premium-form__section {
+    scroll-margin-top: 100px;
+  }
+
+  // ── Comprehensive text format help hiding ─────────────────────────────
+  // Drupal text_long / text_with_summary format selectors, guidelines,
+  // tips links. Must be !important to override any Drupal core styles.
+  .premium-entity-form {
+    .js-text-format-wrapper > .filter-wrapper,
+    .text-format-wrapper > .filter-wrapper,
+    .filter-wrapper,
+    .filter-guidelines,
+    .filter-help,
+    .filter-guidelines-item,
+    .tips,
+    [id*="format-help"],
+    [class*="filter-guidelines"],
+    a[href*="/filter/tips"],
+    .form-item-body-0-format,
+    .form-type-select[class*="format"],
+    .js-form-type-select[class*="format"] {
+      display: none !important;
+    }
+  }
 }

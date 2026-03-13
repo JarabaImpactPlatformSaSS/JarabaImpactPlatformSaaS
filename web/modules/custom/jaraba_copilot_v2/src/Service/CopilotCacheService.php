@@ -74,11 +74,14 @@ class CopilotCacheService
         // Normalize message (lowercase, trim, remove extra spaces)
         $normalizedMessage = strtolower(trim(preg_replace('/\s+/', ' ', $message)));
 
-        // Extract stable context elements for cache key
+        // Extract stable context elements for cache key.
+        // current_page differentiates same question from different pages
+        // (e.g., coordinador vs participant view).
         $stableContext = [
             'vertical' => $context['vertical'] ?? '',
             'phase' => $context['phase'] ?? '',
             'tenant_plan' => $context['tenant_plan'] ?? '',
+            'current_page' => $context['current_page'] ?? '',
         ];
 
         // Generate hash
@@ -127,11 +130,15 @@ class CopilotCacheService
         }
 
         // Layer 2: Semantic match via SemanticCacheService (FIX-036).
+        // FIX: Include current_page in mode to prevent cross-context pollution
+        // (same query from coordinador vs emprendedor returning wrong response).
         if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
             try {
                 $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
                 $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
-                $semanticResult = $semanticCache->get($message, $mode, (string) $tenantId);
+                $currentPage = $context['current_page'] ?? '';
+                $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+                $semanticResult = $semanticCache->get($message, $semanticMode, (string) $tenantId);
 
                 if ($semanticResult !== NULL) {
                     $this->trackCacheHit();
@@ -142,7 +149,7 @@ class CopilotCacheService
 
                     return $semanticResult;
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Semantic cache failure is non-critical.
                 $this->logger->debug('Semantic cache lookup failed: @msg', ['@msg' => $e->getMessage()]);
             }
@@ -192,13 +199,16 @@ class CopilotCacheService
         $this->cache->set($key, $response, $expires, $tags);
 
         // FIX-036: Also store in semantic cache for fuzzy matching.
+        // FIX: Include current_page in mode for context-isolated cache entries.
         if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
             try {
                 $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
                 $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
+                $currentPage = $context['current_page'] ?? '';
+                $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
                 $responseText = $response['text'] ?? json_encode($response);
-                $semanticCache->set($message, $responseText, $mode, (string) $tenantId, $ttl);
-            } catch (\Exception $e) {
+                $semanticCache->set($message, $responseText, $semanticMode, (string) $tenantId, $ttl);
+            } catch (\Throwable $e) {
                 // Non-critical — exact cache already stored.
             }
         }

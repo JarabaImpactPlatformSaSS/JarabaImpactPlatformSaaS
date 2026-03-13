@@ -58,7 +58,7 @@
             return;
           }
 
-          fetch('/api/v1/kb/search?q=' + encodeURIComponent(query) + '&limit=5')
+          fetch(Drupal.url('api/v1/kb/search') + '?q=' + encodeURIComponent(query) + '&limit=5')
             .then(function (response) {
               return response.json();
             })

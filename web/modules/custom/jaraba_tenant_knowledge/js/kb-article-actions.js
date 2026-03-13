@@ -40,7 +40,7 @@
             btn.classList.add('kb-article__feedback-btn--selected');
 
             // Send feedback via API.
-            fetch('/api/v1/kb/search?q=feedback', {
+            fetch(Drupal.url('api/v1/kb/search') + '?q=feedback', {
               method: 'GET',
             }).catch(function () {
               // Silently fail - feedback is non-critical.

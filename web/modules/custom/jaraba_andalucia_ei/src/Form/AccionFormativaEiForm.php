@@ -29,6 +29,8 @@ class AccionFormativaEiForm extends PremiumEntityFormBase {
           'categoria',
           'modalidad',
           'carril',
+          'contenido_sto',
+          'subcontenido_sto',
         ],
       ],
       'duracion' => [

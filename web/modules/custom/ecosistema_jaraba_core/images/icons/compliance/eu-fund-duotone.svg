@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Duotone: filled circle background at 30% opacity -->
+  <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.3"/>
+  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+  <!-- Central EU-style 5-point star (filled at 50% for duotone depth) -->
+  <path d="M12 5l1.76 3.57 3.94.57-2.85 2.78.67 3.93L12 14.07l-3.52 1.78.67-3.93-2.85-2.78 3.94-.57L12 5z" fill="currentColor" opacity="0.5"/>
+  <path d="M12 5l1.76 3.57 3.94.57-2.85 2.78.67 3.93L12 14.07l-3.52 1.78.67-3.93-2.85-2.78 3.94-.57L12 5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Plus sign (ESF+) -->
+  <line x1="19" y1="5" x2="19" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="17" y1="7" x2="21" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

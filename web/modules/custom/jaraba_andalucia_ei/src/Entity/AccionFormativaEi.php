@@ -366,11 +366,12 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
 
     $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Contenido STO'))
-      ->setDescription(t('Tipificación de contenido según STO para acciones formativas.'))
+      ->setDescription(t('Tipificación de contenido según STO para acciones formativas. Selección múltiple.'))
       ->setRevisionable(TRUE)
+      ->setCardinality(-1)
       ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_contenidos_formacion_sto')
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'options_buttons',
         'weight' => -2,
       ])
       ->setDisplayConfigurable('form', TRUE)
@@ -378,11 +379,12 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
 
     $fields['subcontenido_sto'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Subcontenido STO'))
-      ->setDescription(t('Subcontenido formativo según tipificación STO.'))
+      ->setDescription(t('Subcontenido formativo según tipificación STO. Selección múltiple.'))
       ->setRevisionable(TRUE)
+      ->setCardinality(-1)
       ->setSetting('allowed_values_function', 'jaraba_andalucia_ei_subcontenidos_formacion_sto')
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'options_buttons',
         'weight' => -1,
       ])
       ->setDisplayConfigurable('form', TRUE)
@@ -409,6 +411,10 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDescription(t('ID del curso en jaraba_lms (si existe contenido digital asociado).'))
       ->setRevisionable(TRUE)
       ->setSetting('unsigned', TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 20,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -417,6 +423,10 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDescription(t('ID del contenido interactivo en jaraba_interactive (si existe).'))
       ->setRevisionable(TRUE)
       ->setSetting('unsigned', TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 21,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
