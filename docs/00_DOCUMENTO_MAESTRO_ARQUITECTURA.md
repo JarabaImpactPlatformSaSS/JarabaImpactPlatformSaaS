@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-11
-**Versión:** 117.0.0 (Sprint 15-18 Andalucía +ei Clase Mundial — 9 P0 normativos + 5 tools operacionales + 8 features clase mundial + WCAG AA + 432 tests + aprendizaje #179)
+**Versión:** 120.0.0 (SETUP-WIZARD-DAILY-001 — patrón transversal Setup Wizard + Daily Actions + 14 SVG icons + ICON-SYMLINK-REL-001 + aprendizaje #182)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1204,10 +1204,11 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   │       launch-idea, talent-spotlight, career-connect,              │
 │   │       seed-momentum, store-digital + duotone cada)                │
 │   │                                                                     │
-│   ├── SVGs: ~352 iconos (outline + duotone por cada)                  │
+│   ├── SVGs: ~366 iconos (outline + duotone por cada)                  │
 │   │   ├── Outline: stroke-only, stroke-width="2"                      │
 │   │   ├── Duotone: stroke + fill con opacity="0.2" para capas fondo  │
-│   │   └── Canvas inline: hex explicito (#233D63), NO currentColor    │
+│   │   ├── Canvas inline: hex explicito (#233D63), NO currentColor    │
+│   │   └── ICON-SYMLINK-REL-001: symlinks SIEMPRE relativos (Docker)  │
 │   │                                                                     │
 │   ├── Auditoria Templates: 305 pares unicos verificados, 0 chinchetas│
 │   │   ├── 32 llamadas con convencion rota corregidas (4 modulos)      │
@@ -1219,6 +1220,53 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │       ├── Page 57: 6 emojis → 6 SVGs inline business/ (duotone)      │
 │       ├── Pages 60-62: 5 emojis → 5 SVGs inline estandar            │
 │       └── ICON-EMOJI-001 + ICON-CANVAS-INLINE-001 nuevas             │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      SETUP WIZARD: PATRON TRANSVERSAL ⭐              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 ecosistema_jaraba_core (Setup Wizard Infrastructure)              │
+│   ├── SetupWizardStepInterface: contrato 13 metodos                   │
+│   │   ├── getId, getWizardId, getLabel, getDescription, getWeight     │
+│   │   ├── getIcon, getRoute, getRouteParameters                       │
+│   │   ├── useSlidePanel, getSlidePanelSize                            │
+│   │   ├── isComplete(int $tenantId): bool (count-based rapido)        │
+│   │   ├── getCompletionData(int $tenantId): array (quality warnings)  │
+│   │   └── isOptional(): bool                                          │
+│   │                                                                     │
+│   ├── SetupWizardRegistry: tagged service collector                   │
+│   │   ├── addStep(): llamado via SetupWizardCompilerPass              │
+│   │   ├── getStepsForWizard(wizardId, tenantId): Twig-ready array    │
+│   │   │   ├── Computa is_active (primer incompleto no-opcional)       │
+│   │   │   ├── completion_percentage (solo non-optional steps)         │
+│   │   │   └── step_number, serialized labels                          │
+│   │   └── hasWizard(wizardId): bool (quick check)                    │
+│   │                                                                     │
+│   ├── SetupWizardCompilerPass: DI/Compiler/                           │
+│   │   └── Tag: ecosistema_jaraba_core.setup_wizard_step               │
+│   │                                                                     │
+│   ├── SetupWizardApiController: REST async refresh                    │
+│   │   └── GET /api/v1/setup-wizard/{id}/status (CSRF header)         │
+│   │                                                                     │
+│   Parciales Twig (ecosistema_jaraba_theme):                            │
+│   ├── _setup-wizard.html.twig: stepper horizontal, ring SVG,          │
+│   │   stagger entrance, active glow, confetti completion              │
+│   ├── _daily-actions.html.twig: grid cards, shimmer hover,           │
+│   │   badge pop, anchor navigation (href_override)                    │
+│   └── setup-wizard.js: Drupal.behaviors, localStorage dismiss,       │
+│       async refresh, animateNumber, celebrateStep/Completion          │
+│                                                                         │
+│   Caso vertical: Andalucia +ei (coordinador_ei wizard):               │
+│   ├── CoordinadorPlanFormativoStep (weight 10)                        │
+│   ├── CoordinadorAccionesFormativasStep (weight 20)                   │
+│   ├── CoordinadorSesionesStep (weight 30)                             │
+│   └── CoordinadorValidacionStep (weight 40, optional)                 │
+│       └── PIIL: ≥50h formacion + ≥10h orientacion + 0 VoBo           │
+│                                                                         │
+│   Extensibilidad: nuevos verticales registran steps via tag solamente │
+│   — 0 cambios en ecosistema_jaraba_core                               │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -1428,7 +1476,11 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   │   ├── getFormIcon(): Icono principal del formulario               │
 │   │   ├── Navigation pills + sticky action bar                       │
 │   │   ├── SCSS: _premium-forms.scss (glassmorphism, responsive)      │
-│   │   └── JS: premium-form-navigation.js (scroll sync, pills)       │
+│   │   ├── JS: premium-forms.js (scroll sync, pills, dirty state)    │
+│   │   ├── Slide-panel: sticky nav wrap, compact pills, blur bg      │
+│   │   ├── CHECKBOX-SCOPE-001: toggle solo .form-type-boolean        │
+│   │   ├── OBSERVER-SCROLL-ROOT-001: IO root=.slide-panel__body      │
+│   │   └── STICKY-NAV-WRAP-001: flex-wrap + scroll-margin-top        │
 │   │                                                                     │
 │   Migracion completa: 237 formularios en 50 modulos, 8 fases          │
 │   ├── Patron A (Simple): Formularios sin DI ni campos computados     │
@@ -2339,7 +2391,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │              AUTOMATED ARCHITECTURAL VALIDATION SYSTEM                    │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   18 Scripts (scripts/validation/):                                     │
+│   19 Scripts (scripts/validation/):                                     │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │  validate-services-di.php       DI type mismatches YAML↔PHP    │  │
 │   │  validate-routing.php           Route→Controller existence     │  │
@@ -2362,6 +2414,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   │  validate-deploy-readiness.php  Production deploy checks       │  │
 │   │  validate-env-parity.php        Dev/Prod parity (14 checks)    │  │
 │   │  validate-no-hardcoded-prices   EUR price hardcoding in Twig   │  │
+│   │  validate-twig-ortografia.php  Spanish tildes+ñ in {% trans %}│  │
 │   │  validate-all.sh                Orchestrator --fast / --full   │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -3004,6 +3057,8 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-13 | **120.0.0** | **SETUP-WIZARD-DAILY-001 Patrón Transversal + Premium World-Class UI:** Nueva seccion arquitectural "SETUP WIZARD: PATRON TRANSVERSAL" con infraestructura completa: SetupWizardStepInterface (13 metodos), SetupWizardRegistry (tagged services + CompilerPass), SetupWizardApiController (REST async), parciales Twig reutilizables (_setup-wizard + _daily-actions), JS celebrations. Caso vertical Andalucia +ei: 4 wizard steps + 5 daily action cards. Icon system: 14 SVGs nuevos, ~366 total (de ~352). ICON-SYMLINK-REL-001: symlinks relativos obligatorio para Docker/Lando. Aprendizaje #182. |
+| 2026-03-13 | **119.0.0** | **ORTOGRAFIA-TRANS-001 + Coordinador Hub Premium Elevation:** Seccion 10.8.1 actualizada de 18 a 19 scripts de validacion (+validate-twig-ortografia.php: diccionario 402 entradas tildes+ñ, deteccion generica -cion/-sion, filtro comentarios Twig). lint-staged ampliado: .twig files pre-commit. post-edit-lint.sh: seccion ORTOGRAFIA-TRANS-001 con ~50 palabras. Coordinador Hub: tabs "white pill on tinted rail" + compliance cards --ring-color cascade. Aprendizaje #181. |
 | 2026-03-11 | **116.0.0** | **Sprint 14 Reestructuración Actuaciones PIIL — Normative Type Alignment + Persona Atendida/Insertada:** MaterialDidacticoEi entity nueva (7 tipos material, archivo+url_externa, TENANT-ISOLATION-ACCESS-001). ActuacionComputeService (cálculo persona atendida/insertada, triggered via InscripcionSesionEi::postSave con PRESAVE-RESILIENCE-001). SesionProgramadaEi: 6 tipos PIIL-aligned (orient_lab_ind/grup, orient_ins_ind/grup, sesion_formativa, tutoria_seguimiento) con FASE_POR_TIPO + TIPOS_SESION_LEGACY_MAP + preSave formativa→accion_formativa validation. ActuacionSto: 8 tipos con TIPOS_LEGACY_MAP. AccionFormativaEi: +contenido_sto +subcontenido_sto +materiales. PlanFormativoEi: +cumple_persona_atendida +cumple_persona_insertada. CoordinadorHubService: +getEstadisticasPorFase() +getUpcomingSessionsPiil(). Dashboard: tab PIIL con Fase Atención/Inserción + KPIs. Migration script. hook_update_10023. 17 tests (368 total). Regla de oro #119. Aprendizaje #178. |
 | 2026-03-11 | **114.0.0** | **NO-HARDCODE-PRICE-001 Dynamic Pricing + 23 Scripts Validacion:** Sistema de precios dinamicos en frontend conectado a MetaSitePricingService. Homepage PED: comparativa JarabaLex lee professional_price de SaasPlan entity, hero legal subtitle usa from_label, pricing hub overview renderiza 3 tiers desde getPricingPreview('_default'). 4 templates migrados de precios hardcodeados a variables dinamicas con fallbacks. PricingController: +overview_tiers render variable. hook_theme: +overview_tiers en pricing_hub_page. Script #23 validate-no-hardcoded-prices.php (regex EUR/€ en Twig, excepciones competidores/mock/comentarios). Post-edit-lint hook: deteccion de precios EUR en .twig en tiempo real (seccion 3 en case twig). validate-all.sh +NO-HARDCODE-PRICE-001 en fast mode. Fix BTN-CONTRAST-DARK-001: color blanco explicito en .ped-hero h1 (override _base.scss headings color). CSS compilado. Regla de oro #117. Aprendizaje #176. |
 | 2026-03-11 | **113.0.0** | **ENV-PARITY-001 Dev/Prod Parity + 18 Scripts Validacion:** Seccion 10.8.1 actualizada de 6 a 18 scripts de validacion (lista completa). Nuevo script validate-env-parity.php (~900 LOC, 14 checks: PHP version 6 fuentes, 14 ext-* composer.json, MariaDB, Redis, PHP config, MariaDB my.cnf, OPcache invalidation, Supervisor, filesystem, multi-domain, code paths, composer.lock, reverse proxy, wildcard SSL). config/deploy/mariadb/my.cnf creado (InnoDB 16G escalable 40G, NVMe I/O 4000 IOPS, max_connections 300, max_allowed_packet 256M para canvas_data). deploy.yml +OPcache invalidation (`drush php:eval "opcache_reset()"` post-cache-rebuild). composer.json +12 ext-* declarations (bcmath, curl, dom, fileinfo, gd, intl, json, mbstring, pdo_mysql, sodium, xml, zip). php.ini +max_input_vars 5000. validate-all.sh +ENV-PARITY-001 full mode + 3 skip_checks faltantes. Analisis runbook AMD EPYC Zen 5 AE12-128 NVMe. Regla de oro #116. Aprendizaje #175. |

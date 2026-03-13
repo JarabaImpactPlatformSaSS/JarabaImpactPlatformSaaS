@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-12 | Version: 1.5.0
+# Ultima actualizacion: 2026-03-13 | Version: 1.5.1
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -64,6 +64,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DEBE implementar `getSectionDefinitions()` y `getFormIcon()`
 - Fieldsets/details groups PROHIBIDOS. Campos computed: `#disabled = TRUE`
 - DI: patron `parent::create()`. 237 forms migrados en 50 modulos
+- CHECKBOX-SCOPE-001: Toggle switch SOLO para `.form-type-boolean`. Multi-option (`.form-checkboxes`/`.form-radios`) usa card-style
+- OBSERVER-SCROLL-ROOT-001: IntersectionObserver en slide-panel DEBE usar `.slide-panel__body` como root
+- STICKY-NAV-WRAP-001: Nav pills en slide-panel con `flex-wrap: wrap` + `position: sticky` + `scroll-margin-top: 100px`
 
 ### Content Entities — Reglas Obligatorias
 - ENTITY-FK-001: FKs a entidades del mismo modulo = entity_reference. Cross-modulo opcional = integer. tenant_id SIEMPRE entity_reference
@@ -247,12 +250,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v129.0.0
-- ARQUITECTURA: v117.0.0
-- INDICE: v158.0.0
-- FLUJO: v82.0.0
-- Ultimo aprendizaje: #179
-- Ultima golden rule: #120
+- DIRECTRICES: v132.0.0
+- ARQUITECTURA: v120.0.0
+- INDICE: v161.0.0
+- FLUJO: v85.0.0
+- Ultimo aprendizaje: #182
+- Ultima golden rule: #123
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
