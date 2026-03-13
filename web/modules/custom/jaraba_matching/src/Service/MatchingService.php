@@ -74,16 +74,28 @@ class MatchingService
     /**
      * Constructor.
      */
+    /**
+     * Servicio de telemetría de embeddings (opcional).
+     *
+     * @var \Drupal\jaraba_matching\Service\EmbeddingTelemetryService|null
+     */
+    protected ?EmbeddingTelemetryService $embeddingTelemetry;
+
+    /**
+     * Constructor.
+     */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         Connection $database,
         CacheBackendInterface $cache,
-        $logger_factory
+        $logger_factory,
+        ?EmbeddingTelemetryService $embedding_telemetry = NULL
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->database = $database;
         $this->cache = $cache;
         $this->logger = $logger_factory->get('jaraba_matching');
+        $this->embeddingTelemetry = $embedding_telemetry;
     }
 
     /**

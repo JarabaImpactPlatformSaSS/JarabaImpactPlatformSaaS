@@ -16,7 +16,7 @@
     {% trans %}Crea {{ content_type_label }}{% endtrans %}
   </h2>
   <p class="wizard-step__subtitle">
-    {% trans %}Tu primer paso hacia el exito. Podras editarlo despues.{% endtrans %}
+    {% trans %}Tu primer paso hacia el éxito. Podras editarlo despues.{% endtrans %}
   </p>
 
   <div class="wizard-step__form-grid">
@@ -29,7 +29,7 @@
     </div>
 
     <div class="wizard-step__field wizard-step__field--full">
-      <label class="wizard-step__label" for="wizard-content-desc">{% trans %}Descripcion{% endtrans %}</label>
+      <label class="wizard-step__label" for="wizard-content-desc">{% trans %}Descripción{% endtrans %}</label>
       <textarea id="wizard-content-desc" class="wizard-step__textarea" data-field="content_description" rows="3"
         placeholder="{% if vertical == 'agroconecta' or vertical == 'comercioconecta' %}{{ 'Describe tu producto...'|t }}{% elseif vertical == 'serviciosconecta' %}{{ 'Describe tu servicio...'|t }}{% elseif vertical == 'empleabilidad' %}{{ 'Resumen profesional...'|t }}{% else %}{{ 'Describe tu idea de negocio...'|t }}{% endif %}"
       >{{ step_data.content_description|default('') }}</textarea>
@@ -70,8 +70,8 @@
         <select id="wizard-content-category" class="wizard-step__select" data-field="content_category">
           <option value="">{% trans %}Seleccionar...{% endtrans %}</option>
           <option value="consulting">{% trans %}Consultoria{% endtrans %}</option>
-          <option value="training">{% trans %}Formacion{% endtrans %}</option>
-          <option value="technical">{% trans %}Tecnico{% endtrans %}</option>
+          <option value="training">{% trans %}Formación{% endtrans %}</option>
+          <option value="technical">{% trans %}Técnico{% endtrans %}</option>
           <option value="creative">{% trans %}Creativo{% endtrans %}</option>
         </select>
       </div>
@@ -83,13 +83,13 @@
       </div>
 
       <div class="wizard-step__field">
-        <label class="wizard-step__label" for="wizard-content-experience">{% trans %}Anos de experiencia{% endtrans %}</label>
+        <label class="wizard-step__label" for="wizard-content-experience">{% trans %}Años de experiencia{% endtrans %}</label>
         <select id="wizard-content-experience" class="wizard-step__select" data-field="content_experience">
-          <option value="0-1">{% trans %}Menos de 1 ano{% endtrans %}</option>
-          <option value="1-3">{% trans %}1-3 anos{% endtrans %}</option>
-          <option value="3-5">{% trans %}3-5 anos{% endtrans %}</option>
-          <option value="5-10">{% trans %}5-10 anos{% endtrans %}</option>
-          <option value="10+">{% trans %}Mas de 10 anos{% endtrans %}</option>
+          <option value="0-1">{% trans %}Menos de 1 año{% endtrans %}</option>
+          <option value="1-3">{% trans %}1-3 años{% endtrans %}</option>
+          <option value="3-5">{% trans %}3-5 años{% endtrans %}</option>
+          <option value="5-10">{% trans %}5-10 años{% endtrans %}</option>
+          <option value="10+">{% trans %}Mas de 10 años{% endtrans %}</option>
         </select>
       </div>
     {% elseif vertical == 'emprendimiento' %}
@@ -97,7 +97,7 @@
         <label class="wizard-step__label" for="wizard-content-stage">{% trans %}Fase del proyecto{% endtrans %}</label>
         <select id="wizard-content-stage" class="wizard-step__select" data-field="content_stage">
           <option value="idea">{% trans %}Idea{% endtrans %}</option>
-          <option value="validation">{% trans %}Validacion{% endtrans %}</option>
+          <option value="validation">{% trans %}Validación{% endtrans %}</option>
           <option value="mvp">{% trans %}MVP{% endtrans %}</option>
           <option value="growth">{% trans %}Crecimiento{% endtrans %}</option>
         </select>

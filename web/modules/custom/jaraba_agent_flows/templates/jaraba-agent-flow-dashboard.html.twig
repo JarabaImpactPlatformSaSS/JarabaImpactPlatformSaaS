@@ -65,11 +65,11 @@
     </div>
     <div class="agent-flow-metric-card">
       <span class="agent-flow-metric-card__value">{{ metrics.avg_duration|default(0) }}ms</span>
-      <span class="agent-flow-metric-card__label">{% trans %}Duracion media{% endtrans %}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Duración media{% endtrans %}</span>
     </div>
     <div class="agent-flow-metric-card agent-flow-metric-card--{{ metrics.success_rate|default(0) >= 90 ? 'good' : 'warning' }}">
       <span class="agent-flow-metric-card__value">{{ metrics.success_rate|default(0) }}%</span>
-      <span class="agent-flow-metric-card__label">{% trans %}Tasa de exito{% endtrans %}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Tasa de éxito{% endtrans %}</span>
     </div>
   </div>
 

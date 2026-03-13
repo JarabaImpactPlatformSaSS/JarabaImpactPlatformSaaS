@@ -16,12 +16,12 @@
  # Gap G: Diff Visual de Revisiones
  #}
 
-{{ attach_library('jaraba_page_builder/revision-diff') }}
+{{ attach_library('jaraba_page_builder/revisión-diff') }}
 
-<div class="full-width-page revision-list" data-page-id="{{ page.id() }}">
+<div class="full-width-page revisión-list" data-page-id="{{ page.id() }}">
   {# Hero Header Premium (patrón analytics-dashboard/pixel-stats) #}
-  <header class="analytics-dashboard__hero revision-list__hero">
-    <canvas class="analytics-dashboard__particles" id="revision-particles"></canvas>
+  <header class="analytics-dashboard__hero revisión-list__hero">
+    <canvas class="analytics-dashboard__particles" id="revisión-particles"></canvas>
     <div class="analytics-dashboard__hero-content">
       <div class="analytics-dashboard__nav">
         <a href="{{ path('jaraba_page_builder.canvas_editor', {page_content: page.id()}) }}" class="analytics-dashboard__back">

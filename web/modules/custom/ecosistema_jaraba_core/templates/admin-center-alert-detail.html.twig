@@ -38,7 +38,7 @@
     {% endif %}
 
     <div class="ac-alert-detail__field">
-      <span class="ac-alert-detail__field-label">{% trans %}Valor de Metrica{% endtrans %}</span>
+      <span class="ac-alert-detail__field-label">{% trans %}Valor de Métrica{% endtrans %}</span>
       <span class="ac-alert-detail__field-value"><strong>{{ alert.metric_value|default('—') }}</strong></span>
     </div>
 
@@ -56,7 +56,7 @@
   {# Message #}
   {% if alert.message %}
   <div class="ac-alert-detail__section">
-    <h4 class="ac-alert-detail__section-title">{% trans %}Descripcion{% endtrans %}</h4>
+    <h4 class="ac-alert-detail__section-title">{% trans %}Descripción{% endtrans %}</h4>
     <p class="ac-alert-detail__message">{{ alert.message }}</p>
   </div>
   {% endif %}

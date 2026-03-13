@@ -18,7 +18,7 @@
 
 <div class="checkout-result checkout-result--success">
   <div class="checkout-result__card">
-    {# Icono de exito animado #}
+    {# Icono de éxito animado #}
     <div class="checkout-result__icon">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="checkout-result__check-icon">
         <circle cx="32" cy="32" r="30" fill="var(--ej-color-success, #10B981)" opacity="0.1" stroke="var(--ej-color-success, #10B981)" stroke-width="2"/>
@@ -30,12 +30,12 @@
 
     {% if session.status == 'complete' %}
       <p class="checkout-result__message">
-        {% trans %}Tu suscripcion se ha activado correctamente. En breve recibiras un email de confirmacion.{% endtrans %}
+        {% trans %}Tu suscripción se ha activado correctamente. En breve recibiras un email de confirmación.{% endtrans %}
       </p>
 
       {% if session.customer_email %}
         <p class="checkout-result__email">
-          {% trans %}Email de confirmacion enviado a:{% endtrans %}
+          {% trans %}Email de confirmación enviado a:{% endtrans %}
           <strong>{{ session.customer_email }}</strong>
         </p>
       {% endif %}

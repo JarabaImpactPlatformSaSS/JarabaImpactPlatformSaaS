@@ -57,7 +57,7 @@
   <div class="compliance-dashboard__stats">
     <div class="compliance-stat-card compliance-stat-card--score">
       <span class="compliance-stat-card__value" id="compliance-score">{{ stats.compliance_score }}%</span>
-      <span class="compliance-stat-card__label">{% trans %}Puntuacion de Cumplimiento{% endtrans %}</span>
+      <span class="compliance-stat-card__label">{% trans %}Puntuación de Cumplimiento{% endtrans %}</span>
       <div class="compliance-stat-card__indicator compliance-stat-card__indicator--{{ stats.compliance_score >= 80 ? 'good' : (stats.compliance_score >= 50 ? 'warning' : 'critical') }}"></div>
     </div>
 
@@ -78,7 +78,7 @@
 
     <div class="compliance-stat-card compliance-stat-card--assessment">
       <span class="compliance-stat-card__value compliance-stat-card__value--small">{{ stats.last_assessment }}</span>
-      <span class="compliance-stat-card__label">{% trans %}Ultima Evaluacion{% endtrans %}</span>
+      <span class="compliance-stat-card__label">{% trans %}Ultima Evaluación{% endtrans %}</span>
     </div>
   </div>
 
@@ -139,7 +139,7 @@
         <thead>
           <tr>
             <th>{% trans %}Fecha{% endtrans %}</th>
-            <th>{% trans %}Accion{% endtrans %}</th>
+            <th>{% trans %}Acción{% endtrans %}</th>
             <th>{% trans %}Entidad{% endtrans %}</th>
             <th>{% trans %}Usuario{% endtrans %}</th>
             <th>{% trans %}Severidad{% endtrans %}</th>
@@ -182,7 +182,7 @@
       {% trans %}Cabeceras de Seguridad HTTP{% endtrans %}
     </h2>
     <p class="compliance-dashboard__section-desc">
-      {% trans %}Verificacion de cabeceras de seguridad configuradas en las respuestas HTTP del servidor.{% endtrans %}
+      {% trans %}Verificación de cabeceras de seguridad configuradas en las respuestas HTTP del servidor.{% endtrans %}
     </p>
 
     <div class="compliance-header-status-grid">

@@ -74,6 +74,18 @@ class AdminCenterSettingsService {
     protected ConfigFactoryInterface $configFactory,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected ?PersonalizationEngineService $personalizationEngine = NULL,
+    protected ?UserIntentClassifierService $userIntentClassifier = NULL,
+    protected ?TimeToFirstValueService $ttfv = NULL,
+    protected ?InAppMessagingService $inAppMessaging = NULL,
+    protected ?ReferralProgramService $referralProgram = NULL,
+    protected ?PricingRecommendationService $pricingRecommendations = NULL,
+    protected ?AIPromptABTestingService $aiAbTesting = NULL,
+    protected ?SelfHealingService $selfHealing = NULL,
+    protected ?AIValueDashboardService $aiValueDashboard = NULL,
+    protected ?AIOpsService $aiops = NULL,
+    protected ?VideoGeoService $videoGeo = NULL,
+    protected ?MultilingualGeoService $multilingualGeo = NULL,
   ) {}
 
   // ===========================================================================

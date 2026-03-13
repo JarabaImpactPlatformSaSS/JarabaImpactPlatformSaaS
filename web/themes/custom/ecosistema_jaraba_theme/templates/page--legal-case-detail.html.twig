@@ -82,7 +82,7 @@
                 <dd>{{ legal_case.client_email }}</dd>
               {% endif %}
               {% if legal_case.client_phone %}
-                <dt>{% trans %}Telefono{% endtrans %}</dt>
+                <dt>{% trans %}Teléfono{% endtrans %}</dt>
                 <dd>{{ legal_case.client_phone }}</dd>
               {% endif %}
             </dl>
@@ -91,7 +91,7 @@
           {# DESCRIPCION #}
           {% if legal_case.description %}
           <section class="legal-case-detail__section">
-            <h2 class="legal-case-detail__section-title">{% trans %}Descripcion{% endtrans %}</h2>
+            <h2 class="legal-case-detail__section-title">{% trans %}Descripción{% endtrans %}</h2>
             <div class="legal-case-detail__description">
               {{ legal_case.description }}
             </div>

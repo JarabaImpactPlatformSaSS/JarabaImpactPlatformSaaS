@@ -24,12 +24,12 @@
   <header class="cs-dashboard__header">
     <div class="cs-dashboard__header-content">
       <h1 class="cs-dashboard__title">{% trans %}Customer Success{% endtrans %}</h1>
-      <p class="cs-dashboard__subtitle">{% trans %}Proactive health monitoring, churn prevention and expansion pipeline.{% endtrans %}</p>
+      <p class="cs-dashboard__subtitle">{% trans %}Proactive health monitoring, churn prevention and expansión pipeline.{% endtrans %}</p>
     </div>
     <nav class="cs-dashboard__nav">
       <a href="{{ path('jaraba_customer_success.frontend.dashboard') }}" class="cs-dashboard__nav-link cs-dashboard__nav-link--active">{% trans %}Overview{% endtrans %}</a>
       <a href="{{ path('jaraba_customer_success.frontend.playbooks') }}" class="cs-dashboard__nav-link">{% trans %}Playbooks{% endtrans %}</a>
-      <a href="{{ path('jaraba_customer_success.frontend.expansion') }}" class="cs-dashboard__nav-link">{% trans %}Expansion{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.frontend.expansion') }}" class="cs-dashboard__nav-link">{% trans %}Expansión{% endtrans %}</a>
     </nav>
   </header>
 
@@ -137,7 +137,7 @@
   {# Expansion Signals #}
   {% if expansion_signals|length > 0 %}
     <section class="cs-dashboard__expansion">
-      <h2 class="cs-dashboard__section-title">{% trans %}Expansion Signals{% endtrans %}</h2>
+      <h2 class="cs-dashboard__section-title">{% trans %}Expansión Signals{% endtrans %}</h2>
       <div class="cs-expansion-list">
         {% for signal in expansion_signals|slice(0, 5) %}
           <div class="cs-expansion-list__item cs-expansion-list__item--{{ signal.status.value|default('new') }}">

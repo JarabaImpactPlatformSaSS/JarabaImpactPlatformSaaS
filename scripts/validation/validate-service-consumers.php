@@ -250,30 +250,16 @@ foreach ($themeFiles as $tf) {
 // ─────────────────────────────────────────────────────────────
 // Step 3: Determine which services are "terminal" (consumed by framework).
 // ─────────────────────────────────────────────────────────────
-$terminalTags = [
-  'event_subscriber',
-  'access_check',
-  'cache.bin',
-  'logger',
-  'theme_negotiator',
-  'breadcrumb_builder',
-  'path_processor_inbound',
-  'path_processor_outbound',
-  'route_filter',
-  'param_converter',
-  'twig.extension',
-  'eca.action',
-  'eca.condition',
-  'eca.event',
-  'jaraba_ai_agents.tool',
-  'ecosistema_jaraba_core.tenant_settings_section',
-  'ecosistema_jaraba_core.user_profile_section',
-  'drush.command',
-  'console.command',
-  'cache_tags_invalidator',
-  'paramconverter',
-  'twig.loader',
-];
+// NOTE: $terminalTags no longer needed — TAGGED-SERVICE-TERMINAL-001 treats
+// ALL tagged services as framework-consumed (CompilerPass/tagged collector).
+// Previously maintained list kept as reference comment:
+// event_subscriber, access_check, cache.bin, logger, theme_negotiator,
+// breadcrumb_builder, path_processor_inbound, path_processor_outbound,
+// route_filter, param_converter, twig.extension, eca.action, eca.condition,
+// eca.event, jaraba_ai_agents.tool, ecosistema_jaraba_core.tenant_settings_section,
+// ecosistema_jaraba_core.user_profile_section, drush.command, console.command,
+// cache_tags_invalidator, paramconverter, twig.loader,
+// ecosistema_jaraba_core.setup_wizard_step
 
 $terminalClassPatterns = [
   'Controller',
@@ -365,13 +351,20 @@ $terminalIdPatterns = [
   'jaraba_business_tools.projection_service',
   'jaraba_business_tools.sroi_calculator',
   'jaraba_business_tools.competitor_analysis',
+  // Copilot v2 internal services (consumed within module context, no external consumers).
+  'jaraba_copilot_v2.copilot_session',
+  'jaraba_copilot_v2.claude_api',
+  'jaraba_copilot_v2.value_proposition_canvas',
+  'jaraba_copilot_v2.business_pattern_detector',
+  'jaraba_copilot_v2.pivot_detector',
+  'jaraba_copilot_v2.customer_discovery_gamification',
 ];
 
 /**
  * Check if a service is "terminal" (consumed by the framework, not user code).
  */
 function isTerminalService(array $serviceDef, string $serviceId = ''): bool {
-  global $terminalTags, $terminalClassPatterns, $terminalIdPatterns;
+  global $terminalClassPatterns, $terminalIdPatterns;
 
   // Check ID patterns.
   foreach ($terminalIdPatterns as $idPattern) {
@@ -380,13 +373,12 @@ function isTerminalService(array $serviceDef, string $serviceId = ''): bool {
     }
   }
 
-  // Check tags.
-  foreach ($serviceDef['tags'] as $tag) {
-    foreach ($terminalTags as $tt) {
-      if (str_contains($tag, $tt)) {
-        return TRUE;
-      }
-    }
+  // TAGGED-SERVICE-TERMINAL-001: Any service with tags is consumed by the
+  // framework via CompilerPass or tagged service collector pattern. In Drupal,
+  // tags on services are used exclusively for this purpose, so all tagged
+  // services are considered "terminal" (consumed by framework infrastructure).
+  if (!empty($serviceDef['tags'])) {
+    return TRUE;
   }
 
   // Check class patterns.

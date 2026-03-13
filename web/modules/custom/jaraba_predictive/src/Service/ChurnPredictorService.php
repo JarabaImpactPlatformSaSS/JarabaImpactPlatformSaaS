@@ -54,6 +54,8 @@ class ChurnPredictorService {
     protected readonly TenantContextService $tenantContext,
     protected readonly FeatureStoreService $featureStore,
     protected readonly RetentionWorkflowService $retentionWorkflow,
+    protected readonly ?SecurityGuardianService $securityGuardian = NULL,
+    protected readonly ?PredictionBridgeService $predictionBridge = NULL,
   ) {}
 
   /**

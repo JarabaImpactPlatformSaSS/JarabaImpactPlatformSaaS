@@ -35,7 +35,7 @@
 
     {# --- Direccion --- #}
     <div class="wizard-step__field wizard-step__field--full">
-      <label class="wizard-step__label" for="wizard-address">{% trans %}Direccion fiscal{% endtrans %}</label>
+      <label class="wizard-step__label" for="wizard-address">{% trans %}Dirección fiscal{% endtrans %}</label>
       <input type="text" id="wizard-address" class="wizard-step__input" data-field="address" placeholder="{{ 'Calle, numero, piso'|t }}" value="{{ step_data.address|default('') }}" required />
     </div>
 
@@ -45,7 +45,7 @@
     </div>
 
     <div class="wizard-step__field">
-      <label class="wizard-step__label" for="wizard-postal">{% trans %}Codigo postal{% endtrans %}</label>
+      <label class="wizard-step__label" for="wizard-postal">{% trans %}Código postal{% endtrans %}</label>
       <input type="text" id="wizard-postal" class="wizard-step__input" data-field="postal_code" placeholder="28001" value="{{ step_data.postal_code|default('') }}" required maxlength="5" pattern="[0-9]{5}" />
     </div>
 

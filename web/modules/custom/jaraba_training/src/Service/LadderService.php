@@ -28,6 +28,7 @@ class LadderService
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
         protected AccountProxyInterface $currentUser,
+        protected ?UpsellEngine $upsellEngine = NULL,
     ) {
     }
 

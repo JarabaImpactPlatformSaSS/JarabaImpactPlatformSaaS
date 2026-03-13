@@ -39,6 +39,9 @@ class AiMentorshipTracker {
     protected LoggerInterface $logger,
     protected ConfigFactoryInterface $configFactory,
     protected TimeInterface $time,
+    protected ?DocumentoRevisionIaService $documentoRevisionIa = NULL,
+    protected ?AdaptiveDifficultyEngine $adaptiveDifficulty = NULL,
+    protected ?MensajeriaIntegrationService $mensajeriaIntegration = NULL,
   ) {
   }
 

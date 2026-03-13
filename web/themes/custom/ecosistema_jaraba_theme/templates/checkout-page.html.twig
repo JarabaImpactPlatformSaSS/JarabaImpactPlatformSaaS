@@ -47,7 +47,7 @@
         {% if plan.price > 0 %}
           <span class="checkout-summary__cycle">
             {% if plan.is_yearly %}
-              /{% trans %}ano{% endtrans %}
+              /{% trans %}año{% endtrans %}
             {% else %}
               /{% trans %}mes{% endtrans %}
             {% endif %}
@@ -115,7 +115,7 @@
 
       {# Formulario de datos del cliente (pre-Stripe) #}
       <form id="checkout-customer-form" class="checkout-customer-form" novalidate>
-        <h2 class="checkout-customer-form__title">{% trans %}Datos de facturacion{% endtrans %}</h2>
+        <h2 class="checkout-customer-form__title">{% trans %}Datos de facturación{% endtrans %}</h2>
 
         <div class="checkout-customer-form__field">
           <label for="checkout-email">{% trans %}Email{% endtrans %}</label>

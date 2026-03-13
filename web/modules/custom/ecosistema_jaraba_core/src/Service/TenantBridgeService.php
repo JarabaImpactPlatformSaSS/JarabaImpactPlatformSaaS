@@ -25,6 +25,7 @@ class TenantBridgeService {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
+    protected ?TenantCollaborationService $tenantCollaboration = NULL,
   ) {}
 
   /**

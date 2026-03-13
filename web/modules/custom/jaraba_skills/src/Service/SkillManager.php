@@ -22,6 +22,7 @@ class SkillManager
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
         protected SkillUsageService $usageService,
+        protected ?ABTestingService $abTesting = NULL,
     ) {
     }
 

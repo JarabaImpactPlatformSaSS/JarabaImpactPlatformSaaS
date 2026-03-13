@@ -6,6 +6,7 @@ namespace Drupal\jaraba_comercio_conecta\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\ecosistema_jaraba_core\Service\ComercioConectaFeatureGateService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -36,6 +37,7 @@ class MarketplaceService {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
+    protected ?ComercioConectaFeatureGateService $featureGate = NULL,
   ) {}
 
   /**

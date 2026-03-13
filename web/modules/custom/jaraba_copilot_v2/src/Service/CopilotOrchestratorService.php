@@ -1579,13 +1579,30 @@ PROMPT,
 
     /**
      * Extrae sugerencias de acción de la respuesta.
+     *
+     * Soporta dos formatos:
+     * - [ACTION:label|url] — botones CTA con enlace directo (coordinador).
+     * - Listas numeradas — primeras 3 como sugerencias de texto.
      */
-    protected function extractSuggestions(string $text): array
+    protected function extractSuggestions(string &$text): array
     {
         $suggestions = [];
 
-        // Buscar patrones de sugerencias numeradas
-        if (preg_match_all('/^\d+\.\s*(.+)$/m', $text, $matches)) {
+        // 1. Extraer marcadores [ACTION:label|url] del LLM.
+        if (preg_match_all('/\[ACTION:([^|\]]+)\|([^\]]+)\]/', $text, $actionMatches, PREG_SET_ORDER)) {
+            foreach ($actionMatches as $match) {
+                $suggestions[] = [
+                    'label' => trim($match[1]),
+                    'url' => trim($match[2]),
+                ];
+            }
+            // Limpiar los marcadores del texto visible.
+            $text = preg_replace('/\[ACTION:[^|\]]+\|[^\]]+\]/', '', $text);
+            $text = preg_replace('/\n{3,}/', "\n\n", trim($text));
+        }
+
+        // 2. Fallback: sugerencias numeradas (solo si no hay ACTION markers).
+        if (empty($suggestions) && preg_match_all('/^\d+\.\s*(.+)$/m', $text, $matches)) {
             $suggestions = array_slice($matches[1], 0, 3);
         }
 

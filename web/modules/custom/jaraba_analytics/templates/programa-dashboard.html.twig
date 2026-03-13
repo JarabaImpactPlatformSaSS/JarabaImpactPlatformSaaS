@@ -37,7 +37,7 @@
         {% trans %}Dashboard de Programa{% endtrans %}
       </h1>
       <p class="programa-dashboard__subtitle">
-        {% trans %}Gestion institucional: fondos, cohortes e informes.{% endtrans %}
+        {% trans %}Gestión institucional: fondos, cohortes e informes.{% endtrans %}
       </p>
     </div>
     <div class="programa-dashboard__header-actions">
@@ -83,7 +83,7 @@
       </h2>
       {% if grant_summary.burn_rate.alert %}
         <span class="programa-dashboard__alert-badge">
-          {% trans %}Alerta: Desviacion{% endtrans %} {{ grant_summary.burn_rate.deviation }}%
+          {% trans %}Alerta: Desviación{% endtrans %} {{ grant_summary.burn_rate.deviation }}%
         </span>
       {% endif %}
     </div>
@@ -129,7 +129,7 @@
   {# ===== GRANT TIMELINE ===== #}
   <div class="programa-dashboard__timeline">
     <h2 class="programa-dashboard__section-title">
-      {% trans %}Evolucion Temporal: Esperado vs Ejecutado{% endtrans %}
+      {% trans %}Evolución Temporal: Esperado vs Ejecutado{% endtrans %}
     </h2>
     <div class="programa-timeline-card">
       <canvas id="grant-timeline-chart" width="800" height="280"></canvas>
@@ -196,7 +196,7 @@
         </div>
         <div class="programa-cohort-stat">
           <span class="programa-cohort-stat__value">{{ cohort_stats.avg_retention }}%</span>
-          <span class="programa-cohort-stat__label">{% trans %}Retencion{% endtrans %}</span>
+          <span class="programa-cohort-stat__label">{% trans %}Retención{% endtrans %}</span>
         </div>
       </div>
     </div>

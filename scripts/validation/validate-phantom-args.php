@@ -132,7 +132,8 @@ function parseServicesYaml(string $content): array {
     }
 
     // Service definition (2-space indent, not a comment).
-    if (preg_match('/^  ([a-zA-Z_][a-zA-Z0-9_.]+):\s*$/', $line, $m)) {
+    // Also matches FQCN keys like Drupal\module\Service\ClassName:
+    if (preg_match('/^  ([a-zA-Z_][a-zA-Z0-9_.\\\\]+):\s*$/', $line, $m)) {
       // Save previous service.
       if ($currentService && $currentClass) {
         $services[$currentService] = ['class' => $currentClass, 'arg_count' => $argCount];

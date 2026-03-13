@@ -53,17 +53,17 @@
     </div>
     <div class="agent-flow-metric-card">
       <span class="agent-flow-metric-card__value">{{ metrics.success_rate|default(0) }}%</span>
-      <span class="agent-flow-metric-card__label">{% trans %}Tasa de exito{% endtrans %}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Tasa de éxito{% endtrans %}</span>
     </div>
     <div class="agent-flow-metric-card">
       <span class="agent-flow-metric-card__value">{{ metrics.avg_duration|default(0) }}ms</span>
-      <span class="agent-flow-metric-card__label">{% trans %}Duracion media{% endtrans %}</span>
+      <span class="agent-flow-metric-card__label">{% trans %}Duración media{% endtrans %}</span>
     </div>
   </div>
 
   {# ===== CONFIGURACION ===== #}
   <div class="agent-flow-detail__config">
-    <h2 class="agent-flow-detail__section-title">{% trans %}Configuracion{% endtrans %}</h2>
+    <h2 class="agent-flow-detail__section-title">{% trans %}Configuración{% endtrans %}</h2>
     <div class="agent-flow-detail__config-grid">
       <div class="agent-flow-detail__config-item">
         <span class="agent-flow-detail__config-label">{% trans %}Tipo de Trigger{% endtrans %}</span>
@@ -85,7 +85,7 @@
             <th>{% trans %}ID{% endtrans %}</th>
             <th>{% trans %}Estado{% endtrans %}</th>
             <th>{% trans %}Inicio{% endtrans %}</th>
-            <th>{% trans %}Duracion{% endtrans %}</th>
+            <th>{% trans %}Duración{% endtrans %}</th>
             <th>{% trans %}Disparado por{% endtrans %}</th>
           </tr>
         </thead>

@@ -18,7 +18,7 @@
   <header class="usage-dashboard__header">
     <h2 class="usage-dashboard__title">{% trans %}Dashboard de Uso{% endtrans %}</h2>
     <div class="usage-dashboard__period-selector" data-drupal-selector="usage-period-selector">
-      <label class="usage-dashboard__period-label" for="usage-period">{% trans %}Periodo{% endtrans %}:</label>
+      <label class="usage-dashboard__period-label" for="usage-period">{% trans %}Período{% endtrans %}:</label>
       <select class="usage-dashboard__period-select" id="usage-period" name="period">
         <option value="hourly" {% if period == 'hourly' %}selected{% endif %}>{% trans %}Horario{% endtrans %}</option>
         <option value="daily" {% if period == 'daily' %}selected{% endif %}>{% trans %}Diario{% endtrans %}</option>
@@ -49,7 +49,7 @@
           </div>
         {% endfor %}
       {% else %}
-        <p class="usage-dashboard__empty">{% trans %}No hay datos de uso disponibles para este periodo.{% endtrans %}</p>
+        <p class="usage-dashboard__empty">{% trans %}No hay datos de uso disponibles para este período.{% endtrans %}</p>
       {% endif %}
     </div>
   </section>

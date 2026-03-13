@@ -38,6 +38,7 @@ class PersonalizationEngineService {
   public function __construct(
     protected LoggerInterface $logger,
     protected ?TenantContextService $tenantContext = NULL,
+    protected ?MarketplaceRecommendationService $marketplaceRecommendations = NULL,
   ) {}
 
   /**

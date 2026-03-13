@@ -21,7 +21,7 @@
  * Variables inyectadas desde hook_preprocess_page__auth():
  * - auth_form: El formulario de autenticacion (sin bloques extra)
  * - auth_form_type: 'login', 'register', 'password'
- * - theme_settings: Configuracion del tema desde UI
+ * - theme_settings: Configuración del tema desde UI
  * - site_name: Nombre del sitio
  * - logo_url_white: URL del logo en blanco
  *
@@ -36,7 +36,7 @@
     {# ========================================================================
        COLUMNA IZQUIERDA: Hero con branding premium
        ======================================================================== #}
-    <aside class="auth-hero" aria-label="{% trans %}Informacion de bienvenida{% endtrans %}">
+    <aside class="auth-hero" aria-label="{% trans %}Información de bienvenida{% endtrans %}">
       {# Canvas para particulas animadas #}
       <canvas id="auth-particles" class="auth-hero__particles" aria-hidden="true"></canvas>
 
@@ -178,15 +178,15 @@
         {# Titulo del formulario segun tipo - Traducible #}
         <h2 class="auth-form-title">
           {% if auth_form_type == 'login' %}
-            {% trans %}Iniciar sesion{% endtrans %}
+            {% trans %}Iniciar sesión{% endtrans %}
           {% elseif auth_form_type == 'register' %}
             {% trans %}Crear cuenta{% endtrans %}
           {% elseif auth_form_type == 'password' %}
-            {% trans %}Recuperar contrasena{% endtrans %}
+            {% trans %}Recuperar contraseña{% endtrans %}
           {% elseif auth_form_type == 'logout' %}
-            {% trans %}Cerrar sesion{% endtrans %}
+            {% trans %}Cerrar sesión{% endtrans %}
           {% else %}
-            {% trans %}Autenticacion{% endtrans %}
+            {% trans %}Autenticación{% endtrans %}
           {% endif %}
         </h2>
 
@@ -227,11 +227,11 @@
         <div class="auth-links">
           {% if auth_form_type == 'login' %}
             <a href="{{ lp }}/user/register" class="auth-links__primary">{% trans %}No tienes cuenta? Registrate{% endtrans %}</a>
-            <a href="{{ lp }}/user/password" class="auth-links__secondary">{% trans %}Olvidaste tu contrasena?{% endtrans %}</a>
+            <a href="{{ lp }}/user/password" class="auth-links__secondary">{% trans %}Olvidaste tu contraseña?{% endtrans %}</a>
           {% elseif auth_form_type == 'register' %}
-            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Ya tienes cuenta? Inicia sesion{% endtrans %}</a>
+            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Ya tienes cuenta? Inicia sesión{% endtrans %}</a>
           {% elseif auth_form_type == 'password' %}
-            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesion{% endtrans %}</a>
+            <a href="{{ lp }}/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesión{% endtrans %}</a>
           {% elseif auth_form_type == 'logout' %}
             <a href="{{ path('<front>') }}" class="auth-links__primary">{% trans %}Volver al inicio{% endtrans %}</a>
           {% endif %}

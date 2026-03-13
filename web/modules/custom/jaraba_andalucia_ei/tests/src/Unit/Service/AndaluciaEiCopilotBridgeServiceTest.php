@@ -139,6 +139,10 @@ class AndaluciaEiCopilotBridgeServiceTest extends UnitTestCase {
     $this->assertStringContainsString('plataforma SaaS', $context['_system_prompt_addition']);
     $this->assertStringContainsString('PROHIBIDO', $context['_system_prompt_addition']);
     $this->assertStringContainsString('NO uses conocimiento externo', $context['_system_prompt_addition']);
+    // CTA action buttons: prompt includes ACTION marker syntax and panel URLs.
+    $this->assertStringContainsString('[ACTION:', $context['_system_prompt_addition']);
+    $this->assertStringContainsString('#panel-solicitudes', $context['_system_prompt_addition']);
+    $this->assertStringContainsString('#panel-formacion', $context['_system_prompt_addition']);
   }
 
   /**

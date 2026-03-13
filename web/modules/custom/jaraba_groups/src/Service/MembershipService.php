@@ -34,14 +34,38 @@ class MembershipService
     /**
      * Constructs a new MembershipService.
      */
+    /**
+     * Servicio de grupos (opcional).
+     */
+    protected ?GroupService $groupService;
+
+    /**
+     * Servicio de actividad (opcional).
+     */
+    protected ?ActivityService $activityService;
+
+    /**
+     * Servicio de notificaciones de grupo (opcional).
+     */
+    protected ?GroupNotificationService $notificationService;
+
+    /**
+     * Constructs a new MembershipService.
+     */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         AccountProxyInterface $currentUser,
         LoggerInterface $logger,
+        ?GroupService $groupService = NULL,
+        ?ActivityService $activityService = NULL,
+        ?GroupNotificationService $notificationService = NULL,
     ) {
         $this->entityTypeManager = $entityTypeManager;
         $this->currentUser = $currentUser;
         $this->logger = $logger;
+        $this->groupService = $groupService;
+        $this->activityService = $activityService;
+        $this->notificationService = $notificationService;
     }
 
     /**

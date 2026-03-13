@@ -9,14 +9,14 @@
  *   - base_url: URL base para los links
  */
 #}
-<nav class="blog-pagination" aria-label="{% trans %}Paginacion{% endtrans %}">
+<nav class="blog-pagination" aria-label="{% trans %}Paginación{% endtrans %}">
   <ul class="blog-pagination__list">
     {# Boton anterior #}
     {% if current_page > 0 %}
       <li class="blog-pagination__item">
         <a href="{{ base_url }}?page={{ current_page - 1 }}"
            class="blog-pagination__link blog-pagination__link--prev"
-           aria-label="{% trans %}Pagina anterior{% endtrans %}">
+           aria-label="{% trans %}Página anterior{% endtrans %}">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
@@ -50,7 +50,7 @@
       <li class="blog-pagination__item">
         <a href="{{ base_url }}?page={{ current_page + 1 }}"
            class="blog-pagination__link blog-pagination__link--next"
-           aria-label="{% trans %}Pagina siguiente{% endtrans %}">
+           aria-label="{% trans %}Página siguiente{% endtrans %}">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
           </svg>

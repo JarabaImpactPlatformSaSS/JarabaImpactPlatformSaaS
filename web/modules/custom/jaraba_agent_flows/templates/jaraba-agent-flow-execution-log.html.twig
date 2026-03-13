@@ -13,7 +13,7 @@
 
   <div class="agent-flow-execution-log__header">
     <h1 class="agent-flow-execution-log__title">
-      {% trans %}Ejecucion{% endtrans %} #{{ execution.id }}
+      {% trans %}Ejecución{% endtrans %} #{{ execution.id }}
     </h1>
     <span class="agent-flow-execution-log__status agent-flow-execution-log__status--{{ execution.status }}">
       {{ execution.status }}
@@ -26,7 +26,7 @@
       <span class="agent-flow-execution-log__value">{{ execution.started_at_formatted }}</span>
     </div>
     <div class="agent-flow-execution-log__summary-item">
-      <span class="agent-flow-execution-log__label">{% trans %}Duracion total{% endtrans %}</span>
+      <span class="agent-flow-execution-log__label">{% trans %}Duración total{% endtrans %}</span>
       <span class="agent-flow-execution-log__value">{{ execution.duration_ms }}ms</span>
     </div>
     <div class="agent-flow-execution-log__summary-item">
@@ -37,7 +37,7 @@
 
   {# ===== PASOS ===== #}
   <div class="agent-flow-execution-log__steps">
-    <h2 class="agent-flow-execution-log__section-title">{% trans %}Pasos de Ejecucion{% endtrans %}</h2>
+    <h2 class="agent-flow-execution-log__section-title">{% trans %}Pasos de Ejecución{% endtrans %}</h2>
 
     {% for step in steps %}
       <div class="agent-flow-step agent-flow-step--{{ step.status }}">
@@ -60,7 +60,7 @@
 
   {% if execution.error_message %}
     <div class="agent-flow-execution-log__error">
-      <h2>{% trans %}Error de Ejecucion{% endtrans %}</h2>
+      <h2>{% trans %}Error de Ejecución{% endtrans %}</h2>
       <pre class="agent-flow-execution-log__error-detail">{{ execution.error_message }}</pre>
     </div>
   {% endif %}

@@ -72,7 +72,7 @@
   {# Description #}
   {% if tenant.description %}
     <div class="tenant-detail__section">
-      <h4 class="tenant-detail__section-title">{% trans %}Descripcion{% endtrans %}</h4>
+      <h4 class="tenant-detail__section-title">{% trans %}Descripción{% endtrans %}</h4>
       <p class="tenant-detail__description">{{ tenant.description|striptags|slice(0, 300) }}</p>
     </div>
   {% endif %}

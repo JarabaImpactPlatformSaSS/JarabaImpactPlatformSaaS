@@ -214,7 +214,7 @@ $diccionario = [
   'Ninas' => 'Niñas',
   'Ano' => 'Año',
   'Anos' => 'Años',
-  'Anual' => 'Anual', // Correcta, no confundir
+  // 'Anual' is correct Spanish — no entry needed (was causing no-op false positive)
   'Otono' => 'Otoño',
   'Sueno' => 'Sueño',
   'Dueno' => 'Dueño',
@@ -310,6 +310,10 @@ foreach ($files as $file) {
 
     // 1. Buscar palabras del diccionario (tildes + ñ).
     foreach ($diccionario as $wrong => $correct) {
+      // Skip no-op entries (wrong === correct).
+      if ($wrong === $correct) {
+        continue;
+      }
       $word_pattern = '/\b' . preg_quote($wrong, '/') . '\b/u';
       if (preg_match($word_pattern, $trans_text)) {
         $errors[] = [
@@ -323,8 +327,24 @@ foreach ($files as $file) {
     }
 
     // 2. Patron generico: -cion sin tilde (captura palabras no en diccionario).
+    // Excluir palabras inglesas comunes que terminan en -cion/-sion/-ssion.
+    $english_exclusions = ['commission', 'submission', 'permission', 'session', 'mission',
+      'passion', 'expression', 'impression', 'progression', 'regression', 'succession',
+      'concession', 'admission', 'emission', 'transmission', 'omission', 'intermission',
+      'compassion', 'fashion', 'cushion', 'version', 'vision', 'decision', 'precision',
+      'provision', 'revision', 'division', 'collision', 'fusion', 'inclusion', 'exclusion',
+      'conclusion', 'illusion', 'delusion', 'intrusion', 'dimension', 'extension',
+      'expansion', 'suspension', 'comprehension', 'apprehension', 'tension', 'mansion',
+      'pension', 'function', 'action', 'section', 'election', 'collection', 'connection',
+      'direction', 'protection', 'instruction', 'production', 'construction', 'destruction',
+      'introduction', 'reduction', 'education', 'condition', 'position', 'proposition',
+      'composition', 'disposition', 'opposition', 'transition', 'tradition', 'addition',
+      'edition', 'competition', 'definition', 'recognition', 'acquisition', 'ammunition'];
     if (preg_match_all('/\b([A-Za-záéíóúñÁÉÍÓÚÑ]*[cC]ion)\b/u', $trans_text, $generic_matches)) {
       foreach ($generic_matches[1] as $word) {
+        if (in_array(mb_strtolower($word), $english_exclusions)) {
+          continue;
+        }
         if (mb_strpos($word, 'ción') === false && mb_strpos($word, 'Ción') === false) {
           $key = $relative . ':' . $line_number . ':' . mb_strtolower($word);
           if (!isset($seen_generic[$key])) {
@@ -346,6 +366,9 @@ foreach ($files as $file) {
     // 3. Patron generico: -sion sin tilde.
     if (preg_match_all('/\b([A-Za-záéíóúñÁÉÍÓÚÑ]*[sS]ion)\b/u', $trans_text, $generic_matches)) {
       foreach ($generic_matches[1] as $word) {
+        if (in_array(mb_strtolower($word), $english_exclusions)) {
+          continue;
+        }
         if (mb_strpos($word, 'sión') === false && mb_strpos($word, 'Sión') === false) {
           $key = $relative . ':' . $line_number . ':' . mb_strtolower($word);
           if (!isset($seen_generic[$key])) {

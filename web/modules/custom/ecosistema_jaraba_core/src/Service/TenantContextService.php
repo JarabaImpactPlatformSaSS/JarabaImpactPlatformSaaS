@@ -60,6 +60,13 @@ class TenantContextService
     protected $cachedTenant = FALSE;
 
     /**
+     * Servicio de timezone del tenant.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantTimezoneService|null
+     */
+    protected ?TenantTimezoneService $tenantTimezone;
+
+    /**
      * Constructor del servicio.
      *
      * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -68,15 +75,19 @@ class TenantContextService
      *   El proxy de cuenta actual.
      * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
      *   El canal de logger.
+     * @param \Drupal\ecosistema_jaraba_core\Service\TenantTimezoneService|null $tenant_timezone
+     *   Servicio de timezone del tenant (opcional).
      */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         AccountProxyInterface $current_user,
-        LoggerChannelInterface $logger
+        LoggerChannelInterface $logger,
+        ?TenantTimezoneService $tenant_timezone = NULL
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
         $this->logger = $logger;
+        $this->tenantTimezone = $tenant_timezone;
     }
 
     /**

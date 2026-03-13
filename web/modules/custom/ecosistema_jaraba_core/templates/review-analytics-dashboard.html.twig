@@ -14,7 +14,7 @@
   <div class="review-analytics__summary">
     <div class="review-analytics__card">
       <div class="review-analytics__card-value">{{ metrics.summary.total_reviews|default(0) }}</div>
-      <div class="review-analytics__card-label">{% trans %}Total Resenas{% endtrans %}</div>
+      <div class="review-analytics__card-label">{% trans %}Total Reseñas{% endtrans %}</div>
     </div>
     <div class="review-analytics__card">
       <div class="review-analytics__card-value">{{ metrics.summary.average_rating|default(0)|number_format(1) }}</div>
@@ -30,13 +30,13 @@
     </div>
     <div class="review-analytics__card">
       <div class="review-analytics__card-value">{{ metrics.summary.approval_rate|default(0) }}%</div>
-      <div class="review-analytics__card-label">{% trans %}Tasa de Aprobacion{% endtrans %}</div>
+      <div class="review-analytics__card-label">{% trans %}Tasa de Aprobación{% endtrans %}</div>
     </div>
   </div>
 
   {# === Distribution === #}
   <div class="review-analytics__section">
-    <h3>{% trans %}Distribucion de Estrellas{% endtrans %}</h3>
+    <h3>{% trans %}Distribución de Estrellas{% endtrans %}</h3>
     <div class="review-analytics__distribution">
       {% for star in 5..1 %}
         {% set count = metrics.distribution[star]|default(0) %}
@@ -82,7 +82,7 @@
 
   {# === Recent Reviews === #}
   <div class="review-analytics__section">
-    <h3>{% trans %}Resenas Recientes{% endtrans %}</h3>
+    <h3>{% trans %}Reseñas Recientes{% endtrans %}</h3>
     <div class="review-analytics__recent">
       {% for review in metrics.recent_reviews|default([]) %}
         <div class="review-analytics__recent-item">

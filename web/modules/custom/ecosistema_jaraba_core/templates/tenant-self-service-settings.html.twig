@@ -26,10 +26,10 @@
         {{ jaraba_icon('ui', 'settings', { variant: 'duotone', color: 'white', size: '40px' }) }}
       </div>
       <div class="tenant-settings__hero-text">
-        <h1 class="tenant-settings__title">{% trans %}Configuracion{% endtrans %}</h1>
+        <h1 class="tenant-settings__title">{% trans %}Configuración{% endtrans %}</h1>
         {% if tenant %}
           <p class="tenant-settings__subtitle">
-            {% trans %}Gestiona la configuracion de tu organizacion{% endtrans %}
+            {% trans %}Gestiona la configuración de tu organización{% endtrans %}
           </p>
         {% endif %}
       </div>
@@ -48,7 +48,7 @@
   {# --- Buscador client-side --- #}
   <div class="tenant-settings__search" role="search">
     <label for="tenant-settings-search" class="visually-hidden">
-      {% trans %}Buscar configuracion{% endtrans %}
+      {% trans %}Buscar configuración{% endtrans %}
     </label>
     <div class="tenant-settings__search-wrapper">
       <span class="tenant-settings__search-icon" aria-hidden="true">
@@ -96,7 +96,7 @@
       </article>
     {% else %}
       <div class="tenant-settings__empty">
-        <p>{% trans %}No hay secciones de configuracion disponibles.{% endtrans %}</p>
+        <p>{% trans %}No hay secciones de configuración disponibles.{% endtrans %}</p>
       </div>
     {% endfor %}
   </div>

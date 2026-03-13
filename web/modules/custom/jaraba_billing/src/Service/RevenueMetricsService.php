@@ -27,6 +27,7 @@ class RevenueMetricsService {
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly Connection $database,
     protected readonly LoggerInterface $logger,
+    protected readonly ?SyntheticCfoService $syntheticCfo = NULL,
   ) {}
 
   /**

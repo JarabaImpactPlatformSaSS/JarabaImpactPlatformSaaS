@@ -28,14 +28,14 @@
  */
 #}
 
-{# Detectar meta-sitio PED para metricas de impacto #}
+{# Detectar meta-sitio PED para métricas de impacto #}
 {% set is_ped = is_ped|default(false) %}
 
-{# Fallback PED: Metricas de impacto humano verificables #}
+{# Fallback PED: Métricas de impacto humano verificables #}
 {% set ped_stats = [
   { value: 100, suffix: 'M+', label: 'EUR dinamizados en proyectos'|t },
-  { value: 30, suffix: '+', label: 'anos gestionando fondos europeos'|t },
-  { value: 3, suffix: '', label: 'emprendedores lanzados con exito'|t },
+  { value: 30, suffix: '+', label: 'años gestionando fondos europeos'|t },
+  { value: 3, suffix: '', label: 'emprendedores lanzados con éxito'|t },
   { value: 11, suffix: '', label: 'agentes IA especializados'|t }
 ] %}
 

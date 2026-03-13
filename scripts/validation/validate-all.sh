@@ -169,10 +169,10 @@ run_check "CONTAINER-DEPS-002" "Circular reference detection (fast)" \
 run_check "LOGGER-INJECT-001" "Logger injection consistency (fast)" \
   php "$SCRIPT_DIR/validate-logger-injection.php"
 
-warn_check "PHANTOM-ARG-001" "Phantom args in services.yml vs constructor params" \
+run_check "PHANTOM-ARG-001" "Phantom args in services.yml vs constructor params" \
   php "$SCRIPT_DIR/validate-phantom-args.php"
 
-warn_check "ORTOGRAFIA-TRANS-001" "Ortografia en textos traducibles Twig (tildes + ñ)" \
+run_check "ORTOGRAFIA-TRANS-001" "Ortografia en textos traducibles Twig (tildes + ñ)" \
   php "$SCRIPT_DIR/validate-twig-ortografia.php"
 
 # Full-only checks.
@@ -187,7 +187,7 @@ if [ "$MODE" = "full" ]; then
     bash "$SCRIPT_DIR/validate-config-sync.sh"
 
   # New checks (full mode only).
-  warn_check "SERVICE-ORPHAN-001" "Orphaned service detection" \
+  run_check "SERVICE-ORPHAN-001" "Orphaned service detection" \
     php "$SCRIPT_DIR/validate-service-consumers.php"
 
   # ASSET-FRESHNESS-001: Skipped in CI (--full). Timestamp-based check is

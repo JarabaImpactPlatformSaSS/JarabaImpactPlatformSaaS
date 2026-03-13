@@ -42,6 +42,13 @@ class JobPostingService
     protected EventDispatcherInterface $eventDispatcher;
 
     /**
+     * Servicio de employer (opcional).
+     *
+     * @var \Drupal\jaraba_job_board\Service\EmployerService|null
+     */
+    protected ?EmployerService $employer;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -49,13 +56,15 @@ class JobPostingService
         AccountProxyInterface $current_user,
         Connection $database,
         LoggerChannelFactoryInterface $logger_factory,
-        EventDispatcherInterface $event_dispatcher
+        EventDispatcherInterface $event_dispatcher,
+        ?EmployerService $employer = NULL
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
         $this->database = $database;
         $this->logger = $logger_factory->get('jaraba_job_board');
         $this->eventDispatcher = $event_dispatcher;
+        $this->employer = $employer;
     }
 
     /**

@@ -39,7 +39,7 @@
     </div>
     <div class="developer-portal__header-actions">
       <a href="{{ sdk_info.docs_url }}" class="developer-portal__docs-btn">
-        {% trans %}Documentacion SDK{% endtrans %}
+        {% trans %}Documentación SDK{% endtrans %}
       </a>
     </div>
   </div>
@@ -48,7 +48,7 @@
   <div class="developer-portal__sdk">
     <div class="developer-portal__sdk-card">
       <h3 class="developer-portal__sdk-title">{% trans %}SDK de Conectores{% endtrans %}</h3>
-      <p class="developer-portal__sdk-version">{% trans %}Version{% endtrans %}: {{ sdk_info.version }}</p>
+      <p class="developer-portal__sdk-version">{% trans %}Versión{% endtrans %}: {{ sdk_info.version }}</p>
       <p class="developer-portal__sdk-desc">
         {% trans %}Usa el SDK para crear conectores compatibles con el marketplace.{% endtrans %}
       </p>
@@ -57,7 +57,7 @@
     {% if pending_review > 0 %}
       <div class="developer-portal__pending-card">
         <span class="developer-portal__pending-count">{{ pending_review }}</span>
-        <span class="developer-portal__pending-label">{% trans %}conectores pendientes de revision{% endtrans %}</span>
+        <span class="developer-portal__pending-label">{% trans %}conectores pendientes de revisión{% endtrans %}</span>
       </div>
     {% endif %}
   </div>
@@ -73,7 +73,7 @@
     {% if connectors is empty %}
       <div class="developer-portal__empty">
         <p>{% trans %}Aun no has creado ningun conector.{% endtrans %}</p>
-        <p>{% trans %}Consulta la documentacion del SDK para empezar.{% endtrans %}</p>
+        <p>{% trans %}Consulta la documentación del SDK para empezar.{% endtrans %}</p>
       </div>
     {% else %}
       <div class="developer-portal__connectors-table-wrapper">
@@ -81,7 +81,7 @@
           <thead>
             <tr>
               <th>{% trans %}Nombre{% endtrans %}</th>
-              <th>{% trans %}Version{% endtrans %}</th>
+              <th>{% trans %}Versión{% endtrans %}</th>
               <th>{% trans %}Estado{% endtrans %}</th>
               <th>{% trans %}Instalaciones{% endtrans %}</th>
               <th>{% trans %}Acciones{% endtrans %}</th>
@@ -104,7 +104,7 @@
                   </a>
                   {% if connector.status == 'draft' or connector.status == 'rejected' %}
                     <a href="/integraciones/{{ connector.id }}/submit" class="developer-portal__action-link developer-portal__action-link--primary">
-                      {% trans %}Enviar a revision{% endtrans %}
+                      {% trans %}Enviar a revisión{% endtrans %}
                     </a>
                   {% endif %}
                 </td>

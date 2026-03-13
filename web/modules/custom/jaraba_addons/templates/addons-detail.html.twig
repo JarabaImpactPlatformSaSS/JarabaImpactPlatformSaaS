@@ -34,7 +34,7 @@
   <nav class="ej-addons-detail__breadcrumb" aria-label="{% trans %}Migas de pan{% endtrans %}">
     <a href="{{ path('jaraba_addons.catalog') }}" class="ej-addons-detail__breadcrumb-link">
       {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'azul-corporativo' }) }}
-      {% trans %}Volver al Catalogo{% endtrans %}
+      {% trans %}Volver al Catálogo{% endtrans %}
     </a>
   </nav>
 
@@ -62,7 +62,7 @@
     <h2 class="ej-addons-detail__section-title">{% trans %}Precios{% endtrans %}</h2>
 
     {# Toggle mensual/anual #}
-    <div class="ej-addons-detail__pricing-toggle" role="radiogroup" aria-label="{% trans %}Ciclo de facturacion{% endtrans %}">
+    <div class="ej-addons-detail__pricing-toggle" role="radiogroup" aria-label="{% trans %}Ciclo de facturación{% endtrans %}">
       <button type="button"
               class="ej-addons-detail__toggle-btn ej-addons-detail__toggle-btn--active"
               data-cycle="monthly"
@@ -94,7 +94,7 @@
         <span class="ej-addons-detail__price-amount" data-price-monthly="{{ price_monthly }}" data-price-yearly="{{ price_yearly }}">
           {{ price_monthly|number_format(2, ',', '.') }} &euro;
         </span>
-        <span class="ej-addons-detail__price-period" data-period-monthly="{% trans %}/mes{% endtrans %}" data-period-yearly="{% trans %}/ano{% endtrans %}">
+        <span class="ej-addons-detail__price-period" data-period-monthly="{% trans %}/mes{% endtrans %}" data-period-yearly="{% trans %}/año{% endtrans %}">
           /{% trans %}mes{% endtrans %}
         </span>
       </div>
@@ -167,7 +167,7 @@
           {% trans %}Suscribirse Ahora{% endtrans %}
         </button>
         <p class="ej-addons-detail__cta-note">
-          {% trans %}Puedes cancelar tu suscripcion en cualquier momento.{% endtrans %}
+          {% trans %}Puedes cancelar tu suscripción en cualquier momento.{% endtrans %}
         </p>
       {% endif %}
     {% endif %}

@@ -42,7 +42,7 @@
       </span>
     </div>
     <p class="wizard-step__hint">
-      {% trans %}Si no es correcta, puedes cambiarla seleccionando otra opcion.{% endtrans %}
+      {% trans %}Si no es correcta, puedes cambiarla seleccionando otra opción.{% endtrans %}
     </p>
 
     <div class="wizard-step__vertical-options" data-vertical-selector>
@@ -81,9 +81,9 @@
         <select id="wizard-idea-sector" class="wizard-step__select" data-field="idea_sector">
           <option value="">{% trans %}Seleccionar...{% endtrans %}</option>
           <option value="tecnologia"{% if step_data.idea_sector|default('') == 'tecnologia' %} selected{% endif %}>{% trans %}Tecnologia{% endtrans %}</option>
-          <option value="alimentacion"{% if step_data.idea_sector|default('') == 'alimentacion' %} selected{% endif %}>{% trans %}Alimentacion{% endtrans %}</option>
+          <option value="alimentacion"{% if step_data.idea_sector|default('') == 'alimentacion' %} selected{% endif %}>{% trans %}Alimentación{% endtrans %}</option>
           <option value="turismo"{% if step_data.idea_sector|default('') == 'turismo' %} selected{% endif %}>{% trans %}Turismo{% endtrans %}</option>
-          <option value="educacion"{% if step_data.idea_sector|default('') == 'educacion' %} selected{% endif %}>{% trans %}Educacion{% endtrans %}</option>
+          <option value="educacion"{% if step_data.idea_sector|default('') == 'educacion' %} selected{% endif %}>{% trans %}Educación{% endtrans %}</option>
           <option value="salud"{% if step_data.idea_sector|default('') == 'salud' %} selected{% endif %}>{% trans %}Salud{% endtrans %}</option>
           <option value="comercio"{% if step_data.idea_sector|default('') == 'comercio' %} selected{% endif %}>{% trans %}Comercio{% endtrans %}</option>
           <option value="servicios"{% if step_data.idea_sector|default('') == 'servicios' %} selected{% endif %}>{% trans %}Servicios{% endtrans %}</option>

@@ -71,7 +71,7 @@
 
     <div class="reseller-metric-card">
       <span class="reseller-metric-card__value">&euro;{{ commissions.commission_earned|default(0)|number_format(2, ',', '.') }}</span>
-      <span class="reseller-metric-card__label">{% trans %}Comision Ganada{% endtrans %}</span>
+      <span class="reseller-metric-card__label">{% trans %}Comisión Ganada{% endtrans %}</span>
     </div>
 
     <div class="reseller-metric-card">
@@ -152,7 +152,7 @@
     </h2>
     <div class="reseller-commissions__summary">
       <div class="reseller-commissions__item">
-        <span class="reseller-commissions__item-label">{% trans %}Tasa de Comision{% endtrans %}</span>
+        <span class="reseller-commissions__item-label">{% trans %}Tasa de Comisión{% endtrans %}</span>
         <span class="reseller-commissions__item-value">{{ reseller.commission_rate.value|default(0)|number_format(2, ',', '.') }}%</span>
       </div>
       <div class="reseller-commissions__item">
@@ -170,7 +170,7 @@
         <span class="reseller-commissions__item-value">&euro;{{ commissions.total_revenue|default(0)|number_format(2, ',', '.') }}</span>
       </div>
       <div class="reseller-commissions__item">
-        <span class="reseller-commissions__item-label">{% trans %}Comision Generada{% endtrans %}</span>
+        <span class="reseller-commissions__item-label">{% trans %}Comisión Generada{% endtrans %}</span>
         <span class="reseller-commissions__item-value reseller-commissions__item-value--highlight">&euro;{{ commissions.commission_earned|default(0)|number_format(2, ',', '.') }}</span>
       </div>
     </div>

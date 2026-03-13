@@ -39,9 +39,9 @@
     <div class="tenant-dashboard__hero-actions">
       <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}"
          class="tenant-dashboard__settings-link"
-         aria-label="{% trans %}Ir a configuracion{% endtrans %}">
+         aria-label="{% trans %}Ir a configuración{% endtrans %}">
         {{ jaraba_icon('ui', 'settings', { variant: 'duotone', color: 'white', size: '16px' }) }}
-        {% trans %}Configuracion{% endtrans %}
+        {% trans %}Configuración{% endtrans %}
       </a>
     </div>
   </header>
@@ -72,7 +72,7 @@
   {% endif %}
 
   {# --- Grid de metricas principales --- #}
-  <section class="tenant-metrics-grid" aria-label="{% trans %}Metricas principales{% endtrans %}">
+  <section class="tenant-metrics-grid" aria-label="{% trans %}Métricas principales{% endtrans %}">
     {% for key, metric in metrics %}
     <div class="tenant-metric-card">
       <div class="tenant-metric-card__shine" aria-hidden="true"></div>

@@ -70,6 +70,13 @@ class PixelDispatcherService
     protected ?ConversionTrackingService $conversionTracking;
 
     /**
+     * Servicio de gestión de consentimiento.
+     *
+     * @var \Drupal\jaraba_pixels\Service\ConsentManagementService|null
+     */
+    protected ?ConsentManagementService $consentManagement;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -80,6 +87,7 @@ class PixelDispatcherService
         $logger_factory,
         ClientInterface $http_client,
         ?ConversionTrackingService $conversion_tracking = NULL,
+        ?ConsentManagementService $consent_management = NULL,
     ) {
         $this->database = $database;
         $this->eventMapper = $event_mapper;
@@ -88,6 +96,7 @@ class PixelDispatcherService
         $this->logger = $logger_factory->get('jaraba_pixels');
         $this->httpClient = $http_client;
         $this->conversionTracking = $conversion_tracking;
+        $this->consentManagement = $consent_management;
     }
 
     /**
