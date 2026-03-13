@@ -52,10 +52,13 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
    */
   public function streamChat(string $message, array $context, string $mode): \Generator {
     // S5-04: Check semantic cache first (fuzzy matching via Qdrant).
+    // FIX: Composite mode with current_page (parity with buffered orchestrator).
     if ($this->semanticCache) {
       try {
         $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-        $semanticHit = $this->semanticCache->get($message, $mode, $tenantId);
+        $currentPage = $context['current_page'] ?? '';
+        $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+        $semanticHit = $this->semanticCache->get($message, $semanticMode, $tenantId);
         if ($semanticHit) {
           $this->logger->debug('GAP-01/S5-04: Respuesta servida desde semantic cache (no-stream).');
           $semanticHit['cached'] = TRUE;
@@ -64,7 +67,7 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
           return;
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->logger->notice('Semantic cache lookup failed in streaming: @error', ['@error' => $e->getMessage()]);
       }
     }
@@ -103,9 +106,14 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
           $actualModel = $this->getGeminiModelForContext($model);
         }
 
-        // Set configuration (temperature, max_tokens) on the provider.
+        // Temperature parity with CopilotOrchestratorService::callProvider().
+        // When vertical bridge provides a full system prompt, use lower temp
+        // for faithful instruction following (prevents training data recall).
+        $hasVerticalPrompt = !empty($this->lastVerticalBridgeData['_system_prompt_addition']);
+        $temperature = $hasVerticalPrompt ? 0.3 : 0.7;
+
         $provider->setConfiguration([
-          'temperature' => 0.7,
+          'temperature' => $temperature,
           'max_tokens' => $this->getMaxTokens(),
         ]);
 
@@ -170,8 +178,8 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
         $this->resetCircuitBreaker($providerId);
         return;
       }
-      catch (\Exception $e) {
-        $this->recordCircuitBreakerFailure($providerId);
+      catch (\Throwable $e) {
+        $this->recordCircuitFailure($providerId);
         $this->logger->warning('GAP-01: Streaming fallo con provider @id: @msg', [
           '@id' => $providerId,
           '@msg' => $e->getMessage(),
@@ -274,12 +282,15 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
     }
 
     // S5-04: Store in semantic cache for future fuzzy matching.
+    // FIX: Composite mode with current_page (parity with buffered orchestrator).
     if ($this->semanticCache) {
       try {
         $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-        $this->semanticCache->set($originalMessage, $fullText, $mode, $tenantId);
+        $currentPage = $context['current_page'] ?? '';
+        $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+        $this->semanticCache->set($originalMessage, $fullText, $semanticMode, $tenantId);
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->logger->notice('Semantic cache store failed in streaming: @error', ['@error' => $e->getMessage()]);
       }
     }
@@ -410,7 +421,7 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
         return $guardrails->maskOutputPII($buffer);
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       // Non-blocking — PII masking es best-effort en streaming.
     }
 
@@ -450,7 +461,7 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
         ]);
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->warning('GAP-01: Error en tracking de uso streaming: @msg', [
         '@msg' => $e->getMessage(),
       ]);

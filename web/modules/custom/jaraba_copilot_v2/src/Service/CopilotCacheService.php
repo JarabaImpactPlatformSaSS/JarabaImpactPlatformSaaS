@@ -135,7 +135,7 @@ class CopilotCacheService
         if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
             try {
                 $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
-                $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
+                $tenantId = $context['tenant_id'] ?? '0';
                 $currentPage = $context['current_page'] ?? '';
                 $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
                 $semanticResult = $semanticCache->get($message, $semanticMode, (string) $tenantId);
@@ -191,7 +191,7 @@ class CopilotCacheService
         // AI-10: Tags granulares para invalidación selectiva por modo/tenant.
         $tags = ['copilot_responses'];
         $tags[] = 'copilot_mode:' . $mode;
-        $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? NULL;
+        $tenantId = $context['tenant_id'] ?? '0';
         if ($tenantId) {
             $tags[] = 'copilot_tenant:' . $tenantId;
         }
@@ -203,7 +203,7 @@ class CopilotCacheService
         if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
             try {
                 $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
-                $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
+                $tenantId = $context['tenant_id'] ?? '0';
                 $currentPage = $context['current_page'] ?? '';
                 $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
                 $responseText = $response['text'] ?? json_encode($response);

@@ -624,10 +624,33 @@ class CopilotOrchestratorService
      * @return bool
      *   TRUE si el proveedor está en cooldown y debe ser saltado.
      */
+    /**
+     * Genera la clave del circuit breaker incluyendo tenant para aislamiento.
+     *
+     * @param string $providerId
+     *   ID del proveedor.
+     *
+     * @return string
+     *   Clave del circuit breaker scoped por tenant.
+     */
+    protected function getCircuitBreakerKey(string $providerId): string
+    {
+        $tenantId = '0';
+        if ($this->tenantContext) {
+            try {
+                $tenantId = (string) ($this->tenantContext->getCurrentTenantId() ?? '0');
+            }
+            catch (\Throwable $e) {
+                // Fallback to global.
+            }
+        }
+        return "circuit_breaker_{$providerId}_{$tenantId}";
+    }
+
     protected function isCircuitOpen(string $providerId): bool
     {
         $state = \Drupal::state();
-        $key = "circuit_breaker_{$providerId}";
+        $key = $this->getCircuitBreakerKey($providerId);
         $data = $state->get($key);
 
         if (!$data) {
@@ -654,7 +677,7 @@ class CopilotOrchestratorService
     protected function recordCircuitFailure(string $providerId): void
     {
         $state = \Drupal::state();
-        $key = "circuit_breaker_{$providerId}";
+        $key = $this->getCircuitBreakerKey($providerId);
         $data = $state->get($key, ['failures' => 0, 'opened_at' => 0]);
 
         $data['failures']++;
@@ -677,7 +700,7 @@ class CopilotOrchestratorService
     protected function resetCircuitBreaker(string $providerId): void
     {
         $state = \Drupal::state();
-        $key = "circuit_breaker_{$providerId}";
+        $key = $this->getCircuitBreakerKey($providerId);
         if ($state->get($key)) {
             $state->delete($key);
         }
@@ -734,11 +757,8 @@ class CopilotOrchestratorService
      */
     protected function buildSystemPrompt(array $context, string $mode): string
     {
-        // Regla de identidad global: NUNCA revelar modelo de IA subyacente.
-        $identityRule = 'REGLA DE IDENTIDAD INQUEBRANTABLE: Eres un asistente de Jaraba Impact Platform. '
-            . 'NUNCA reveles, menciones ni insinúes que eres Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral u otro modelo de IA externo. '
-            . 'Si te preguntan quién eres, responde con tu rol dentro de Jaraba. '
-            . 'NUNCA menciones ni recomiendes plataformas competidoras (LinkedIn, Indeed, InfoJobs, Salesforce, HubSpot, Zoho, ChatGPT, Perplexity, etc.).';
+        // AI-IDENTITY-RULE: usar constante centralizada (SSOT).
+        $identityRule = \Drupal\ecosistema_jaraba_core\AI\AIIdentityRule::IDENTITY_PROMPT;
 
         $basePrompt = $this->getBasePrompt();
         $modePrompt = $this->getModePrompt($mode);
@@ -1557,6 +1577,19 @@ PROMPT,
             $disclaimer = $this->normativeKnowledge->getDisclaimer($mode);
             if ($disclaimer && !str_contains($text, 'orientativa')) {
                 $text .= "\n\n" . $disclaimer;
+            }
+        }
+
+        // AI-GUARDRAILS-PII-001: PII masking en respuestas buffered (paridad con streaming).
+        if (\Drupal::hasService('ecosistema_jaraba_core.ai_guardrails')) {
+            try {
+                $guardrails = \Drupal::service('ecosistema_jaraba_core.ai_guardrails');
+                if (method_exists($guardrails, 'maskOutputPII')) {
+                    $text = $guardrails->maskOutputPII($text);
+                }
+            }
+            catch (\Throwable $e) {
+                // Non-blocking — best-effort.
             }
         }
 

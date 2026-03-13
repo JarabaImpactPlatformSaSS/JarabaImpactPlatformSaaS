@@ -99,7 +99,7 @@ case "$EXT" in
 
     # 2. Detectar innerHTML sin checkPlain
     if grep -qn 'innerHTML\s*=' "$FILE_PATH" 2>/dev/null; then
-      if ! grep -q 'Drupal.checkPlain\|checkPlain' "$FILE_PATH" 2>/dev/null; then
+      if ! grep -q 'Drupal.checkPlain\|checkPlain\|escapeHtml' "$FILE_PATH" 2>/dev/null; then
         ERRORS="${ERRORS:+$ERRORS\n}INNERHTML-XSS-001: innerHTML usado sin Drupal.checkPlain(). Verificar que los datos insertados estan sanitizados."
       fi
     fi

@@ -1474,6 +1474,12 @@ services:
   # SERVICIOSCONECTA COPILOT BRIDGE (Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2)
   # ===========================================
 
+  # Demo vertical CopilotBridge — 10/10 vertical coverage.
+  ecosistema_jaraba_core.demo_copilot_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\DemoCopilotBridgeService
+    arguments:
+      - '@logger.channel.ecosistema_jaraba_core'
+
   # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2: CopilotBridge.
   ecosistema_jaraba_core.serviciosconecta_copilot_bridge:
     class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaCopilotBridgeService

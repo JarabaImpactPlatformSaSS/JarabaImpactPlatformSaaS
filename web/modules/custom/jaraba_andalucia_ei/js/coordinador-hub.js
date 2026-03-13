@@ -282,6 +282,7 @@
         initKpiNavigation(container);
         initCsvExport(container);
         loadSolicitudes(container, '', 0);
+        handleHashNavigation(container);
         startAutoRefresh(container);
       });
     },
@@ -525,6 +526,23 @@
         }
       });
     });
+  }
+
+  // ─── Hash Navigation (Copilot CTA deep-links) ──────────────────────────
+
+  function handleHashNavigation(container) {
+    function navigateToHash() {
+      var hash = window.location.hash;
+      if (!hash || !hash.startsWith('#panel-')) { return; }
+      var panelName = hash.replace('#panel-', '');
+      var tab = container.querySelector('[data-tab="' + panelName + '"]');
+      if (tab) {
+        tab.click();
+        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+    navigateToHash();
+    window.addEventListener('hashchange', navigateToHash);
   }
 
   // ─── Solicitudes ─────────────────────────────────────────────────────────

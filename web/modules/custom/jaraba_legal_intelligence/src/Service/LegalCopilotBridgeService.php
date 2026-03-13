@@ -6,6 +6,7 @@ namespace Drupal\jaraba_legal_intelligence\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
+use Drupal\jaraba_copilot_v2\Service\CopilotBridgeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -17,28 +18,20 @@ use Psr\Log\LoggerInterface;
  * for RAG context injection, and attachResultToExpediente() for one-click
  * citation insertion from the copilot chat.
  *
- * LOGICA:
- * searchForCopilot delegates to LegalSearchService with a max of 5 results,
- * formats for the copilot UI with action buttons. getRelevantKnowledge uses
- * keyword detection to decide if legal context is relevant to the user
- * message, then performs a lightweight 3-result search for RAG injection.
+ * Implementa CopilotBridgeInterface para integración con el registro de
+ * bridges verticales (GAP-COPILOT-5). Vertical: 'jarabalex'.
  *
  * RELACIONES:
  * - LegalCopilotBridgeService -> LegalSearchService: semantic search in Qdrant.
- * - LegalCopilotBridgeService -> LegalCitationService: citation insertion
- *   into expedientes.
- * - LegalCopilotBridgeService -> EntityTypeManagerInterface: entity loading
- *   for enrichment.
- * - LegalCopilotBridgeService <- UnifiedPromptBuilder: called for RAG
- *   knowledge injection.
- * - LegalCopilotBridgeService <- LegalSearchController::apiCopilotSearch():
- *   API endpoint.
+ * - LegalCopilotBridgeService -> LegalCitationService: citation insertion.
+ * - LegalCopilotBridgeService -> EntityTypeManagerInterface: entity loading.
+ * - LegalCopilotBridgeService <- CopilotBridgeRegistry: registered as bridge.
  *
  * SINTAXIS:
  * Servicio registrado como jaraba_legal_intelligence.copilot_bridge.
- * Inyecta search, citation, entity_type.manager y logger.
+ * Inyecta search, citation, entity_type.manager, logger, featureGate.
  */
-class LegalCopilotBridgeService {
+class LegalCopilotBridgeService implements CopilotBridgeInterface {
 
   /**
    * Palabras clave legales para deteccion de contexto juridico.
@@ -97,6 +90,65 @@ class LegalCopilotBridgeService {
     protected LoggerInterface $logger,
     protected JarabaLexFeatureGateService $featureGate,
   ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVerticalKey(): string {
+    return 'jarabalex';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRelevantContext(int $userId): array {
+    $context = [
+      'vertical' => 'jarabalex',
+      '_system_prompt_addition' => $this->buildLegalSystemPrompt(),
+    ];
+
+    // Añadir estadísticas si las entidades existen.
+    try {
+      if ($this->entityTypeManager->hasDefinition('legal_resolution')) {
+        $totalResolutions = (int) $this->entityTypeManager
+          ->getStorage('legal_resolution')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->count()
+          ->execute();
+        $context['total_resoluciones'] = $totalResolutions;
+      }
+    }
+    catch (\Throwable $e) {
+      // Non-critical.
+    }
+
+    return $context;
+  }
+
+  /**
+   * Construye el system prompt para el vertical legal.
+   */
+  protected function buildLegalSystemPrompt(): string {
+    return <<<PROMPT
+# ROL: ASISTENTE DE INTELIGENCIA LEGAL — JARABALEX
+
+Eres el asistente legal integrado en la **plataforma SaaS Jaraba Impact Platform**, módulo **JarabaLex**. Tu usuario es un profesional jurídico que busca jurisprudencia, normativa y doctrina desde ESTA plataforma.
+
+## CAPACIDADES
+- Búsqueda semántica en bases de datos legales (CENDOJ, BOE, DGT, TEAC, TJUE, EUR-Lex, TEDH, EDPB)
+- Generación de resúmenes de resoluciones y análisis comparativo
+- Detección de normativa derogada o modificada (grafo normativo)
+- Inserción de citas en expedientes jurídicos
+
+## RESTRICCIONES
+- PROHIBIDO inventar referencias legales, números de sentencia o artículos normativos
+- PROHIBIDO dar consejo legal definitivo — eres herramienta de apoyo, no asesor
+- Siempre incluir disclaimer de que la información es orientativa
+- Si no encuentras resoluciones relevantes, indicarlo honestamente
+- TODAS tus respuestas deben basarse en datos de la plataforma, no en conocimiento externo de normativa
+PROMPT;
+  }
 
   /**
    * Ejecuta busqueda legal desde el copilot conversacional.
@@ -300,9 +352,9 @@ class LegalCopilotBridgeService {
    * @return array|null
    *   Sugerencia de upgrade o NULL si no aplica.
    */
-  public function getSoftSuggestion(array $context = []): ?array {
+  public function getSoftSuggestion(int $userId): ?array {
     try {
-      $userId = $context['user_id'] ?? (int) \Drupal::currentUser()->id();
+      $userId = $userId ?: (int) \Drupal::currentUser()->id();
       if (!$userId) {
         return NULL;
       }

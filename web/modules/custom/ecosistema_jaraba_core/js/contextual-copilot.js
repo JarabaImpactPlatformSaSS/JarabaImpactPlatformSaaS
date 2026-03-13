@@ -17,31 +17,208 @@
       const copilots = context.querySelectorAll('.contextual-copilot:not(.processed)');
 
       /**
-       * Parsea Markdown básico a HTML (patrón AgroConecta).
-       * Soporta: enlaces [texto](url), negritas **texto**
+       * Parsea Markdown a HTML seguro para respuestas del copilot.
+       *
+       * Soporta: headers (##), bold, italic, inline code, links,
+       * listas ordenadas/desordenadas, separadores, párrafos.
+       * XSS-safe: escapeHtml() antes de cualquier transformación.
        */
+      /**
+       * Aplica formato inline: bold+italic, bold, italic, strikethrough, code.
+       */
+      function applyInline(text) {
+        return text
+          .replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
+          .replace(/~~([^~]+)~~/g, '<del>$1</del>')
+          .replace(/`([^`]+)`/g, '<code class="copilot-code">$1</code>');
+      }
+
+      /**
+       * Parsea tabla Markdown (pipe syntax) a HTML.
+       */
+      function parseTable(lines, startIdx) {
+        if (startIdx + 1 >= lines.length) return null;
+        var headerLine = lines[startIdx].trim();
+        var sepLine = lines[startIdx + 1].trim();
+        if (!/^\|(.+)\|$/.test(headerLine) || !/^\|[\s\-:|]+\|$/.test(sepLine)) return null;
+
+        var headers = headerLine.slice(1, -1).split('|').map(function (c) { return c.trim(); });
+        var aligns = sepLine.slice(1, -1).split('|').map(function (c) {
+          c = c.trim();
+          if (c.startsWith(':') && c.endsWith(':')) return 'center';
+          if (c.endsWith(':')) return 'right';
+          return 'left';
+        });
+
+        var html = '<div class="copilot-table-wrap"><table class="copilot-table"><thead><tr>';
+        headers.forEach(function (h, i) {
+          html += '<th style="text-align:' + (aligns[i] || 'left') + '">' + applyInline(h) + '</th>';
+        });
+        html += '</tr></thead><tbody>';
+
+        var rowIdx = startIdx + 2;
+        while (rowIdx < lines.length && /^\|(.+)\|$/.test(lines[rowIdx].trim())) {
+          var cells = lines[rowIdx].trim().slice(1, -1).split('|').map(function (c) { return c.trim(); });
+          html += '<tr>';
+          cells.forEach(function (cell, i) {
+            html += '<td style="text-align:' + (aligns[i] || 'left') + '">' + applyInline(cell) + '</td>';
+          });
+          html += '</tr>';
+          rowIdx++;
+        }
+        html += '</tbody></table></div>';
+        return { html: html, endIdx: rowIdx - 1 };
+      }
+
       function parseMarkdown(text) {
         if (!text) return '';
-        // 1. Extraer enlaces y protegerlos
-        const linkPlaceholders = [];
-        let html = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
-          const placeholder = `__LINK_${linkPlaceholders.length}__`;
-          // Escapar texto pero mantener URL
-          const safeText = escapeHtml(linkText);
-          linkPlaceholders.push(`<a href="${url}" class="copilot-link" target="_blank">${safeText}</a>`);
+
+        // 0. Extraer marcadores [ACTION:label|url] como botones CTA.
+        var actionPlaceholders = [];
+        var processed = text.replace(/\[ACTION:([^|\]]+)\|([^\]]+)\]/g, function (match, label, url) {
+          var placeholder = '__ACTION_' + actionPlaceholders.length + '__';
+          var safeLabel = escapeHtml(label.trim());
+          var safeUrl = escapeHtml(url.trim());
+          actionPlaceholders.push(
+            '<a class="copilot-chat__action-btn" href="' + safeUrl + '">' +
+            safeLabel +
+            ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
+            '</a>'
+          );
           return placeholder;
         });
-        // 2. Escapar HTML del resto
-        html = escapeHtml(html);
-        // 3. Restaurar enlaces
-        linkPlaceholders.forEach((link, i) => {
-          html = html.replace(`__LINK_${i}__`, link);
+
+        // 1. Extraer code blocks (```) antes de cualquier procesamiento.
+        var codeBlockPlaceholders = [];
+        processed = processed.replace(/```(\w*)\n([\s\S]*?)```/g, function (match, lang, code) {
+          var placeholder = '__CODEBLOCK_' + codeBlockPlaceholders.length + '__';
+          var safeCode = escapeHtml(code.replace(/\n$/, ''));
+          var langAttr = lang ? ' data-lang="' + escapeHtml(lang) + '"' : '';
+          var langLabel = lang ? '<span class="copilot-codeblock__lang">' + escapeHtml(lang) + '</span>' : '';
+          codeBlockPlaceholders.push(
+            '<div class="copilot-codeblock"' + langAttr + '>' + langLabel +
+            '<pre><code>' + safeCode + '</code></pre></div>'
+          );
+          return placeholder;
         });
-        // 4. Convertir **negrita**
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-        // 5. Saltos de línea
-        html = html.replace(/\n/g, '<br>');
-        return html;
+
+        // 2. Extraer enlaces antes de escapar.
+        var linkPlaceholders = [];
+        processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, linkText, url) {
+          var placeholder = '__LINK_' + linkPlaceholders.length + '__';
+          var safeText = escapeHtml(linkText);
+          linkPlaceholders.push('<a href="' + url + '" class="copilot-link" target="_blank" rel="noopener">' + safeText + '</a>');
+          return placeholder;
+        });
+
+        // 3. Escapar HTML.
+        processed = escapeHtml(processed);
+
+        // 4. Restaurar placeholders.
+        linkPlaceholders.forEach(function (link, i) {
+          processed = processed.replace('__LINK_' + i + '__', link);
+        });
+        actionPlaceholders.forEach(function (btn, i) {
+          processed = processed.replace('__ACTION_' + i + '__', btn);
+        });
+        codeBlockPlaceholders.forEach(function (block, i) {
+          processed = processed.replace('__CODEBLOCK_' + i + '__', block);
+        });
+
+        // 5. Procesar por lineas.
+        var lines = processed.split('\n');
+        var result = [];
+        var inUl = false;
+        var inOl = false;
+        var inBlockquote = false;
+
+        function closeLists() {
+          if (inUl) { result.push('</ul>'); inUl = false; }
+          if (inOl) { result.push('</ol>'); inOl = false; }
+        }
+
+        function closeBlockquote() {
+          if (inBlockquote) { result.push('</blockquote>'); inBlockquote = false; }
+        }
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+
+          if (/^-{3,}$/.test(line.trim()) || /^\*{3,}$/.test(line.trim())) {
+            closeLists(); closeBlockquote();
+            result.push('<hr class="copilot-hr">');
+            continue;
+          }
+
+          if (line.trim().indexOf('<div class="copilot-codeblock"') === 0) {
+            closeLists(); closeBlockquote();
+            result.push(line.trim());
+            continue;
+          }
+
+          if (/^\|(.+)\|$/.test(line.trim()) && i + 1 < lines.length && /^\|[\s\-:|]+\|$/.test(lines[i + 1].trim())) {
+            closeLists(); closeBlockquote();
+            var tableResult = parseTable(lines, i);
+            if (tableResult) {
+              result.push(tableResult.html);
+              i = tableResult.endIdx;
+              continue;
+            }
+          }
+
+          var headerMatch = line.match(/^(#{1,4})\s+(.+)$/);
+          if (headerMatch) {
+            closeLists(); closeBlockquote();
+            var level = Math.min(headerMatch[1].length + 1, 6);
+            result.push('<h' + level + ' class="copilot-heading copilot-heading--h' + level + '">' + applyInline(headerMatch[2]) + '</h' + level + '>');
+            continue;
+          }
+
+          var bqMatch = line.match(/^>\s*(.*)$/);
+          if (bqMatch) {
+            closeLists();
+            if (!inBlockquote) { result.push('<blockquote class="copilot-blockquote">'); inBlockquote = true; }
+            var bqContent = bqMatch[1].trim();
+            if (bqContent) {
+              result.push('<p>' + applyInline(bqContent) + '</p>');
+            }
+            continue;
+          } else if (inBlockquote) {
+            closeBlockquote();
+          }
+
+          var ulMatch = line.match(/^[\-]\s+(.+)$/) || line.match(/^\*\s+(.+)$/);
+          if (ulMatch) {
+            if (inOl) { result.push('</ol>'); inOl = false; }
+            if (!inUl) { result.push('<ul class="copilot-list copilot-list--ul">'); inUl = true; }
+            result.push('<li>' + applyInline(ulMatch[1]) + '</li>');
+            continue;
+          }
+
+          var olMatch = line.match(/^\d+\.\s+(.+)$/);
+          if (olMatch) {
+            if (inUl) { result.push('</ul>'); inUl = false; }
+            if (!inOl) { result.push('<ol class="copilot-list copilot-list--ol">'); inOl = true; }
+            result.push('<li>' + applyInline(olMatch[1]) + '</li>');
+            continue;
+          }
+
+          if (line.trim() === '') {
+            closeLists();
+            result.push('<div class="copilot-spacer"></div>');
+            continue;
+          }
+
+          closeLists();
+          result.push('<p class="copilot-paragraph">' + applyInline(line) + '</p>');
+        }
+
+        closeLists();
+        closeBlockquote();
+
+        return result.join('');
       }
 
       function escapeHtml(text) {

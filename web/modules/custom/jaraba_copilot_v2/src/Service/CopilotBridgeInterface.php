@@ -26,6 +26,22 @@ interface CopilotBridgeInterface {
   /**
    * Gets context relevant to the copilot for a specific user.
    *
+   * The returned array may include special underscore-prefixed keys that
+   * are extracted by CopilotOrchestratorService::resolveVerticalBridgeContext()
+   * and used to customize the copilot behavior:
+   *
+   * - '_system_prompt_addition': string — Full system prompt that REPLACES the
+   *   generic base/mode prompts. Used for coordinador, legal, etc.
+   * - '_modos_permitidos': string[] — Copilot modes allowed for this context.
+   * - '_instrucciones_fase': string[] — Phase-specific instructions.
+   * - '_instrucciones_barreras': string[] — Barrier-breaking instructions.
+   *
+   * Non-prefixed keys are formatted as context text injected into the prompt.
+   *
+   * For LLM-driven action buttons, include [ACTION:label|url] markers in
+   * '_system_prompt_addition' with available routes. See
+   * AndaluciaEiCopilotBridgeService for reference implementation.
+   *
    * @param int $userId
    *   The Drupal user ID.
    *
