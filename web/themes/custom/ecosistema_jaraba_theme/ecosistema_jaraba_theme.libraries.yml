@@ -567,6 +567,19 @@ quick-start:
     - core/drupalSettings
     - core/once
 
+# SETUP-WIZARD-DAILY-001: Setup Wizard + Daily Actions transversal pattern
+# CSS included in global-styling via main.scss (avoids SCSS-ENTRY-CONSOLIDATION-001)
+setup-wizard:
+  version: 1.0.0
+  js:
+    js/setup-wizard.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/slide-panel
+
 # HAL-AI-10: Core Web Vitals tracking (LCP, CLS, INP, FCP, TTFB)
 cwv-tracking:
   version: 1.0.0

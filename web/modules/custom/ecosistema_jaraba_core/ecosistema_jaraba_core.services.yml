@@ -1835,6 +1835,13 @@ services:
       - '@config.factory'
 
   # =========================================================================
+  # Setup Wizard — Registry (tagged services) — SETUP-WIZARD-DAILY-001
+  # =========================================================================
+
+  ecosistema_jaraba_core.setup_wizard_registry:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry
+
+  # =========================================================================
   # Tenant Settings Hub — Registry + Secciones (tagged services)
   # =========================================================================
 

@@ -406,3 +406,35 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
       - '@database'
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Coordinador)
+  # =========================================================================
+
+  jaraba_andalucia_ei.setup_wizard.plan_formativo:
+    class: Drupal\jaraba_andalucia_ei\SetupWizard\CoordinadorPlanFormativoStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_andalucia_ei.setup_wizard.acciones_formativas:
+    class: Drupal\jaraba_andalucia_ei\SetupWizard\CoordinadorAccionesFormativasStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_andalucia_ei.setup_wizard.sesiones:
+    class: Drupal\jaraba_andalucia_ei\SetupWizard\CoordinadorSesionesStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_andalucia_ei.setup_wizard.validacion:
+    class: Drupal\jaraba_andalucia_ei\SetupWizard\CoordinadorValidacionStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }

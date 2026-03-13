@@ -1,0 +1,203 @@
+{#
+/**
+ * @file
+ * Parcial reutilizable: Setup Wizard — SETUP-WIZARD-DAILY-001.
+ *
+ * Stepper horizontal premium con animaciones escalonadas, glow activo,
+ * y micro-interacciones de clase mundial.
+ * Auto-collapse cuando wizard.is_complete = TRUE.
+ * Mobile-first: stepper vertical en < 768px.
+ *
+ * Variables:
+ *   - wizard: Array from SetupWizardRegistry::getStepsForWizard()
+ *     - wizard_id: string
+ *     - is_complete: bool
+ *     - completion_percentage: int (0-100)
+ *     - steps: array of step objects
+ *   - wizard_title: string (TranslatableMarkup)
+ *   - wizard_subtitle: string (TranslatableMarkup)
+ *   - collapsed_label: string (TranslatableMarkup)
+ *
+ * Directrices aplicadas:
+ *   - SETUP-WIZARD-DAILY-001: Patrón transversal Setup Wizard
+ *   - CSS-VAR-ALL-COLORS-001: Todos los colores via var(--ej-*)
+ *   - ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001
+ *   - TWIG-INCLUDE-ONLY-001: Se usa con `only`
+ *   - ORTOGRAFIA-TRANS-001: Textos {% trans %} con tildes correctas
+ *   - ROUTE-LANGPREFIX-001: URLs via path()
+ *   - WCAG 2.1 AA: aria-labels, role, focus-visible
+ *
+ * @see SetupWizardRegistry::getStepsForWizard()
+ */
+#}
+
+{% if wizard and wizard.steps|length > 0 %}
+<section class="setup-wizard setup-wizard--entrance"
+         data-setup-wizard="{{ wizard.wizard_id }}"
+         data-wizard-complete="{{ wizard.is_complete ? 'true' : 'false' }}"
+         aria-label="{{ wizard_title }}">
+
+  {# === COLLAPSED STATE (visible when wizard is complete) === #}
+  <div class="setup-wizard__collapsed {% if not wizard.is_complete %}setup-wizard__collapsed--hidden{% endif %}"
+       data-wizard-collapsed>
+    <div class="setup-wizard__collapsed-content">
+      <span class="setup-wizard__collapsed-icon" aria-hidden="true">
+        {{ jaraba_icon('compliance', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+      </span>
+      <span class="setup-wizard__collapsed-label">{{ collapsed_label }}</span>
+      <span class="setup-wizard__collapsed-percentage">{{ wizard.completion_percentage }}%</span>
+    </div>
+    <button class="setup-wizard__expand-btn"
+            type="button"
+            aria-expanded="false"
+            aria-controls="wizard-panel-{{ wizard.wizard_id }}"
+            data-wizard-toggle>
+      {% trans %}Revisar configuración{% endtrans %}
+      <span class="setup-wizard__btn-arrow" aria-hidden="true">&darr;</span>
+    </button>
+  </div>
+
+  {# === EXPANDED STATE (visible when wizard is NOT complete or user expands) === #}
+  <div class="setup-wizard__panel {% if wizard.is_complete %}setup-wizard__panel--hidden{% endif %}"
+       id="wizard-panel-{{ wizard.wizard_id }}"
+       data-wizard-panel>
+
+    {# --- Header with title, subtitle, icon and progress --- #}
+    <div class="setup-wizard__header">
+      <div class="setup-wizard__header-text">
+        <h2 class="setup-wizard__title">
+          <span class="setup-wizard__title-icon" aria-hidden="true">
+            {{ jaraba_icon('actions', 'settings', { variant: 'duotone', color: 'azul-corporativo', size: '22px' }) }}
+          </span>
+          {{ wizard_title }}
+        </h2>
+        {% if wizard_subtitle %}
+          <p class="setup-wizard__subtitle">{{ wizard_subtitle }}</p>
+        {% endif %}
+      </div>
+      <div class="setup-wizard__progress" role="progressbar"
+           aria-valuenow="{{ wizard.completion_percentage }}"
+           aria-valuemin="0" aria-valuemax="100"
+           aria-label="{% trans %}Progreso de configuración{% endtrans %}">
+        <div class="setup-wizard__progress-ring" data-wizard-ring>
+          <svg viewBox="0 0 40 40" class="setup-wizard__ring-svg">
+            <circle class="setup-wizard__ring-bg" cx="20" cy="20" r="17" />
+            <circle class="setup-wizard__ring-fill" cx="20" cy="20" r="17"
+                    stroke-dasharray="{{ (wizard.completion_percentage * 106.8) / 100 }} 106.8"
+                    data-percentage="{{ wizard.completion_percentage }}" />
+          </svg>
+          <span class="setup-wizard__ring-text" data-wizard-percentage>
+            {{ wizard.completion_percentage }}<small>%</small>
+          </span>
+        </div>
+      </div>
+      {% if wizard.is_complete %}
+        <button class="setup-wizard__collapse-btn"
+                type="button"
+                aria-expanded="true"
+                aria-controls="wizard-panel-{{ wizard.wizard_id }}"
+                data-wizard-toggle>
+          {{ jaraba_icon('ui', 'chevron-up', { variant: 'outline', color: 'azul-corporativo', size: '16px' }) }}
+          <span class="visually-hidden">{% trans %}Colapsar{% endtrans %}</span>
+        </button>
+      {% endif %}
+    </div>
+
+    {# --- Stepper with steps --- #}
+    <div class="setup-wizard__stepper" role="list">
+      {% for step in wizard.steps %}
+        <div class="setup-wizard__step
+                    {% if step.is_complete %}setup-wizard__step--complete{% endif %}
+                    {% if step.is_active %}setup-wizard__step--active{% endif %}
+                    {% if step.is_optional %}setup-wizard__step--optional{% endif %}"
+             role="listitem"
+             data-step-id="{{ step.id }}"
+             data-step-index="{{ loop.index0 }}"
+             style="--step-delay: {{ loop.index0 * 80 }}ms;">
+
+          {# --- Step number indicator --- #}
+          <div class="setup-wizard__step-indicator">
+            {% if step.is_complete %}
+              <span class="setup-wizard__step-check" aria-hidden="true">
+                {{ jaraba_icon('compliance', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+              </span>
+            {% else %}
+              <span class="setup-wizard__step-number">{{ step.step_number }}</span>
+            {% endif %}
+          </div>
+
+          {# --- Connector line (between steps, not on last) --- #}
+          {% if not loop.last %}
+            <div class="setup-wizard__step-connector
+                        {% if step.is_complete %}setup-wizard__step-connector--complete{% endif %}"
+                 aria-hidden="true">
+              <div class="setup-wizard__connector-fill"></div>
+            </div>
+          {% endif %}
+
+          {# --- Step content card --- #}
+          <div class="setup-wizard__step-card">
+            <div class="setup-wizard__step-icon" aria-hidden="true">
+              {{ jaraba_icon(step.icon.category, step.icon.name, {
+                variant: step.icon.variant|default('duotone'),
+                color: step.is_complete ? 'verde-innovacion' : (step.is_active ? 'naranja-impulso' : 'azul-corporativo'),
+                size: '32px'
+              }) }}
+            </div>
+            <div class="setup-wizard__step-text">
+              <h3 class="setup-wizard__step-label">{{ step.label }}</h3>
+              <p class="setup-wizard__step-desc">{{ step.description }}</p>
+
+              {# --- Completion data (badges, warnings) --- #}
+              {% if step.completion_data.label is defined %}
+                <span class="setup-wizard__step-status
+                             {% if step.is_complete %}setup-wizard__step-status--success{% endif %}
+                             {% if step.completion_data.warning is defined %}setup-wizard__step-status--warning{% endif %}">
+                  {% if step.is_complete %}
+                    {{ jaraba_icon('compliance', 'check-circle', { variant: 'outline', color: 'verde-innovacion', size: '12px' }) }}
+                  {% endif %}
+                  {{ step.completion_data.label }}
+                </span>
+              {% endif %}
+              {% if step.completion_data.warning is defined and not step.is_complete %}
+                <span class="setup-wizard__step-warning">
+                  {{ jaraba_icon('compliance', 'alert-triangle', { variant: 'outline', color: 'naranja-impulso', size: '14px' }) }}
+                  {{ step.completion_data.warning }}
+                </span>
+              {% endif %}
+            </div>
+
+            {# --- Action button --- #}
+            {% if not step.is_complete or step.is_active %}
+              <a href="{{ path(step.route, step.route_params) }}"
+                 class="setup-wizard__step-action {% if step.is_active %}setup-wizard__step-action--pulse{% endif %}"
+                 {% if step.use_slide_panel %}
+                   data-slide-panel="{{ step.slide_panel_size }}"
+                   data-slide-panel-title="{{ step.label }}"
+                 {% endif %}>
+                {% if step.is_complete %}
+                  {% trans %}Editar{% endtrans %}
+                {% else %}
+                  {% trans %}Configurar{% endtrans %}
+                {% endif %}
+                <span class="setup-wizard__action-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            {% elseif step.is_complete %}
+              <a href="{{ path(step.route, step.route_params) }}"
+                 class="setup-wizard__step-action setup-wizard__step-action--edit"
+                 {% if step.use_slide_panel %}
+                   data-slide-panel="{{ step.slide_panel_size }}"
+                   data-slide-panel-title="{{ step.label }}"
+                 {% endif %}>
+                {{ jaraba_icon('actions', 'edit', { variant: 'outline', color: 'azul-corporativo', size: '14px' }) }}
+                <span class="visually-hidden">{% trans %}Editar{% endtrans %} {{ step.label }}</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+{% endif %}

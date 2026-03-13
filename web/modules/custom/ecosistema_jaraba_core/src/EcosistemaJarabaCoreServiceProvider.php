@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Drupal\ecosistema_jaraba_core\DependencyInjection\Compiler\SetupWizardCompilerPass;
 use Drupal\ecosistema_jaraba_core\DependencyInjection\Compiler\TenantSettingsSectionPass;
 use Drupal\ecosistema_jaraba_core\DependencyInjection\Compiler\UserProfileSectionPass;
 use Symfony\Component\DependencyInjection\Reference;
@@ -30,6 +31,7 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
     {
         $container->addCompilerPass(new TenantSettingsSectionPass());
         $container->addCompilerPass(new UserProfileSectionPass());
+        $container->addCompilerPass(new SetupWizardCompilerPass());
 
         $modules = $container->getParameter('container.modules');
 

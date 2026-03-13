@@ -967,6 +967,48 @@ entity.accion_formativa_ei.settings:
   requirements:
     _permission: 'administer andalucia ei'
 
+# === SESION PROGRAMADA: COLECCIÓN ADMIN ===
+entity.sesion_programada_ei.collection:
+  path: '/admin/content/sesiones-programadas-ei'
+  defaults:
+    _entity_list: 'sesion_programada_ei'
+    _title: 'Sesiones Programadas'
+  requirements:
+    _permission: 'view sesion programada ei'
+
+# === SESION PROGRAMADA: CRUD ===
+entity.sesion_programada_ei.canonical:
+  path: '/admin/content/sesiones-programadas-ei/{sesion_programada_ei}'
+  defaults:
+    _entity_view: 'sesion_programada_ei'
+    _title: 'Ver Sesión Programada'
+  requirements:
+    _permission: 'view sesion programada ei'
+
+entity.sesion_programada_ei.add_form:
+  path: '/admin/content/sesiones-programadas-ei/add'
+  defaults:
+    _entity_form: 'sesion_programada_ei.add'
+    _title: 'Programar Sesión'
+  requirements:
+    _permission: 'create sesion programada ei'
+
+entity.sesion_programada_ei.edit_form:
+  path: '/admin/content/sesiones-programadas-ei/{sesion_programada_ei}/edit'
+  defaults:
+    _entity_form: 'sesion_programada_ei.edit'
+    _title: 'Editar Sesión'
+  requirements:
+    _permission: 'edit sesion programada ei'
+
+entity.sesion_programada_ei.delete_form:
+  path: '/admin/content/sesiones-programadas-ei/{sesion_programada_ei}/delete'
+  defaults:
+    _entity_form: 'sesion_programada_ei.delete'
+    _title: 'Eliminar Sesión'
+  requirements:
+    _permission: 'delete sesion programada ei'
+
 # === SESION PROGRAMADA: SETTINGS (Field UI) ===
 entity.sesion_programada_ei.settings:
   path: '/admin/structure/sesion-programada-ei'
@@ -1157,3 +1199,83 @@ jaraba_andalucia_ei.ical.subscribe_url:
   methods: [GET]
   requirements:
     _permission: 'view programa participante ei'
+
+# === SPRINT 19: CALENDARIO INTERACTIVO ===
+
+jaraba_andalucia_ei.api.hub.calendar_events:
+  path: '/api/v1/andalucia-ei/hub/calendar-events'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::calendarEvents'
+  methods: [GET]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.hub.session_reschedule:
+  path: '/api/v1/andalucia-ei/hub/session/{id}/reschedule'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorHubApiController::rescheduleSession'
+  methods: [POST]
+  requirements:
+    _permission: 'administer andalucia ei'
+    _csrf_request_header_token: 'TRUE'
+    id: '\d+'
+
+# ===================================================================
+# === SPRINT 20: SLIDE-PANEL FORMS (FRONTEND HUB) ===
+# ===================================================================
+# SLIDE-PANEL-RENDER-001: Frontend routes for entity forms served via
+# slide-panel from the Coordinador Hub. These routes serve the SAME
+# PremiumEntityFormBase forms but via renderPlain() for AJAX.
+# Admin routes (/admin/content/*) are preserved for Field UI and Views.
+
+jaraba_andalucia_ei.hub.plan_formativo.add:
+  path: '/api/v1/andalucia-ei/hub/plan-formativo/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::addPlanFormativo'
+    _title: 'Nuevo Plan Formativo'
+  requirements:
+    _permission: 'create plan formativo ei'
+
+jaraba_andalucia_ei.hub.plan_formativo.edit:
+  path: '/api/v1/andalucia-ei/hub/plan-formativo/{id}/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::editPlanFormativo'
+    _title: 'Editar Plan Formativo'
+  requirements:
+    _permission: 'edit plan formativo ei'
+    id: '\d+'
+
+jaraba_andalucia_ei.hub.accion_formativa.add:
+  path: '/api/v1/andalucia-ei/hub/accion-formativa/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::addAccionFormativa'
+    _title: 'Nueva Acción Formativa'
+  requirements:
+    _permission: 'create accion formativa ei'
+
+jaraba_andalucia_ei.hub.accion_formativa.edit:
+  path: '/api/v1/andalucia-ei/hub/accion-formativa/{id}/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::editAccionFormativa'
+    _title: 'Editar Acción Formativa'
+  requirements:
+    _permission: 'edit accion formativa ei'
+    id: '\d+'
+
+jaraba_andalucia_ei.hub.sesion_programada.add:
+  path: '/api/v1/andalucia-ei/hub/sesion-programada/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::addSesionProgramada'
+    _title: 'Programar Nueva Sesión'
+  requirements:
+    _permission: 'create sesion programada ei'
+
+jaraba_andalucia_ei.hub.sesion_programada.edit:
+  path: '/api/v1/andalucia-ei/hub/sesion-programada/{id}/form'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::editSesionProgramada'
+    _title: 'Editar Sesión Programada'
+  requirements:
+    _permission: 'edit sesion programada ei'
+    id: '\d+'

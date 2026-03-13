@@ -1,0 +1,87 @@
+{#
+/**
+ * @file
+ * Parcial reutilizable: Daily Actions — SETUP-WIZARD-DAILY-001.
+ *
+ * Grid responsive premium de action cards para operaciones diarias.
+ * Entrada escalonada, hover lift, badges animados.
+ *
+ * Variables:
+ *   - daily_actions: array of action objects
+ *     - id: string
+ *     - label: TranslatableMarkup
+ *     - description: TranslatableMarkup
+ *     - icon: { category: string, name: string, variant: string }
+ *     - color: string (azul-corporativo | naranja-impulso | verde-innovacion)
+ *     - route: string (Drupal route name)
+ *     - route_params: array
+ *     - href_override: string (optional, overrides path() generation)
+ *     - use_slide_panel: bool
+ *     - slide_panel_size: string
+ *     - badge: int|null (counter badge, e.g., pending items)
+ *     - badge_type: string (info | warning | critical)
+ *     - is_primary: bool (primary action gets larger card)
+ *
+ * Directrices aplicadas:
+ *   - SETUP-WIZARD-DAILY-001: Patrón transversal Daily Actions
+ *   - CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*)
+ *   - ICON-CONVENTION-001, ICON-DUOTONE-001
+ *   - TWIG-INCLUDE-ONLY-001: Se usa con `only`
+ *   - ROUTE-LANGPREFIX-001: URLs via path()
+ *   - WCAG 2.1 AA: aria-labels en badges
+ *
+ * @see SetupWizardRegistry
+ */
+#}
+
+{% if daily_actions is not empty %}
+<div class="daily-actions daily-actions--entrance" aria-label="{{ actions_title|default('Acciones rápidas'|t) }}">
+  {% if actions_title %}
+    <h2 class="daily-actions__title">
+      <span class="daily-actions__title-icon" aria-hidden="true">
+        {{ jaraba_icon('actions', 'rocket', { variant: 'duotone', color: 'naranja-impulso', size: '18px' }) }}
+      </span>
+      {{ actions_title }}
+    </h2>
+  {% endif %}
+
+  <div class="daily-actions__grid">
+    {% for action in daily_actions %}
+      <a href="{{ action.href_override is defined and action.href_override ? action.href_override : path(action.route, action.route_params|default({})) }}"
+         class="daily-actions__card
+                {% if action.is_primary|default(false) %}daily-actions__card--primary{% endif %}
+                daily-actions__card--{{ action.color|default('azul-corporativo') }}"
+         style="--card-delay: {{ loop.index0 * 60 }}ms;"
+         {% if action.use_slide_panel|default(false) %}
+           data-slide-panel="{{ action.slide_panel_size|default('medium') }}"
+           data-slide-panel-title="{{ action.label }}"
+         {% endif %}>
+
+        <span class="daily-actions__icon daily-actions__icon--{{ action.color|default('azul-corporativo') }}">
+          {{ jaraba_icon(
+            action.icon.category,
+            action.icon.name,
+            { variant: action.icon.variant|default('duotone'), size: '24px' }
+          ) }}
+        </span>
+
+        <span class="daily-actions__content">
+          <span class="daily-actions__label">{{ action.label }}</span>
+          <span class="daily-actions__desc">{{ action.description }}</span>
+        </span>
+
+        {% if action.badge is defined and action.badge is not null and action.badge > 0 %}
+          <span class="daily-actions__badge daily-actions__badge--{{ action.badge_type|default('info') }}"
+                aria-label="{{ action.badge }} {% trans %}pendientes{% endtrans %}">
+            {{ action.badge }}
+          </span>
+        {% endif %}
+
+        <span class="daily-actions__arrow" aria-hidden="true">
+          {{ jaraba_icon('ui', 'arrow-right', { variant: 'outline', size: '16px' }) }}
+        </span>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

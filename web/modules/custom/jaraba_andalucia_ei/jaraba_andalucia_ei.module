@@ -210,6 +210,8 @@ function jaraba_andalucia_ei_theme(): array {
         'historias_exito' => [],
         'sto_resumen' => NULL,
         'advanced_analytics' => NULL,
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'coordinador-dashboard',
     ],
@@ -2522,4 +2524,44 @@ function _jaraba_andalucia_ei_auto_asignar_carril_dime(\Drupal\Core\Entity\Entit
     'Carril auto-asignado: @carril para participante #@id (DIME score: @score).',
     ['@carril' => $carril, '@id' => $entity->id() ?? 'nuevo', '@score' => $score]
   );
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Sprint 19: Inject calendar library + drupalSettings on the
+ * sesion_programada_ei admin collection page for dual-view calendar.
+ * ROUTE-LANGPREFIX-001: URLs via Url::fromRoute().
+ */
+function jaraba_andalucia_ei_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'entity.sesion_programada_ei.collection') {
+    return;
+  }
+
+  $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/coordinador-calendar';
+  $attachments['#attached']['library'][] = 'ecosistema_jaraba_theme/route-coordinador-hub';
+
+  try {
+    $calendarEventsUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.api.hub.calendar_events')->toString();
+    $rescheduleUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.api.hub.session_reschedule', ['id' => '__ID__'])->toString();
+    $subscribeUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.ical.subscribe_url')->toString();
+    $sessionCreateUrl = \Drupal\Core\Url::fromRoute('entity.sesion_programada_ei.add_form')->toString();
+    $sessionEditUrl = \Drupal\Core\Url::fromRoute('entity.sesion_programada_ei.edit_form', ['sesion_programada_ei' => 99999999])->toString();
+  }
+  catch (\Throwable) {
+    return;
+  }
+
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['apiUrls']['calendarEvents'] = $calendarEventsUrl;
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['apiUrls']['sessionReschedule'] = $rescheduleUrl;
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['apiUrls']['calendarSubscribe'] = $subscribeUrl;
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['apiUrls']['sessionCreate'] = $sessionCreateUrl;
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['apiUrls']['sessionEdit'] = $sessionEditUrl;
+  $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['hub']['calendarConfig'] = [
+    'tiposSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::TIPOS_SESION,
+    'modalidades' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::MODALIDADES,
+    'estadosSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::ESTADOS,
+    'fases' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::FASES_PROGRAMA,
+  ];
 }

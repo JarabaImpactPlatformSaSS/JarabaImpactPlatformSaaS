@@ -2634,3 +2634,16 @@ ecosistema_jaraba_core.api.vertical_brand:
   methods: [GET]
   requirements:
     _access: 'TRUE'
+
+# ---------------------------------------------------------------------------
+# SETUP WIZARD API — SETUP-WIZARD-DAILY-001
+# ---------------------------------------------------------------------------
+
+ecosistema_jaraba_core.setup_wizard_status:
+  path: '/api/v1/setup-wizard/{wizard_id}/status'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SetupWizardApiController::getStatus'
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+  methods: [GET]

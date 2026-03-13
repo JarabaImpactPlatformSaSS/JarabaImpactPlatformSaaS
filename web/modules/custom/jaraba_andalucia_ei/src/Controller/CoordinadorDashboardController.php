@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
@@ -55,6 +56,7 @@ class CoordinadorDashboardController extends ControllerBase {
     protected ?EiEmprendimientoBridgeService $emprendimientoBridge = NULL,
     protected ?EiAlumniBridgeService $alumniBridge = NULL,
     protected ?StoBidireccionalService $stoBidireccional = NULL,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -94,6 +96,8 @@ class CoordinadorDashboardController extends ControllerBase {
         ? $container->get('jaraba_andalucia_ei.ei_alumni_bridge') : NULL,
       $container->has('jaraba_andalucia_ei.sto_bidireccional')
         ? $container->get('jaraba_andalucia_ei.sto_bidireccional') : NULL,
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
     );
   }
 
@@ -200,6 +204,16 @@ class CoordinadorDashboardController extends ControllerBase {
       ? $this->safeCall(fn() => $this->hubService->getUpcomingSessionsPiil($tenantId))
       : [];
 
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    $setupWizard = NULL;
+    $dailyActions = [];
+    if ($this->wizardRegistry && $tenantId) {
+      $setupWizard = $this->wizardRegistry->hasWizard('coordinador_ei')
+        ? $this->wizardRegistry->getStepsForWizard('coordinador_ei', $tenantId)
+        : NULL;
+      $dailyActions = $this->buildDailyActions($tenantId, $formacionStats, $voboPendientes ?? 0);
+    }
+
     // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.
     $apiUrls = $this->resolveHubApiUrls();
 
@@ -240,11 +254,17 @@ class CoordinadorDashboardController extends ControllerBase {
       '#historias_exito' => $historiasExito ?? [],
       '#sto_resumen' => $stoResumen,
       '#advanced_analytics' => $advancedAnalytics,
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/dashboard',
           'jaraba_andalucia_ei/coordinador-hub',
+          'jaraba_andalucia_ei/coordinador-calendar',
           'ecosistema_jaraba_theme/route-coordinador-hub',
+          'ecosistema_jaraba_theme/setup-wizard',
+          // Pre-load for slide-panel entity forms (renderPlain strips #attached).
+          'jaraba_andalucia_ei/recurrence-form',
         ],
         'drupalSettings' => [
           'jarabaAndaluciaEi' => [
@@ -265,6 +285,13 @@ class CoordinadorDashboardController extends ControllerBase {
               'phases' => ['acogida', 'diagnostico', 'atencion', 'insercion', 'seguimiento', 'baja'],
               'phaseLabels' => array_map('strval', $phaseLabels),
               'estados' => ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'],
+              // Sprint 19: Calendar config.
+              'calendarConfig' => [
+                'tiposSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::TIPOS_SESION,
+                'modalidades' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::MODALIDADES,
+                'estadosSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::ESTADOS,
+                'fases' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::FASES_PROGRAMA,
+              ],
             ],
           ],
         ],
@@ -324,16 +351,45 @@ class CoordinadorDashboardController extends ControllerBase {
       'indicadoresEsf' => 'jaraba_andalucia_ei.api.hub.indicadores_esf',
       // Sprint 17: iCal feed subscription.
       'calendarSubscribe' => 'jaraba_andalucia_ei.ical.subscribe_url',
+      // Sprint 19: Calendar interactive API.
+      'calendarEvents' => 'jaraba_andalucia_ei.api.hub.calendar_events',
+      'sessionReschedule' => 'jaraba_andalucia_ei.api.hub.session_reschedule',
+      'sessionCreate' => 'entity.sesion_programada_ei.add_form',
+      'sessionEdit' => 'entity.sesion_programada_ei.edit_form',
+      // Sprint 20: Slide-panel form URLs for frontend hub.
+      'accionFormativaAdd' => 'jaraba_andalucia_ei.hub.accion_formativa.add',
+      'accionFormativaEdit' => 'jaraba_andalucia_ei.hub.accion_formativa.edit',
+      'sesionProgramadaAdd' => 'jaraba_andalucia_ei.hub.sesion_programada.add',
+      'sesionProgramadaEdit' => 'jaraba_andalucia_ei.hub.sesion_programada.edit',
     ];
+
+    // Rutas con {id} custom placeholder (API endpoints).
+    // Uses __ID__ as placeholder — JS replaces with actual ID.
+    $idPlaceholderRoutes = ['solicitudApprove', 'solicitudReject', 'changePhase', 'sessionReschedule'];
+    // Rutas entity con {entity_type_id} placeholder (entity forms).
+    // Entity routes require numeric IDs — use 99999999 as placeholder,
+    // JS replaces it with actual ID via string replace.
+    $entityPlaceholderRoutes = ['sessionEdit' => 'sesion_programada_ei'];
+    // Rutas con {id} constrained to \d+ — use numeric placeholder.
+    // JS replaces 99999999 with actual ID.
+    $numericIdPlaceholderRoutes = ['accionFormativaEdit', 'sesionProgramadaEdit'];
 
     $urls = [];
     foreach ($routes as $key => $route) {
       try {
-        // Para rutas con {id} placeholder, resolvemos base sin parametro.
-        $urls[$key] = Url::fromRoute($route, in_array($key, ['solicitudApprove', 'solicitudReject', 'changePhase'], TRUE)
-          ? ['id' => '__ID__']
-          : []
-        )->toString();
+        if (in_array($key, $idPlaceholderRoutes, TRUE)) {
+          $urls[$key] = Url::fromRoute($route, ['id' => '__ID__'])->toString();
+        }
+        elseif (isset($entityPlaceholderRoutes[$key])) {
+          $urls[$key] = Url::fromRoute($route, [$entityPlaceholderRoutes[$key] => 99999999])->toString();
+        }
+        elseif (in_array($key, $numericIdPlaceholderRoutes, TRUE)) {
+          // Routes with {id} constrained to \d+ — numeric placeholder.
+          $urls[$key] = Url::fromRoute($route, ['id' => 99999999])->toString();
+        }
+        else {
+          $urls[$key] = Url::fromRoute($route)->toString();
+        }
       }
       catch (\Throwable) {
         $urls[$key] = NULL;
@@ -695,6 +751,110 @@ class CoordinadorDashboardController extends ControllerBase {
     }
 
     return $defaults;
+  }
+
+  /**
+   * Builds daily action cards for the coordinador dashboard.
+   *
+   * SETUP-WIZARD-DAILY-001: Operational actions separated from setup steps.
+   * These are recurring daily tasks, NOT one-time configuration.
+   *
+   * @param int $tenantId
+   *   Tenant group ID.
+   * @param array $formacionStats
+   *   Pre-computed formacion stats from buildFormacionStats().
+   * @param int $voboPendientes
+   *   Count of VoBo pending actions.
+   *
+   * @return array
+   *   Array of action definitions ready for _daily-actions.html.twig.
+   */
+  protected function buildDailyActions(int $tenantId, array $formacionStats, int $voboPendientes): array {
+    $pendingSolicitudes = 0;
+    try {
+      if ($this->entityTypeManager->hasDefinition('solicitud_ei')) {
+        $query = $this->entityTypeManager->getStorage('solicitud_ei')
+          ->getQuery()
+          ->accessCheck(TRUE)
+          ->condition('estado', 'pendiente')
+          ->count();
+        $this->addTenantCondition($query, $tenantId);
+        $pendingSolicitudes = (int) $query->execute();
+      }
+    }
+    catch (\Throwable) {
+    }
+
+    return [
+      [
+        'id' => 'solicitudes',
+        'label' => $this->t('Gestionar solicitudes'),
+        'description' => $this->t('Revisar y procesar solicitudes de participantes'),
+        'icon' => ['category' => 'users', 'name' => 'user-check', 'variant' => 'duotone'],
+        'color' => 'azul-corporativo',
+        'href_override' => '#panel-solicitudes',
+        'route' => 'jaraba_andalucia_ei.coordinador_dashboard',
+        'route_params' => [],
+        'use_slide_panel' => FALSE,
+        'badge' => $pendingSolicitudes,
+        'badge_type' => $pendingSolicitudes > 10 ? 'critical' : ($pendingSolicitudes > 0 ? 'warning' : 'info'),
+        'is_primary' => TRUE,
+      ],
+      [
+        'id' => 'nuevo_participante',
+        'label' => $this->t('Nuevo participante'),
+        'description' => $this->t('Registrar un nuevo participante en el programa'),
+        'icon' => ['category' => 'users', 'name' => 'user-plus', 'variant' => 'duotone'],
+        'color' => 'azul-corporativo',
+        'route' => 'entity.programa_participante_ei.add_form',
+        'route_params' => [],
+        'use_slide_panel' => TRUE,
+        'slide_panel_size' => 'large',
+        'badge' => NULL,
+        'badge_type' => 'info',
+        'is_primary' => FALSE,
+      ],
+      [
+        'id' => 'programar_sesion',
+        'label' => $this->t('Programar sesión'),
+        'description' => $this->t('Crear una nueva sesión formativa'),
+        'icon' => ['category' => 'education', 'name' => 'calendar-clock', 'variant' => 'duotone'],
+        'color' => 'verde-innovacion',
+        'route' => 'jaraba_andalucia_ei.hub.sesion_programada.add',
+        'route_params' => [],
+        'use_slide_panel' => TRUE,
+        'slide_panel_size' => 'large',
+        'badge' => NULL,
+        'badge_type' => 'info',
+        'is_primary' => FALSE,
+      ],
+      [
+        'id' => 'exportar_sto',
+        'label' => $this->t('Exportar STO'),
+        'description' => $this->t('Generar fichero STO para SEPE'),
+        'icon' => ['category' => 'business', 'name' => 'file-export', 'variant' => 'duotone'],
+        'color' => 'naranja-impulso',
+        'route' => 'jaraba_andalucia_ei.sto_export',
+        'route_params' => [],
+        'use_slide_panel' => FALSE,
+        'badge' => NULL,
+        'badge_type' => 'info',
+        'is_primary' => FALSE,
+      ],
+      [
+        'id' => 'leads',
+        'label' => $this->t('Captación de leads'),
+        'description' => $this->t('Gestionar leads y prospección empresarial'),
+        'icon' => ['category' => 'analytics', 'name' => 'funnel', 'variant' => 'duotone'],
+        'color' => 'naranja-impulso',
+        'route' => 'jaraba_andalucia_ei.leads_guia',
+        'route_params' => [],
+        'use_slide_panel' => FALSE,
+        'badge' => NULL,
+        'badge_type' => 'info',
+        'is_primary' => FALSE,
+      ],
+    ];
   }
 
   /**
