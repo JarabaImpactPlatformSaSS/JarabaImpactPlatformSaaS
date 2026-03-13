@@ -4,7 +4,10 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-11
-**Versión:** 161.0.0 (SETUP-WIZARD-DAILY-001 — patrón transversal Setup Wizard + Daily Actions + 14 SVG icons + ICON-SYMLINK-REL-001 + aprendizaje #182)
+**Versión:** 162.0.0 (AI-ECOSYSTEM-SAFEGUARD — auditoría integral ecosistema IA: 11 gaps, 6 reglas, CopilotBridge 10/10, streaming parity, Markdown clase mundial + aprendizaje #183)
+
+> **📋 AI-ECOSYSTEM-SAFEGUARD AUDITORÍA INTEGRAL — v133 DIRECTRICES + v121 ARQUITECTURA** (2026-03-13)
+> - **Contexto:** Auditoría integral del ecosistema IA nativo. 11 gaps de paridad y coherencia corregidos entre StreamingOrchestratorService y CopilotOrchestratorService. 6 reglas nuevas: COPILOT-BRIDGE-COVERAGE-001 (10/10 verticales con CopilotBridgeInterface), STREAMING-PARITY-001 (7 dimensiones de paridad streaming-buffered), CIRCUIT-BREAKER-TENANT-001 (State API scoped por tenant), CACHE-TENANT-STRICT-001 (no vertical fallback en cache keys), COPILOT-CTA-ACTION-001 ([ACTION:label|url] LLM-driven), COPILOT-MARKDOWN-001 (parser Markdown clase mundial). DemoCopilotBridgeService nuevo. LegalCopilotBridgeService completado. AndaluciaEiCopilotBridgeService +14 ACTION routes. Markdown premium: code blocks language badge, tablas responsive, blockquotes, bold+italic+strikethrough. Regla de oro #124. Aprendizaje #183.
 
 > **📋 SETUP-WIZARD-DAILY-001 PATRÓN TRANSVERSAL — v132 DIRECTRICES + v120 ARQUITECTURA** (2026-03-13)
 > - **Contexto:** Patrón SaaS transversal que separa configuración one-time (wizard stepper) de acciones operativas diarias (action cards). Infraestructura en ecosistema_jaraba_core: SetupWizardStepInterface (13 métodos) + SetupWizardRegistry (tagged services + CompilerPass) + API REST async. Caso vertical Andalucía +ei: 4 wizard steps PIIL (Plan→Acciones→Sesiones→Validación) + 5 daily action cards. Premium UI: 10 keyframes CSS, ring SVG circular, confetti, stagger entrance. 14 SVG icons nuevos. 2 reglas: SETUP-WIZARD-DAILY-001 (P0), ICON-SYMLINK-REL-001 (P1). Regla de oro #123. Aprendizaje #182.

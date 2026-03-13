@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-11
-**Versión:** 120.0.0 (SETUP-WIZARD-DAILY-001 — patrón transversal Setup Wizard + Daily Actions + 14 SVG icons + ICON-SYMLINK-REL-001 + aprendizaje #182)
+**Versión:** 121.0.0 (AI-ECOSYSTEM-SAFEGUARD — auditoría integral ecosistema IA: 11 gaps corregidos, CopilotBridge 10/10, streaming-buffered parity, circuit breaker tenant-scoped + aprendizaje #183)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -558,6 +558,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── ChatInput::setStreamedOutput(TRUE) → Provider real streaming     │
 │   ├── PHP Generator yield: chunk, cached, done, error                  │
 │   ├── Buffer 80 chars + PII masking incremental (GAP-03/10)           │
+│   ├── Paridad con buffered: temp 0.3/0.7, PII, circuit breaker tenant │
+│   ├── Semantic cache composite mode (mode:current_page)                │
 │   └── Fallback automatico a buffered si servicio no disponible         │
 │                                                                         │
 │   🔧 Native Function Calling API-Level (GAP-09)                        │
@@ -3057,6 +3059,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-13 | **121.0.0** | **AI-ECOSYSTEM-SAFEGUARD Auditoría Integral Ecosistema IA Nativo:** Streaming architecture: StreamingOrchestratorService paridad con buffered en 7 dimensiones (temperature 0.3/0.7, PII masking bidireccional, circuit breaker tenant-scoped, semantic cache composite mode, AIIdentityRule SSOT, catch(\Throwable), extractSuggestions [ACTION]). CopilotBridge cobertura 10/10 verticales: +DemoCopilotBridgeService (ecosistema_jaraba_core), LegalCopilotBridgeService completado con CopilotBridgeInterface. Circuit breaker: getCircuitBreakerKey() con tenant_id en State API keys. Cache: tenant_id ?? '0' (eliminado vertical fallback). Markdown parser clase mundial en copilot-chat-widget.js + contextual-copilot.js: code blocks con language badge, tablas pipe-syntax, blockquotes, bold+italic+strikethrough, [ACTION:label\|url] CTAs. SCSS premium: dark code theme (#1e293b), table responsive hover, action button lift animation. Aprendizaje #183. |
 | 2026-03-13 | **120.0.0** | **SETUP-WIZARD-DAILY-001 Patrón Transversal + Premium World-Class UI:** Nueva seccion arquitectural "SETUP WIZARD: PATRON TRANSVERSAL" con infraestructura completa: SetupWizardStepInterface (13 metodos), SetupWizardRegistry (tagged services + CompilerPass), SetupWizardApiController (REST async), parciales Twig reutilizables (_setup-wizard + _daily-actions), JS celebrations. Caso vertical Andalucia +ei: 4 wizard steps + 5 daily action cards. Icon system: 14 SVGs nuevos, ~366 total (de ~352). ICON-SYMLINK-REL-001: symlinks relativos obligatorio para Docker/Lando. Aprendizaje #182. |
 | 2026-03-13 | **119.0.0** | **ORTOGRAFIA-TRANS-001 + Coordinador Hub Premium Elevation:** Seccion 10.8.1 actualizada de 18 a 19 scripts de validacion (+validate-twig-ortografia.php: diccionario 402 entradas tildes+ñ, deteccion generica -cion/-sion, filtro comentarios Twig). lint-staged ampliado: .twig files pre-commit. post-edit-lint.sh: seccion ORTOGRAFIA-TRANS-001 con ~50 palabras. Coordinador Hub: tabs "white pill on tinted rail" + compliance cards --ring-color cascade. Aprendizaje #181. |
 | 2026-03-11 | **116.0.0** | **Sprint 14 Reestructuración Actuaciones PIIL — Normative Type Alignment + Persona Atendida/Insertada:** MaterialDidacticoEi entity nueva (7 tipos material, archivo+url_externa, TENANT-ISOLATION-ACCESS-001). ActuacionComputeService (cálculo persona atendida/insertada, triggered via InscripcionSesionEi::postSave con PRESAVE-RESILIENCE-001). SesionProgramadaEi: 6 tipos PIIL-aligned (orient_lab_ind/grup, orient_ins_ind/grup, sesion_formativa, tutoria_seguimiento) con FASE_POR_TIPO + TIPOS_SESION_LEGACY_MAP + preSave formativa→accion_formativa validation. ActuacionSto: 8 tipos con TIPOS_LEGACY_MAP. AccionFormativaEi: +contenido_sto +subcontenido_sto +materiales. PlanFormativoEi: +cumple_persona_atendida +cumple_persona_insertada. CoordinadorHubService: +getEstadisticasPorFase() +getUpcomingSessionsPiil(). Dashboard: tab PIIL con Fase Atención/Inserción + KPIs. Migration script. hook_update_10023. 17 tests (368 total). Regla de oro #119. Aprendizaje #178. |

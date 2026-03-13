@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-12
-**Version:** 85.0.0 (SETUP-WIZARD-DAILY-001 — patron transversal Setup Wizard + Daily Actions + ICON-SYMLINK-REL-001 + regla de oro #123 + aprendizaje #182)
+**Version:** 86.0.0 (AI-ECOSYSTEM-SAFEGUARD — auditoria integral ecosistema IA: 11 gaps, 6 reglas, CopilotBridge 10/10, streaming parity + regla de oro #124 + aprendizaje #183)
 
 ---
 ## 1. Inicio de Sesion
