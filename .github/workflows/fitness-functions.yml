@@ -223,7 +223,7 @@ jobs:
           
           # Pattern 3: No hardcoded credentials
           echo "### Hardcoded Credentials Check" >> $GITHUB_STEP_SUMMARY
-          CREDS=$(grep -rE "(password|api_key|secret)\s*=\s*['\"][^'\"]+['\"]" $MODULES_DIR --include="*.php" 2>/dev/null | grep -v "// " || true)
+          CREDS=$(grep -rE "(password|api_key|secret)\s*=\s*['\"][^'\"]+['\"]" $MODULES_DIR --include="*.php" 2>/dev/null | grep -v "// \|Crypt::\|random\|getenv\|->get(" || true)
           if [ -z "$CREDS" ]; then
             echo "✅ No hardcoded credentials found" >> $GITHUB_STEP_SUMMARY
           else

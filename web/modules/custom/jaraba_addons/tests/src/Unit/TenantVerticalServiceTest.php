@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\jaraba_addons\Service\TenantVerticalService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -20,8 +21,8 @@ use Psr\Log\LoggerInterface;
 class TenantVerticalServiceTest extends TestCase {
 
   protected TenantVerticalService $service;
-  protected EntityTypeManagerInterface $entityTypeManager;
-  protected LoggerInterface $logger;
+  protected EntityTypeManagerInterface&MockObject $entityTypeManager;
+  protected LoggerInterface&MockObject $logger;
 
   /**
    * {@inheritdoc}
@@ -230,8 +231,8 @@ class TenantVerticalServiceTest extends TestCase {
             return FALSE;
           }
 
-          public ?object $entity {
-            get {
+          public function __get(string $name): ?object {
+            if ($name === 'entity') {
               $mn = $this->machineName;
               $l = $this->label;
               return new class ($mn, $l) {
@@ -254,6 +255,7 @@ class TenantVerticalServiceTest extends TestCase {
 
               };
             }
+            return NULL;
           }
 
         };
@@ -289,8 +291,8 @@ class TenantVerticalServiceTest extends TestCase {
             $this->label = $l;
           }
 
-          public ?object $entity {
-            get {
+          public function __get(string $name): ?object {
+            if ($name === 'entity') {
               $vr = $this->verticalRef;
               $l = $this->label;
               return new class ($vr, $l) {
@@ -326,6 +328,7 @@ class TenantVerticalServiceTest extends TestCase {
 
               };
             }
+            return NULL;
           }
 
         };
