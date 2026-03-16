@@ -167,17 +167,17 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: #2d2d3d;
+    background: var(--ej-bg-dark, #2d2d3d);
   }
 
   &__dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #ff5f57;
+    background: var(--ej-color-danger, #ff5f57);
 
-    &:nth-child(2) { background: #ffbd2e; }
-    &:nth-child(3) { background: #28c840; }
+    &:nth-child(2) { background: var(--ej-color-warning, #ffbd2e); }
+    &:nth-child(3) { background: var(--ej-color-success, #28c840); }
   }
 
   &__url-bar {

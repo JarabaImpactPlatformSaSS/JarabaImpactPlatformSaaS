@@ -664,8 +664,8 @@
   }
 
   &--critical {
-    background: color-mix(in srgb, #DC2626 12%, var(--ej-color-surface, #ffffff));
-    color: #DC2626;
+    background: color-mix(in srgb, var(--ej-color-danger, #DC2626) 12%, var(--ej-color-surface, #ffffff));
+    color: var(--ej-color-danger, #DC2626);
     animation: badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 }

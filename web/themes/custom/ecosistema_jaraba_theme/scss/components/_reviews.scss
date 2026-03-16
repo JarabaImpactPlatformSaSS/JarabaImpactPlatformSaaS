@@ -1205,11 +1205,11 @@
     font-weight: 600;
     text-transform: uppercase;
 
-    &--bronze { background: #cd7f32; color: var(--ej-bg-surface, #fff); }
-    &--silver { background: #c0c0c0; color: var(--ej-gray-dark, #333); }
-    &--gold { background: #ffd700; color: var(--ej-gray-dark, #333); }
-    &--platinum { background: #e5e4e2; color: var(--ej-gray-dark, #333); }
-    &--diamond { background: linear-gradient(135deg, #b9f2ff, #89cff0); color: #1a365d; }
+    &--bronze { background: var(--ej-badge-bronze, #cd7f32); color: var(--ej-bg-surface, #fff); }
+    &--silver { background: var(--ej-badge-silver, #c0c0c0); color: var(--ej-gray-dark, #333); }
+    &--gold { background: var(--ej-badge-gold, #ffd700); color: var(--ej-gray-dark, #333); }
+    &--platinum { background: var(--ej-badge-platinum, #e5e4e2); color: var(--ej-gray-dark, #333); }
+    &--diamond { background: linear-gradient(135deg, var(--ej-badge-diamond-start, #b9f2ff), var(--ej-badge-diamond-end, #89cff0)); color: var(--ej-color-corporate-dark, #1a365d); }
   }
 
   &__points {

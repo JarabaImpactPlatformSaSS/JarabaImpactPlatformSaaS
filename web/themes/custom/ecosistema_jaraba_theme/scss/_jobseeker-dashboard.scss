@@ -92,7 +92,7 @@
 
     &--active {
         background: rgba(16, 185, 129, 0.2);
-        color: #6ee7b7;
+        color: var(--ej-color-success-light, #6ee7b7);
         border: 1px solid rgba(16, 185, 129, 0.3);
 
         &::before {

@@ -1065,7 +1065,7 @@
 
     &:hover {
       border-color: var(--ej-color-corporate, #233D63);
-      background: #fafbfc;
+      background: var(--ej-bg-surface, #fafbfc);
     }
 
     &:focus {
