@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-16
-**Versión:** 123.0.0 (DEPLOY-ENV-ORDER-001 + CSRF-LOGIN-FIX-001 v2 + Drupal 11.3.5 update + aprendizaje #185)
+**Versión:** 124.0.0 (Sprint 1 Onboarding 10/10 + ZEIGARNIK-PRELOAD-001 + GAP-FLOW-002/003 + aprendizaje #186)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 

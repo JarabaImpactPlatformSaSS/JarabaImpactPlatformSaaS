@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-16
-**Version:** 88.0.0 (DEPLOY-ENV-ORDER-001 + CSRF-LOGIN-FIX-001 v2 + Drupal 11.3.5 update + aprendizaje #185)
+**Version:** 89.0.0 (Sprint 1 Onboarding 10/10 + ZEIGARNIK-PRELOAD-001 + Auditoría i18n config + aprendizaje #186)
 
 ---
 ## 1. Inicio de Sesion

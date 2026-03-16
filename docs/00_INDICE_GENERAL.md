@@ -4,10 +4,16 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-16
-**Versión:** 164.0.0 (DEPLOY-ENV-ORDER-001 + CSRF-LOGIN-FIX-001 v2 + Drupal 11.3.5 update + aprendizaje #185)
+**Versión:** 165.0.0 (Sprint 1 Onboarding 10/10 + Auditoría admin/people i18n + GAP-FLOW-002/003 + ZEIGARNIK-PRELOAD-001 + aprendizaje #186)
 
 > **📋 AI-ECOSYSTEM-SAFEGUARD AUDITORÍA INTEGRAL — v133 DIRECTRICES + v121 ARQUITECTURA** (2026-03-13)
 > - **Contexto:** Auditoría integral del ecosistema IA nativo. 11 gaps de paridad y coherencia corregidos entre StreamingOrchestratorService y CopilotOrchestratorService. 6 reglas nuevas: COPILOT-BRIDGE-COVERAGE-001 (10/10 verticales con CopilotBridgeInterface), STREAMING-PARITY-001 (7 dimensiones de paridad streaming-buffered), CIRCUIT-BREAKER-TENANT-001 (State API scoped por tenant), CACHE-TENANT-STRICT-001 (no vertical fallback en cache keys), COPILOT-CTA-ACTION-001 ([ACTION:label|url] LLM-driven), COPILOT-MARKDOWN-001 (parser Markdown clase mundial). DemoCopilotBridgeService nuevo. LegalCopilotBridgeService completado. AndaluciaEiCopilotBridgeService +14 ACTION routes. Markdown premium: code blocks language badge, tablas responsive, blockquotes, bold+italic+strikethrough. Regla de oro #124. Aprendizaje #183.
+
+> **📋 SPRINT 1 ONBOARDING 10/10 + AUDITORÍA I18N ADMIN/PEOPLE — v165 INDICE + v136 DIRECTRICES + v124 ARQUITECTURA + v89 FLUJO** (2026-03-16)
+> - **Contexto:** Auditoría exhaustiva `/es/admin/people` (19 hallazgos corregidos: CSRF en RBAC toggle, URLs hardcodeadas en command palette migradas a drupalSettings, `|t`→`{% trans %}` en RBAC template, 14 archivos config Domain Access traducidos). Auditoría completa flujo registro→metasitio (6 fases, 17 servicios, 4 entities auto-provisioned). Gap Analysis con investigación de mercado (40+ fuentes, teardowns Stripe/Canva/Notion/Shopify/Squarespace). Sprint 1 implementado: ZEIGARNIK-PRELOAD-001 (auto-complete steps globales, wizards arrancan 33-50%), GAP-WC-005 (social proof en registro con contador tenants + testimonios), GAP-WC-003 (CTA "Ir a tu dashboard" en Step 7 Launch con mapa 9 verticales). GAP-FLOW-002 corregido (tenantId=0 en 3 controllers). GAP-FLOW-003 corregido (3 next steps apuntaban a misma URL). Try-catch defensivo en preprocess_html para Url::fromRoute().
+> - **Reglas nuevas:** ZEIGARNIK-PRELOAD-001 (auto-complete global steps en todos los Setup Wizards, efecto Zeigarnik +12-28% completion).
+> - **Aprendizaje:** #186 — Auditorías de página DEBEN cubrir ALL layers (config/sync fields, views, contrib strings, actions) en primera pasada. Url::fromRoute() en preprocess hooks DEBE tener try-catch (WSOD risk). Content Hub Setup Wizard steps SÍ usan tenantId para queries — pasar 0 hacía que el wizard nunca marcara steps como completados.
+> - **Cross-refs:** Directrices v136.0.0, Arquitectura v124.0.0, Indice v165.0.0, Flujo v89.0.0.
 
 > **📋 PIPELINE-E2E-001 + DailyActionsRegistry — v163 INDICE + v87 FLUJO** (2026-03-16)
 > **2026-03-16 — PIPELINE-E2E-001 + DailyActionsRegistry**: 102 tagged services (48 wizard steps + 54 daily actions), 13 dashboards, 13 roles, 4 capas verificadas E2E. Salvaguarda contra gap "código existe pero usuario no lo ve".
