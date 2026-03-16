@@ -9,6 +9,8 @@ use Drupal\jaraba_candidate\Service\CandidateProfileService;
 use Drupal\jaraba_job_board\Service\ApplicationService;
 use Drupal\jaraba_job_board\Service\MatchingService;
 use Drupal\jaraba_lms\Service\EnrollmentService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -50,7 +52,9 @@ class DashboardController extends ControllerBase
         CandidateProfileService $profile_service,
         ApplicationService $application_service,
         EnrollmentService $enrollment_service,
-        MatchingService $matching_service
+        MatchingService $matching_service,
+        protected ?SetupWizardRegistry $wizardRegistry = NULL,
+        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
     ) {
         $this->profileService = $profile_service;
         $this->applicationService = $application_service;
@@ -67,7 +71,11 @@ class DashboardController extends ControllerBase
             $container->get('jaraba_candidate.profile'),
             $container->get('jaraba_job_board.application'),
             $container->get('jaraba_lms.enrollment'),
-            $container->get('jaraba_job_board.matching')
+            $container->get('jaraba_job_board.matching'),
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
         );
     }
 
@@ -98,6 +106,14 @@ class DashboardController extends ControllerBase
         // Calculate overall stats
         $stats = $this->calculateStats($user_id, $applications, $enrollments);
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        // User-scoped vertical: use userId as context (no tenant).
+        $wizardContextId = (int) $this->currentUser()->id();
+        $setupWizard = $this->wizardRegistry?->hasWizard('candidato_empleo')
+            ? $this->wizardRegistry->getStepsForWizard('candidato_empleo', $wizardContextId)
+            : NULL;
+        $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('candidato_empleo', $wizardContextId) ?? [];
+
         // Cross-vertical bridges (Plan Elevación Empleabilidad v1 — Fase 8).
         $cross_vertical_bridges = [];
         if (\Drupal::hasService('ecosistema_jaraba_core.employability_cross_vertical_bridge')) {
@@ -120,6 +136,8 @@ class DashboardController extends ControllerBase
             '#stats' => $stats,
             '#quick_actions' => $this->getQuickActions($profile),
             '#cross_vertical_bridges' => $cross_vertical_bridges,
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => ['jaraba_candidate/dashboard'],
             ],

@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_legal_intelligence\Service\LegalAlertService;
 use Drupal\jaraba_legal_intelligence\Service\LegalCitationService;
 use Drupal\jaraba_legal_intelligence\Service\LegalSearchService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -68,6 +70,8 @@ class LegalDashboardController extends ControllerBase {
     protected LegalAlertService $alertService,
     protected LegalCitationService $citationService,
     protected LoggerInterface $logger,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -82,6 +86,10 @@ class LegalDashboardController extends ControllerBase {
       $container->get('jaraba_legal_intelligence.alerts'),
       $container->get('jaraba_legal_intelligence.citations'),
       $container->get('logger.channel.jaraba_legal_intelligence'),
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -103,11 +111,21 @@ class LegalDashboardController extends ControllerBase {
     $alerts = $this->loadUserActiveAlerts($userId);
     $searches = [];
 
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    // User-scoped vertical: use userId as context (no tenant).
+    $wizardContextId = (int) $this->currentUser()->id();
+    $setupWizard = $this->wizardRegistry?->hasWizard('legal_professional')
+      ? $this->wizardRegistry->getStepsForWizard('legal_professional', $wizardContextId)
+      : NULL;
+    $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('legal_professional', $wizardContextId) ?? [];
+
     return [
       '#theme' => 'legal_professional_dashboard',
       '#bookmarks' => $bookmarks,
       '#alerts' => $alerts,
       '#searches' => $searches,
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => [
           'jaraba_legal_intelligence/legal.dashboard',

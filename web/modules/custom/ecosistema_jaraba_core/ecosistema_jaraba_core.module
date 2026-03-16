@@ -155,6 +155,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'headline' => '',
         'subheadline' => '',
         'google_oauth_enabled' => FALSE,
+        'tenant_count' => 0,
+        'testimonials' => [],
       ],
       'template' => 'ecosistema-jaraba-register-form',
       'path' => $path . '/templates',
@@ -3517,8 +3519,38 @@ function ecosistema_jaraba_core_preprocess_html(&$variables) {
   $isAdmin = \Drupal::service('router.admin_context')->isAdminRoute($route);
   if ($isAdmin && \Drupal::currentUser()->hasPermission('administer site configuration')) {
     $variables['#attached']['library'][] = 'ecosistema_jaraba_core/admin-command-palette';
+    // Resolve routes defensively — preprocess_html must NEVER throw.
+    $route_map = [
+      'tenants' => 'entity.group.collection',
+      'users' => 'entity.user.collection',
+      'finops' => 'ecosistema_jaraba_core.finops.dashboard',
+      'health' => 'ecosistema_jaraba_core.health.dashboard',
+      'analytics' => 'ecosistema_jaraba_core.admin.center.analytics',
+      'alerts' => 'entity.alert_rule.collection',
+      'compliance' => 'ecosistema_jaraba_core.compliance_dashboard',
+      'email' => 'ecosistema_jaraba_core.admin.center.settings',
+      'adminCenter' => 'ecosistema_jaraba_core.admin.center',
+      'customerSuccess' => 'jaraba_customer_success.admin.dashboard',
+      'rbacMatrix' => 'ecosistema_jaraba_core.admin.rbac_matrix',
+    ];
+    $resolved_routes = [];
+    foreach ($route_map as $key => $route_name) {
+      try {
+        $resolved_routes[$key] = \Drupal\Core\Url::fromRoute($route_name)->toString();
+      }
+      catch (\Throwable $e) {
+        $resolved_routes[$key] = '';
+      }
+    }
+    try {
+      $search_url = \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString();
+    }
+    catch (\Throwable $e) {
+      $search_url = '';
+    }
     $variables['#attached']['drupalSettings']['adminCommandPalette'] = [
-      'searchUrl' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString(),
+      'searchUrl' => $search_url,
+      'routes' => $resolved_routes,
     ];
   }
 

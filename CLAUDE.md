@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-13 | Version: 1.5.1
+# Ultima actualizacion: 2026-03-16 | Version: 1.5.2
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -290,6 +290,21 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - CSS-VAR-ALL-COLORS-001 en SCSS
 - TENANT-001 en queries
 
+### Pipeline E2E (PIPELINE-E2E-001)
+- Si feature involucra dashboards, verificar 4 capas:
+  - L1: Service inyectado en controller (constructor + create())
+  - L2: Controller pasa datos al render array (#setup_wizard, #daily_actions)
+  - L3: hook_theme() declara las variables en el array 'variables'
+  - L4: Template incluye parciales con textos traducidos y `only` keyword
+
+### Setup Wizard + Daily Actions (SETUP-WIZARD-DAILY-001)
+- Patron transversal: SetupWizardRegistry + DailyActionsRegistry (tagged services via CompilerPass)
+- 52 wizard steps + 39 daily actions en 9 verticales
+- ZEIGARNIK-PRELOAD-001: 2 auto-complete global steps (`__global__`) inyectados en TODOS los wizards. Wizards arrancan 33-50% (efecto Zeigarnik +12-28% completion)
+- User-scoped verticals (candidate, legal, content_hub): usar `currentUser()->id()` como contextId, NO 0
+- Tenant-scoped verticals (agro, comercio, servicios, lms, ei): usar `TenantContextService::getCurrentTenantId()`
+- Anti-patron: Completar L1-L2 sin verificar L3-L4. Drupal descarta variables no declaradas en hook_theme() silenciosamente
+
 ### Coherencia
 - Documentacion actualizada (master docs si aplica)
 - CLAUDE.md actualizado si nueva regla descubierta
@@ -314,3 +329,4 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | En cada PR |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status |
 | 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features |
+| 6 | PIPELINE-E2E-001 (4 capas L1-L4) | Al completar features con UI dashboard |

@@ -265,11 +265,41 @@ class TenantOnboardingWizardController extends ControllerBase {
     $stepData = $progress->getStepData();
     $tenantName = $stepData[2]['business_name'] ?? $stepData[1]['vertical_label'] ?? 'Mi Negocio';
 
+    // GAP-WC-003: Resolve vertical dashboard URL for primary CTA.
+    $dashboardRoutes = [
+      'empleabilidad' => 'jaraba_candidate.dashboard',
+      'emprendimiento' => 'jaraba_copilot_v2.dashboard',
+      'agroconecta' => 'jaraba_agroconecta_core.producer.dashboard',
+      'comercioconecta' => 'jaraba_comercio_conecta.merchant_portal',
+      'serviciosconecta' => 'jaraba_servicios_conecta.provider_portal',
+      'jarabalex' => 'jaraba_legal.dashboard',
+      'jaraba_content_hub' => 'jaraba_content_hub.dashboard',
+      'formacion' => 'jaraba_lms.instructor.courses',
+      'andalucia_ei' => 'jaraba_andalucia_ei.coordinador_dashboard',
+    ];
+    $dashboardUrl = '/';
+    $routeName = $dashboardRoutes[$vertical] ?? NULL;
+    if ($routeName) {
+      try {
+        $dashboardUrl = Url::fromRoute($routeName)->toString();
+      }
+      catch (\Throwable) {
+        // Route not available — fallback to front.
+        try {
+          $dashboardUrl = Url::fromRoute('<front>')->toString();
+        }
+        catch (\Throwable) {
+          $dashboardUrl = '/';
+        }
+      }
+    }
+
     return $this->buildWizardPage($progress, TenantOnboardingProgress::STEP_LAUNCH, [
       '#theme' => 'onboarding_wizard_step_launch',
       '#vertical' => $vertical,
       '#tenant_name' => $tenantName,
       '#preview_url' => '',
+      '#dashboard_url' => $dashboardUrl,
       '#step_data' => $stepData,
     ]);
   }

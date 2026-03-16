@@ -7,25 +7,26 @@
  * - roles: Array de roles con id y label
  * - permissions: Array de permisos con id, title, module
  * - matrix: Matriz role x permission con booleanos
+ * - modules: Array de nombres de módulo para filtro
  */
 #}
 <div class="rbac-matrix-wrapper">
-  
+
   <div class="rbac-matrix-header">
     <div class="rbac-matrix-filter">
-      <label for="module-filter">{{ 'Filtrar por módulo'|t }}:</label>
+      <label for="module-filter">{% trans %}Filtrar por módulo{% endtrans %}:</label>
       <select id="module-filter" class="form-select">
-        <option value="">{{ 'Todos los módulos'|t }}</option>
+        <option value="">{% trans %}Todos los módulos{% endtrans %}</option>
         {% for module in modules %}
           <option value="{{ module }}">{{ module }}</option>
         {% endfor %}
       </select>
     </div>
-    
+
     <div class="rbac-matrix-actions">
-      <a href="/admin/people/rbac-matrix/export" class="button button--secondary">
+      <a href="{{ path('ecosistema_jaraba_core.admin.rbac_export') }}" class="button button--secondary">
         {{ jaraba_icon('tools', 'download') }}
-        {{ 'Exportar CSV'|t }}
+        {% trans %}Exportar CSV{% endtrans %}
       </a>
     </div>
   </div>
@@ -34,7 +35,7 @@
     <table class="rbac-matrix-table">
       <thead>
         <tr>
-          <th class="rbac-matrix-th--permission">{{ 'Permiso'|t }}</th>
+          <th class="rbac-matrix-th--permission">{% trans %}Permiso{% endtrans %}</th>
           {% for role in roles %}
             <th class="rbac-matrix-th--role">
               <span class="role-label">{{ role.label }}</span>
@@ -56,7 +57,7 @@
             {% for role in roles %}
               <td class="rbac-matrix-td--checkbox">
                 <label class="rbac-checkbox">
-                  <input type="checkbox" 
+                  <input type="checkbox"
                          class="rbac-toggle"
                          data-role="{{ role.id }}"
                          data-permission="{{ perm.id }}"
@@ -70,20 +71,20 @@
       </tbody>
     </table>
   </div>
-  
+
   <div class="rbac-matrix-legend">
     <span class="legend-item">
       <span class="legend-restricted"></span>
-      {{ 'Permiso restringido (alto riesgo)'|t }}
+      {% trans %}Permiso restringido (alto riesgo){% endtrans %}
     </span>
     <span class="legend-item">
       <span class="legend-count">{{ permissions|length }}</span>
-      {{ 'permisos'|t }}
+      {% trans %}permisos{% endtrans %}
     </span>
     <span class="legend-item">
       <span class="legend-count">{{ roles|length }}</span>
-      {{ 'roles'|t }}
+      {% trans %}roles{% endtrans %}
     </span>
   </div>
-  
+
 </div>

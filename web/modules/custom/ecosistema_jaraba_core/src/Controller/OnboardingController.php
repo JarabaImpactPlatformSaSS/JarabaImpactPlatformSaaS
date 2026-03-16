@@ -120,6 +120,48 @@ class OnboardingController extends ControllerBase
           }
         }
 
+        // GAP-WC-005: Social proof — count active tenants per vertical.
+        $tenantCount = 0;
+        try {
+            $tenantCount = (int) $this->entityTypeManager()
+                ->getStorage('tenant')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vertical', $vertical->id())
+                ->condition('subscription_status', ['trial', 'active'], 'IN')
+                ->count()
+                ->execute();
+        }
+        catch (\Throwable) {
+            // Non-critical — show 0 if query fails.
+        }
+
+        // GAP-WC-005: Load testimonials from success cases per vertical.
+        $testimonials = [];
+        try {
+            if (\Drupal::hasService('entity_type.manager')) {
+                $cases = $this->entityTypeManager()
+                    ->getStorage('success_case')
+                    ->loadByProperties([
+                        'vertical' => $vertical->id(),
+                        'status' => TRUE,
+                        'featured' => TRUE,
+                    ]);
+                foreach (array_slice(array_values($cases), 0, 2) as $case) {
+                    $name = $case->label() ?? '';
+                    $testimonials[] = [
+                        'name' => $name,
+                        'role' => $case->get('profession')->value ?? '',
+                        'text' => $case->get('result_after')->value ?? '',
+                        'avatar_initials' => mb_strtoupper(mb_substr($name, 0, 2)),
+                    ];
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Non-critical — show no testimonials.
+        }
+
         return [
             '#theme' => 'ecosistema_jaraba_register_form',
             '#vertical' => $vertical,
@@ -129,6 +171,8 @@ class OnboardingController extends ControllerBase
             '#headline' => $headline,
             '#subheadline' => $subheadline,
             '#google_oauth_enabled' => $googleOAuthEnabled,
+            '#tenant_count' => $tenantCount,
+            '#testimonials' => $testimonials,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/onboarding'],
                 'drupalSettings' => [
@@ -142,7 +186,7 @@ class OnboardingController extends ControllerBase
             ],
             '#cache' => [
                 'contexts' => ['url.path'],
-                'tags' => ['vertical:' . $vertical->id()],
+                'tags' => ['vertical:' . $vertical->id(), 'tenant_list', 'success_case_list'],
             ],
         ];
     }
@@ -448,8 +492,18 @@ class OnboardingController extends ControllerBase
             return $steps;
         }
 
-        // Fallback genérico.
+        // Fallback genérico con rutas reales por vertical.
+        $dashboardUrl = $this->resolveVerticalDashboardUrl($vertical);
+
         return [
+            [
+                'title' => $this->t('Ir a tu dashboard'),
+                'description' => $this->t('Tu asistente de configuración te guiará paso a paso.'),
+                'url' => $dashboardUrl,
+                'icon' => 'bi-speedometer2',
+                'completed' => FALSE,
+                'primary' => TRUE,
+            ],
             [
                 'title' => $this->t('Completa tu perfil'),
                 'description' => $this->t('Añade el logo y la información de tu organización.'),
@@ -458,20 +512,56 @@ class OnboardingController extends ControllerBase
                 'completed' => FALSE,
             ],
             [
-                'title' => $this->t('Invita a tu equipo'),
-                'description' => $this->t('Añade colaboradores a tu organización.'),
-                'url' => Url::fromRoute('entity.tenant.edit_form', ['tenant' => $tenant->id()])->toString(),
-                'icon' => 'bi-people',
-                'completed' => FALSE,
-            ],
-            [
-                'title' => $this->t('Explora la plataforma'),
-                'description' => $this->t('Descubre las herramientas disponibles para tu vertical.'),
-                'url' => Url::fromRoute('entity.tenant.edit_form', ['tenant' => $tenant->id()])->toString(),
-                'icon' => 'bi-compass',
+                'title' => $this->t('Personaliza tu diseño'),
+                'description' => $this->t('Configura colores, tipografía y marca de tu sitio.'),
+                'url' => $this->resolveRouteOrFallback('ecosistema_jaraba_core.tenant_self_service.design', [], $dashboardUrl),
+                'icon' => 'bi-palette',
                 'completed' => FALSE,
             ],
         ];
+    }
+
+    /**
+     * Resolves the frontend dashboard URL for a vertical.
+     *
+     * Maps vertical machine names to their dashboard route names.
+     * Returns a safe fallback URL if the route doesn't exist.
+     */
+    protected function resolveVerticalDashboardUrl($vertical): string {
+        $verticalId = $vertical->id();
+
+        // Map verticals to their dashboard routes.
+        $dashboardRoutes = [
+            'empleabilidad' => 'jaraba_candidate.dashboard',
+            'emprendimiento' => 'jaraba_copilot_v2.dashboard',
+            'agroconecta' => 'jaraba_agroconecta_core.producer.dashboard',
+            'comercioconecta' => 'jaraba_comercio_conecta.merchant_portal',
+            'serviciosconecta' => 'jaraba_servicios_conecta.provider_portal',
+            'jarabalex' => 'jaraba_legal.dashboard',
+            'jaraba_content_hub' => 'jaraba_content_hub.dashboard',
+            'formacion' => 'jaraba_lms.instructor.courses',
+            'andalucia_ei' => 'jaraba_andalucia_ei.coordinador_dashboard',
+        ];
+
+        $routeName = $dashboardRoutes[$verticalId] ?? NULL;
+        if ($routeName) {
+            return $this->resolveRouteOrFallback($routeName, [], '/');
+        }
+
+        // Fallback: front page.
+        return Url::fromRoute('<front>')->toString();
+    }
+
+    /**
+     * Resolves a route name to URL with try-catch fallback.
+     */
+    protected function resolveRouteOrFallback(string $routeName, array $params, string $fallback): string {
+        try {
+            return Url::fromRoute($routeName, $params)->toString();
+        }
+        catch (\Throwable $e) {
+            return $fallback;
+        }
     }
 
 }

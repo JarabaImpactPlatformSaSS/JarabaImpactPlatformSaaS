@@ -6,6 +6,9 @@ namespace Drupal\jaraba_content_hub\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for Content Hub Editor Dashboard.
@@ -15,6 +18,26 @@ use Drupal\Core\Url;
  */
 class ContentHubDashboardController extends ControllerBase
 {
+
+    /**
+     * Constructs a ContentHubDashboardController.
+     */
+    public function __construct(
+        protected ?SetupWizardRegistry $wizardRegistry = NULL,
+        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
+    ) {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static {
+        return new static(
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
+        );
+    }
 
     /**
      * Renders the Content Hub Editor Dashboard.
@@ -57,6 +80,16 @@ class ContentHubDashboardController extends ControllerBase
         $topCategories = $this->getTopCategories(5);
         $drafts = $this->getDraftArticles(5);
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        // Resolve tenant context — content_hub steps use tenantId for queries.
+        $wizardContextId = (int) (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')
+            ? \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId() ?? $this->currentUser()->id()
+            : $this->currentUser()->id());
+        $setupWizard = $this->wizardRegistry?->hasWizard('editor_content_hub')
+            ? $this->wizardRegistry->getStepsForWizard('editor_content_hub', $wizardContextId)
+            : NULL;
+        $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('editor_content_hub', $wizardContextId) ?? [];
+
         return [
             '#theme' => 'content_hub_dashboard_frontend',
             '#stats' => $stats,
@@ -64,6 +97,8 @@ class ContentHubDashboardController extends ControllerBase
             '#top_categories' => $topCategories,
             '#drafts' => $drafts,
             '#quick_actions' => $this->getQuickActionsFrontend(),
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_theme/content-hub',

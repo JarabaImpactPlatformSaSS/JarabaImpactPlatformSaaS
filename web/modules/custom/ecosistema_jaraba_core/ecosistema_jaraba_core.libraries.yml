@@ -409,6 +409,7 @@ rbac-matrix:
     js/rbac-matrix.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
 
 # ---------------------------------------------------------------------------

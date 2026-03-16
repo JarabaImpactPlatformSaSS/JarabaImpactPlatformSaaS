@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ * Social proof section for registration page (GAP-WC-005).
+ *
+ * Variables:
+ * - tenant_count: Number of active tenants for this vertical.
+ * - vertical_label: Human-readable vertical name.
+ * - testimonials: Array of {name, role, text, avatar_initials} (max 2).
+ *
+ * Benchmark: +20-30% completion rate with social proof on registration.
+ */
+#}
+{% if tenant_count > 0 or testimonials is not empty %}
+<section class="registration-social-proof" aria-label="{% trans %}Prueba social{% endtrans %}">
+
+  {% if tenant_count > 0 %}
+    <div class="registration-social-proof__counter">
+      {{ jaraba_icon('users', 'group', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+      <span class="registration-social-proof__count-text">
+        {% trans %}
+          <strong>{{ tenant_count }}</strong> organizaciones ya usan {{ vertical_label }}
+        {% endtrans %}
+      </span>
+    </div>
+  {% endif %}
+
+  {% if testimonials is not empty %}
+    <div class="registration-social-proof__testimonials">
+      {% for testimonial in testimonials|slice(0, 2) %}
+        <div class="registration-social-proof__testimonial">
+          <div class="registration-social-proof__avatar" aria-hidden="true">
+            {{ testimonial.avatar_initials|default('?') }}
+          </div>
+          <div class="registration-social-proof__quote">
+            <p class="registration-social-proof__text">{{ testimonial.text }}</p>
+            <cite class="registration-social-proof__author">
+              {{ testimonial.name }}
+              {% if testimonial.role %}
+                <span class="registration-social-proof__role">{{ testimonial.role }}</span>
+              {% endif %}
+            </cite>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</section>
+{% endif %}

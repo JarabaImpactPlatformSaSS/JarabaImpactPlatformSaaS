@@ -265,9 +265,16 @@
           </form>
 
           <p class="ej-register-login-link">
-            {{ '¿Ya tienes una cuenta?'|t }} 
+            {{ '¿Ya tienes una cuenta?'|t }}
             <a href="/user/login">{{ 'Inicia sesión'|t }}</a>
           </p>
+
+          {# GAP-WC-005: Social proof — tenant counter + testimonials #}
+          {% include '@ecosistema_jaraba_theme/partials/_registration-social-proof.html.twig' with {
+            tenant_count: tenant_count,
+            vertical_label: vertical.getName(),
+            testimonials: testimonials,
+          } only %}
         </div>
       </div>
     </div>

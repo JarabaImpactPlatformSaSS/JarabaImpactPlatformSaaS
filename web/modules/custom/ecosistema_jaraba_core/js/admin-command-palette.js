@@ -14,18 +14,21 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
+  // URLs inyectadas via drupalSettings (ROUTE-LANGPREFIX-001).
+  var routes = (drupalSettings.adminCommandPalette && drupalSettings.adminCommandPalette.routes) || {};
+
   var COMMANDS = [
-    { label: Drupal.t('Ir a Tenants'), icon: '🏢', shortcut: 'G T', url: '/admin/structure/group', group: 'navigation' },
-    { label: Drupal.t('Ir a Usuarios'), icon: '👥', shortcut: 'G U', url: '/admin/people', group: 'navigation' },
-    { label: Drupal.t('Ir a Finanzas'), icon: '💰', shortcut: 'G F', url: '/admin/finops', group: 'navigation' },
-    { label: Drupal.t('Health Monitor'), icon: '📊', shortcut: '', url: '/admin/health', group: 'navigation' },
-    { label: Drupal.t('Analytics'), icon: '📈', shortcut: '', url: '/admin/jaraba/analytics', group: 'navigation' },
-    { label: Drupal.t('Alertas'), icon: '🔔', shortcut: 'A', url: '/admin/config/system/alert-rules', group: 'navigation' },
-    { label: Drupal.t('Compliance'), icon: '🛡️', shortcut: '', url: '/admin/seguridad', group: 'navigation' },
-    { label: Drupal.t('Email'), icon: '📧', shortcut: '', url: '/admin/jaraba/email', group: 'navigation' },
-    { label: Drupal.t('Admin Center'), icon: '🏠', shortcut: '', url: '/admin/jaraba/center', group: 'navigation' },
-    { label: Drupal.t('Customer Success'), icon: '💚', shortcut: '', url: '/admin/structure/customer-success', group: 'navigation' },
-    { label: Drupal.t('RBAC Matrix'), icon: '🔐', shortcut: '', url: '/admin/people/rbac-matrix', group: 'navigation' },
+    { label: Drupal.t('Ir a Tenants'), icon: '🏢', shortcut: 'G T', url: routes.tenants || '', group: 'navigation' },
+    { label: Drupal.t('Ir a Usuarios'), icon: '👥', shortcut: 'G U', url: routes.users || '', group: 'navigation' },
+    { label: Drupal.t('Ir a Finanzas'), icon: '💰', shortcut: 'G F', url: routes.finops || '', group: 'navigation' },
+    { label: Drupal.t('Health Monitor'), icon: '📊', shortcut: '', url: routes.health || '', group: 'navigation' },
+    { label: Drupal.t('Analytics'), icon: '📈', shortcut: '', url: routes.analytics || '', group: 'navigation' },
+    { label: Drupal.t('Alertas'), icon: '🔔', shortcut: 'A', url: routes.alerts || '', group: 'navigation' },
+    { label: Drupal.t('Compliance'), icon: '🛡️', shortcut: '', url: routes.compliance || '', group: 'navigation' },
+    { label: Drupal.t('Email'), icon: '📧', shortcut: '', url: routes.email || '', group: 'navigation' },
+    { label: Drupal.t('Admin Center'), icon: '🏠', shortcut: '', url: routes.adminCenter || '', group: 'navigation' },
+    { label: Drupal.t('Customer Success'), icon: '💚', shortcut: '', url: routes.customerSuccess || '', group: 'navigation' },
+    { label: Drupal.t('RBAC Matrix'), icon: '🔐', shortcut: '', url: routes.rbacMatrix || '', group: 'navigation' },
   ];
 
   Drupal.behaviors.adminCommandPalette = {
@@ -169,22 +172,22 @@
         switch (e.key.toLowerCase()) {
           case 't':
             e.preventDefault();
-            window.location.href = '/admin/structure/group';
+            if (routes.tenants) window.location.href = routes.tenants;
             return;
           case 'u':
             e.preventDefault();
-            window.location.href = '/admin/people';
+            if (routes.users) window.location.href = routes.users;
             return;
           case 'f':
             e.preventDefault();
-            window.location.href = '/admin/finops';
+            if (routes.finops) window.location.href = routes.finops;
             return;
         }
       }
 
       // Single key shortcuts.
       if (e.key === 'a' || e.key === 'A') {
-        window.location.href = '/admin/config/system/alert-rules';
+        if (routes.alerts) window.location.href = routes.alerts;
         return;
       }
 

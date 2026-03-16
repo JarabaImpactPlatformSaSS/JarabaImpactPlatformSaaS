@@ -51,6 +51,11 @@ class SetupWizardRegistry {
   public function getStepsForWizard(string $wizardId, int $tenantId): array {
     $wizardSteps = $this->steps[$wizardId] ?? [];
 
+    // GAP-WC-008: Inject global auto-complete steps into every wizard.
+    // These always-complete steps pre-load the progress bar (~25%).
+    $globalSteps = $this->steps[AutoCompleteAccountStep::GLOBAL_WIZARD_ID] ?? [];
+    $wizardSteps = array_merge($globalSteps, $wizardSteps);
+
     usort($wizardSteps, fn($a, $b) => $a->getWeight() <=> $b->getWeight());
 
     $steps = [];
@@ -109,6 +114,10 @@ class SetupWizardRegistry {
    * Quick check if a wizard has any registered steps.
    */
   public function hasWizard(string $wizardId): bool {
+    // __global__ steps are injected into other wizards, not standalone.
+    if ($wizardId === AutoCompleteAccountStep::GLOBAL_WIZARD_ID) {
+      return FALSE;
+    }
     return !empty($this->steps[$wizardId]);
   }
 

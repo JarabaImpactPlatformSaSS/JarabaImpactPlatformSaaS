@@ -1847,6 +1847,25 @@ services:
   ecosistema_jaraba_core.setup_wizard_registry:
     class: Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry
 
+  # GAP-WC-008: Auto-complete steps (Zeigarnik effect — pre-load 25%)
+  # Global steps injected into ALL wizards (weight -20, -10 = appear first).
+  ecosistema_jaraba_core.setup_wizard.auto_account:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\AutoCompleteAccountStep
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  ecosistema_jaraba_core.setup_wizard.auto_vertical:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\AutoCompleteVerticalStep
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — Registry (tagged services, patrón SETUP-WIZARD-DAILY-001)
+  # =========================================================================
+
+  ecosistema_jaraba_core.daily_actions_registry:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry
+
   # =========================================================================
   # Tenant Settings Hub — Registry + Secciones (tagged services)
   # =========================================================================

@@ -92,6 +92,16 @@
     </div>
   </div>
 
+  {# GAP-WC-003: Primary CTA — redirect to vertical dashboard #}
+  {% if dashboard_url %}
+    <div class="wizard-step__launch-primary-cta">
+      <a href="{{ dashboard_url }}" class="ej-btn ej-btn--primary ej-btn--lg">
+        {{ jaraba_icon('business', 'rocket-launch', { variant: 'duotone', color: 'white', size: '20px' }) }}
+        {% trans %}Ir a tu dashboard{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+
   {# Confetti canvas (JS animated) #}
   <canvas class="wizard-step__confetti-canvas" data-confetti-canvas></canvas>
 </div>

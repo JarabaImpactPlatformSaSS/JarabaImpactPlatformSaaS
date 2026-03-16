@@ -1280,6 +1280,7 @@ ecosistema_jaraba_core.api.rbac.toggle:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\RbacMatrixController::togglePermission'
   requirements:
     _permission: 'administer permissions'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # Export CSV

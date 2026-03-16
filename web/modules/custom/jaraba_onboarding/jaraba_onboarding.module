@@ -126,6 +126,7 @@ function jaraba_onboarding_theme() {
         'vertical' => '',
         'tenant_name' => '',
         'preview_url' => '',
+        'dashboard_url' => '',
         'step_data' => [],
       ],
       'template' => 'onboarding-wizard-step-launch',
