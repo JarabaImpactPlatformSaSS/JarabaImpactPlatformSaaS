@@ -943,13 +943,37 @@ if (file_exists($app_root . '/../config/deploy/settings.env.php')) {
   include $app_root . '/../config/deploy/settings.env.php';
 }
 
-// CSRF-LOGIN-FIX-001: Production reverse proxy + session hardening.
-// IONOS shared hosting sits behind a reverse proxy (access*.webspace-data.io).
-// Without these settings, Drupal misreads the protocol (HTTP vs HTTPS),
-// causing CSRF token mismatch on login forms.
+// CSRF-LOGIN-FIX-001: IONOS HTTPS detection + reverse proxy trust.
+//
+// ROOT CAUSE: IONOS terminates SSL at infrastructure level. Apache/PHP receives
+// plain HTTP. Without explicit HTTPS detection:
+//   1. SessionConfiguration::getName() uses 'SESS' prefix (not 'SSESS')
+//   2. SessionConfiguration::getOptions() sets cookie_secure = FALSE
+//      (core/lib/Drupal/Core/Session/SessionConfiguration.php:55 overrides
+//       the services.yml value: $options['cookie_secure'] = $request->isSecure())
+//   3. If isSecure() is inconsistent between requests, the session cookie name
+//      flips between SESS_/SSESS_, the session is lost, and CSRF validation fails.
+//
+// FIX: Set $_SERVER['HTTPS'] BEFORE Drupal bootstrap, so Symfony's
+// Request::createFromGlobals() sees HTTPS from the start. This guarantees
+// consistent session cookie naming and correct cookie_secure behavior.
 if (getenv('LANDO') !== 'ON') {
+  // Layer 1: Detect HTTPS from X-Forwarded-Proto (set by IONOS infrastructure).
+  // MUST happen before Request::createFromGlobals() in index.php.
+  if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+  }
+  // Layer 2: Fallback — detect HTTPS from server port.
+  if (!empty($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) {
+    $_SERVER['HTTPS'] = 'on';
+  }
+
+  // Layer 3: Trust the direct upstream IP as reverse proxy.
+  // On IONOS, REMOTE_ADDR is the internal proxy IP (varies, not always 127.0.0.1).
+  // Trusting $_SERVER['REMOTE_ADDR'] is safe because on managed hosting only the
+  // infrastructure proxy can reach Apache directly.
   $settings['reverse_proxy'] = TRUE;
-  $settings['reverse_proxy_addresses'] = ['127.0.0.1'];
+  $settings['reverse_proxy_addresses'] = [$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'];
   $settings['reverse_proxy_trusted_headers'] =
     \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
     \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |

@@ -75,9 +75,23 @@ $settings['file_temp_path'] = '/tmp';
 $config['system.logging']['error_level'] = 'hide';
 
 // ============================================================================
-// REVERSE PROXY / CDN
+// REVERSE PROXY / HTTPS DETECTION
 // ============================================================================
-// Descomentar si se usa Cloudflare u otro proxy delante de IONOS:
-// $settings['reverse_proxy'] = TRUE;
-// $settings['reverse_proxy_addresses'] = ['IP_DEL_PROXY'];
-// $settings['reverse_proxy_header'] = 'X-Forwarded-For';
+// CSRF-LOGIN-FIX-001 v2: IONOS infrastructure terminates SSL before Apache.
+// The canonical fix is in settings.php (applied by patch-settings-csrf.php).
+// This block is a defense-in-depth fallback for manual deployments.
+if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+  if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+  }
+  if (!empty($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) {
+    $_SERVER['HTTPS'] = 'on';
+  }
+}
+$settings['reverse_proxy'] = TRUE;
+$settings['reverse_proxy_addresses'] = [$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'];
+$settings['reverse_proxy_trusted_headers'] =
+  \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+  \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+  \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+  \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO;
