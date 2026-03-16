@@ -9,8 +9,8 @@ id: node.article.field_domain_all_affiliates
 field_name: field_domain_all_affiliates
 entity_type: node
 bundle: article
-label: 'Send to all affiliates'
-description: 'Make this content available on all domains.'
+label: 'Enviar a todos los afiliados'
+description: 'Hacer que este contenido esté disponible en todos los dominios.'
 required: false
 translatable: true
 default_value: {  }

@@ -7,7 +7,7 @@ dependencies:
   module:
     - domain_access
 id: domain_access_add_editor_action_jaraba_saas_lndo_site
-label: 'Add editors to the Plataforma Principal domain'
+label: 'Agregar editores al dominio Plataforma Principal'
 type: user
 plugin: domain_access_add_editor_action
 configuration:

@@ -7,7 +7,7 @@ dependencies:
   module:
     - domain_access
 id: domain_access_add_action_jaraba_saas_lndo_site
-label: 'Add selected content to the Plataforma Principal domain'
+label: 'Agregar el contenido seleccionado al dominio Plataforma Principal'
 type: node
 plugin: domain_access_add_action
 configuration:

@@ -297,7 +297,7 @@ display:
           entity_type: user
           entity_field: access
           plugin_id: field
-          label: 'Ultimo acceso'
+          label: 'Último acceso'
           exclude: false
           alter:
             alter_text: false
@@ -907,7 +907,7 @@ display:
       tab_options:
         type: normal
         title: Usuarios
-        description: 'Manage user accounts, roles, and permissions.'
+        description: 'Encuentre y administre cuentas de usuario, roles y permisos.'
         weight: 0
         menu_name: admin
     cache_metadata:

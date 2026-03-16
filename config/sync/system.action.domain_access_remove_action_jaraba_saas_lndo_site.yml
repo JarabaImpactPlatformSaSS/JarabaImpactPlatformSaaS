@@ -7,7 +7,7 @@ dependencies:
   module:
     - domain_access
 id: domain_access_remove_action_jaraba_saas_lndo_site
-label: 'Remove selected content from the Plataforma Principal domain'
+label: 'Eliminar el contenido seleccionado del dominio Plataforma Principal'
 type: node
 plugin: domain_access_remove_action
 configuration:

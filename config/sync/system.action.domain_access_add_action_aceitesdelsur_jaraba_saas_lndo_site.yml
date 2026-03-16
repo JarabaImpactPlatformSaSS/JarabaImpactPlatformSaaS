@@ -7,7 +7,7 @@ dependencies:
   module:
     - domain_access
 id: domain_access_add_action_aceitesdelsur_jaraba_saas_lndo_site
-label: 'Add selected content to the Cooperativa Aceites del Sur domain'
+label: 'Agregar el contenido seleccionado al dominio Cooperativa Aceites del Sur'
 type: node
 plugin: domain_access_add_action
 configuration:

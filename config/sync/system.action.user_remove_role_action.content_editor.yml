@@ -1,5 +1,5 @@
 uuid: 0df5519e-98a2-4322-89cd-30ab03e9021c
-langcode: en
+langcode: es
 status: true
 dependencies:
   config:
@@ -7,7 +7,7 @@ dependencies:
   module:
     - user
 id: user_remove_role_action.content_editor
-label: 'Remove the Content editor role from the selected user(s)'
+label: 'Quitar el rol Editor de contenido de los usuarios seleccionados'
 type: user
 plugin: user_remove_role_action
 configuration:

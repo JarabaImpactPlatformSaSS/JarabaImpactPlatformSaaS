@@ -7,7 +7,7 @@ dependencies:
   module:
     - domain_access
 id: domain_access_add_editor_action_aceitesdelsur_jaraba_saas_lndo_site
-label: 'Add editors to the Cooperativa Aceites del Sur domain'
+label: 'Agregar editores al dominio Cooperativa Aceites del Sur'
 type: user
 plugin: domain_access_add_editor_action
 configuration:
