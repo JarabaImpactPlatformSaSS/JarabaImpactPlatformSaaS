@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-12
-**Version:** 86.0.0 (AI-ECOSYSTEM-SAFEGUARD — auditoria integral ecosistema IA: 11 gaps, 6 reglas, CopilotBridge 10/10, streaming parity + regla de oro #124 + aprendizaje #183)
+**Ultima actualizacion:** 2026-03-16
+**Version:** 88.0.0 (DEPLOY-ENV-ORDER-001 + CSRF-LOGIN-FIX-001 v2 + Drupal 11.3.5 update + aprendizaje #185)
 
 ---
 ## 1. Inicio de Sesion
@@ -610,6 +610,27 @@ Esto garantiza contexto completo antes de cualquier implementacion.
   - Despues de cada commit que toque documentos maestros, ejecutar `scripts/maintenance/verify-doc-integrity.sh` para verificar que las lineas no cayeron bajo los umbrales (DIRECTRICES>=2000, ARQUITECTURA>=2400, INDICE>=2000, FLUJO>=700).
   - El pre-commit hook `.git/hooks/pre-commit` bloquea automaticamente commits que reduzcan >10% las lineas de cualquier doc maestro.
   - El CI pipeline ejecuta `scripts/ci/verify-doc-integrity.sh` como step adicional del security scan.
+
+### Checklist PIPELINE-E2E-001 — Verificación Post-Implementación
+
+Tras completar CUALQUIER feature que involucre nuevo UI en dashboards, verificar las 4 capas:
+
+1. **L1 — Service/DI**: `grep -rl "RegistryClass" web/modules/custom/$MODULE/src/Controller/`
+2. **L2 — Controller data**: El método dashboard() llama al registry y pasa datos al render array
+3. **L3 — hook_theme()**: Variables declaradas en la definición del tema del módulo
+4. **L4 — Template include**: Parciales incluidos con textos traducidos y `only` keyword
+
+**Anti-patrón detectado (2026-03-16):** Implementar solo L1-L2 y marcar como "completado". Sin L3-L4, el código existe pero el usuario no lo experimenta. Descubierto en 8 de 9 verticales del patrón Setup Wizard + Daily Actions.
+
+**Verificación automática recomendada:**
+```bash
+# Verificar las 4 capas para un módulo
+MODULE="jaraba_candidate"
+echo "L1:" && grep -c "SetupWizardRegistry" web/modules/custom/$MODULE/src/Controller/*.php
+echo "L2:" && grep -c "getStepsForWizard\|getActionsForDashboard" web/modules/custom/$MODULE/src/Controller/*.php
+echo "L3:" && grep -c "setup_wizard" web/modules/custom/$MODULE/$MODULE.module
+echo "L4:" && grep -c "setup-wizard.html.twig" web/modules/custom/$MODULE/templates/*.twig
+```
 
 ---
 ## 4. Despues de Implementar

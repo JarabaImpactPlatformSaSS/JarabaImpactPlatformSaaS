@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-11
-**Versión:** 121.0.0 (AI-ECOSYSTEM-SAFEGUARD — auditoría integral ecosistema IA: 11 gaps corregidos, CopilotBridge 10/10, streaming-buffered parity, circuit breaker tenant-scoped + aprendizaje #183)
+**Fecha:** 2026-03-16
+**Versión:** 123.0.0 (DEPLOY-ENV-ORDER-001 + CSRF-LOGIN-FIX-001 v2 + Drupal 11.3.5 update + aprendizaje #185)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1271,6 +1271,77 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   — 0 cambios en ecosistema_jaraba_core                               │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
+
+### DAILY ACTIONS — PATRÓN EXTENSIBLE (DAILY-ACTIONS-REGISTRY-001)
+
+> Complemento del Setup Wizard. Mientras el wizard guía la configuración inicial (one-time), las Daily Actions facilitan las operaciones recurrentes del día a día.
+
+#### Diagrama de Componentes
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ECOSISTEMA_JARABA_CORE                        │
+│                                                                 │
+│  ┌──────────────────────────────┐  ┌──────────────────────────┐ │
+│  │ DailyActionInterface         │  │ DailyActionsRegistry     │ │
+│  │ ──────────────────────────── │  │ ────────────────────────  │ │
+│  │ + getId(): string            │  │ - actions: Interface[][] │ │
+│  │ + getDashboardId(): string   │  │ + addAction(action)      │ │
+│  │ + getLabel(): Translatable   │  │ + getActionsForDashboard()│ │
+│  │ + getIcon(): array           │  │ + hasDashboard()         │ │
+│  │ + getColor(): string         │  │                          │ │
+│  │ + getRoute(): string         │  │ (tagged service collector)│ │
+│  │ + isPrimary(): bool          │  └──────────────────────────┘ │
+│  │ + getContext(tenantId): array │                               │
+│  │   → badge, badge_type, visible│  DailyActionsCompilerPass    │
+│  └──────────────────────────────┘  (tag: daily_action)          │
+└─────────────────────────────────────────────────────────────────┘
+        │                    │                    │
+        ▼                    ▼                    ▼
+┌──────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│ 11 módulos    │  │ 13 dashboards    │  │ 54 tagged         │
+│ verticales    │  │ (9 primary +     │  │ services          │
+│               │  │  4 secondary)    │  │                   │
+└──────────────┘  └──────────────────┘  └──────────────────┘
+```
+
+#### Cobertura Multi-Vertical y Multi-Rol
+
+| Vertical | Rol Primario | Rol(es) Secundario(s) | Wizard Steps | Daily Actions |
+|----------|-------------|----------------------|-------------|---------------|
+| Andalucía +ei | Coordinador | Orientador | 7 | 9 |
+| Empleabilidad | Candidato | — | 5 | 4 |
+| Emprendimiento | Emprendedor (Copilot) | Entrepreneur (Business Tools) | 7 | 8 |
+| Comercio Conecta | Merchant | — | 5 | 5 |
+| AgroConecta | Productor | — | 5 | 4 |
+| Servicios Conecta | Proveedor | — | 4 | 4 |
+| JarabaLex | Profesional jurídico | — | 3 | 4 |
+| Content Hub | Editor | — | 3 | 4 |
+| Formación/LMS | Instructor | Learner | 6 | 8 |
+| Mentoring | — | Mentor | 3 | 4 |
+| **Total** | **9 primarios** | **4 secundarios** | **48** | **54** |
+
+#### Patrón de Integración en Controladores
+
+```php
+// L1: Constructor DI (optional)
+protected ?SetupWizardRegistry $wizardRegistry = NULL,
+protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
+
+// L2: Dashboard method
+$setupWizard = $this->wizardRegistry?->hasWizard('wizard_id')
+  ? $this->wizardRegistry->getStepsForWizard('wizard_id', $tenantId) : NULL;
+$dailyActions = $this->dailyActionsRegistry
+  ?->getActionsForDashboard('dashboard_id', $tenantId) ?? [];
+```
+
+#### PIPELINE-E2E-001 — Verificación Obligatoria
+
+Toda integración Setup Wizard + Daily Actions DEBE verificar 4 capas:
+- **L1** Service → DI en constructor → create() factory
+- **L2** Controller → getStepsForWizard() + getActionsForDashboard() → render array
+- **L3** hook_theme() → variables declaradas (setup_wizard, daily_actions)
+- **L4** Template → {% include %} de parciales → textos traducidos → DOM visible
 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      SEGURIDAD: ACCESS HANDLERS ⭐                     │
@@ -3059,6 +3130,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-16 | **122.0.0** | **DAILY-ACTIONS-REGISTRY-001 + PIPELINE-E2E-001:** Nueva sección arquitectural "DAILY ACTIONS — PATRÓN EXTENSIBLE" con diagrama de componentes (DailyActionInterface 16 métodos, DailyActionsRegistry tagged service collector, DailyActionsCompilerPass). Tabla cobertura multi-vertical multi-rol: 54 daily actions + 48 wizard steps en 11 módulos, 13 dashboards (9 primary + 4 secondary), 13 roles. Patrón integración controladores con DI opcional. PIPELINE-E2E-001: verificación obligatoria 4 capas (L1 Service/DI, L2 Controller, L3 hook_theme, L4 Template). Regla de oro #125. Aprendizaje #184. |
 | 2026-03-13 | **121.0.0** | **AI-ECOSYSTEM-SAFEGUARD Auditoría Integral Ecosistema IA Nativo:** Streaming architecture: StreamingOrchestratorService paridad con buffered en 7 dimensiones (temperature 0.3/0.7, PII masking bidireccional, circuit breaker tenant-scoped, semantic cache composite mode, AIIdentityRule SSOT, catch(\Throwable), extractSuggestions [ACTION]). CopilotBridge cobertura 10/10 verticales: +DemoCopilotBridgeService (ecosistema_jaraba_core), LegalCopilotBridgeService completado con CopilotBridgeInterface. Circuit breaker: getCircuitBreakerKey() con tenant_id en State API keys. Cache: tenant_id ?? '0' (eliminado vertical fallback). Markdown parser clase mundial en copilot-chat-widget.js + contextual-copilot.js: code blocks con language badge, tablas pipe-syntax, blockquotes, bold+italic+strikethrough, [ACTION:label\|url] CTAs. SCSS premium: dark code theme (#1e293b), table responsive hover, action button lift animation. Aprendizaje #183. |
 | 2026-03-13 | **120.0.0** | **SETUP-WIZARD-DAILY-001 Patrón Transversal + Premium World-Class UI:** Nueva seccion arquitectural "SETUP WIZARD: PATRON TRANSVERSAL" con infraestructura completa: SetupWizardStepInterface (13 metodos), SetupWizardRegistry (tagged services + CompilerPass), SetupWizardApiController (REST async), parciales Twig reutilizables (_setup-wizard + _daily-actions), JS celebrations. Caso vertical Andalucia +ei: 4 wizard steps + 5 daily action cards. Icon system: 14 SVGs nuevos, ~366 total (de ~352). ICON-SYMLINK-REL-001: symlinks relativos obligatorio para Docker/Lando. Aprendizaje #182. |
 | 2026-03-13 | **119.0.0** | **ORTOGRAFIA-TRANS-001 + Coordinador Hub Premium Elevation:** Seccion 10.8.1 actualizada de 18 a 19 scripts de validacion (+validate-twig-ortografia.php: diccionario 402 entradas tildes+ñ, deteccion generica -cion/-sion, filtro comentarios Twig). lint-staged ampliado: .twig files pre-commit. post-edit-lint.sh: seccion ORTOGRAFIA-TRANS-001 con ~50 palabras. Coordinador Hub: tabs "white pill on tinted rail" + compliance cards --ring-color cascade. Aprendizaje #181. |
