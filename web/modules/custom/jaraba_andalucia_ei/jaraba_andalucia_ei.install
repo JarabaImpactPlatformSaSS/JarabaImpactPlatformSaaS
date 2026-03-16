@@ -74,7 +74,7 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
     'jaraba_andalucia_ei.inscripcion_sesion',
     'jaraba_andalucia_ei.programa_vertical_access',
     'jaraba_andalucia_ei.indicadores_esf',
-    'jaraba_andalucia_ei.plan_formativo',
+    'jaraba_andalucia_ei.setup_wizard.plan_formativo',
   ];
 
   $missingServices = [];

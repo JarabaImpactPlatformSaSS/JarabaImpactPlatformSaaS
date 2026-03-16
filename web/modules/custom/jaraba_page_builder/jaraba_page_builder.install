@@ -601,6 +601,73 @@ function jaraba_page_builder_update_9010(): string {
 }
 
 /**
+ * Complete meta_title varchar(70)->255 expansion + entity type resync.
+ *
+ * update_9010 expanded meta_title via updateFieldStorageDefinition() but only
+ * altered _field_data table. This hook fixes:
+ * 1) _field_revision column (still varchar(70)).
+ * 2) entity.storage_schema.sql KV store (cached old length).
+ * 3) entity.definitions.installed KV store (stale definition).
+ * 4) Entity type handlers (view_builder, moderation, storage_schema added).
+ */
+function jaraba_page_builder_update_9011(): string {
+  $messages = [];
+  try {
+    $db = \Drupal::database();
+    $schema = $db->schema();
+
+    // 1) Expand revision table column if still varchar(70).
+    $tables = ['page_content_field_data', 'page_content_field_revision'];
+    foreach ($tables as $table) {
+      if (!$schema->tableExists($table)) {
+        continue;
+      }
+      $result = $db->query("SHOW COLUMNS FROM {" . $table . "} WHERE Field = 'meta_title'");
+      $row = $result->fetchAssoc();
+      if ($row && $row['Type'] !== 'varchar(255)') {
+        $schema->changeField($table, 'meta_title', 'meta_title', [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+        ]);
+        $messages[] = "Expanded $table.meta_title to varchar(255).";
+      }
+    }
+
+    // 2) Fix entity.storage_schema.sql KV (cached column lengths).
+    $kvSchema = \Drupal::keyValue('entity.storage_schema.sql');
+    $schemaData = $kvSchema->get('page_content.field_schema_data.meta_title');
+    if ($schemaData) {
+      $changed = FALSE;
+      foreach ($tables as $table) {
+        if (isset($schemaData[$table]['fields']['meta_title']['length'])
+            && $schemaData[$table]['fields']['meta_title']['length'] !== 255) {
+          $schemaData[$table]['fields']['meta_title']['length'] = 255;
+          $changed = TRUE;
+        }
+      }
+      if ($changed) {
+        $kvSchema->set('page_content.field_schema_data.meta_title', $schemaData);
+        $messages[] = 'Updated storage schema KV cache.';
+      }
+    }
+
+    // 3) Resync entity type + field storage definitions.
+    $kv = \Drupal::keyValue('entity.definitions.installed');
+    $entityType = \Drupal::entityTypeManager()->getDefinition('page_content');
+    $kv->set('page_content.entity_type', $entityType);
+    $codeDefs = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('page_content');
+    $kv->set('page_content.field_storage_definitions', $codeDefs);
+    $messages[] = 'Resynced entity type and field definitions.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+  return implode(' ', $messages) ?: 'Already up to date.';
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_page_builder_requirements(string $phase): array {
