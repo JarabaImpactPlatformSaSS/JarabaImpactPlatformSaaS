@@ -236,6 +236,70 @@ jobs:
             exit 1
           fi
 
+      - name: Clean legacy putenv from settings.local.php
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOFCLEAN'
+            cd ~/JarabaImpactPlatformSaaS
+            SETTINGS=web/sites/default/settings.local.php
+            if grep -q 'API Keys - Key module env provider' "$SETTINGS" 2>/dev/null; then
+              chmod 755 web/sites/default 2>/dev/null || true
+              chmod 644 "$SETTINGS" 2>/dev/null || true
+              sed -i '/\/\/ API Keys - Key module env provider/,/\/\/ END API Keys/d' "$SETTINGS"
+              chmod 440 "$SETTINGS"
+              chmod 555 web/sites/default
+              echo "✅ Legacy putenv block removed from settings.local.php"
+            else
+              echo "ℹ️ No legacy putenv block found — clean"
+            fi
+          EOFCLEAN
+
+      - name: Pull code and install dependencies
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+
+            # Desbloquear permisos para git (runbook §Deployment)
+            chmod 755 web/sites/default
+            chmod 644 web/sites/default/settings.php
+
+            # Pull código (settings.local.php no se ve afectado — no está en git)
+            git fetch origin
+            git reset --hard origin/main
+
+            # IONOS: Check if PHP handler needs to be configured
+            # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
+            # If needed, AddHandler will be added in a follow-up commit
+            echo "ℹ️ Web PHP version will be checked by diagnostic step after deploy"
+
+            # Restaurar permisos seguros
+            chmod 555 web/sites/default
+            chmod 444 web/sites/default/settings.php
+
+            # Verificar que settings.local.php existe post-reset
+            if [ ! -f web/sites/default/settings.local.php ]; then
+              echo "❌ FATAL: settings.local.php desapareció después de git reset"
+              exit 1
+            fi
+
+            # Wipe vendor to prevent "Could not delete" / extraction errors
+            # on IONOS shared hosting (stale temp dirs with restrictive perms).
+            # Composer's global cache (~/.cache/composer) speeds up reinstall.
+            rm -rf vendor
+
+            # Instalar dependencias
+            /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
+          EOF
+
+      - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
+
+      # CRITICAL: Generate settings.env.php AFTER git pull (not before).
+      # git reset --hard overwrites settings.env.php with the empty stub from
+      # the repo. This step must run AFTER pull to write the real API keys.
+      # Without this, reCAPTCHA, Stripe, OAuth, and AI providers have no keys
+      # in production — reCAPTCHA failure causes "La verificación de seguridad
+      # ha fallado" on every login attempt.
       - name: Generate settings.env.php (ENV-BOOTSTRAP-001)
         env:
           KEY_OPENAI: ${{ secrets.OPENAI_API_KEY }}
@@ -299,64 +363,6 @@ jobs:
             chmod 440 "\$ENV_FILE"
             echo "✅ settings.env.php generated with $(grep -c putenv "\$ENV_FILE") env vars"
           EOFENV
-
-      - name: Clean legacy putenv from settings.local.php
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOFCLEAN'
-            cd ~/JarabaImpactPlatformSaaS
-            SETTINGS=web/sites/default/settings.local.php
-            if grep -q 'API Keys - Key module env provider' "$SETTINGS" 2>/dev/null; then
-              chmod 755 web/sites/default 2>/dev/null || true
-              chmod 644 "$SETTINGS" 2>/dev/null || true
-              sed -i '/\/\/ API Keys - Key module env provider/,/\/\/ END API Keys/d' "$SETTINGS"
-              chmod 440 "$SETTINGS"
-              chmod 555 web/sites/default
-              echo "✅ Legacy putenv block removed from settings.local.php"
-            else
-              echo "ℹ️ No legacy putenv block found — clean"
-            fi
-          EOFCLEAN
-
-      - name: Pull code and install dependencies
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-
-            # Desbloquear permisos para git (runbook §Deployment)
-            chmod 755 web/sites/default
-            chmod 644 web/sites/default/settings.php
-
-            # Pull código (settings.local.php no se ve afectado — no está en git)
-            git fetch origin
-            git reset --hard origin/main
-
-            # IONOS: Check if PHP handler needs to be configured
-            # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
-            # If needed, AddHandler will be added in a follow-up commit
-            echo "ℹ️ Web PHP version will be checked by diagnostic step after deploy"
-
-            # Restaurar permisos seguros
-            chmod 555 web/sites/default
-            chmod 444 web/sites/default/settings.php
-
-            # Verificar que settings.local.php existe post-reset
-            if [ ! -f web/sites/default/settings.local.php ]; then
-              echo "❌ FATAL: settings.local.php desapareció después de git reset"
-              exit 1
-            fi
-
-            # Wipe vendor to prevent "Could not delete" / extraction errors
-            # on IONOS shared hosting (stale temp dirs with restrictive perms).
-            # Composer's global cache (~/.cache/composer) speeds up reinstall.
-            rm -rf vendor
-
-            # Instalar dependencias
-            /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
-          EOF
-
-      - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
 
       - name: Fix .htaccess for IONOS (after composer scaffold)
         run: |
