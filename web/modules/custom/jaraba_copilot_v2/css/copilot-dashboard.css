@@ -1,0 +1,263 @@
+/* Copilot Dashboard — Premium SaaS Styles
+   CSS-VAR-ALL-COLORS-001: ALL colors via var(--ej-*) */
+
+.copilot-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-lg, 1.5rem);
+}
+
+.copilot-dashboard__header {
+  padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-lg, 1.5rem);
+  background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, color-mix(in srgb, var(--ej-color-corporate, #233D63) 70%, var(--ej-color-primary, #FF8C42)) 100%);
+  border-radius: var(--ej-radius-xl, 16px);
+  color: var(--ej-color-on-primary, #fff);
+}
+
+.copilot-dashboard__header h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  font-size: var(--ej-font-size-xl, 1.5rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.copilot-dashboard__header p {
+  margin: var(--ej-spacing-xs, 0.25rem) 0 0;
+  opacity: 0.85;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+/* Modes section */
+.cd-modes {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+.cd-modes__header {
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.cd-modes__header h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  font-size: var(--ej-font-size-lg, 1.25rem);
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-color-text, #1a1a2e);
+}
+
+.cd-modes__subtitle {
+  margin: var(--ej-spacing-xs, 0.25rem) 0 0;
+  color: var(--ej-color-text-muted, #9ca3af);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+.cd-modes__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+@media (max-width: 640px) {
+  .cd-modes__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual mode card */
+.cd-mode {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.75rem);
+  padding: var(--ej-spacing-md, 1.25rem);
+  border-radius: var(--ej-radius-md, 10px);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  background: var(--ej-bg-surface, #fff);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.cd-mode:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+}
+
+.cd-mode--locked {
+  opacity: 0.65;
+  border-style: dashed;
+}
+
+.cd-mode--locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.cd-mode--verde-innovacion:not(.cd-mode--locked) {
+  border-left: 3px solid var(--ej-color-innovation, #00A9A5);
+}
+
+.cd-mode--azul-corporativo:not(.cd-mode--locked) {
+  border-left: 3px solid var(--ej-color-corporate, #233D63);
+}
+
+.cd-mode--naranja-impulso:not(.cd-mode--locked) {
+  border-left: 3px solid var(--ej-color-primary, #FF8C42);
+}
+
+.cd-mode__icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ej-radius-md, 10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-mode__icon-wrap--verde-innovacion {
+  background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+}
+
+.cd-mode__icon-wrap--azul-corporativo {
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+}
+
+.cd-mode__icon-wrap--naranja-impulso {
+  background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 12%, transparent);
+}
+
+.cd-mode__body {
+  flex: 1;
+}
+
+.cd-mode__name {
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 700;
+  margin: 0;
+  color: var(--ej-color-text, #1a1a2e);
+}
+
+.cd-mode__desc {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--ej-color-text-muted, #9ca3af);
+  line-height: 1.4;
+}
+
+.cd-mode__footer {
+  padding-top: var(--ej-spacing-xs, 0.25rem);
+  border-top: 1px solid var(--ej-border-subtle, #f3f4f6);
+}
+
+.cd-mode__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cd-mode__status--active {
+  color: var(--ej-color-innovation, #00A9A5);
+}
+
+.cd-mode__status--locked {
+  color: var(--ej-color-text-muted, #9ca3af);
+}
+
+/* Milestones */
+.copilot-dashboard__milestones {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+.copilot-dashboard__milestones h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 700;
+  margin: 0 0 var(--ej-spacing-md, 1rem);
+}
+
+.copilot-dashboard__milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.copilot-dashboard__milestone {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-sm, 0.5rem);
+  border-radius: var(--ej-radius-sm, 6px);
+  background: var(--ej-bg-subtle, #f9fafb);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+}
+
+/* Quick access cards */
+.copilot-dashboard__quick {
+  margin-top: var(--ej-spacing-sm, 0.5rem);
+}
+
+.copilot-dashboard__quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ej-spacing-md, 1rem);
+}
+
+@media (max-width: 768px) {
+  .copilot-dashboard__quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .copilot-dashboard__quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.copilot-dashboard__quick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-lg, 1.5rem) var(--ej-spacing-md, 1rem);
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  border-radius: var(--ej-radius-lg, 12px);
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-color-text, #1a1a2e);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.copilot-dashboard__quick-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+}
+
+/* Animations */
+.copilot-dashboard__header,
+.cd-modes,
+.copilot-dashboard__milestones,
+.copilot-dashboard__quick {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.cd-modes { animation-delay: 0.1s; }
+.copilot-dashboard__milestones { animation-delay: 0.15s; }
+.copilot-dashboard__quick { animation-delay: 0.2s; }

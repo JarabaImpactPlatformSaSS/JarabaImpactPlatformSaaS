@@ -1,0 +1,676 @@
+// =============================================================================
+// Entrepreneur Dashboard — Premium SaaS Styles
+// =============================================================================
+//
+// CSS-VAR-ALL-COLORS-001: ALL colors via var(--ej-*)
+// SCSS-COLORMIX-001: Alpha via color-mix(), not rgba()
+// ICON-COLOR-001: Only Jaraba palette colors
+// =============================================================================
+
+@use 'variables' as *;
+
+// =============================================================================
+// HERO HEADER
+// =============================================================================
+
+.ed-hero {
+  position: relative;
+  border-radius: var(--ej-radius-xl, 16px);
+  overflow: hidden;
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  &__gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--ej-color-corporate, #233D63) 0%,
+      color-mix(in srgb, var(--ej-color-corporate, #233D63) 70%, var(--ej-color-primary, #FF8C42)) 100%
+    );
+  }
+
+  &__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+
+    &--1 {
+      width: 200px;
+      height: 200px;
+      top: -40px;
+      right: -40px;
+      background: var(--ej-color-primary, #FF8C42);
+    }
+
+    &--2 {
+      width: 140px;
+      height: 140px;
+      bottom: -30px;
+      left: 20%;
+      background: var(--ej-color-innovation, #00A9A5);
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-lg, 1.5rem);
+    padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-lg, 1.5rem);
+    color: var(--ej-color-on-primary, #fff);
+
+    @include respond-to(xs) {
+      flex-direction: column;
+      text-align: center;
+      padding: var(--ej-spacing-lg, 1.5rem);
+    }
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid color-mix(in srgb, var(--ej-color-on-primary, #fff) 30%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--ej-color-on-primary, #fff) 15%, transparent);
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__avatar-initials {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-color-on-primary, #fff);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-xl, 1.5rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    margin: var(--ej-spacing-xs, 0.25rem) 0 0;
+    opacity: 0.85;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+    padding: 4px 12px;
+    border-radius: var(--ej-radius-full, 999px);
+    background: color-mix(in srgb, var(--ej-color-on-primary, #fff) 15%, transparent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// =============================================================================
+// SECTIONS (Wizard / Actions containers)
+// =============================================================================
+
+.ed-section {
+  margin-bottom: var(--ej-spacing-md, 1rem);
+
+  &--wizard .setup-wizard {
+    border-radius: var(--ej-radius-xl, 16px);
+  }
+}
+
+// =============================================================================
+// KPI CARDS
+// =============================================================================
+
+.ed-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(xs) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ed-kpi {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ej-radius-md, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--innovation { background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent); }
+    &--impulse { background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 12%, transparent); }
+    &--corporate { background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 12%, transparent); }
+    &--danger { background: var(--ej-color-danger, #EF4444); }
+  }
+
+  &__data {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ej-color-text, #1a1a2e);
+
+    small {
+      font-size: 0.6em;
+      font-weight: 600;
+      opacity: 0.6;
+    }
+  }
+
+  &__label {
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--ej-color-text-secondary, #6b7280);
+    margin-top: 2px;
+  }
+
+  &__sub {
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+  }
+
+  &--warning {
+    background: linear-gradient(135deg, var(--ej-color-danger, #EF4444), #dc2626);
+    border-color: transparent;
+
+    .ed-kpi__value,
+    .ed-kpi__label,
+    .ed-kpi__sub {
+      color: var(--ej-color-on-primary, #fff);
+    }
+
+    .ed-kpi__sub {
+      opacity: 0.85;
+    }
+  }
+}
+
+// =============================================================================
+// MAIN GRID (2 columns)
+// =============================================================================
+
+.ed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ej-spacing-lg, 1.5rem);
+
+  @include respond-to(sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =============================================================================
+// CARD (shared base for all sections)
+// =============================================================================
+
+.ed-card {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-radius-lg, 12px);
+  border: 1px solid var(--ej-border-subtle, #e5e7eb);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    padding-bottom: var(--ej-spacing-sm, 0.5rem);
+    border-bottom: 1px solid var(--ej-border-subtle, #e5e7eb);
+  }
+
+  &__title {
+    font-size: var(--ej-font-size-base, 1rem);
+    font-weight: 700;
+    margin: 0;
+    color: var(--ej-color-text, #1a1a2e);
+  }
+}
+
+// =============================================================================
+// NEXT STEPS
+// =============================================================================
+
+.ed-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.ed-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-sm, 0.75rem);
+  border-radius: var(--ej-radius-md, 8px);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--ej-bg-hover, #f9fafb);
+  }
+
+  &__check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  &__circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--ej-border-default, #d1d5db);
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    min-width: 0;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-text, #1a1a2e);
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+    margin-top: 2px;
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: var(--ej-radius-full, 999px);
+    background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 12%, transparent);
+    color: var(--ej-color-primary, #FF8C42);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    align-self: center;
+  }
+
+  &--done {
+    opacity: 0.6;
+
+    .ed-step__title {
+      text-decoration: line-through;
+    }
+  }
+
+  &--priority {
+    background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 5%, transparent);
+    border-left: 3px solid var(--ej-color-primary, #FF8C42);
+  }
+
+  &__actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: var(--ej-radius-full, 999px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    border: 1px solid var(--ej-border-default, #d1d5db);
+    color: var(--ej-color-text-secondary, #6b7280);
+    background: var(--ej-bg-surface, #fff);
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--ej-color-corporate, #233D63);
+      color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--primary {
+      background: var(--ej-color-primary, #FF8C42);
+      border-color: var(--ej-color-primary, #FF8C42);
+      color: var(--ej-color-on-primary, #fff);
+
+      &:hover {
+        filter: brightness(1.1);
+        color: var(--ej-color-on-primary, #fff);
+      }
+    }
+  }
+}
+
+// =============================================================================
+// CANVAS MINI-PREVIEW (9-block BMC grid)
+// =============================================================================
+
+.ed-canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, auto);
+  grid-template-areas:
+    "partners activities value relationships segments"
+    "partners resources  value channels      segments"
+    "costs    costs      costs revenues      revenues";
+  gap: 4px;
+  margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.ed-canvas-block {
+  padding: var(--ej-spacing-sm, 0.5rem);
+  border-radius: var(--ej-radius-sm, 6px);
+  background: var(--ej-bg-subtle, #f3f4f6);
+  text-align: center;
+  transition: background 0.15s ease;
+
+  &--filled {
+    background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 10%, transparent);
+  }
+
+  // Grid areas matching BMC layout
+  &--key-partners { grid-area: partners; }
+  &--key-activities { grid-area: activities; }
+  &--key-resources { grid-area: resources; }
+  &--value-propositions { grid-area: value; }
+  &--customer-relationships { grid-area: relationships; }
+  &--channels { grid-area: channels; }
+  &--customer-segments { grid-area: segments; }
+  &--cost-structure { grid-area: costs; }
+  &--revenue-streams { grid-area: revenues; }
+
+  &__count {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ej-color-text, #1a1a2e);
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+}
+
+// =============================================================================
+// PROGRESS BAR
+// =============================================================================
+
+.ed-progress {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: var(--ej-color-text-secondary, #6b7280);
+  }
+
+  &__value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ej-color-text, #1a1a2e);
+  }
+
+  &__bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--ej-bg-subtle, #f3f4f6);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+
+    &--impulse {
+      background: linear-gradient(90deg, var(--ej-color-primary, #FF8C42), color-mix(in srgb, var(--ej-color-primary, #FF8C42) 80%, #fff));
+    }
+  }
+}
+
+// =============================================================================
+// MENTORING SESSIONS
+// =============================================================================
+
+.ed-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.5rem);
+}
+
+.ed-session {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.75rem);
+  padding: var(--ej-spacing-sm, 0.75rem);
+  border-radius: var(--ej-radius-md, 8px);
+  background: var(--ej-bg-subtle, #f9fafb);
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__mentor {
+    font-weight: 600;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__time {
+    font-size: 0.8rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+  }
+
+  &__status {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: var(--ej-radius-full, 999px);
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    &--confirmed {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--scheduled {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+      color: var(--ej-color-corporate, #233D63);
+    }
+  }
+}
+
+// =============================================================================
+// RESOURCES
+// =============================================================================
+
+.ed-resources {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ej-spacing-sm, 0.5rem);
+
+  @include respond-to(xs) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ed-resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 0.25rem);
+  padding: var(--ej-spacing-md, 1rem);
+  border-radius: var(--ej-radius-md, 8px);
+  background: var(--ej-bg-subtle, #f9fafb);
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-color-text, #1a1a2e);
+  }
+
+  &__desc {
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+  }
+}
+
+// =============================================================================
+// EMPTY STATE
+// =============================================================================
+
+.ed-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-xl, 2rem);
+  text-align: center;
+  color: var(--ej-color-text-muted, #9ca3af);
+  flex: 1;
+
+  p {
+    margin: 0;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__hint {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
+
+// =============================================================================
+// ANIMATIONS (entrance)
+// =============================================================================
+
+.entrepreneur-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 1.5rem);
+
+  @include respond-to(xs) {
+    padding: var(--ej-spacing-sm, 0.75rem);
+  }
+}
+
+.ed-hero,
+.ed-section,
+.ed-kpis,
+.ed-grid > .ed-card {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.ed-kpis { animation-delay: 0.1s; }
+.ed-grid > .ed-card:nth-child(1) { animation-delay: 0.15s; }
+.ed-grid > .ed-card:nth-child(2) { animation-delay: 0.2s; }
+.ed-grid > .ed-card:nth-child(3) { animation-delay: 0.25s; }
+.ed-grid > .ed-card:nth-child(4) { animation-delay: 0.3s; }

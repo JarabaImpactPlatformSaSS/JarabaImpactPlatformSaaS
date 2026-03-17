@@ -1,0 +1,150 @@
+{#
+/**
+ * @file
+ * copilot-dashboard.html.twig — Panel de herramientas del emprendedor.
+ *
+ * Variables:
+ * - unlock_status: array — Estado de desbloqueo de features
+ * - available_modes: array — Modos disponibles del copiloto
+ * - milestones: array — Hitos recientes del emprendedor
+ * - setup_wizard: array — Datos del Setup Wizard
+ * - daily_actions: array — Acciones del día
+ */
+#}
+
+<div class="copilot-dashboard" role="main" aria-label="{% trans %}Panel de herramientas{% endtrans %}">
+
+  {# ── HEADER ──────────────────────────────────────────────────── #}
+  <header class="copilot-dashboard__header">
+    <div class="copilot-dashboard__header-text">
+      <h1>
+        {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+        {% trans %}Panel de Herramientas{% endtrans %}
+      </h1>
+      <p>{% trans %}Herramientas inteligentes para impulsar tu emprendimiento{% endtrans %}</p>
+    </div>
+  </header>
+
+  {# ── SETUP WIZARD ────────────────────────────────────────────── #}
+  {% if setup_wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: setup_wizard,
+      wizard_title: 'Progreso'|t,
+      wizard_subtitle: 'Tu avance en el ecosistema'|t,
+      collapsed_label: 'Configuración completada'|t,
+    } only %}
+  {% endif %}
+
+  {# ── DAILY ACTIONS ───────────────────────────────────────────── #}
+  {% if daily_actions is not empty %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones rápidas'|t,
+    } only %}
+  {% endif %}
+
+  {# ── MODOS DE COPILOTO IA ────────────────────────────────────── #}
+  {# Mapeo de mode_id → icono SVG duotone (ICON-CONVENTION-001) #}
+  {% set mode_icons = {
+    'coach':     { category: 'ai',         name: 'brain' },
+    'consultor': { category: 'business',   name: 'toolkit' },
+    'sparring':  { category: 'ai',         name: 'debate' },
+    'cfo':       { category: 'finance',    name: 'coins' },
+    'fiscal':    { category: 'legal',      name: 'gavel' },
+    'laboral':   { category: 'compliance', name: 'shield-check' },
+    'devil':     { category: 'ai',         name: 'challenge' },
+  } %}
+  {% set mode_colors = {
+    'coach':     'verde-innovacion',
+    'consultor': 'azul-corporativo',
+    'sparring':  'naranja-impulso',
+    'cfo':       'naranja-impulso',
+    'fiscal':    'azul-corporativo',
+    'laboral':   'verde-innovacion',
+    'devil':     'naranja-impulso',
+  } %}
+
+  {% if available_modes is not empty %}
+    <section class="cd-modes" aria-label="{% trans %}Modos del copiloto IA{% endtrans %}">
+      <header class="cd-modes__header">
+        {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'naranja-impulso', size: '22px' }) }}
+        <h2>{% trans %}Copiloto IA — Modos especializados{% endtrans %}</h2>
+        <p class="cd-modes__subtitle">{% trans %}7 expertos virtuales que se desbloquean a medida que avanzas{% endtrans %}</p>
+      </header>
+
+      <div class="cd-modes__grid">
+        {% for mode_id, mode in available_modes %}
+          {% set icon = mode_icons[mode_id]|default({ category: 'ai', name: 'sparkles' }) %}
+          {% set color = mode_colors[mode_id]|default('azul-corporativo') %}
+          {% set is_available = mode.available|default(false) %}
+
+          <article class="cd-mode {% if not is_available %}cd-mode--locked{% endif %} cd-mode--{{ color }}">
+            <div class="cd-mode__icon-wrap cd-mode__icon-wrap--{{ color }}">
+              {{ jaraba_icon(icon.category, icon.name, { variant: 'duotone', color: is_available ? color : 'neutral', size: '28px' }) }}
+            </div>
+
+            <div class="cd-mode__body">
+              <h3 class="cd-mode__name">{{ mode.label|default(mode_id) }}</h3>
+              <p class="cd-mode__desc">{{ mode.description|default('') }}</p>
+            </div>
+
+            <footer class="cd-mode__footer">
+              {% if is_available %}
+                <span class="cd-mode__status cd-mode__status--active">
+                  {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '14px' }) }}
+                  {% trans %}Disponible{% endtrans %}
+                </span>
+              {% else %}
+                <span class="cd-mode__status cd-mode__status--locked">
+                  {{ jaraba_icon('actions', 'lock', { variant: 'outline', size: '12px' }) }}
+                  {% trans %}Semana {{ mode.unlock_week }}{% endtrans %}
+                </span>
+              {% endif %}
+            </footer>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ── MILESTONES RECIENTES ────────────────────────────────────── #}
+  {% if milestones is not empty %}
+    <section class="copilot-dashboard__milestones" aria-label="{% trans %}Hitos recientes{% endtrans %}">
+      <h2>
+        {{ jaraba_icon('achievement', 'star', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+        {% trans %}Hitos recientes{% endtrans %}
+      </h2>
+      <div class="copilot-dashboard__milestones-list">
+        {% for milestone in milestones %}
+          <div class="copilot-dashboard__milestone">
+            {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+            <span>{{ milestone.label|default(milestone) }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ── ACCESOS RÁPIDOS ─────────────────────────────────────────── #}
+  <section class="copilot-dashboard__quick" aria-label="{% trans %}Accesos rápidos{% endtrans %}">
+    <div class="copilot-dashboard__quick-grid">
+      <a href="{{ path('jaraba_copilot_v2.bmc_dashboard') }}" class="copilot-dashboard__quick-card">
+        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+        <span>{% trans %}Business Model Canvas{% endtrans %}</span>
+      </a>
+      <a href="{{ path('jaraba_copilot_v2.hypothesis_manager') }}" class="copilot-dashboard__quick-card">
+        {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+        <span>{% trans %}Gestión de Hipótesis{% endtrans %}</span>
+      </a>
+      <a href="{{ path('jaraba_copilot_v2.experiments') }}" class="copilot-dashboard__quick-card">
+        {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+        <span>{% trans %}Experimentos{% endtrans %}</span>
+      </a>
+      <a href="{{ path('jaraba_diagnostic.wizard.start') }}" class="copilot-dashboard__quick-card">
+        {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+        <span>{% trans %}Diagnóstico Digital{% endtrans %}</span>
+      </a>
+    </div>
+  </section>
+
+</div>

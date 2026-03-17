@@ -213,6 +213,13 @@
                 {% endif %}
               </div>
 
+              {# PLG-UPGRADE-UI-001: Tarjeta de suscripción + features + uso #}
+              {% if section.id == 'subscription_upgrade' and section.subscription_widget is defined %}
+                {% include '@ecosistema_jaraba_theme/partials/_subscription-card.html.twig' with {
+                  ctx: section.subscription_widget,
+                } only %}
+              {% endif %}
+
               {# Profile completeness ring (solo en sección professional_profile) #}
               {% if section.id == 'professional_profile' and section.profile_completeness is defined %}
                 <div class="quick-access-section__completeness">

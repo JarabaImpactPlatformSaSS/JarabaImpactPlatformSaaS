@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\jaraba_copilot_v2\Service\BmcValidationService;
 use Drupal\jaraba_copilot_v2\Service\FeatureUnlockService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 
 /**
  * Controller for the entrepreneur copilot dashboard.
@@ -33,6 +35,8 @@ class CopilotDashboardController extends ControllerBase
         FeatureUnlockService $featureUnlock,
         BmcValidationService $bmcValidation,
         EntityTypeManagerInterface $entityTypeManager,
+        protected ?SetupWizardRegistry $wizardRegistry = NULL,
+        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
     ) {
         $this->featureUnlock = $featureUnlock;
         $this->bmcValidation = $bmcValidation;
@@ -48,6 +52,10 @@ class CopilotDashboardController extends ControllerBase
             $container->get('jaraba_copilot_v2.feature_unlock'),
             $container->get('jaraba_copilot_v2.bmc_validation'),
             $container->get('entity_type.manager'),
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
         );
     }
 
@@ -62,6 +70,15 @@ class CopilotDashboardController extends ControllerBase
         $unlockStatus = $this->featureUnlock->getUnlockStatus();
         $availableModes = $this->featureUnlock->getAvailableCopilotModes();
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        $tenantId = \Drupal::hasService('ecosistema_jaraba_core.tenant_context')
+            ? (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId()
+            : 0;
+        $setupWizard = $this->wizardRegistry?->hasWizard('emprendedor')
+            ? $this->wizardRegistry->getStepsForWizard('emprendedor', $tenantId)
+            : NULL;
+        $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('emprendedor', $tenantId) ?? [];
+
         // Cargar ultimos milestones del emprendedor.
         $userId = (string) $this->currentUser()->id();
         $profile = $this->loadUserProfile($userId);
@@ -75,6 +92,8 @@ class CopilotDashboardController extends ControllerBase
             '#unlock_status' => $unlockStatus,
             '#available_modes' => $availableModes,
             '#milestones' => $milestones,
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => ['jaraba_copilot_v2/dashboard'],
             ],
@@ -93,9 +112,9 @@ class CopilotDashboardController extends ControllerBase
      */
     public function bmcDashboard(): array
     {
-        $userId = (string) $this->currentUser()->id();
-        $validation = $this->bmcValidation->getValidationState($userId);
-        $profile = $this->loadUserProfile($userId);
+        $uid = (int) $this->currentUser()->id();
+        $validation = $this->bmcValidation->getValidationState($uid);
+        $profile = $this->loadUserProfile((string) $uid);
 
         $impactPoints = $profile ? (int) ($profile->get('impact_points')->value ?? 0) : 0;
         $level = $this->calculateLevel($impactPoints);

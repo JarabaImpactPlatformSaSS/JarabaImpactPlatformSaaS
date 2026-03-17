@@ -1950,6 +1950,24 @@ services:
   ecosistema_jaraba_core.user_profile_section_registry:
     class: Drupal\ecosistema_jaraba_core\UserProfile\UserProfileSectionRegistry
 
+  # PLG-UPGRADE-UI-001: SubscriptionContextService.
+  ecosistema_jaraba_core.subscription_context:
+    class: Drupal\ecosistema_jaraba_core\Service\SubscriptionContextService
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_bridge'
+      - '@?ecosistema_jaraba_core.plan_resolver'
+
+  # PLG-UPGRADE-UI-001: Sección de suscripción en perfil de usuario.
+  ecosistema_jaraba_core.user_profile_section.subscription:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\SubscriptionProfileSection
+    arguments:
+      - '@current_user'
+      - '@?ecosistema_jaraba_core.subscription_context'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
   ecosistema_jaraba_core.user_profile_section.professional_profile:
     class: Drupal\ecosistema_jaraba_core\UserProfile\Section\ProfessionalProfileSection
     arguments:

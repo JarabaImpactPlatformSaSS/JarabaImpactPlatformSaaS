@@ -1,228 +1,300 @@
 {#
 /**
  * @file
- * Entrepreneur Dashboard - Main dashboard for entrepreneurs.
+ * entrepreneur-dashboard.html.twig
  *
- * Variables:
- * - user: Current user entity
- * - diagnostic: Latest BusinessDiagnostic entity
- * - canvas: Latest BusinessModelCanvas entity
- * - path_progress: Path enrollment progress data
- * - kpis: Array of KPI data
- * - next_steps: Array of recommended next actions
+ * Dashboard premium de clase mundial para emprendedores.
+ *
+ * Variables (todas inyectadas desde EntrepreneurDashboardController):
+ * - user_name: string — Nombre visible del usuario
+ * - user_avatar_url: string — URL del avatar (vacío si no tiene)
+ * - user_initials: string — Iniciales fallback
+ * - kpis: array — {maturity_score, canvas_completeness, path_progress, estimated_loss}
+ * - maturity_label: string — Nivel de madurez (Analógico, Básico, etc.)
+ * - next_steps: array — Pasos dinámicos con completed, priority, icon_*
+ * - canvas_blocks: array — 9 bloques del canvas con count/has_items
+ * - canvas_id: int — ID del canvas para link directo
+ * - upcoming_sessions: array — Sesiones de mentoría con mentor_name, scheduled_at
+ * - path_progress: array — {percentage, current_phase}
+ * - setup_wizard: array — Datos del SetupWizardRegistry
+ * - daily_actions: array — Datos del DailyActionsRegistry
+ *
+ * Directrices:
+ * - SETUP-WIZARD-DAILY-001: Setup Wizard + Daily Actions
+ * - CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*)
+ * - ICON-DUOTONE-001: Iconos duotone por defecto
+ * - ROUTE-LANGPREFIX-001: URLs via path()
+ * - TWIG-INCLUDE-ONLY-001: Includes con only
+ * - i18n: {% trans %} para todos los textos
  */
 #}
 
-<div class="entrepreneur-dashboard" role="main" aria-label="{{ 'Dashboard del emprendedor'|t }}">
-  {# Header Section #}
-  <header class="entrepreneur-dashboard__header">
-    <div class="welcome-message">
-      <h1>{{ 'Hola, @name'|t({'@name': user.displayname|default(user.name|default('Emprendedor'))}) }}</h1>
-      <p class="subtitle">{{ 'Tu centro de control para la digitalización de tu negocio'|t }}</p>
+<div class="entrepreneur-dashboard" role="main" aria-label="{% trans %}Dashboard del emprendedor{% endtrans %}">
+
+  {# ── HERO HEADER ──────────────────────────────────────────────── #}
+  <header class="ed-hero">
+    <div class="ed-hero__bg" aria-hidden="true">
+      <div class="ed-hero__gradient"></div>
+      <div class="ed-hero__orb ed-hero__orb--1"></div>
+      <div class="ed-hero__orb ed-hero__orb--2"></div>
     </div>
-    
-    <div class="quick-actions">
-      <a href="/admin/content/business-canvas/add" class="btn btn--primary">
-        {{ jaraba_icon('business', 'canvas', { size: '16px' }) }}
-        {{ 'Nuevo Canvas'|t }}
-      </a>
-      <a href="/diagnostic/start" class="btn btn--secondary">
-        {{ jaraba_icon('business', 'diagnostic', { size: '16px' }) }}
-        {{ 'Hacer Diagnóstico'|t }}
-      </a>
+
+    <div class="ed-hero__content">
+      <div class="ed-hero__avatar">
+        {% if user_avatar_url %}
+          <img src="{{ user_avatar_url }}" alt="{{ user_name }}" class="ed-hero__avatar-img" loading="lazy">
+        {% else %}
+          <span class="ed-hero__avatar-initials">{{ user_initials|default('E') }}</span>
+        {% endif %}
+      </div>
+
+      <div class="ed-hero__text">
+        <h1 class="ed-hero__title">{% trans %}Hola, {{ user_name }}{% endtrans %}</h1>
+        <p class="ed-hero__subtitle">{% trans %}Tu centro de control para la digitalización de tu negocio{% endtrans %}</p>
+        <span class="ed-hero__badge">
+          {{ jaraba_icon('verticals', 'emprendimiento', { variant: 'duotone', color: 'naranja-impulso', size: '14px' }) }}
+          {% trans %}Emprendimiento{% endtrans %}
+        </span>
+      </div>
     </div>
   </header>
-  
-  {# KPIs Grid #}
-  <section class="entrepreneur-dashboard__kpis" aria-label="{{ 'Indicadores clave'|t }}">
-    <article class="kpi-card">
-      <div class="kpi-card__icon">
-        {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'innovation', size: '32px' }) }}
+
+  {# ── SETUP WIZARD — SETUP-WIZARD-DAILY-001 ────────────────────── #}
+  {% if setup_wizard %}
+    <div class="ed-section ed-section--wizard">
+      {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+        wizard: setup_wizard,
+        wizard_title: 'Arranca tu proyecto'|t,
+        wizard_subtitle: 'Completa estos pasos para estructurar tu emprendimiento'|t,
+        collapsed_label: 'Proyecto en marcha'|t,
+      } only %}
+    </div>
+  {% endif %}
+
+  {# ── DAILY ACTIONS — SETUP-WIZARD-DAILY-001 ───────────────────── #}
+  {% if daily_actions is not empty %}
+    <div class="ed-section ed-section--actions">
+      {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+        daily_actions: daily_actions,
+        actions_title: 'Acciones del día'|t,
+      } only %}
+    </div>
+  {% endif %}
+
+  {# ── KPI CARDS ─────────────────────────────────────────────────── #}
+  <section class="ed-kpis" aria-label="{% trans %}Indicadores clave{% endtrans %}">
+    {# Madurez Digital #}
+    <article class="ed-kpi">
+      <div class="ed-kpi__icon ed-kpi__icon--innovation">
+        {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
       </div>
-      <div class="kpi-card__content">
-        <span class="kpi-card__label">{{ 'Madurez Digital'|t }}</span>
-        <span class="kpi-card__value">{{ diagnostic.overall_score|default(0)|number_format(0) }}%</span>
-        <span class="kpi-card__sublabel">{{ diagnostic.maturity_level|default('Sin evaluar')|t }}</span>
+      <div class="ed-kpi__data">
+        <span class="ed-kpi__value">{{ kpis.maturity_score|default(0)|number_format(0) }}<small>%</small></span>
+        <span class="ed-kpi__label">{% trans %}Madurez Digital{% endtrans %}</span>
+        <span class="ed-kpi__sub">{{ maturity_label|default('Sin evaluar'|t) }}</span>
       </div>
     </article>
-    
-    <article class="kpi-card">
-      <div class="kpi-card__icon">
-        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'impulse', size: '32px' }) }}
+
+    {# Canvas Completitud #}
+    <article class="ed-kpi">
+      <div class="ed-kpi__icon ed-kpi__icon--impulse">
+        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
       </div>
-      <div class="kpi-card__content">
-        <span class="kpi-card__label">{{ 'Canvas'|t }}</span>
-        <span class="kpi-card__value">{{ canvas.completeness_score|default(0)|number_format(0) }}%</span>
-        <span class="kpi-card__sublabel">{{ 'Completitud'|t }}</span>
-      </div>
-    </article>
-    
-    <article class="kpi-card">
-      <div class="kpi-card__icon">
-        {{ jaraba_icon('ui', 'path', { variant: 'duotone', color: 'corporate', size: '32px' }) }}
-      </div>
-      <div class="kpi-card__content">
-        <span class="kpi-card__label">{{ 'Itinerario'|t }}</span>
-        <span class="kpi-card__value">{{ path_progress.percentage|default(0)|number_format(0) }}%</span>
-        <span class="kpi-card__sublabel">{{ path_progress.current_phase|default('Sin iniciar')|t }}</span>
+      <div class="ed-kpi__data">
+        <span class="ed-kpi__value">{{ kpis.canvas_completeness|default(0)|number_format(0) }}<small>%</small></span>
+        <span class="ed-kpi__label">{% trans %}Canvas{% endtrans %}</span>
+        <span class="ed-kpi__sub">{% trans %}Completitud{% endtrans %}</span>
       </div>
     </article>
-    
-    <article class="kpi-card kpi-card--warning">
-      <div class="kpi-card__icon">
-        {{ jaraba_icon('analytics', 'euro', { variant: 'duotone', color: 'danger', size: '32px' }) }}
+
+    {# Itinerario #}
+    <article class="ed-kpi">
+      <div class="ed-kpi__icon ed-kpi__icon--corporate">
+        {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
       </div>
-      <div class="kpi-card__content">
-        <span class="kpi-card__label">{{ 'Pérdida Estimada'|t }}</span>
-        <span class="kpi-card__value">{{ diagnostic.estimated_loss|default(0)|number_format(0, ',', '.') }}€</span>
-        <span class="kpi-card__sublabel">{{ 'Por gaps digitales'|t }}</span>
+      <div class="ed-kpi__data">
+        <span class="ed-kpi__value">{{ kpis.path_progress|default(0)|number_format(0) }}<small>%</small></span>
+        <span class="ed-kpi__label">{% trans %}Itinerario{% endtrans %}</span>
+        <span class="ed-kpi__sub">{{ path_progress.current_phase|default('Sin iniciar'|t) }}</span>
+      </div>
+    </article>
+
+    {# Pérdida Estimada #}
+    <article class="ed-kpi ed-kpi--warning">
+      <div class="ed-kpi__icon ed-kpi__icon--danger">
+        {{ jaraba_icon('finance', 'trending-up', { variant: 'duotone', color: 'white', size: '28px' }) }}
+      </div>
+      <div class="ed-kpi__data">
+        <span class="ed-kpi__value">{{ kpis.estimated_loss|default(0)|number_format(0, ',', '.') }}<small>€</small></span>
+        <span class="ed-kpi__label">{% trans %}Pérdida Estimada{% endtrans %}</span>
+        <span class="ed-kpi__sub">{% trans %}Por gaps digitales{% endtrans %}</span>
       </div>
     </article>
   </section>
-  
-  {# Main Content Grid #}
-  <div class="entrepreneur-dashboard__grid">
-    {# Next Steps #}
-    <section class="dashboard-section next-steps" aria-label="{{ 'Próximos pasos'|t }}">
-      <header class="dashboard-section__header">
-        <h2>{{ 'Próximos Pasos'|t }}</h2>
-        {{ jaraba_icon('actions', 'checklist', { size: '20px' }) }}
+
+  {# ── MAIN CONTENT GRID ─────────────────────────────────────────── #}
+  <div class="ed-grid">
+
+    {# ── PRÓXIMOS PASOS ──────────────────────────────────────────── #}
+    <section class="ed-card ed-card--steps" aria-label="{% trans %}Próximos pasos{% endtrans %}">
+      <header class="ed-card__header">
+        {{ jaraba_icon('actions', 'checklist', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        <h2 class="ed-card__title">{% trans %}Próximos Pasos{% endtrans %}</h2>
       </header>
-      
-      <div class="dashboard-section__content">
-        {% if next_steps %}
-          <ul class="task-list">
-            {% for step in next_steps %}
-              <li class="task-item {{ step.completed ? 'task-item--completed' : '' }}">
-                <span class="task-item__checkbox">
-                  {% if step.completed %}
-                    {{ jaraba_icon('ui', 'check-circle', { color: 'success', size: '20px' }) }}
-                  {% else %}
-                    {{ jaraba_icon('ui', 'circle', { color: 'neutral', size: '20px' }) }}
-                  {% endif %}
+
+      {% if next_steps is not empty %}
+        <ul class="ed-steps" role="list">
+          {% for step in next_steps %}
+            <li class="ed-step {% if step.completed %}ed-step--done{% endif %} {% if step.priority == 'high' and not step.completed %}ed-step--priority{% endif %}">
+              <span class="ed-step__check" aria-hidden="true">
+                {% if step.completed %}
+                  {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+                {% else %}
+                  <span class="ed-step__circle"></span>
+                {% endif %}
+              </span>
+              <div class="ed-step__content">
+                <span class="ed-step__icon" aria-hidden="true">
+                  {{ jaraba_icon(step.icon_category|default('ui'), step.icon_name|default('info'), { variant: 'duotone', size: '16px' }) }}
                 </span>
-                <div class="task-item__content">
-                  <span class="task-item__title">{{ step.title }}</span>
-                  <span class="task-item__description">{{ step.description }}</span>
+                <div class="ed-step__text">
+                  <span class="ed-step__title">{{ step.title }}</span>
+                  <span class="ed-step__desc">{{ step.description }}</span>
                 </div>
-                {% if step.action_url and not step.completed %}
-                  <a href="{{ step.action_url }}" class="task-item__action btn btn--sm">
-                    {{ 'Hacer'|t }}
+              </div>
+              <div class="ed-step__actions">
+                {% if step.priority == 'high' and not step.completed %}
+                  <span class="ed-step__badge">{% trans %}Prioritario{% endtrans %}</span>
+                {% endif %}
+                {% if step.url %}
+                  <a href="{{ step.url }}" class="ed-step__btn {% if not step.completed %}ed-step__btn--primary{% endif %}">
+                    {{ step.action_label|default('Ir'|t) }}
+                    <span aria-hidden="true">&rarr;</span>
                   </a>
                 {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="empty-state">
-            <p>{{ '¡Excelente! Has completado todos los pasos recomendados.'|t }}</p>
-          </div>
-        {% endif %}
-      </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="ed-empty">
+          {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+          <p>{% trans %}¡Excelente! Has completado todos los pasos recomendados.{% endtrans %}</p>
+        </div>
+      {% endif %}
     </section>
-    
-    {# Canvas Preview #}
-    {% if canvas %}
-    <section class="dashboard-section canvas-preview">
-      <header class="dashboard-section__header">
-        <h2>{{ 'Tu Business Model Canvas'|t }}</h2>
-        <a href="{{ path('entity.business_model_canvas.canonical', {'business_model_canvas': canvas.id}) }}" class="btn btn--sm btn--secondary">
-          {{ 'Ver completo'|t }}
-        </a>
+
+    {# ── CANVAS MINI-PREVIEW ─────────────────────────────────────── #}
+    <section class="ed-card ed-card--canvas" aria-label="{% trans %}Business Model Canvas{% endtrans %}">
+      <header class="ed-card__header">
+        {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+        <h2 class="ed-card__title">{% trans %}Tu Business Model Canvas{% endtrans %}</h2>
       </header>
-      
-      <div class="canvas-mini-preview">
-        <div class="canvas-mini__grid">
-          {% set block_order = ['key_partners', 'key_activities', 'key_resources', 'value_propositions', 'customer_relationships', 'channels', 'customer_segments', 'cost_structure', 'revenue_streams'] %}
-          {% for block_type in block_order %}
-            {% set block = canvas.blocks[block_type]|default({}) %}
-            {% set items = block.items|default([]) %}
-            <div class="canvas-mini__block canvas-mini__block--{{ block_type|replace({'_': '-'}) }}">
-              <span class="canvas-mini__count">{{ items|length }}</span>
+
+      {% if canvas_blocks is not empty %}
+        <div class="ed-canvas-grid">
+          {% set block_labels = {
+            'key_partners': 'Socios'|t,
+            'key_activities': 'Actividades'|t,
+            'key_resources': 'Recursos'|t,
+            'value_propositions': 'Propuesta'|t,
+            'customer_relationships': 'Relaciones'|t,
+            'channels': 'Canales'|t,
+            'customer_segments': 'Clientes'|t,
+            'cost_structure': 'Costes'|t,
+            'revenue_streams': 'Ingresos'|t,
+          } %}
+          {% for type, block in canvas_blocks %}
+            <div class="ed-canvas-block ed-canvas-block--{{ type|replace({'_': '-'}) }} {% if block.has_items %}ed-canvas-block--filled{% endif %}">
+              <span class="ed-canvas-block__count">{{ block.count }}</span>
+              <span class="ed-canvas-block__label">{{ block_labels[type]|default(type) }}</span>
             </div>
           {% endfor %}
         </div>
-        
-        <div class="canvas-preview__scores">
-          <div class="score-item">
-            <span class="score-item__label">{{ 'Completitud'|t }}</span>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: {{ canvas.completeness_score }}%"></div>
+
+        <div class="ed-canvas-scores">
+          <div class="ed-progress">
+            <div class="ed-progress__header">
+              <span class="ed-progress__label">{% trans %}Completitud{% endtrans %}</span>
+              <span class="ed-progress__value">{{ kpis.canvas_completeness|default(0)|number_format(0) }}%</span>
             </div>
-            <span class="score-item__value">{{ canvas.completeness_score|number_format(0) }}%</span>
-          </div>
-          {% if canvas.coherence_score %}
-          <div class="score-item">
-            <span class="score-item__label">{{ 'Coherencia IA'|t }}</span>
-            <div class="progress-bar">
-              <div class="progress-bar__fill progress-bar__fill--ai" style="width: {{ canvas.coherence_score }}%"></div>
+            <div class="ed-progress__bar">
+              <div class="ed-progress__fill ed-progress__fill--impulse" style="width: {{ kpis.canvas_completeness|default(0) }}%"></div>
             </div>
-            <span class="score-item__value">{{ canvas.coherence_score|number_format(0) }}%</span>
           </div>
-          {% endif %}
         </div>
-      </div>
+      {% else %}
+        <div class="ed-empty ed-empty--canvas">
+          {{ jaraba_icon('business', 'canvas', { variant: 'duotone', color: 'naranja-impulso', size: '40px' }) }}
+          <p>{% trans %}Aún no has creado un canvas.{% endtrans %}</p>
+          <span class="ed-empty__hint">{% trans %}Define los 9 bloques de tu modelo de negocio{% endtrans %}</span>
+        </div>
+      {% endif %}
     </section>
-    {% endif %}
-    
-    {# Mentoring Sessions #}
-    <section class="dashboard-section upcoming-sessions" aria-label="{{ 'Próximas mentorías'|t }}">
-      <header class="dashboard-section__header">
-        <h2>{{ 'Próximas Mentorías'|t }}</h2>
-        <a href="/es/admin/content/mentoring-sessions" class="btn btn--sm btn--secondary">
-          {{ 'Ver todas'|t }}
-        </a>
+
+    {# ── PRÓXIMAS MENTORÍAS ──────────────────────────────────────── #}
+    <section class="ed-card ed-card--sessions" aria-label="{% trans %}Próximas mentorías{% endtrans %}">
+      <header class="ed-card__header">
+        {{ jaraba_icon('education', 'calendar-clock', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        <h2 class="ed-card__title">{% trans %}Próximas Mentorías{% endtrans %}</h2>
       </header>
-      
-      <div class="dashboard-section__content">
-        {% if mentoring_sessions %}
-          {% for session in mentoring_sessions %}
-            <article class="session-card">
-              <div class="session-card__avatar">
-                {{ jaraba_icon('ui', 'user', { size: '24px' }) }}
+
+      {% if upcoming_sessions is not empty %}
+        <div class="ed-sessions">
+          {% for session in upcoming_sessions %}
+            <article class="ed-session">
+              <div class="ed-session__avatar">
+                {{ jaraba_icon('users', 'user-check', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
               </div>
-              <div class="session-card__content">
-                <span class="session-card__mentor">{{ session.mentor_name }}</span>
-                <span class="session-card__datetime">{{ session.scheduled_at|date('d/m/Y H:i') }}</span>
+              <div class="ed-session__info">
+                <span class="ed-session__mentor">{{ session.mentor_name }}</span>
+                <span class="ed-session__time">{{ session.scheduled_at }}</span>
               </div>
-              <a href="{{ session.join_url }}" class="session-card__action btn btn--sm btn--primary">
-                {{ 'Unirse'|t }}
-              </a>
+              <span class="ed-session__status ed-session__status--{{ session.status }}">
+                {% if session.status == 'confirmed' %}
+                  {% trans %}Confirmada{% endtrans %}
+                {% else %}
+                  {% trans %}Programada{% endtrans %}
+                {% endif %}
+              </span>
             </article>
           {% endfor %}
-        {% else %}
-          <div class="empty-state">
-            <p>{{ 'No tienes mentorías programadas.'|t }}</p>
-            <a href="/es/entrepreneur/mentors" class="btn btn--primary">
-              {{ 'Buscar mentores'|t }}
-            </a>
-          </div>
-        {% endif %}
-      </div>
+        </div>
+      {% else %}
+        <div class="ed-empty">
+          {{ jaraba_icon('education', 'calendar-clock', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+          <p>{% trans %}No tienes mentorías programadas.{% endtrans %}</p>
+        </div>
+      {% endif %}
     </section>
-    
-    {# Resources #}
-    <section class="dashboard-section resources" aria-label="{{ 'Recursos recomendados'|t }}">
-      <header class="dashboard-section__header">
-        <h2>{{ 'Recursos Recomendados'|t }}</h2>
+
+    {# ── RECURSOS RECOMENDADOS ───────────────────────────────────── #}
+    <section class="ed-card ed-card--resources" aria-label="{% trans %}Recursos recomendados{% endtrans %}">
+      <header class="ed-card__header">
+        {{ jaraba_icon('business', 'toolkit', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <h2 class="ed-card__title">{% trans %}Recursos{% endtrans %}</h2>
       </header>
-      
-      <div class="resource-grid">
-        <a href="/es/entrepreneur/paths" class="resource-card">
-          {{ jaraba_icon('ui', 'book', { variant: 'duotone', color: 'corporate', size: '32px' }) }}
-          <span class="resource-card__title">{{ 'Itinerarios de Digitalización'|t }}</span>
+
+      <div class="ed-resources">
+        <a href="{{ path('jaraba_lms.my_learning') }}" class="ed-resource">
+          {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+          <span class="ed-resource__title">{% trans %}Itinerarios{% endtrans %}</span>
+          <span class="ed-resource__desc">{% trans %}Aprende habilidades digitales{% endtrans %}</span>
         </a>
-        
-        <a href="#" class="resource-card">
-          {{ jaraba_icon('business', 'toolkit', { variant: 'duotone', color: 'impulse', size: '32px' }) }}
-          <span class="resource-card__title">{{ 'Kits Digitales'|t }}</span>
+
+        <a href="{{ path('jaraba_diagnostic.wizard.start') }}" class="ed-resource">
+          {{ jaraba_icon('business', 'toolkit', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+          <span class="ed-resource__title">{% trans %}Diagnóstico Digital{% endtrans %}</span>
+          <span class="ed-resource__desc">{% trans %}Evalúa tu madurez digital{% endtrans %}</span>
         </a>
-        
-        <a href="#" class="resource-card">
-          {{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'innovation', size: '32px' }) }}
-          <span class="resource-card__title">{{ 'Copiloto IA'|t }}</span>
+
+        <a href="{{ path('jaraba_copilot_v2.dashboard') }}" class="ed-resource">
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+          <span class="ed-resource__title">{% trans %}Copiloto IA{% endtrans %}</span>
+          <span class="ed-resource__desc">{% trans %}Asistente inteligente{% endtrans %}</span>
         </a>
       </div>
     </section>
+
   </div>
 </div>

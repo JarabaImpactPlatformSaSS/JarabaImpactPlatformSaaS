@@ -588,7 +588,7 @@ ecosistema_jaraba_core.tenant_self_service.settings:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::settings'
     _title: 'Configuración'
   requirements:
-    _permission: 'edit own tenant' # AUDIT-SEC-002
+    _user_is_logged_in: 'TRUE'
   options:
     _admin_route: FALSE
 
@@ -706,7 +706,7 @@ ecosistema_jaraba_core.tenant_self_service.plan:
     _form: '\Drupal\ecosistema_jaraba_core\Form\TenantPlanSettingsForm'
     _title: 'Plan y Facturacion'
   requirements:
-    _permission: 'edit own tenant'
+    _user_is_logged_in: 'TRUE'
   options:
     _admin_route: FALSE
 

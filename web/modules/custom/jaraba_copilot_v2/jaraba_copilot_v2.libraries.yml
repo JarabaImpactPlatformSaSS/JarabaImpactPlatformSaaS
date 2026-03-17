@@ -1,3 +1,11 @@
+dashboard:
+  version: VERSION
+  css:
+    component:
+      css/copilot-dashboard.css: {}
+  dependencies:
+    - core/drupal
+
 bmc-dashboard:
   version: VERSION
   css:

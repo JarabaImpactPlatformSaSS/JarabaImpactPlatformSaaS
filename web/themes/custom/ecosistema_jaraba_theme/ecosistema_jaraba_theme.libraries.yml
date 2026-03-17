@@ -63,6 +63,14 @@ bundle-agent-dashboard:
   dependencies:
     - ecosistema_jaraba_theme/global-styling
 
+bundle-entrepreneur-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/entrepreneur-dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 bundle-support:
   version: 1.0.0
   css:

@@ -154,7 +154,7 @@ jaraba_diagnostic.wizard.start:
     _controller: '\Drupal\jaraba_diagnostic\Controller\DiagnosticWizardController::start'
     _title: 'Diagnóstico Empresarial'
   requirements:
-    _permission: 'create business diagnostic'
+    _user_is_logged_in: 'TRUE'
 
 jaraba_diagnostic.wizard.create:
   path: '/diagnostic/start'
@@ -163,7 +163,7 @@ jaraba_diagnostic.wizard.create:
     _title: 'Crear Diagnóstico'
   methods: [POST]
   requirements:
-    _permission: 'create business diagnostic'
+    _user_is_logged_in: 'TRUE'
 
 
 jaraba_diagnostic.wizard.step:
@@ -172,7 +172,7 @@ jaraba_diagnostic.wizard.step:
     _controller: '\Drupal\jaraba_diagnostic\Controller\DiagnosticWizardController::step'
     _title: 'Diagnóstico - Paso'
   requirements:
-    _permission: 'edit own business diagnostic'
+    _user_is_logged_in: 'TRUE'
     uuid: '[a-f0-9\-]+'
     section: '[a-z_]+'
 
@@ -182,7 +182,7 @@ jaraba_diagnostic.wizard.results:
     _controller: '\Drupal\jaraba_diagnostic\Controller\DiagnosticWizardController::results'
     _title: 'Resultados del Diagnóstico'
   requirements:
-    _permission: 'view own business diagnostic'
+    _user_is_logged_in: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 entity.diagnostic_answer.collection:

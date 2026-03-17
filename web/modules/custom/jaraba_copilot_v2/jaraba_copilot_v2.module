@@ -67,6 +67,17 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
         'profile' => NULL,
       ],
     ],
+    // Copilot main dashboard (entrepreneur tools hub)
+    'copilot_dashboard' => [
+      'variables' => [
+        'unlock_status' => [],
+        'available_modes' => [],
+        'milestones' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
+      ],
+      'template' => 'copilot-dashboard',
+    ],
     // BMC Dashboard frontend
     'bmc_dashboard' => [
       'variables' => [
@@ -78,6 +89,8 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
         'impact_points' => 0,
         'level' => 1,
         'next_level_points' => 100,
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'bmc-dashboard',
     ],
