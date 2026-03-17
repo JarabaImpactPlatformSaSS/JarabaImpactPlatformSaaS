@@ -121,7 +121,9 @@ class PricingController extends ControllerBase
                 'features' => $this->formatFeatures($features),
                 'is_free' => $plan->isFree(),
                 'is_recommended' => $plan->get('recommended')->value ?? FALSE,
-                'cta_url' => '/registro/' . $vertical->getMachineName() . '?plan=' . $plan->id(),
+                'cta_url' => $plan->isFree()
+                    ? '/registro/' . $vertical->getMachineName() . '?plan=' . $plan->id()
+                    : Url::fromRoute('jaraba_billing.checkout', ['saas_plan' => $plan->id()])->toString(),
             ];
 
             $response['plans'][] = $planData;

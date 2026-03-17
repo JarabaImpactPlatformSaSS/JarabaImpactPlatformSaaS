@@ -126,21 +126,22 @@ class CheckoutSessionService {
       $params['subscription_data']['trial_period_days'] = $trialDays;
     }
 
-    // Customer: usar existente o crear nuevo por email.
+    // Customer: usar existente o pre-rellenar email si disponible.
     if ($existingCustomerId) {
       $params['customer'] = $existingCustomerId;
     }
-    else {
+    elseif (!empty($customerEmail)) {
       $params['customer_email'] = $customerEmail;
     }
 
     // Permitir codigos promocionales.
+    // Stripe API espera string 'true', no boolean (form_params encoding).
     $params['allow_promotion_codes'] = 'true';
 
     // Crear la session via Stripe API.
     $response = $this->stripeConnect->stripeRequest(
       'POST',
-      '/v1/checkout/sessions',
+      '/checkout/sessions',
       $params
     );
 
@@ -181,7 +182,7 @@ class CheckoutSessionService {
 
     return $this->stripeConnect->stripeRequest(
       'GET',
-      '/v1/checkout/sessions/' . $sessionId,
+      '/checkout/sessions/' . $sessionId,
       ['expand' => ['subscription', 'customer']]
     );
   }

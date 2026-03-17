@@ -141,7 +141,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
       return $result;
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->billingLogger->error('Error procesando billing webhook @type: @error', [
         '@type' => $eventType,
         '@error' => $e->getMessage(),
@@ -209,7 +209,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           $this->tenantSubscription->markPastDue($tenant);
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error marcando tenant @id past_due: @error', [
           '@id' => $tenantId,
           '@error' => $e->getMessage(),
@@ -222,6 +222,31 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
     // Sincronizar la factura con estado fallido.
     $this->invoiceService->syncInvoice($data, $tenantId ?: NULL);
+
+    // Enviar email de notificación de fallo de pago.
+    if ($tenantId && $this->mailManager) {
+      try {
+        $tenantStorage = $this->entityTypeManager()->getStorage('tenant');
+        $loadedTenant = $tenantStorage->load($tenantId);
+        $customerStorage = $this->entityTypeManager()->getStorage('billing_customer');
+        $customers = $customerStorage->loadByProperties(['tenant_id' => $tenantId]);
+        $customer = !empty($customers) ? reset($customers) : NULL;
+        $billingEmail = $customer ? $customer->get('billing_email')->value : NULL;
+
+        if ($billingEmail && $loadedTenant) {
+          $this->mailManager->mail('jaraba_billing', 'payment_failed', $billingEmail, 'es', [
+            'tenant_label' => $loadedTenant->label(),
+            'invoice_id' => $data['id'] ?? '',
+          ]);
+        }
+      }
+      catch (\Throwable $e) {
+        $this->billingLogger->error('Error sending payment_failed email for tenant @tenant: @error', [
+          '@tenant' => $tenantId,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
 
     $this->billingLogger->warning('Pago fallido en invoice @id, tenant @tenant', [
       '@id' => $data['id'] ?? 'unknown',
@@ -335,7 +360,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           }
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error sincronizando suscripción @id para tenant @tenant: @error', [
           '@id' => $subscriptionId,
           '@tenant' => $tenantId,
@@ -381,7 +406,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           $this->tenantSubscription->cancelSubscription($tenant, TRUE);
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error cancelando tenant @id: @error', [
           '@id' => $tenantId,
           '@error' => $e->getMessage(),
@@ -434,7 +459,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           }
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error notificando fin de trial para tenant @tenant: @error', [
           '@tenant' => $tenantId,
           '@error' => $e->getMessage(),
@@ -487,7 +512,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
         $entity = $storage->create($values);
         $entity->save();
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error creando payment method @pm: @error', [
           '@pm' => $pmId,
           '@error' => $e->getMessage(),
@@ -517,7 +542,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           $entity->save();
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error marcando payment method @pm como detached: @error', [
           '@pm' => $pmId,
           '@error' => $e->getMessage(),
@@ -576,7 +601,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           $tenant->save();
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Error activating tenant @id on subscription.created: @error', [
           '@id' => $tenantId,
           '@error' => $e->getMessage(),
@@ -655,29 +680,101 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'already_provisioned', 'tenant_id' => $tenant->id()], 'meta' => ['timestamp' => time()]]);
         }
 
-        // Auto-provision via TenantOnboardingService.
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_onboarding')) {
+        // Auto-provision: dos flujos posibles.
+        // A) Usuario ya registrado → vincular Stripe IDs a su tenant.
+        // B) Usuario nuevo → crear via TenantOnboardingService.
+        $drupalPlanId = $metadata['drupal_plan_id'] ?? '';
+        $vertical = $metadata['vertical'] ?? 'demo';
+        $businessName = $metadata['business_name'] ?? $customerEmail;
+
+        // Resolver plan tier desde el SaasPlan entity (drupal_plan_id en metadata).
+        $planTier = 'starter';
+        if ($drupalPlanId) {
+          $planEntity = $this->entityTypeManager()->getStorage('saas_plan')->load($drupalPlanId);
+          if ($planEntity) {
+            $planName = strtolower($planEntity->getName());
+            if (str_contains($planName, 'enterprise')) {
+              $planTier = 'enterprise';
+            }
+            elseif (str_contains($planName, 'profesional') || str_contains($planName, 'professional') || str_contains($planName, 'premium')) {
+              $planTier = 'professional';
+            }
+          }
+        }
+
+        // Flujo A: Buscar usuario existente por email.
+        $existingUsers = $this->entityTypeManager()->getStorage('user')
+          ->loadByProperties(['mail' => $customerEmail]);
+
+        if (!empty($existingUsers)) {
+          $user = reset($existingUsers);
+          $this->billingLogger->info('Checkout completed for existing user @uid (@email).', [
+            '@uid' => $user->id(),
+            '@email' => $customerEmail,
+          ]);
+
+          // Buscar tenant del usuario via TenantContextService.
+          if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+            $tenant = $tenantContext->getTenantForUser($user);
+
+            if ($tenant) {
+              // Vincular Stripe IDs al tenant existente.
+              if ($tenant->hasField('stripe_customer_id')) {
+                $tenant->set('stripe_customer_id', $customerId);
+              }
+              if ($tenant->hasField('stripe_subscription_id')) {
+                $tenant->set('stripe_subscription_id', $subscriptionId);
+              }
+              if ($tenant->hasField('subscription_plan') && $drupalPlanId) {
+                $tenant->set('subscription_plan', $drupalPlanId);
+              }
+              if ($tenant->hasField('subscription_status')) {
+                $tenant->set('subscription_status', 'active');
+              }
+              $tenant->save();
+
+              $this->billingLogger->info('Linked Stripe IDs to existing tenant @id (plan: @plan).', [
+                '@id' => $tenant->id(),
+                '@plan' => $planTier,
+              ]);
+            }
+          }
+        }
+        // Flujo B: Usuario nuevo → auto-provisioning completo.
+        elseif (\Drupal::hasService('ecosistema_jaraba_core.tenant_onboarding')) {
           $onboarding = \Drupal::service('ecosistema_jaraba_core.tenant_onboarding');
-          $planTier = $metadata['plan_tier'] ?? 'starter';
-          $vertical = $metadata['vertical'] ?? 'demo';
+
+          // Generar domain desde business_name (slug).
+          $domain = preg_replace('/[^a-z0-9-]/', '', strtolower(str_replace(' ', '-', $businessName)));
+          $domain = substr($domain, 0, 30) ?: 'tenant-' . time();
+
+          // Password random (se enviara email de reset).
+          $randomPassword = bin2hex(random_bytes(16));
 
           $registrationData = [
-            'email' => $customerEmail,
-            'business_name' => $metadata['business_name'] ?? $customerEmail,
-            'vertical' => $vertical,
+            'organization_name' => $businessName,
+            'domain' => $domain,
+            'admin_email' => $customerEmail,
+            'admin_name' => $businessName,
+            'password' => $randomPassword,
+            'vertical_id' => $vertical,
             'plan' => $planTier,
-            'stripe_customer_id' => $customerId,
-            'stripe_subscription_id' => $subscriptionId,
+            'drupal_plan_id' => $drupalPlanId,
             'auto_provisioned' => TRUE,
           ];
 
           $result = $onboarding->processRegistration($registrationData);
 
           if (!empty($result['tenant'])) {
-            // Complete onboarding with Stripe IDs.
             $onboarding->completeOnboarding($result['tenant'], $customerId, $subscriptionId);
 
-            $this->billingLogger->info('Auto-provisioned tenant @id for @email (plan: @plan, vertical: @vertical).', [
+            // Enviar email de password reset al usuario nuevo.
+            if (!empty($result['user'])) {
+              _user_mail_notify('password_reset', $result['user']);
+            }
+
+            $this->billingLogger->info('Auto-provisioned tenant @id for new user @email (plan: @plan, vertical: @vertical).', [
               '@id' => $result['tenant']->id(),
               '@email' => $customerEmail,
               '@plan' => $planTier,
@@ -686,10 +783,12 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           }
         }
         else {
-          $this->billingLogger->warning('TenantOnboardingService not available for auto-provisioning.');
+          $this->billingLogger->warning('No provisioning path available for @email.', [
+            '@email' => $customerEmail,
+          ]);
         }
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         $this->billingLogger->error('Auto-provisioning failed for @email: @error', [
           '@email' => $customerEmail,
           '@error' => $e->getMessage(),

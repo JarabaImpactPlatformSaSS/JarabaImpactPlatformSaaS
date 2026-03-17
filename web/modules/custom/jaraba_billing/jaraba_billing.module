@@ -162,6 +162,128 @@ function jaraba_billing_entity_insert(\Drupal\Core\Entity\EntityInterface $entit
 }
 
 /**
+ * Implements hook_mail().
+ *
+ * Define subject y body para emails transaccionales de billing.
+ * Textos traducibles via t(). Parámetros inyectados desde webhook handlers.
+ *
+ * Keys:
+ * - trial_will_end: Aviso de fin de periodo de prueba.
+ * - payment_failed: Notificacion de fallo de pago.
+ * - subscription_cancelled: Confirmacion de cancelacion de suscripcion.
+ */
+function jaraba_billing_mail(string $key, array &$message, array $params): void {
+  $siteName = \Drupal::config('system.site')->get('name') ?: 'Jaraba Impact Platform';
+
+  // Estilo inline para párrafos de email (compatible con todos los clientes).
+  $pStyle = 'style="margin: 0 0 16px 0; font-family: \'Outfit\', \'Segoe UI\', Arial, sans-serif; font-size: 15px; line-height: 1.7; color: #334155;"';
+
+  // Helper: el email-wrap.html.twig de Symfony Mailer inserta {{ body|nl2br }}
+  // en un <td> HTML. Usamos Markup::create() para que Twig no escape el HTML.
+  // salto visual en HTML. Cada párrafo debe ir en <p> para espaciado correcto.
+  // Nota: t() es el patrón correcto para hook_mail() en PHP ({% trans %} es
+  // para Twig). t() registra las cadenas para la interfaz de traducción.
+  switch ($key) {
+    case 'trial_will_end':
+      $tenantLabel = $params['tenant_label'] ?? $siteName;
+      $trialEnd = $params['trial_end'] ?? '';
+      $message['subject'] = t('Tu período de prueba en @site termina el @date', [
+        '@site' => $siteName,
+        '@date' => $trialEnd,
+      ]);
+      $message['body'][] = \Drupal\Core\Render\Markup::create(
+        "<p $pStyle>" . t('Hola:') . '</p>'
+        . "<p $pStyle>" . t('El período de prueba de @tenant en @site termina el @date.', [
+          '@tenant' => $tenantLabel,
+          '@site' => $siteName,
+          '@date' => $trialEnd,
+        ]) . '</p>'
+        . "<p $pStyle>" . t('Para continuar disfrutando de todas las funcionalidades, añade un método de pago antes de esa fecha.') . '</p>'
+        . "<p $pStyle>" . t('Si ya has configurado tu método de pago, puedes ignorar este mensaje.') . '</p>'
+        . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+      );
+      break;
+
+    case 'payment_failed':
+      $tenantLabel = $params['tenant_label'] ?? $siteName;
+      $invoiceId = $params['invoice_id'] ?? '';
+      $invoiceLine = $invoiceId ? "<p $pStyle>" . t('Referencia de factura: @id', ['@id' => $invoiceId]) . '</p>' : '';
+      $message['subject'] = t('Problema con tu pago en @site', ['@site' => $siteName]);
+      $message['body'][] = \Drupal\Core\Render\Markup::create(
+        "<p $pStyle>" . t('Hola:') . '</p>'
+        . "<p $pStyle>" . t('No hemos podido procesar el pago de tu suscripción de @tenant.', [
+          '@tenant' => $tenantLabel,
+        ]) . '</p>'
+        . $invoiceLine
+        . "<p $pStyle>" . t('Por favor, actualiza tu método de pago para evitar la suspensión del servicio.') . '</p>'
+        . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+      );
+      break;
+
+    case 'subscription_cancelled':
+      $tenantLabel = $params['tenant_label'] ?? $siteName;
+      $cancelAt = $params['cancel_at'] ?? '';
+      $cancelLine = $cancelAt ? "<p $pStyle>" . t('Tu acceso continuará activo hasta el @date.', ['@date' => $cancelAt]) . '</p>' : '';
+      $message['subject'] = t('Confirmación de cancelación en @site', ['@site' => $siteName]);
+      $message['body'][] = \Drupal\Core\Render\Markup::create(
+        "<p $pStyle>" . t('Hola:') . '</p>'
+        . "<p $pStyle>" . t('Tu suscripción de @tenant ha sido cancelada.', [
+          '@tenant' => $tenantLabel,
+        ]) . '</p>'
+        . $cancelLine
+        . "<p $pStyle>" . t('Si cambias de opinión, puedes reactivar tu suscripción en cualquier momento desde tu panel de control.') . '</p>'
+        . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+      );
+      break;
+  }
+
+  // Dunning emails (DunningService: 6-step payment recovery sequence).
+  // Keys: dunning_email_soft, dunning_email_urgent, dunning_restrict,
+  //        dunning_suspend, dunning_final_notice, dunning_cancel.
+  if (str_starts_with($key, 'dunning_')) {
+    $tenantLabel = $params['tenant_label'] ?? $siteName;
+    $step = (int) ($params['step'] ?? 0);
+    $action = $params['action'] ?? $key;
+
+    $subjects = [
+      'dunning_email_soft' => t('Recordatorio: actualiza tu método de pago en @site', ['@site' => $siteName]),
+      'dunning_email_urgent' => t('Urgente: tu pago no se ha podido procesar en @site', ['@site' => $siteName]),
+      'dunning_restrict' => t('Tu acceso ha sido restringido en @site', ['@site' => $siteName]),
+      'dunning_suspend' => t('Tu cuenta ha sido suspendida en @site', ['@site' => $siteName]),
+      'dunning_final_notice' => t('Último aviso antes de cancelación en @site', ['@site' => $siteName]),
+      'dunning_cancel' => t('Tu suscripción ha sido cancelada en @site', ['@site' => $siteName]),
+    ];
+
+    $message['subject'] = $subjects[$key] ?? t('Aviso de pago en @site', ['@site' => $siteName]);
+
+    $dunningBody = "<p $pStyle>" . t('Hola:') . '</p>'
+      . "<p $pStyle>" . t('Te escribimos sobre tu suscripción de @tenant en @site.', [
+        '@tenant' => $tenantLabel,
+        '@site' => $siteName,
+      ]) . '</p>';
+
+    if (in_array($key, ['dunning_email_soft', 'dunning_email_urgent'], TRUE)) {
+      $dunningBody .= "<p $pStyle>" . t('No hemos podido procesar tu último pago. Por favor, actualiza tu método de pago para mantener tu acceso.') . '</p>';
+    }
+    elseif ($key === 'dunning_restrict') {
+      $dunningBody .= "<p $pStyle>" . t('Debido al impago, hemos restringido temporalmente algunas funcionalidades. Actualiza tu método de pago para restaurar el acceso completo.') . '</p>';
+    }
+    elseif ($key === 'dunning_suspend') {
+      $dunningBody .= "<p $pStyle>" . t('Tu cuenta ha sido suspendida por falta de pago. Actualiza tu método de pago para reactivarla.') . '</p>';
+    }
+    elseif ($key === 'dunning_final_notice') {
+      $dunningBody .= "<p $pStyle>" . t('Este es el último aviso antes de la cancelación definitiva de tu suscripción. Tienes 7 días para regularizar tu situación.') . '</p>';
+    }
+    elseif ($key === 'dunning_cancel') {
+      $dunningBody .= "<p $pStyle>" . t('Tu suscripción ha sido cancelada por falta de pago. Puedes reactivarla en cualquier momento desde tu panel de control.') . '</p>';
+    }
+
+    $dunningBody .= "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>';
+    $message['body'][] = \Drupal\Core\Render\Markup::create($dunningBody);
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function jaraba_billing_theme(): array {
@@ -187,6 +309,10 @@ function jaraba_billing_theme(): array {
     'checkout_page' => [
       'variables' => [
         'plan' => [],
+        'stripe_ready' => FALSE,
+        'is_admin' => FALSE,
+        'admin_edit_url' => '',
+        'contact_email' => '',
       ],
       'template' => 'checkout-page',
       'path' => $themePath,

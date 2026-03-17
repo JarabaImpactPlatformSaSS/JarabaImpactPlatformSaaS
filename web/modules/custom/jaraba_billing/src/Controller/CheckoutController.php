@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_billing\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
 use Drupal\jaraba_billing\Service\CheckoutSessionService;
@@ -17,10 +18,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Controller para el flujo de Stripe Checkout embebido.
  *
  * Rutas:
- * - GET  /checkout/{saas_plan}   → checkoutPage()
+ * - GET  /planes/checkout/{saas_plan}   → checkoutPage()
  * - POST /api/v1/billing/checkout-session → createCheckoutSession()
- * - GET  /checkout/success       → checkoutSuccess()
- * - GET  /checkout/cancel        → checkoutCancel()
+ * - GET  /planes/checkout/success       → checkoutSuccess()
+ * - GET  /planes/checkout/cancel        → checkoutCancel()
  *
  * CONTROLLER-READONLY-001: No usa readonly en promotion para $entityTypeManager.
  * ZERO-REGION-001/003: drupalSettings via #attached, no via preprocess.
@@ -36,6 +37,11 @@ class CheckoutController extends ControllerBase {
   protected CheckoutSessionService $checkoutSession;
 
   /**
+   * The current user.
+   */
+  protected AccountProxyInterface $account;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
@@ -43,6 +49,7 @@ class CheckoutController extends ControllerBase {
     // CONTROLLER-READONLY-001: asignar manualmente, no readonly promotion.
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->checkoutSession = $container->get('jaraba_billing.checkout_session');
+    $instance->account = $container->get('current_user');
     return $instance;
   }
 
@@ -58,6 +65,11 @@ class CheckoutController extends ControllerBase {
    *   Render array con template y drupalSettings.
    */
   public function checkoutPage(SaasPlanInterface $saas_plan, Request $request): array {
+    // Planes desactivados no son accesibles.
+    if (!$saas_plan->get('status')->value) {
+      throw new NotFoundHttpException();
+    }
+
     $cycle = $request->query->get('cycle', 'monthly');
     if (!in_array($cycle, ['monthly', 'yearly'], TRUE)) {
       $cycle = 'monthly';
@@ -68,9 +80,7 @@ class CheckoutController extends ControllerBase {
       ? $saas_plan->getStripePriceYearlyId()
       : $saas_plan->getStripePriceId();
 
-    if (empty($priceId)) {
-      throw new NotFoundHttpException();
-    }
+    $stripeReady = !empty($priceId);
 
     // Precio a mostrar en el resumen.
     $price = $cycle === 'yearly'
@@ -81,7 +91,18 @@ class CheckoutController extends ControllerBase {
     $stripePublicKey = $this->config('ecosistema_jaraba_core.stripe')->get('public_key')
       ?: (getenv('STRIPE_PUBLIC_KEY') ?: '');
 
-    return [
+    // Si Stripe no tiene public key, tampoco esta listo.
+    if (empty($stripePublicKey)) {
+      $stripeReady = FALSE;
+    }
+
+    // Admin edit URL para el aviso administrativo.
+    $isAdmin = $this->account->hasPermission('administer saas plans');
+    $adminEditUrl = $isAdmin
+      ? Url::fromRoute('entity.saas_plan.edit_form', ['saas_plan' => $saas_plan->id()])->toString()
+      : '';
+
+    $build = [
       '#theme' => 'checkout_page',
       '#plan' => [
         'id' => $saas_plan->id(),
@@ -92,7 +113,18 @@ class CheckoutController extends ControllerBase {
         'vertical' => $saas_plan->getVertical()?->label() ?? '',
         'is_yearly' => $cycle === 'yearly',
       ],
-      '#attached' => [
+      '#stripe_ready' => $stripeReady,
+      '#is_admin' => $isAdmin,
+      '#admin_edit_url' => $adminEditUrl,
+      '#contact_email' => $this->config('system.site')->get('mail') ?: 'contacto@plataformadeecosistemas.es',
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+
+    // Solo adjuntar Stripe JS cuando la pasarela esta lista.
+    if ($stripeReady) {
+      $build['#attached'] = [
         'library' => [
           'jaraba_billing/stripe-checkout',
         ],
@@ -104,11 +136,10 @@ class CheckoutController extends ControllerBase {
             'cycle' => $cycle,
           ],
         ],
-      ],
-      '#cache' => [
-        'max-age' => 0,
-      ],
-    ];
+      ];
+    }
+
+    return $build;
   }
 
   /**
@@ -126,8 +157,9 @@ class CheckoutController extends ControllerBase {
   public function createCheckoutSession(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE);
 
-    // Validar campos requeridos.
-    $required = ['planId', 'cycle', 'email', 'businessName'];
+    // Validar campos requeridos (email y businessName opcionales:
+    // Stripe Embedded Checkout recoge el email internamente).
+    $required = ['planId', 'cycle'];
     foreach ($required as $field) {
       if (empty($data[$field])) {
         return new JsonResponse([
@@ -181,7 +213,7 @@ class CheckoutController extends ControllerBase {
   /**
    * Pagina de exito post-checkout.
    *
-   * GET /checkout/success?session_id={CHECKOUT_SESSION_ID}
+   * GET /planes/checkout/success?session_id={CHECKOUT_SESSION_ID}
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La request HTTP.
@@ -221,7 +253,7 @@ class CheckoutController extends ControllerBase {
   /**
    * Pagina de cancelacion de checkout.
    *
-   * GET /checkout/cancel
+   * GET /planes/checkout/cancel
    *
    * @return array
    *   Render array con template de cancelacion.

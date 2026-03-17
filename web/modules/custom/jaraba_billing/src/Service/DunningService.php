@@ -126,7 +126,7 @@ class DunningService {
         $this->tenantSubscription->activateSubscription($tenant);
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Error restaurando tenant @id después de dunning: @error', [
         '@id' => $tenantId,
         '@error' => $e->getMessage(),
@@ -214,7 +214,7 @@ class DunningService {
         '@action' => $config['action'],
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Error ejecutando dunning step @step para tenant @id: @error', [
         '@step' => $step,
         '@id' => $tenantId,
@@ -252,7 +252,7 @@ class DunningService {
 
       $this->mailManager->mail('jaraba_billing', 'dunning_' . $action, $to, 'es', $params);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Error sending dunning email for tenant @id: @error', [
         '@id' => $tenantId,
         '@error' => $e->getMessage(),

@@ -142,51 +142,10 @@
         return;
       }
 
-      // El formulario de datos del cliente.
-      var form = container.querySelector('#checkout-customer-form');
-      if (!form) {
-        // Si no hay formulario (usuario ya autenticado), iniciar checkout directo.
-        this.initCheckout(container, settings, {});
-        return;
-      }
-
-      var self = this;
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        var emailInput = form.querySelector('[name="email"]');
-        var businessInput = form.querySelector('[name="business_name"]');
-
-        if (!emailInput || !emailInput.value.trim()) {
-          showError(container, Drupal.t('El email es obligatorio.'));
-          return;
-        }
-        if (!businessInput || !businessInput.value.trim()) {
-          showError(container, Drupal.t('El nombre de empresa es obligatorio.'));
-          return;
-        }
-
-        // Validacion basica de email.
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailInput.value.trim())) {
-          showError(container, Drupal.t('Introduce un email valido.'));
-          return;
-        }
-
-        hideError(container);
-
-        // Deshabilitar boton submit.
-        var submitBtn = form.querySelector('[type="submit"]');
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = Drupal.t('Procesando...');
-        }
-
-        self.initCheckout(container, settings, {
-          email: emailInput.value.trim(),
-          businessName: businessInput.value.trim(),
-        });
-      });
+      // Cargar Stripe Embedded Checkout directamente.
+      // Stripe recoge email y datos de pago internamente (PCI compliant).
+      // Email y businessName se recogen post-checkout en onboarding.
+      this.initCheckout(container, settings, {});
     },
 
     /**
@@ -237,12 +196,6 @@
             .then(function (checkout) {
               toggleLoading(container, false);
 
-              // Ocultar el formulario de datos del cliente.
-              var form = container.querySelector('#checkout-customer-form');
-              if (form) {
-                form.style.display = 'none';
-              }
-
               // Montar el checkout embebido.
               var mountPoint = container.querySelector('#stripe-checkout-mount');
               if (mountPoint) {
@@ -253,13 +206,6 @@
         .catch(function (error) {
           toggleLoading(container, false);
           showError(container, error.message || Drupal.t('Error al iniciar el checkout. Intentalo de nuevo.'));
-
-          // Re-habilitar boton submit.
-          var submitBtn = container.querySelector('[type="submit"]');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = Drupal.t('Continuar al pago');
-          }
         });
     },
   };

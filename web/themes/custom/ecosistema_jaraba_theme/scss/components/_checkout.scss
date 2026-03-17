@@ -1,31 +1,49 @@
 /**
  * @file
- * _checkout.scss — Stripe Embedded Checkout styles.
+ * _checkout.scss — Stripe Embedded Checkout (Premium World-Class).
  *
  * STRIPE-CHECKOUT-001 §5.5: Estilos premium para checkout.
  * Mobile-first, BEM, CSS Custom Properties (CSS-VAR-ALL-COLORS-001).
+ * Dart Sass moderno: @use, color-mix(), sass:color.
+ *
+ * Estructura:
+ * 1. Page-level (header, trust bar, main, footer)
+ * 2. Checkout layout (2 columnas: summary + form)
+ * 3. Plan summary card
+ * 4. Customer form + Stripe mount
+ * 5. Result pages (success, cancel)
+ * 6. Preview mode (Stripe no configurado)
+ * 7. Body class overrides
  */
 
 @use '../variables' as *;
 
 // =============================================
-// PAGE-LEVEL: checkout header & footer minimal
+// 1. PAGE-LEVEL: Header checkout minimal
 // =============================================
 
 .checkout-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--ej-color-bg, #fff);
+  background: color-mix(in srgb, var(--ej-bg-surface, #fff) 95%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--ej-color-border, #e5e7eb);
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 0.75rem 2rem;
+  }
 
   &__inner {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
+    gap: 1rem;
   }
 
   &__logo {
@@ -33,17 +51,44 @@
     align-items: center;
     text-decoration: none;
     color: var(--ej-color-text, #1f2937);
+    gap: 0.5rem;
+    justify-self: start;
   }
 
   &__logo-img {
     height: 32px;
     width: auto;
+
+    @media (min-width: 768px) {
+      height: 36px;
+    }
   }
 
   &__logo-text {
     font-weight: 700;
     font-size: 1.125rem;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     color: var(--ej-color-corporate, #233D63);
+  }
+
+  // Centro: indicador de seguridad
+  &__center {
+    display: none;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-text-muted, #6b7280);
+    white-space: nowrap;
+
+    @media (min-width: 640px) {
+      display: flex;
+    }
+
+    svg {
+      flex-shrink: 0;
+      color: var(--ej-color-success, #10B981);
+    }
   }
 
   &__back {
@@ -54,6 +99,8 @@
     color: var(--ej-color-text-muted, #6b7280);
     text-decoration: none;
     transition: color 0.2s ease;
+    white-space: nowrap;
+    justify-self: end;
 
     &:hover {
       color: var(--ej-color-corporate, #233D63);
@@ -65,32 +112,107 @@
   }
 }
 
+// =============================================
+// 1b. TRUST BAR — Conversion booster
+// =============================================
+
+.checkout-trust-bar {
+  background: var(--ej-bg-surface, #fff);
+  border-bottom: 1px solid var(--ej-color-border, #e5e7eb);
+  padding: 0.5rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 0.5rem 2rem;
+  }
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) {
+      gap: 2rem;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--ej-color-text-muted, #6b7280);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+
+    @media (min-width: 768px) {
+      font-size: 0.75rem;
+    }
+
+    svg {
+      flex-shrink: 0;
+      color: var(--ej-color-success, #10B981);
+      opacity: 0.8;
+    }
+
+    &--stripe {
+      gap: 0.25rem;
+
+      svg {
+        color: inherit;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+// =============================================
+// 1c. MESSAGES + MAIN
+// =============================================
+
 .checkout-messages {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 0.5rem 2rem;
+  }
 }
 
 .checkout-main {
-  min-height: calc(100vh - 180px);
-  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+  min-height: calc(100dvh - 200px);
+  padding: 1.5rem 1.25rem 2rem;
 
   @media (min-width: 768px) {
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 2rem 3rem;
   }
 }
+
+// =============================================
+// 1d. FOOTER checkout minimal
+// =============================================
 
 .checkout-footer {
   background: var(--ej-color-bg-subtle, #f9fafb);
   border-top: 1px solid var(--ej-color-border, #e5e7eb);
-  padding: 1.5rem;
+  padding: 1.25rem 1.25rem;
+
+  @media (min-width: 768px) {
+    padding: 1.25rem 2rem;
+  }
 
   &__inner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    max-width: 1200px;
+    gap: 0.625rem;
+    max-width: 1400px;
     margin: 0 auto;
     text-align: center;
 
@@ -116,7 +238,7 @@
 
   &__links {
     display: flex;
-    gap: 1rem;
+    gap: 1.25rem;
 
     a {
       font-size: 0.8125rem;
@@ -132,46 +254,57 @@
 
   &__copyright {
     font-size: 0.75rem;
-    color: var(--ej-color-text-muted, #6b7280);
+    color: var(--ej-color-text-muted, #9ca3af);
     margin: 0;
   }
 }
 
 // =============================================
-// CHECKOUT LAYOUT: 2 columnas
+// 2. CHECKOUT LAYOUT: 2 columnas responsive
 // =============================================
 
 .checkout-layout {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  max-width: 1100px;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
 
   @media (min-width: 960px) {
     flex-direction: row;
-    gap: 3rem;
+    gap: 2rem;
+    align-items: flex-start;
   }
 }
 
 // =============================================
-// PLAN SUMMARY (columna izquierda)
+// 3. PLAN SUMMARY (columna izquierda)
 // =============================================
 
 .checkout-summary {
+  order: 2;
+
   @media (min-width: 960px) {
-    flex: 0 0 380px;
+    order: 1;
+    flex: 0 0 320px;
     position: sticky;
-    top: 80px;
+    top: 110px;
     align-self: flex-start;
   }
 
   &__card {
-    background: var(--ej-color-bg, #fff);
+    background: var(--ej-bg-surface, #fff);
     border: 1px solid var(--ej-color-border, #e5e7eb);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    box-shadow:
+      0 1px 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 6%, transparent),
+      0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 3%, transparent);
+
+    @media (min-width: 768px) {
+      padding: 1.75rem;
+    }
   }
 
   &__vertical {
@@ -182,16 +315,18 @@
     letter-spacing: 0.05em;
     color: var(--ej-color-primary, #FF8C42);
     background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 10%, transparent);
-    padding: 0.25rem 0.625rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 100px;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.875rem;
   }
 
   &__plan-name {
     font-size: 1.375rem;
     font-weight: 700;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     color: var(--ej-color-corporate, #233D63);
     margin: 0 0 1rem;
+    line-height: 1.2;
   }
 
   &__price {
@@ -202,10 +337,12 @@
   }
 
   &__amount {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
     font-weight: 800;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     color: var(--ej-color-text, #1f2937);
     line-height: 1;
+    letter-spacing: -0.02em;
   }
 
   &__cycle {
@@ -234,10 +371,10 @@
   }
 
   &__features-title {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--ej-color-text-muted, #6b7280);
     margin: 0 0 0.75rem;
   }
@@ -284,29 +421,59 @@
     svg {
       flex-shrink: 0;
       color: var(--ej-color-corporate, #233D63);
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 }
 
 // =============================================
-// CHECKOUT FORM SECTION (columna derecha)
+// 4. CHECKOUT FORM SECTION (columna derecha)
 // =============================================
 
 .checkout-form-section {
-  flex: 1;
+  flex: 1 1 0%;
   min-width: 0;
+  order: 1;
+
+  @media (min-width: 960px) {
+    order: 2;
+    // Stripe Embedded Checkout necesita minimo 500px para no truncar
+    min-width: 500px;
+  }
 }
 
 .checkout-container {
-  background: var(--ej-color-bg, #fff);
+  background: var(--ej-bg-surface, #fff);
   border: 1px solid var(--ej-color-border, #e5e7eb);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+  box-shadow:
+    0 1px 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 6%, transparent),
+    0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 3%, transparent);
 
   @media (min-width: 768px) {
     padding: 2rem;
+  }
+
+  // Cuando Stripe Embedded Checkout esta montado, eliminar padding
+  // para que el iframe ocupe todo el ancho disponible.
+  &--stripe-mounted {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+// Stripe mount necesita ancho completo
+.checkout-mount {
+  min-height: 400px;
+  width: 100%;
+
+  // Stripe iframe debe ocupar todo el ancho
+  iframe {
+    width: 100% !important;
+    min-width: 100% !important;
   }
 }
 
@@ -317,15 +484,16 @@
   color: var(--ej-color-danger, #EF4444);
   font-size: 0.875rem;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 1rem;
 }
 
 // Customer data form (pre-Stripe)
 .checkout-customer-form {
   &__title {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     color: var(--ej-color-corporate, #233D63);
     margin: 0 0 1.25rem;
   }
@@ -343,11 +511,11 @@
 
     input {
       width: 100%;
-      padding: 0.625rem 0.875rem;
-      font-size: 0.9375rem;
-      border: 1px solid var(--ej-color-border, #d1d5db);
-      border-radius: 8px;
-      background: var(--ej-color-bg, #fff);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1.5px solid var(--ej-color-border, #d1d5db);
+      border-radius: 10px;
+      background: var(--ej-bg-surface, #fff);
       color: var(--ej-color-text, #1f2937);
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
       outline: none;
@@ -359,26 +527,27 @@
 
       &:focus {
         border-color: var(--ej-color-corporate, #233D63);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-corporate, #233D63) 12%, transparent);
       }
     }
   }
 
   &__submit {
     width: 100%;
-    padding: 0.75rem 1.5rem;
+    padding: 0.875rem 1.5rem;
     font-size: 1rem;
     font-weight: 600;
     color: var(--ej-color-text-inverse, #fff);
     background: var(--ej-color-corporate, #233D63);
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     margin-top: 0.5rem;
 
     &:hover {
       background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, #000);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-corporate, #233D63) 25%, transparent);
     }
 
     &:active {
@@ -389,6 +558,7 @@
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
     &:focus-visible {
@@ -429,13 +599,8 @@
   }
 }
 
-// Stripe mount point
-.checkout-mount {
-  min-height: 300px;
-}
-
 // =============================================
-// RESULT PAGES: success & cancel
+// 5. RESULT PAGES: success & cancel
 // =============================================
 
 .checkout-result {
@@ -446,12 +611,14 @@
   &__card {
     max-width: 560px;
     width: 100%;
-    background: var(--ej-color-bg, #fff);
+    background: var(--ej-bg-surface, #fff);
     border: 1px solid var(--ej-color-border, #e5e7eb);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 2.5rem 2rem;
     text-align: center;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    box-shadow:
+      0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 6%, transparent),
+      0 8px 32px color-mix(in srgb, var(--ej-color-corporate, #233D63) 3%, transparent);
   }
 
   &__icon {
@@ -473,6 +640,7 @@
   &__title {
     font-size: 1.5rem;
     font-weight: 700;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
     color: var(--ej-color-corporate, #233D63);
     margin: 0 0 0.75rem;
   }
@@ -513,9 +681,9 @@
     padding: 0.75rem 1.5rem;
     font-size: 0.9375rem;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 10px;
     text-decoration: none;
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 
     &:active {
       transform: scale(0.98);
@@ -532,6 +700,7 @@
 
       &:hover {
         background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, #000);
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-corporate, #233D63) 25%, transparent);
       }
     }
 
@@ -552,10 +721,10 @@
   }
 
   &__next-title {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--ej-color-text-muted, #6b7280);
     margin: 0 0 0.75rem;
   }
@@ -585,11 +754,137 @@
 }
 
 // =============================================
-// Responsive: body class overrides
+// 6. PREVIEW MODE: Stripe no configurado
+// =============================================
+
+.checkout-container--preview {
+  text-align: center;
+}
+
+.checkout-admin-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-warning, #F59E0B) 25%, transparent);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  text-align: left;
+
+  > svg {
+    flex-shrink: 0;
+    color: var(--ej-color-warning, #F59E0B);
+    margin-top: 0.125rem;
+  }
+
+  &__content {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--ej-color-text, #1f2937);
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      font-size: 0.8125rem;
+      color: var(--ej-color-text-muted, #6b7280);
+      margin: 0 0 0.5rem;
+      line-height: 1.5;
+    }
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.checkout-preview {
+  padding: 2rem 1rem;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+
+  &__icon {
+    margin-bottom: 1.25rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+  }
+
+  &__title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0 0 0.75rem;
+  }
+
+  &__message {
+    font-size: 1rem;
+    color: var(--ej-color-text-muted, #6b7280);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto 1.5rem;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-text-inverse, #fff);
+    background: var(--ej-color-corporate, #233D63);
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.1s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 85%, #000);
+      color: var(--ej-color-text-inverse, #fff);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, #FF8C42);
+      outline-offset: 2px;
+    }
+  }
+
+  &__hint {
+    font-size: 0.8125rem;
+    color: var(--ej-color-text-muted, #9ca3af);
+    margin: 1.25rem 0 0;
+  }
+}
+
+// =============================================
+// 7. BODY CLASS OVERRIDES
 // =============================================
 
 .page-checkout {
-  // Ocultar elementos que no necesitamos en checkout
+  // Fondo sutil para la pagina completa
+  background: var(--ej-bg-body, #f8fafc);
+
+  // Ocultar chrome de admin en checkout
   .admin-toolbar,
   .toolbar-bar {
     display: none;

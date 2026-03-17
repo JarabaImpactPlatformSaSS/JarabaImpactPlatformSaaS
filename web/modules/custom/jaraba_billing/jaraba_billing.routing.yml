@@ -269,7 +269,7 @@ jaraba_billing.api.pricing.estimate:
 # =============================================
 
 jaraba_billing.checkout:
-  path: '/checkout/{saas_plan}'
+  path: '/planes/checkout/{saas_plan}'
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutPage'
     _title_callback: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutTitle'
@@ -290,7 +290,7 @@ jaraba_billing.checkout_session.create:
   methods: [POST]
 
 jaraba_billing.checkout.success:
-  path: '/checkout/success'
+  path: '/planes/checkout/success'
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutSuccess'
     _title: 'Pago completado'
@@ -298,7 +298,7 @@ jaraba_billing.checkout.success:
     _access: 'TRUE'
 
 jaraba_billing.checkout.cancel:
-  path: '/checkout/cancel'
+  path: '/planes/checkout/cancel'
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\CheckoutController::checkoutCancel'
     _title: 'Pago cancelado'

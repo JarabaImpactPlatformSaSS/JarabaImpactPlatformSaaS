@@ -71,11 +71,16 @@ function jaraba_theming_page_attachments(array &$attachments): void {
  * Añade clases al HTML basadas en la configuración de tema.
  */
 function jaraba_theming_preprocess_html(array &$variables): void {
-  // No aplicar clases de variante en páginas de administración.
+  // No aplicar clases de variante en páginas de administración ni checkout.
   // hero--split crea un grid 2 columnas que rompe el layout admin.
+  // STRIPE-CHECKOUT-001 §5.5: checkout usa body limpio (page-checkout clean-layout).
   $route = \Drupal::routeMatch()->getRouteName() ?? '';
   $is_admin = \Drupal::service('router.admin_context')->isAdminRoute();
   if ($is_admin || str_starts_with($route, 'system.') || str_starts_with($route, 'dblog.')) {
+    return;
+  }
+  // Checkout: funnel de conversión sin chrome genérico del tema.
+  if (str_starts_with($route, 'jaraba_billing.checkout')) {
     return;
   }
 

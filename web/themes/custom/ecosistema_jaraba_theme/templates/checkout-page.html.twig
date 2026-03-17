@@ -14,6 +14,10 @@
  * - plan.is_yearly: Boolean.
  * - plan.features: Array de features del plan.
  * - plan.vertical: Nombre de la vertical.
+ * - stripe_ready: Boolean — TRUE si Stripe Price ID y public key configurados.
+ * - is_admin: Boolean — TRUE si el usuario tiene 'administer saas plans'.
+ * - admin_edit_url: String — URL al formulario de edicion del plan (solo admin).
+ * - contact_email: String — Email de contacto del sitio.
  *
  * Convenciones:
  * - i18n: {% trans %} en todos los textos.
@@ -108,48 +112,81 @@
   </aside>
 
   {# ================================================================
-     COLUMNA DERECHA: Checkout embebido de Stripe
+     COLUMNA DERECHA: Checkout o Preview
      ================================================================ #}
   <section class="checkout-form-section" aria-label="{% trans %}Formulario de pago{% endtrans %}">
-    <div id="checkout-container" class="checkout-container">
 
-      {# Formulario de datos del cliente (pre-Stripe) #}
-      <form id="checkout-customer-form" class="checkout-customer-form" novalidate>
-        <h2 class="checkout-customer-form__title">{% trans %}Datos de facturación{% endtrans %}</h2>
+    {% if stripe_ready %}
+      {# ============================================================
+         MODO ACTIVO: Stripe Embedded Checkout (carga directa)
+         Stripe recoge email y datos de pago internamente.
+         ============================================================ #}
+      <div id="checkout-container" class="checkout-container checkout-container--stripe-mounted">
 
-        <div class="checkout-customer-form__field">
-          <label for="checkout-email">{% trans %}Email{% endtrans %}</label>
-          <input type="email"
-                 id="checkout-email"
-                 name="email"
-                 required
-                 autocomplete="email"
-                 placeholder="tu@empresa.com">
+        {# Spinner de carga (visible hasta que Stripe monte) #}
+        <div class="checkout-loading" aria-label="{% trans %}Cargando formulario de pago{% endtrans %}">
+          <div class="checkout-loading__spinner"></div>
+          <p>{% trans %}Preparando el pago seguro...{% endtrans %}</p>
         </div>
 
-        <div class="checkout-customer-form__field">
-          <label for="checkout-business">{% trans %}Nombre de empresa{% endtrans %}</label>
-          <input type="text"
-                 id="checkout-business"
-                 name="business_name"
-                 required
-                 autocomplete="organization"
-                 placeholder="{% trans %}Tu empresa o proyecto{% endtrans %}">
-        </div>
-
-        <button type="submit" class="checkout-customer-form__submit">
-          {% trans %}Continuar al pago{% endtrans %}
-        </button>
-      </form>
-
-      {# Spinner de carga #}
-      <div class="checkout-loading" style="display: none;" aria-label="{% trans %}Cargando formulario de pago{% endtrans %}">
-        <div class="checkout-loading__spinner"></div>
-        <p>{% trans %}Preparando el pago seguro...{% endtrans %}</p>
+        {# Punto de montaje para Stripe Embedded Checkout #}
+        <div id="stripe-checkout-mount" class="checkout-mount"></div>
       </div>
 
-      {# Punto de montaje para Stripe Embedded Checkout #}
-      <div id="stripe-checkout-mount" class="checkout-mount"></div>
-    </div>
+    {% else %}
+      {# ============================================================
+         MODO PREVIEW: Stripe no configurado
+         ============================================================ #}
+      <div class="checkout-container checkout-container--preview">
+
+        {# Aviso administrativo (solo para admins) #}
+        {% if is_admin and admin_edit_url %}
+          <div class="checkout-admin-notice" role="alert">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div class="checkout-admin-notice__content">
+              <strong>{% trans %}Configuracion pendiente{% endtrans %}</strong>
+              <p>{% trans %}Este plan no tiene Stripe Price ID configurado. Guarda el plan con las credenciales de Stripe activas para sincronizar automaticamente.{% endtrans %}</p>
+              <a href="{{ admin_edit_url }}" class="checkout-admin-notice__link">
+                {% trans %}Editar plan en admin{% endtrans %}
+                <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+        {# CTA de contacto para visitantes publicos #}
+        <div class="checkout-preview">
+          <div class="checkout-preview__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="48" height="48" aria-hidden="true" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h2 class="checkout-preview__title">{% trans %}Disponible proximamente{% endtrans %}</h2>
+          <p class="checkout-preview__message">
+            {% trans %}Estamos preparando la pasarela de pago para este plan. Contactanos y te avisaremos en cuanto este disponible.{% endtrans %}
+          </p>
+
+          {% if contact_email %}
+            <a href="mailto:{{ contact_email }}?subject={% trans %}Interes en plan{% endtrans %} {{ plan.name }}"
+               class="checkout-preview__cta">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              {% trans %}Contactar con ventas{% endtrans %}
+            </a>
+          {% endif %}
+
+          <p class="checkout-preview__hint">
+            {% trans %}Mientras tanto, puedes revisar las caracteristicas del plan en la columna izquierda.{% endtrans %}
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
   </section>
 </div>

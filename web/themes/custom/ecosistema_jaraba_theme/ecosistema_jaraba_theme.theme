@@ -4318,6 +4318,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // Las rutas principales del vertical usan page--emprendimiento.html.twig
   // como parent template unificado (Plan Elevación Emprendimiento v1 — Fase 1).
   $emprendimiento_routes = [
+    'jaraba_business_tools.entrepreneur_dashboard',
     'jaraba_copilot_v2.bmc_dashboard',
     'jaraba_copilot_v2.hypothesis_manager',
     'jaraba_copilot_v2.experiment_lifecycle',
@@ -4680,6 +4681,7 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_candidate.jobseeker' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_candidate.dashboard' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_agents.' => ['ecosistema_jaraba_theme/bundle-agent-dashboard'],
+    'jaraba_business_tools.entrepreneur_dashboard' => ['ecosistema_jaraba_theme/bundle-entrepreneur-dashboard'],
   ];
 
   // SETUP-WIZARD-DAILY-001: Attach setup-wizard library on dashboard routes

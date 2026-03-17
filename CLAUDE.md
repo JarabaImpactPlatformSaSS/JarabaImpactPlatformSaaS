@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-16 | Version: 1.5.2
+# Ultima actualizacion: 2026-03-17 | Version: 1.5.3
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -187,6 +187,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 
 ### Rutas y URLs
 - ROUTE-LANGPREFIX-001: URLs SIEMPRE via Url::fromRoute(). El sitio usa /es/ prefix. Paths hardcoded causan 404
+- CHECKOUT-ROUTE-COLLISION-001: Commerce Checkout captura /checkout/* (step=null default). Rutas billing en /planes/checkout/*
+- STRIPE-URL-PREFIX-001: stripeRequest() endpoints SIN /v1/ (base URL ya incluye /v1). /products NO /v1/products
+- CSP-STRIPE-SCRIPT-001: js.stripe.com en script-src + connect-src + frame-src de CSP
 
 ## IA — STACK COMPLETO
 
@@ -254,8 +257,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v121.0.0
 - INDICE: v162.0.0
 - FLUJO: v86.0.0
-- Ultimo aprendizaje: #183
-- Ultima golden rule: #124
+- Ultimo aprendizaje: #187
+- Ultima golden rule: #128
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:

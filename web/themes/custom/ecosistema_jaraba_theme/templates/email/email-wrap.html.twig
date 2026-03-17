@@ -100,8 +100,8 @@
 
           {# ═══ EMAIL BODY CONTENT ═══ #}
           <tr>
-            <td style="background-color: #FFFFFF; padding: 32px 40px;"{{ attributes.addClass(classes) }}>
-              {{ body }}
+            <td style="background-color: #FFFFFF; padding: 32px 40px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 15px; line-height: 1.7; color: #334155;"{{ attributes.addClass(classes) }}>
+              {{ body|nl2br }}
             </td>
           </tr>
 

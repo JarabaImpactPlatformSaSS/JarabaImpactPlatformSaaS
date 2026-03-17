@@ -204,7 +204,7 @@ class StripeProductSyncService {
     }
 
     try {
-      $this->stripeConnect->stripeRequest('POST', '/v1/products/' . $stripeProductId, [
+      $this->stripeConnect->stripeRequest('POST', '/products/' . $stripeProductId, [
         'active' => 'false',
       ]);
       $this->logger->info('Archived Stripe product @id.', ['@id' => $stripeProductId]);
@@ -243,7 +243,7 @@ class StripeProductSyncService {
       // Actualizar producto existente.
       $response = $this->stripeConnect->stripeRequest(
         'POST',
-        '/v1/products/' . $existingProductId,
+        '/products/' . $existingProductId,
         $productData
       );
       return $response['id'];
@@ -253,7 +253,7 @@ class StripeProductSyncService {
     $idempotencyKey = 'jaraba_product_' . ($plan->id() ?? md5($plan->getName()));
     $response = $this->stripeConnect->stripeRequest(
       'POST',
-      '/v1/products',
+      '/products',
       $productData,
       $idempotencyKey
     );
@@ -301,7 +301,7 @@ class StripeProductSyncService {
       try {
         $existingPrice = $this->stripeConnect->stripeRequest(
           'GET',
-          '/v1/prices/' . $existingPriceId
+          '/prices/' . $existingPriceId
         );
 
         // Si el monto no cambio, no hacer nada.
@@ -310,7 +310,7 @@ class StripeProductSyncService {
         }
 
         // Monto cambio: archivar el precio viejo.
-        $this->stripeConnect->stripeRequest('POST', '/v1/prices/' . $existingPriceId, [
+        $this->stripeConnect->stripeRequest('POST', '/prices/' . $existingPriceId, [
           'active' => 'false',
         ]);
 
@@ -337,7 +337,7 @@ class StripeProductSyncService {
 
     $response = $this->stripeConnect->stripeRequest(
       'POST',
-      '/v1/prices',
+      '/prices',
       [
         'product' => $productId,
         'unit_amount' => $unitAmount,
