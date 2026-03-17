@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-17
-**Version:** 92.0.0 (Profile Hub + Avatar Access + Entrepreneur Dashboard Premium + aprendizaje #189)
+**Version:** 93.0.0 (PLG Upgrade UI + Precios Doc 158 + Enterprise→Checkout directo + aprendizaje #190)
 
 ---
 ## 1. Inicio de Sesion

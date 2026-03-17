@@ -4,9 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-17
-**Versión:** 168.0.0 (Profile Hub Onboarding + Avatar Access Checker + Entrepreneur Dashboard Premium + aprendizaje #189)
+**Versión:** 169.0.0 (PLG Upgrade UI + Precios Doc 158 + Enterprise→Checkout directo + aprendizaje #190)
 
 > **📋 PROFILE HUB + AVATAR ACCESS + ENTREPRENEUR DASHBOARD PREMIUM — v168 INDICE + v139 DIRECTRICES + v127 ARQUITECTURA** (2026-03-17)
+>
+> Aprendizaje #190: PLG Upgrade UI implementado — SubscriptionContextService resuelve plan/features/uso/upgrade para cualquier usuario. SubscriptionProfileSection en perfil (peso 5, primera). Tarjeta de suscripción con features incluidos (checks verdes) + bloqueados (locks naranjas → tier superior) + barras de uso vs límites + CTA upgrade directo a Stripe Checkout. Precios de los 24 planes corregidos al estudio de mercado Doc 158 (8 verticales × 3 tiers). Enterprise de TODOS los verticales → checkout directo (self-service, NO contacto comercial). Pricing page actualizada: eliminado CTA "Contactar" de Enterprise. SaasPlanFeatures emprendimiento: 11/18/23 features reales. Diagnóstico DIAG-PLG-001: 6 gaps críticos entre "el código existe" y "el usuario lo experimenta" (6 de 7 servicios de gating sin UI). Regla de oro #131: los precios del SaaS SIEMPRE deben coincidir con el Doc 158 (estudio de mercado = fuente de verdad).
 >
 > Aprendizaje #189: Los avatares del SaaS NO son roles de Drupal — son personas de journey persistidas en JourneyState entity (19 tipos). Solo 4 Drupal roles existen (anonymous, authenticated, administrator, content_editor). AvatarDetectionService es CONTEXTUAL (depende URL/dominio) — en /user/{uid} devuelve 'general' porque no hay contexto vertical. Solución: AvatarWizardBridgeService con cascada JourneyState (fiable) → AvatarDetection (fallback). Nomenclatura dual normalizada via JOURNEY_TO_CANONICAL. AvatarAccessCheck reemplaza _permission en 22 rutas frontend de portales (8 módulos). Entrepreneur Dashboard premium con datos reales del controller, SCSS bundle, wizard steps y daily actions con rutas verificadas E2E. Copilot Dashboard creado (hook_theme + template faltaban). 31 iconos SVG duotone creados. 30 unit tests. Regla de oro #130: TODA ruta enlazada desde wizard/daily-actions DEBE verificarse con access_manager.checkNamedRoute() para el avatar del usuario ANTES de dar por completado.
 >
