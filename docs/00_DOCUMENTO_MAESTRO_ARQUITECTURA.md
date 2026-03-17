@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-16
-**Versión:** 125.0.0 (Stripe Checkout E2E Operativo + Sync Bidireccional 17 Products + 9 Email Templates + aprendizaje #187)
+**Versión:** 127.0.0 (Profile Hub + Avatar Access Checker + Entrepreneur Dashboard Premium + aprendizaje #189)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1320,6 +1320,34 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | Formación/LMS | Instructor | Learner | 6 | 8 |
 | Mentoring | — | Mentor | 3 | 4 |
 | **Total** | **9 primarios** | **4 secundarios** | **48** | **54** |
+
+#### Avatar Access Checker (AVATAR-ACCESS-001)
+
+Reemplaza `_permission` en rutas frontend de dashboards/portales con `_avatar_access` basado en JourneyState:
+
+```yaml
+# routing.yml — antes (requiere Drupal role/permission que no existe)
+_permission: 'access entrepreneur dashboard'
+
+# routing.yml — después (verifica avatar en JourneyState)
+_avatar_access: 'emprendedor,mentor,gestor_programa'
+```
+
+- `AvatarAccessCheck` (tag: `access_check`, `applies_to: _avatar_access`)
+- Normaliza nomenclatura dual via `AVATAR_ALIASES` (JourneyState español ↔ AvatarDetection inglés)
+- Admin bypass automático (rol `administrator`)
+- 22 rutas migradas en 8 módulos (candidate, business_tools, mentoring, comercio, agro, servicios, legal, lms)
+- Rutas admin (`/admin/...`) mantienen `_permission`
+
+#### Profile Hub (PROFILE-HUB-001)
+
+`/user/{uid}` actúa como hub inteligente de onboarding:
+
+- `AvatarWizardBridgeService`: cascada JourneyState → AvatarDetection para resolver wizard_id/dashboard_id
+- `AvatarWizardMapping`: value object inmutable con wizardId, dashboardId, contextId, avatarType, vertical
+- `JOURNEY_TO_CANONICAL`: normaliza 19 avatares JourneyState + 9 avatares AvatarDetection
+- Reutiliza partials `_setup-wizard.html.twig` + `_daily-actions.html.twig` al 100%
+- CTA "Ir a mi panel" con verificación de existencia de ruta
 
 #### Patrón de Integración en Controladores
 

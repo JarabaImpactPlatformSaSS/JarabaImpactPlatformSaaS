@@ -4,10 +4,18 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-17
-**Versión:** 166.0.0 (Stripe Checkout E2E + 7 bugs P0-P2 + 9 email templates + regla de oro #128 + aprendizaje #187)
+**Versión:** 168.0.0 (Profile Hub Onboarding + Avatar Access Checker + Entrepreneur Dashboard Premium + aprendizaje #189)
 
+> **📋 PROFILE HUB + AVATAR ACCESS + ENTREPRENEUR DASHBOARD PREMIUM — v168 INDICE + v139 DIRECTRICES + v127 ARQUITECTURA** (2026-03-17)
+>
+> Aprendizaje #189: Los avatares del SaaS NO son roles de Drupal — son personas de journey persistidas en JourneyState entity (19 tipos). Solo 4 Drupal roles existen (anonymous, authenticated, administrator, content_editor). AvatarDetectionService es CONTEXTUAL (depende URL/dominio) — en /user/{uid} devuelve 'general' porque no hay contexto vertical. Solución: AvatarWizardBridgeService con cascada JourneyState (fiable) → AvatarDetection (fallback). Nomenclatura dual normalizada via JOURNEY_TO_CANONICAL. AvatarAccessCheck reemplaza _permission en 22 rutas frontend de portales (8 módulos). Entrepreneur Dashboard premium con datos reales del controller, SCSS bundle, wizard steps y daily actions con rutas verificadas E2E. Copilot Dashboard creado (hook_theme + template faltaban). 31 iconos SVG duotone creados. 30 unit tests. Regla de oro #130: TODA ruta enlazada desde wizard/daily-actions DEBE verificarse con access_manager.checkNamedRoute() para el avatar del usuario ANTES de dar por completado.
+>
 > **📋 AI-ECOSYSTEM-SAFEGUARD AUDITORÍA INTEGRAL — v133 DIRECTRICES + v121 ARQUITECTURA** (2026-03-13)
 > - **Contexto:** Auditoría integral del ecosistema IA nativo. 11 gaps de paridad y coherencia corregidos entre StreamingOrchestratorService y CopilotOrchestratorService. 6 reglas nuevas: COPILOT-BRIDGE-COVERAGE-001 (10/10 verticales con CopilotBridgeInterface), STREAMING-PARITY-001 (7 dimensiones de paridad streaming-buffered), CIRCUIT-BREAKER-TENANT-001 (State API scoped por tenant), CACHE-TENANT-STRICT-001 (no vertical fallback en cache keys), COPILOT-CTA-ACTION-001 ([ACTION:label|url] LLM-driven), COPILOT-MARKDOWN-001 (parser Markdown clase mundial). DemoCopilotBridgeService nuevo. LegalCopilotBridgeService completado. AndaluciaEiCopilotBridgeService +14 ACTION routes. Markdown premium: code blocks language badge, tablas responsive, blockquotes, bold+italic+strikethrough. Regla de oro #124. Aprendizaje #183.
+
+> **📋 AI-SERVICE-CHAIN-001 SALVAGUARDA 4 CAPAS + PHANTOM-ARG BIDIRECCIONAL + LOGIN CSRF reCAPTCHA — v167 INDICE + v138 DIRECTRICES + v126 ARQUITECTURA + v91 FLUJO** (2026-03-17)
+>
+> Aprendizaje #188: AI-SERVICE-CHAIN-001 — Un argumento faltante (`@current_user`) en `LegalSearchService` services.yml (7 args YAML vs 8 constructor) causaba TypeError transitivo que rompía toda la cadena `CopilotOrchestratorService` → 503 "El servicio de IA no está disponible" para TODOS los usuarios. Salvaguarda 4 capas implementada: (1) validate-phantom-args.php mejorado para detectar args faltantes Y sobrantes (antes solo detectaba sobrantes — 13 servicios con args faltantes descubiertos), (2) hook_requirements() en jaraba_copilot_v2.install intenta instanciar 5 servicios críticos del copilot, (3) HealthCheckController::checkAiCopilot() en /api/v1/platform/status, (4) fix raíz @current_user. Fix login CSRF: reCAPTCHA v3 en user_login_form con claves vinculadas a dominios producción — Google rechaza token de jaraba-saas.lndo.site. Fix: settings.local.php desactiva captcha en login. Redirección post-login unificada a entity.user.canonical (perfil = hub SaaS). Regla de oro #129: validate-phantom-args.php DEBE detectar AMBAS direcciones — "too few" es más peligroso que "too many" porque $container->has() devuelve TRUE pero get() lanza TypeError transitivo invisible.
 
 > **📋 STRIPE CHECKOUT E2E OPERATIVO + 7 BUGS P0-P2 + 9 EMAIL TEMPLATES — v166 INDICE + v137 DIRECTRICES + v125 ARQUITECTURA + v90 FLUJO** (2026-03-17)
 >
