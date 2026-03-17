@@ -1,17 +1,17 @@
 # Plan de Implementacion: Stripe Checkout Embebido y Sincronizacion Bidireccional Drupal-Stripe — Clase Mundial
 
 **Fecha de creacion:** 2026-03-05
-**Ultima actualizacion:** 2026-03-05
+**Ultima actualizacion:** 2026-03-17
 **Autor:** Claude Opus 4.6 (Anthropic) — Arquitecto Senior SaaS / Especialista Stripe Connect
-**Version:** 1.0.0
+**Version:** 2.0.0
 **Categoria:** Plan de Implementacion Estrategico
 **Codigo:** STRIPE-CHECKOUT-001
-**Estado:** PLANIFICADO
+**Estado:** EN PROGRESO (Fases 1-2 completadas, Fases 3-4 pendientes)
 **Esfuerzo estimado:** 80-100h (4 fases, 28 acciones)
 **Documentos fuente:** Auditoria Gaps Billing v1 (2026-03-05), REM-BILLING-001, Doc 158 (Pricing Matrix), VERT-PRICING-001, Plan Verticalizacion Precios v1
 **Directrices aplicables:** `00_DIRECTRICES_PROYECTO.md` v114.0.0, `00_FLUJO_TRABAJO_CLAUDE.md` v63.0.0, `00_DOCUMENTO_MAESTRO_ARQUITECTURA.md` v99.0.0, `CLAUDE.md` v1.2.0
 **Modulos afectados:** `jaraba_billing`, `jaraba_foc`, `ecosistema_jaraba_core`, `jaraba_addons`, `ecosistema_jaraba_theme`
-**Rutas principales:** `/planes/{vertical_key}` (pricing), `/registro` (onboarding), `/checkout/{plan}` (checkout), `/my-dashboard` (tenant dashboard), `/api/v1/billing/*` (API billing)
+**Rutas principales:** `/planes/{vertical_key}` (pricing), `/registro` (onboarding), `/planes/checkout/{plan}` (checkout), `/my-dashboard` (tenant dashboard), `/api/v1/billing/*` (API billing)
 
 ---
 
@@ -1731,3 +1731,76 @@ lando drush sql:query "SELECT name, stripe_product_id, stripe_price_id FROM saas
 | Version | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0.0 | 2026-03-05 | Claude Opus 4.6 | Creacion del plan completo: 4 fases, 28 acciones, 80-100h estimadas |
+| 2.0.0 | 2026-03-17 | Claude Opus 4.6 | **EJECUCION Fases 1+2**: Sync bidireccional + checkout operativo. Ver §15.1 |
+
+### 15.1 Detalle de Ejecucion v2.0.0 (2026-03-17)
+
+**Estado global:** PLANIFICADO → EN PROGRESO (Fases 1-2 completadas, Fases 3-4 pendientes)
+
+#### Bugs Criticos Resueltos
+
+| Bug | Severidad | Root Cause | Fix |
+|-----|-----------|-----------|-----|
+| **CHECKOUT-ROUTE-COLLISION-001** | P0 | Ruta `/checkout/{saas_plan}` colisionaba con `commerce_checkout.form` (`/checkout/{commerce_order}/{step}` con step=null default). Commerce capturaba la ruta y lanzaba `ParamNotConvertedException` → 404 para TODOS los checkout. | Rutas movidas a `/planes/checkout/{saas_plan}`, `/planes/checkout/success`, `/planes/checkout/cancel` (ROUTE-VAR-FIRST-SEGMENT-001). |
+| **STRIPE-URL-PREFIX-001** | P0 | `StripeProductSyncService` y `CheckoutSessionService` usaban endpoints con prefijo `/v1/` (`/v1/products`, `/v1/checkout/sessions`) que se concatenaba con base `https://api.stripe.com/v1` generando URLs invalidas (`v1/v1/products`). Otros servicios (FOC, AgroConecta, InvoiceService) NO tenian el bug. | Eliminado `/v1/` de TODOS los endpoints en StripeProductSyncService y CheckoutSessionService. |
+| **CHECKOUT-404-EMPTY-STRIPE** | P1 | `CheckoutController::checkoutPage()` lanzaba `NotFoundHttpException` cuando `stripe_price_id` estaba vacio. Con las keys no configuradas + el bug de URLs, TODOS los planes devolvian 404. | Degradacion elegante: modo preview con CTA de contacto (visitantes) + aviso administrativo con enlace al formulario de edicion (admins). |
+| **CHECKOUT-NO-STATUS-CHECK** | P2 | Planes desactivados (status=0) eran accesibles en checkout. | Check de `status` antes de cualquier otra logica; 404 para planes inactivos. |
+
+#### Fase 1 — Sincronizacion Bidireccional (COMPLETADA 2026-03-17)
+
+- [x] §4.1 StripeProductSyncService: URLs corregidas, endpoints alineados con convencion FOC
+- [x] §4.2 Campos stripe_product_id, stripe_price_id, stripe_price_yearly_id: ya existian (update_9002, update_10004)
+- [x] §4.3 hook_entity_presave para SaasPlan: ya implementado con PRESAVE-RESILIENCE-001
+- [x] §4.5 Sincronizacion masiva: 25 planes sincronizados (17 Products + 17 monthly Prices + yearly Prices)
+- [x] Verificacion: API Stripe responde correctamente, todos los planes con stripe_price_id != ''
+
+**Resultado en Stripe:**
+- 17 Products activos (planes con precio > 0)
+- 17+ Prices activos (monthly para todos, yearly para los que tienen precio anual)
+- Metadata correcta: drupal_plan_id, vertical, source=jaraba_saas
+
+#### Fase 2 — Checkout Session Embebido (COMPLETADA 2026-03-17)
+
+- [x] §5.1 CheckoutSessionService: URLs corregidas, funcional
+- [x] §5.2 CheckoutController: Rutas movidas a /planes/checkout/*, degradacion elegante, status check
+- [x] §5.3 Template checkout-page.html.twig: Bifurcacion stripe_ready/preview, admin notice
+- [x] §5.4 stripe-checkout.js: Ya funcional (CSRF, Embedded Checkout, error handling)
+- [x] §5.5 SCSS: Nuevos estilos para preview mode y admin notice, compilado OK
+- [x] §5.7 Pagina exito: /planes/checkout/success responde 200
+- [x] §5.8 Pagina cancelacion: /planes/checkout/cancel responde 200
+
+**RUNTIME-VERIFY-001 (5/5 PASS):**
+- CSS compilado (timestamp OK)
+- Rutas accesibles (200)
+- Planes inactivos (404)
+- Preview mode classes en DOM (7 matches)
+- drupalSettings inyectado correctamente cuando Stripe ready
+
+#### Fase 3 — Auto-Provisionamiento (PENDIENTE)
+
+Requiere:
+- [ ] Configurar Stripe Webhook endpoint en Stripe Dashboard
+- [ ] TenantOnboardingService integracion con checkout.session.completed
+- [ ] Flujo upgrade/downgrade con proration preview
+- [ ] Portal de facturacion Stripe Customer Portal
+
+#### Fase 4 — Frontend Premium (PENDIENTE)
+
+Requiere:
+- [ ] Pricing page: enlaces a /planes/checkout/{plan} (actualizar ruta)
+- [ ] Tenant Dashboard: widget de suscripcion
+- [ ] Slide-panel: metodos de pago, facturas
+- [ ] Notificaciones: trial expiring, payment failed
+
+#### Archivos Modificados en v2.0.0
+
+| Archivo | Cambio | Directriz |
+|---------|--------|-----------|
+| `jaraba_billing/jaraba_billing.routing.yml` | Rutas /checkout/* → /planes/checkout/* | ROUTE-VAR-FIRST-SEGMENT-001 |
+| `jaraba_billing/src/Controller/CheckoutController.php` | Degradacion elegante + status check + admin notice | STRIPE-CHECKOUT-001 §5.2 |
+| `jaraba_billing/jaraba_billing.module` | Variables stripe_ready, is_admin, admin_edit_url, contact_email | ZERO-REGION-003 |
+| `jaraba_billing/src/Service/StripeProductSyncService.php` | URLs /v1/* → /* (fix doble prefijo) | STRIPE-URL-PREFIX-001 |
+| `jaraba_billing/src/Service/CheckoutSessionService.php` | URLs /v1/* → /* (fix doble prefijo) | STRIPE-URL-PREFIX-001 |
+| `ecosistema_jaraba_theme/templates/checkout-page.html.twig` | Bifurcacion stripe_ready/preview | STRIPE-CHECKOUT-001 §5.3 |
+| `ecosistema_jaraba_theme/scss/components/_checkout.scss` | Estilos preview mode + admin notice | CSS-VAR-ALL-COLORS-001 |
+| `ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css` | Recompilado | SCSS-COMPILE-VERIFY-001 |

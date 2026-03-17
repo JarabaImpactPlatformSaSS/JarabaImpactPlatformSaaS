@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-16
-**Versión:** 124.0.0 (Sprint 1 Onboarding 10/10 + ZEIGARNIK-PRELOAD-001 + GAP-FLOW-002/003 + aprendizaje #186)
+**Versión:** 125.0.0 (Stripe Checkout E2E Operativo + Sync Bidireccional 17 Products + 9 Email Templates + aprendizaje #187)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -3195,5 +3195,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 | 2026-02-18 | 54.0.0 | **CI/CD Hardening:** Corrección de trivy.yaml (claves `scan.skip-dirs`), deploy resiliente con fallback SSH. Security Scan y Deploy en verde. |
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
+
+| 2026-03-17 | 125.0.0 | **Stripe Checkout E2E Operativo:** 7 bugs P0-P2 corregidos (colisión rutas Commerce, doble /v1/ en URLs, CSP script-src, metadata mismatch, processRegistration incompatible, catch Exception→Throwable). Rutas movidas a /planes/checkout/*. 17 Products + Prices sincronizados. Checkout Embedded con body limpio. 9 email templates transaccionales (trial, payment_failed, cancelled + 6 dunning). Pricing CTAs actualizados. |
 
 > **Versión:** 99.0.0 | **Fecha:** 2026-03-04 | **Autor:** IA Asistente

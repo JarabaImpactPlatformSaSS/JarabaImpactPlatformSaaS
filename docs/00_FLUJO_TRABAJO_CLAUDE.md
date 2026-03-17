@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-16
-**Version:** 89.0.0 (Sprint 1 Onboarding 10/10 + ZEIGARNIK-PRELOAD-001 + Auditoría i18n config + aprendizaje #186)
+**Ultima actualizacion:** 2026-03-17
+**Version:** 90.0.0 (Stripe Checkout E2E + 7 bugs P0-P2 + 9 email templates + aprendizaje #187)
 
 ---
 ## 1. Inicio de Sesion
