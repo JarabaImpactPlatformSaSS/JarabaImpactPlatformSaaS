@@ -59,6 +59,8 @@ function jaraba_business_tools_theme(): array {
         'upcoming_sessions' => [],
         'kpis' => [],
         'next_steps' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
     ],
     'program_dashboard' => [
@@ -411,11 +413,11 @@ function jaraba_business_tools_page_attachments_alter(array &$attachments): void
     try {
       if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
         $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
-        $group = $tenantContext->getCurrentGroup();
-        if ($group) {
-          $schema['name'] = $group->label() ?: (string) $siteName;
-          if ($group->hasField('field_description') && !$group->get('field_description')->isEmpty()) {
-            $schema['description'] = mb_substr(strip_tags($group->get('field_description')->value), 0, 300);
+        $tenant = $tenantContext->getCurrentTenant();
+        if ($tenant) {
+          $schema['name'] = $tenant->label() ?: (string) $siteName;
+          if ($tenant->hasField('field_description') && !$tenant->get('field_description')->isEmpty()) {
+            $schema['description'] = mb_substr(strip_tags($tenant->get('field_description')->value), 0, 300);
           }
         }
       }

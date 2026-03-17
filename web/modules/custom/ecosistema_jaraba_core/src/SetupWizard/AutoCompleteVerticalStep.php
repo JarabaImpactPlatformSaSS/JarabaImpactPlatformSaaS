@@ -21,6 +21,16 @@ class AutoCompleteVerticalStep implements SetupWizardStepInterface {
   use StringTranslationTrait;
 
   /**
+   * Constructs an AutoCompleteVerticalStep.
+   *
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   Current user proxy para generar route params del dashboard.
+   */
+  public function __construct(
+    protected \Drupal\Core\Session\AccountProxyInterface $currentUser,
+  ) {}
+
+  /**
    * {@inheritdoc}
    */
   public function getId(): string {
@@ -70,6 +80,19 @@ class AutoCompleteVerticalStep implements SetupWizardStepInterface {
    * {@inheritdoc}
    */
   public function getRoute(): string {
+    // Resolver ruta del dashboard vertical del usuario via bridge.
+    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_wizard_bridge')) {
+      try {
+        $mapping = \Drupal::service('ecosistema_jaraba_core.avatar_wizard_bridge')
+          ->resolveForCurrentUser();
+        if ($mapping && $mapping->dashboardRoute) {
+          return $mapping->dashboardRoute;
+        }
+      }
+      catch (\Throwable $e) {
+        // Fallback silencioso a front.
+      }
+    }
     return '<front>';
   }
 

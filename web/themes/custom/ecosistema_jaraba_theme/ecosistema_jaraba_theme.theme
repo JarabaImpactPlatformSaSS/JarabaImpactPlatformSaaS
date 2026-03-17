@@ -1142,6 +1142,33 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   $variables['html_attributes']['lang'] = $language->getId();
   $variables['html_attributes']['dir'] = $language->getDirection();
 
+  // =========================================================================
+  // CHECKOUT: Body classes limpias — sin header/hero/card/footer genéricos.
+  // Las rutas de checkout son un funnel de conversión minimalista que NO debe
+  // heredar clases del tema genérico (header-layout-classic, hero-layout-*,
+  // has-avatar-nav, has-back-to-top, etc.) para evitar CSS contaminante.
+  // STRIPE-CHECKOUT-001 §5.5 — Frontend limpio sin chrome de Drupal.
+  // =========================================================================
+  $route_name = '';
+  try {
+    $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+  }
+  catch (\Throwable $e) {
+    // Route not available yet (e.g. 404).
+  }
+  $checkout_routes = [
+    'jaraba_billing.checkout',
+    'jaraba_billing.checkout.success',
+    'jaraba_billing.checkout.cancel',
+  ];
+  if (in_array($route_name, $checkout_routes, TRUE)) {
+    $variables['attributes']['class'][] = 'page-checkout';
+    $variables['attributes']['class'][] = 'clean-layout';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    // Early return — no añadir clases genéricas del tema.
+    return;
+  }
+
   // Body classes - Header Layout
   $header_layout = $config->get('header_layout') ?: 'classic';
   $variables['attributes']['class'][] = 'header-layout-' . $header_layout;
@@ -1163,6 +1190,43 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   if ($is_front) {
     $variables['attributes']['class'][] = 'page-front';
     $variables['attributes']['class'][] = 'landing-page';
+
+    // SEO-HOMEPAGE-TITLE-001: Sincronizar <title> con og:title.
+    // preprocess_page() inyecta og:title y meta description correctamente,
+    // pero head_title (que renderiza <title>) quedaba como fallback genérico.
+    // Resolvemos aquí porque head_title es variable de html.html.twig.
+    $site_name = \Drupal::config('system.site')->get('name') ?: 'Jaraba Impact Platform';
+    $homepage_title = '';
+    try {
+      if (\Drupal::hasService('jaraba_page_builder.homepage_data')) {
+        /** @var \Drupal\jaraba_page_builder\Service\HomepageDataService $homepage_service */
+        $homepage_service = \Drupal::service('jaraba_page_builder.homepage_data');
+        $seo_data = $homepage_service->getHomepageData()['seo'] ?? [];
+        $homepage_title = $seo_data['meta_title'] ?? '';
+      }
+    }
+    catch (\Throwable $e) {
+      // Servicio no disponible, usar fallback.
+    }
+    if (empty($homepage_title)) {
+      $homepage_title = t('Impulsa tu ecosistema digital | @site', ['@site' => $site_name]);
+    }
+    $variables['head_title']['title'] = $homepage_title;
+
+    // GEO-HOMEPAGE-001: Geo meta tags para SEO local (Bing, Yahoo, Yandex).
+    // NAP-NORMALIZATION-001: coordenadas canónicas Málaga HQ.
+    $geo_tags = [
+      'geo.region' => 'ES-AN',
+      'geo.placename' => 'Málaga, Andalucía, España',
+      'geo.position' => '36.7265;-4.4198',
+      'ICBM' => '36.7265, -4.4198',
+    ];
+    foreach ($geo_tags as $geo_name => $geo_content) {
+      $variables['#attached']['html_head'][] = [
+        ['#tag' => 'meta', '#attributes' => ['name' => $geo_name, 'content' => $geo_content]],
+        'homepage_' . str_replace('.', '_', $geo_name),
+      ];
+    }
   }
 
   // Clase landing-page para rutas de verticales (full-width como homepage)
@@ -1635,17 +1699,9 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
-  // CHECKOUT PAGES - Stripe Embedded Checkout (STRIPE-CHECKOUT-001)
+  // CHECKOUT PAGES — Manejado con early return al inicio de preprocess_html.
+  // Ver bloque STRIPE-CHECKOUT-001 §5.5 al inicio de la función.
   // =========================================================================
-  $checkout_routes = [
-    'jaraba_billing.checkout',
-    'jaraba_billing.checkout.success',
-    'jaraba_billing.checkout.cancel',
-  ];
-  if (in_array($route, $checkout_routes)) {
-    $variables['attributes']['class'][] = 'page-checkout';
-    $variables['attributes']['class'][] = 'clean-layout';
-  }
 
   // =========================================================================
   // USER PAGES - Paginas de usuario autenticado con header/footer
@@ -3419,10 +3475,22 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
   $user_content = NULL;
   
   // Obtener el usuario de la ruta si existe.
+  // NOTA: $variables['user'] es también inyectada por template_preprocess()
+  // como AccountProxy global. Aquí la sobreescribimos con la entidad User
+  // específica de la ruta. Además, inyectamos 'profile_uid' como variable
+  // dedicada para path() en el template (evita ambigüedad con user global).
+  // URLs pre-resueltas para el template (ROUTE-LANGPREFIX-001).
+  // Se generan aquí en PHP para evitar MissingMandatoryParametersException
+  // cuando path() en Twig recibe parámetros NULL/vacíos.
+  $variables['profile_uid'] = 0;
+  $variables['profile_edit_url'] = NULL;
+  $variables['profile_view_url'] = NULL;
+
   $user = $route_match->getParameter('user');
-  if ($user && is_object($user)) {
+  if ($user && is_object($user) && method_exists($user, 'id')) {
     $variables['user'] = $user;
     $variables['user_display_name'] = $user->getDisplayName();
+    $variables['profile_uid'] = (int) $user->id();
   }
   else {
     $variables['user_display_name'] = t('Usuario');
@@ -3430,8 +3498,27 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     $user = \Drupal::currentUser();
     if ($user->isAuthenticated()) {
       $user = \Drupal::entityTypeManager()->getStorage('user')->load($user->id());
-      $variables['user'] = $user;
-      $variables['user_display_name'] = $user->getDisplayName();
+      if ($user) {
+        $variables['user'] = $user;
+        $variables['user_display_name'] = $user->getDisplayName();
+        $variables['profile_uid'] = (int) $user->id();
+      }
+    }
+  }
+
+  // Generar URLs de perfil en PHP (safe, no exceptions).
+  $uid = $variables['profile_uid'];
+  if ($uid > 0) {
+    try {
+      $variables['profile_edit_url'] = \Drupal\Core\Url::fromRoute(
+        'entity.user.edit_form', ['user' => $uid]
+      )->toString();
+      $variables['profile_view_url'] = \Drupal\Core\Url::fromRoute(
+        'entity.user.canonical', ['user' => $uid]
+      )->toString();
+    }
+    catch (\Throwable $e) {
+      // Silenciar — URLs quedan NULL y el template no muestra los links.
     }
   }
   
@@ -3599,8 +3686,111 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
       }
     }
     $variables['user_quick_links'] = $flat_links;
+
+    // -- Setup Wizard + Daily Actions (via AvatarWizardBridgeService) --------
+    // Detecta el avatar del usuario y resuelve qué wizard de onboarding y
+    // acciones diarias le corresponden. Reutiliza los partials probados
+    // _setup-wizard.html.twig y _daily-actions.html.twig de los dashboards.
+    // SETUP-WIZARD-DAILY-001 + ZEIGARNIK-PRELOAD-001 + PIPELINE-E2E-001
+    $variables['profile_setup_wizard'] = NULL;
+    $variables['profile_daily_actions'] = [];
+    $variables['profile_wizard_title'] = '';
+    $variables['profile_wizard_subtitle'] = '';
+    $variables['profile_actions_title'] = '';
+    $variables['profile_dashboard_route'] = NULL;
+    $variables['profile_avatar_type'] = NULL;
+
+    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_wizard_bridge')) {
+      try {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\AvatarWizardBridgeService $bridge */
+        $bridge = \Drupal::service('ecosistema_jaraba_core.avatar_wizard_bridge');
+        $mapping = $bridge->resolveForCurrentUser();
+
+        if ($mapping) {
+          $variables['profile_avatar_type'] = $mapping->avatarType;
+          $variables['profile_dashboard_route'] = $mapping->dashboardRoute;
+
+          // Setup Wizard.
+          if ($mapping->hasWizard()
+              && \Drupal::hasService('ecosistema_jaraba_core.setup_wizard_registry')) {
+            /** @var \Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry $wizardRegistry */
+            $wizardRegistry = \Drupal::service('ecosistema_jaraba_core.setup_wizard_registry');
+            if ($wizardRegistry->hasWizard($mapping->wizardId)) {
+              $variables['profile_setup_wizard'] = $wizardRegistry->getStepsForWizard(
+                $mapping->wizardId,
+                $mapping->contextId,
+              );
+            }
+          }
+
+          // Daily Actions.
+          if ($mapping->hasDailyActions()
+              && \Drupal::hasService('ecosistema_jaraba_core.daily_actions_registry')) {
+            /** @var \Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry $actionsRegistry */
+            $actionsRegistry = \Drupal::service('ecosistema_jaraba_core.daily_actions_registry');
+            if ($actionsRegistry->hasDashboard($mapping->dashboardId)) {
+              $variables['profile_daily_actions'] = $actionsRegistry->getActionsForDashboard(
+                $mapping->dashboardId,
+                $mapping->contextId,
+              );
+            }
+          }
+
+          // Títulos traducibles contextuales al vertical.
+          $vertical_labels = [
+            'empleabilidad' => t('Empleabilidad'),
+            'emprendimiento' => t('Emprendimiento'),
+            'comercioconecta' => t('ComercioConecta'),
+            'comercio' => t('ComercioConecta'),
+            'agroconecta' => t('AgroConecta'),
+            'serviciosconecta' => t('ServiciosConecta'),
+            'jarabalex' => t('JarabaLex'),
+            'formacion' => t('Formación'),
+            'andalucia_ei' => t('Andalucía +ei'),
+          ];
+          $vertical_label = $mapping->vertical
+            ? ($vertical_labels[$mapping->vertical] ?? ucfirst($mapping->vertical))
+            : '';
+
+          $variables['profile_wizard_title'] = t('Primeros pasos');
+          $variables['profile_wizard_subtitle'] = $vertical_label
+            ? t('Configura tu espacio en @vertical', ['@vertical' => $vertical_label])
+            : t('Configura tu espacio');
+          $variables['profile_actions_title'] = t('Acciones de hoy');
+
+          // Attach library del wizard JS (collapse/expand, API refresh).
+          $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/setup-wizard';
+
+          // Verificar que la ruta del dashboard existe antes de pasarla al
+          // template. Si el módulo vertical no está instalado, path() en Twig
+          // lanzaría RouteNotFoundException.
+          if ($mapping->dashboardRoute) {
+            try {
+              $router = \Drupal::service('router.route_provider');
+              $router->getRouteByName($mapping->dashboardRoute);
+            }
+            catch (\Throwable $e) {
+              // Ruta no existe (módulo no instalado) → anular CTA.
+              $variables['profile_dashboard_route'] = NULL;
+            }
+          }
+
+          // Cache: wizard/actions son datos per-user dinámicos.
+          // Invalidar cache de perfil cuando cambia el estado del usuario.
+          $variables['#cache']['contexts'][] = 'user';
+          $variables['#cache']['tags'][] = 'user:' . $uid;
+          $variables['#cache']['max-age'] = 120;
+        }
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('ecosistema_jaraba_theme')->error(
+          'Error loading wizard/actions for profile: @error',
+          ['@error' => $e->getMessage()],
+        );
+      }
+    }
   }
-  
+
   // =========================================================================
   // CONFIGURACIÓN DEL TEMA Y BRANDING
   // =========================================================================
@@ -4491,6 +4681,28 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_candidate.dashboard' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_agents.' => ['ecosistema_jaraba_theme/bundle-agent-dashboard'],
   ];
+
+  // SETUP-WIZARD-DAILY-001: Attach setup-wizard library on dashboard routes
+  // that integrate the Setup Wizard + Daily Actions pattern.
+  $wizardDashboardRoutes = [
+    'jaraba_andalucia_ei.coordinador_dashboard',
+    'jaraba_candidate.dashboard',
+    'jaraba_copilot_v2.dashboard',
+    'jaraba_comercio_conecta.merchant_portal',
+    'jaraba_agroconecta_core.producer_dashboard',
+    'jaraba_servicios_conecta.provider_portal',
+    'jaraba_legal_intelligence.legal_dashboard',
+    'jaraba_content_hub.dashboard.frontend',
+    'jaraba_lms.instructor.courses',
+    // Secondary roles:
+    'jaraba_andalucia_ei.orientador_dashboard',
+    'jaraba_lms.my_learning',
+    'jaraba_mentoring.mentor_dashboard',
+    'jaraba_business_tools.entrepreneur_dashboard',
+  ];
+  if (in_array($route, $wizardDashboardRoutes, TRUE)) {
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_theme/setup-wizard';
+  }
 
   foreach ($routeLibraryMap as $prefix => $libraries) {
     if ($route === $prefix || str_starts_with($route, $prefix)) {

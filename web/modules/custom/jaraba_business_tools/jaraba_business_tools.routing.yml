@@ -381,7 +381,7 @@ jaraba_business_tools.entrepreneur_dashboard:
     _controller: '\Drupal\jaraba_business_tools\Controller\EntrepreneurDashboardController::dashboard'
     _title: 'Mi Panel de Emprendedor'
   requirements:
-    _permission: 'access entrepreneur dashboard'
+    _avatar_access: 'emprendedor,mentor,gestor_programa'
 
 jaraba_business_tools.program_dashboard:
   path: '/admin/programs/dashboard'

@@ -75,7 +75,7 @@ jaraba_comercio_conecta.merchant_portal:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::dashboard'
     _title: 'Mi Comercio'
   requirements:
-    _permission: 'edit own merchant profile'
+    _avatar_access: 'comerciante,comprador_local'
 
 jaraba_comercio_conecta.merchant_portal.products:
   path: '/mi-comercio/productos'
@@ -83,7 +83,7 @@ jaraba_comercio_conecta.merchant_portal.products:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::products'
     _title: 'Mis Productos'
   requirements:
-    _permission: 'edit own merchant profile'
+    _avatar_access: 'comerciante,comprador_local'
 
 jaraba_comercio_conecta.merchant_portal.product_add:
   path: '/mi-comercio/productos/add'
@@ -99,7 +99,7 @@ jaraba_comercio_conecta.merchant_portal.stock:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::stock'
     _title: 'Inventario'
   requirements:
-    _permission: 'view comercio stock'
+    _avatar_access: 'comerciante,comprador_local'
 
 jaraba_comercio_conecta.merchant_portal.analytics:
   path: '/mi-comercio/analiticas'
@@ -107,7 +107,7 @@ jaraba_comercio_conecta.merchant_portal.analytics:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::analytics'
     _title: 'Analíticas'
   requirements:
-    _permission: 'view merchant analytics'
+    _avatar_access: 'comerciante,comprador_local'
 
 jaraba_comercio_conecta.merchant_portal.profile:
   path: '/mi-comercio/perfil'
@@ -115,7 +115,7 @@ jaraba_comercio_conecta.merchant_portal.profile:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::profile'
     _title: 'Perfil del Comercio'
   requirements:
-    _permission: 'edit own merchant profile'
+    _avatar_access: 'comerciante,comprador_local'
 
 # --- API REST Productos ---
 
@@ -402,7 +402,7 @@ jaraba_comercio_conecta.merchant_portal.payments:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::merchantPayments'
     _title: 'Pagos y Comisiones'
   requirements:
-    _permission: 'edit own merchant profile'
+    _avatar_access: 'comerciante,comprador_local'
 
 # P1-06: Bulk CSV import
 jaraba_comercio_conecta.merchant_portal.import:
@@ -428,7 +428,7 @@ jaraba_comercio_conecta.merchant_portal.settings:
     _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::merchantSettings'
     _title: 'Configuracion del Comercio'
   requirements:
-    _permission: 'edit own merchant profile'
+    _avatar_access: 'comerciante,comprador_local'
 
 # --- API REST F7: Wishlist ---
 
@@ -884,3 +884,93 @@ entity.comercio_wishlist_item.settings:
     _title: 'Item de Lista de Deseos settings'
   requirements:
     _permission: 'manage comercio wishlists'
+
+# --- Settings Routes: Field UI base routes (Batch P3 — missing field_ui_base_route targets) ---
+
+jaraba_comercio_conecta.comercio_carrier_config.settings:
+  path: '/admin/structure/comercio-carrier-configs'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Transportistas'
+  requirements:
+    _permission: 'manage comercio carrier configs'
+
+jaraba_comercio_conecta.flash_offer.settings:
+  path: '/admin/structure/comercio-flash-offers'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Ofertas Flash'
+  requirements:
+    _permission: 'manage comercio flash offers'
+
+jaraba_comercio_conecta.comercio_incident_ticket.settings:
+  path: '/admin/structure/comercio-incident-tickets'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Incidencias'
+  requirements:
+    _permission: 'manage comercio incidents'
+
+jaraba_comercio_conecta.notification_template.settings:
+  path: '/admin/structure/comercio-notification-templates'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Plantillas Notificacion'
+  requirements:
+    _permission: 'manage comercio notifications'
+
+jaraba_comercio_conecta.comercio_pos_connection.settings:
+  path: '/admin/structure/comercio-pos-connections'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Conexiones POS'
+  requirements:
+    _permission: 'manage comercio pos connections'
+
+jaraba_comercio_conecta.qr_code.settings:
+  path: '/admin/structure/comercio-qr-codes'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Codigos QR'
+  requirements:
+    _permission: 'manage comercio qr codes'
+
+jaraba_comercio_conecta.review.settings:
+  path: '/admin/structure/comercio-reviews'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Resenas'
+  requirements:
+    _permission: 'manage comercio reviews'
+
+jaraba_comercio_conecta.comercio_search_synonym.settings:
+  path: '/admin/structure/comercio-search-synonyms'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Sinonimos Busqueda'
+  requirements:
+    _permission: 'manage comercio search'
+
+jaraba_comercio_conecta.comercio_shipment.settings:
+  path: '/admin/structure/comercio-shipments'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Envios'
+  requirements:
+    _permission: 'manage comercio shipments'
+
+jaraba_comercio_conecta.comercio_shipping_method.settings:
+  path: '/admin/structure/comercio-shipping-methods'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Metodos de Envio'
+  requirements:
+    _permission: 'manage comercio shipping methods'
+
+jaraba_comercio_conecta.comercio_shipping_zone.settings:
+  path: '/admin/structure/comercio-shipping-zones'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Zonas de Envio'
+  requirements:
+    _permission: 'manage comercio shipping zones'

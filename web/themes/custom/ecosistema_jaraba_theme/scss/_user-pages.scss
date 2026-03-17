@@ -1531,3 +1531,79 @@ button[type="submit"],
   outline: 3px solid var(--ej-color-primary, #4F46E5);
   outline-offset: 2px;
 }
+
+// =============================================================================
+// PROFILE HUB — Setup Wizard + Daily Actions en perfil de usuario
+// =============================================================================
+//
+// SETUP-WIZARD-DAILY-001: Reutiliza los estilos existentes de .setup-wizard
+// y .daily-actions sin duplicar. Solo define el wrapper contenedor y el CTA
+// de acceso al dashboard vertical.
+//
+// CSS-VAR-ALL-COLORS-001: Todos los colores via var(--ej-*).
+// SCSS-COLORMIX-001: Alpha via color-mix(), no rgba().
+// ICON-COLOR-001: Colores solo de paleta Jaraba.
+// =============================================================================
+
+.profile-hub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-lg, 1.5rem);
+  margin-top: var(--ej-spacing-xl, 2rem);
+  animation: fadeInUp 0.5s ease-out both;
+  animation-delay: 0.2s;
+
+  // Setup wizard — bordes redondeados en contexto de perfil.
+  .setup-wizard {
+    border-radius: var(--ej-radius-xl, 16px);
+  }
+
+  // Daily actions — máximo 3 columnas en perfil (no 4 como en dashboards).
+  .daily-actions__grid {
+    @include respond-to(lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.profile-hub__dashboard-link {
+  display: flex;
+  justify-content: center;
+  padding: var(--ej-spacing-xs, 0.25rem) 0;
+}
+
+.profile-hub__dashboard-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ej-spacing-xs, 0.5rem);
+  padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-lg, 1.5rem);
+  color: var(--ej-color-primary, #FF8C42);
+  font-weight: 600;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  text-decoration: none;
+  border: 2px solid var(--ej-color-primary, #FF8C42);
+  border-radius: var(--ej-radius-full, 999px);
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ej-color-primary, #FF8C42);
+    color: var(--ej-color-on-primary, #fff);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-primary, #FF8C42) 30%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-color-primary, #FF8C42);
+    outline-offset: 2px;
+  }
+}
+
+.profile-hub__cta-arrow {
+  font-size: 1.1em;
+  transition: transform 0.2s ease;
+
+  .profile-hub__dashboard-cta:hover & {
+    transform: translateX(3px);
+  }
+}

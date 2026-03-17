@@ -158,7 +158,7 @@ jaraba_candidate.dashboard:
     _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::index'
     _title: 'JobSeeker Dashboard'
   requirements:
-    _permission: 'access jobseeker dashboard'
+    _avatar_access: 'job_seeker,employer,orientador'
 
 jaraba_candidate.dashboard.recommendations:
   path: '/jobseeker/recommendations'
@@ -166,7 +166,7 @@ jaraba_candidate.dashboard.recommendations:
     _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::recommendations'
     _title: 'Recommended Jobs'
   requirements:
-    _permission: 'access jobseeker dashboard'
+    _avatar_access: 'job_seeker,employer,orientador'
 
 jaraba_candidate.dashboard.stats:
   path: '/jobseeker/stats'
@@ -174,7 +174,7 @@ jaraba_candidate.dashboard.stats:
     _controller: '\Drupal\jaraba_candidate\Controller\DashboardController::stats'
     _title: 'My Statistics'
   requirements:
-    _permission: 'access jobseeker dashboard'
+    _avatar_access: 'job_seeker,employer,orientador'
 
 # --- Rutas de API REST ---
 jaraba_candidate.api.profile:

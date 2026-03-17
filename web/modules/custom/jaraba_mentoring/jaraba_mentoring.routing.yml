@@ -134,7 +134,7 @@ jaraba_mentoring.mentor_dashboard:
     _controller: 'Drupal\jaraba_mentoring\Controller\MentorDashboardController::dashboard'
     _title: 'Mi Dashboard de Mentor'
   requirements:
-    _permission: 'access mentor dashboard'
+    _avatar_access: 'mentor,gestor_programa'
 
 # ============================================
 # API REST: Sesiones de Mentoría

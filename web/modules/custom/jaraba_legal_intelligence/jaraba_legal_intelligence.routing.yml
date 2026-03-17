@@ -71,7 +71,7 @@ jaraba_legal.dashboard:
     _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalDashboardController::dashboard'
     _title: 'My Legal Dashboard'
   requirements:
-    _permission: 'view legal resolutions'
+    _avatar_access: 'job_seeker,employer,emprendedor,productor,comerciante,profesional,mentor,estudiante'
   options:
     _admin_route: FALSE
 

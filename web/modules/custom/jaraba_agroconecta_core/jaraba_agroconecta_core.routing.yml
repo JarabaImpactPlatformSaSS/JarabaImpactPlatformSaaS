@@ -433,7 +433,7 @@ jaraba_agroconecta_core.producer.dashboard:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::dashboard'
     _title: 'Mi Tienda'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
 
 jaraba_agroconecta_core.producer.orders:
   path: '/productor/pedidos'
@@ -441,7 +441,7 @@ jaraba_agroconecta_core.producer.orders:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orders'
     _title: 'Mis Pedidos'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
 
 jaraba_agroconecta_core.producer.order_detail:
   path: '/productor/pedidos/{suborder_id}'
@@ -449,7 +449,7 @@ jaraba_agroconecta_core.producer.order_detail:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orderDetail'
     _title: 'Detalle del Pedido'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
     suborder_id: '\d+'
 
 jaraba_agroconecta_core.producer.products:
@@ -458,7 +458,7 @@ jaraba_agroconecta_core.producer.products:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::products'
     _title: 'Mis Productos'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
 
 jaraba_agroconecta_core.producer.payouts:
   path: '/productor/finanzas'
@@ -466,7 +466,7 @@ jaraba_agroconecta_core.producer.payouts:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::payouts'
     _title: 'Finanzas'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
 
 jaraba_agroconecta_core.producer.settings:
   path: '/productor/configuracion'
@@ -474,7 +474,7 @@ jaraba_agroconecta_core.producer.settings:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::settings'
     _title: 'Configuración'
   requirements:
-    _permission: 'manage producer profiles'
+    _avatar_access: 'productor,comprador_b2b'
 
 # ============================================
 # PORTAL DEL CLIENTE (Fase 3)

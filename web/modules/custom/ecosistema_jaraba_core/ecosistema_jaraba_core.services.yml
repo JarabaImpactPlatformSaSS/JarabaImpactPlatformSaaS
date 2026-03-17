@@ -21,6 +21,21 @@ services:
       - { name: theme_negotiator, priority: 1000 }
 
   # ===========================================
+  # AVATAR ACCESS CHECK - Acceso a dashboards por avatar
+  # ===========================================
+
+  # Verifica acceso a rutas basándose en el avatar del usuario
+  # persistido en JourneyState. Reemplaza permisos como
+  # 'access entrepreneur dashboard' con _avatar_access en routing.yml.
+  # SETUP-WIZARD-DAILY-001, ACCESS-RETURN-TYPE-001
+  ecosistema_jaraba_core.access_check.avatar:
+    class: Drupal\ecosistema_jaraba_core\Access\AvatarAccessCheck
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: access_check, applies_to: _avatar_access }
+
+  # ===========================================
   # TWIG EXTENSION - HELPERS DE PLANTILLA
   # ===========================================
 
@@ -536,6 +551,18 @@ services:
       - '@ecosistema_jaraba_core.avatar_detection'
       - '@current_route_match'
       - '@current_user'
+
+  # Bridge Avatar → Setup Wizard + Daily Actions
+  # Centraliza el mapping avatar_type → wizard_id/dashboard_id/contextId
+  # para que el perfil de usuario pueda mostrar wizard y acciones diarias.
+  # SETUP-WIZARD-DAILY-001, OPTIONAL-CROSSMODULE-001, PHANTOM-ARG-001
+  ecosistema_jaraba_core.avatar_wizard_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\AvatarWizardBridgeService
+    arguments:
+      - '@current_user'
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.avatar_detection'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   # Servicio de resolución de contexto para copilotos
   # Detecta dinámicamente avatar, vertical, plan y tenant del usuario
@@ -1851,11 +1878,15 @@ services:
   # Global steps injected into ALL wizards (weight -20, -10 = appear first).
   ecosistema_jaraba_core.setup_wizard.auto_account:
     class: Drupal\ecosistema_jaraba_core\SetupWizard\AutoCompleteAccountStep
+    arguments:
+      - '@current_user'
     tags:
       - { name: ecosistema_jaraba_core.setup_wizard_step }
 
   ecosistema_jaraba_core.setup_wizard.auto_vertical:
     class: Drupal\ecosistema_jaraba_core\SetupWizard\AutoCompleteVerticalStep
+    arguments:
+      - '@current_user'
     tags:
       - { name: ecosistema_jaraba_core.setup_wizard_step }
 

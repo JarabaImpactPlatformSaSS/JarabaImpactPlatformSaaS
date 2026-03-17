@@ -83,7 +83,7 @@ jaraba_servicios_conecta.provider_portal:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::dashboard'
     _title: 'Mi Servicio'
   requirements:
-    _permission: 'edit own provider profile'
+    _avatar_access: 'profesional,cliente_servicios'
 
 jaraba_servicios_conecta.provider_portal.offerings:
   path: '/mi-servicio/servicios'
@@ -91,7 +91,7 @@ jaraba_servicios_conecta.provider_portal.offerings:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::offerings'
     _title: 'Mis Servicios'
   requirements:
-    _permission: 'edit own provider profile'
+    _avatar_access: 'profesional,cliente_servicios'
 
 jaraba_servicios_conecta.provider_portal.offering_add:
   path: '/mi-servicio/servicios/add'
@@ -99,7 +99,7 @@ jaraba_servicios_conecta.provider_portal.offering_add:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::offeringAdd'
     _title: 'Nuevo Servicio'
   requirements:
-    _permission: 'create servicios offerings'
+    _avatar_access: 'profesional,cliente_servicios'
 
 jaraba_servicios_conecta.provider_portal.bookings:
   path: '/mi-servicio/reservas'
@@ -107,7 +107,7 @@ jaraba_servicios_conecta.provider_portal.bookings:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::bookings'
     _title: 'Mis Reservas'
   requirements:
-    _permission: 'edit own provider profile'
+    _avatar_access: 'profesional,cliente_servicios'
 
 jaraba_servicios_conecta.provider_portal.calendar:
   path: '/mi-servicio/calendario'
@@ -115,7 +115,7 @@ jaraba_servicios_conecta.provider_portal.calendar:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::calendar'
     _title: 'Calendario'
   requirements:
-    _permission: 'edit own provider profile'
+    _avatar_access: 'profesional,cliente_servicios'
 
 jaraba_servicios_conecta.provider_portal.profile:
   path: '/mi-servicio/perfil'
@@ -123,7 +123,7 @@ jaraba_servicios_conecta.provider_portal.profile:
     _controller: '\Drupal\jaraba_servicios_conecta\Controller\ProviderPortalController::profile'
     _title: 'Perfil Profesional'
   requirements:
-    _permission: 'edit own provider profile'
+    _avatar_access: 'profesional,cliente_servicios'
 
 # --- API REST Providers ---
 
@@ -284,3 +284,13 @@ entity.review_servicios.settings:
     _title: 'Resena Servicios settings'
   requirements:
     _permission: 'administer site configuration'
+
+# --- Settings Route: Field UI base route (missing target) ---
+
+jaraba_servicios_conecta.review_servicios.settings:
+  path: '/admin/structure/servicios-reviews'
+  defaults:
+    _form: '\Drupal\system\Form\SystemConfigEditForm'
+    _title: 'Configuracion Resenas Servicios'
+  requirements:
+    _permission: 'manage servicios reviews'

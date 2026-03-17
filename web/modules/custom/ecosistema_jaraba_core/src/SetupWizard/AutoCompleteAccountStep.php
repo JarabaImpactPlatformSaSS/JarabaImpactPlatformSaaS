@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\SetupWizard;
 
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
@@ -15,6 +16,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * It appears first in every wizard (weight: -20) as a visual anchor.
  *
  * Registered in ALL wizards via SetupWizardRegistry::GLOBAL_WIZARD_ID.
+ *
+ * ROUTE-LANGPREFIX-001: route params MUST include 'user' => uid for
+ * entity.user.edit_form. Empty params cause MissingMandatoryParametersException
+ * when _setup-wizard.html.twig calls path(step.route, step.route_params).
  */
 class AutoCompleteAccountStep implements SetupWizardStepInterface {
 
@@ -24,6 +29,16 @@ class AutoCompleteAccountStep implements SetupWizardStepInterface {
    * Global wizard marker — registry injects into every wizard.
    */
   const GLOBAL_WIZARD_ID = '__global__';
+
+  /**
+   * Constructs an AutoCompleteAccountStep.
+   *
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   Current user proxy for generating route parameters.
+   */
+  public function __construct(
+    protected AccountProxyInterface $currentUser,
+  ) {}
 
   /**
    * {@inheritdoc}
@@ -82,7 +97,7 @@ class AutoCompleteAccountStep implements SetupWizardStepInterface {
    * {@inheritdoc}
    */
   public function getRouteParameters(): array {
-    return [];
+    return ['user' => (int) $this->currentUser->id()];
   }
 
   /**

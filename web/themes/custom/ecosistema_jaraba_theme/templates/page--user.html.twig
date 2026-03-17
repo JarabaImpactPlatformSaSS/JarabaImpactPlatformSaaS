@@ -94,10 +94,11 @@
             </div>
           </div>
 
-          {# Action Buttons #}
+          {# Action Buttons — usa profile_edit_url pre-resuelta en preprocess
+             para evitar MissingMandatoryParametersException con path(). #}
           <div class="profile-hero__actions">
-            {% if user is defined and user.id is defined %}
-              <a href="{{ path('entity.user.edit_form', {'user': user.id}) }}" class="btn-primary">
+            {% if profile_edit_url %}
+              <a href="{{ profile_edit_url }}" class="btn-primary">
                 {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
                 {% trans %}Editar perfil{% endtrans %}
               </a>
@@ -108,6 +109,45 @@
           </div>
         </div>
       </div>
+
+      {# ── Onboarding Hub: Setup Wizard + Daily Actions ─────────────── #}
+      {# Resuelto via AvatarWizardBridgeService según avatar del usuario. #}
+      {# Reutiliza los partials probados de los dashboards verticales.    #}
+      {# SETUP-WIZARD-DAILY-001 + ZEIGARNIK-PRELOAD-001                  #}
+      {% if profile_setup_wizard or profile_daily_actions is not empty %}
+        <div class="profile-hub" data-avatar="{{ profile_avatar_type|default('') }}">
+
+          {# Setup Wizard — Onboarding personalizado al avatar #}
+          {% if profile_setup_wizard %}
+            {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+              wizard: profile_setup_wizard,
+              wizard_title: profile_wizard_title,
+              wizard_subtitle: profile_wizard_subtitle,
+              collapsed_label: 'Configuración completada'|t,
+            } only %}
+          {% endif %}
+
+          {# CTA al dashboard vertical (ROUTE-LANGPREFIX-001) #}
+          {% if profile_dashboard_route %}
+            <div class="profile-hub__dashboard-link">
+              <a href="{{ path(profile_dashboard_route) }}" class="profile-hub__dashboard-cta">
+                {{ jaraba_icon('verticals', 'rocket', { variant: 'duotone', color: 'naranja-impulso', size: '18px' }) }}
+                {% trans %}Ir a mi panel{% endtrans %}
+                <span class="profile-hub__cta-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          {% endif %}
+
+          {# Daily Actions — Acciones vivas con badges de estado #}
+          {% if profile_daily_actions is not empty %}
+            {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+              daily_actions: profile_daily_actions,
+              actions_title: profile_actions_title,
+            } only %}
+          {% endif %}
+
+        </div>
+      {% endif %}
 
       {# ── Account Info Cards ───────────────────────────────────────── #}
       <div class="account-info">
@@ -367,8 +407,8 @@
 
       {# Enlaces de navegación secundaria #}
       <div class="user-nav-links">
-        {% if user_page_type == 'edit' and user is defined and user.id is defined %}
-          <a href="{{ path('entity.user.canonical', {'user': user.id}) }}" class="user-nav-links__item">
+        {% if user_page_type == 'edit' and profile_view_url %}
+          <a href="{{ profile_view_url }}" class="user-nav-links__item">
             {% trans %}Ver perfil{% endtrans %}
           </a>
           <span class="user-nav-links__separator" aria-hidden="true">·</span>

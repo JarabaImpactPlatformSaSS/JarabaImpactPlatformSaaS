@@ -31,7 +31,7 @@ jaraba_lms.my_learning:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
     _title: 'Mis cursos'
   requirements:
-    _permission: 'view own enrollments'
+    _avatar_access: 'estudiante,formador,admin_lms,emprendedor,job_seeker,profesional'
 
 # Alias para /my-courses (users may expect this route)
 jaraba_lms.my_courses:
@@ -40,7 +40,7 @@ jaraba_lms.my_courses:
     _controller: '\Drupal\jaraba_lms\Controller\LearnerController::dashboard'
     _title: 'Mis cursos'
   requirements:
-    _permission: 'view own enrollments'
+    _avatar_access: 'estudiante,formador,admin_lms,emprendedor,job_seeker,profesional'
 
 jaraba_lms.course_player:
   path: '/learn/{lms_enrollment}'
@@ -140,7 +140,7 @@ jaraba_lms.instructor.courses:
     _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::courses'
     _title: 'Mis Cursos'
   requirements:
-    _permission: 'edit own courses'
+    _avatar_access: 'formador,admin_lms'
 
 jaraba_lms.instructor.lessons:
   path: '/mis-cursos/{course_id}/lecciones'
@@ -148,7 +148,7 @@ jaraba_lms.instructor.lessons:
     _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::lessons'
     _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::lessonsTitle'
   requirements:
-    _permission: 'edit own courses'
+    _avatar_access: 'formador,admin_lms'
     course_id: '\d+'
 
 jaraba_lms.instructor.students:
@@ -157,7 +157,7 @@ jaraba_lms.instructor.students:
     _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::students'
     _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::studentsTitle'
   requirements:
-    _permission: 'view learner progress'
+    _avatar_access: 'formador,admin_lms'
     course_id: '\d+'
 
 # P2-08: Analytics instructor.
@@ -167,7 +167,7 @@ jaraba_lms.instructor.analytics:
     _controller: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::courseAnalytics'
     _title_callback: '\Drupal\jaraba_lms\Controller\InstructorDashboardController::analyticsTitle'
   requirements:
-    _permission: 'view learner progress'
+    _avatar_access: 'formador,admin_lms'
     course_id: '\d+'
 
 # --- Rutas de Administración ---
