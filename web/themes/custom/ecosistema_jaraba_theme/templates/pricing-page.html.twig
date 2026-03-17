@@ -174,18 +174,9 @@
           </ul>
         {% endif %}
 
-        {# CTA button — STRIPE-CHECKOUT-001: checkout directo si plan sincronizado #}
+        {# CTA button — STRIPE-CHECKOUT-001: TODOS los planes → checkout directo #}
         <div class="pricing-card__cta">
-          {% if tier.tier_key == 'enterprise' %}
-            {# Enterprise: contacto comercial (sin checkout self-service) #}
-            <a href="{{ path('ecosistema_jaraba_core.contact') }}?asunto=plan-empresa{% if vertical_key %}&vertical={{ vertical_key }}{% endif %}"
-               class="btn btn--outline btn--lg pricing-card__btn"
-               data-track-cta="pricing_enterprise"
-               data-track-position="pricing_page"
-               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-              {% trans %}Contactar{% endtrans %}
-            </a>
-          {% elseif tier.saas_plan_id %}
+          {% if tier.saas_plan_id %}
             {# Plan con Stripe sincronizado: checkout directo #}
             <a href="{{ path('jaraba_billing.checkout', {saas_plan: tier.saas_plan_id}) }}"
                class="btn btn--primary btn--lg pricing-card__btn pricing-card__btn--checkout"

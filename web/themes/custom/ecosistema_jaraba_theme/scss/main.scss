@@ -197,6 +197,7 @@
 
 // Checkout — Stripe Embedded Checkout (STRIPE-CHECKOUT-001)
 @use 'components/checkout';
+@use 'components/subscription-card';
 
 // Setup Wizard + Daily Actions — SETUP-WIZARD-DAILY-001
 @use 'components/setup-wizard';
