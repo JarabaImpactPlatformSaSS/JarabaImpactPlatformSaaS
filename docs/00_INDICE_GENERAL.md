@@ -3,8 +3,12 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-17
-**Versión:** 169.0.0 (PLG Upgrade UI + Precios Doc 158 + Enterprise→Checkout directo + aprendizaje #190)
+**Última actualización:** 2026-03-18
+**Versión:** 170.0.0 (PHANTOM-ARG-001 v2 salvaguarda + Safeguard System 27 scripts + aprendizaje #191)
+
+> **📋 PHANTOM-ARG-001 v2 SALVAGUARDA COMPLETA + ACCESS-RETURN-TYPE-001 — v141 DIRECTRICES + v129 ARQUITECTURA + v170 INDICE + v94 FLUJO** (2026-03-18)
+>
+> Aprendizaje #191: PHANTOM-ARG-001 v2 bidireccional — validate-phantom-args.php ahora detecta args faltantes (YAML < constructor required) además de sobrantes. Parser fix: trailing comma + inline comments (`// AUDIT-CONS...`) parseado como param extra → 7 falsos positivos en feature gates. Fix: strip inline comments + filter non-$ entries. 3 servicios reales corregidos (AgroAnalyticsService +@database+@logger.factory, StripeInvoiceService +@http_client, QuoteEstimatorService +@http_client). 12 tests regresión del parser. Pre-commit hook activado (chmod +x, git lo ignoraba silenciosamente). lint-staged optimizado: services.yml → 4 validators DI (~3s). 68 AccessControlHandlers AccessResult→AccessResultInterface en 22 módulos. Drupal core + contrib actualizado (773 archivos). Regla de oro #132: pre-commit hook DEBE ser ejecutable — git ignora sin warning.
 
 > **📋 PROFILE HUB + AVATAR ACCESS + ENTREPRENEUR DASHBOARD PREMIUM — v168 INDICE + v139 DIRECTRICES + v127 ARQUITECTURA** (2026-03-17)
 >

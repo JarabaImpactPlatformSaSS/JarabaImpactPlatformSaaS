@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-17 | Version: 1.5.3
+# Ultima actualizacion: 2026-03-18 | Version: 1.5.4
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -46,7 +46,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - OPTIONAL-CROSSMODULE-001: Toda referencia cross-modulo en services.yml DEBE usar `@?` (opcional). Solo `ecosistema_jaraba_core` y submodulos propios permiten `@` hard. Validacion: `php scripts/validation/validate-optional-deps.php`
 - CONTAINER-DEPS-002: NUNCA crear dependencias circulares en services.yml. Si A necesita B y B necesita A, una direccion DEBE ser `@?` o lazy-load via `\Drupal::service()`. Validacion: `php scripts/validation/validate-circular-deps.php`
 - LOGGER-INJECT-001: Si services.yml inyecta `@logger.channel.X`, el constructor PHP DEBE aceptar `LoggerInterface $logger` directamente (NO llamar `->get('channel')`). `->get()` solo es valido con `@logger.factory`. Validacion: `php scripts/validation/validate-logger-injection.php`
-- PHANTOM-ARG-001: args en services.yml DEBEN coincidir exactamente con params del constructor PHP. Args extra/faltantes causan errores silenciosos en runtime
+- PHANTOM-ARG-001: args en services.yml DEBEN coincidir exactamente con params del constructor PHP. Deteccion bidireccional: args de MAS (phantom) Y de MENOS (missing). Missing es mas peligroso ($container->has() devuelve TRUE pero get() lanza TypeError transitivo). Validacion: `php scripts/validation/validate-phantom-args.php` + 12 tests regresion en tests/test-phantom-args-parser.php
 - STRIPE-ENV-UNIFY-001: Secrets de Stripe via `getenv()` en settings.secrets.php. NUNCA en config/sync/. Multiples config namespaces (core.stripe, foc.settings, legal_billing.settings) via un solo fichero
 
 ### PHP
@@ -257,8 +257,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v128.0.0
 - INDICE: v169.0.0
 - FLUJO: v93.0.0
-- Ultimo aprendizaje: #190
-- Ultima golden rule: #131
+- Ultimo aprendizaje: #191
+- Ultima golden rule: #132
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -323,13 +323,21 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-optional-deps.php` (OPTIONAL-CROSSMODULE-001)
 - `php scripts/validation/validate-logger-injection.php` (LOGGER-INJECT-001)
 
-## SAFEGUARD SYSTEM — 5 Capas de Defensa
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (27 scripts, 100% madurez)
 
-| Capa | Mecanismo | Cuando |
-|------|-----------|--------|
-| 1 | Scripts validacion (scripts/validation/) | On demand, CI |
-| 2 | Pre-commit hooks (Husky + lint-staged) | Antes de cada commit |
-| 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | En cada PR |
-| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status |
-| 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features |
-| 6 | PIPELINE-E2E-001 (4 capas L1-L4) | Al completar features con UI dashboard |
+| Capa | Mecanismo | Cuando | Cobertura |
+|------|-----------|--------|-----------|
+| 1 | 27 scripts validacion (scripts/validation/) | On demand, CI | 26 checks fast+full |
+| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 6 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml |
+| 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
+| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/94 modulos (88%) |
+| 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features | Complitud+Integridad+Consistencia+Coherencia |
+| 6 | PIPELINE-E2E-001 (4 capas L1-L4) | Al completar features con UI dashboard | Service→Controller→hook_theme→Template |
+
+### Pre-commit lint-staged (detalle)
+- `**/*.php`: PHPStan Level 6
+- `**/*.scss`: validate-compiled-assets.php
+- `docs/00_*.md`: verify-doc-integrity.sh (DOC-GUARD-001)
+- `**/*.html.twig`: validate-twig-ortografia.php
+- `**/*.services.yml`: validate-phantom-args + validate-optional-deps + validate-circular-deps + validate-logger-injection (~3s)
+- `**/*.routing.yml`: validate-all.sh --fast

@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-17
-**Version:** 93.0.0 (PLG Upgrade UI + Precios Doc 158 + Enterprise→Checkout directo + aprendizaje #190)
+**Ultima actualizacion:** 2026-03-18
+**Version:** 94.0.0 (PHANTOM-ARG-001 v2 salvaguarda + lint-staged DI validators + aprendizaje #191)
 
 ---
 ## 1. Inicio de Sesion
