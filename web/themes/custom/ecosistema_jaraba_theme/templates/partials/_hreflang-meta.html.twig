@@ -20,16 +20,25 @@
 #}
 {% set langs = available_languages|default(['es']) %}
 {% set links = language_links|default({}) %}
-{% set base_url_raw = url('<front>', {}, {absolute: true})|render|default('') %}
-{% set base_url = base_url_raw|trim('/') %}
-{% set current_path = path('<current>')|default('/') %}
 
-{% if base_url and langs|length > 0 %}
+{#
+ # HREFLANG-CONDITIONAL-001: Las URLs vienen pre-generadas desde preprocess_html
+ # via Url::fromRoute() con ['language' => $lang, 'absolute' => TRUE].
+ # Si language_links está vacío, NO generamos fallback con concatenación manual
+ # porque path('<current>') y url('<front>') ya incluyen el prefix del idioma
+ # actual, causando duplicación (es/es/es/ruta).
+ #
+ # La fuente de verdad es language_links — si está vacío, no se emiten hreflang.
+ #}
+{% if links is not empty and langs|length > 0 %}
   {% for lang in langs %}
-    {% set href = links[lang]|default(base_url ~ '/' ~ lang ~ current_path) %}
-    <link rel="alternate" hreflang="{{ lang }}" href="{{ href }}" />
+    {% if links[lang] is defined %}
+      <link rel="alternate" hreflang="{{ lang }}" href="{{ links[lang] }}" />
+    {% endif %}
   {% endfor %}
   {# x-default apunta al idioma por defecto (es) #}
   {% set default_lang = langs|first %}
-  <link rel="alternate" hreflang="x-default" href="{{ links[default_lang]|default(base_url ~ '/' ~ default_lang ~ current_path) }}" />
+  {% if links[default_lang] is defined %}
+    <link rel="alternate" hreflang="x-default" href="{{ links[default_lang] }}" />
+  {% endif %}
 {% endif %}

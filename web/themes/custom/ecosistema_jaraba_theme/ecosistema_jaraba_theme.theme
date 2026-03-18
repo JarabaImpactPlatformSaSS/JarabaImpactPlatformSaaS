@@ -1122,6 +1122,48 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
       '#placeholder' => t('Verticales activas'),
     ];
   }
+
+  // =========================================================================
+  // TAB 16: PLG / TEXTOS DE CONVERSIÓN
+  // =========================================================================
+  $form['plg_texts'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('megaphone', t('PLG / Textos de conversión'), '#FF8C42'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -10,
+  ];
+
+  $form['plg_texts']['plg_free_plan_note'] = [
+    '#type' => 'textfield',
+    '#title' => t('Nota plan gratuito (pricing preview)'),
+    '#description' => t('Texto que aparece bajo el pricing en landings. Ej: "Plan gratuito disponible. Sin tarjeta de crédito."'),
+    '#default_value' => $config->get('plg_free_plan_note') ?: 'Plan gratuito disponible. Sin tarjeta de crédito.',
+    '#maxlength' => 255,
+  ];
+
+  $form['plg_texts']['plg_cta_subtitle'] = [
+    '#type' => 'textfield',
+    '#title' => t('Subtítulo CTA final'),
+    '#description' => t('Texto bajo el botón CTA final de landings. Ej: "Sin tarjeta de crédito. Empieza gratis."'),
+    '#default_value' => $config->get('plg_cta_subtitle') ?: 'Sin tarjeta de crédito. Empieza gratis.',
+    '#maxlength' => 255,
+  ];
+
+  $form['plg_texts']['plg_guarantee_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto de garantía (checkout/pricing)'),
+    '#description' => t('Texto de confianza en páginas de precios. Ej: "Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras."'),
+    '#default_value' => $config->get('plg_guarantee_text') ?: 'Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.',
+    '#maxlength' => 255,
+  ];
+
+  $form['plg_texts']['plg_register_subtitle'] = [
+    '#type' => 'textfield',
+    '#title' => t('Subtítulo registro'),
+    '#description' => t('Texto bajo formularios de registro. Ej: "Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito."'),
+    '#default_value' => $config->get('plg_register_subtitle') ?: 'Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.',
+    '#maxlength' => 255,
+  ];
 }
 
 /**
@@ -2498,17 +2540,21 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   $route_match_hl = \Drupal::routeMatch();
   $route_name_hl = $route_match_hl->getRouteName();
   $route_params_hl = $route_match_hl->getRawParameters()->all();
+  $host_hl = \Drupal::request()->getSchemeAndHttpHost();
   $hl_links = [];
-  foreach ($language_manager->getLanguages() as $langcode => $language) {
-    try {
-      $url = \Drupal\Core\Url::fromRoute($route_name_hl ?: '<front>', $route_params_hl, [
-        'language' => $language,
-        'absolute' => TRUE,
-      ]);
-      $hl_links[$langcode] = $url->toString();
-    }
-    catch (\Exception $e) {
-      $hl_links[$langcode] = '/' . $langcode;
+  if ($route_name_hl) {
+    foreach ($language_manager->getLanguages() as $langcode => $language) {
+      try {
+        $url = \Drupal\Core\Url::fromRoute($route_name_hl, $route_params_hl, [
+          'language' => $language,
+          'absolute' => TRUE,
+        ]);
+        $hl_links[$langcode] = $url->toString();
+      }
+      catch (\Throwable $e) {
+        // UPDATE-HOOK-CATCH-001: \Throwable no \Exception.
+        $hl_links[$langcode] = $host_hl . '/' . $langcode;
+      }
     }
   }
   $variables['available_languages'] = array_keys($hl_links);
@@ -2734,22 +2780,25 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         $translation = $page_content->getTranslation($langcode);
         $alias = $translation->get('path_alias')->value ?? '';
         if (!empty($alias)) {
-          // Build URL with language prefix (skip prefix for default language).
+          // Build absolute URL with language prefix for hreflang.
+          $host = \Drupal::request()->getSchemeAndHttpHost();
           $prefix = ($langcode !== $defaultLangcode) ? '/' . $langcode : '';
-          $language_links[$langcode] = $prefix . $alias;
+          $language_links[$langcode] = $host . $prefix . $alias;
           continue;
         }
       }
 
       // Generic route-based URL generation for non-page_content routes.
+      // HREFLANG-CONDITIONAL-001: 'absolute' => TRUE obligatorio para hreflang.
       $url = \Drupal\Core\Url::fromRoute($route_name ?: '<front>', $route_params, [
         'language' => $language,
+        'absolute' => TRUE,
       ]);
       $language_links[$langcode] = $url->toString();
     }
     catch (\Exception $e) {
       // Fallback to language prefix root if route can't be resolved.
-      $language_links[$langcode] = '/' . $langcode;
+      $language_links[$langcode] = \Drupal::request()->getSchemeAndHttpHost() . '/' . $langcode;
     }
   }
   $variables['available_languages'] = array_keys($language_links);
@@ -3093,6 +3142,15 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       // Servicio no disponible, no mostrar navegacion contextual.
     }
   }
+
+  // =========================================================================
+  // PLG texts from theme settings (configurable from UI).
+  // NO-HARDCODE-PRICE-001: Textos de conversión configurables desde Apariencia.
+  // =========================================================================
+  $variables['plg_free_plan_note'] = theme_get_setting('plg_free_plan_note') ?? 'Plan gratuito disponible. Sin tarjeta de crédito.';
+  $variables['plg_cta_subtitle'] = theme_get_setting('plg_cta_subtitle') ?? 'Sin tarjeta de crédito. Empieza gratis.';
+  $variables['plg_guarantee_text'] = theme_get_setting('plg_guarantee_text') ?? 'Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.';
+  $variables['plg_register_subtitle'] = theme_get_setting('plg_register_subtitle') ?? 'Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.';
 
   // =========================================================================
   // ZERO REGION POLICY — Variables limpias para templates custom
