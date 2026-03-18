@@ -1956,3 +1956,29 @@ function jaraba_andalucia_ei_update_10028(): string {
 
   return implode(' | ', $messages);
 }
+
+/**
+ * Install FichaTecnicaEi entity type (ICV 2025 §3.2).
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva entity DEBE tener hook_update_N().
+ * UPDATE-HOOK-CATCH-001: \Throwable (no \Exception) para PHP 8.4.
+ */
+function jaraba_andalucia_ei_update_10029(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if (!$updateManager->getEntityType('ficha_tecnica_ei')) {
+      $entityType = $entityTypeManager->getDefinition('ficha_tecnica_ei', FALSE);
+      if ($entityType) {
+        $updateManager->installEntityType($entityType);
+        return 'FichaTecnicaEi entity type installed.';
+      }
+      return 'Warning: ficha_tecnica_ei definition not found — module code may not be deployed.';
+    }
+    return 'ficha_tecnica_ei entity type already installed.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing ficha_tecnica_ei: ' . $e->getMessage();
+  }
+}

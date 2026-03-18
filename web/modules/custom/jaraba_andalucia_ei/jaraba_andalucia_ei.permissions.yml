@@ -262,3 +262,13 @@ delete plan formativo ei:
 view andalucia ei esf indicators:
   title: 'Ver indicadores ESF+'
   description: 'Permite acceder al dashboard de indicadores del Fondo Social Europeo Plus.'
+
+# === FICHA TÉCNICA PIIL ===
+
+view ficha tecnica ei:
+  title: 'Ver fichas técnicas PIIL'
+  description: 'Permite ver las fichas técnicas del programa.'
+
+manage ficha tecnica ei:
+  title: 'Gestionar fichas técnicas PIIL'
+  description: 'Permite crear, editar y eliminar fichas técnicas del programa.'

@@ -525,3 +525,30 @@ services:
     class: Drupal\jaraba_andalucia_ei\DailyActions\OrientadorInformesAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # ===========================================
+  # ICV 2025 GAP CLOSURE — Plazos + Inserción + Ficha Técnica
+  # ===========================================
+
+  # GAP-2: Enforcement de plazos normativos ICV 2025.
+  jaraba_andalucia_ei.plazo_enforcement:
+    class: Drupal\jaraba_andalucia_ei\Service\PlazoEnforcementService
+    arguments:
+      - '@entity_type.manager'
+      - '@datetime.time'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # GAP-3: Validación inserción laboral SS.
+  jaraba_andalucia_ei.insercion_validator:
+    class: Drupal\jaraba_andalucia_ei\Service\InsercionValidatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Daily Action: Plazos normativos vencidos (coordinador).
+  jaraba_andalucia_ei.daily_action.plazos_vencidos:
+    class: Drupal\jaraba_andalucia_ei\DailyActions\PlazosVencidosAction
+    arguments:
+      - '@?jaraba_andalucia_ei.plazo_enforcement'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

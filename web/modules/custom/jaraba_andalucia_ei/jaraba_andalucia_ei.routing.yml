@@ -1279,3 +1279,15 @@ jaraba_andalucia_ei.hub.sesion_programada.edit:
   requirements:
     _permission: 'edit sesion programada ei'
     id: '\d+'
+
+# =====================================================
+# FICHA TÉCNICA PIIL — Field UI Settings (GAP-1 ICV 2025)
+# =====================================================
+
+entity.ficha_tecnica_ei.settings:
+  path: '/admin/config/andalucia-ei/ficha-tecnica'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\FichaTecnicaEiSettingsForm'
+    _title: 'Ficha Técnica PIIL settings'
+  requirements:
+    _permission: 'administer andalucia ei'
