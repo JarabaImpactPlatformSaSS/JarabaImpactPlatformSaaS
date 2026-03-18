@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * _addon-card.html.twig — Tarjeta de Add-on (activo o recomendado).
+ *
+ * GP-02: Renderiza add-ons activos y recomendados en la subscription card.
+ *
+ * Variables:
+ * - addon: {addon_id, label, price, icon_cat, icon_name, description}
+ * - is_recommended: bool (highlight con CTA de activación)
+ *
+ * Directrices:
+ * - TWIG-INCLUDE-ONLY-001: Incluir con keyword only.
+ * - CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*).
+ * - ICON-CONVENTION-001: jaraba_icon() duotone.
+ * - {% trans %}: Todos los textos traducibles.
+ */
+#}
+
+{% if addon is defined %}
+<div class="addon-card {{ is_recommended ? 'addon-card--recommended' : 'addon-card--active' }}">
+  <div class="addon-card__icon">
+    {% if addon.icon_cat is defined and addon.icon_name is defined %}
+      {{ jaraba_icon(addon.icon_cat, addon.icon_name, {variant: 'duotone', color: is_recommended ? 'naranja-impulso' : 'azul-corporativo', size: '20px'}) }}
+    {% endif %}
+  </div>
+  <div class="addon-card__content">
+    <span class="addon-card__label">{{ addon.label }}</span>
+    {% if addon.description is defined and addon.description %}
+      <span class="addon-card__desc">{{ addon.description }}</span>
+    {% endif %}
+  </div>
+  <div class="addon-card__price">
+    {% if addon.price is defined and addon.price > 0 %}
+      <span>{{ addon.price|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+    {% else %}
+      <span class="addon-card__price--included">{% trans %}Incluido{% endtrans %}</span>
+    {% endif %}
+  </div>
+  {% if is_recommended %}
+    <a href="{{ path('jaraba_addons.catalog') }}" class="addon-card__cta" aria-label="{% trans %}Activar {{ addon.label }}{% endtrans %}">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+      </svg>
+    </a>
+  {% endif %}
+</div>
+{% endif %}

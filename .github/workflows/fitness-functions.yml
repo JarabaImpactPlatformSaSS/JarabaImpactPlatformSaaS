@@ -366,3 +366,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         continue-on-error: true
+
+  # ===========================================
+  # SPRINT 4 SEO/GEO: Core Web Vitals via Lighthouse CI
+  # Thresholds: Performance >=85, Accessibility >=95, SEO >=90
+  # Solo ejecuta en schedule (lunes 8:00 UTC) y workflow_dispatch
+  # NO bloquea PRs — es metrica de observabilidad
+  # ===========================================
+  lighthouse-audit:
+    name: 🔍 Lighthouse CWV Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Lighthouse CI — Landing principal
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ secrets.STAGING_URL }}/es/agroconecta
+            ${{ secrets.STAGING_URL }}/es/empleabilidad
+            ${{ secrets.STAGING_URL }}/es/emprendimiento
+          budgetPath: .github/lighthouse-budget.json
+          runs: 3
+        continue-on-error: true
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+          retention-days: 30
+        if: always()

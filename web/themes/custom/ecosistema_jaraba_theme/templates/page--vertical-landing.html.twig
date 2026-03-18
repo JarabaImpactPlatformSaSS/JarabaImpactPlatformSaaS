@@ -21,6 +21,14 @@
 {{ attach_library('ecosistema_jaraba_core/global') }}
 {{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
 
+{# Sprint 4 SEO/GEO: Schema.org contextual por vertical #}
+{% if vertical_key is defined and vertical_key %}
+  {% include '@ecosistema_jaraba_theme/partials/_vertical-schema.html.twig' with {
+    vertical_key: vertical_key,
+    site_name: site_name,
+  } only %}
+{% endif %}
+
 <div class="page-wrapper page-wrapper--clean page-wrapper--landing">
 
   {# HEADER - Partial reutilizable con menú móvil #}

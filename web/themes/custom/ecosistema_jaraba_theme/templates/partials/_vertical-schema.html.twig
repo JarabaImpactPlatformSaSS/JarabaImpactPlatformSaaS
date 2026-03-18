@@ -1,0 +1,175 @@
+{#
+/**
+ * @file
+ * _vertical-schema.html.twig — Schema.org JSON-LD contextual por vertical.
+ *
+ * Sprint 4 SEO/GEO: Inyecta schemas especificos por vertical en landings.
+ * Mejora la visibilidad en Google, AI Overviews, Perplexity y ChatGPT Search.
+ *
+ * Variables:
+ * - vertical_key: string (agroconecta, comercioconecta, etc.)
+ * - site_name: string
+ *
+ * Directrices:
+ * - TWIG-INCLUDE-ONLY-001: Incluir con keyword only.
+ * - TWIG-URL-RENDER-ARRAY-001: usar path() no url().
+ * - i18n: textos traducibles con |t.
+ * - NAP-NORMALIZATION-001: phone y email canonicos.
+ */
+#}
+
+{% set front = path('<front>') %}
+{% set phone = '+34 623 174 304' %}
+{% set email = 'contacto@plataformadeecosistemas.es' %}
+
+{% if vertical_key == 'agroconecta' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AgroConecta — {{ 'Marketplace Agroalimentario'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Marketplace de proximidad agroalimentario con trazabilidad QR'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.agroconecta') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "49",
+    "highPrice": "249",
+    "priceCurrency": "EUR"
+  },
+  "featureList": [
+    "{{ 'Trazabilidad QR a nivel de lote con DOP/IGP/Eco'|t }}",
+    "{{ 'Marketplace multi-tienda para productores agroalimentarios'|t }}",
+    "{{ 'Storytelling de productor con video y landing personalizada'|t }}",
+    "{{ 'ProducerCopilotAgent con IA agro-especifica'|t }}"
+  ]
+}
+</script>
+
+{% elseif vertical_key == 'comercioconecta' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ComercioConecta — {{ 'Sistema Operativo de Barrio'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Plataforma phygital para comercio de proximidad'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.comercioconecta') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "39",
+    "highPrice": "199",
+    "priceCurrency": "EUR"
+  },
+  "featureList": [
+    "{{ 'QR dinamicos que cambian por hora y dia'|t }}",
+    "{{ 'Ofertas Flash con countdown en tiempo real'|t }}",
+    "{{ 'Local SEO automatizado con sincronizacion Google Business'|t }}",
+    "{{ 'MerchantCopilotAgent con IA para comercio local'|t }}"
+  ]
+}
+</script>
+
+{% elseif vertical_key == 'jarabalex' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "JarabaLex — {{ 'Inteligencia Legal con IA'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Legal practice management con IA generativa y EU AI Act compliance'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.jarabalex') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "29",
+    "highPrice": "149",
+    "priceCurrency": "EUR"
+  },
+  "featureList": [
+    "{{ 'LCIS: Legal Coherence Intelligence System con 9 capas'|t }}",
+    "{{ 'Busqueda semantica en BOE/BOJA con grafo normativo'|t }}",
+    "{{ 'Firma digital PAdES con validez eIDAS'|t }}",
+    "{{ 'Cumplimiento nativo EU AI Act Annex III Section 8'|t }}"
+  ]
+}
+</script>
+
+{% elseif vertical_key == 'serviciosconecta' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ServiciosConecta — {{ 'Plataforma Profesional Integral'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Booking, facturacion VeriFactu, firma PAdES y AI triage para profesionales'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.serviciosconecta') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "29",
+    "highPrice": "149",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
+
+{% elseif vertical_key == 'empleabilidad' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ 'Empleabilidad — LMS + Job Board + Matching IA'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Plataforma de empleo con LMS certificable, matching 5D y Open Badges 3.0'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.empleabilidad') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "29",
+    "highPrice": "149",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
+
+{% elseif vertical_key == 'emprendimiento' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ 'Emprendimiento — Diagnostico + Canvas + Validacion + Copilot IA'|t }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "{{ 'Plataforma de apoyo a emprendedores con 44 experimentos Osterwalder y AI Copilot v2'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.emprendimiento') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "39",
+    "highPrice": "199",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
+
+{% elseif vertical_key == 'formacion' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ 'Formacion — LMS con xAPI, H5P y certificacion Open Badges'|t }}",
+  "applicationCategory": "EducationalApplication",
+  "applicationSubCategory": "{{ 'Plataforma de formacion bonificable SEPE/Fundae con tracking xAPI y credenciales digitales'|t }}",
+  "operatingSystem": "All",
+  "url": "{{ path('ecosistema_jaraba_core.landing.formacion') }}",
+  "offers": {
+    "@type": "AggregateOffer",
+    "lowPrice": "0",
+    "highPrice": "149",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
+{% endif %}

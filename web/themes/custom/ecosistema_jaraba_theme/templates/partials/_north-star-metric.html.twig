@@ -1,0 +1,67 @@
+{#
+/**
+ * @file
+ * _north-star-metric.html.twig — Widget de metrica North Star por vertical.
+ *
+ * Sprint 5: Muestra LA metrica clave de cada vertical en su dashboard.
+ * Doc 158 v2 define las North Star por vertical:
+ * - empleabilidad: Tasa insercion >40%
+ * - emprendimiento: Supervivencia negocio >60% 12m
+ * - agroconecta: Margen incremental productor 3-10x
+ * - comercioconecta: Conversion QR→venta >5%
+ * - serviciosconecta: No-shows <5%
+ * - jarabalex: Horas facturables recuperadas
+ * - formacion: Tasa completitud >70%
+ * - andalucia_ei: Insercion >40%
+ *
+ * Variables:
+ * - north_star: {label, value, target, unit, trend, trend_pct, icon_cat, icon_name}
+ *   - trend: 'up' | 'down' | 'flat'
+ *   - trend_pct: float (cambio porcentual vs periodo anterior)
+ *
+ * Directrices:
+ * - CSS-VAR-ALL-COLORS-001, ICON-CONVENTION-001, {% trans %}.
+ * - TWIG-INCLUDE-ONLY-001.
+ */
+#}
+
+{% if north_star is defined and north_star %}
+<div class="north-star-metric">
+  <div class="north-star-metric__icon">
+    {% if north_star.icon_cat is defined and north_star.icon_name is defined %}
+      {{ jaraba_icon(north_star.icon_cat, north_star.icon_name, {variant: 'duotone', color: 'naranja-impulso', size: '28px'}) }}
+    {% endif %}
+  </div>
+
+  <div class="north-star-metric__body">
+    <span class="north-star-metric__label">{{ north_star.label }}</span>
+    <div class="north-star-metric__value-row">
+      <span class="north-star-metric__value">
+        {{ north_star.value }}{% if north_star.unit is defined %}{{ north_star.unit }}{% endif %}
+      </span>
+      {% if north_star.target is defined %}
+        <span class="north-star-metric__target">
+          / {{ north_star.target }}{{ north_star.unit|default('') }} {% trans %}objetivo{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if north_star.trend is defined %}
+      <div class="north-star-metric__trend north-star-metric__trend--{{ north_star.trend }}">
+        {% if north_star.trend == 'up' %}
+          <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
+          </svg>
+        {% elseif north_star.trend == 'down' %}
+          <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 13a1 1 0 100 2h5a1 1 0 001-1V9a1 1 0 10-2 0v2.586l-4.293-4.293a1 1 0 00-1.414 0L8 9.586 3.707 5.293a1 1 0 00-1.414 1.414l5 5a1 1 0 001.414 0L11 9.414 14.586 13H12z" clip-rule="evenodd"/>
+          </svg>
+        {% endif %}
+        {% if north_star.trend_pct is defined %}
+          <span>{{ north_star.trend_pct > 0 ? '+' : '' }}{{ north_star.trend_pct|number_format(1, ',', '.') }}%</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

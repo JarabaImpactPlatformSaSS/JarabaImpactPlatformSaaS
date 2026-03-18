@@ -3129,6 +3129,31 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     }
   }
 
+  // GP-05: Usage warning banner for dashboards (FairUsePolicyService).
+  // ZERO-REGION-001: Datos via preprocess, NO controller.
+  // OPTIONAL-SERVICE: FairUsePolicyService puede no existir.
+  $variables['usage_warning'] = NULL;
+  if (\Drupal::currentUser()->isAuthenticated()
+      && \Drupal::hasService('ecosistema_jaraba_core.fair_use_policy')
+      && \Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+    try {
+      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $currentTenant = $tenantContext->getCurrentTenant();
+      if ($currentTenant) {
+        $fairUse = \Drupal::service('ecosistema_jaraba_core.fair_use_policy');
+        // Verificar recurso mas critico: ai_queries.
+        $enforcement = $fairUse->getActiveEnforcement((int) $currentTenant->id(), 'ai_queries');
+        if ($enforcement && in_array($enforcement['level'] ?? '', ['warn', 'throttle', 'soft_block'], TRUE)) {
+          $variables['usage_warning'] = $enforcement;
+          $variables['pricing_url'] = \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString();
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      // PRESAVE-RESILIENCE-001: No bloquear renderizado si FairUse falla.
+    }
+  }
+
   // RUNTIME-VERIFY-001: Inject vertical_key for FAB Copilot contextual agent.
   // Without this, page--vertical-landing.html.twig defaults to 'public_copilot'
   // for ALL landing pages instead of vertical-specific agents.

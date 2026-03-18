@@ -53,6 +53,16 @@
       </div>
     {% endif %}
 
+    {# GP-05: Banner advertencia uso pre-limite (FairUsePolicyService) #}
+    {% if usage_warning %}
+      <div class="container">
+        {% include '@ecosistema_jaraba_theme/partials/_usage-warning-banner.html.twig' with {
+          usage_warning: usage_warning,
+          pricing_url: pricing_url|default(null),
+        } only %}
+      </div>
+    {% endif %}
+
     {# Contenido del controlador — sin bloques heredados #}
     <div class="main-content__inner main-content__inner--full">
       {% if dashboard_content %}

@@ -168,6 +168,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - _skeleton.html.twig, _empty-state.html.twig, _review-card.html.twig, _article-card.html.twig
 - ANTES de crear contenido nuevo: verificar si existe parcial reutilizable
 - Footer content (links, copyright, social) configurado desde Theme Settings UI, NO hardcoded
+- ZEIGARNIK-PRELOAD-001: 2 auto-complete global steps (__global__) inyectados en TODOS los wizards (weight -20, -10). Wizards arrancan 25-33% completados. Efecto Zeigarnik: +12-28% tasa de finalizacion
+- _setup-wizard.html.twig (203 lineas): Progress circle SVG, stepper, auto-collapse, jaraba_icon()
+- _daily-actions.html.twig (88 lineas): Grid layout, badges, color variants, slide-panel support
 
 ### Modales y Slide-Panel
 - TODA accion crear/editar/ver en frontend DEBE abrirse en slide-panel (no navegar fuera)
@@ -184,6 +187,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - API-WHITELIST-001: Endpoints con campos dinamicos DEBEN definir ALLOWED_FIELDS y filtrar input
 - CSRF-API-001: API routes via fetch() usan _csrf_request_header_token: 'TRUE' (NO _csrf_token)
 - ACCESS-STRICT-001: Comparaciones ownership con (int)..===(int), NUNCA ==
+- ACCESS-RETURN-TYPE-001: checkAccess() DEBE declarar `: AccessResultInterface` (NO `: AccessResult`). parent::checkAccess() devuelve AccessResultInterface; return type mas restrictivo causa PHPStan error. 68 handlers migrados
+- STRIPE_WEBHOOK_SECRET: Variable obligatoria en settings.secrets.php para verificacion HMAC de webhooks Stripe (AUDIT-SEC-001). Sin ella, checkout.session.completed e invoice.payment_failed no se verifican
+- CSRF-LOGIN-FIX-001 v2: IONOS termina SSL; Apache/PHP recibe HTTP. Fix: `$_SERVER['HTTPS']='on'` desde X-Forwarded-Proto ANTES del bootstrap Drupal. Aplicado por `patch-settings-csrf.php` (ejecutar en cada deploy). Sin esto, SessionConfiguration.php override cookie_secure → session perdida → CSRF falla
 
 ### Rutas y URLs
 - ROUTE-LANGPREFIX-001: URLs SIEMPRE via Url::fromRoute(). El sitio usa /es/ prefix. Paths hardcoded causan 404
@@ -203,6 +209,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - AI-IDENTITY-RULE: Centralizado en AIIdentityRule::apply(). NUNCA duplicar
 - AI-GUARDRAILS-PII-001: Detecta DNI, NIE, IBAN ES, NIF/CIF, +34. Bidireccional (input + output)
 - SERVICE-CALL-CONTRACT-001: Firmas de metodo DEBEN coincidir exactamente. hasService() NO protege contra TypeError
+- COPILOT-BRIDGE-COVERAGE-001: Cada vertical con copilot DEBE tener su CopilotBridgeService. Implementados: DemoCopilotBridgeService, LegalCopilotBridgeService, EmpleabilidadCopilotBridgeService, EmprendimientoCopilotBridgeService
+- STREAMING-PARITY-001: StreamingOrchestratorService y CopilotOrchestratorService deben mantener paridad funcional
 
 ### Legal Coherence Intelligence System (LCIS)
 - LCIS-AUDIT-001: Audit trail obligatorio para EU AI Act Art. 12. Toda respuesta legal trazable
@@ -227,6 +235,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Canvas editor: full-viewport HtmlResponse que bypasa page template system
 - Dual architecture: GrapesJS script functions (editor) + Drupal behaviors (frontend publicado)
 - ICON-EMOJI-001: NO emojis Unicode en canvas_data. Usar SVG inline con hex de marca
+- SAFEGUARD-CANVAS-001: 4 capas proteccion canvas — (1) Backup pre-save (canvas_data snapshot), (2) Restore via revision history, (3) Presave JSON validation, (4) Post-save rendered output verification
 
 ## TESTING
 

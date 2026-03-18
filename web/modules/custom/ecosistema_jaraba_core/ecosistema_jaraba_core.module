@@ -3494,10 +3494,17 @@ function ecosistema_jaraba_core_entity_type_alter(array &$entity_types): void {
       $entityType->setHandlerClass('storage_schema', $storageSchemaClass);
     }
 
-    // AUDIT-CONS-001: Add AccessControlHandler for entities that don't have
-    // one. Entities with explicit access handlers are left untouched.
+    // AUDIT-CONS-001: Add DefaultEntityAccessControlHandler for entities that
+    // use Drupal's generic EntityAccessControlHandler (no tenant isolation) or
+    // have no handler at all. Entities with CUSTOM access handlers (extending
+    // DefaultEntityAccessControlHandler or implementing their own logic) are
+    // left untouched. This ensures TENANT-ISOLATION-ACCESS-001 coverage for
+    // all custom ContentEntities with tenant_id field.
     $currentAccess = $entityType->getHandlerClass('access');
-    if (!$currentAccess) {
+    if (
+      !$currentAccess
+      || $currentAccess === 'Drupal\Core\Entity\EntityAccessControlHandler'
+    ) {
       $entityType->setHandlerClass('access', $accessHandlerClass);
     }
   }

@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * _usage-warning-banner.html.twig — Banner de advertencia de uso pre-limite.
+ *
+ * GP-05: Muestra aviso cuando el uso se acerca al limite del plan.
+ * Se renderiza en dashboards cuando FairUsePolicyService devuelve
+ * nivel 'warn' (70-85%) o 'throttle' (85-95%).
+ *
+ * Variables:
+ * - usage_warning: {level, resource, usage_pct, message, limit, current}
+ *   - level: 'warn' | 'throttle' | 'soft_block'
+ *   - resource: string (ej: 'ai_queries', 'storage_gb', 'max_pages')
+ *   - usage_pct: int (0-100+)
+ * - pricing_url: string (ruta a pagina de planes)
+ *
+ * Directrices:
+ * - CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*).
+ * - ICON-CONVENTION-001: jaraba_icon() duotone.
+ * - {% trans %}: Todos los textos traducibles.
+ * - TWIG-INCLUDE-ONLY-001: Incluir con keyword only.
+ */
+#}
+
+{% if usage_warning is defined and usage_warning %}
+  {% set level = usage_warning.level|default('warn') %}
+  {% set is_critical = level in ['throttle', 'soft_block'] %}
+
+  <div class="usage-warning-banner usage-warning-banner--{{ level }}"
+       role="alert"
+       aria-live="polite">
+    <div class="usage-warning-banner__icon">
+      {% if is_critical %}
+        <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+      {% else %}
+        <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+      {% endif %}
+    </div>
+
+    <div class="usage-warning-banner__content">
+      <p class="usage-warning-banner__message">
+        {% if is_critical %}
+          {% trans %}Tu uso esta al {{ usage_warning.usage_pct }}%. Algunas funciones pueden verse limitadas.{% endtrans %}
+        {% else %}
+          {% trans %}Tu uso esta al {{ usage_warning.usage_pct }}% del limite de tu plan.{% endtrans %}
+        {% endif %}
+      </p>
+      {% if usage_warning.resource is defined %}
+        <p class="usage-warning-banner__detail">
+          {% trans %}Recurso: {{ usage_warning.resource }}{% endtrans %}
+          {% if usage_warning.current is defined and usage_warning.limit is defined %}
+            ({{ usage_warning.current }}/{{ usage_warning.limit }})
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if pricing_url is defined and pricing_url %}
+      <a href="{{ pricing_url }}" class="usage-warning-banner__cta">
+        {% trans %}Ampliar plan{% endtrans %}
+        <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </a>
+    {% endif %}
+  </div>
+{% endif %}

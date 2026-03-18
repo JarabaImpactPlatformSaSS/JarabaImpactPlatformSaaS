@@ -595,3 +595,14 @@ cwv-tracking:
     js/cwv-tracking.js: {}
   dependencies:
     - core/drupal
+
+
+# GP-06: Stripe Customer Portal — self-service billing management
+stripe-portal:
+  version: 1.0.0
+  js:
+    js/stripe-portal.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global-styling
