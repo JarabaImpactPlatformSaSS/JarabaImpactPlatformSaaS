@@ -4,9 +4,9 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-18
-**Versión:** 173.0.0 (Kit Digital Agente Digitalizador + aprendizaje #194)
+**Versión:** 174.0.0 (Freemium + Pagos Rápidos + PLG Configurables + aprendizaje #195)
 
-> **📋 KIT DIGITAL AGENTE DIGITALIZADOR — v144 DIRECTRICES + v132 ARQUITECTURA + v173 INDICE + v97 FLUJO** (2026-03-18)
+> **📋 FREEMIUM + PAGOS RÁPIDOS + PLG — v145 DIRECTRICES + v133 ARQUITECTURA + v174 INDICE + v98 FLUJO** (2026-03-18)
 >
 > Aprendizaje #194: Implementación completa del sistema Kit Digital para PED S.L. como Agente Digitalizador. KitDigitalAgreement ContentEntity (17 campos, 7 estados lifecycle). KitDigitalService 10 métodos (categorías C1-C9 por paquete, tabla bonos máximos Anexo IV, secuencia KD-YYYY-NNNN). 5 landing pages zero-region cumpliendo 9 requisitos Anexo II Red.es. Admin dashboard con KPIs. Cron lifecycle. 3 emails. Setup Wizard + 2 Daily Actions. 12 tests, 112 assertions. CI green + deploy IONOS. RUNTIME-VERIFY-001 verificado: 5 rutas HTTP 200, body classes, DB table, entity installed. 7 reglas KIT-DIGITAL-001 a 007. Regla de oro #135: landing Kit Digital DEBE cumplir 9 requisitos Anexo II o Red.es rechaza adhesión.
 
