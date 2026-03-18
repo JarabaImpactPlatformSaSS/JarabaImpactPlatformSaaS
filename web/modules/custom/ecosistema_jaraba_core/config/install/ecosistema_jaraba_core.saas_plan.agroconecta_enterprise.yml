@@ -21,7 +21,6 @@ features:
   - notifications_multichannel
   - partner_hub
   - api_access
-  - white_label
   - soporte_email
   - soporte_chat
   - soporte_dedicado

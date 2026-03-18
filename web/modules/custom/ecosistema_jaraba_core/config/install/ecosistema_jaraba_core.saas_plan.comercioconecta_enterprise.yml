@@ -18,7 +18,6 @@ features:
   - pos_integration
   - multi_store
   - api_access
-  - white_label
   - soporte_email
   - soporte_chat
   - soporte_dedicado

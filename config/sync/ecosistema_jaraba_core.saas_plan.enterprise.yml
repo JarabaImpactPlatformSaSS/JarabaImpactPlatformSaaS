@@ -18,7 +18,6 @@ features:
   - webhooks
   - api_access
   - dominio_personalizado
-  - marca_blanca
 limits: '{"productores": -1, "storage_gb": 100, "ai_queries": -1, "webhooks": -1}'
 stripe_price_id: ''
 weight: 2

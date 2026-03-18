@@ -22,7 +22,7 @@ features:
   - dashboard_empresas
   - analytics
   - api_access
-  - white_label
+  - personalizacion_marca
   - premium_blocks
   - soporte_dedicado
 limits: '{"diagnostics":10000,"cv_builder":10000,"job_applications_per_day":10000,"copilot_messages_per_day":10000,"job_alerts":10000,"offers_visible_per_day":10000}'

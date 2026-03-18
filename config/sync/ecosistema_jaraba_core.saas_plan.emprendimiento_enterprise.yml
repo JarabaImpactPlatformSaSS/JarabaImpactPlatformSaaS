@@ -22,7 +22,7 @@ features:
   - analytics
   - ab_testing
   - api_access
-  - white_label
+  - personalizacion_marca
   - premium_blocks
   - soporte_dedicado
 limits: '{"hypotheses_active":-1,"experiments_monthly":10000,"copilot_sessions_daily":10000,"mentoring_sessions_monthly":50,"bmc_drafts":-1,"calculadora_uses":-1}'
