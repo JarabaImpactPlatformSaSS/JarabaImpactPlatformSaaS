@@ -2013,6 +2013,14 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.user_profile_section }
 
+  # Sprint C: Professional Services section in profile hub (Doc 181 Pilar 3).
+  ecosistema_jaraba_core.user_profile_section.professional_services:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\ProfessionalServicesSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
   ecosistema_jaraba_core.user_profile_section.administration:
     class: Drupal\ecosistema_jaraba_core\UserProfile\Section\AdministrationSection
     arguments:
