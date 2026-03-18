@@ -387,6 +387,80 @@ function jaraba_mentoring_update_10007(): string {
 
 
 /**
+ * Doc 181: Add stripe_product_id + vertical fields to mentoring_package.
+ * Amplify package_type + engagement status for professional services model.
+ */
+function jaraba_mentoring_update_10008(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $messages = [];
+
+  // 1. Install stripe_product_id on mentoring_package.
+  $entity_type_id = 'mentoring_package';
+  $field_name = 'stripe_product_id';
+  if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+    try {
+      $definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+        ->setName($field_name)
+        ->setTargetEntityTypeId($entity_type_id)
+        ->setLabel(t('Stripe Product ID'))
+        ->setSetting('max_length', 255)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE);
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+      $messages[] = "Installed stripe_product_id on $entity_type_id.";
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error stripe_product_id: " . $e->getMessage();
+    }
+  }
+  else {
+    $messages[] = "stripe_product_id already exists on $entity_type_id.";
+  }
+
+  // 2. Install vertical on mentoring_package.
+  $field_name = 'vertical';
+  if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+    try {
+      $definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+        ->setName($field_name)
+        ->setTargetEntityTypeId($entity_type_id)
+        ->setLabel(t('Vertical'))
+        ->setSetting('max_length', 64)
+        ->setDefaultValue('all')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE);
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+      $messages[] = "Installed vertical on $entity_type_id.";
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error vertical: " . $e->getMessage();
+    }
+  }
+  else {
+    $messages[] = "vertical already exists on $entity_type_id.";
+  }
+
+  // 3. Update entity type definitions (package_type + status changes).
+  try {
+    $update_manager->updateEntityType($update_manager->getEntityType('mentoring_package'));
+    $messages[] = 'Updated mentoring_package entity type.';
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Update mentoring_package type: ' . $e->getMessage();
+  }
+
+  try {
+    $update_manager->updateEntityType($update_manager->getEntityType('mentoring_engagement'));
+    $messages[] = 'Updated mentoring_engagement entity type.';
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Update mentoring_engagement type: ' . $e->getMessage();
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_mentoring_requirements(string $phase): array {

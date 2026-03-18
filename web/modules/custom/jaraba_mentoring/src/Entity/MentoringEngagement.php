@@ -169,11 +169,13 @@ class MentoringEngagement extends ContentEntityBase implements EntityOwnerInterf
             ->setRequired(TRUE)
             ->setSetting('allowed_values', [
                 'pending' => 'Pendiente de Pago',
+                'paid' => 'Pagado (pendiente activación)',
                 'active' => 'Activo',
                 'paused' => 'Pausado',
                 'completed' => 'Completado',
                 'expired' => 'Expirado',
                 'cancelled' => 'Cancelado',
+                'refunded' => 'Reembolsado',
             ])
             ->setDefaultValue('pending')
             ->setDisplayOptions('view', ['weight' => 15])

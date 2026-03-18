@@ -117,8 +117,11 @@ class MentoringPackage extends ContentEntityBase
             ->setSetting('allowed_values', [
                 'single_session' => 'Sesión Individual',
                 'session_pack' => 'Pack de Sesiones',
-                'monthly_subscription' => 'Suscripción Mensual',
-                'intensive_program' => 'Programa Intensivo',
+                'program' => 'Programa (Launch/Aceleración)',
+                'workshop' => 'Workshop Grupal',
+                'mastermind' => 'Mastermind Premium',
+                'bootcamp' => 'Bootcamp Intensivo',
+                'institutional' => 'Institucional',
             ])
             ->setDefaultValue('single_session')
             ->setDisplayOptions('view', ['weight' => 2])
@@ -222,6 +225,22 @@ class MentoringPackage extends ContentEntityBase
         $fields['total_sold'] = BaseFieldDefinition::create('integer')
             ->setLabel(t('Total Vendidos'))
             ->setDefaultValue(0)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // === Stripe (Doc 181: servicios profesionales one-time) ===
+        $fields['stripe_product_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Stripe Product ID'))
+            ->setDescription(t('ID del producto en Stripe para pagos one-time.'))
+            ->setSetting('max_length', 255)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['vertical'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Vertical'))
+            ->setDescription(t('Vertical asociado (o "all" para transversal).'))
+            ->setSetting('max_length', 64)
+            ->setDefaultValue('all')
+            ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
         // === Timestamps ===

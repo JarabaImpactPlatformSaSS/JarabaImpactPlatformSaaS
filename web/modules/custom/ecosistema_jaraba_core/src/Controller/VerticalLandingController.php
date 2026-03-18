@@ -307,8 +307,8 @@ class VerticalLandingController extends ControllerBase
       ],
       'features' => [
         ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'title' => $this->t('Motor de Reservas 24/7'), 'description' => $this->t('Tus clientes reservan online con confirmación automática y recordatorios por email. Detección de no-shows.')],
-        ['icon' => ['category' => 'ui', 'name' => 'video'], 'title' => $this->t('Videoconsulta Online'), 'description' => $this->t('Sesiones via Jitsi Meet generadas automáticamente al crear la reserva. Sin apps externas.')],
-        ['icon' => ['category' => 'business', 'name' => 'store'], 'title' => $this->t('Marketplace Profesional'), 'description' => $this->t('Perfil público con portfolio, certificaciones y reseñas. Tus clientes te encuentran y reservan.')],
+        ['icon' => ['category' => 'ui', 'name' => 'video'], 'title' => $this->t('Videoconsulta Online'), 'description' => $this->t('Sesiones via Google Meet o Zoom con enlace automático al crear la reserva. Sin apps externas.')],
+        ['icon' => ['category' => 'business', 'name' => 'store'], 'title' => $this->t('Tu Perfil Profesional'), 'description' => $this->t('Perfil público con portfolio, certificaciones y reseñas. Tus clientes te encuentran y reservan directamente.')],
         ['icon' => ['category' => 'business', 'name' => 'gift'], 'title' => $this->t('Paquetes y Bonos de Sesiones'), 'description' => $this->t('Ofrece bundles de sesiones con descuento. Fideliza clientes con bonos prepago.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Reseñas y Reputación Verificada'), 'description' => $this->t('Sistema de calificación post-servicio con moderación automática. Schema.org para Google.')],
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Cobro Automático via Stripe'), 'description' => $this->t('Pagos seguros con Stripe Connect. Comisión transparente del 10%. Tu dinero en 2-7 días.')],
@@ -524,14 +524,14 @@ class VerticalLandingController extends ControllerBase
       'steps' => [
         ['title' => $this->t('Diagnostica tu idea'), 'description' => $this->t('Calculadora de madurez digital + evaluación IA de viabilidad. Reporte PDF en 5 minutos con gaps y prioridades.')],
         ['title' => $this->t('Diseña y valida'), 'description' => $this->t('Business Model Canvas con IA + hipótesis + motor de experimentos A/B. Lean Startup sin teoría: datos reales.')],
-        ['title' => $this->t('Lanza y crece'), 'description' => $this->t('Mentoría 1:1 + financiación + credenciales digitales + puentes a Formación, Comercio y Servicios.')],
+        ['title' => $this->t('Lanza y crece'), 'description' => $this->t('Mastermind grupal + financiación + credenciales digitales + puentes a Formación, Comercio y Servicios.')],
       ],
       'features' => [
         // --- 6 features originales, mejoradas ---
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Calculadora de Madurez Digital'), 'description' => $this->t('Diagnóstico completo de tu nivel digital, operacional y financiero. Reporte PDF personalizado en menos de 5 minutos con plan de acción.')],
         ['icon' => ['category' => 'business', 'name' => 'canvas'], 'title' => $this->t('Business Model Canvas con IA'), 'description' => $this->t('Describe tu problema, solución y clientes, y la IA genera un canvas coherente. Iterativo: refina bloques hasta que el modelo sea sólido.')],
         ['icon' => ['category' => 'ai', 'name' => 'lightbulb'], 'title' => $this->t('Validación de MVP con Lean Startup'), 'description' => $this->t('Crea hipótesis, diseña experimentos baratos y obtén feedback real. Motor de experimentos A/B integrado con 10 eventos de conversión.')],
-        ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Mentoría 1:1 con Empresarios'), 'description' => $this->t('Sesiones individuales con empresarios experimentados. Matching inteligente según tu sector y fase. Seguimiento continuo de cada sesión.')],
+        ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Mastermind Grupal con Empresarios'), 'description' => $this->t('Sesiones grupales (máx. 8 personas) con empresarios experimentados. Networking, feedback cruzado y accountability mensual. Sesiones 1:1 disponibles como servicio profesional.')],
         ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Proyecciones Financieras'), 'description' => $this->t('Plantillas profesionales para tu plan de negocio: ingresos, gastos, punto de equilibrio, escenarios. La IA sugiere métricas del sector.')],
         ['icon' => ['category' => 'business', 'name' => 'achievement'], 'title' => $this->t('Acceso a Financiación'), 'description' => $this->t('Conexión directa con líneas ICO, ENISA, ángeles inversores y aceleradoras. Alertas automáticas cuando cumples criterios de elegibilidad.')],
         // --- 9 features NUEVAS (código real existente) ---
@@ -817,7 +817,7 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'title' => $this->t('Planes para empresas'),
-        'subtitle' => $this->t('Desde plan gratuito con búsqueda básica hasta Enterprise con API, white-label y soporte dedicado'),
+        'subtitle' => $this->t('Desde plan gratuito con búsqueda básica hasta Enterprise con API, dominio personalizado y soporte prioritario'),
         'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         'features_preview' => [
           $this->t('Búsqueda de talento desde Free'),
