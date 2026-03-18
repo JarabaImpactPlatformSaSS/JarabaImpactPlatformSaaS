@@ -1,9 +1,9 @@
 {#
 /**
  * @file
- * _usage-warning-banner.html.twig — Banner de advertencia de uso pre-limite.
+ * _usage-warning-banner.html.twig — Banner de advertencia de uso pre-límite.
  *
- * GP-05: Muestra aviso cuando el uso se acerca al limite del plan.
+ * GP-05: Muestra aviso cuando el uso se acerca al límite del plan.
  * Se renderiza en dashboards cuando FairUsePolicyService devuelve
  * nivel 'warn' (70-85%) o 'throttle' (85-95%).
  *
@@ -46,7 +46,7 @@
         {% if is_critical %}
           {% trans %}Tu uso esta al {{ usage_warning.usage_pct }}%. Algunas funciones pueden verse limitadas.{% endtrans %}
         {% else %}
-          {% trans %}Tu uso esta al {{ usage_warning.usage_pct }}% del limite de tu plan.{% endtrans %}
+          {% trans %}Tu uso esta al {{ usage_warning.usage_pct }}% del límite de tu plan.{% endtrans %}
         {% endif %}
       </p>
       {% if usage_warning.resource is defined %}
