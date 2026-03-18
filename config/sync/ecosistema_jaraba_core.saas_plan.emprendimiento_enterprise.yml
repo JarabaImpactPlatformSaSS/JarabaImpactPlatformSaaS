@@ -25,6 +25,6 @@ features:
   - personalizacion_marca
   - premium_blocks
   - soporte_dedicado
-limits: '{"hypotheses_active":-1,"experiments_monthly":10000,"copilot_sessions_daily":10000,"mentoring_sessions_monthly":50,"bmc_drafts":-1,"calculadora_uses":-1}'
+limits: '{"hypotheses_active":-1,"experiments_monthly":10000,"copilot_sessions_daily":10000,"mastermind_monthly": 1,"bmc_drafts":-1,"calculadora_uses":-1}'
 stripe_price_id: ''
 weight: 30

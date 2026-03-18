@@ -247,6 +247,9 @@ if [ "$MODE" = "full" ]; then
   run_check "ENV-PARITY-001" "Dev/Prod environment parity (PHP, DB, Redis, OPcache, SSL)" \
     php "$SCRIPT_DIR/validate-env-parity.php"
 
+  run_check "PRICING-COHERENCE-001" "Pricing vs delivery consistency (Doc 158 v3 rules)" \
+    php "$SCRIPT_DIR/validate-pricing-coherence.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
