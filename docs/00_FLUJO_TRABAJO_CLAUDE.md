@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-18
-**Version:** 98.0.0 (Freemium + Pagos Rápidos + PLG Configurables + aprendizaje #195)
+**Version:** 99.0.0 (ICV 2025 Gaps P0 + PlazoEnforcement + InsercionValidator + aprendizaje #196)
 
 ---
 ## 1. Inicio de Sesion

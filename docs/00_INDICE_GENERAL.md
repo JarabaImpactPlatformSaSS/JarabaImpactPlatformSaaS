@@ -4,7 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-18
-**Versión:** 174.0.0 (Freemium + Pagos Rápidos + PLG Configurables + aprendizaje #195)
+**Versión:** 175.0.0 (ICV 2025 Gaps P0 — Ficha Técnica + Plazos + Inserción SS + aprendizaje #196)
+
+> **📋 ICV 2025 GAPS P0 — FICHA TÉCNICA + PLAZOS + INSERCIÓN SS — v146 DIRECTRICES + v134 ARQUITECTURA + v175 INDICE + v99 FLUJO** (2026-03-18)
+>
+> Aprendizaje #196: Auditoría confrontación Pautas Gestión Técnica ICV 2025 (SAE, 22 págs) vs implementación Andalucía +ei: 93%→99%. GAP-1: FichaTecnicaEi entity (17 campos, ratio 1:60, validación SAE). GAP-2: PlazoEnforcementService (15d recibos, 10d hábiles VoBo con festivos Andalucía, 2m incentivo, 18m programa). GAP-3: InsercionValidatorService (4m ajena, 4m propia, 3m agrario NO combinable). Desglose fiscal 528€ IRPF 2% = 10,56€ neto 517,44€. PlazosVencidosAction daily action. 7 tests. ICV25-FICHA-001, ICV25-PLAZO-001, ICV25-INSERCION-001. Regla de oro #137: plazos PIIL en días hábiles, no naturales.
 
 > **📋 FREEMIUM + PAGOS RÁPIDOS + PLG — v145 DIRECTRICES + v133 ARQUITECTURA + v174 INDICE + v98 FLUJO** (2026-03-18)
 >
