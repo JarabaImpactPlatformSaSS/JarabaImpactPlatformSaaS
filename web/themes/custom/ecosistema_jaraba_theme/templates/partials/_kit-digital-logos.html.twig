@@ -13,12 +13,20 @@
  */
 #}
 {% if logos is not empty %}
-  <aside class="kit-digital-logos" aria-label="{% trans %}Financiado por{% endtrans %}">
+  <aside class="kit-digital-logos" aria-label="{% trans %}Programa financiado por{% endtrans %}">
     <div class="kit-digital-logos__container">
       <span class="kit-digital-logos__label">{% trans %}Programa financiado por:{% endtrans %}</span>
       <div class="kit-digital-logos__grid">
         {% for logo in logos %}
-          <img src="{{ logo.src }}" alt="{{ logo.alt }}" class="kit-digital-logos__img" loading="lazy" width="160" height="48">
+          <div class="kit-digital-logos__item">
+            <img src="{{ logo.src }}"
+                 alt="{{ logo.alt }}"
+                 class="kit-digital-logos__img"
+                 loading="lazy"
+                 width="220"
+                 height="60"
+                 decoding="async">
+          </div>
         {% endfor %}
       </div>
     </div>
