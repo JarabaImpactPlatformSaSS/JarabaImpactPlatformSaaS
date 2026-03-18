@@ -88,10 +88,31 @@ class MarketplaceController extends ControllerBase
             $producer = $this->entityTypeManager()->getStorage('producer_profile')->load($producerId);
         }
 
+        // WhatsApp Commerce: inyectar datos del botón "Pedir por WhatsApp".
+        $whatsappEnabled = FALSE;
+        $whatsappPhone = '';
+        $whatsappMessage = '';
+        try {
+            $config = \Drupal::config('jaraba_agroconecta_core.settings');
+            $whatsappPhone = $config->get('whatsapp_phone_number_id') ?? '';
+            if ($whatsappPhone !== '') {
+                $whatsappEnabled = TRUE;
+                $productName = $product_agro->label() ?? '';
+                $productPrice = $product_agro->get('price')->value ?? '0';
+                $whatsappMessage = "Hola, me interesa {$productName} ({$productPrice} EUR). ¿Está disponible?";
+            }
+        }
+        catch (\Throwable) {
+            // WhatsApp no configurado — botón no se muestra.
+        }
+
         return [
             '#theme' => 'agro_product_detail',
             '#product' => $product_agro,
             '#producer' => $producer,
+            '#whatsapp_enabled' => $whatsappEnabled,
+            '#whatsapp_phone' => $whatsappPhone,
+            '#whatsapp_message' => $whatsappMessage,
             '#attached' => [
                 'library' => ['jaraba_agroconecta_core/agroconecta.frontend'],
             ],

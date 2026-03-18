@@ -760,6 +760,54 @@
   }
 }
 
+// === SEPA Mandate Legal Text ===
+.ej-sepa-mandate {
+  margin: var(--ej-spacing-sm, 0.75rem) 0;
+}
+
+.ej-sepa-mandate__details {
+  border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
+  border-radius: var(--ej-radius-md, 8px);
+  overflow: hidden;
+}
+
+.ej-sepa-mandate__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 5%, transparent);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--ej-text-body, #475569);
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  svg {
+    color: var(--ej-color-corporate, #233D63);
+  }
+}
+
+.ej-sepa-mandate__content {
+  padding: 0.75rem 1rem;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #94a3b8);
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 0.5rem;
+  }
+}
+
+.ej-sepa-mandate__creditor {
+  font-weight: 600;
+  color: var(--ej-text-body, #475569);
+}
+
 // === Responsive: stack buttons on mobile ===
 @media (max-width: 480px) {
   .ej-payment__bizum-btn,

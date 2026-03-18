@@ -49,6 +49,9 @@ function jaraba_agroconecta_core_theme(): array
             'variables' => [
                 'product' => NULL,
                 'producer' => NULL,
+                'whatsapp_enabled' => FALSE,
+                'whatsapp_phone' => '',
+                'whatsapp_message' => '',
             ],
             'template' => 'agro-product-detail',
         ],

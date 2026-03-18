@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * _sepa-mandate.html.twig — Texto legal del mandato SEPA Direct Debit.
+ *
+ * Stripe requiere mostrar el texto de autorización de débito directo SEPA
+ * al usuario antes de procesar el cobro. Este parcial renderiza el texto
+ * legal traducido según la normativa europea PSD2.
+ *
+ * Variables:
+ * - sepa_enabled: boolean — Si SEPA está habilitado para este checkout.
+ * - creditor_name: string — Nombre del acreedor (normalmente la plataforma).
+ * - creditor_id: string — Identificador SEPA del acreedor (ES + NIF + sufijo).
+ *
+ * TWIG-INCLUDE-ONLY-001: Se incluye con keyword only.
+ * i18n: Textos con {% trans %}.
+ * CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*).
+ */
+#}
+
+{% if sepa_enabled|default(false) %}
+  <div class="ej-sepa-mandate" role="complementary" aria-label="{% trans %}Mandato de adeudo directo SEPA{% endtrans %}">
+    <details class="ej-sepa-mandate__details">
+      <summary class="ej-sepa-mandate__summary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        {% trans %}Mandato de adeudo directo SEPA{% endtrans %}
+      </summary>
+      <div class="ej-sepa-mandate__content">
+        <p>
+          {% trans %}Al proporcionar su IBAN y confirmar este pago, usted autoriza a {{ creditor_name|default('Jaraba Impact Platform') }} y a Stripe, nuestro proveedor de servicios de pago, a enviar instrucciones a su banco para debitar su cuenta de acuerdo con dichas instrucciones. Usted tiene derecho a un reembolso de su banco bajo los términos y condiciones de su acuerdo con su banco. El reembolso debe solicitarse dentro de las 8 semanas a partir de la fecha en que se debitó su cuenta.{% endtrans %}
+        </p>
+        {% if creditor_id|default('') %}
+          <p class="ej-sepa-mandate__creditor">
+            {% trans %}Identificador del acreedor{% endtrans %}: {{ creditor_id }}
+          </p>
+        {% endif %}
+      </div>
+    </details>
+  </div>
+{% endif %}

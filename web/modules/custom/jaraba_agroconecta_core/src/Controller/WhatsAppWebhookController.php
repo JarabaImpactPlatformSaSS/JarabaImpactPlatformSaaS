@@ -86,18 +86,36 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
         try {
             $result = $this->whatsappService->handleIncomingMessage($payload);
 
-            // WhatsApp Commerce: procesar intención de compra (Fase C pagos rápidos).
+            // WhatsApp Commerce: procesar intención de compra y pedidos estructurados.
             if ($this->orderService !== NULL && isset($payload['entry'][0]['changes'][0]['value']['messages'][0])) {
                 $msg = $payload['entry'][0]['changes'][0]['value']['messages'][0];
                 $senderPhone = $msg['from'] ?? '';
-                $messageText = $msg['text']['body'] ?? '';
-                if ($senderPhone !== '' && $messageText !== '') {
-                    try {
-                        $this->orderService->processIncomingMessage($senderPhone, $messageText, 0);
+                $msgType = $msg['type'] ?? 'text';
+
+                try {
+                    if ($msgType === 'order' && isset($msg['order']['product_items'])) {
+                        // Pedido estructurado desde catálogo nativo WhatsApp.
+                        $productItems = [];
+                        foreach ($msg['order']['product_items'] as $item) {
+                            $productItems[] = [
+                                'retailer_id' => $item['product_retailer_id'] ?? '',
+                                'quantity' => (int) ($item['quantity'] ?? 1),
+                                'item_price' => (float) ($item['item_price'] ?? 0),
+                                'currency' => $item['currency'] ?? 'EUR',
+                            ];
+                        }
+                        $this->orderService->processStructuredOrder($senderPhone, $productItems, 0);
                     }
-                    catch (\Throwable $orderError) {
-                        $this->logger->warning('WhatsApp order processing warning: @msg', ['@msg' => $orderError->getMessage()]);
+                    elseif ($msgType === 'text') {
+                        // Mensaje de texto libre: detectar intención de compra.
+                        $messageText = $msg['text']['body'] ?? '';
+                        if ($senderPhone !== '' && $messageText !== '') {
+                            $this->orderService->processIncomingMessage($senderPhone, $messageText, 0);
+                        }
                     }
+                }
+                catch (\Throwable $orderError) {
+                    $this->logger->warning('WhatsApp order processing warning: @msg', ['@msg' => $orderError->getMessage()]);
                 }
             }
 

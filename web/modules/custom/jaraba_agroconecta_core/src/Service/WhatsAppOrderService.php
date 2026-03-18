@@ -34,6 +34,88 @@ class WhatsAppOrderService {
   ) {}
 
   /**
+   * Procesa un pedido estructurado de WhatsApp (catálogo nativo).
+   *
+   * Meta envía mensajes tipo 'order' cuando el cliente usa el catálogo
+   * nativo de WhatsApp Business y pulsa "Enviar pedido". El payload
+   * incluye product_items[] con retailer_id, quantity y item_price.
+   *
+   * @param string $senderPhone
+   *   Teléfono del remitente (formato +34xxx).
+   * @param array<int, array{retailer_id: string, quantity: int, item_price: float, currency: string}> $productItems
+   *   Items del pedido del catálogo WhatsApp.
+   * @param int $tenantId
+   *   ID del tenant.
+   *
+   * @return array{is_purchase: bool, response_sent: bool, order_id: int|null}
+   *   Resultado del procesamiento.
+   */
+  public function processStructuredOrder(string $senderPhone, array $productItems, int $tenantId): array {
+    $result = ['is_purchase' => TRUE, 'response_sent' => FALSE, 'order_id' => NULL];
+
+    if ($productItems === []) {
+      return $result;
+    }
+
+    try {
+      // Resolver productos desde retailer_id (formato: agro_{entity_id}).
+      $products = [];
+      $total = 0.0;
+      foreach ($productItems as $item) {
+        $retailerId = $item['retailer_id'] ?? '';
+        $quantity = (int) ($item['quantity'] ?? 1);
+        $itemPrice = (float) ($item['item_price'] ?? 0);
+
+        // Extraer entity ID del retailer_id (agro_123 → 123).
+        $entityId = str_starts_with($retailerId, 'agro_')
+          ? (int) substr($retailerId, 5)
+          : 0;
+
+        if ($entityId > 0) {
+          $product = $this->entityTypeManager->getStorage('product_agro')->load($entityId);
+          if ($product !== NULL) {
+            $products[] = ['product' => $product, 'quantity' => $quantity];
+          }
+        }
+
+        $total += $itemPrice * $quantity;
+      }
+
+      if ($total <= 0 && $products !== []) {
+        foreach ($products as $item) {
+          $total += (float) ($item['product']->get('price')->value ?? 0) * $item['quantity'];
+        }
+      }
+
+      // Crear pedido.
+      $order = $this->createOrderFromTotal($total, $senderPhone, $tenantId, 'whatsapp_catalog');
+      if ($order !== NULL) {
+        $result['order_id'] = (int) $order->id();
+
+        // Enviar payment link por WhatsApp.
+        $paymentUrl = $this->generatePaymentLink($order);
+        if ($this->whatsAppApi !== NULL && $paymentUrl !== '') {
+          $formattedTotal = number_format($total, 2, ',', '.');
+          $itemCount = count($productItems);
+          $this->whatsAppApi->sendTextMessage(
+            $senderPhone,
+            "¡Pedido recibido! ({$itemCount} productos)\n\n" .
+            "Total: {$formattedTotal} EUR\n\n" .
+            "Paga de forma segura aquí:\n{$paymentUrl}\n\n" .
+            "El enlace es válido durante 24 horas."
+          );
+          $result['response_sent'] = TRUE;
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('WhatsApp structured order error: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $result;
+  }
+
+  /**
    * Procesa un mensaje entrante de WhatsApp para detectar intención de compra.
    *
    * @param string $senderPhone
@@ -171,6 +253,40 @@ class WhatsAppOrderService {
     }
     catch (\Throwable $e) {
       $this->logger->error('Error creating WhatsApp order: @msg', ['@msg' => $e->getMessage()]);
+      return NULL;
+    }
+  }
+
+  /**
+   * Crea un pedido a partir de un total calculado.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   El pedido creado o NULL.
+   */
+  protected function createOrderFromTotal(float $total, string $phone, int $tenantId, string $source = 'whatsapp'): ?object {
+    try {
+      $storage = $this->entityTypeManager->getStorage('order_agro');
+      $order = $storage->create([
+        'tenant_id' => $tenantId,
+        'status' => 'pending_payment',
+        'total' => $total,
+        'currency' => 'EUR',
+        'customer_phone' => $phone,
+        'source' => $source,
+      ]);
+      $order->save();
+
+      $this->logger->info('WhatsApp order @id created from @source for @phone (@total EUR).', [
+        '@id' => $order->id(),
+        '@source' => $source,
+        '@phone' => $phone,
+        '@total' => $total,
+      ]);
+
+      return $order;
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error creating order from total: @msg', ['@msg' => $e->getMessage()]);
       return NULL;
     }
   }

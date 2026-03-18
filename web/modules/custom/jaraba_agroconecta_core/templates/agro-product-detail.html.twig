@@ -65,6 +65,14 @@
         {{ product.description.value|safe_html }}
       </div>
     {% endif %}
+
+    {# === Botón "Pedir por WhatsApp" (pagos rápidos Fase C) === #}
+    {% include '@ecosistema_jaraba_theme/partials/_whatsapp-order-button.html.twig' with {
+      whatsapp_enabled: whatsapp_enabled|default(false),
+      whatsapp_phone: whatsapp_phone|default(''),
+      whatsapp_message: whatsapp_message|default(''),
+      product_name: product.name.value|default(''),
+    } only %}
   </div>
 
   {# === Info del productor === #}

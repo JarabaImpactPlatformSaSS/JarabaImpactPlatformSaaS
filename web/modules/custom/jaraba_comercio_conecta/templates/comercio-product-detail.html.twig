@@ -182,6 +182,14 @@
           </div>
         {% endif %}
 
+        {# === Botón "Pedir por WhatsApp" (pagos rápidos Fase C) === #}
+        {% include '@ecosistema_jaraba_theme/partials/_whatsapp-order-button.html.twig' with {
+          whatsapp_enabled: whatsapp_enabled|default(false),
+          whatsapp_phone: whatsapp_phone|default(''),
+          whatsapp_message: whatsapp_message|default(''),
+          product_name: product.get('title').value|default(''),
+        } only %}
+
         {# Información de IVA #}
         {% set tax_labels = {
           'general_21': 'IVA 21% incluido'|trans,
