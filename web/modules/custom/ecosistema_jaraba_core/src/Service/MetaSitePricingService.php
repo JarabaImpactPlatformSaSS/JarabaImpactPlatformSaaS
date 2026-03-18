@@ -341,7 +341,8 @@ class MetaSitePricingService
             'schema_org' => $this->t('Schema.org estructurado'),
             'premium_blocks' => $this->t('Bloques premium'),
             'api_access' => $this->t('Acceso a API'),
-            'white_label' => $this->t('Marca blanca'),
+            'personalizacion_marca' => $this->t('Personalización de colores y logo'),
+            'white_label' => $this->t('Dominio propio + marca blanca (servicio profesional)'),
             // Domain features.
             'trazabilidad_basica' => $this->t('Trazabilidad básica'),
             'trazabilidad_avanzada' => $this->t('Trazabilidad avanzada'),

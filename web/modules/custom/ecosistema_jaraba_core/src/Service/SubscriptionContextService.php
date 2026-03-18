@@ -39,8 +39,8 @@ class SubscriptionContextService {
     'soporte_telefono' => ['label' => 'Soporte por email', 'icon_cat' => 'ui', 'icon_name' => 'phone'],
     'analiticas_basicas' => ['label' => 'Analíticas básicas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-bar'],
     'analiticas_avanzadas' => ['label' => 'Analíticas avanzadas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-line'],
-    'dominio_personalizado' => ['label' => 'Dominio personalizado', 'icon_cat' => 'ui', 'icon_name' => 'globe'],
-    'marca_blanca' => ['label' => 'Marca blanca', 'icon_cat' => 'ui', 'icon_name' => 'palette'],
+    'dominio_personalizado' => ['label' => 'Dominio propio (add-on)', 'icon_cat' => 'ui', 'icon_name' => 'globe'],
+    'personalizacion_marca' => ['label' => 'Personalización de colores y logo', 'icon_cat' => 'ui', 'icon_name' => 'palette'],
     'api_access' => ['label' => 'Acceso API completo', 'icon_cat' => 'ui', 'icon_name' => 'code'],
     'webhooks' => ['label' => 'Webhooks', 'icon_cat' => 'ui', 'icon_name' => 'webhook'],
     'firma_digital' => ['label' => 'Firma digital', 'icon_cat' => 'business', 'icon_name' => 'signature'],
@@ -68,7 +68,7 @@ class SubscriptionContextService {
     'analytics' => ['label' => 'Panel de analíticas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-bar'],
     'ab_testing' => ['label' => 'Testing A/B avanzado', 'icon_cat' => 'analytics', 'icon_name' => 'split'],
     'premium_blocks' => ['label' => 'Bloques premium del Page Builder', 'icon_cat' => 'ui', 'icon_name' => 'layout'],
-    'white_label' => ['label' => 'Solución marca blanca', 'icon_cat' => 'ui', 'icon_name' => 'palette'],
+    'white_label' => ['label' => 'Dominio propio + marca blanca completa (servicio profesional)', 'icon_cat' => 'ui', 'icon_name' => 'globe'],
   ];
 
   /**
