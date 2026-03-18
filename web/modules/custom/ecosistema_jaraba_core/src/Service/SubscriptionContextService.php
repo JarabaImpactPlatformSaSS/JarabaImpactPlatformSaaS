@@ -35,8 +35,8 @@ class SubscriptionContextService {
     // Transversales.
     'soporte_email' => ['label' => 'Soporte por email', 'icon_cat' => 'ui', 'icon_name' => 'mail'],
     'soporte_chat' => ['label' => 'Soporte por chat en vivo', 'icon_cat' => 'ui', 'icon_name' => 'chat'],
-    'soporte_dedicado' => ['label' => 'Soporte dedicado', 'icon_cat' => 'ui', 'icon_name' => 'headset'],
-    'soporte_telefono' => ['label' => 'Soporte telefónico', 'icon_cat' => 'ui', 'icon_name' => 'phone'],
+    'soporte_dedicado' => ['label' => 'Email prioritario 24h', 'icon_cat' => 'ui', 'icon_name' => 'headset'],
+    'soporte_telefono' => ['label' => 'Soporte por email', 'icon_cat' => 'ui', 'icon_name' => 'phone'],
     'analiticas_basicas' => ['label' => 'Analíticas básicas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-bar'],
     'analiticas_avanzadas' => ['label' => 'Analíticas avanzadas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-line'],
     'dominio_personalizado' => ['label' => 'Dominio personalizado', 'icon_cat' => 'ui', 'icon_name' => 'globe'],

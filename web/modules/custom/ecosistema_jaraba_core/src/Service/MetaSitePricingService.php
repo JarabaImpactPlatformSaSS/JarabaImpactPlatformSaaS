@@ -392,7 +392,7 @@ class MetaSitePricingService
             'calculadora_madurez' => $this->t('Calculadora de madurez'),
             'bmc_ia' => $this->t('Business Model Canvas con IA'),
             'validacion_mvp' => $this->t('Validación MVP'),
-            'mentoring_1a1' => $this->t('Mentoría 1 a 1'),
+            'mastermind_grupal' => $this->t('Mastermind Grupal'),
             // Andalucia +ei features.
             'formacion_certificada' => $this->t('Formación certificada'),
             'expediente_digital' => $this->t('Expediente digital'),

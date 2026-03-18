@@ -143,10 +143,11 @@ class MentoringSession extends ContentEntityBase
         $fields['meeting_provider'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Proveedor de Videollamada'))
             ->setSetting('allowed_values', [
-                'jitsi' => 'Jitsi Meet',
+                'google_meet' => 'Google Meet',
                 'zoom' => 'Zoom',
+                'jitsi' => 'Jitsi Meet (legacy)',
             ])
-            ->setDefaultValue('jitsi')
+            ->setDefaultValue('google_meet')
             ->setDisplayConfigurable('view', TRUE);
 
         $fields['meeting_room_id'] = BaseFieldDefinition::create('string')
