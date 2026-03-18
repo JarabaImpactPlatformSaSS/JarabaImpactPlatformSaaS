@@ -250,6 +250,18 @@ if [ "$MODE" = "full" ]; then
   run_check "PRICING-COHERENCE-001" "Pricing vs delivery consistency (Doc 158 v3 rules)" \
     php "$SCRIPT_DIR/validate-pricing-coherence.php"
 
+  run_check "FEATURE-GATING-001" "Feature enforcement audit (limits vs controllers)" \
+    php "$SCRIPT_DIR/validate-feature-gating.php"
+
+  run_check "STRIPE-SYNC-001" "Stripe integration verification (Price IDs in config)" \
+    php "$SCRIPT_DIR/validate-stripe-sync.php"
+
+  run_check "LANDING-PLAN-COHERENCE-001" "Landing page vs plan coherence (Doc 158 v3)" \
+    php "$SCRIPT_DIR/validate-landing-vs-plans.php"
+
+  run_check "ADDON-IMPLEMENTATION-001" "Addon module implementation audit" \
+    php "$SCRIPT_DIR/validate-addon-implementation.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

@@ -660,7 +660,7 @@ class PageAttachmentsHooks
 
     // --- Emprendimiento ---
     if ($route === 'ecosistema_jaraba_core.landing.emprendimiento') {
-      $description = 'Plataforma de emprendimiento con IA: calculadora de madurez digital, Business Model Canvas con IA, validación de MVP con Lean Startup, mentoría 1:1, health score emprendedor, 15 insignias digitales, copilot proactivo, motor de experimentos A/B y acceso a financiación ICO/ENISA.';
+      $description = 'Plataforma de emprendimiento con IA: calculadora de madurez digital, Business Model Canvas con IA, validación de MVP con Lean Startup, Mastermind grupal, health score emprendedor, 15 insignias digitales, copilot proactivo, motor de experimentos A/B y acceso a financiación ICO/ENISA.';
 
       $attachments['#attached']['html_head'][] = [
         [
@@ -691,7 +691,7 @@ class PageAttachmentsHooks
           'Calculadora de Madurez Digital con reporte PDF',
           'Business Model Canvas con IA iterativo',
           'Validación de MVP con Lean Startup y experimentos A/B',
-          'Mentoría 1:1 con empresarios experimentados',
+          'Mastermind grupal con empresarios experimentados',
           'Proyecciones financieras con IA',
           'Acceso a financiación ICO, ENISA y aceleradoras',
           'Health Score Emprendedor (5 dimensiones, 0-100)',

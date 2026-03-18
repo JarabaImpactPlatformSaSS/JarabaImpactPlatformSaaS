@@ -825,7 +825,7 @@ class VerticalLandingController extends ControllerBase
           $this->t('Mini-ATS completo desde Starter'),
           $this->t('Asistente IA ilimitado en Profesional'),
           $this->t('API REST en Enterprise + dominio personalizado (add-on)'),
-          $this->t('Soporte dedicado en Enterprise'),
+          $this->t('Email prioritario 24h en Enterprise'),
         ],
       ],
       'faq' => [
