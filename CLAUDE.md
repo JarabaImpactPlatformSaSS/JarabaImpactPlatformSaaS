@@ -266,8 +266,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v130.0.0
 - INDICE: v171.0.0
 - FLUJO: v95.0.0
-- Ultimo aprendizaje: #192
-- Ultima golden rule: #133
+- Ultimo aprendizaje: #193
+- Ultima golden rule: #134
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
