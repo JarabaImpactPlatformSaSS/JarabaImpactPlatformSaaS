@@ -195,6 +195,8 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.plazo_enforcement'
+      - '@?jaraba_andalucia_ei.insercion_validator'
 
   # Calendario y temporalizacion del programa
   jaraba_andalucia_ei.calendario_programa:

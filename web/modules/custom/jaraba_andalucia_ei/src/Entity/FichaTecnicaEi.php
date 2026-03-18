@@ -26,7 +26,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_singular = @Translation("ficha técnica PIIL"),
  *   label_plural = @Translation("fichas técnicas PIIL"),
  *   handlers = {
- *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_andalucia_ei\ListBuilder\FichaTecnicaEiListBuilder",
  *     "form" = {
  *       "default" = "Drupal\jaraba_andalucia_ei\Form\FichaTecnicaEiForm",

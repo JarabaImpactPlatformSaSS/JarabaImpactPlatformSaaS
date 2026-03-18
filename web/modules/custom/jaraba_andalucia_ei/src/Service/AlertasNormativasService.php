@@ -32,6 +32,8 @@ class AlertasNormativasService {
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly ?PlazoEnforcementService $plazoService = NULL,
+    protected readonly ?InsercionValidatorService $insercionValidator = NULL,
   ) {}
 
   /**
