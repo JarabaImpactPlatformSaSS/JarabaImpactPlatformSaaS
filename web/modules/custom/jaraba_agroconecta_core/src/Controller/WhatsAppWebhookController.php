@@ -7,6 +7,7 @@ namespace Drupal\jaraba_agroconecta_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\jaraba_agroconecta_core\Service\WhatsAppApiService;
+use Drupal\jaraba_agroconecta_core\Service\WhatsAppOrderService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +28,7 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
     public function __construct(
         protected WhatsAppApiService $whatsappService,
         protected LoggerInterface $logger,
+        protected ?WhatsAppOrderService $orderService = NULL,
     ) {
     }
 
@@ -35,9 +37,15 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
      */
     public static function create(ContainerInterface $container): static
     {
+        $orderService = NULL;
+        if ($container->has('jaraba_agroconecta_core.whatsapp_order')) {
+            $orderService = $container->get('jaraba_agroconecta_core.whatsapp_order');
+        }
+
         return new static(
             $container->get('jaraba_agroconecta_core.whatsapp'),
             $container->get('logger.channel.default'),
+            $orderService,
         );
     }
 
@@ -77,9 +85,25 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
 
         try {
             $result = $this->whatsappService->handleIncomingMessage($payload);
+
+            // WhatsApp Commerce: procesar intención de compra (Fase C pagos rápidos).
+            if ($this->orderService !== NULL && isset($payload['entry'][0]['changes'][0]['value']['messages'][0])) {
+                $msg = $payload['entry'][0]['changes'][0]['value']['messages'][0];
+                $senderPhone = $msg['from'] ?? '';
+                $messageText = $msg['text']['body'] ?? '';
+                if ($senderPhone !== '' && $messageText !== '') {
+                    try {
+                        $this->orderService->processIncomingMessage($senderPhone, $messageText, 0);
+                    }
+                    catch (\Throwable $orderError) {
+                        $this->logger->warning('WhatsApp order processing warning: @msg', ['@msg' => $orderError->getMessage()]);
+                    }
+                }
+            }
+
             return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             $this->logger->error('WhatsApp webhook error: @error', ['@error' => $e->getMessage()]);
             return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
         }

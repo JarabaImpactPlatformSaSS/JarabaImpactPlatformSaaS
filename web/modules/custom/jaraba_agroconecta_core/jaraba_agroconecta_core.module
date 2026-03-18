@@ -377,6 +377,21 @@ function jaraba_agroconecta_core_cron(): void
         );
     }
 
+    // === Sincronización catálogo WhatsApp Commerce (cada 6h) ===
+    $lastWaSync = (int) $state->get('jaraba_agroconecta_core.whatsapp_catalog_last_sync', 0);
+    if (($time - $lastWaSync) > 21600 && \Drupal::hasService('jaraba_agroconecta_core.whatsapp_catalog_sync')) {
+        $state->set('jaraba_agroconecta_core.whatsapp_catalog_last_sync', $time);
+        try {
+            $catalogId = getenv('WHATSAPP_CATALOG_ID');
+            if ($catalogId) {
+                \Drupal::service('jaraba_agroconecta_core.whatsapp_catalog_sync')->syncProducts($catalogId, 0);
+            }
+        }
+        catch (\Throwable $e) {
+            \Drupal::logger('jaraba_agroconecta_core')->error('WhatsApp catalog sync cron error: @msg', ['@msg' => $e->getMessage()]);
+        }
+    }
+
     // === Detección de carritos abandonados (cada 1h) ===
     $lastCartCheck = (int) $state->get('jaraba_agroconecta_core.last_cart_recovery_check', 0);
 
@@ -1179,3 +1194,4 @@ function jaraba_agroconecta_core_preprocess_trace_event_agro(array &$variables):
   }
   $variables['trace_event_agro'] = $entity;
 }
+
