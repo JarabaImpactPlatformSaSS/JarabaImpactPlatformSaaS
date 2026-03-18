@@ -144,6 +144,13 @@
         <li class="header__menu-item">
           <a href="{{ lp }}/planes" class="header__menu-link">{% trans %}Precios{% endtrans %}</a>
         </li>
+        {% if ts.promo_banner_enabled|default(false) and ts.promo_banner_url|default('') %}
+        <li class="header__menu-item">
+          <a href="{{ lp }}{{ ts.promo_banner_url }}" class="header__menu-link header__menu-link--highlight">
+            {{ ts.promo_banner_cta|default('Kit Digital'|t) }}
+          </a>
+        </li>
+        {% endif %}
         <li class="header__menu-item">
           <a href="{{ lp }}/casos-de-exito" class="header__menu-link">{% trans %}Casos de Éxito{% endtrans %}</a>
         </li>

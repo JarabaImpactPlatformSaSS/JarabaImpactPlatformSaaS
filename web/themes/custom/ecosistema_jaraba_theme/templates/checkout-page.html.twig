@@ -108,6 +108,16 @@
           {% trans %}Soporte prioritario{% endtrans %}
         </div>
       </div>
+
+      {# Promo banner inline (datos inyectados desde controller via promo_*) #}
+      {% if promo_title|default('') and promo_url|default('') %}
+        <a href="{{ promo_url }}" class="checkout-summary__promo">
+          <span class="checkout-summary__promo-title">{{ promo_title }}</span>
+          {% if promo_cta|default('') %}
+            <span class="checkout-summary__promo-cta">{{ promo_cta }} →</span>
+          {% endif %}
+        </a>
+      {% endif %}
     </div>
   </aside>
 

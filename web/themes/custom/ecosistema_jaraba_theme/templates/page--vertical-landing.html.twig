@@ -52,6 +52,16 @@
     {# CONTENIDO DE LA PÁGINA (render del controlador) #}
     {{ clean_content }}
 
+    {# PROMO BANNER — Configurable desde Theme Settings #}
+    {% if theme_settings.promo_banner_enabled|default(false) %}
+      {% include '@ecosistema_jaraba_theme/partials/_promo-banner.html.twig' with {
+        promo_title: theme_settings.promo_banner_title|default(''),
+        promo_text: theme_settings.promo_banner_text|default(''),
+        promo_url: theme_settings.promo_banner_url|default(''),
+        promo_cta: theme_settings.promo_banner_cta|default(''),
+      } only %}
+    {% endif %}
+
   </main>
 
   {# FOOTER - Partial configurable desde UI #}

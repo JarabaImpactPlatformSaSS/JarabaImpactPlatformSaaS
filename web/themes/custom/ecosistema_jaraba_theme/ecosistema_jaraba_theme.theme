@@ -783,16 +783,32 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#title' => t('Activar Banner'),
     '#default_value' => $config->get('enable_promo_banner'),
   ];
+  $form['banner']['promo_banner_title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Título del banner'),
+    '#default_value' => $config->get('promo_banner_title'),
+    '#description' => t('Ej: ¿Tienes Bono Kit Digital?'),
+    '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
+  ];
   $form['banner']['promo_banner_text'] = [
     '#type' => 'textfield',
-    '#title' => t('Texto'),
+    '#title' => t('Texto descriptivo'),
     '#default_value' => $config->get('promo_banner_text'),
+    '#description' => t('Ej: Financia tu suscripción con el bono Kit Digital.'),
     '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
   ];
   $form['banner']['promo_banner_url'] = [
     '#type' => 'textfield',
-    '#title' => t('URL'),
+    '#title' => t('URL destino'),
     '#default_value' => $config->get('promo_banner_url'),
+    '#description' => t('Ruta interna (ej: /kit-digital) o URL externa.'),
+    '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
+  ];
+  $form['banner']['promo_banner_cta'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto del botón CTA'),
+    '#default_value' => $config->get('promo_banner_cta'),
+    '#description' => t('Ej: Ver paquetes Kit Digital'),
     '#states' => ['visible' => [':input[name="enable_promo_banner"]' => ['checked' => TRUE]]],
   ];
   $form['banner']['color_promo_bg'] = $fn_color('color_promo_bg', t('Fondo Banner'), '#FF8C42');
@@ -1125,6 +1141,12 @@ function _ecosistema_jaraba_theme_get_base_settings($config) {
     'footer_powered_text' => $config->get('footer_powered_text') ?: 'Jaraba Impact Platform',
     'footer_powered_url' => $config->get('footer_powered_url') ?: 'https://jaraba.io',
     'navigation_items' => $config->get('navigation_items'),
+    // Promo banner (configurable desde UI — NO-HARDCODE-PRICE-001).
+    'promo_banner_enabled' => (bool) $config->get('enable_promo_banner'),
+    'promo_banner_title' => $config->get('promo_banner_title') ?: '',
+    'promo_banner_text' => $config->get('promo_banner_text') ?: '',
+    'promo_banner_url' => $config->get('promo_banner_url') ?: '',
+    'promo_banner_cta' => $config->get('promo_banner_cta') ?: '',
   ];
 }
 

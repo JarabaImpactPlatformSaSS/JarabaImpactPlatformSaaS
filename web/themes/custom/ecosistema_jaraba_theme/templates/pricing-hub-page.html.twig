@@ -146,6 +146,16 @@
   </div>
 </section>
 
+{# === PROMO BANNER: Configurable desde Theme Settings (promo_banner_*) === #}
+{% if ts.promo_banner_enabled|default(false) %}
+  {% include '@ecosistema_jaraba_theme/partials/_promo-banner.html.twig' with {
+    promo_title: ts.promo_banner_title|default(''),
+    promo_text: ts.promo_banner_text|default(''),
+    promo_url: ts.promo_banner_url|default(''),
+    promo_cta: ts.promo_banner_cta|default(''),
+  } only %}
+{% endif %}
+
 {# === FAQ === #}
 {% if faq_items is not empty %}
   <section class="pricing-faq reveal-element reveal-fade-up" aria-labelledby="hub-faq-title">
