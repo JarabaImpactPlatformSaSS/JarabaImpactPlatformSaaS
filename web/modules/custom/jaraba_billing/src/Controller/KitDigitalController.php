@@ -316,22 +316,28 @@ class KitDigitalController extends ControllerBase {
     $themePath = '/' . \Drupal::service('extension.list.theme')
       ->getPath('ecosistema_jaraba_theme');
 
+    // KIT-DIGITAL-001: Logos oficiales descargados de fuentes institucionales.
+    // - kit-digital-logo.svg: SVG oficial de kitdigital.red.es
+    // - next-generation-eu.png: PNG oficial de ec.europa.eu (ES horizontal POS)
+    // - gobierno-espana.png: PNG oficial Ministerio de kitdigital.red.es
+    // - kit-digital-composite.png: PNG compuesto oficial de red.es (1398x200)
+    // - redes-logo.png: PNG oficial Red.es de kitdigital.red.es
     return [
       [
         'src' => $themePath . '/images/kit-digital-logo.svg',
-        'alt' => 'Kit Digital',
+        'alt' => 'Kit Digital — Programa de digitalización de PYMEs',
       ],
       [
-        'src' => $themePath . '/images/next-generation-eu.svg',
-        'alt' => 'NextGenerationEU',
+        'src' => $themePath . '/images/next-generation-eu.png',
+        'alt' => 'Financiado por la Unión Europea — NextGenerationEU',
       ],
       [
-        'src' => $themePath . '/images/plan-recuperacion.svg',
-        'alt' => 'Plan de Recuperación, Transformación y Resiliencia',
+        'src' => $themePath . '/images/gobierno-espana.png',
+        'alt' => 'Gobierno de España — Ministerio de Asuntos Económicos y Transformación Digital',
       ],
       [
-        'src' => $themePath . '/images/gobierno-espana.svg',
-        'alt' => 'Gobierno de España',
+        'src' => $themePath . '/images/redes-logo.png',
+        'alt' => 'Red.es — Entidad pública empresarial adscrita al Ministerio',
       ],
     ];
   }
