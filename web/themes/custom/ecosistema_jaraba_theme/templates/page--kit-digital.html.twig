@@ -1,0 +1,42 @@
+{#
+/**
+ * @file page--kit-digital.html.twig
+ * Zero-region page template para las landing pages Kit Digital.
+ *
+ * ZERO-REGION-001: Usa {{ clean_content }} en vez de {{ page.content }}.
+ * Body classes inyectadas via hook_preprocess_html():
+ *   page-kit-digital clean-layout full-width-layout
+ */
+#}
+{% set site_name = site_name|default('Plataforma de Ecosistemas Digitales') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global-styling') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--kit-digital">
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan|default(''),
+    logo: logo,
+    logged_in: logged_in|default(false),
+    theme_settings: theme_settings|default({})
+  } only %}
+
+  <main id="main-content" class="kit-digital-main" role="main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {{ clean_content }}
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright|default(''),
+    theme_settings: theme_settings|default({})
+  } only %}
+
+</div>

@@ -81,6 +81,27 @@ function jaraba_billing_cron(): void {
     // Table may not exist yet — safe to ignore.
   }
 
+  // 4. Kit Digital: transicionar acuerdos expirados a justification_pending.
+  if (\Drupal::hasService('jaraba_billing.kit_digital')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\KitDigitalService $kitDigital */
+      $kitDigital = \Drupal::service('jaraba_billing.kit_digital');
+      $transitioned = $kitDigital->processExpiredAgreements();
+      if ($transitioned > 0) {
+        \Drupal::logger('jaraba_billing')->info(
+          'Kit Digital cron: @count acuerdos expirados transicionados a justification_pending.',
+          ['@count' => $transitioned]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Kit Digital cron error: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+
   \Drupal::state()->set('jaraba_billing.cron_last_run', $now);
 }
 
@@ -281,6 +302,57 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
     $dunningBody .= "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>';
     $message['body'][] = \Drupal\Core\Render\Markup::create($dunningBody);
   }
+
+  // === KIT DIGITAL — Emails de ciclo de vida del acuerdo ===
+  if ($key === 'kit_digital_agreement_created') {
+    $message['subject'] = t('Acuerdo Kit Digital creado — @agreement', [
+      '@agreement' => $params['agreement_number'] ?? '',
+    ]);
+    $message['body'][] = \Drupal\Core\Render\Markup::create(
+      "<p $pStyle>" . t('Hola:') . '</p>'
+      . "<p $pStyle>" . t('Se ha creado el acuerdo Kit Digital @num para @beneficiary.', [
+        '@num' => $params['agreement_number'] ?? '',
+        '@beneficiary' => $params['beneficiary_name'] ?? '',
+      ]) . '</p>'
+      . "<p $pStyle>" . t('Paquete: @paquete | Segmento: @segmento | Bono: @bono EUR', [
+        '@paquete' => $params['paquete_label'] ?? '',
+        '@segmento' => $params['segmento'] ?? '',
+        '@bono' => $params['bono_amount'] ?? '0',
+      ]) . '</p>'
+      . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+    );
+  }
+
+  if ($key === 'kit_digital_justification_reminder') {
+    $message['subject'] = t('Recordatorio: justificación pendiente — @agreement', [
+      '@agreement' => $params['agreement_number'] ?? '',
+    ]);
+    $message['body'][] = \Drupal\Core\Render\Markup::create(
+      "<p $pStyle>" . t('Hola:') . '</p>'
+      . "<p $pStyle>" . t('El acuerdo Kit Digital @num con @beneficiary requiere justificación ante Red.es antes del @date.', [
+        '@num' => $params['agreement_number'] ?? '',
+        '@beneficiary' => $params['beneficiary_name'] ?? '',
+        '@date' => $params['justification_deadline'] ?? '',
+      ]) . '</p>'
+      . "<p $pStyle>" . t('Accede al panel de gestión para preparar la Memoria Técnica de Actuación.') . '</p>'
+      . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+    );
+  }
+
+  if ($key === 'kit_digital_bono_expiring') {
+    $message['subject'] = t('Bono Kit Digital próximo a expirar — @agreement', [
+      '@agreement' => $params['agreement_number'] ?? '',
+    ]);
+    $message['body'][] = \Drupal\Core\Render\Markup::create(
+      "<p $pStyle>" . t('Hola:') . '</p>'
+      . "<p $pStyle>" . t('El bono digital del acuerdo @num con @beneficiary expira el @date. Tras esa fecha, el tenant pasará a facturación regular vía Stripe.', [
+        '@num' => $params['agreement_number'] ?? '',
+        '@beneficiary' => $params['beneficiary_name'] ?? '',
+        '@date' => $params['end_date'] ?? '',
+      ]) . '</p>'
+      . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+    );
+  }
 }
 
 /**
@@ -329,5 +401,44 @@ function jaraba_billing_theme(): array {
       'template' => 'checkout-cancel',
       'path' => $themePath,
     ],
+    // KIT-DIGITAL: Landing pages.
+    'kit_digital_landing' => [
+      'variables' => [
+        'paquetes' => [],
+        'logos' => [],
+      ],
+      'template' => 'kit-digital-landing',
+      'path' => $themePath,
+    ],
+    'kit_digital_paquete' => [
+      'variables' => [
+        'paquete_data' => [],
+        'logos' => [],
+        'categorias' => [],
+      ],
+      'template' => 'kit-digital-paquete',
+      'path' => $themePath,
+    ],
+    'kit_digital_admin_dashboard' => [
+      'variables' => [
+        'snapshot' => [],
+      ],
+      'template' => 'kit-digital-admin-dashboard',
+      'path' => $themePath,
+    ],
   ];
+}
+
+/**
+ * Implements template_preprocess_kit_digital_agreement().
+ *
+ * ENTITY-PREPROCESS-001: Toda ContentEntity con view mode necesita preprocess.
+ */
+function template_preprocess_kit_digital_agreement(array &$variables): void {
+  if (isset($variables['kit_digital_agreement'])) {
+    $entity = $variables['kit_digital_agreement'];
+    $variables['agreement_number'] = $entity->get('agreement_number')->value ?? '';
+    $variables['beneficiary_name'] = $entity->get('beneficiary_name')->value ?? '';
+    $variables['status'] = $entity->get('status')->value ?? 'draft';
+  }
 }

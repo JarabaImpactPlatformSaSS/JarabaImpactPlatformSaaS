@@ -1,0 +1,150 @@
+{#
+/**
+ * @file kit-digital-paquete.html.twig
+ * Página individual de paquete Kit Digital.
+ *
+ * Variables:
+ *   - paquete_data: datos del paquete (label, target, funcionalidades, etc.)
+ *   - logos: logos obligatorios (KIT-DIGITAL-001)
+ *   - categorias: array de {code, label} con categorías Kit Digital
+ *
+ * Contenido obligatorio según Anexo II Red.es:
+ * 1. Nombre de la solución digital
+ * 2. Categorías Kit Digital que cubre
+ * 3. Segmentos de beneficiarios
+ * 4. Sectores de actividad compatibles
+ * 5. Descripción funcional
+ * 6. Requisitos técnicos
+ * 7. Precio regular y precio con bono
+ * 8. Duración del servicio (mínimo 12 meses)
+ * 9. Logos obligatorios
+ */
+#}
+{% set paq = paquete_data %}
+
+<div class="kit-digital-paquete kit-digital-paquete--{{ paq.key }}">
+
+  {# === 1. HERO + NOMBRE === #}
+  <section class="kit-digital-paquete__hero">
+    <div class="kit-digital-paquete__hero-container">
+      <a href="{{ path('jaraba_billing.kit_digital.landing') }}" class="kit-digital-paquete__back">
+        ← {% trans %}Volver a Kit Digital{% endtrans %}
+      </a>
+      <div class="kit-digital-paquete__hero-icon">
+        {{ jaraba_icon(paq.icon.category, paq.icon.name, {variant: 'duotone', color: 'white', size: '64px'}) }}
+      </div>
+      <h1 class="kit-digital-paquete__title">{{ paq.label }}</h1>
+      <p class="kit-digital-paquete__target">{{ paq.target }}</p>
+      <p class="kit-digital-paquete__description">{{ paq.description }}</p>
+    </div>
+  </section>
+
+  {# === 2. CATEGORÍAS KIT DIGITAL === #}
+  <section class="kit-digital-paquete__categorias" aria-label="{% trans %}Categorías Kit Digital{% endtrans %}">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Categorías Kit Digital cubiertas{% endtrans %}</h2>
+      <div class="kit-digital-paquete__cat-grid">
+        {% for cat in categorias %}
+          <div class="kit-digital-paquete__cat-card">
+            <span class="kit-digital-paquete__cat-code">{{ cat.code }}</span>
+            <span class="kit-digital-paquete__cat-label">{{ cat.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# === 3. SEGMENTOS === #}
+  <section class="kit-digital-paquete__segmentos" aria-label="{% trans %}Segmentos de beneficiarios{% endtrans %}">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Segmentos de beneficiarios{% endtrans %}</h2>
+      <div class="kit-digital-paquete__segmentos-grid">
+        {% for seg, amount in paq.bono_max %}
+          <div class="kit-digital-paquete__segmento-card">
+            <span class="kit-digital-paquete__seg-label">{% trans %}Segmento{% endtrans %} {{ seg }}</span>
+            <span class="kit-digital-paquete__seg-bono">{% trans %}Bono hasta{% endtrans %} {{ amount|number_format(0, ',', '.') }} €</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# === 4. SECTORES === #}
+  <section class="kit-digital-paquete__sectores">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Sectores de actividad compatibles{% endtrans %}</h2>
+      <p>{{ paq.sectores }}</p>
+    </div>
+  </section>
+
+  {# === 5. FUNCIONALIDADES === #}
+  <section class="kit-digital-paquete__funcionalidades" aria-label="{% trans %}Funcionalidades incluidas{% endtrans %}">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Funcionalidades incluidas{% endtrans %}</h2>
+      <ul class="kit-digital-paquete__features-list">
+        {% for func in paq.funcionalidades %}
+          <li>
+            {{ jaraba_icon('compliance', 'check-circle', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }}
+            <span>{{ func }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  {# === 6. REQUISITOS TÉCNICOS === #}
+  <section class="kit-digital-paquete__requisitos">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Requisitos técnicos mínimos{% endtrans %}</h2>
+      <ul class="kit-digital-paquete__req-list">
+        {% for req in paq.requisitos_minimos %}
+          <li>{{ req }}</li>
+        {% endfor %}
+      </ul>
+      <p class="kit-digital-paquete__tech-note">{% trans %}Navegador web actualizado (Chrome, Firefox, Safari, Edge). Acceso desde cualquier dispositivo (PC, tablet, móvil).{% endtrans %}</p>
+    </div>
+  </section>
+
+  {# === 7. PRECIO REGULAR VS BONO === #}
+  <section class="kit-digital-paquete__pricing" aria-label="{% trans %}Precios{% endtrans %}">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Precio del servicio{% endtrans %}</h2>
+      <div class="kit-digital-pricing">
+        <div class="kit-digital-pricing__regular">
+          <span class="kit-digital-pricing__label">{% trans %}Precio regular{% endtrans %}</span>
+          <span class="kit-digital-pricing__range">{{ paq.price_from }}–{{ paq.price_to }} {% trans %}EUR/mes{% endtrans %}</span>
+        </div>
+        <div class="kit-digital-pricing__bono">
+          <span class="kit-digital-pricing__bono-badge">{% trans %}Con bono Kit Digital{% endtrans %}</span>
+          <span class="kit-digital-pricing__bono-price">0 {% trans %}EUR/mes{% endtrans %}*</span>
+          <span class="kit-digital-pricing__bono-note">{% trans %}*El bono digital cubre el coste del servicio durante el período subvencionado.{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# === 8. DURACIÓN === #}
+  <section class="kit-digital-paquete__duracion">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}Duración del servicio{% endtrans %}</h2>
+      <p>{% trans %}Mínimo 12 meses de servicio, conforme a los requisitos del programa Kit Digital.{% endtrans %}</p>
+    </div>
+  </section>
+
+  {# === CTA === #}
+  <section class="kit-digital-paquete__cta">
+    <div class="kit-digital-paquete__section-container">
+      <h2>{% trans %}¿Listo para digitalizar tu negocio?{% endtrans %}</h2>
+      <p>{% trans %}Contacta con nosotros para iniciar el proceso de adhesión al Kit Digital.{% endtrans %}</p>
+      <a href="{{ path('user.register') }}" class="kit-digital-paquete__cta-btn">
+        {% trans %}Solicitar Kit Digital{% endtrans %}
+      </a>
+    </div>
+  </section>
+
+  {# === 9. LOGOS OBLIGATORIOS === #}
+  {% include '@ecosistema_jaraba_theme/partials/_kit-digital-logos.html.twig' with {
+    logos: logos
+  } only %}
+
+</div>

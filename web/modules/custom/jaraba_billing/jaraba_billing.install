@@ -300,6 +300,40 @@ function jaraba_billing_update_10005(): string {
 }
 
 /**
+ * Install KitDigitalAgreement entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Nueva entity DEBE tener hook_update_N().
+ * UPDATE-HOOK-CATCH-001: \Throwable (no \Exception) para PHP 8.4.
+ */
+function jaraba_billing_update_10006(): string {
+  $messages = [];
+
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if (!$updateManager->getEntityType('kit_digital_agreement')) {
+      $entityType = $entityTypeManager->getDefinition('kit_digital_agreement', FALSE);
+      if ($entityType) {
+        $updateManager->installEntityType($entityType);
+        $messages[] = 'KitDigitalAgreement entity type installed.';
+      }
+      else {
+        $messages[] = 'Warning: kit_digital_agreement entity type definition not found — module code may not be deployed.';
+      }
+    }
+    else {
+      $messages[] = 'kit_digital_agreement entity type already installed.';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error installing kit_digital_agreement: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_billing_requirements(string $phase): array {

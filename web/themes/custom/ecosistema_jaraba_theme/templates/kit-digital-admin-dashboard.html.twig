@@ -1,0 +1,109 @@
+{#
+/**
+ * @file kit-digital-admin-dashboard.html.twig
+ * Dashboard de administración Kit Digital.
+ *
+ * Variables:
+ *   - snapshot: {kpis, recent_agreements, distribution_by_paquete}
+ */
+#}
+{% set kpis = snapshot.kpis|default({}) %}
+{% set recent = snapshot.recent_agreements|default([]) %}
+{% set distribution = snapshot.distribution_by_paquete|default([]) %}
+
+<div class="kit-digital-admin">
+
+  {# === KPIs === #}
+  <div class="kit-digital-admin__kpis">
+    <div class="kit-digital-admin__kpi">
+      <span class="kit-digital-admin__kpi-value">{{ kpis.total_agreements|default(0) }}</span>
+      <span class="kit-digital-admin__kpi-label">{% trans %}Acuerdos totales{% endtrans %}</span>
+    </div>
+    <div class="kit-digital-admin__kpi">
+      <span class="kit-digital-admin__kpi-value">{{ kpis.active_agreements|default(0) }}</span>
+      <span class="kit-digital-admin__kpi-label">{% trans %}Activos{% endtrans %}</span>
+    </div>
+    <div class="kit-digital-admin__kpi kit-digital-admin__kpi--warning">
+      <span class="kit-digital-admin__kpi-value">{{ kpis.pending_justification|default(0) }}</span>
+      <span class="kit-digital-admin__kpi-label">{% trans %}Pendientes justificación{% endtrans %}</span>
+    </div>
+    <div class="kit-digital-admin__kpi">
+      <span class="kit-digital-admin__kpi-value">{{ kpis.bono_total_eur|default(0)|number_format(0, ',', '.') }} €</span>
+      <span class="kit-digital-admin__kpi-label">{% trans %}Bono total{% endtrans %}</span>
+    </div>
+    <div class="kit-digital-admin__kpi kit-digital-admin__kpi--alert">
+      <span class="kit-digital-admin__kpi-value">{{ kpis.expiring_soon|default(0) }}</span>
+      <span class="kit-digital-admin__kpi-label">{% trans %}Expiran pronto{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# === DISTRIBUCIÓN POR PAQUETE === #}
+  {% if distribution is not empty %}
+    <section class="kit-digital-admin__distribution">
+      <h2>{% trans %}Distribución por paquete{% endtrans %}</h2>
+      <div class="kit-digital-admin__dist-grid">
+        {% for item in distribution %}
+          <div class="kit-digital-admin__dist-card">
+            <span class="kit-digital-admin__dist-name">{{ item.paquete }}</span>
+            <span class="kit-digital-admin__dist-count">{{ item.count }} {% trans %}acuerdos{% endtrans %}</span>
+            <span class="kit-digital-admin__dist-bono">{{ item.bono_sum|number_format(0, ',', '.') }} €</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# === ACUERDOS RECIENTES === #}
+  {% if recent is not empty %}
+    <section class="kit-digital-admin__recent">
+      <h2>{% trans %}Acuerdos recientes{% endtrans %}</h2>
+      <div class="table-responsive">
+        <table class="kit-digital-admin__table">
+          <thead>
+            <tr>
+              <th>{% trans %}Nº Acuerdo{% endtrans %}</th>
+              <th>{% trans %}Beneficiario{% endtrans %}</th>
+              <th>{% trans %}Paquete{% endtrans %}</th>
+              <th>{% trans %}Segmento{% endtrans %}</th>
+              <th>{% trans %}Bono{% endtrans %}</th>
+              <th>{% trans %}Estado{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agreement in recent %}
+              <tr>
+                <td>
+                  <a href="{{ path('entity.kit_digital_agreement.canonical', {'kit_digital_agreement': agreement.id}) }}">
+                    {{ agreement.agreement_number }}
+                  </a>
+                </td>
+                <td>{{ agreement.beneficiary_name }}</td>
+                <td>{{ agreement.paquete }}</td>
+                <td>{{ agreement.segmento }}</td>
+                <td>{{ agreement.bono_amount|default(0)|number_format(2, ',', '.') }} €</td>
+                <td>
+                  <span class="kit-digital-admin__status kit-digital-admin__status--{{ agreement.status }}">
+                    {{ agreement.status_label }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+
+  {# === ACCIONES RÁPIDAS === #}
+  <section class="kit-digital-admin__actions">
+    <a href="{{ path('entity.kit_digital_agreement.add_form') }}" class="kit-digital-admin__action-btn">
+      {{ jaraba_icon('ui', 'plus', {variant: 'duotone', color: 'white', size: '18px'}) }}
+      {% trans %}Nuevo acuerdo{% endtrans %}
+    </a>
+    <a href="{{ path('entity.kit_digital_agreement.collection') }}" class="kit-digital-admin__action-btn kit-digital-admin__action-btn--secondary">
+      {{ jaraba_icon('compliance', 'list', {variant: 'duotone', color: 'azul-corporativo', size: '18px'}) }}
+      {% trans %}Ver todos los acuerdos{% endtrans %}
+    </a>
+  </section>
+
+</div>

@@ -34,3 +34,12 @@ view billing dunning:
 manage subscriptions:
   title: 'Gestionar suscripciones'
   description: 'Crear, cambiar y cancelar suscripciones del tenant.'
+
+administer kit digital:
+  title: 'Administrar acuerdos Kit Digital'
+  description: 'Crear, editar y gestionar acuerdos Kit Digital y seguimiento de bonos.'
+  restrict access: true
+
+view kit digital agreements:
+  title: 'Ver acuerdos Kit Digital'
+  description: 'Ver detalles y estado de acuerdos Kit Digital.'

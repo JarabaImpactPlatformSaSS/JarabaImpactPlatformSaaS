@@ -1,0 +1,26 @@
+{#
+/**
+ * @file _kit-digital-logos.html.twig
+ * Parcial: logos obligatorios Kit Digital.
+ *
+ * KIT-DIGITAL-001: Toda página /kit-digital/* DEBE incluir estos logos.
+ * Fuente: Anexo II del Anuncio de Adhesión Red.es.
+ *
+ * Variables:
+ *   - logos: array de {src, alt}
+ *
+ * TWIG-INCLUDE-ONLY-001: Siempre incluir con keyword 'only'.
+ */
+#}
+{% if logos is not empty %}
+  <aside class="kit-digital-logos" aria-label="{% trans %}Financiado por{% endtrans %}">
+    <div class="kit-digital-logos__container">
+      <span class="kit-digital-logos__label">{% trans %}Programa financiado por:{% endtrans %}</span>
+      <div class="kit-digital-logos__grid">
+        {% for logo in logos %}
+          <img src="{{ logo.src }}" alt="{{ logo.alt }}" class="kit-digital-logos__img" loading="lazy" width="160" height="48">
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+{% endif %}

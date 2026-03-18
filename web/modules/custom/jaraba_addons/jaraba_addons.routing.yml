@@ -33,7 +33,7 @@ jaraba_addons.catalog:
     _controller: '\Drupal\jaraba_addons\Controller\AddonCatalogController::catalog'
     _title: 'Add-ons Disponibles'
   requirements:
-    _permission: 'view addon catalog'
+    _access: 'TRUE'
 
 jaraba_addons.catalog.detail:
   path: '/addons/{addon_id}'
@@ -41,7 +41,7 @@ jaraba_addons.catalog.detail:
     _controller: '\Drupal\jaraba_addons\Controller\AddonCatalogController::detail'
     _title: 'Detalle Add-on'
   requirements:
-    _permission: 'view addon catalog'
+    _access: 'TRUE'
     addon_id: '\d+'
 
 # --- Rutas API REST ---

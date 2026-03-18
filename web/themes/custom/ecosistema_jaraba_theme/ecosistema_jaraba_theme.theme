@@ -1169,6 +1169,14 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     return;
   }
 
+  // KIT DIGITAL — Landing pages zero-region.
+  if (str_starts_with($route_name, 'jaraba_billing.kit_digital.')) {
+    $variables['attributes']['class'][] = 'page-kit-digital';
+    $variables['attributes']['class'][] = 'clean-layout';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    return;
+  }
+
   // Body classes - Header Layout
   $header_layout = $config->get('header_layout') ?: 'classic';
   $variables['attributes']['class'][] = 'header-layout-' . $header_layout;
@@ -4319,6 +4327,13 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   ];
   if (in_array($route, $checkout_routes)) {
     $suggestions[] = 'page__checkout';
+  }
+
+  // =========================================================================
+  // KIT DIGITAL — Landing pages
+  // =========================================================================
+  if (str_starts_with($route, 'jaraba_billing.kit_digital.')) {
+    $suggestions[] = 'page__kit_digital';
   }
 
   // =========================================================================

@@ -2,9 +2,9 @@ addons-catalog:
   version: 1.x
   css:
     theme:
-      css/addons-catalog.css: { weight: 10 }
+      css/addons-catalog.css: {}
   js:
-    js/addon-catalog.js: { weight: 10 }
+    js/addon-catalog.js: {}
   dependencies:
     - core/drupal
     - core/once
@@ -13,9 +13,9 @@ addons-detail:
   version: 1.x
   css:
     theme:
-      css/addons-detail.css: { weight: 10 }
+      css/addons-detail.css: {}
   js:
-    js/addon-detail.js: { weight: 10 }
+    js/addon-detail.js: {}
   dependencies:
     - core/drupal
     - core/once

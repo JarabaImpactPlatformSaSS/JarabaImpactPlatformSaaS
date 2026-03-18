@@ -1,0 +1,97 @@
+{#
+/**
+ * @file kit-digital-landing.html.twig
+ * Landing principal Kit Digital — lista de 5 paquetes de digitalización.
+ *
+ * Variables:
+ *   - paquetes: array de datos de los 5 paquetes
+ *   - logos: array de logos obligatorios (KIT-DIGITAL-001)
+ *
+ * ZERO-REGION-001: Renderizado dentro de {{ clean_content }}.
+ * NO-HARDCODE-PRICE-001: Precios desde MetaSitePricingService.
+ */
+#}
+
+<div class="kit-digital-landing">
+
+  {# === HERO === #}
+  <section class="kit-digital-hero">
+    <div class="kit-digital-hero__container">
+      <span class="kit-digital-hero__badge">{% trans %}Programa Kit Digital{% endtrans %}</span>
+      <h1 class="kit-digital-hero__title">{% trans %}Digitaliza tu negocio con ayuda del Kit Digital{% endtrans %}</h1>
+      <p class="kit-digital-hero__subtitle">{% trans %}PED S.L. es Agente Digitalizador adherido al programa Kit Digital. Te ayudamos a aprovechar el bono digital para transformar tu negocio.{% endtrans %}</p>
+    </div>
+  </section>
+
+  {# === PAQUETES GRID === #}
+  <section class="kit-digital-paquetes" aria-label="{% trans %}Paquetes Kit Digital{% endtrans %}">
+    <div class="kit-digital-paquetes__container">
+      <h2 class="kit-digital-paquetes__title">{% trans %}Nuestras soluciones de digitalización{% endtrans %}</h2>
+      <p class="kit-digital-paquetes__subtitle">{% trans %}Elige el paquete que mejor se adapte a tu negocio. Todos incluyen 12 meses de servicio.{% endtrans %}</p>
+
+      <div class="kit-digital-paquetes__grid">
+        {% for key, paq in paquetes %}
+          <a href="{{ paq.url }}" class="kit-digital-paquete-card" aria-label="{{ paq.label }}">
+            <div class="kit-digital-paquete-card__icon">
+              {{ jaraba_icon(paq.icon.category, paq.icon.name, {variant: 'duotone', color: 'azul-corporativo', size: '48px'}) }}
+            </div>
+            <h3 class="kit-digital-paquete-card__title">{{ paq.label }}</h3>
+            <p class="kit-digital-paquete-card__target">{{ paq.target }}</p>
+            <p class="kit-digital-paquete-card__description">{{ paq.description }}</p>
+
+            <div class="kit-digital-paquete-card__categorias">
+              {% for cat in paq.categorias %}
+                <span class="kit-digital-paquete-card__cat-badge">{{ cat }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="kit-digital-paquete-card__pricing">
+              <span class="kit-digital-paquete-card__price-from">{% trans %}Desde{% endtrans %} {{ paq.price_from }} {% trans %}EUR/mes{% endtrans %}</span>
+              <span class="kit-digital-paquete-card__bono">{% trans %}Bono hasta{% endtrans %} {{ paq.bono_max.I|number_format(0, ',', '.') }} €</span>
+            </div>
+
+            <span class="kit-digital-paquete-card__cta">
+              {% trans %}Ver paquete{% endtrans %}
+              <span aria-hidden="true">→</span>
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# === CÓMO FUNCIONA === #}
+  <section class="kit-digital-steps">
+    <div class="kit-digital-steps__container">
+      <h2>{% trans %}¿Cómo funciona el Kit Digital?{% endtrans %}</h2>
+      <div class="kit-digital-steps__grid">
+        <div class="kit-digital-steps__step">
+          <span class="kit-digital-steps__number">1</span>
+          <h3>{% trans %}Solicita tu bono{% endtrans %}</h3>
+          <p>{% trans %}Regístrate en Acelera Pyme y solicita el bono digital según tu segmento de empresa.{% endtrans %}</p>
+        </div>
+        <div class="kit-digital-steps__step">
+          <span class="kit-digital-steps__number">2</span>
+          <h3>{% trans %}Elige tu paquete{% endtrans %}</h3>
+          <p>{% trans %}Selecciona la solución de digitalización que mejor se adapte a tu negocio.{% endtrans %}</p>
+        </div>
+        <div class="kit-digital-steps__step">
+          <span class="kit-digital-steps__number">3</span>
+          <h3>{% trans %}Firmamos el acuerdo{% endtrans %}</h3>
+          <p>{% trans %}Firmamos el Acuerdo de Prestación de Soluciones de Digitalización.{% endtrans %}</p>
+        </div>
+        <div class="kit-digital-steps__step">
+          <span class="kit-digital-steps__number">4</span>
+          <h3>{% trans %}¡Digitalízate!{% endtrans %}</h3>
+          <p>{% trans %}Activamos tu plataforma y te acompañamos durante los 12 meses de servicio.{% endtrans %}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# === LOGOS OBLIGATORIOS (KIT-DIGITAL-001) === #}
+  {% include '@ecosistema_jaraba_theme/partials/_kit-digital-logos.html.twig' with {
+    logos: logos
+  } only %}
+
+</div>

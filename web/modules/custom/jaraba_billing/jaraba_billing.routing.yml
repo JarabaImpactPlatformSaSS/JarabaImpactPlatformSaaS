@@ -400,3 +400,52 @@ jaraba_billing.bizum.initiate:
   methods: [POST]
   options:
     _csrf_request_header_token: 'TRUE'
+
+# =============================================================================
+# KIT DIGITAL — Acuerdos de Prestación de Soluciones de Digitalización
+# =============================================================================
+
+# Field UI settings (FIELD-UI-SETTINGS-TAB-001)
+jaraba_billing.kit_digital_agreement.settings:
+  path: '/admin/config/billing/kit-digital-agreement'
+  defaults:
+    _form: '\Drupal\jaraba_billing\Form\KitDigitalAgreementSettingsForm'
+    _title: 'Kit Digital Agreement settings'
+  requirements:
+    _permission: 'administer kit digital'
+
+# Landing pública Kit Digital
+jaraba_billing.kit_digital.landing:
+  path: '/kit-digital'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\KitDigitalController::landing'
+    _title: 'Kit Digital - Soluciones de Digitalización'
+  requirements:
+    _access: 'TRUE'
+
+# Página de paquete individual
+jaraba_billing.kit_digital.paquete:
+  path: '/kit-digital/{paquete}'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\KitDigitalController::paquete'
+  requirements:
+    _access: 'TRUE'
+    paquete: 'comercio-digital|productor-digital|profesional-digital|despacho-digital|emprendedor-digital'
+
+# Admin Dashboard Kit Digital
+jaraba_billing.kit_digital.admin:
+  path: '/admin/content/kit-digital'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\KitDigitalAdminController::dashboard'
+    _title: 'Kit Digital - Gestión de Acuerdos'
+  requirements:
+    _permission: 'administer kit digital'
+
+# API snapshot Kit Digital
+jaraba_billing.kit_digital.admin.api_snapshot:
+  path: '/api/v1/kit-digital/snapshot'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\KitDigitalAdminController::apiSnapshot'
+  requirements:
+    _permission: 'administer kit digital'
+  methods: [GET]
