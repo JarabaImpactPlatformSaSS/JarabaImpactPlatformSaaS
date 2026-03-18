@@ -52,8 +52,11 @@ foreach ($plan_files as $file) {
   }
   else {
     $plans_missing_stripe++;
-    $errors[] = sprintf(
-      '%s (%.0f EUR/mes): NO Stripe Price ID — checkout will show "not configured"',
+    // NOTE: Stripe Price IDs are stored in DB (via StripeProductSyncService),
+    // NOT in config/sync YAML. Missing ID in YAML is expected — the DB is
+    // the source of truth for Stripe IDs. This is a WARNING, not an error.
+    $warnings[] = sprintf(
+      '%s (%.0f EUR/mes): no Stripe Price ID in config/sync (check DB)',
       str_replace('ecosistema_jaraba_core.saas_plan.', '', $basename),
       $price
     );
