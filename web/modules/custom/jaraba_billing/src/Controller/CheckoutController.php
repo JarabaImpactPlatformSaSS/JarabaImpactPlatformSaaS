@@ -114,6 +114,7 @@ class CheckoutController extends ControllerBase {
         'is_yearly' => $cycle === 'yearly',
       ],
       '#stripe_ready' => $stripeReady,
+      '#bizum_enabled' => (string) getenv('REDSYS_SECRET_KEY') !== '',
       '#is_admin' => $isAdmin,
       '#admin_edit_url' => $adminEditUrl,
       '#contact_email' => $this->config('system.site')->get('mail') ?: 'contacto@plataformadeecosistemas.es',
@@ -121,6 +122,11 @@ class CheckoutController extends ControllerBase {
         'max-age' => 0,
       ],
     ];
+
+    // Adjuntar Bizum JS cuando Redsys esta configurado.
+    if ((string) getenv('REDSYS_SECRET_KEY') !== '') {
+      $build['#attached']['library'][] = 'ecosistema_jaraba_theme/bizum-checkout';
+    }
 
     // Solo adjuntar Stripe JS cuando la pasarela esta lista.
     if ($stripeReady) {

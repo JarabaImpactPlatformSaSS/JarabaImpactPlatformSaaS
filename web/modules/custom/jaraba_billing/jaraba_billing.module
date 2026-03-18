@@ -382,6 +382,7 @@ function jaraba_billing_theme(): array {
       'variables' => [
         'plan' => [],
         'stripe_ready' => FALSE,
+        'bizum_enabled' => FALSE,
         'is_admin' => FALSE,
         'admin_edit_url' => '',
         'contact_email' => '',

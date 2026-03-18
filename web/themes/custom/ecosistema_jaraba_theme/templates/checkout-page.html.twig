@@ -133,6 +133,33 @@
         <div id="stripe-checkout-mount" class="checkout-mount"></div>
       </div>
 
+      {# ============================================================
+         BIZUM via Redsys (alternativa a Stripe para mercado español)
+         Solo visible si Redsys está configurado.
+         ============================================================ #}
+      {% if bizum_enabled and plan.price > 0 %}
+        <div class="ej-payment__bizum">
+          <div class="ej-payment__divider">
+            <span>{% trans %}o paga con{% endtrans %}</span>
+          </div>
+          <button type="button"
+                  class="ej-payment__bizum-btn"
+                  data-bizum-trigger
+                  data-bizum-amount="{{ plan.price }}"
+                  data-bizum-order-ref="plan-{{ plan.id }}-{{ 'now'|date('U') }}"
+                  data-bizum-endpoint="{{ path('jaraba_billing.bizum.initiate') }}"
+                  aria-label="{% trans %}Pagar con Bizum{% endtrans %}">
+            <svg class="ej-payment__bizum-logo" width="60" height="20" viewBox="0 0 60 20" aria-hidden="true">
+              <text x="0" y="15" fill="currentColor" font-family="sans-serif" font-weight="700" font-size="16">Bizum</text>
+            </svg>
+            {% trans %}Pagar con Bizum{% endtrans %}
+          </button>
+          <p class="ej-payment__bizum-note">
+            {% trans %}Pago instantáneo desde tu app bancaria{% endtrans %}
+          </p>
+        </div>
+      {% endif %}
+
     {% else %}
       {# ============================================================
          MODO PREVIEW: Stripe no configurado

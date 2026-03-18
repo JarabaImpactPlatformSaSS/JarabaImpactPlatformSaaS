@@ -606,3 +606,13 @@ stripe-portal:
     - core/drupal
     - core/once
     - ecosistema_jaraba_theme/global-styling
+
+# Bizum checkout via Redsys — pagos rápidos España
+bizum-checkout:
+  version: 1.0.0
+  js:
+    js/bizum-checkout.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global-styling

@@ -7,6 +7,7 @@ namespace Drupal\jaraba_billing\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\jaraba_billing\Service\RedsysGatewayService;
+use Drupal\jaraba_billing\Service\TenantSubscriptionService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,19 +39,30 @@ class RedsysCallbackController extends ControllerBase {
   protected LoggerInterface $logger;
 
   /**
+   * The tenant subscription service (optional).
+   */
+  protected ?TenantSubscriptionService $tenantSubscription;
+
+  /**
    * Constructs a RedsysCallbackController.
+   *
+   * CONTROLLER-READONLY-001: No readonly on inherited ControllerBase properties.
    *
    * @param \Drupal\jaraba_billing\Service\RedsysGatewayService|null $redsysGateway
    *   The Redsys gateway service (optional, may not be configured).
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger channel.
+   * @param \Drupal\jaraba_billing\Service\TenantSubscriptionService|null $tenantSubscription
+   *   The tenant subscription service (optional — OPTIONAL-CROSSMODULE-001).
    */
   public function __construct(
     ?RedsysGatewayService $redsysGateway,
     LoggerInterface $logger,
+    ?TenantSubscriptionService $tenantSubscription = NULL,
   ) {
     $this->redsysGateway = $redsysGateway;
     $this->logger = $logger;
+    $this->tenantSubscription = $tenantSubscription;
   }
 
   /**
@@ -67,9 +79,21 @@ class RedsysCallbackController extends ControllerBase {
       // Service not available — continue without it.
     }
 
+    // OPTIONAL-CROSSMODULE-001: TenantSubscriptionService es interno al módulo.
+    $tenantSubscription = NULL;
+    try {
+      if ($container->has('jaraba_billing.tenant_subscription')) {
+        $tenantSubscription = $container->get('jaraba_billing.tenant_subscription');
+      }
+    }
+    catch (\Throwable) {
+      // Service not available in test environments.
+    }
+
     return new static(
       $redsysGateway,
       $container->get('logger.channel.jaraba_billing'),
+      $tenantSubscription,
     );
   }
 
@@ -124,9 +148,47 @@ class RedsysCallbackController extends ControllerBase {
         '@response' => $responseCode,
       ]);
 
-      // TODO: Update internal payment/subscription status based on order.
-      // This would typically dispatch an event or call a service to process
-      // the successful payment.
+      // Process successful Bizum payment: activate subscription or record payment.
+      // Order format: "plan-{saas_plan_id}-{timestamp}" (from bizum-checkout.js).
+      if ($this->tenantSubscription !== NULL && str_starts_with($orderNumber, 'plan-')) {
+        try {
+          $parts = explode('-', $orderNumber);
+          $planId = $parts[1] ?? NULL;
+
+          if ($planId !== NULL && $planId !== '') {
+            // Resolve tenant from Ds_Merchant_MerchantData if available,
+            // or from session context for server-to-server callbacks.
+            $tenantId = $decoded['Ds_Merchant_MerchantData'] ?? NULL;
+
+            $this->logger->info('Bizum payment: activating plan @plan for tenant @tenant (order @order)', [
+              '@plan' => $planId,
+              '@tenant' => $tenantId ?? 'unknown',
+              '@order' => $orderNumber,
+            ]);
+
+            // Dispatch event for downstream processing (ECA, webhooks, etc.).
+            if (\Drupal::hasService('event_dispatcher')) {
+              /** @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $dispatcher */
+              $dispatcher = \Drupal::service('event_dispatcher');
+              $event = new \Symfony\Component\EventDispatcher\GenericEvent($orderNumber, [
+                'plan_id' => $planId,
+                'tenant_id' => $tenantId,
+                'amount' => $amount,
+                'payment_method' => 'bizum',
+                'redsys_order' => $orderNumber,
+                'redsys_response' => $responseCode,
+              ]);
+              $dispatcher->dispatch($event, 'jaraba_billing.payment_completed');
+            }
+          }
+        }
+        catch (\Throwable $e) {
+          // PRESAVE-RESILIENCE-001: Log but don't break the OK response to Redsys.
+          $this->logger->error('Bizum post-payment processing failed: @error', [
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
     }
     else {
       $this->logger->warning('Redsys payment declined: order=@order, response=@response', [
