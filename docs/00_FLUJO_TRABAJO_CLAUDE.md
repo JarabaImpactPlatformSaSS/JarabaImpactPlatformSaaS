@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-18
-**Version:** 96.0.0 (Pagos Rápidos 100% Cobertura + aprendizaje #193)
+**Version:** 97.0.0 (Kit Digital Agente Digitalizador + 7 reglas KIT-DIGITAL + aprendizaje #194)
 
 ---
 ## 1. Inicio de Sesion
