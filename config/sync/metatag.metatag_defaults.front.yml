@@ -7,5 +7,7 @@ _core:
 id: front
 label: 'Página de Inicio'
 tags:
+  title: 'Impulsa tu ecosistema digital | [site:name]'
+  description: 'Plataforma SaaS que conecta talento, negocios y emprendedores con inteligencia artificial. Empleabilidad, emprendimiento, comercio y servicios profesionales en un solo ecosistema.'
   canonical_url: '[site:url]'
   shortlink: '[site:url]'
