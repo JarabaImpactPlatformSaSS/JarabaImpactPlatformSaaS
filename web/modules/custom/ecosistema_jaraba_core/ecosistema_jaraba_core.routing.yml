@@ -322,6 +322,54 @@ ecosistema_jaraba_core.webhook.custom:
   methods: [POST]
 
 # ---------------------------------------------------------------------------
+# API REST: SUSCRIPCION DEL TENANT (Doc 158 §5.4)
+# ---------------------------------------------------------------------------
+
+# GET: Obtener suscripcion actual con add-ons y billing
+ecosistema_jaraba_core.api.subscription:
+  path: '/api/v1/subscription'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SubscriptionApiController::getCurrentSubscription'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _csrf_request_header_token: 'TRUE'
+    no_cache: TRUE
+
+# GET: Listar add-ons disponibles filtrados por vertical del tenant
+ecosistema_jaraba_core.api.subscription.addons_available:
+  path: '/api/v1/subscription/addons/available'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SubscriptionApiController::getAvailableAddons'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _csrf_request_header_token: 'TRUE'
+    no_cache: TRUE
+
+# POST: Upgrade de plan (devuelve checkout URL)
+ecosistema_jaraba_core.api.subscription.upgrade:
+  path: '/api/v1/subscription/upgrade'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SubscriptionApiController::upgradeSubscription'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+  options:
+    _csrf_request_header_token: 'TRUE'
+
+# GET: Preview de proxima factura
+ecosistema_jaraba_core.api.subscription.invoice_upcoming:
+  path: '/api/v1/subscription/invoice/upcoming'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\SubscriptionApiController::getUpcomingInvoice'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _csrf_request_header_token: 'TRUE'
+    no_cache: TRUE
+
+# ---------------------------------------------------------------------------
 # API PÚBLICA - PLANES Y PRECIOS
 # ---------------------------------------------------------------------------
 

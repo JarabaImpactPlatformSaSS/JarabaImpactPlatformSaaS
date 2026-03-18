@@ -133,6 +133,66 @@
     </div>
   {% endif %}
 
+  {# === ADD-ONS ACTIVOS === #}
+  {% if ctx.addons is defined and ctx.addons.active is not empty %}
+    <div class="subscription-card__addons">
+      <h3 class="subscription-card__addons-title">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+          <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+        </svg>
+        {% trans %}Add-ons activos{% endtrans %}
+      </h3>
+      <div class="subscription-card__addons-list">
+        {% for addon in ctx.addons.active %}
+          <div class="subscription-card__addon-item">
+            {{ jaraba_icon(addon.icon_cat, addon.icon_name, { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+            <span class="subscription-card__addon-name">{{ addon.label }}</span>
+            <span class="subscription-card__addon-price">{{ addon.price|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# === ADD-ONS RECOMENDADOS === #}
+  {% if ctx.addons is defined and ctx.addons.recommended is not empty %}
+    <div class="subscription-card__recommended">
+      <h3 class="subscription-card__recommended-title">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        </svg>
+        {% trans %}Recomendado para ti{% endtrans %}
+      </h3>
+      <div class="subscription-card__recommended-list">
+        {% for addon in ctx.addons.recommended %}
+          <a href="{{ path('jaraba_addons.catalog.detail', {'addon_id': addon.addon_id}) }}"
+             class="subscription-card__recommended-item">
+            {{ jaraba_icon(addon.icon_cat, addon.icon_name, { variant: 'duotone', color: 'naranja-impulso', size: '16px' }) }}
+            <span class="subscription-card__recommended-name">{{ addon.label }}</span>
+            <span class="subscription-card__recommended-price">{{ addon.price|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+            <span class="subscription-card__recommended-badge">{% trans %}+ Añadir{% endtrans %}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# === RESUMEN DE FACTURACION === #}
+  {% if ctx.billing is defined and ctx.billing.total_monthly > 0 %}
+    <div class="subscription-card__billing">
+      <div class="subscription-card__billing-row">
+        <span>{% trans %}Total mensual{% endtrans %}</span>
+        <span class="subscription-card__billing-total">{{ ctx.billing.total_monthly|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+      </div>
+      {% if ctx.billing.next_invoice_date %}
+        <div class="subscription-card__billing-row subscription-card__billing-row--secondary">
+          <span>{% trans %}Próxima factura{% endtrans %}</span>
+          <span>{{ ctx.billing.next_invoice_date }}</span>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
   {# === CTA UPGRADE === #}
   {% if ctx.upgrade.available %}
     <div class="subscription-card__upgrade">
@@ -143,6 +203,14 @@
             <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
           </svg>
           {% trans %}Mejorar a {{ ctx.upgrade.next_tier_label }}{% endtrans %}
+        </a>
+      {% endif %}
+      {% if ctx.addons is defined %}
+        <a href="{{ path('jaraba_addons.catalog') }}" class="subscription-card__addons-link">
+          {% trans %}Explorar Add-ons{% endtrans %}
+          <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
         </a>
       {% endif %}
       {% if ctx.upgrade.pricing_url %}

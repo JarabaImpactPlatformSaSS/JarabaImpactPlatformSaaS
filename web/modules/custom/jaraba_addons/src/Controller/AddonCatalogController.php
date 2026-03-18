@@ -66,6 +66,13 @@ class AddonCatalogController extends ControllerBase {
   protected RequestStack $requestStack;
 
   /**
+   * Servicio de compatibilidad de add-ons (opcional).
+   *
+   * @var object|null
+   */
+  protected $compatibilityService;
+
+  /**
    * Constructor del controlador de catálogo.
    *
    * @param \Drupal\jaraba_addons\Service\AddonCatalogService $catalog_service
@@ -76,17 +83,21 @@ class AddonCatalogController extends ControllerBase {
    *   Servicio de contexto de tenant (opcional, puede ser NULL).
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Pila de peticiones HTTP.
+   * @param object|null $compatibility_service
+   *   Servicio de compatibilidad de add-ons (opcional).
    */
   public function __construct(
     AddonCatalogService $catalog_service,
     AddonSubscriptionService $subscription_service,
     $tenant_context,
     RequestStack $request_stack,
+    $compatibility_service = NULL,
   ) {
     $this->catalogService = $catalog_service;
     $this->subscriptionService = $subscription_service;
     $this->tenantContext = $tenant_context;
     $this->requestStack = $request_stack;
+    $this->compatibilityService = $compatibility_service;
   }
 
   /**
@@ -101,11 +112,19 @@ class AddonCatalogController extends ControllerBase {
       // Servicio de tenant no disponible; se opera sin contexto de tenant.
     }
 
+    try {
+      $compatibility_service = $container->get('jaraba_addons.addon_compatibility');
+    }
+    catch (\Throwable) {
+      $compatibility_service = NULL;
+    }
+
     return new static(
       $container->get('jaraba_addons.catalog'),
       $container->get('jaraba_addons.subscription'),
       $tenant_context,
       $container->get('request_stack'),
+      $compatibility_service,
     );
   }
 
@@ -138,11 +157,12 @@ class AddonCatalogController extends ControllerBase {
       'api_calls' => $this->t('API Calls'),
       'support' => $this->t('Support'),
       'custom' => $this->t('Custom'),
+      'bundle' => $this->t('Bundle'),
     ];
 
     // Cargar add-ons: filtrados por tipo o todos.
     try {
-      if ($active_type && isset($addon_types[$active_type])) {
+      if ($active_type !== '' && isset($addon_types[$active_type])) {
         $addons = $this->catalogService->getAddonsByType($active_type);
       }
       else {
@@ -159,7 +179,7 @@ class AddonCatalogController extends ControllerBase {
     $subscribed_addon_ids = [];
     try {
       $tenant_id = $this->getCurrentTenantId();
-      if ($tenant_id) {
+      if ($tenant_id !== NULL) {
         $subscriptions = $this->subscriptionService->getTenantSubscriptions($tenant_id);
         foreach ($subscriptions as $subscription) {
           $addon_ref_id = $subscription->get('addon_id')->target_id;
@@ -179,22 +199,59 @@ class AddonCatalogController extends ControllerBase {
       // Sin contexto de tenant, se muestra catálogo sin estado de suscripción.
     }
 
+    // Resolver vertical del tenant actual para compatibilidad.
+    $tenant_vertical = '';
+    try {
+      $tenant_id = $this->getCurrentTenantId();
+      if ($tenant_id !== NULL && $this->tenantContext !== NULL) {
+        $tenant = $this->tenantContext->getCurrentTenant();
+        if ($tenant !== NULL && $tenant->hasField('vertical') && $tenant->get('vertical')->entity !== NULL) {
+          $tenant_vertical = $tenant->get('vertical')->entity->get('machine_name')->value ?? '';
+        }
+      }
+    }
+    catch (\Throwable) {
+      // Sin vertical de tenant.
+    }
+
     // Preparar datos de add-ons para la plantilla.
     $addons_data = [];
     foreach ($addons as $addon) {
       $addon_id = (int) $addon->id();
+      $machine_name = $addon->get('machine_name')->value ?? '';
+      $addon_type = $addon->get('addon_type')->value ?? 'custom';
+
+      // Resolver nivel de recomendación vía AddonCompatibilityService.
+      $recommendation_level = 'available';
+      if ($this->compatibilityService !== NULL && $tenant_vertical !== '' && $addon_type !== 'vertical' && $addon_type !== 'bundle') {
+        try {
+          $recommendation_level = $this->compatibilityService->getRecommendationLevel($machine_name, $tenant_vertical);
+        }
+        catch (\Throwable) {
+          // Fallback: disponible.
+        }
+      }
+
       $addons_data[] = [
         'id' => $addon_id,
         'label' => $addon->label(),
         'description' => $addon->get('description')->value ?? '',
-        'addon_type' => $addon->get('addon_type')->value ?? 'custom',
-        'addon_type_label' => $addon_types[$addon->get('addon_type')->value] ?? $this->t('Custom'),
+        'addon_type' => $addon_type,
+        'addon_type_label' => $addon_types[$addon_type] ?? $this->t('Custom'),
         'price_monthly' => (float) ($addon->get('price_monthly')->value ?? 0),
         'price_yearly' => (float) ($addon->get('price_yearly')->value ?? 0),
         'is_subscribed' => in_array($addon_id, $subscribed_addon_ids),
         'vertical_ref' => $addon->get('vertical_ref')->value ?? '',
+        'recommendation_level' => $recommendation_level,
+        'machine_name' => $machine_name,
       ];
     }
+
+    // Ordenar: recomendados primero, luego disponibles, luego no aplicables.
+    usort($addons_data, static function (array $a, array $b): int {
+      $order = ['recommended' => 0, 'available' => 1, 'not_applicable' => 2];
+      return ($order[$a['recommendation_level']] ?? 1) <=> ($order[$b['recommendation_level']] ?? 1);
+    });
 
     return [
       '#theme' => 'jaraba_addons_catalog',
@@ -266,7 +323,7 @@ class AddonCatalogController extends ControllerBase {
     $is_subscribed = FALSE;
     try {
       $tenant_id = $this->getCurrentTenantId();
-      if ($tenant_id) {
+      if ($tenant_id !== NULL) {
         $is_subscribed = $this->subscriptionService->isAddonActive($addon_id, $tenant_id);
       }
     }
@@ -282,6 +339,7 @@ class AddonCatalogController extends ControllerBase {
       'api_calls' => $this->t('API Calls'),
       'support' => $this->t('Support'),
       'custom' => $this->t('Custom'),
+      'bundle' => $this->t('Bundle'),
     ];
 
     // Datos del add-on para la plantilla.
@@ -293,7 +351,34 @@ class AddonCatalogController extends ControllerBase {
       'addon_type_label' => $addon_types[$addon->get('addon_type')->value] ?? $this->t('Custom'),
       'machine_name' => $addon->get('machine_name')->value ?? '',
       'vertical_ref' => $addon->get('vertical_ref')->value ?? '',
+      'recommendation_level' => '',
+      'compatibility_warning' => FALSE,
     ];
+
+    // Resolver compatibilidad con vertical del tenant.
+    $compatibility_warning = FALSE;
+    $recommendation_level = 'available';
+    try {
+      $tenant_id_detail = $this->getCurrentTenantId();
+      if ($tenant_id_detail !== NULL && $this->tenantContext !== NULL && $this->compatibilityService !== NULL) {
+        $tenant_detail = $this->tenantContext->getCurrentTenant();
+        if ($tenant_detail !== NULL && $tenant_detail->hasField('vertical') && $tenant_detail->get('vertical')->entity !== NULL) {
+          $detail_vertical = $tenant_detail->get('vertical')->entity->get('machine_name')->value ?? '';
+          if ($detail_vertical !== '') {
+            $recommendation_level = $this->compatibilityService->getRecommendationLevel(
+              $addon->get('machine_name')->value ?? '',
+              $detail_vertical
+            );
+            $compatibility_warning = ($recommendation_level === 'not_applicable');
+          }
+        }
+      }
+    }
+    catch (\Throwable) {
+      // Silenciar.
+    }
+    $addon_data['recommendation_level'] = $recommendation_level;
+    $addon_data['compatibility_warning'] = $compatibility_warning;
 
     return [
       '#theme' => 'jaraba_addons_detail',
@@ -303,6 +388,8 @@ class AddonCatalogController extends ControllerBase {
       '#price_monthly' => $price_monthly,
       '#price_yearly' => $price_yearly,
       '#is_subscribed' => $is_subscribed,
+      '#recommendation_level' => $recommendation_level,
+      '#compatibility_warning' => $compatibility_warning,
       '#attached' => [
         'library' => [
           'jaraba_addons/addons-detail',
@@ -335,13 +422,13 @@ class AddonCatalogController extends ControllerBase {
    *   ID del tenant actual o NULL si no hay contexto de tenant.
    */
   protected function getCurrentTenantId(): ?int {
-    if (!$this->tenantContext) {
+    if ($this->tenantContext === NULL) {
       return NULL;
     }
 
     try {
       $tenant = $this->tenantContext->getCurrentTenant();
-      return $tenant ? (int) $tenant->id() : NULL;
+      return $tenant !== NULL ? (int) $tenant->id() : NULL;
     }
     catch (\Exception $e) {
       return NULL;

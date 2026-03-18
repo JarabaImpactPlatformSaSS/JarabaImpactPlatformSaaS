@@ -1,8 +1,8 @@
 langcode: es
 status: true
 name: 'ComercioConecta Enterprise'
-price_monthly: '149.00'
-price_yearly: '1490.00'
+price_monthly: '199.00'
+price_yearly: '1990.00'
 features:
   - catalog
   - flash_offers

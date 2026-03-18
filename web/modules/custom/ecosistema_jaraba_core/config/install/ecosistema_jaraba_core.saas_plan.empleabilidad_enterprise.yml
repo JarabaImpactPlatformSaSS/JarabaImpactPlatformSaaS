@@ -1,11 +1,8 @@
-# Plan SaaS Empleabilidad Enterprise - Para empresas y reclutadores
-# Se importa al instalar el modulo
-
 langcode: es
 status: true
 name: 'Empleabilidad Enterprise'
-price_monthly: '199.00'
-price_yearly: '1990.00'
+price_monthly: '149.00'
+price_yearly: '1490.00'
 features:
   - diagnostico_competencias
   - cv_builder_ia
@@ -28,6 +25,6 @@ features:
   - white_label
   - premium_blocks
   - soporte_dedicado
-limits: '{"diagnostics": -1, "cv_builder": -1, "job_applications_per_day": -1, "copilot_messages_per_day": -1, "job_alerts": -1, "offers_visible_per_day": -1}'
+limits: '{"diagnostics":10000,"cv_builder":10000,"job_applications_per_day":10000,"copilot_messages_per_day":10000,"job_alerts":10000,"offers_visible_per_day":10000}'
 stripe_price_id: ''
 weight: 30

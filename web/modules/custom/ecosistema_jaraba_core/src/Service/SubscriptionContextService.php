@@ -95,6 +95,8 @@ class SubscriptionContextService {
     protected ?TenantContextService $tenantContext,
     protected ?TenantBridgeService $tenantBridge,
     protected ?PlanResolverService $planResolver,
+    protected ?object $addonSubscriptionService = NULL,
+    protected ?object $addonCompatibilityService = NULL,
   ) {}
 
   /**
@@ -122,13 +124,13 @@ class SubscriptionContextService {
   protected function doResolve(int $uid): array {
     // 1. Resolver tenant del usuario.
     $tenant = $this->resolveTenant($uid);
-    if (!$tenant) {
+    if ($tenant === NULL) {
       return [];
     }
 
     // 2. Cargar plan de suscripción.
     $planRef = $tenant->get('subscription_plan')->entity ?? NULL;
-    if (!$planRef) {
+    if ($planRef === NULL) {
       return $this->buildFreePlanContext($tenant);
     }
 
@@ -143,7 +145,7 @@ class SubscriptionContextService {
     $currentFeatures = [];
     if ($this->planResolver) {
       $featuresEntity = $this->planResolver->getFeatures($verticalKey, $tier);
-      if ($featuresEntity) {
+      if ($featuresEntity !== NULL) {
         $currentFeatures = $featuresEntity->getFeatures();
       }
     }
@@ -164,6 +166,17 @@ class SubscriptionContextService {
     if ($trialEnds && $subscriptionStatus === 'trial') {
       $trialDaysRemaining = max(0, (int) ceil(((int) $trialEnds - time()) / 86400));
     }
+
+    // 9. Resolver add-ons activos del tenant.
+    $activeAddons = $this->resolveActiveAddons($tenant);
+    $activeAddonMachineNames = array_column($activeAddons, 'machine_name');
+
+    // 10. Resolver add-ons recomendados no suscritos.
+    $recommendedAddons = $this->resolveRecommendedAddons($verticalKey, $activeAddonMachineNames);
+
+    // 11. Resolver resumen de facturación.
+    $planPrice = (float) $planRef->getPriceMonthly();
+    $billing = $this->resolveBillingSummary($tenant, $activeAddons, $planPrice);
 
     return [
       'plan' => [
@@ -188,6 +201,11 @@ class SubscriptionContextService {
       ],
       'usage' => $usage,
       'upgrade' => $upgrade,
+      'addons' => [
+        'active' => $activeAddons,
+        'recommended' => $recommendedAddons,
+      ],
+      'billing' => $billing,
     ];
   }
 
@@ -228,7 +246,7 @@ class SubscriptionContextService {
    * Resuelve features bloqueados (disponibles en tiers superiores).
    */
   protected function resolveLockedFeatures(string $vertical, string $currentTier, array $currentFeatures): array {
-    if (!$this->planResolver) {
+    if ($this->planResolver === NULL) {
       return [];
     }
 
@@ -242,7 +260,7 @@ class SubscriptionContextService {
     for ($i = $currentIndex + 1; $i < count(self::TIER_HIERARCHY); $i++) {
       $nextTier = self::TIER_HIERARCHY[$i];
       $nextFeatures = $this->planResolver->getFeatures($vertical, $nextTier);
-      if (!$nextFeatures) {
+      if ($nextFeatures === NULL) {
         continue;
       }
 
@@ -252,7 +270,7 @@ class SubscriptionContextService {
           $featureInfo = self::FEATURE_LABELS[$feature] ?? NULL;
           $locked[$feature] = [
             'key' => $feature,
-            'label' => $featureInfo ? $this->t($featureInfo['label']) : ucfirst(str_replace('_', ' ', $feature)),
+            'label' => $featureInfo !== NULL ? $this->t($featureInfo['label']) : ucfirst(str_replace('_', ' ', $feature)),
             'icon_cat' => $featureInfo['icon_cat'] ?? 'ui',
             'icon_name' => $featureInfo['icon_name'] ?? 'lock',
             'available_in' => $this->getTierLabel($nextTier),
@@ -268,13 +286,13 @@ class SubscriptionContextService {
   /**
    * Resuelve uso actual vs límites del plan.
    */
-  protected function resolveUsage($tenant, string $vertical, string $tier): array {
-    if (!$this->planResolver) {
+  protected function resolveUsage(object $tenant, string $vertical, string $tier): array {
+    if ($this->planResolver === NULL) {
       return [];
     }
 
     $featuresEntity = $this->planResolver->getFeatures($vertical, $tier);
-    if (!$featuresEntity) {
+    if ($featuresEntity === NULL) {
       return [];
     }
 
@@ -288,7 +306,19 @@ class SubscriptionContextService {
       }
 
       $label = self::LIMIT_LABELS[$key] ?? ucfirst(str_replace('_', ' ', $key));
-      $current = 0; // Default — el conteo real se resuelve en el dashboard.
+      // Resolve real usage from TenantMeteringService (GAP-PRICING-006).
+      $current = 0;
+      if (\Drupal::hasService('jaraba_billing.tenant_metering')) {
+        try {
+          $metering = \Drupal::service('jaraba_billing.tenant_metering');
+          if (method_exists($metering, 'getCurrentUsage')) {
+            $current = (int) $metering->getCurrentUsage((int) $tenant->id(), $key);
+          }
+        }
+        catch (\Throwable) {
+          // Silenciar — metering no disponible.
+        }
+      }
       $percentage = $limit > 0 ? min(100, (int) round(($current / $limit) * 100)) : 0;
 
       $usage[] = [
@@ -383,7 +413,7 @@ class SubscriptionContextService {
       $info = self::FEATURE_LABELS[$key] ?? NULL;
       $result[] = [
         'key' => $key,
-        'label' => $info ? $this->t($info['label']) : ucfirst(str_replace('_', ' ', $key)),
+        'label' => $info !== NULL ? $this->t($info['label']) : ucfirst(str_replace('_', ' ', $key)),
         'icon_cat' => $info['icon_cat'] ?? 'ui',
         'icon_name' => $info['icon_name'] ?? 'check',
       ];
@@ -420,7 +450,7 @@ class SubscriptionContextService {
   /**
    * Contexto para usuario sin plan (free).
    */
-  protected function buildFreePlanContext($tenant): array {
+  protected function buildFreePlanContext(object $tenant): array {
     return [
       'plan' => [
         'id' => 0,
@@ -452,6 +482,153 @@ class SubscriptionContextService {
         'checkout_url' => '',
         'pricing_url' => $this->resolveRoute('ecosistema_jaraba_core.pricing.page') ?? '',
       ],
+      'addons' => [
+        'active' => [],
+        'recommended' => [],
+      ],
+      'billing' => [
+        'plan_monthly' => 0.0,
+        'addons_monthly' => 0.0,
+        'total_monthly' => 0.0,
+        'next_invoice_date' => NULL,
+        'billing_cycle' => 'monthly',
+      ],
+    ];
+  }
+
+  /**
+   * Resuelve add-ons activos del tenant.
+   *
+   * @param object $tenant
+   *   The tenant entity.
+   */
+  protected function resolveActiveAddons(object $tenant): array {
+    if ($this->addonSubscriptionService === NULL) {
+      return [];
+    }
+    try {
+      $subscriptions = $this->addonSubscriptionService->getTenantSubscriptions((int) $tenant->id());
+      $active = [];
+      $entityTypeManager = $this->entityTypeManager;
+      foreach ($subscriptions as $subscription) {
+        $status = $subscription->get('status')->value;
+        if (!in_array($status, ['active', 'trial'], TRUE)) {
+          continue;
+        }
+        $addonId = (int) $subscription->get('addon_id')->target_id;
+        /** @var \Drupal\Core\Entity\ContentEntityInterface|null $addon */
+        $addon = $entityTypeManager->getStorage('addon')->load($addonId);
+        if ($addon === NULL) {
+          continue;
+        }
+        $active[] = [
+          'addon_id' => $addonId,
+          'label' => $addon->label(),
+          'machine_name' => $addon->get('machine_name')->value ?? '',
+          'price' => (float) ($addon->get('price_monthly')->value ?? 0),
+          'addon_type' => $addon->get('addon_type')->value ?? 'feature',
+          'icon_cat' => 'ui',
+          'icon_name' => $this->resolveAddonIcon($addon->get('machine_name')->value ?? ''),
+        ];
+      }
+      return $active;
+    }
+    catch (\Throwable) {
+      return [];
+    }
+  }
+
+  /**
+   * Resuelve add-ons recomendados no suscritos para la vertical.
+   *
+   * @param string $verticalKey
+   *   The vertical machine name.
+   * @param string[] $activeAddonMachineNames
+   *   Machine names of already-active add-ons.
+   */
+  protected function resolveRecommendedAddons(string $verticalKey, array $activeAddonMachineNames): array {
+    if ($this->addonCompatibilityService === NULL || !method_exists($this->addonCompatibilityService, 'getRecommendedAddons')) {
+      return [];
+    }
+    try {
+      $recommended = $this->addonCompatibilityService->getRecommendedAddons($verticalKey);
+      $result = [];
+      foreach ($recommended as $machineName) {
+        if (in_array($machineName, $activeAddonMachineNames, TRUE)) {
+          continue;
+        }
+        // Load addon entity by machine_name.
+        $addons = $this->entityTypeManager->getStorage('addon')
+          ->loadByProperties(['machine_name' => $machineName, 'is_active' => TRUE]);
+        /** @var \Drupal\Core\Entity\ContentEntityInterface|null $addon */
+        $addon = reset($addons) ?: NULL;
+        if ($addon === NULL) {
+          continue;
+        }
+        $result[] = [
+          'addon_id' => (int) $addon->id(),
+          'label' => $addon->label(),
+          'machine_name' => $machineName,
+          'price' => (float) ($addon->get('price_monthly')->value ?? 0),
+          'icon_cat' => 'ui',
+          'icon_name' => $this->resolveAddonIcon($machineName),
+        ];
+        if (count($result) >= 3) {
+          break;
+        }
+      }
+      return $result;
+    }
+    catch (\Throwable) {
+      return [];
+    }
+  }
+
+  /**
+   * Resuelve icono para un add-on por machine_name.
+   */
+  protected function resolveAddonIcon(string $machineName): string {
+    return match ($machineName) {
+      'jaraba_crm' => 'users',
+      'jaraba_email', 'jaraba_email_plus' => 'mail',
+      'jaraba_social' => 'share',
+      'paid_ads_sync' => 'megaphone',
+      'retargeting_pixels' => 'target',
+      'events_webinars' => 'calendar',
+      'ab_testing' => 'split',
+      'referral_program' => 'gift',
+      default => 'package',
+    };
+  }
+
+  /**
+   * Resuelve resumen de facturación del tenant.
+   *
+   * @param object $tenant
+   *   The tenant entity.
+   * @param array $activeAddons
+   *   Active add-on data arrays.
+   * @param float $planPriceMonthly
+   *   Monthly plan price.
+   */
+  protected function resolveBillingSummary(object $tenant, array $activeAddons, float $planPriceMonthly): array {
+    $addonTotal = 0.0;
+    foreach ($activeAddons as $addon) {
+      $addonTotal += $addon['price'];
+    }
+    $total = $planPriceMonthly + $addonTotal;
+
+    $nextInvoiceDate = NULL;
+    if ($tenant->hasField('current_period_end') && $tenant->get('current_period_end')->value) {
+      $nextInvoiceDate = date('d/m/Y', (int) $tenant->get('current_period_end')->value);
+    }
+
+    return [
+      'plan_monthly' => $planPriceMonthly,
+      'addons_monthly' => $addonTotal,
+      'total_monthly' => $total,
+      'next_invoice_date' => $nextInvoiceDate,
+      'billing_cycle' => $tenant->hasField('billing_cycle') ? ($tenant->get('billing_cycle')->value ?? 'monthly') : 'monthly',
     ];
   }
 

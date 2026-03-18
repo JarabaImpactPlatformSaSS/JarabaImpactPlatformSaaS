@@ -1890,12 +1890,30 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.setup_wizard_step }
 
+  # Setup Wizard step: Suscripción (GAP-PRICING-009, PLG-UPGRADE-UI-001)
+  ecosistema_jaraba_core.setup_wizard.subscription_upgrade:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\SubscriptionUpgradeStep
+    arguments:
+      - '@?ecosistema_jaraba_core.subscription_context'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
   # =========================================================================
   # Daily Actions — Registry (tagged services, patrón SETUP-WIZARD-DAILY-001)
   # =========================================================================
 
   ecosistema_jaraba_core.daily_actions_registry:
     class: Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry
+
+  # Daily Action: Revisar suscripción (GAP-PRICING-010, PLG-UPGRADE-UI-001)
+  ecosistema_jaraba_core.daily_action.review_subscription:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\ReviewSubscriptionAction
+    arguments:
+      - '@?ecosistema_jaraba_core.subscription_context'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
 
   # =========================================================================
   # Tenant Settings Hub — Registry + Secciones (tagged services)
@@ -1958,6 +1976,8 @@ services:
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@?ecosistema_jaraba_core.tenant_bridge'
       - '@?ecosistema_jaraba_core.plan_resolver'
+      - '@?jaraba_addons.subscription'
+      - '@?jaraba_addons.addon_compatibility'
 
   # PLG-UPGRADE-UI-001: Sección de suscripción en perfil de usuario.
   ecosistema_jaraba_core.user_profile_section.subscription:

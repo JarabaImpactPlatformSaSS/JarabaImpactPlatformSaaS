@@ -3085,3 +3085,81 @@ function ecosistema_jaraba_core_update_9036(): string {
 
   return empty($messages) ? 'All translatable entities already have content_translation fields.' : implode('; ', $messages);
 }
+
+/**
+ * Update SaasPlan entity prices to match Doc 158 (market study source of truth).
+ *
+ * Golden Rule #131: precios del SaaS SIEMPRE deben coincidir con Doc 158.
+ */
+function ecosistema_jaraba_core_update_9037(): string {
+  $price_corrections = [
+    'Empleabilidad Enterprise' => ['price_monthly' => 149.00, 'price_yearly' => 1490.00],
+    'Emprendimiento Starter' => ['price_monthly' => 39.00, 'price_yearly' => 390.00],
+    'Emprendimiento Profesional' => ['price_monthly' => 99.00, 'price_yearly' => 990.00],
+    'AgroConecta Starter' => ['price_monthly' => 49.00, 'price_yearly' => 490.00],
+    'AgroConecta Profesional' => ['price_monthly' => 129.00, 'price_yearly' => 1290.00],
+    'AgroConecta Enterprise' => ['price_monthly' => 249.00, 'price_yearly' => 2490.00],
+    'ComercioConecta Starter' => ['price_monthly' => 39.00, 'price_yearly' => 390.00],
+    'ComercioConecta Profesional' => ['price_monthly' => 99.00, 'price_yearly' => 990.00],
+    'ComercioConecta Enterprise' => ['price_monthly' => 199.00, 'price_yearly' => 1990.00],
+    'ServiciosConecta Profesional' => ['price_monthly' => 79.00, 'price_yearly' => 790.00],
+  ];
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $storage = $entityTypeManager->getStorage('saas_plan');
+  $logger = \Drupal::logger('ecosistema_jaraba_core');
+
+  $updated = [];
+  $not_found = [];
+  $errors = [];
+
+  foreach ($price_corrections as $name => $prices) {
+    try {
+      $entities = $storage->loadByProperties(['name' => $name]);
+
+      if (empty($entities)) {
+        $not_found[] = $name;
+        $logger->warning('update_9037: SaasPlan "@name" not found in DB.', ['@name' => $name]);
+        continue;
+      }
+
+      /** @var \Drupal\ecosistema_jaraba_core\Entity\SaasPlan $entity */
+      $entity = reset($entities);
+      $old_monthly = $entity->get('price_monthly')->value;
+      $old_yearly = $entity->get('price_yearly')->value;
+
+      $entity->set('price_monthly', $prices['price_monthly']);
+      $entity->set('price_yearly', $prices['price_yearly']);
+      $entity->save();
+
+      $updated[] = "$name: monthly $old_monthly→{$prices['price_monthly']}, yearly $old_yearly→{$prices['price_yearly']}";
+      $logger->notice('update_9037: Updated "@name" prices — monthly: @old_m→@new_m, yearly: @old_y→@new_y', [
+        '@name' => $name,
+        '@old_m' => $old_monthly,
+        '@new_m' => $prices['price_monthly'],
+        '@old_y' => $old_yearly,
+        '@new_y' => $prices['price_yearly'],
+      ]);
+    }
+    catch (\Throwable $e) {
+      $errors[] = "$name: " . $e->getMessage();
+      $logger->error('update_9037: Error updating "@name": @error', [
+        '@name' => $name,
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  $parts = [];
+  if (!empty($updated)) {
+    $parts[] = count($updated) . ' plans updated: ' . implode('; ', $updated);
+  }
+  if (!empty($not_found)) {
+    $parts[] = count($not_found) . ' plans not found: ' . implode(', ', $not_found);
+  }
+  if (!empty($errors)) {
+    $parts[] = count($errors) . ' errors: ' . implode('; ', $errors);
+  }
+
+  return empty($parts) ? 'No SaasPlan price corrections needed.' : implode(' | ', $parts);
+}

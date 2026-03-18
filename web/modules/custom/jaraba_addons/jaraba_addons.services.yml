@@ -59,3 +59,12 @@ services:
       - '@jaraba_addons.tenant_vertical'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_addons'
+
+  # =====================================================================
+  # AddonCompatibilityService: Matriz de compatibilidad addon/vertical
+  # Responsabilidad: determinar qué add-ons son compatibles/recomendados
+  #   para cada vertical según Doc 158 §4
+  # Relaciones: servicio de datos puro, sin dependencias
+  # =====================================================================
+  jaraba_addons.addon_compatibility:
+    class: Drupal\jaraba_addons\Service\AddonCompatibilityService

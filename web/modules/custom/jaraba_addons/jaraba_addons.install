@@ -289,6 +289,279 @@ function jaraba_addons_update_10003(): string {
 }
 
 /**
+ * Add marketing add-on fields, seed 9 marketing add-ons + 4 bundles (Doc 158 §3.1-3.3).
+ */
+function jaraba_addons_update_10004(): string {
+  $messages = [];
+
+  // --- Part A: Install new base fields on addon entity ---
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+    // 1. Update addon_type to include 'bundle'.
+    $addon_type_def = $update_manager->getFieldStorageDefinition('addon_type', 'addon');
+    if ($addon_type_def) {
+      $allowed_values = $addon_type_def->getSetting('allowed_values');
+      if (!isset($allowed_values['bundle'])) {
+        $allowed_values['bundle'] = t('Bundle');
+        $addon_type_def->setSetting('allowed_values', $allowed_values);
+        $addon_type_def->setName('addon_type');
+        $addon_type_def->setTargetEntityTypeId('addon');
+        $update_manager->updateFieldStorageDefinition($addon_type_def);
+        $messages[] = 'Added "bundle" to addon_type allowed values.';
+      }
+    }
+
+    // 2. Install compatible_verticals field.
+    $new_fields = [
+      'compatible_verticals' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+        ->setName('compatible_verticals')
+        ->setTargetEntityTypeId('addon')
+        ->setLabel(t('Verticales Compatibles (JSON)'))
+        ->setDescription(t('Array JSON de machine_names de verticales compatibles.'))
+        ->setDisplayOptions('form', ['weight' => 22])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+      'recommendation_level' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+        ->setName('recommendation_level')
+        ->setTargetEntityTypeId('addon')
+        ->setLabel(t('Nivel de Recomendación'))
+        ->setDescription(t('Nivel de recomendación por defecto: recommended, available, not_applicable.'))
+        ->setSetting('max_length', 32)
+        ->setDefaultValue('available')
+        ->setDisplayOptions('form', ['weight' => 23])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+      'bundle_items' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+        ->setName('bundle_items')
+        ->setTargetEntityTypeId('addon')
+        ->setLabel(t('Items del Bundle (JSON)'))
+        ->setDescription(t('Array JSON de machine_names de add-ons incluidos en el bundle.'))
+        ->setDisplayOptions('form', ['weight' => 24])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+      'bundle_discount_pct' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+        ->setName('bundle_discount_pct')
+        ->setTargetEntityTypeId('addon')
+        ->setLabel(t('Descuento del Bundle (%)'))
+        ->setDescription(t('Porcentaje de descuento aplicado en el bundle.'))
+        ->setDefaultValue(0)
+        ->setDisplayOptions('form', ['weight' => 25])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE),
+    ];
+
+    foreach ($new_fields as $field_name => $field_definition) {
+      $existing = $update_manager->getFieldStorageDefinition($field_name, 'addon');
+      if (!$existing) {
+        $update_manager->installFieldStorageDefinition(
+          $field_name,
+          'addon',
+          'jaraba_addons',
+          $field_definition
+        );
+        $messages[] = sprintf('Installed %s field on addon entity.', $field_name);
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Field install error: ' . $e->getMessage();
+  }
+
+  // --- Part B: Seed 9 Marketing Add-ons (Doc 158 §3.1-3.2) ---
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('addon');
+
+    $marketing_addons = [
+      [
+        'machine_name' => 'jaraba_crm',
+        'label' => 'CRM Pipeline',
+        'addon_type' => 'feature',
+        'price_monthly' => 19.00,
+        'price_yearly' => 193.80,
+        'features_included' => '["crm_pipeline","crm_contacts","lead_scoring","forecasting","crm_activities","foc_integration"]',
+      ],
+      [
+        'machine_name' => 'jaraba_email',
+        'label' => 'Email Marketing',
+        'addon_type' => 'feature',
+        'price_monthly' => 29.00,
+        'price_yearly' => 295.80,
+        'features_included' => '["email_campaigns","email_sequences","email_templates","email_ab_testing","email_analytics"]',
+      ],
+      [
+        'machine_name' => 'jaraba_email_plus',
+        'label' => 'Email Marketing Plus',
+        'addon_type' => 'feature',
+        'price_monthly' => 59.00,
+        'price_yearly' => 601.80,
+        'features_included' => '["email_campaigns_unlimited","email_sequences_unlimited","email_ai_content","dedicated_ip","email_analytics_advanced"]',
+      ],
+      [
+        'machine_name' => 'jaraba_social',
+        'label' => 'Social Media Manager',
+        'addon_type' => 'feature',
+        'price_monthly' => 25.00,
+        'price_yearly' => 255.00,
+        'features_included' => '["social_calendar","social_posts","social_variants_ai","social_scheduling","social_analytics"]',
+      ],
+      [
+        'machine_name' => 'paid_ads_sync',
+        'label' => 'Paid Ads Sync',
+        'addon_type' => 'feature',
+        'price_monthly' => 15.00,
+        'price_yearly' => 153.00,
+        'features_included' => '["ads_sync_meta","ads_sync_google","roas_tracking","audience_management","budget_alerts"]',
+      ],
+      [
+        'machine_name' => 'retargeting_pixels',
+        'label' => 'Retargeting & Pixels',
+        'addon_type' => 'feature',
+        'price_monthly' => 12.00,
+        'price_yearly' => 122.40,
+        'features_included' => '["pixel_manager","server_side_tracking","consent_management","multi_platform"]',
+      ],
+      [
+        'machine_name' => 'events_webinars',
+        'label' => 'Events & Webinars',
+        'addon_type' => 'feature',
+        'price_monthly' => 19.00,
+        'price_yearly' => 193.80,
+        'features_included' => '["events_create","webinar_integration","event_landing_pages","certificates","replays"]',
+      ],
+      [
+        'machine_name' => 'ab_testing',
+        'label' => 'A/B Testing Engine',
+        'addon_type' => 'feature',
+        'price_monthly' => 15.00,
+        'price_yearly' => 153.00,
+        'features_included' => '["experiments_unlimited","statistical_significance","auto_stop","segmentation"]',
+      ],
+      [
+        'machine_name' => 'referral_program',
+        'label' => 'Referral Program',
+        'addon_type' => 'feature',
+        'price_monthly' => 19.00,
+        'price_yearly' => 193.80,
+        'features_included' => '["referral_codes","rewards_configurable","leaderboard","ambassador_levels"]',
+      ],
+    ];
+
+    $created_marketing = 0;
+    foreach ($marketing_addons as $data) {
+      // Check for existing entity by machine_name to prevent duplicates.
+      $existing = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('machine_name', $data['machine_name'])
+        ->count()
+        ->execute();
+
+      if ((int) $existing > 0) {
+        $messages[] = sprintf('Marketing addon "%s" already exists, skipping.', $data['machine_name']);
+        continue;
+      }
+
+      $addon = $storage->create([
+        'label' => $data['label'],
+        'machine_name' => $data['machine_name'],
+        'addon_type' => $data['addon_type'],
+        'price_monthly' => $data['price_monthly'],
+        'price_yearly' => $data['price_yearly'],
+        'is_active' => TRUE,
+        'features_included' => $data['features_included'],
+        'limits' => json_encode([]),
+        'recommendation_level' => 'available',
+        'tenant_id' => 0,
+      ]);
+      $addon->save();
+      $created_marketing++;
+    }
+    $messages[] = sprintf('Created %d marketing addon entities.', $created_marketing);
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Marketing addon seed error: ' . $e->getMessage();
+  }
+
+  // --- Part C: Seed 4 Bundle Add-ons (Doc 158 §3.3) ---
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('addon');
+
+    $bundles = [
+      [
+        'machine_name' => 'bundle_marketing_starter',
+        'label' => 'Marketing Starter',
+        'price_monthly' => 35.00,
+        'price_yearly' => 357.00,
+        'bundle_items' => '["jaraba_email","retargeting_pixels"]',
+        'bundle_discount_pct' => 15,
+      ],
+      [
+        'machine_name' => 'bundle_marketing_pro',
+        'label' => 'Marketing Pro',
+        'price_monthly' => 59.00,
+        'price_yearly' => 601.80,
+        'bundle_items' => '["jaraba_crm","jaraba_email","jaraba_social"]',
+        'bundle_discount_pct' => 20,
+      ],
+      [
+        'machine_name' => 'bundle_marketing_complete',
+        'label' => 'Marketing Complete',
+        'price_monthly' => 99.00,
+        'price_yearly' => 1009.80,
+        'bundle_items' => '["jaraba_crm","jaraba_email","jaraba_social","paid_ads_sync","retargeting_pixels","events_webinars","ab_testing","referral_program"]',
+        'bundle_discount_pct' => 30,
+      ],
+      [
+        'machine_name' => 'bundle_growth_engine',
+        'label' => 'Growth Engine',
+        'price_monthly' => 79.00,
+        'price_yearly' => 805.80,
+        'bundle_items' => '["jaraba_email_plus","ab_testing","referral_program"]',
+        'bundle_discount_pct' => 15,
+      ],
+    ];
+
+    $created_bundles = 0;
+    foreach ($bundles as $data) {
+      // Check for existing entity by machine_name to prevent duplicates.
+      $existing = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('machine_name', $data['machine_name'])
+        ->count()
+        ->execute();
+
+      if ((int) $existing > 0) {
+        $messages[] = sprintf('Bundle addon "%s" already exists, skipping.', $data['machine_name']);
+        continue;
+      }
+
+      $addon = $storage->create([
+        'label' => $data['label'],
+        'machine_name' => $data['machine_name'],
+        'addon_type' => 'bundle',
+        'price_monthly' => $data['price_monthly'],
+        'price_yearly' => $data['price_yearly'],
+        'is_active' => TRUE,
+        'features_included' => json_encode([]),
+        'limits' => json_encode([]),
+        'bundle_items' => $data['bundle_items'],
+        'bundle_discount_pct' => $data['bundle_discount_pct'],
+        'recommendation_level' => 'available',
+        'tenant_id' => 0,
+      ]);
+      $addon->save();
+      $created_bundles++;
+    }
+    $messages[] = sprintf('Created %d bundle addon entities.', $created_bundles);
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Bundle addon seed error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_addons_requirements(string $phase): array {

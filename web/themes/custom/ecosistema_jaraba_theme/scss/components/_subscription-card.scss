@@ -360,3 +360,238 @@
     flex-shrink: 0;
   }
 }
+
+// === ADD-ONS ACTIVOS ===
+.subscription-card__addons {
+  padding: var(--ej-spacing-sm, 0.75rem) 0;
+  border-top: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+}
+
+.subscription-card__addons-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--ej-font-size-sm, 0.8125rem);
+  font-weight: 600;
+  color: var(--ej-text-heading, #1e293b);
+  margin: 0 0 0.5rem;
+
+  svg {
+    color: var(--ej-color-corporate, #233D63);
+  }
+}
+
+.subscription-card__addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.subscription-card__addon-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: color-mix(in srgb, var(--ej-bg-surface, #ffffff) 98%, var(--ej-color-corporate, #233D63));
+  border-radius: var(--ej-radius-sm, 6px);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+}
+
+.subscription-card__addon-name {
+  flex: 1;
+  color: var(--ej-text-body, #475569);
+  font-weight: 500;
+}
+
+.subscription-card__addon-price {
+  color: var(--ej-color-impulse, #FF8C42);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// === ADD-ONS RECOMENDADOS ===
+.subscription-card__recommended {
+  padding: var(--ej-spacing-sm, 0.75rem) 0;
+  border-top: 1px solid color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+}
+
+.subscription-card__recommended-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--ej-font-size-sm, 0.8125rem);
+  font-weight: 600;
+  color: var(--ej-color-impulse, #FF8C42);
+  margin: 0 0 0.5rem;
+
+  svg {
+    color: var(--ej-color-impulse, #FF8C42);
+  }
+}
+
+.subscription-card__recommended-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.subscription-card__recommended-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 25%, transparent);
+  border-radius: var(--ej-radius-sm, 6px);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+    border-color: var(--ej-color-impulse, #FF8C42);
+  }
+}
+
+.subscription-card__recommended-name {
+  flex: 1;
+  color: var(--ej-text-body, #475569);
+  font-weight: 500;
+}
+
+.subscription-card__recommended-price {
+  color: var(--ej-text-muted, #94a3b8);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.subscription-card__recommended-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background: var(--ej-color-impulse, #FF8C42);
+  color: #ffffff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--ej-radius-full, 9999px);
+  white-space: nowrap;
+}
+
+// === RESUMEN FACTURACION ===
+.subscription-card__billing {
+  padding: var(--ej-spacing-sm, 0.75rem) 0;
+  border-top: 2px solid var(--ej-color-corporate, #233D63);
+}
+
+.subscription-card__billing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--ej-font-size-sm, 0.8125rem);
+  color: var(--ej-text-body, #475569);
+  padding: 0.25rem 0;
+
+  &--secondary {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #94a3b8);
+  }
+}
+
+.subscription-card__billing-total {
+  font-size: var(--ej-font-size-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--ej-text-heading, #1e293b);
+}
+
+// === LINK A ADDONS ===
+.subscription-card__addons-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-color-impulse, #FF8C42);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 80%, black);
+    text-decoration: underline;
+  }
+
+  svg {
+    transition: transform 0.15s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+// === ADDON CATALOG BADGES (GAP-2, GAP-3) ===
+.ej-addons-card__recommended-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent);
+  color: var(--ej-color-impulse, #FF8C42);
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--ej-radius-full, 9999px);
+  border: 1px solid color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 30%, transparent);
+}
+
+.ej-addons-card--incompatible {
+  opacity: 0.55;
+  order: 99;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+// === ADDON DETAIL COMPATIBILITY (GAP-3) ===
+.ej-addons-detail__compatibility-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-warning, #F59E0B) 25%, transparent);
+  border-radius: var(--ej-radius-md, 8px);
+  color: var(--ej-text-body, #475569);
+
+  strong {
+    display: block;
+    color: var(--ej-text-heading, #1e293b);
+    font-size: var(--ej-font-size-sm, 0.8125rem);
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #94a3b8);
+  }
+}
+
+.ej-addons-detail__recommendation-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  margin: 1rem 0;
+  background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 20%, transparent);
+  border-radius: var(--ej-radius-md, 8px);
+  color: var(--ej-color-impulse, #FF8C42);
+  font-size: var(--ej-font-size-sm, 0.8125rem);
+  font-weight: 600;
+}

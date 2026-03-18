@@ -119,6 +119,7 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
         'support' => t('Soporte'),
         'custom' => t('Personalizado'),
         'vertical' => t('Vertical'),
+        'bundle' => t('Bundle'),
       ])
       ->setDisplayOptions('form', ['weight' => 5])
       ->setDisplayConfigurable('form', TRUE)
@@ -176,12 +177,47 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // --- Compatibilidad con verticales (Doc 158 §4) ---
+    $fields['compatible_verticals'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Verticales Compatibles (JSON)'))
+      ->setDescription(t('Array JSON de machine_names de verticales compatibles. Ej: ["empleabilidad","emprendimiento"]'))
+      ->setDisplayOptions('form', ['weight' => 22])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- Nivel de recomendación por defecto ---
+    $fields['recommendation_level'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nivel de Recomendación'))
+      ->setDescription(t('Nivel de recomendación por defecto: recommended, available, not_applicable.'))
+      ->setSetting('max_length', 32)
+      ->setDefaultValue('available')
+      ->setDisplayOptions('form', ['weight' => 23])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- Bundle: items incluidos (Doc 158 §3.3) ---
+    $fields['bundle_items'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Items del Bundle (JSON)'))
+      ->setDescription(t('Array JSON de machine_names de add-ons incluidos en el bundle. Solo para addon_type=bundle.'))
+      ->setDisplayOptions('form', ['weight' => 24])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- Bundle: porcentaje de descuento ---
+    $fields['bundle_discount_pct'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Descuento del Bundle (%)'))
+      ->setDescription(t('Porcentaje de descuento aplicado en el bundle. Solo para addon_type=bundle.'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', ['weight' => 25])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // --- Tenant ---
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setRequired(TRUE)
       ->setSetting('target_type', 'tenant')
-      ->setDisplayOptions('form', ['weight' => 25])
+      ->setDisplayOptions('form', ['weight' => 30])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -290,6 +326,61 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
       return (float) ($this->get('price_yearly')->value ?? 0);
     }
     return (float) ($this->get('price_monthly')->value ?? 0);
+  }
+
+  /**
+   * Obtiene los verticales compatibles como array PHP.
+   *
+   * Decodifica el campo JSON compatible_verticals.
+   *
+   * @return string[]
+   *   Array de machine_names de verticales compatibles.
+   */
+  public function getCompatibleVerticals(): array {
+    $json = $this->get('compatible_verticals')->value;
+    if ($json === NULL || $json === '') {
+      return [];
+    }
+    $decoded = json_decode($json, TRUE);
+    return is_array($decoded) ? $decoded : [];
+  }
+
+  /**
+   * Obtiene los items del bundle como array PHP.
+   *
+   * Decodifica el campo JSON bundle_items. Solo relevante cuando
+   * addon_type = 'bundle'.
+   *
+   * @return string[]
+   *   Array de machine_names de add-ons incluidos en el bundle.
+   */
+  public function getBundleItems(): array {
+    $json = $this->get('bundle_items')->value;
+    if ($json === NULL || $json === '') {
+      return [];
+    }
+    $decoded = json_decode($json, TRUE);
+    return is_array($decoded) ? $decoded : [];
+  }
+
+  /**
+   * Obtiene el porcentaje de descuento del bundle.
+   *
+   * @return int
+   *   Porcentaje de descuento (0-100). Solo relevante para bundles.
+   */
+  public function getBundleDiscountPct(): int {
+    return (int) ($this->get('bundle_discount_pct')->value ?? 0);
+  }
+
+  /**
+   * Comprueba si este addon es de tipo bundle.
+   *
+   * @return bool
+   *   TRUE si addon_type = 'bundle'.
+   */
+  public function isBundle(): bool {
+    return $this->get('addon_type')->value === 'bundle';
   }
 
 }

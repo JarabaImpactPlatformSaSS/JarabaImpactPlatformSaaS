@@ -91,6 +91,11 @@
                   {% trans %}Activo{% endtrans %}
                 </span>
               {% endif %}
+              {% if addon.recommendation_level is defined and addon.recommendation_level == 'recommended' %}
+                <span class="ej-addons-card__recommended-badge">
+                  {% trans %}Recomendado{% endtrans %}
+                </span>
+              {% endif %}
             </div>
 
             <div class="ej-addons-card__body">
@@ -136,7 +141,7 @@
     {% endif %}
     <div class="ej-addons-catalog__grid">
       {% for addon in display_addons %}
-        <article class="ej-addons-card ej-addons-card--{{ addon.addon_type }}"
+        <article class="ej-addons-card ej-addons-card--{{ addon.addon_type }}{{ addon.recommendation_level is defined and addon.recommendation_level == 'not_applicable' ? ' ej-addons-card--incompatible' : '' }}"
                  data-addon-id="{{ addon.id }}"
                  data-addon-type="{{ addon.addon_type }}">
 
@@ -147,6 +152,11 @@
             {% if addon.is_subscribed %}
               <span class="ej-addons-card__subscribed-badge">
                 {% trans %}Activo{% endtrans %}
+              </span>
+            {% endif %}
+            {% if addon.recommendation_level is defined and addon.recommendation_level == 'recommended' %}
+              <span class="ej-addons-card__recommended-badge">
+                {% trans %}Recomendado{% endtrans %}
               </span>
             {% endif %}
           </div>

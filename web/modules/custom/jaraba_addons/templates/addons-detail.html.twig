@@ -57,6 +57,22 @@
     </div>
   </section>
 
+  {# ===== Compatibilidad vertical (Doc 158 §4) ===== #}
+  {% if compatibility_warning is defined and compatibility_warning %}
+    <div class="ej-addons-detail__compatibility-warning" role="alert">
+      {{ jaraba_icon('ui', 'alert-triangle', { size: '20px', color: 'warning' }) }}
+      <div class="ej-addons-detail__compatibility-text">
+        <strong>{% trans %}Este add-on no está recomendado para tu vertical{% endtrans %}</strong>
+        <p>{% trans %}Las funcionalidades incluidas pueden no ser relevantes para tu tipo de negocio. Consulta los add-ons recomendados en el catálogo.{% endtrans %}</p>
+      </div>
+    </div>
+  {% elseif recommendation_level is defined and recommendation_level == 'recommended' %}
+    <div class="ej-addons-detail__recommendation-notice">
+      {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
+      <span>{% trans %}Recomendado para tu vertical — alto impacto en tu negocio{% endtrans %}</span>
+    </div>
+  {% endif %}
+
   {# ===== Pricing Section ===== #}
   <section class="ej-addons-detail__pricing" aria-label="{% trans %}Precios{% endtrans %}">
     <h2 class="ej-addons-detail__section-title">{% trans %}Precios{% endtrans %}</h2>
