@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-18
-**Version:** 95.0.0 (Pricing PLG & Add-ons Marketplace Clase Mundial + aprendizaje #192)
+**Version:** 96.0.0 (Pagos Rápidos 100% Cobertura + aprendizaje #193)
 
 ---
 ## 1. Inicio de Sesion

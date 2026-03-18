@@ -4,9 +4,9 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-18
-**Versión:** 171.0.0 (Pricing PLG & Add-ons Marketplace Clase Mundial + aprendizaje #192)
+**Versión:** 172.0.0 (Pagos Rápidos 100% Cobertura + aprendizaje #193)
 
-> **📋 PRICING PLG & ADD-ONS MARKETPLACE CLASE MUNDIAL — v142 DIRECTRICES + v130 ARQUITECTURA + v171 INDICE + v95 FLUJO** (2026-03-18)
+> **📋 PAGOS RÁPIDOS 100% COBERTURA — v143 DIRECTRICES + v131 ARQUITECTURA + v172 INDICE + v96 FLUJO** (2026-03-18)
 >
 > Aprendizaje #191: PHANTOM-ARG-001 v2 bidireccional — validate-phantom-args.php ahora detecta args faltantes (YAML < constructor required) además de sobrantes. Parser fix: trailing comma + inline comments (`// AUDIT-CONS...`) parseado como param extra → 7 falsos positivos en feature gates. Fix: strip inline comments + filter non-$ entries. 3 servicios reales corregidos (AgroAnalyticsService +@database+@logger.factory, StripeInvoiceService +@http_client, QuoteEstimatorService +@http_client). 12 tests regresión del parser. Pre-commit hook activado (chmod +x, git lo ignoraba silenciosamente). lint-staged optimizado: services.yml → 4 validators DI (~3s). 68 AccessControlHandlers AccessResult→AccessResultInterface en 22 módulos. Drupal core + contrib actualizado (773 archivos). Regla de oro #132: pre-commit hook DEBE ser ejecutable — git ignora sin warning.
 
