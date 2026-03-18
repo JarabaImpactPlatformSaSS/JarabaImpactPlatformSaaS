@@ -7,7 +7,7 @@ label: 'Emprendimiento Starter: Sesiones Mentoria Mensuales'
 vertical: emprendimiento
 plan: starter
 feature_key: mentoring_sessions_monthly
-limit_value: 2
+limit_value: 0
 description: '2 sesiones de mentoria mensuales en plan Starter Emprendimiento.'
 upgrade_message: 'Has usado tus 2 sesiones de mentoria este mes. Actualiza a Profesional para mentoria ilimitada.'
 expected_conversion: 0.0

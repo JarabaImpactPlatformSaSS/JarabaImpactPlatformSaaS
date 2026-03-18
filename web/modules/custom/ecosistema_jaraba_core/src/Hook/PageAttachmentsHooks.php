@@ -373,7 +373,7 @@ class PageAttachmentsHooks
         'name' => 'ServiciosConecta',
         'applicationCategory' => 'BusinessApplication',
         'operatingSystem' => 'Web',
-        'description' => 'Plataforma de gestion integral para profesionales de servicios: motor de reservas 24/7, videoconsulta via Jitsi, marketplace profesional, presupuestador IA, firma digital PAdES, buzon de confianza cifrado, cobro automatico via Stripe Connect, paquetes de sesiones, resenas verificadas y Copilot IA.',
+        'description' => 'Plataforma de gestion integral para profesionales de servicios: motor de reservas 24/7, videoconsulta online, presupuestador IA, firma digital PAdES, buzon de confianza cifrado, cobro automatico via Stripe Connect, paquetes de sesiones, resenas verificadas y Copilot IA.',
         'offers' => [
           '@type' => 'Offer',
           'price' => '0',
@@ -382,7 +382,7 @@ class PageAttachmentsHooks
         ],
         'featureList' => [
           'Motor de reservas online 24/7 con recordatorios',
-          'Videoconsulta integrada via Jitsi Meet',
+          'Videoconsulta online via Google Meet o Zoom',
           'Marketplace profesional con portfolio y certificaciones',
           'Paquetes y bonos de sesiones con descuento',
           'Resenas y reputacion verificada con Schema.org',

@@ -63,7 +63,7 @@ class VerticalLandingController extends ControllerBase
       'color' => 'agro',
       'hero' => [
         'headline' => $this->t('Vende tus productos del campo sin intermediarios'),
-        'subheadline' => $this->t('Marketplace agro con trazabilidad QR, envio MRW/SEUR, Copilot IA, prevision de demanda, analytics avanzados y cobro seguro via Stripe Connect. Listo en 10 minutos.'),
+        'subheadline' => $this->t('Tu tienda online de productor con trazabilidad QR, envío MRW/SEUR, Copilot IA, previsión de demanda, analytics avanzados y cobro seguro via Stripe Connect. Listo en 10 minutos.'),
         'icon' => ['category' => 'verticals', 'name' => 'leaf'],
         'cta' => [
           'text' => $this->t('Crea tu tienda gratis'),
@@ -173,7 +173,7 @@ class VerticalLandingController extends ControllerBase
       'color' => 'success',
       'hero' => [
         'headline' => $this->t('Tu tienda de barrio, ahora también en el móvil de tus clientes'),
-        'subheadline' => $this->t('Marketplace multi-comercio, ofertas flash geolocalizadas, click & collect, carrito con Stripe, copilot IA, envíos con tracking, SEO local y analytics — todo integrado con tu TPV, desde 0 €/mes.'),
+        'subheadline' => $this->t('Tu tienda online con ofertas flash geolocalizadas, click & collect, carrito con Stripe, copilot IA, envíos con tracking, SEO local y analytics — todo integrado con tu TPV, desde 0 €/mes.'),
         'icon' => ['category' => 'business', 'name' => 'storefront'],
         'cta' => [
           'text' => $this->t('Digitaliza tu comercio'),
@@ -283,7 +283,7 @@ class VerticalLandingController extends ControllerBase
       'color' => 'servicios',
       'hero' => [
         'headline' => $this->t('Más clientes, menos papeleo. Tu negocio de servicios digitalizado.'),
-        'subheadline' => $this->t('Motor de reservas 24/7, videoconsulta online, marketplace profesional, presupuestador IA, firma digital y cobro automático via Stripe — todo en un solo lugar, desde 0 €/mes.'),
+        'subheadline' => $this->t('Motor de reservas 24/7, videoconsulta online, tu perfil profesional público, presupuestador IA, firma digital y cobro automático via Stripe — todo en un solo lugar, desde 0 €/mes.'),
         'icon' => ['category' => 'business', 'name' => 'briefcase'],
         'cta' => [
           'text' => $this->t('Empieza gratis ahora'),
@@ -353,7 +353,7 @@ class VerticalLandingController extends ControllerBase
       ],
       'faq' => [
         ['question' => $this->t('¿Cómo funciona el motor de reservas?'), 'answer' => $this->t('Configuras tus horarios y servicios. Tus clientes ven la disponibilidad en tiempo real y reservan slots libres. Reciben confirmación automática por email y recordatorios antes de la cita.')],
-        ['question' => $this->t('¿Puedo hacer videoconsultas con mis clientes?'), 'answer' => $this->t('Sí. Al crear una reserva de tipo online, se genera automáticamente una sala Jitsi Meet. Tu cliente recibe el enlace por email. Sin instalar apps.')],
+        ['question' => $this->t('¿Puedo hacer videoconsultas con mis clientes?'), 'answer' => $this->t('Sí. Al crear una reserva de tipo online, se genera automáticamente un enlace de Google Meet o Zoom. Tu cliente lo recibe por email. Sin instalar apps.')],
         ['question' => $this->t('¿Cómo funciona el cobro via Stripe?'), 'answer' => $this->t('Conectas tu cuenta Stripe una vez. Cuando un cliente reserva, el pago se procesa automáticamente. Recibes el dinero en tu cuenta bancaria en 2-7 días, con comisión transparente del 10%.')],
         ['question' => $this->t('¿Qué es el marketplace profesional?'), 'answer' => $this->t('Un directorio público donde tus clientes te encuentran. Tu perfil incluye portfolio, certificaciones, reseñas verificadas y botón de reserva directa. Optimizado para Google.')],
         ['question' => $this->t('¿Puedo ofrecer paquetes de sesiones?'), 'answer' => $this->t('Sí. Crea bundles de sesiones con descuento (ej: 5 sesiones por el precio de 4). Tus clientes compran el bono y van consumiendo sesiones. Disponible desde plan Profesional.')],
@@ -824,7 +824,7 @@ class VerticalLandingController extends ControllerBase
           $this->t('Matching IA 5D desde Starter'),
           $this->t('Mini-ATS completo desde Starter'),
           $this->t('Asistente IA ilimitado en Profesional'),
-          $this->t('API REST + white-label en Enterprise'),
+          $this->t('API REST en Enterprise + dominio personalizado (add-on)'),
           $this->t('Soporte dedicado en Enterprise'),
         ],
       ],
@@ -1018,7 +1018,7 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Seguimiento xAPI'), 'description' => $this->t('Trazabilidad completa del aprendizaje: tiempo en cada lección, intentos en quizzes, interacciones con contenido. Datos exportables y conformes con xAPI/SCORM.')],
         ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Portal del Alumno'), 'description' => $this->t('Dashboard personalizado para cada alumno: progreso, certificados, próximos cursos, historial. Perfil público con credenciales verificables.')],
         ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Monetización Integrada'), 'description' => $this->t('Vende cursos individuales, paquetes o suscripciones. Pagos con Stripe, cupones de descuento, períodos de prueba y facturación automática.')],
-        ['icon' => ['category' => 'ui', 'name' => 'share-2'], 'title' => $this->t('Marca Blanca Completa'), 'description' => $this->t('Tu academia con tu logo, colores, dominio y estilo. Los alumnos nunca ven la plataforma subyacente. Emails y certificados con tu marca.')],
+        ['icon' => ['category' => 'ui', 'name' => 'share-2'], 'title' => $this->t('Personalización de Marca'), 'description' => $this->t('Tu academia con tu logo, colores y estilo. Dominio propio disponible como add-on. Emails y certificados con tu marca.')],
         ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Analytics de Formación'), 'description' => $this->t('Tasas de completitud, engagement por módulo, tiempo promedio, NPS de cursos, top alumnos y proyecciones de matrícula. Datos para tomar decisiones.')],
         ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Email Nurturing Educativo'), 'description' => $this->t('Secuencias automatizadas: bienvenida, recordatorios de curso, felicitación por logros, recomendaciones de siguiente curso y reactivación de inactivos.')],
         ['icon' => ['category' => 'ui', 'name' => 'link'], 'title' => $this->t('Integraciones LMS'), 'description' => $this->t('xAPI, SCORM, LTI para integración con otras plataformas. Webhooks para conectar con tu CRM, email marketing o sistemas internos.')],

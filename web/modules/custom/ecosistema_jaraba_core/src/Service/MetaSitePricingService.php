@@ -399,7 +399,7 @@ class MetaSitePricingService
             // Shared features.
             'soporte_email' => $this->t('Soporte por email'),
             'soporte_chat' => $this->t('Soporte por chat'),
-            'soporte_dedicado' => $this->t('Soporte dedicado'),
+            'soporte_dedicado' => $this->t('Email prioritario 24h'),
             // Comercio/Agro features.
             'calendar_sync' => $this->t('Sincronización de calendario'),
             'buzon_confianza' => $this->t('Buzón de confianza'),
