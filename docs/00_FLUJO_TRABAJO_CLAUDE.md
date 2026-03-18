@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-18
-**Version:** 94.0.0 (PHANTOM-ARG-001 v2 salvaguarda + lint-staged DI validators + aprendizaje #191)
+**Version:** 95.0.0 (Pricing PLG & Add-ons Marketplace Clase Mundial + aprendizaje #192)
 
 ---
 ## 1. Inicio de Sesion
