@@ -52,7 +52,7 @@ class SubscriptionContextService {
     'calculadora_madurez' => ['label' => 'Calculadora de madurez digital', 'icon_cat' => 'analytics', 'icon_name' => 'gauge'],
     'bmc_ia' => ['label' => 'Business Model Canvas con IA', 'icon_cat' => 'business', 'icon_name' => 'grid'],
     'validacion_mvp' => ['label' => 'Validación MVP (Lean Startup)', 'icon_cat' => 'business', 'icon_name' => 'experiment'],
-    'mentoring_1a1' => ['label' => 'Mentoría individual', 'icon_cat' => 'business', 'icon_name' => 'users'],
+    'mastermind_grupal' => ['label' => 'Mastermind grupal (max 8 personas)', 'icon_cat' => 'business', 'icon_name' => 'users'],
     'proyecciones_financieras' => ['label' => 'Proyecciones financieras', 'icon_cat' => 'analytics', 'icon_name' => 'chart-line'],
     'health_score' => ['label' => 'Health Score empresarial', 'icon_cat' => 'analytics', 'icon_name' => 'heart-pulse'],
     'credenciales_digitales' => ['label' => 'Credenciales digitales', 'icon_cat' => 'business', 'icon_name' => 'badge'],
@@ -77,7 +77,7 @@ class SubscriptionContextService {
   protected const LIMIT_LABELS = [
     'copilot_sessions_daily' => 'Consultas IA hoy',
     'hypotheses_active' => 'Hipótesis activas',
-    'mentoring_sessions_monthly' => 'Sesiones de mentoría este mes',
+    'mastermind_monthly' => 'Sesiones Mastermind grupal este mes',
     'experiments_monthly' => 'Experimentos este mes',
     'productores' => 'Productores',
     'storage_gb' => 'Almacenamiento (GB)',
