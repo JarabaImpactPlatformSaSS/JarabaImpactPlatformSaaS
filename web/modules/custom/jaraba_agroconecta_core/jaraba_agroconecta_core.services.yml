@@ -154,6 +154,8 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService
     arguments:
       - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
 
   # Fase 9: Producer Copilot
 

@@ -20,6 +20,15 @@
 
 declare(strict_types=1);
 
+// Allow importing functions without running main (for tests).
+if (basename(__FILE__) === basename($_SERVER['argv'][0] ?? '')) {
+  _phantom_args_main();
+}
+
+/**
+ * Main execution — only runs when script is invoked directly.
+ */
+function _phantom_args_main(): void {
 $projectRoot = dirname(__DIR__, 2);
 $modulesDir = $projectRoot . '/web/modules/custom';
 
@@ -114,6 +123,7 @@ if (count($errors) > 0) {
 
 echo sprintf("PHANTOM-ARG-001: OK — %d services checked, 0 violations.\n", $checked);
 exit(0);
+} // End _phantom_args_main().
 
 // ============================================================================
 // Helper functions.
@@ -243,6 +253,11 @@ function countConstructorParams(string $filePath): ?array {
     return ['total' => 0, 'required' => 0];
   }
 
+  // Strip inline comments (// ...) to prevent trailing-comma + comment
+  // from being parsed as an extra parameter.
+  $paramBlock = preg_replace('#//[^\n]*#', '', $paramBlock);
+  $paramBlock = trim($paramBlock);
+
   // Split parameters at top-level commas (not inside nested parens).
   $params = [];
   $depth = 0;
@@ -269,6 +284,12 @@ function countConstructorParams(string $filePath): ?array {
   if ($last !== '') {
     $params[] = $last;
   }
+
+  // Filter out entries that are not actual parameters (e.g., trailing comma
+  // artifacts). A real parameter must contain a $ variable.
+  $params = array_filter($params, function (string $p): bool {
+    return str_contains($p, '$');
+  });
 
   $total = count($params);
   $required = 0;

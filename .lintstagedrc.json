@@ -12,7 +12,10 @@
     "php scripts/validation/validate-twig-ortografia.php"
   ],
   "web/modules/custom/**/*.services.yml": [
-    "bash scripts/validation/validate-all.sh --fast"
+    "php scripts/validation/validate-phantom-args.php",
+    "php scripts/validation/validate-optional-deps.php",
+    "php scripts/validation/validate-circular-deps.php",
+    "php scripts/validation/validate-logger-injection.php"
   ],
   "web/modules/custom/**/*.routing.yml": [
     "bash scripts/validation/validate-all.sh --fast"
