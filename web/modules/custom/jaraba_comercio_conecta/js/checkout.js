@@ -181,9 +181,18 @@
               }
 
               // Paso 2: Confirmar pago con Stripe.js
+              // confirmPayment() soporta TODOS los métodos de pago
+              // (tarjeta, Apple Pay, Google Pay, Link, SEPA, Bizum via Stripe).
+              // Migrado de confirmCardPayment() para automatic_payment_methods.
               payBtn.textContent = Drupal.t('Confirmando con banco...');
 
-              stripe.confirmCardPayment(result.data.client_secret).then(function (stripeResult) {
+              stripe.confirmPayment({
+                clientSecret: result.data.client_secret,
+                confirmParams: {
+                  return_url: _confirmationBaseUrl.replace('__ORDER_ID__', result.data.order_id),
+                },
+                redirect: 'if_required',
+              }).then(function (stripeResult) {
                 if (stripeResult.error) {
                   _comercioShowMessage(stripeResult.error.message, 'error');
                   payBtn.disabled = false;

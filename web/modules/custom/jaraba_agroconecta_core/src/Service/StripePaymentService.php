@@ -75,10 +75,13 @@ class StripePaymentService
                 return NULL;
             }
 
+            // Automatic Payment Methods: Stripe auto-detecta Apple Pay,
+            // Google Pay, Link, tarjeta y otros según Dashboard config.
+            // Habilitar en: Stripe Dashboard → Settings → Payment methods.
             $paymentIntentData = [
                 'amount' => $amountCents,
                 'currency' => $currency,
-                'payment_method_types' => ['card'],
+                'automatic_payment_methods' => ['enabled' => 'true'],
                 'metadata' => [
                     'order_id' => (string) $order->id(),
                     'order_number' => $order->get('order_number')->value,

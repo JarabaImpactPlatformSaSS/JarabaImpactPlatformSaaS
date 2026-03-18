@@ -314,3 +314,20 @@ services:
       - '@?ecosistema_jaraba_core.tenant_context'
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # =====================================================================
+  # WhatsApp Commerce: Catálogo + Pedidos rápidos
+  # =====================================================================
+  jaraba_agroconecta_core.whatsapp_catalog_sync:
+    class: Drupal\jaraba_agroconecta_core\Service\WhatsAppCatalogSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_agroconecta_core.whatsapp'
+      - '@logger.channel.jaraba_agroconecta_core'
+
+  jaraba_agroconecta_core.whatsapp_order:
+    class: Drupal\jaraba_agroconecta_core\Service\WhatsAppOrderService
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_agroconecta_core.whatsapp'
+      - '@logger.channel.jaraba_agroconecta_core'

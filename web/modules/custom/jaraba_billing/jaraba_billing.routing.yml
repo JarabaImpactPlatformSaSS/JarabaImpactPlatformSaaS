@@ -360,3 +360,43 @@ jaraba_billing.api.addon.upcoming_invoice:
   requirements:
     _permission: 'view own invoices'
   methods: [GET]
+
+# ---------------------------------------------------------------------------
+# REDSYS / BIZUM CALLBACKS
+# ---------------------------------------------------------------------------
+
+# POST: Notificación asíncrona de Redsys (server-to-server, sin CSRF)
+jaraba_billing.redsys.notification:
+  path: '/api/v1/payments/redsys/notification'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RedsysCallbackController::notification'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+# GET: Retorno exitoso desde Redsys al usuario
+jaraba_billing.redsys.return_success:
+  path: '/api/v1/payments/redsys/return/success'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RedsysCallbackController::returnSuccess'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# GET: Retorno fallido desde Redsys al usuario
+jaraba_billing.redsys.return_failure:
+  path: '/api/v1/payments/redsys/return/failure'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RedsysCallbackController::returnFailure'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# POST: Iniciar pago Bizum (frontend → genera form data → redirect a Redsys)
+jaraba_billing.bizum.initiate:
+  path: '/api/v1/payments/bizum/initiate'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RedsysCallbackController::initiateBizum'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  methods: [POST]
+  options:
+    _csrf_request_header_token: 'TRUE'

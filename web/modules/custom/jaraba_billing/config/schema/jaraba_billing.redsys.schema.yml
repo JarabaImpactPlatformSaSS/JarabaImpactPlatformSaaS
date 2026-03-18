@@ -1,0 +1,16 @@
+jaraba_billing.redsys:
+  type: config_object
+  label: 'Redsys Configuration'
+  mapping:
+    merchant_code:
+      type: string
+      label: 'Merchant Code'
+    terminal:
+      type: string
+      label: 'Terminal'
+    environment:
+      type: string
+      label: 'Environment (test|live)'
+    bizum_enabled:
+      type: boolean
+      label: 'Bizum enabled'

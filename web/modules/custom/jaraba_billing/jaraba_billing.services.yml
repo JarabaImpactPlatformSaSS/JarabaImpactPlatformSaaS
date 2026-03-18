@@ -218,3 +218,30 @@ services:
       - ~
       - ~
       - ~
+
+  # =====================================================================
+  # RedsysGatewayService: Integración Redsys API para Bizum
+  # Responsabilidad: firma HMAC-SHA256, redirect, callback, Bizum
+  # SECRET-MGMT-001: clave via getenv('REDSYS_SECRET_KEY')
+  # =====================================================================
+  jaraba_billing.redsys_gateway:
+    class: Drupal\jaraba_billing\Service\RedsysGatewayService
+    arguments:
+      - '@logger.channel.jaraba_billing'
+      - '@config.factory'
+
+  # ===========================================
+  # SETUP WIZARD + DAILY ACTIONS — Métodos de pago
+  # ===========================================
+
+  # Setup Wizard step: Métodos de pago (GAP pagos rápidos)
+  jaraba_billing.setup_wizard.payment_methods:
+    class: Drupal\jaraba_billing\SetupWizard\PaymentMethodsStep
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # Daily Action: Revisar métodos de pago
+  jaraba_billing.daily_action.review_payment_methods:
+    class: Drupal\jaraba_billing\DailyActions\ReviewPaymentMethodsAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

@@ -93,6 +93,11 @@ class CheckoutSessionService {
     ])->toString();
 
     // Parametros de la Checkout Session.
+    // Stripe Embedded Checkout con Automatic Payment Methods (por defecto):
+    // NO enviar payment_method_types — Stripe auto-detecta Apple Pay,
+    // Google Pay, Link, SEPA y tarjeta según configuración del Dashboard
+    // y capacidades del dispositivo del usuario.
+    // Habilitar métodos en: Stripe Dashboard → Settings → Payment methods.
     $params = [
       'mode' => 'subscription',
       'ui_mode' => 'embedded',
