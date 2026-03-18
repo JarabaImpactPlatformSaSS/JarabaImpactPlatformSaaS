@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_comercio_conecta\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -42,7 +43,7 @@ class ReviewRetailAccessControlHandler extends EntityAccessControlHandler implem
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Admin bypass.
     if ($account->hasPermission('manage comercio reviews')) {
       return AccessResult::allowed()->cachePerPermissions();

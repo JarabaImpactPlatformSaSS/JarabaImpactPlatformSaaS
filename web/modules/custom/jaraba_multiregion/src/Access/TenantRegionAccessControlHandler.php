@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_multiregion\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -47,7 +48,7 @@ class TenantRegionAccessControlHandler extends EntityAccessControlHandler {
    *
    * SINTAXIS: Retorna AccessResult con metadata de cache apropiada.
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Cortocircuito administrativo: acceso total si tiene permiso global.
     if ($account->hasPermission('administer multiregion')) {
       return AccessResult::allowed()->cachePerPermissions();

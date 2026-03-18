@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_customer_success\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -17,7 +18,7 @@ class VerticalRetentionProfileAccessControlHandler extends EntityAccessControlHa
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     return match ($operation) {
       'view' => AccessResult::allowedIfHasPermission($account, 'view customer health scores'),
       'update', 'delete' => AccessResult::allowedIfHasPermission($account, 'administer customer success'),

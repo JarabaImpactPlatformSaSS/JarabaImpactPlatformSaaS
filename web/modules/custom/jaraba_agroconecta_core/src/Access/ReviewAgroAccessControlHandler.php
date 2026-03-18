@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -41,7 +42,7 @@ class ReviewAgroAccessControlHandler extends EntityAccessControlHandler implemen
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     /** @var \Drupal\jaraba_agroconecta_core\Entity\ReviewAgro $entity */
     $admin_permission = $this->entityType->getAdminPermission();
 

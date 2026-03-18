@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_diagnostic;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -21,7 +22,7 @@ class EmployabilityDiagnosticAccessControlHandler extends EntityAccessControlHan
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     $adminPermission = 'administer employability diagnostics';
 
     if ($account->hasPermission($adminPermission)) {

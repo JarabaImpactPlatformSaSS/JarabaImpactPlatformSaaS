@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para CsPlaybook.
@@ -21,7 +22,7 @@ class CsPlaybookAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     return match($operation) {
       'view', 'update' => AccessResult::allowedIfHasPermission($account, 'manage playbooks'),
       'delete' => AccessResult::allowedIfHasPermission($account, 'administer customer success'),

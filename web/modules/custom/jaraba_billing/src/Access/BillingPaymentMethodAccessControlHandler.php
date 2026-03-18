@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_billing\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -20,7 +21,7 @@ class BillingPaymentMethodAccessControlHandler extends EntityAccessControlHandle
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('administer billing')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

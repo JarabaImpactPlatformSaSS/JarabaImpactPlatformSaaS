@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Drupal\jaraba_comercio_conecta\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 class FlashOfferClaimAccessControlHandler extends EntityAccessControlHandler {
 
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('manage comercio flash offers')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_vault\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -21,7 +22,7 @@ class DocumentAuditLogAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Append-only: jamas permitir update o delete.
     if (in_array($operation, ['update', 'delete'], TRUE)) {
       return AccessResult::forbidden('Audit log entries are immutable.')

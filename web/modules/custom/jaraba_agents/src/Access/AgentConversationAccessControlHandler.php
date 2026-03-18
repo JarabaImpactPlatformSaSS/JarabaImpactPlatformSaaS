@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agents\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -28,7 +29,7 @@ class AgentConversationAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Acceso completo para administradores en cualquier operacion.
     if ($account->hasPermission('administer agents')) {
       return AccessResult::allowed()->cachePerPermissions();

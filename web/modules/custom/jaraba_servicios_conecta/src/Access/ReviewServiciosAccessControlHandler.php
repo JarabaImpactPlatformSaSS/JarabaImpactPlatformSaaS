@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_servicios_conecta\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -40,7 +41,7 @@ class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler imp
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('manage servicios reviews')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

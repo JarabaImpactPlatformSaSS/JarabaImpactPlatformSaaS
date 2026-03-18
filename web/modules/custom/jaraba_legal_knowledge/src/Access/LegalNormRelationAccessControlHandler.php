@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_knowledge\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -42,7 +43,7 @@ class LegalNormRelationAccessControlHandler extends EntityAccessControlHandler i
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('administer legal knowledge')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
