@@ -319,15 +319,34 @@ class PricingController extends ControllerBase
             ];
         }
 
-        // NO-HARDCODE-PRICE-001: Overview tiers with dynamic prices.
+        // NO-HARDCODE-PRICE-001: Overview tiers with "Desde X€/mes" — minimum
+        // price across all verticals for each tier. '_default' has no SaasPlan
+        // entities, so we compute min prices from the 7 priority verticals.
         $overviewTiers = [];
         if ($this->pricingService) {
-            $defaultTiers = $this->pricingService->getPricingPreview('_default');
-            foreach ($defaultTiers as $tier) {
+            // Collect prices from all priority verticals per tier.
+            $tierMinPrices = [];
+            foreach ($priorityVerticals as $vKey) {
+                $vTiers = $this->pricingService->getPricingPreview($vKey);
+                foreach ($vTiers as $tier) {
+                    $tk = $tier['tier_key'];
+                    $pm = (float) ($tier['price_monthly'] ?? 0);
+                    if ($pm > 0 && (!isset($tierMinPrices[$tk]) || $pm < $tierMinPrices[$tk])) {
+                        $tierMinPrices[$tk] = $pm;
+                    }
+                }
+            }
+
+            // Build overview tiers with min prices from SaasPlanTier ConfigEntities.
+            $tierEntities = $this->pricingService->getPricingPreview(
+                $priorityVerticals[0] ?? 'empleabilidad'
+            );
+            foreach ($tierEntities as $tier) {
+                $tk = $tier['tier_key'];
                 $overviewTiers[] = [
                     'label' => $tier['label'],
-                    'tier_key' => $tier['tier_key'],
-                    'price_monthly' => $tier['price_monthly'],
+                    'tier_key' => $tk,
+                    'price_monthly' => $tierMinPrices[$tk] ?? 0.0,
                     'is_recommended' => $tier['is_recommended'],
                     'description' => $tier['description'],
                 ];
@@ -339,8 +358,8 @@ class PricingController extends ControllerBase
             '#verticals' => $verticals,
             '#overview_tiers' => $overviewTiers,
             '#page_title' => $this->t('Elige tu vertical y encuentra el plan perfecto'),
-            '#page_subtitle' => $this->t('7 soluciones verticalizadas. Todas empiezan gratis. Sin permanencia.'),
-            '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),
+            '#page_subtitle' => $this->t('7 soluciones verticalizadas. Sin permanencia. Cancela cuando quieras.'),
+            '#guarantee_text' => $this->getPlgGuaranteeText(),
             '#faq_items' => $this->getPricingFaq(),
             '#attached' => [
                 'library' => [
@@ -395,7 +414,7 @@ class PricingController extends ControllerBase
             '#vertical_label' => $verticalLabel,
             '#page_title' => $this->t('Planes @vertical', ['@vertical' => $verticalLabel]),
             '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. Empieza gratis, sin permanencia.'),
-            '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),
+            '#guarantee_text' => $this->getPlgGuaranteeText(),
             '#faq_items' => $this->getVerticalPricingFaq($vertical_key),
             '#attached' => [
                 'library' => [
@@ -502,6 +521,26 @@ class PricingController extends ControllerBase
      * @return array
      *   Array of FAQ items with 'question' and 'answer' keys.
      */
+    /**
+     * Obtiene el texto de garantía PLG desde Theme Settings (configurable desde UI).
+     *
+     * Falls back a texto por defecto si no está configurado.
+     * Directriz: textos PLG configurables desde Appearance > Ecosistema Jaraba Theme.
+     */
+    protected function getPlgGuaranteeText(): string
+    {
+        try {
+            $setting = theme_get_setting('plg_guarantee_text', 'ecosistema_jaraba_theme');
+            if (is_string($setting) && $setting !== '') {
+                return $setting;
+            }
+        }
+        catch (\Throwable) {
+            // Theme settings no disponibles.
+        }
+        return (string) $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.');
+    }
+
     protected function getVerticalPricingFaq(string $vertical_key): array
     {
         // Start with general FAQ items.
