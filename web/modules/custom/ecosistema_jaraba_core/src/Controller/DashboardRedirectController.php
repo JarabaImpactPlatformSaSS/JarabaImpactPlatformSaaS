@@ -50,8 +50,8 @@ class DashboardRedirectController extends ControllerBase {
       $url = Url::fromRoute($routeName)->toString();
     }
     catch (\Exception $e) {
-      // Fallback al dashboard del tenant si la ruta no existe.
-      $url = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard')->toString();
+      // Fallback al perfil del usuario (SaaS entry point) si la ruta no existe.
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $this->currentUser()->id()])->toString();
     }
 
     return new RedirectResponse($url, 302);

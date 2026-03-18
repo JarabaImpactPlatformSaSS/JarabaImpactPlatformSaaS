@@ -9,6 +9,8 @@ use Drupal\jaraba_comercio_conecta\Service\MerchantDashboardService;
 use Drupal\jaraba_comercio_conecta\Service\MerchantPayoutService;
 use Drupal\jaraba_comercio_conecta\Service\OrderRetailService;
 use Drupal\jaraba_comercio_conecta\Service\ProductRetailService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -43,6 +45,8 @@ class MerchantPortalController extends ControllerBase {
     protected ProductRetailService $productService,
     protected OrderRetailService $orderService,
     protected MerchantPayoutService $payoutService,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {}
 
   /**
@@ -54,6 +58,10 @@ class MerchantPortalController extends ControllerBase {
       $container->get('jaraba_comercio_conecta.product_retail'),
       $container->get('jaraba_comercio_conecta.order_retail'),
       $container->get('jaraba_comercio_conecta.merchant_payout'),
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -77,12 +85,21 @@ class MerchantPortalController extends ControllerBase {
     $kpis = $this->dashboardService->getMerchantKpis($merchant);
     $stock_alerts = $this->dashboardService->getStockAlerts($merchant);
 
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    $tenantId = (int) ($merchant->get('tenant_id')->value ?? 0);
+    $setupWizard = $this->wizardRegistry?->hasWizard('merchant_comercio')
+      ? $this->wizardRegistry->getStepsForWizard('merchant_comercio', $tenantId)
+      : NULL;
+    $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('merchant_comercio', $tenantId) ?? [];
+
     return [
       '#theme' => 'comercio_merchant_dashboard',
       '#merchant' => $merchant,
       '#kpis' => $kpis,
       '#stock_alerts' => $stock_alerts,
       '#recent_orders' => [],
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => [
           'jaraba_comercio_conecta/merchant-portal',

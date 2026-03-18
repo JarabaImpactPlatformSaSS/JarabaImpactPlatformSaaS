@@ -230,3 +230,63 @@ services:
       - { name: cache.bin }
     factory: cache_factory:get
     arguments: [copilot_triggers]
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Emprendedor)
+  # =========================================================================
+
+  jaraba_copilot_v2.setup_wizard.diagnostico:
+    class: Drupal\jaraba_copilot_v2\SetupWizard\EmprendedorDiagnosticoStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_copilot_v2.setup_wizard.canvas:
+    class: Drupal\jaraba_copilot_v2\SetupWizard\EmprendedorCanvasStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_copilot_v2.setup_wizard.hipotesis:
+    class: Drupal\jaraba_copilot_v2\SetupWizard\EmprendedorHipotesisStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_copilot_v2.setup_wizard.experimento:
+    class: Drupal\jaraba_copilot_v2\SetupWizard\EmprendedorExperimentoStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Emprendedor)
+  # =========================================================================
+
+  jaraba_copilot_v2.daily_action.validar:
+    class: Drupal\jaraba_copilot_v2\DailyActions\ValidarHipotesisAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_copilot_v2.daily_action.experimento:
+    class: Drupal\jaraba_copilot_v2\DailyActions\NuevoExperimentoAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_copilot_v2.daily_action.copilot:
+    class: Drupal\jaraba_copilot_v2\DailyActions\ChatCopilotEmprendedorAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_copilot_v2.daily_action.mentores:
+    class: Drupal\jaraba_copilot_v2\DailyActions\BuscarMentoresAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

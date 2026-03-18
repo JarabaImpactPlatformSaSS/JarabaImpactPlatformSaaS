@@ -5,9 +5,14 @@
  * PHANTOM-ARG-001: Detect services.yml arguments that don't match constructor params.
  *
  * Compares the number of arguments declared in services.yml with the number of
- * constructor parameters in the PHP class. Extra args in YAML cause
- * "Too many arguments" TypeError at runtime — a silent killer because
- * $container->has() returns TRUE but $container->get() throws.
+ * constructor parameters in the PHP class. Detects TWO failure modes:
+ *
+ * 1. PHANTOM args (YAML > constructor): "Too many arguments" TypeError.
+ * 2. MISSING args (YAML < required params): "Too few arguments" TypeError.
+ *    This is the more insidious bug because $container->has() returns TRUE
+ *    but $container->get() throws, silently breaking transitive dependencies
+ *    (e.g., a missing @current_user in LegalSearchService breaking the
+ *    entire CopilotOrchestratorService chain — 2026-03-17 incident).
  *
  * Usage: php scripts/validation/validate-phantom-args.php
  * Exit:  0 = clean, 1 = mismatches found
@@ -60,21 +65,37 @@ foreach ($iterator as $file) {
     }
 
     $checked++;
-    $constructorParamCount = countConstructorParams($classFile);
+    $paramInfo = countConstructorParams($classFile);
 
-    if ($constructorParamCount === NULL) {
+    if ($paramInfo === NULL) {
       // No constructor found — skip (might use parent).
       continue;
     }
 
-    if ($argCount > $constructorParamCount) {
+    $totalParams = $paramInfo['total'];
+    $requiredParams = $paramInfo['required'];
+
+    // Case 1: Too MANY args in YAML (phantom args).
+    if ($argCount > $totalParams) {
       $errors[] = sprintf(
         "  PHANTOM-ARG-001: %s\n    Service: %s\n    YAML args: %d, Constructor params: %d (%d phantom args)\n    File: %s",
         basename($file->getPathname()),
         $serviceId,
         $argCount,
-        $constructorParamCount,
-        $argCount - $constructorParamCount,
+        $totalParams,
+        $argCount - $totalParams,
+        $classFile
+      );
+    }
+    // Case 2: Too FEW args in YAML (missing required args).
+    elseif ($argCount < $requiredParams) {
+      $errors[] = sprintf(
+        "  PHANTOM-ARG-001: %s\n    Service: %s\n    YAML args: %d, Required constructor params: %d (%d missing args)\n    File: %s",
+        basename($file->getPathname()),
+        $serviceId,
+        $argCount,
+        $requiredParams,
+        $requiredParams - $argCount,
         $classFile
       );
     }
@@ -196,8 +217,16 @@ function resolveClassFile(string $className, string $modulesDir): ?string {
 
 /**
  * Count constructor parameters in a PHP file.
+ *
+ * Returns both total params and required (non-optional) params.
+ * A param is optional if it has a default value (= ...) or is nullable
+ * with = NULL. This allows detecting both phantom (too many) and
+ * missing (too few) arguments.
+ *
+ * @return array{total: int, required: int}|null
+ *   NULL if no constructor found.
  */
-function countConstructorParams(string $filePath): ?int {
+function countConstructorParams(string $filePath): ?array {
   $content = file_get_contents($filePath);
   if ($content === FALSE) {
     return NULL;
@@ -211,29 +240,46 @@ function countConstructorParams(string $filePath): ?int {
 
   $paramBlock = trim($m[1]);
   if ($paramBlock === '') {
-    return 0;
+    return ['total' => 0, 'required' => 0];
   }
 
-  // Count parameters by counting commas at the top level (not inside nested parens).
+  // Split parameters at top-level commas (not inside nested parens).
+  $params = [];
   $depth = 0;
-  $count = 1;
+  $current = '';
   for ($i = 0; $i < strlen($paramBlock); $i++) {
     $char = $paramBlock[$i];
     if ($char === '(') {
       $depth++;
+      $current .= $char;
     }
     elseif ($char === ')') {
       $depth--;
+      $current .= $char;
     }
     elseif ($char === ',' && $depth === 0) {
-      $count++;
+      $params[] = trim($current);
+      $current = '';
+    }
+    else {
+      $current .= $char;
+    }
+  }
+  $last = trim($current);
+  if ($last !== '') {
+    $params[] = $last;
+  }
+
+  $total = count($params);
+  $required = 0;
+
+  foreach ($params as $param) {
+    // A param is optional if it has a default value assignment.
+    // Patterns: `= NULL`, `= null`, `= 'value'`, `= []`, `= 0`, etc.
+    if (!preg_match('/=\s*\S/', $param)) {
+      $required++;
     }
   }
 
-  // Handle trailing comma.
-  if (preg_match('/,\s*$/', $paramBlock)) {
-    $count--;
-  }
-
-  return $count;
+  return ['total' => $total, 'required' => $required];
 }

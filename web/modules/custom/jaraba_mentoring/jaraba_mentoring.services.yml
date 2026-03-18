@@ -23,3 +23,61 @@ services:
     class: Drupal\jaraba_mentoring\Breadcrumb\MentoringBreadcrumbBuilder
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Mentor)
+  # =========================================================================
+
+  jaraba_mentoring.setup_wizard.perfil:
+    class: Drupal\jaraba_mentoring\SetupWizard\MentorPerfilStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_mentoring.setup_wizard.disponibilidad:
+    class: Drupal\jaraba_mentoring\SetupWizard\MentorDisponibilidadStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_mentoring.setup_wizard.sesion:
+    class: Drupal\jaraba_mentoring\SetupWizard\MentorPrimeraSesionStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Mentor)
+  # =========================================================================
+
+  jaraba_mentoring.daily_action.sesiones_pendientes:
+    class: Drupal\jaraba_mentoring\DailyActions\MentorSesionesPendientesAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_mentoring.daily_action.nueva_sesion:
+    class: Drupal\jaraba_mentoring\DailyActions\MentorNuevaSesionAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_mentoring.daily_action.resenas:
+    class: Drupal\jaraba_mentoring\DailyActions\MentorResenasAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_mentoring.daily_action.estadisticas:
+    class: Drupal\jaraba_mentoring\DailyActions\MentorEstadisticasAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

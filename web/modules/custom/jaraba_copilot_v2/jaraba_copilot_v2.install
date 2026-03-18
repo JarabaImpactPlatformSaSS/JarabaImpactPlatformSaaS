@@ -389,5 +389,50 @@ function jaraba_copilot_v2_requirements(string $phase): array {
     ];
   }
 
+  // AI-SERVICE-CHAIN-001: Verify the copilot orchestrator service chain
+  // instantiates without errors. A single missing arg in ANY transitive
+  // dependency (e.g., LegalSearchService missing @current_user) silently
+  // breaks the entire copilot, returning 503 to all users.
+  $aiServices = [
+    'jaraba_copilot_v2.copilot_orchestrator' => 'CopilotOrchestratorService',
+    'jaraba_copilot_v2.streaming_orchestrator' => 'StreamingOrchestratorService',
+    'jaraba_copilot_v2.mode_detector' => 'ModeDetectorService',
+    'jaraba_copilot_v2.normative_rag' => 'NormativeRAGService',
+    'jaraba_copilot_v2.copilot_cache' => 'CopilotCacheService',
+  ];
+  $brokenServices = [];
+
+  foreach ($aiServices as $serviceId => $label) {
+    try {
+      if (\Drupal::hasService($serviceId)) {
+        \Drupal::service($serviceId);
+      }
+      else {
+        $brokenServices[] = "$label (not registered)";
+      }
+    }
+    catch (\Throwable $e) {
+      $brokenServices[] = "$label: " . $e->getMessage();
+    }
+  }
+
+  if (!empty($brokenServices)) {
+    $requirements['jaraba_copilot_v2_ai_chain'] = [
+      'title' => t('Copilot IA: Service Chain'),
+      'value' => t('@count services broken', ['@count' => count($brokenServices)]),
+      'description' => t('The copilot will return 503 "El servicio de IA no está disponible" until fixed: @list', [
+        '@list' => implode('; ', $brokenServices),
+      ]),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $requirements['jaraba_copilot_v2_ai_chain'] = [
+      'title' => t('Copilot IA: Service Chain'),
+      'value' => t('All @count services instantiate correctly', ['@count' => count($aiServices)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
   return $requirements;
 }

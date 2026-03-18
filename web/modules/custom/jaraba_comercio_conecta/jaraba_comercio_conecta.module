@@ -66,6 +66,8 @@ function jaraba_comercio_conecta_theme(): array {
         'recent_orders' => [],
         'stock_alerts' => [],
         'sales_chart_data' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'comercio-merchant-dashboard',
     ],

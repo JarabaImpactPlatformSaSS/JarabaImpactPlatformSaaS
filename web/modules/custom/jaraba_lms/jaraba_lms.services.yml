@@ -126,3 +126,119 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_lms'
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Instructor LMS)
+  # =========================================================================
+
+  jaraba_lms.setup_wizard.curso:
+    class: Drupal\jaraba_lms\SetupWizard\InstructorCursoStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_lms.setup_wizard.leccion:
+    class: Drupal\jaraba_lms\SetupWizard\InstructorLeccionStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_lms.setup_wizard.publicar:
+    class: Drupal\jaraba_lms\SetupWizard\InstructorPublicarStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Instructor LMS)
+  # =========================================================================
+
+  jaraba_lms.daily_action.alumnos:
+    class: Drupal\jaraba_lms\DailyActions\GestionarAlumnosAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.nueva_leccion:
+    class: Drupal\jaraba_lms\DailyActions\NuevaLeccionAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.resenas:
+    class: Drupal\jaraba_lms\DailyActions\VerResenasLmsAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.analiticas:
+    class: Drupal\jaraba_lms\DailyActions\AnaliticasCursoAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Learner LMS)
+  # =========================================================================
+
+  jaraba_lms.setup_wizard.learner_perfil:
+    class: Drupal\jaraba_lms\SetupWizard\LearnerPerfilStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_lms.setup_wizard.learner_curso:
+    class: Drupal\jaraba_lms\SetupWizard\LearnerPrimerCursoStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_lms.setup_wizard.learner_leccion:
+    class: Drupal\jaraba_lms\SetupWizard\LearnerPrimeraLeccionStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Learner LMS)
+  # =========================================================================
+
+  jaraba_lms.daily_action.learner_continuar:
+    class: Drupal\jaraba_lms\DailyActions\LearnerContinuarCursoAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.learner_explorar:
+    class: Drupal\jaraba_lms\DailyActions\LearnerExplorarCataAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.learner_certificados:
+    class: Drupal\jaraba_lms\DailyActions\LearnerCertificadosAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_lms.daily_action.learner_resenas:
+    class: Drupal\jaraba_lms\DailyActions\LearnerResenasAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
 use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\jaraba_andalucia_ei\Service\AlertasNormativasService;
@@ -57,6 +58,7 @@ class CoordinadorDashboardController extends ControllerBase {
     protected ?EiAlumniBridgeService $alumniBridge = NULL,
     protected ?StoBidireccionalService $stoBidireccional = NULL,
     protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -98,6 +100,8 @@ class CoordinadorDashboardController extends ControllerBase {
         ? $container->get('jaraba_andalucia_ei.sto_bidireccional') : NULL,
       $container->has('ecosistema_jaraba_core.setup_wizard_registry')
         ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -211,7 +215,7 @@ class CoordinadorDashboardController extends ControllerBase {
       $setupWizard = $this->wizardRegistry->hasWizard('coordinador_ei')
         ? $this->wizardRegistry->getStepsForWizard('coordinador_ei', $tenantId)
         : NULL;
-      $dailyActions = $this->buildDailyActions($tenantId, $formacionStats, $voboPendientes ?? 0);
+      $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('coordinador_ei', $tenantId) ?? [];
     }
 
     // ROUTE-LANGPREFIX-001: URLs API via drupalSettings.

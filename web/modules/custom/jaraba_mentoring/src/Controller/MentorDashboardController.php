@@ -5,12 +5,41 @@ declare(strict_types=1);
 namespace Drupal\jaraba_mentoring\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for mentor dashboard.
  */
 class MentorDashboardController extends ControllerBase
 {
+
+    /**
+     * Constructs a MentorDashboardController.
+     */
+    public function __construct(
+        EntityTypeManagerInterface $entity_type_manager,
+        protected ?SetupWizardRegistry $wizardRegistry = NULL,
+        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
+    ) {
+        $this->entityTypeManager = $entity_type_manager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static
+    {
+        return new static(
+            $container->get('entity_type.manager'),
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
+        );
+    }
 
     /**
      * Displays the mentor dashboard.
@@ -43,14 +72,28 @@ class MentorDashboardController extends ControllerBase
         // Get pipeline (active engagements).
         $pipeline = $this->getPipeline($mentor_profile);
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        $tenantId = 0;
+        $setupWizard = NULL;
+        $dailyActions = [];
+        if ($this->wizardRegistry) {
+            $setupWizard = $this->wizardRegistry->hasWizard('mentor')
+                ? $this->wizardRegistry->getStepsForWizard('mentor', $tenantId)
+                : NULL;
+            $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('mentor', $tenantId) ?? [];
+        }
+
         return [
             '#theme' => 'mentor_dashboard',
             '#kpis' => $kpis,
             '#pipeline' => $pipeline,
             '#upcoming_sessions' => $upcoming_sessions,
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => [
                     'jaraba_mentoring/mentor_dashboard',
+                    'ecosistema_jaraba_theme/setup-wizard',
                 ],
             ],
         ];

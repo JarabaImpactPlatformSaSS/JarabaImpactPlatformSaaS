@@ -8,6 +8,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -35,6 +37,8 @@ class InstructorDashboardController extends ControllerBase {
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
     Connection $database,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     // CONTROLLER-READONLY-001: asignar manualmente propiedad heredada.
     $this->entityTypeManager = $entity_type_manager;
@@ -47,6 +51,10 @@ class InstructorDashboardController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('current_user'),
       $container->get('database'),
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -64,6 +72,15 @@ class InstructorDashboardController extends ControllerBase {
       ->condition('author_id', $uid)
       ->sort('changed', 'DESC')
       ->execute();
+
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    $tenantId = \Drupal::hasService('ecosistema_jaraba_core.tenant_context')
+      ? (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId()
+      : 0;
+    $setupWizard = $this->wizardRegistry?->hasWizard('instructor_lms')
+      ? $this->wizardRegistry->getStepsForWizard('instructor_lms', $tenantId)
+      : NULL;
+    $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('instructor_lms', $tenantId) ?? [];
 
     $courses = [];
     foreach ($course_storage->loadMultiple($ids) as $course) {
@@ -107,6 +124,8 @@ class InstructorDashboardController extends ControllerBase {
       '#theme' => 'lms_instructor_courses',
       '#courses' => $courses,
       '#total' => count($courses),
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => ['jaraba_lms/instructor-dashboard'],
       ],

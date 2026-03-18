@@ -29,6 +29,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_ai_agents\ProactiveInsightListBuilder",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_ai_agents\ProactiveInsightAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\jaraba_ai_agents\Form\ProactiveInsightForm",

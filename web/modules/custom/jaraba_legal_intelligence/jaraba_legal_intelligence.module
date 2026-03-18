@@ -424,6 +424,8 @@ function jaraba_legal_intelligence_theme(): array {
         'bookmarks' => [],
         'alerts' => [],
         'searches' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
     ],
     // Dashboard admin con metricas de ingesta.

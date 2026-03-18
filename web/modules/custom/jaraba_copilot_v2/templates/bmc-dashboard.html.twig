@@ -27,6 +27,24 @@
     {% endif %}
   </div>
 
+  {# === SETUP WIZARD — SETUP-WIZARD-DAILY-001 === #}
+  {% if setup_wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: setup_wizard,
+      wizard_title: 'Configura tu proyecto emprendedor'|t,
+      wizard_subtitle: 'Sigue estos pasos para validar tu modelo de negocio'|t,
+      collapsed_label: 'Proyecto configurado'|t,
+    } only %}
+  {% endif %}
+
+  {# === DAILY ACTIONS — SETUP-WIZARD-DAILY-001 === #}
+  {% if daily_actions is not empty %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones del día'|t,
+    } only %}
+  {% endif %}
+
   {% if impact_points is defined %}
     {% include '@jaraba_copilot_v2/partials/_impact-points-bar.html.twig' with {
       'points': impact_points,

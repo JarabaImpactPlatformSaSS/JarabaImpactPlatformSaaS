@@ -61,6 +61,8 @@ function jaraba_servicios_conecta_theme(): array {
         'upcoming_bookings' => [],
         'pending_bookings' => [],
         'recent_reviews' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'servicios-provider-dashboard',
     ],

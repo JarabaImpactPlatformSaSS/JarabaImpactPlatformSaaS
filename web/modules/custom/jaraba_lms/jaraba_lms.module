@@ -48,6 +48,8 @@ function jaraba_lms_theme(): array {
         'active_courses' => [],
         'completed_courses' => [],
         'stats' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'lms-dashboard',
     ],
@@ -100,6 +102,8 @@ function jaraba_lms_theme(): array {
       'variables' => [
         'courses' => [],
         'total' => 0,
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'lms-instructor-courses',
     ],

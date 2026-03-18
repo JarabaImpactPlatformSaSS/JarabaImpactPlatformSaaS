@@ -44,6 +44,8 @@ function jaraba_mentoring_theme(): array {
         'kpis' => [],
         'pipeline' => [],
         'upcoming_sessions' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'mentor-dashboard',
     ],

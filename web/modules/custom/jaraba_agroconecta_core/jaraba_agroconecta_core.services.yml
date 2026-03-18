@@ -243,3 +243,72 @@ services:
       - '@entity_type.manager'
       - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
       - '@logger.channel.jaraba_agroconecta_core'
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Producer Agro)
+  # =========================================================================
+
+  jaraba_agroconecta_core.setup_wizard.perfil:
+    class: Drupal\jaraba_agroconecta_core\SetupWizard\ProducerPerfilStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_agroconecta_core.setup_wizard.certificacion:
+    class: Drupal\jaraba_agroconecta_core\SetupWizard\ProducerCertificacionStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_agroconecta_core.setup_wizard.catalogo:
+    class: Drupal\jaraba_agroconecta_core\SetupWizard\ProducerCatalogoStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_agroconecta_core.setup_wizard.envio:
+    class: Drupal\jaraba_agroconecta_core\SetupWizard\ProducerEnvioStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_agroconecta_core.setup_wizard.trazabilidad:
+    class: Drupal\jaraba_agroconecta_core\SetupWizard\ProducerTrazabilidadStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Producer Agro)
+  # =========================================================================
+
+  jaraba_agroconecta_core.daily_action.pedidos:
+    class: Drupal\jaraba_agroconecta_core\DailyActions\PedidosPendientesAgroAction
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_agroconecta_core.daily_action.producto:
+    class: Drupal\jaraba_agroconecta_core\DailyActions\NuevoProductoAgroAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_agroconecta_core.daily_action.lote:
+    class: Drupal\jaraba_agroconecta_core\DailyActions\RegistrarLoteAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_agroconecta_core.daily_action.alertas:
+    class: Drupal\jaraba_agroconecta_core\DailyActions\AlertasCalidadAction
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\jaraba_lms\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Drupal\jaraba_lms\Entity\EnrollmentInterface;
 use Drupal\jaraba_lms\Service\EnrollmentService;
 use Drupal\jaraba_lms\Service\ProgressTrackingService;
@@ -27,12 +29,28 @@ class LearnerController extends ControllerBase
     protected ProgressTrackingService $progressService;
 
     /**
+     * The setup wizard registry.
+     */
+    protected ?SetupWizardRegistry $wizardRegistry;
+
+    /**
+     * The daily actions registry.
+     */
+    protected ?DailyActionsRegistry $dailyActionsRegistry;
+
+    /**
      * Constructor.
      */
-    public function __construct(EnrollmentService $enrollment_service, ProgressTrackingService $progress_service)
-    {
+    public function __construct(
+        EnrollmentService $enrollment_service,
+        ProgressTrackingService $progress_service,
+        ?SetupWizardRegistry $wizard_registry = NULL,
+        ?DailyActionsRegistry $daily_actions_registry = NULL,
+    ) {
         $this->enrollmentService = $enrollment_service;
         $this->progressService = $progress_service;
+        $this->wizardRegistry = $wizard_registry;
+        $this->dailyActionsRegistry = $daily_actions_registry;
     }
 
     /**
@@ -42,7 +60,11 @@ class LearnerController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_lms.enrollment'),
-            $container->get('jaraba_lms.progress')
+            $container->get('jaraba_lms.progress'),
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
         );
     }
 
@@ -74,11 +96,25 @@ class LearnerController extends ControllerBase
             }
         }
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        $setupWizard = NULL;
+        $dailyActions = [];
+        if ($this->wizardRegistry) {
+            // Learner wizard is user-scoped; tenantId=0 as fallback.
+            $tenantId = 0;
+            $setupWizard = $this->wizardRegistry->hasWizard('learner_lms')
+                ? $this->wizardRegistry->getStepsForWizard('learner_lms', $tenantId)
+                : NULL;
+            $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('learner_lms', $tenantId) ?? [];
+        }
+
         return [
             '#theme' => 'lms_dashboard',
             '#active_courses' => $active,
             '#completed_courses' => $completed,
             '#stats' => $this->progressService->getUserLearningStats($user_id),
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => ['jaraba_lms/dashboard'],
             ],

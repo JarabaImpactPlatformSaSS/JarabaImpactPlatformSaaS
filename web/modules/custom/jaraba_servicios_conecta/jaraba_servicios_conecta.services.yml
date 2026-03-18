@@ -107,3 +107,65 @@ services:
       - '@?jaraba_rag.qdrant_client'
       - '@?jaraba_servicios_conecta.availability'
       - '@?jaraba_ai_agents.smart_marketing_agent'
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Provider Servicios)
+  # =========================================================================
+
+  jaraba_servicios_conecta.setup_wizard.perfil:
+    class: Drupal\jaraba_servicios_conecta\SetupWizard\ProviderPerfilStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_servicios_conecta.setup_wizard.servicio:
+    class: Drupal\jaraba_servicios_conecta\SetupWizard\ProviderServicioStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_servicios_conecta.setup_wizard.paquete:
+    class: Drupal\jaraba_servicios_conecta\SetupWizard\ProviderPaqueteStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_servicios_conecta.setup_wizard.disponibilidad:
+    class: Drupal\jaraba_servicios_conecta\SetupWizard\ProviderDisponibilidadStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Provider Servicios)
+  # =========================================================================
+
+  jaraba_servicios_conecta.daily_action.reservas:
+    class: Drupal\jaraba_servicios_conecta\DailyActions\ReservasPendientesAction
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_servicios_conecta.daily_action.servicio:
+    class: Drupal\jaraba_servicios_conecta\DailyActions\NuevoServicioAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_servicios_conecta.daily_action.horario:
+    class: Drupal\jaraba_servicios_conecta\DailyActions\GestionarHorarioAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_servicios_conecta.daily_action.resenas:
+    class: Drupal\jaraba_servicios_conecta\DailyActions\VerResenasServiciosAction
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

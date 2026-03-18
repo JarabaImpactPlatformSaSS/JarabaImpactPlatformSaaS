@@ -53,6 +53,11 @@ class HealthCheckController extends ControllerBase
         // Componente 4: Qdrant vectorial (no crítico).
         $components['qdrant'] = $this->checkQdrant();
 
+        // Componente 5: AI Copilot service chain (no crítico).
+        // AI-SERVICE-CHAIN-001: Detect broken transitive dependencies
+        // that cause 503 "El servicio de IA no está disponible".
+        $components['ai_copilot'] = $this->checkAiCopilot();
+
         $response = [
             'status' => $healthy ? 'ok' : 'degraded',
             'timestamp' => gmdate('c'),
@@ -217,6 +222,42 @@ class HealthCheckController extends ControllerBase
                 'message' => 'Qdrant unavailable',
             ];
         }
+    }
+
+    /**
+     * Verifica la cadena de servicios del copilot de IA (no crítico).
+     *
+     * AI-SERVICE-CHAIN-001: Un argumento faltante en cualquier dependencia
+     * transitiva (ej: LegalSearchService sin @current_user) rompe toda la
+     * cadena del orquestador → 503 para todos los usuarios.
+     */
+    protected function checkAiCopilot(): array
+    {
+        $services = [
+            'jaraba_copilot_v2.copilot_orchestrator',
+            'jaraba_copilot_v2.streaming_orchestrator',
+        ];
+        $broken = [];
+
+        foreach ($services as $serviceId) {
+            try {
+                if (\Drupal::hasService($serviceId)) {
+                    \Drupal::service($serviceId);
+                }
+                // Optional services that are not registered are OK.
+            } catch (\Throwable $e) {
+                $broken[] = $serviceId;
+            }
+        }
+
+        if (!empty($broken)) {
+            return [
+                'status' => 'warning',
+                'message' => 'Broken: ' . implode(', ', $broken),
+            ];
+        }
+
+        return ['status' => 'ok'];
     }
 
 }

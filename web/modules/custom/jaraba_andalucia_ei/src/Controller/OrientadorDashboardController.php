@@ -6,7 +6,9 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Drupal\jaraba_andalucia_ei\Service\ExpedienteCompletenessService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,6 +29,8 @@ class OrientadorDashboardController extends ControllerBase {
     protected ExpedienteCompletenessService $completenessService,
     protected ?TenantContextService $tenantContext,
     protected LoggerInterface $logger,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -40,6 +44,10 @@ class OrientadorDashboardController extends ControllerBase {
       $container->get('jaraba_andalucia_ei.expediente_completeness'),
       $container->get('ecosistema_jaraba_core.tenant_context', ContainerInterface::NULL_ON_INVALID_REFERENCE),
       $container->get('logger.channel.jaraba_andalucia_ei'),
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -71,6 +79,16 @@ class OrientadorDashboardController extends ControllerBase {
       $completenessMap[$p['id']] = $this->completenessService->getCompleteness($p['id']);
     }
 
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    $setupWizard = NULL;
+    $dailyActions = [];
+    if ($this->wizardRegistry && $tenantId) {
+      $setupWizard = $this->wizardRegistry->hasWizard('orientador_ei')
+        ? $this->wizardRegistry->getStepsForWizard('orientador_ei', $tenantId)
+        : NULL;
+      $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('orientador_ei', $tenantId) ?? [];
+    }
+
     return [
       '#theme' => 'orientador_dashboard',
       '#mentor_profile' => $mentorProfile,
@@ -78,6 +96,8 @@ class OrientadorDashboardController extends ControllerBase {
       '#pending_sheets' => $pendingSheets,
       '#upcoming_sessions' => $upcomingSessions,
       '#completeness_map' => $completenessMap,
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#stats' => [
         'total_participants' => count($participants),
         'pending_signatures' => count($pendingSheets),

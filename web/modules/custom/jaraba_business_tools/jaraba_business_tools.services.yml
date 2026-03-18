@@ -63,3 +63,55 @@ services:
     tags:
       - { name: breadcrumb_builder, priority: 100 }
 
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Entrepreneur)
+  # =========================================================================
+
+  jaraba_business_tools.setup_wizard.perfil:
+    class: Drupal\jaraba_business_tools\SetupWizard\EntrepreneurPerfilStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_business_tools.setup_wizard.diagnostico:
+    class: Drupal\jaraba_business_tools\SetupWizard\EntrepreneurDiagnosticoStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_business_tools.setup_wizard.canvas:
+    class: Drupal\jaraba_business_tools\SetupWizard\EntrepreneurCanvasStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Entrepreneur)
+  # =========================================================================
+
+  jaraba_business_tools.daily_action.canvas:
+    class: Drupal\jaraba_business_tools\DailyActions\EntrepreneurCanvasAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_business_tools.daily_action.aprendizaje:
+    class: Drupal\jaraba_business_tools\DailyActions\EntrepreneurAprendizajeAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_business_tools.daily_action.herramientas:
+    class: Drupal\jaraba_business_tools\DailyActions\EntrepreneurHerramientasAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_business_tools.daily_action.kpis:
+    class: Drupal\jaraba_business_tools\DailyActions\EntrepreneurKpisAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+

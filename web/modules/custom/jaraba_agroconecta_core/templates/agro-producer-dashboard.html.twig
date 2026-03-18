@@ -24,6 +24,24 @@
     </nav>
   </div>
 
+  {# === SETUP WIZARD — SETUP-WIZARD-DAILY-001 === #}
+  {% if setup_wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: setup_wizard,
+      wizard_title: 'Configura tu explotación'|t,
+      wizard_subtitle: 'Completa estos pasos para empezar a vender tus productos'|t,
+      collapsed_label: 'Explotación configurada'|t,
+    } only %}
+  {% endif %}
+
+  {# === DAILY ACTIONS — SETUP-WIZARD-DAILY-001 === #}
+  {% if daily_actions is not empty %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones del día'|t,
+    } only %}
+  {% endif %}
+
   {# Alertas #}
   {% if alerts is not empty %}
     <div class="producer-portal__alerts" role="alert" aria-label="{{ 'Alertas del productor'|t }}">

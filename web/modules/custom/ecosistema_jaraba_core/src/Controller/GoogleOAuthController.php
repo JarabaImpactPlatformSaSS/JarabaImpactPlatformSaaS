@@ -173,7 +173,7 @@ class GoogleOAuthController extends ControllerBase
       $this->messenger()->addStatus($this->t('¡Bienvenido, @name! Tu cuenta ha sido creada.', ['@name' => $name]));
     }
 
-    // Redirect to stored destination or dashboard.
+    // Redirect to stored destination or user profile (SaaS entry point).
     $destination = $request->getSession()->get('google_oauth_destination', '');
     $request->getSession()->remove('google_oauth_destination');
 
@@ -181,7 +181,9 @@ class GoogleOAuthController extends ControllerBase
       return new RedirectResponse($destination);
     }
 
-    $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard', [], ['absolute' => TRUE])->toString();
+    // The user profile is the unified entry point to the entire SaaS —
+    // consistent with core UserLoginForm::submitForm() behavior.
+    $redirectUrl = Url::fromRoute('entity.user.canonical', ['user' => $account->id()], ['absolute' => TRUE])->toString();
     return new RedirectResponse($redirectUrl);
   }
 

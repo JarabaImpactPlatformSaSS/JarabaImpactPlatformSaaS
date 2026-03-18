@@ -180,6 +180,8 @@ function jaraba_andalucia_ei_theme(): array {
         'upcoming_sessions' => [],
         'completeness_map' => [],
         'stats' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'orientador-dashboard',
     ],

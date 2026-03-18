@@ -312,3 +312,74 @@ services:
       - '@current_route_match'
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Merchant Comercio)
+  # =========================================================================
+
+  jaraba_comercio_conecta.setup_wizard.perfil:
+    class: Drupal\jaraba_comercio_conecta\SetupWizard\MerchantPerfilStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_comercio_conecta.setup_wizard.catalogo:
+    class: Drupal\jaraba_comercio_conecta\SetupWizard\MerchantCatalogoStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_comercio_conecta.setup_wizard.envio:
+    class: Drupal\jaraba_comercio_conecta\SetupWizard\MerchantEnvioStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_comercio_conecta.setup_wizard.pagos:
+    class: Drupal\jaraba_comercio_conecta\SetupWizard\MerchantPagosStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_comercio_conecta.setup_wizard.qr:
+    class: Drupal\jaraba_comercio_conecta\SetupWizard\MerchantQrStep
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Merchant Comercio)
+  # =========================================================================
+
+  jaraba_comercio_conecta.daily_action.pedidos:
+    class: Drupal\jaraba_comercio_conecta\DailyActions\PedidosPendientesAction
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_comercio_conecta.daily_action.producto:
+    class: Drupal\jaraba_comercio_conecta\DailyActions\NuevoProductoComercioAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_comercio_conecta.daily_action.stock:
+    class: Drupal\jaraba_comercio_conecta\DailyActions\GestionarStockAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_comercio_conecta.daily_action.analiticas:
+    class: Drupal\jaraba_comercio_conecta\DailyActions\VerAnaliticasComercioAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_comercio_conecta.daily_action.ofertas:
+    class: Drupal\jaraba_comercio_conecta\DailyActions\OfertasFlashAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

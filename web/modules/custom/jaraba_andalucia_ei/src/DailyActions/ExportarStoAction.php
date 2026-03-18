@@ -1,0 +1,80 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\jaraba_andalucia_ei\DailyActions;
+
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionInterface;
+
+/**
+ * Daily action: export STO file for SEPE compliance.
+ *
+ * No slide-panel — navigates to the export page.
+ */
+class ExportarStoAction implements DailyActionInterface {
+
+  use StringTranslationTrait;
+
+  public function getId(): string {
+    return 'coordinador_ei.sto';
+  }
+
+  public function getDashboardId(): string {
+    return 'coordinador_ei';
+  }
+
+  public function getLabel(): TranslatableMarkup {
+    return $this->t('Exportar STO');
+  }
+
+  public function getDescription(): TranslatableMarkup {
+    return $this->t('Generar fichero STO para SEPE');
+  }
+
+  public function getIcon(): array {
+    return ['category' => 'business', 'name' => 'file-export', 'variant' => 'duotone'];
+  }
+
+  public function getColor(): string {
+    return 'naranja-impulso';
+  }
+
+  public function getRoute(): string {
+    return 'jaraba_andalucia_ei.sto_export';
+  }
+
+  public function getRouteParameters(): array {
+    return [];
+  }
+
+  public function getHrefOverride(): ?string {
+    return NULL;
+  }
+
+  public function useSlidePanel(): bool {
+    return FALSE;
+  }
+
+  public function getSlidePanelSize(): string {
+    return 'medium';
+  }
+
+  public function getWeight(): int {
+    return 40;
+  }
+
+  public function isPrimary(): bool {
+    return FALSE;
+  }
+
+  public function getContext(int $tenantId): array {
+    return [
+      'badge' => NULL,
+      'badge_type' => 'info',
+      'visible' => TRUE,
+    ];
+  }
+
+}

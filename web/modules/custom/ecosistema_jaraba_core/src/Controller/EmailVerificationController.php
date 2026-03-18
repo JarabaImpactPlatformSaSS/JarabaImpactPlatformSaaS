@@ -76,9 +76,9 @@ class EmailVerificationController extends ControllerBase {
 
     $this->messenger()->addStatus($this->t('¡Tu email ha sido verificado correctamente! Gracias.'));
 
-    // Redirect to dashboard if logged in, login page if not.
+    // Redirect to user profile (SaaS entry point) if logged in, login page if not.
     if ($this->currentUser()->isAuthenticated()) {
-      $redirectUrl = Url::fromRoute('ecosistema_jaraba_core.tenant.dashboard', [], ['absolute' => TRUE])->toString();
+      $redirectUrl = Url::fromRoute('entity.user.canonical', ['user' => $this->currentUser()->id()], ['absolute' => TRUE])->toString();
     }
     else {
       $redirectUrl = Url::fromRoute('user.login', [], ['absolute' => TRUE])->toString();

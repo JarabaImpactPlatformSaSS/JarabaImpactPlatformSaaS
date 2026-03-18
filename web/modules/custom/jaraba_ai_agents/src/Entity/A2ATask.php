@@ -25,6 +25,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   },
  *   handlers = {
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_ai_agents\A2ATaskAccessControlHandler",
  *   },
  *   admin_permission = "administer ai agents",

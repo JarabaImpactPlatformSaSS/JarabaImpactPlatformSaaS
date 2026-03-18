@@ -10,6 +10,8 @@ use Drupal\jaraba_agroconecta_core\Entity\OrderAgro;
 use Drupal\jaraba_agroconecta_core\Service\OrderService;
 use Drupal\jaraba_agroconecta_core\Service\ProducerDashboardService;
 use Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,6 +39,8 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
         protected ProducerDashboardService $dashboardService,
         protected OrderService $orderService,
         protected AgroAnalyticsService $analyticsService,
+        protected ?SetupWizardRegistry $wizardRegistry = NULL,
+        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
     ) {
     }
 
@@ -49,6 +53,10 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
             $container->get('jaraba_agroconecta_core.producer_dashboard_service'),
             $container->get('jaraba_agroconecta_core.order_service'),
             $container->get('jaraba_agroconecta_core.analytics_service'),
+            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+            $container->has('ecosistema_jaraba_core.daily_actions_registry')
+                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
         );
     }
 
@@ -74,6 +82,12 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
         $tenantId = (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId();
         $analytics = $this->analyticsService->getRecentAnalytics($tenantId, $producerId);
 
+        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+        $setupWizard = $this->wizardRegistry?->hasWizard('producer_agro')
+            ? $this->wizardRegistry->getStepsForWizard('producer_agro', $tenantId)
+            : NULL;
+        $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('producer_agro', $tenantId) ?? [];
+
         return [
             '#theme' => 'agro_producer_dashboard',
             '#kpis' => $kpis,
@@ -81,6 +95,8 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
             '#pending_orders' => $pendingOrders,
             '#top_products' => $topProducts,
             '#analytics' => $analytics,
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
             '#attached' => [
                 'library' => ['jaraba_agroconecta_core/agroconecta.producer'],
                 'drupalSettings' => [

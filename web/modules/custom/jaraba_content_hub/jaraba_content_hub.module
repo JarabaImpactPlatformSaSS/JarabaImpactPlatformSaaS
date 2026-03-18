@@ -149,6 +149,8 @@ function jaraba_content_hub_theme(): array {
         'logo' => NULL,
         'logged_in' => FALSE,
         'theme_settings' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
     ],
     // === Frontend List Templates (Tenant Editors - NO admin theme) ===

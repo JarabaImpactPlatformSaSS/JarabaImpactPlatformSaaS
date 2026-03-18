@@ -15,6 +15,7 @@ services:
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
       - '@ecosistema_jaraba_core.jarabalex_feature_gate'
+      - '@current_user'
 
   # === INGESTION: Orquestacion de ingesta de resoluciones ===
   jaraba_legal_intelligence.ingestion:
@@ -228,3 +229,58 @@ services:
       - '@http_client'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
+
+  # =========================================================================
+  # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Legal Professional)
+  # =========================================================================
+
+  jaraba_legal_intelligence.setup_wizard.areas:
+    class: Drupal\jaraba_legal_intelligence\SetupWizard\LegalAreasStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_legal_intelligence.setup_wizard.alertas:
+    class: Drupal\jaraba_legal_intelligence\SetupWizard\LegalAlertasStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_legal_intelligence.setup_wizard.favoritos:
+    class: Drupal\jaraba_legal_intelligence\SetupWizard\LegalFavoritosStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # =========================================================================
+  # Daily Actions — SETUP-WIZARD-DAILY-001 (Legal Professional)
+  # =========================================================================
+
+  jaraba_legal_intelligence.daily_action.buscar:
+    class: Drupal\jaraba_legal_intelligence\DailyActions\BuscarJurisprudenciaAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_legal_intelligence.daily_action.alertas:
+    class: Drupal\jaraba_legal_intelligence\DailyActions\AlertasNormativasLegalAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_legal_intelligence.daily_action.favoritos:
+    class: Drupal\jaraba_legal_intelligence\DailyActions\MisFavoritosLegalAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_legal_intelligence.daily_action.ia_legal:
+    class: Drupal\jaraba_legal_intelligence\DailyActions\ConsultarIaLegalAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

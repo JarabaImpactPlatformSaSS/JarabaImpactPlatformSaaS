@@ -72,6 +72,8 @@ function jaraba_agroconecta_core_theme(): array
                 'alerts' => [],
                 'pending_orders' => [],
                 'top_products' => [],
+                'setup_wizard' => NULL,
+                'daily_actions' => [],
             ],
             'template' => 'agro-producer-dashboard',
         ],

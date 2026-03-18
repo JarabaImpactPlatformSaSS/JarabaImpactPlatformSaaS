@@ -8,6 +8,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_servicios_conecta\Service\ProviderService;
 use Drupal\jaraba_servicios_conecta\Service\ServiceOfferingService;
 use Drupal\jaraba_servicios_conecta\Service\AvailabilityService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -44,6 +46,8 @@ class ProviderPortalController extends ControllerBase {
     ProviderService $provider_service,
     ServiceOfferingService $offering_service,
     AvailabilityService $availability_service,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     $this->providerService = $provider_service;
     $this->offeringService = $offering_service;
@@ -58,6 +62,10 @@ class ProviderPortalController extends ControllerBase {
       $container->get('jaraba_servicios_conecta.provider'),
       $container->get('jaraba_servicios_conecta.service_offering'),
       $container->get('jaraba_servicios_conecta.availability'),
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
     );
   }
 
@@ -71,6 +79,15 @@ class ProviderPortalController extends ControllerBase {
     }
 
     $upcoming = $this->availabilityService->getUpcomingBookings((int) $provider->id(), 5);
+
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    $tenantId = \Drupal::hasService('ecosistema_jaraba_core.tenant_context')
+      ? (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId()
+      : 0;
+    $setupWizard = $this->wizardRegistry?->hasWizard('provider_servicios')
+      ? $this->wizardRegistry->getStepsForWizard('provider_servicios', $tenantId)
+      : NULL;
+    $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('provider_servicios', $tenantId) ?? [];
 
     // KPIs del profesional
     $kpis = [
@@ -87,6 +104,8 @@ class ProviderPortalController extends ControllerBase {
       '#upcoming_bookings' => $upcoming,
       '#pending_bookings' => [],
       '#recent_reviews' => [],
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/provider-portal'],
       ],
