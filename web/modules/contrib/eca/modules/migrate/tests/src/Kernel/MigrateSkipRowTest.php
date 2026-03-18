@@ -10,6 +10,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\migrate\MigrateSkipRowException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the MigrateSkipRow action plugin.
@@ -17,6 +18,7 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('eca_migrate')]
 #[Group('eca')]
 #[CoversClass(MigrateSkipRow::class)]
+#[RunTestsInSeparateProcesses]
 class MigrateSkipRowTest extends KernelTestBase {
 
   /**

@@ -5,12 +5,14 @@ namespace Drupal\Tests\eca\Kernel\Model;
 use Drupal\eca_base\Hook\BaseHooks;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Model test for entity loops.
  */
 #[Group('eca')]
 #[Group('eca_model')]
+#[RunTestsInSeparateProcesses]
 class EntityLoopTest extends Base {
 
   /**

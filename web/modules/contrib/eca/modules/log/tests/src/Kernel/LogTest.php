@@ -8,12 +8,14 @@ use Drupal\eca\Entity\Eca;
 use Drupal\eca_log\Event\LogMessageEvent;
 use Drupal\eca_log\LogEvents;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for events provided by "eca_log".
  */
 #[Group('eca')]
 #[Group('eca_log')]
+#[RunTestsInSeparateProcesses]
 class LogTest extends KernelTestBase {
 
   /**

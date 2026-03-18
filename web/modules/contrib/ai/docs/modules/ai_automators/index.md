@@ -84,6 +84,15 @@ Field UI module enabled**.
          processes running at save, but can cause large delays between save and
          field population, particularly if there are large numbers of AI
          Automators waiting to be processed across the site.
+      4. Field Widget: processes the automator when triggered from a
+         Field Widget Action button in the content edit form. This allows
+         content creators to manually trigger AI generation on-demand via
+         AJAX without saving the entity. Use this worker type when you
+         want to add a "Generate" button to a field widget using the
+         Field Widget Actions module. The generated values are populated
+         directly into the form without saving the entity, allowing users
+         to review and edit before saving.
+
    10. **AI Provider**: If you want to use a specific AI Provider to run the AI
        Automator, you can select it here. For more information about AI
        Providers, please see [the documentation here](https://project.pages.drupalcode.org/ai/providers/matris/).
@@ -238,6 +247,18 @@ own implementation.
    }
   }
 ```
+
+## Field Widget Action Examples
+
+For step-by-step examples of configuring AI Automators with Field Widget Actions (FWA) to add "Generate" buttons in content edit forms, see the [Examples](examples/) section:
+
+- [FAQ Field + `faqfield_default` widget](examples/faq-field.md) - Generate FAQ entries from content using the `LLM: FAQ Field` automator
+- [Chart Field + `chart_config_default` widget](examples/chart-field.md) - Generate chart data from content using the `LLM: Chart From Text` automator
+- [Text to Audio Media](examples/text_to_audio_media_automator.md) - Generate audio from content using the `LLM: Media Audio Generation` automator
+- [Text to Image Field](examples/text_to_image_automator.md) - Generate image from content using the `LLM: Media Image Generation` automator
+- [Text to Image Media Field](examples/text_to_image_media_automator.md) - Generate image from content using the `LLM: Media Image Generation` automator
+- [Text to Address Field](examples/address_automator.md) - Generate address from content using the `LLM: Address` automator
+- [Metatag](examples/metatag_automator.md) - Generate metatags for content using the `LLM: Metatag` automator
 
 ## Developer documentation
 Check the [developers guide](../../developers/writing_an_ai_automators_plugin.md) for

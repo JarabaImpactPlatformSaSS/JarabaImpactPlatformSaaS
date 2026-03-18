@@ -5,12 +5,14 @@ namespace Drupal\Tests\eca\Kernel;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\KernelTests\KernelTestBase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests for ECA action eca_list_remove plugin.
  */
 #[Group('eca')]
 #[Group('eca_base')]
+#[RunTestsInSeparateProcesses]
 class ListRemoveTest extends KernelTestBase {
 
   /**

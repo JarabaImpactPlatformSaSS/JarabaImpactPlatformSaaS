@@ -811,21 +811,22 @@ display:
         options: {  }
       empty: {  }
       sorts:
-        id:
-          id: id
+        created:
+          id: created
           table: ai_log
-          field: id
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
           entity_type: ai_log
-          entity_field: id
-          plugin_id: standard
+          entity_field: created
+          plugin_id: date
           order: DESC
           expose:
             label: ''
             field_identifier: ''
           exposed: false
+          granularity: second
       arguments: {  }
       filters:
         bundle:

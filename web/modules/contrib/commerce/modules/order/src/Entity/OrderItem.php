@@ -10,6 +10,7 @@ use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Calculator;
 use Drupal\commerce_price\Price;
+use Drupal\Core\Url;
 
 /**
  * Defines the order item entity class.
@@ -67,6 +68,23 @@ class OrderItem extends CommerceContentEntityBase implements OrderItemInterface 
     $uri_route_parameters = parent::urlRouteParameters($rel);
     $uri_route_parameters['commerce_order'] = $this->getOrderId();
     return $uri_route_parameters;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toUrl($rel = NULL, array $options = []) {
+    // By default, when $rel is NULL Drupal tries to get the "canonical" link,
+    // and if "canonical" link is not defined Drupal tries to generate link for
+    // the "edit-form". The "edit-form" link for the order item requires
+    // "commerce_order" parameter which is added in "urlRouteParameters"
+    // and it should not be empty.
+    if ((is_null($rel) || in_array($rel, ['edit-form', 'delete-form'], TRUE))
+      && empty($this->getOrderId())
+    ) {
+      return Url::fromRoute('<nolink>');
+    }
+    return parent::toUrl($rel, $options);
   }
 
   /**

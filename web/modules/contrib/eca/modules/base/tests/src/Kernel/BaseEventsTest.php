@@ -9,12 +9,14 @@ use Drupal\eca_base\Event\CustomEvent;
 use Drupal\eca_test_array\Plugin\Action\ArrayIncrement;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for events provided by "eca_base".
  */
 #[Group('eca')]
 #[Group('eca_base')]
+#[RunTestsInSeparateProcesses]
 class BaseEventsTest extends KernelTestBase {
 
   /**

@@ -9,12 +9,14 @@ use Drupal\user\Entity\User;
 use Drupal\user\Event\UserEvents as CoreUserEvents;
 use Drupal\user\Event\UserFloodEvent;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for events provided by "eca_user".
  */
 #[Group('eca')]
 #[Group('eca_user')]
+#[RunTestsInSeparateProcesses]
 class UserEventsTest extends KernelTestBase {
 
   /**

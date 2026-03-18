@@ -9,12 +9,14 @@ use Drupal\node\Entity\NodeType;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for data transfer objects.
  */
 #[Group('eca')]
 #[Group('eca_core')]
+#[RunTestsInSeparateProcesses]
 class DataTransferObjectTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;

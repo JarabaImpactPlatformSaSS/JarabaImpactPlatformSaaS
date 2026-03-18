@@ -8,12 +8,14 @@ use Drupal\eca\Entity\Eca;
 use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for pre-configured actions.
  */
 #[Group('eca')]
 #[Group('eca_core')]
+#[RunTestsInSeparateProcesses]
 class PreconfiguredActionTest extends KernelTestBase {
 
   /**

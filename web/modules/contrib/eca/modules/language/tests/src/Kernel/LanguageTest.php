@@ -15,6 +15,7 @@ use Drupal\eca_language\Plugin\LanguageNegotiation\EcaLanguageNegotiation;
 use Drupal\language\ConfigurableLanguageManagerInterface;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\locale\StringStorageInterface;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use function current;
 use function parse_url;
 use PHPUnit\Framework\Attributes\Group;
@@ -24,6 +25,7 @@ use PHPUnit\Framework\Attributes\Group;
  */
 #[Group('eca')]
 #[Group('eca_language')]
+#[RunTestsInSeparateProcesses]
 class LanguageTest extends KernelTestBase {
 
   /**

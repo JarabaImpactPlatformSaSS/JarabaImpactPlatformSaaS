@@ -10,6 +10,11 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface AiProviderInterface extends PluginInspectionInterface {
 
   /**
+   * Constant for the default provider/model option value.
+   */
+  public const DEFAULT_MODEL_VALUE = '__default__';
+
+  /**
    * Provides associative array with a list of models' IDs.
    *
    * Keyed with model IDs, valued with human-readable names

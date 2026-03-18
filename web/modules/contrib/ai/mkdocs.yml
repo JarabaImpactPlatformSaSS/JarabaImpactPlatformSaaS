@@ -64,11 +64,15 @@ nav:
       - Image Classification Call: developers/call_image_classification.md
       - Translate Text Call: developers/call_translate_text.md
       - Image-To-Image Call: developers/call_image_to_image.md
+      - Object Detection Call: developers/call_object_detection.md
     - Plugins/Managers:
+      - Function Call Plugins: developers/function_call.md
       - Function Call Schema: developers/function_call_schema.md
       - Short-Term Memory: developers/short_term_memory.md
     - Helper Services:
       - Chat History Form Element: developers/chat_history_element.md
+      - CSS / JS / Icon Utility Library: developers/css_utility_library.md
+      - Provider Config Schema: developers/provider_config_schema.md
     - Develop an AI Provider:
       - Getting Started: developers/writing_an_ai_provider.md
       - Testing a Provider: developers/testing_an_ai_provider.md
@@ -77,11 +81,15 @@ nav:
     - DDEV: developers/ddev.md
     - Prompt Management: developers/ai_prompt_management.md
     - Mock a Provider: developers/virtual_provider.md
+    - Form Elements:
+      - Chat History: developers/chat_history_element.md
+      - MDXEditor: developers/mdxeditor.md
+      - JSON Schema Editor: developers/json_schema_editor.md
     - Develop for submodules:
-        - AI Assistant API Action: developers/develop_api_assistant_action.md
-        - Develop an AI API Explorer plugin: developers/ai_api_explorer.md
-        - Develop an AI Automators plugin: developers/writing_an_ai_automators_plugin.md
-        - AI CKEditor: developers/ck_editor_plugin.md
+      - AI Assistant API Action: developers/develop_api_assistant_action.md
+      - Develop an AI API Explorer plugin: developers/ai_api_explorer.md
+      - Develop an AI Automators plugin: developers/writing_an_ai_automators_plugin.md
+      - AI CKEditor: developers/ck_editor_plugin.md
   - Contribute:
     - Getting Started: contribute/index.md
     - Issue Guidelines: contribute/issue_guidelines.md

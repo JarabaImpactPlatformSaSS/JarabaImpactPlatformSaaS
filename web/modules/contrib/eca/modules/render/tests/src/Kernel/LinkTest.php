@@ -6,12 +6,14 @@ use Drupal\Core\Url;
 use Drupal\eca_test_render_basics\Event\BasicRenderEvent;
 use Drupal\eca_test_render_basics\RenderBasicsEvents;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests regarding ECA render Link action.
  */
 #[Group('eca')]
 #[Group('eca_render')]
+#[RunTestsInSeparateProcesses]
 class LinkTest extends RenderActionsTestBase {
 
   /**

@@ -8,12 +8,14 @@ use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests regarding inline entity forms.
  */
 #[Group('eca')]
 #[Group('eca_form')]
+#[RunTestsInSeparateProcesses]
 class InlineEntityFormTest extends KernelTestBase {
 
   /**

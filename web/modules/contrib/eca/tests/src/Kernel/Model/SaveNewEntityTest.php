@@ -3,12 +3,14 @@
 namespace Drupal\Tests\eca\Kernel\Model;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Model test for saving a new entity.
  */
 #[Group('eca')]
 #[Group('eca_model')]
+#[RunTestsInSeparateProcesses]
 class SaveNewEntityTest extends Base {
 
   /**

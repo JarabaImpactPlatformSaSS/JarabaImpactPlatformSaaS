@@ -5,12 +5,14 @@ namespace Drupal\Tests\eca_config\Kernel;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the "eca_config_write" action plugin.
  */
 #[Group('eca')]
 #[Group('eca_config')]
+#[RunTestsInSeparateProcesses]
 class ConfigWriteTest extends Base {
 
   /**

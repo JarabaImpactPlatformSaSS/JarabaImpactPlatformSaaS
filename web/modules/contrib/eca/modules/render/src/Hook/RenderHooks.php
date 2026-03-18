@@ -68,8 +68,8 @@ class RenderHooks {
         $variables['attributes'] = new Attribute($variables['attributes']);
       }
       $attributes = $variables['attributes'];
-      if (!isset($attributes['id'])) {
-        $attributes['id'] = Html::getUniqueId('eca-serialized');
+      if (!$attributes->hasAttribute('id')) {
+        $attributes->setAttribute('id', Html::getUniqueId('eca-serialized'));
         $attributes->addClass('eca-serialized');
       }
     }

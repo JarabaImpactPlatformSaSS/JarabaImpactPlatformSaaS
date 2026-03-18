@@ -26,6 +26,9 @@ block.settings.ai_deepchat_block:
     first_message:
       type: text
       label: First Message
+    loading_message:
+      type: text
+      label: Loading Message
     stream:
       type: integer
       label: Stream
@@ -56,3 +59,6 @@ block.settings.ai_deepchat_block:
     verbose_mode:
       type: boolean
       label: Verbose Mode
+    expansion_method:
+      type: string
+      label: Expansion Method

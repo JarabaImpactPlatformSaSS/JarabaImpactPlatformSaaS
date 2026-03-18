@@ -12,12 +12,14 @@ use Drupal\node\Entity\Node;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use Drupal\user\RoleInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests for ECA-extended Token replacement behavior.
  */
 #[Group('eca')]
 #[Group('eca_core')]
+#[RunTestsInSeparateProcesses]
 class TokenTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;

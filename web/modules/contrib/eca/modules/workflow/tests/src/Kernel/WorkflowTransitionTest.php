@@ -12,12 +12,14 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the "eca_workflow" action plugin.
  */
 #[Group('eca')]
 #[Group('eca_workflow')]
+#[RunTestsInSeparateProcesses]
 class WorkflowTransitionTest extends KernelTestBase {
 
   use ContentModerationTestTrait;

@@ -10,6 +10,7 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\language\Entity\ConfigurableLanguage;
+use Drupal\user\Plugin\Validation\Constraint\UserNameConstraint;
 
 /**
  * Tests the checkout of an order.
@@ -407,13 +408,14 @@ class CheckoutOrderTest extends CommerceBrowserTestBase {
     ], 'Create new account and continue');
     $this->assertSession()->pageTextContains('The email address guest@example.com is already taken.');
 
+    $user_name_constraint = new UserNameConstraint();
     $this->submitForm([
       'login[register][name]' => 'User @#.``^ ù % name invalid',
       'login[register][mail]' => 'guest2@example.com',
       'login[register][password][pass1]' => 'pass',
       'login[register][password][pass2]' => 'pass',
     ], 'Create new account and continue');
-    $this->assertSession()->pageTextContains('The username contains an illegal character.');
+    $this->assertSession()->pageTextContains($user_name_constraint->illegalMessage ?? $user_name_constraint->invalidMessage);
 
     $this->submitForm([
       'login[register][name]' => 'User name',
@@ -566,12 +568,13 @@ class CheckoutOrderTest extends CommerceBrowserTestBase {
     ], 'Create account');
     $this->assertSession()->pageTextContains('Password field is required.');
 
+    $user_name_constraint = new UserNameConstraint();
     $this->submitForm([
       'completion_register[name]' => 'User @#.``^ ù % name invalid',
       'completion_register[pass][pass1]' => 'pass',
       'completion_register[pass][pass2]' => 'pass',
     ], 'Create account');
-    $this->assertSession()->pageTextContains('The username contains an illegal character.');
+    $this->assertSession()->pageTextContains($user_name_constraint->illegalMessage ?? $user_name_constraint->invalidMessage);
 
     $this->submitForm([
       'completion_register[name]' => 'User name',

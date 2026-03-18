@@ -26,12 +26,14 @@ use Drupal\layout_builder_test\Plugin\SectionStorage\SimpleConfigSectionStorage;
 use Drupal\locale\LocaleEvent;
 use Drupal\locale\LocaleEvents;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Drupal core event tests provided by "eca_misc".
  */
 #[Group('eca')]
 #[Group('eca_misc')]
+#[RunTestsInSeparateProcesses]
 class DrupalCoreEventTest extends KernelTestBase {
 
   /**

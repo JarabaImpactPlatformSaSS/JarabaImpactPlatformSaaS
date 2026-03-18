@@ -13,6 +13,7 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
@@ -23,6 +24,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
  */
 #[Group('eca')]
 #[Group('eca_misc')]
+#[RunTestsInSeparateProcesses]
 class RouteTest extends KernelTestBase {
 
   use ProphecyTrait;

@@ -24,4 +24,4 @@ ai_test.form_elements:
     _title: 'AI Form Elements'
     _form: 'Drupal\ai_test\Form\FormElementForm'
   requirements:
-    _permission: 'administer ai providers'
+    _permission: 'administer ai'

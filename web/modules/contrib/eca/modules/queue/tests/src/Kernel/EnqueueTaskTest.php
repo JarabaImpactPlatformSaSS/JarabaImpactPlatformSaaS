@@ -10,12 +10,14 @@ use Drupal\node\NodeInterface;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the "eca_enqueue_task" action plugin.
  */
 #[Group('eca')]
 #[Group('eca_queue')]
+#[RunTestsInSeparateProcesses]
 class EnqueueTaskTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;

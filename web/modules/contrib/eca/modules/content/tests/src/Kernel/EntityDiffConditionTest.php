@@ -3,12 +3,14 @@
 namespace Drupal\Tests\eca_content\Kernel;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the entity diff condition plugin.
  */
 #[Group('eca')]
 #[Group('eca_content')]
+#[RunTestsInSeparateProcesses]
 class EntityDiffConditionTest extends EntityDiffTestBase {
 
   /**

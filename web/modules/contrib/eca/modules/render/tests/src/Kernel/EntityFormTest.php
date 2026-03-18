@@ -7,12 +7,14 @@ use Drupal\eca_test_render_basics\RenderBasicsEvents;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests regarding ECA render EntityForm action.
  */
 #[Group('eca')]
 #[Group('eca_render')]
+#[RunTestsInSeparateProcesses]
 class EntityFormTest extends RenderActionsTestBase {
 
   /**

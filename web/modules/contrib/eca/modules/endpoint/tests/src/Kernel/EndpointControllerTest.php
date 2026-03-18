@@ -8,6 +8,7 @@ use Drupal\eca_endpoint\Controller\EndpointController;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 #[Group('eca')]
 #[Group('eca_endpoint')]
+#[RunTestsInSeparateProcesses]
 class EndpointControllerTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;

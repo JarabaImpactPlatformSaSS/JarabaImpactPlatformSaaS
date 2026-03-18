@@ -9,6 +9,7 @@ use Drupal\eca_endpoint\EndpointEvents;
 use Drupal\eca_endpoint\Event\EndpointResponseEvent;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
  */
 #[Group('eca')]
 #[Group('eca_endpoint')]
+#[RunTestsInSeparateProcesses]
 class EndpointActionsTest extends KernelTestBase {
 
   /**

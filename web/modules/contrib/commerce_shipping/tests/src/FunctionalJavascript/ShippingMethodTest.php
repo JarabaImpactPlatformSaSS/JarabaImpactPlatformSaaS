@@ -88,28 +88,11 @@ class ShippingMethodTest extends CommerceWebDriverTestBase {
     $this->assertSession()->fieldExists('name[0][value]');
     $new_shipping_method_name = $this->randomMachineName(8);
 
-    // Test that finalize transition is required.
+    // Save shipping method without "Finalize" and "Cancel" transitions.
     $edit = [
       'name[0][value]' => $new_shipping_method_name,
       'plugin[0][target_plugin_configuration][flat_rate][rate_amount][number]' => '20.00',
-      'plugin[0][target_plugin_configuration][flat_rate][workflow]' => 'shipment_missing_finalize',
-    ];
-    $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains($this->t('The Missing finalize workflow does not have a "Finalize" transition.'));
-
-    // Test that cancel transition is required.
-    $edit = [
-      'name[0][value]' => $new_shipping_method_name,
-      'plugin[0][target_plugin_configuration][flat_rate][rate_amount][number]' => '20.00',
-      'plugin[0][target_plugin_configuration][flat_rate][workflow]' => 'shipment_missing_cancel',
-    ];
-    $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains($this->t('The Missing cancel workflow does not have a "Cancel" transition.'));
-
-    $edit = [
-      'name[0][value]' => $new_shipping_method_name,
-      'plugin[0][target_plugin_configuration][flat_rate][rate_amount][number]' => '20.00',
-      'plugin[0][target_plugin_configuration][flat_rate][workflow]' => 'shipment_good_test',
+      'plugin[0][target_plugin_configuration][flat_rate][workflow]' => 'shipment_missing_transitions',
     ];
     $this->submitForm($edit, 'Save');
 
@@ -119,7 +102,7 @@ class ShippingMethodTest extends CommerceWebDriverTestBase {
     /** @var \Drupal\commerce_shipping\Plugin\Commerce\ShippingMethod\ShippingMethodInterface $plugin */
     $plugin = $shipping_method_changed->getPlugin();
     $this->assertEquals(['number' => '20.00', 'currency_code' => 'USD'], $plugin->getConfiguration()['rate_amount']);
-    $this->assertEquals('shipment_good_test', $plugin->getConfiguration()['workflow']);
+    $this->assertEquals('shipment_missing_transitions', $plugin->getConfiguration()['workflow']);
   }
 
   /**

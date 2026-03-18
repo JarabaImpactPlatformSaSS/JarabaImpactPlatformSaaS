@@ -8,6 +8,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\eca\Plugin\Action\ActionInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 
 /**
@@ -15,6 +16,7 @@ use Symfony\Component\ErrorHandler\BufferingLogger;
  */
 #[Group('eca')]
 #[Group('eca_core')]
+#[RunTestsInSeparateProcesses]
 class PluginConfigFormTest extends KernelTestBase {
 
   /**

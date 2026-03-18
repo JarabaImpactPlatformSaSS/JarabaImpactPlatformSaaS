@@ -8,9 +8,9 @@ services:
       - '@config.factory'
       - '@config.storage.export'
       - '@file_system'
-      - '@entity_type.manager'
-      - '@router.route_provider'
       - '@plugin.manager.menu.link'
+      - !service_closure '@entity_type.manager'
+      - !service_closure '@router.route_provider'
 
   logger.channel.modeler_api:
     parent: logger.channel_base

@@ -207,24 +207,7 @@ abstract class ShippingMethodBase extends PluginBase implements ContainerFactory
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $values = $form_state->getValue($form['#parents']);
-    /** @var \Drupal\state_machine\Plugin\Workflow\WorkflowInterface $workflow */
-    $workflow = $this->workflowManager->createInstance($values['workflow']);
-
-    // Verify "Finalize" transition.
-    if (!$workflow->getTransition('finalize')) {
-      $form_state->setError($form['workflow'], $this->t('The @workflow workflow does not have a "Finalize" transition.', [
-        '@workflow' => $workflow->getLabel(),
-      ]));
-    }
-    // Verify "Cancel" transition.
-    if (!$workflow->getTransition('cancel')) {
-      $form_state->setError($form['workflow'], $this->t('The @workflow workflow does not have a "Cancel" transition.', [
-        '@workflow' => $workflow->getLabel(),
-      ]));
-    }
-  }
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {}
 
   /**
    * {@inheritdoc}

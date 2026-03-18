@@ -8,6 +8,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\migrate\Row;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -15,6 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 #[Group('eca')]
 #[Group('eca_migrate')]
+#[RunTestsInSeparateProcesses]
 class EcaMigrateEventTest extends KernelTestBase {
 
   /**

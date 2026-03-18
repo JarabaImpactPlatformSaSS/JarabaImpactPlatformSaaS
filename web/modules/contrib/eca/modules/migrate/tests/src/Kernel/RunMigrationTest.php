@@ -2,14 +2,12 @@
 
 namespace Drupal\Tests\eca_migrate\Kernel;
 
-use Drupal\Core\Action\ActionManager;
 use Drupal\eca_migrate\Plugin\Action\RunMigration;
 use Drupal\eca_migrate_test\Plugin\migrate\id_map\TestIdMap;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\migrate\Plugin\MigrationInterface;
-use Drupal\migrate\Plugin\MigrationPluginManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Kernel tests for the "eca_migrate_run_migration" action plugin.
@@ -17,42 +15,8 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('eca')]
 #[Group('eca_migrate')]
 #[CoversClass(RunMigration::class)]
-class RunMigrationTest extends KernelTestBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = [
-    'system',
-    'user',
-    'file',
-    'migrate',
-    'eca',
-    'eca_migrate',
-    'eca_migrate_test',
-  ];
-
-  /**
-   * The migration manager.
-   */
-  protected MigrationPluginManagerInterface $migrationManager;
-
-  /**
-   * The action manager.
-   */
-  protected ActionManager $actionManager;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-
-    $this->migrationManager = \Drupal::service('plugin.manager.migration');
-    $this->migrationManager->clearCachedDefinitions();
-
-    $this->actionManager = \Drupal::service('plugin.manager.action');
-  }
+#[RunTestsInSeparateProcesses]
+class RunMigrationTest extends MigrationActionTestBase {
 
   /**
    * Tests executing the RunMigration action.

@@ -21,6 +21,7 @@ use Drupal\node\NodeInterface;
 use Drupal\Tests\eca\ContentTypeCreationTrait;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -29,6 +30,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
  */
 #[Group('eca')]
 #[Group('eca_form')]
+#[RunTestsInSeparateProcesses]
 class FormActionsTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;

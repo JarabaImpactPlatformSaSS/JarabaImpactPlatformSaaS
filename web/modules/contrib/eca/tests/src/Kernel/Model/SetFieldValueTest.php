@@ -4,12 +4,14 @@ namespace Drupal\Tests\eca\Kernel\Model;
 
 use Drupal\node\Entity\Node;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Model test for the action set_field_value.
  */
 #[Group('eca')]
 #[Group('eca_model')]
+#[RunTestsInSeparateProcesses]
 class SetFieldValueTest extends Base {
 
   /**
