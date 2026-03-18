@@ -4416,6 +4416,11 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     $suggestions[] = 'page__kit_digital';
   }
 
+  // Sprint B: Servicios Profesionales (Doc 181 — Pilar 3).
+  if (str_starts_with($route, 'jaraba_mentoring.service_catalog') || str_starts_with($route, 'jaraba_mentoring.my_services')) {
+    $suggestions[] = 'page__servicios_profesionales';
+  }
+
   // =========================================================================
   // MY CERTIFICATIONS - Dashboard de credenciales del usuario
   // Frontend premium con partículas y grid de credenciales

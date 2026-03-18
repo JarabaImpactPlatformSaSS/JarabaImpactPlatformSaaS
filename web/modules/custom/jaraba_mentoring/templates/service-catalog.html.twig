@@ -1,0 +1,64 @@
+{#
+/**
+ * @file service-catalog.html.twig
+ * Catálogo público de servicios profesionales (Doc 181 — Pilar 3).
+ *
+ * Variables:
+ * - packages: array de servicios con id, title, type, price, sessions, duration_minutes, description
+ *
+ * ZERO-REGION-001: Renderizado dentro de {{ clean_content }}.
+ * NO-HARDCODE-PRICE-001: Precios desde entities.
+ * i18n: {% trans %} en todos los textos.
+ * CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*).
+ */
+#}
+
+<div class="service-catalog">
+
+  <section class="service-catalog__hero">
+    <h1>{% trans %}Servicios Profesionales{% endtrans %}</h1>
+    <p>{% trans %}Sesiones de mentoría, workshops y programas intensivos con empresarios experimentados. Reserva tu sesión y acelera tu negocio.{% endtrans %}</p>
+  </section>
+
+  {% if packages is not empty %}
+    <div class="service-catalog__grid">
+      {% for package in packages %}
+        <div class="service-catalog__card">
+          <div class="service-catalog__card-header">
+            <span class="service-catalog__type service-catalog__type--{{ package.type }}">
+              {% if package.type == 'single_session' %}{% trans %}Sesión{% endtrans %}
+              {% elseif package.type == 'session_pack' %}{% trans %}Pack{% endtrans %}
+              {% elseif package.type == 'program' %}{% trans %}Programa{% endtrans %}
+              {% elseif package.type == 'workshop' %}{% trans %}Workshop{% endtrans %}
+              {% elseif package.type == 'mastermind' %}{% trans %}Mastermind{% endtrans %}
+              {% elseif package.type == 'bootcamp' %}{% trans %}Bootcamp{% endtrans %}
+              {% else %}{{ package.type }}{% endif %}
+            </span>
+            <h3 class="service-catalog__title">{{ package.title }}</h3>
+          </div>
+
+          <div class="service-catalog__price">
+            <span class="service-catalog__amount">{{ package.price|number_format(0, ',', '.') }}&euro;</span>
+            {% if package.sessions > 1 %}
+              <span class="service-catalog__sessions">{{ package.sessions }} {% trans %}sesiones{% endtrans %}</span>
+            {% endif %}
+          </div>
+
+          <p class="service-catalog__description">{{ package.description }}</p>
+
+          <div class="service-catalog__meta">
+            <span>{{ package.duration_minutes }} {% trans %}min/sesión{% endtrans %}</span>
+          </div>
+
+          <a href="mailto:contacto@plataformadeecosistemas.es?subject={% trans %}Reserva{% endtrans %}: {{ package.title }}"
+             class="service-catalog__cta">
+            {% trans %}Reservar{% endtrans %}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="service-catalog__empty">{% trans %}No hay servicios disponibles en este momento.{% endtrans %}</p>
+  {% endif %}
+
+</div>

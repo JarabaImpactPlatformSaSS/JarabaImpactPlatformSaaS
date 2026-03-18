@@ -56,6 +56,24 @@ jaraba_mentoring.mentor_catalog:
   requirements:
     _permission: 'view mentor profiles'
 
+# Sprint B — Pilar 3: Catálogo de Servicios Profesionales (Doc 181)
+jaraba_mentoring.service_catalog:
+  path: '/servicios-profesionales'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorCatalogController::serviceCatalog'
+    _title: 'Servicios Profesionales'
+  requirements:
+    _access: 'TRUE'
+
+# Frontend: Mis Servicios contratados
+jaraba_mentoring.my_services:
+  path: '/mis-servicios'
+  defaults:
+    _controller: 'Drupal\jaraba_mentoring\Controller\MentorCatalogController::myServices'
+    _title: 'Mis Servicios'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
 # Frontend: Perfil público de Mentor
 jaraba_mentoring.mentor_public_profile:
   path: '/mentor/{mentor_profile}'

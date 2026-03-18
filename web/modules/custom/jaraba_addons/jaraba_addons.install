@@ -562,6 +562,44 @@ function jaraba_addons_update_10004(): string {
 }
 
 /**
+ * Sprint A: Add Stripe fields to addon entity (Pilar 2 revenue).
+ */
+function jaraba_addons_update_10005(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'addon';
+  $messages = [];
+
+  $stripe_fields = [
+    'stripe_product_id' => ['type' => 'string', 'label' => 'Stripe Product ID', 'max' => 255],
+    'stripe_price_monthly_id' => ['type' => 'string', 'label' => 'Stripe Price ID (Mensual)', 'max' => 255],
+    'stripe_price_yearly_id' => ['type' => 'string', 'label' => 'Stripe Price ID (Anual)', 'max' => 255],
+  ];
+
+  foreach ($stripe_fields as $field_name => $config) {
+    if ($update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+      $messages[] = "$field_name already exists.";
+      continue;
+    }
+    try {
+      $definition = \Drupal\Core\Field\BaseFieldDefinition::create($config['type'])
+        ->setName($field_name)
+        ->setTargetEntityTypeId($entity_type_id)
+        ->setLabel(t($config['label']))
+        ->setSetting('max_length', $config['max'])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE);
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_addons', $definition);
+      $messages[] = "Installed $field_name.";
+    }
+    catch (\Throwable $e) {
+      $messages[] = "Error $field_name: " . $e->getMessage();
+    }
+  }
+
+  return implode(' | ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_addons_requirements(string $phase): array {

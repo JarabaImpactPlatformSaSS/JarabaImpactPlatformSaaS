@@ -222,6 +222,24 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Metadatos ---
+    // Stripe integration (Pilar 2: add-ons como subscription items).
+    $fields['stripe_product_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Product ID'))
+      ->setDescription(t('ID del producto en Stripe para suscripciones recurrentes de add-ons.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['stripe_price_monthly_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Price ID (Mensual)'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['stripe_price_yearly_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Price ID (Anual)'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE);
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Creación'));
 

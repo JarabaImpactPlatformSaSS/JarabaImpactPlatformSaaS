@@ -59,6 +59,21 @@ function jaraba_mentoring_theme(): array {
       ],
       'template' => 'session-booking',
     ],
+    // Sprint B — Pilar 3: Catálogo de servicios profesionales (Doc 181).
+    'service_catalog' => [
+      'variables' => [
+        'packages' => [],
+      ],
+      'template' => 'service-catalog',
+    ],
+    'my_services' => [
+      'variables' => [
+        'bookings' => [],
+        'empty_message' => '',
+        'catalog_url' => '',
+      ],
+      'template' => 'my-services',
+    ],
   ];
 }
 

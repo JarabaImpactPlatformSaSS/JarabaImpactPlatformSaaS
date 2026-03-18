@@ -1,0 +1,52 @@
+{#
+/**
+ * @file my-services.html.twig
+ * Mis servicios contratados (Doc 181 — Pilar 3).
+ *
+ * Variables:
+ * - bookings: array de engagements con id, status, sessions_total, sessions_used, start_date, expiry_date
+ * - empty_message: string
+ * - catalog_url: string (URL al catálogo)
+ *
+ * i18n: {% trans %} en todos los textos.
+ */
+#}
+
+<div class="my-services">
+  <h1>{% trans %}Mis Servicios{% endtrans %}</h1>
+
+  {% if bookings is not empty %}
+    <div class="my-services__list">
+      {% for booking in bookings %}
+        <div class="my-services__card my-services__card--{{ booking.status }}">
+          <div class="my-services__status">
+            {% if booking.status == 'active' %}{% trans %}Activo{% endtrans %}
+            {% elseif booking.status == 'completed' %}{% trans %}Completado{% endtrans %}
+            {% elseif booking.status == 'pending' %}{% trans %}Pendiente{% endtrans %}
+            {% elseif booking.status == 'paid' %}{% trans %}Pagado{% endtrans %}
+            {% elseif booking.status == 'expired' %}{% trans %}Expirado{% endtrans %}
+            {% else %}{{ booking.status }}{% endif %}
+          </div>
+          <div class="my-services__sessions">
+            <strong>{{ booking.sessions_used }}/{{ booking.sessions_total }}</strong>
+            {% trans %}sesiones usadas{% endtrans %}
+          </div>
+          {% if booking.expiry_date %}
+            <div class="my-services__expiry">
+              {% trans %}Expira:{% endtrans %} {{ booking.expiry_date }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="my-services__empty">
+      <p>{{ empty_message }}</p>
+      {% if catalog_url %}
+        <a href="{{ catalog_url }}" class="my-services__cta">
+          {% trans %}Explorar servicios profesionales{% endtrans %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

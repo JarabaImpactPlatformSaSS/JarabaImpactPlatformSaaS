@@ -112,4 +112,84 @@ class MentorCatalogController extends ControllerBase
         ];
     }
 
+    /**
+     * Sprint B — Pilar 3: Catálogo público de servicios profesionales.
+     *
+     * Ruta: /servicios-profesionales (acceso público).
+     * Muestra los MentoringPackage entities publicados con precio,
+     * descripción y CTA de contacto/reserva.
+     *
+     * ZERO-REGION-001: Devuelve render array simple.
+     * NO-HARDCODE-PRICE-001: Precios desde entities.
+     */
+    public function serviceCatalog(): array {
+        $storage = $this->entityTypeManager()->getStorage('mentoring_package');
+        $ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('is_published', TRUE)
+            ->sort('price', 'ASC')
+            ->execute();
+
+        $packages = [];
+        foreach ($storage->loadMultiple($ids) as $entity) {
+            $packages[] = [
+                'id' => (int) $entity->id(),
+                'title' => $entity->get('title')->value ?? '',
+                'type' => $entity->get('package_type')->value ?? 'single_session',
+                'price' => (float) ($entity->get('price')->value ?? 0),
+                'sessions' => (int) ($entity->get('sessions_included')->value ?? 1),
+                'duration_minutes' => (int) ($entity->get('session_duration_minutes')->value ?? 45),
+                'description' => $entity->get('description')->value ?? '',
+            ];
+        }
+
+        return [
+            '#theme' => 'service_catalog',
+            '#packages' => $packages,
+            '#cache' => [
+                'tags' => ['mentoring_package_list'],
+                'max-age' => 300,
+            ],
+        ];
+    }
+
+    /**
+     * Sprint B — Mis servicios contratados.
+     *
+     * Ruta: /mis-servicios (autenticado).
+     * Muestra los MentoringEngagement del usuario actual con estado,
+     * sesiones usadas/restantes y próxima sesión.
+     */
+    public function myServices(): array {
+        $uid = (int) $this->currentUser()->id();
+        $storage = $this->entityTypeManager()->getStorage('mentoring_engagement');
+        $ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('mentee_id', $uid)
+            ->sort('created', 'DESC')
+            ->execute();
+
+        $bookings = [];
+        foreach ($storage->loadMultiple($ids) as $entity) {
+            $bookings[] = [
+                'id' => (int) $entity->id(),
+                'status' => $entity->get('status')->value ?? 'pending',
+                'sessions_total' => (int) ($entity->get('sessions_total')->value ?? 0),
+                'sessions_used' => (int) ($entity->get('sessions_used')->value ?? 0),
+                'start_date' => $entity->get('start_date')->value ?? '',
+                'expiry_date' => $entity->get('expiry_date')->value ?? '',
+            ];
+        }
+
+        return [
+            '#theme' => 'my_services',
+            '#bookings' => $bookings,
+            '#empty_message' => $this->t('Aún no tienes servicios contratados.'),
+            '#catalog_url' => Url::fromRoute('jaraba_mentoring.service_catalog')->toString(),
+            '#cache' => [
+                'max-age' => 0,
+            ],
+        ];
+    }
+
 }
