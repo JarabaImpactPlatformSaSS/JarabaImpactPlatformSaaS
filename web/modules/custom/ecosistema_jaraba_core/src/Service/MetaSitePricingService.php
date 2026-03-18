@@ -142,9 +142,9 @@ class MetaSitePricingService
             ? array_slice($starterFeatures->getFeatures(), 0, 4)
             : [];
 
-        // Load the cheapest starter price for display.
+        // Load the cheapest price for display (free or starter).
         $priceMap = $this->loadVerticalPrices($vertical);
-        $starterPrice = $priceMap['starter']['price_monthly'] ?? 0.0;
+        $starterPrice = $priceMap['free']['price_monthly'] ?? $priceMap['starter']['price_monthly'] ?? 0.0;
         $fromPrice = $starterPrice > 0
             ? (string) $this->t('@price€/mes', ['@price' => number_format($starterPrice, 0)])
             : (string) $this->t('0€/mes');
@@ -279,8 +279,17 @@ class MetaSitePricingService
             $plans = $this->entityTypeManager->getStorage('saas_plan')
                 ->loadMultiple($planIds);
 
-            // Assign plans to tiers by position (1st = starter, 2nd = professional, 3rd = enterprise).
-            $tierKeys = ['starter', 'professional', 'enterprise'];
+            // Assign plans to tiers by position.
+            // Con plan Free (weight=0): Free, Starter, Professional, Enterprise.
+            // Sin plan Free: Starter, Professional, Enterprise.
+            $firstPlanPrice = 0.0;
+            $firstPlan = reset($plans);
+            if ($firstPlan) {
+                $firstPlanPrice = (float) $firstPlan->getPriceMonthly();
+            }
+            $tierKeys = $firstPlanPrice <= 0.0
+                ? ['free', 'starter', 'professional', 'enterprise']
+                : ['starter', 'professional', 'enterprise'];
             $index = 0;
             foreach ($plans as $plan) {
                 if ($index >= count($tierKeys)) {

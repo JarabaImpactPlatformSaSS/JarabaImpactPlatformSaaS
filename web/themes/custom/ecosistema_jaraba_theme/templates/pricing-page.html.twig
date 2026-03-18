@@ -263,7 +263,7 @@
       {% trans %}¿Listo para empezar?{% endtrans %}
     </h2>
     <p class="pricing-final-cta__subtitle">
-      {% trans %}Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.{% endtrans %}
+      {{ plg_register_subtitle|default('Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.'|trans) }}
     </p>
     <a href="{{ path('user.register') }}{% if vertical_key %}?vertical={{ vertical_key }}{% endif %}"
        class="btn btn--primary btn--xl pricing-final-cta__btn"

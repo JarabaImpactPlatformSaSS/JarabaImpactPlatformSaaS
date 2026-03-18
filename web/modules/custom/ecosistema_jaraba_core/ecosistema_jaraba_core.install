@@ -3163,3 +3163,139 @@ function ecosistema_jaraba_core_update_9037(): string {
 
   return empty($parts) ? 'No SaasPlan price corrections needed.' : implode(' | ', $parts);
 }
+
+/**
+ * Seed 8 Free SaasPlan entities (€0/month, €0/year) — one per vertical.
+ *
+ * These are real free plans with limited features matching the existing
+ * FreemiumVerticalLimit configs. Weight 0 = lowest tier (before Starter at 10).
+ */
+function ecosistema_jaraba_core_update_9038(): string {
+  $freePlans = [
+    [
+      'vertical' => 'empleabilidad',
+      'name' => 'Empleabilidad Free',
+      'features' => ['basic_profile', 'community', 'soporte_email', 'copilot_ia'],
+      'limits' => '{"diagnostics":1,"cv_builder":1,"job_applications_per_day":3,"copilot_messages_per_day":5,"job_alerts":1,"offers_visible_per_day":10}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'emprendimiento',
+      'name' => 'Emprendimiento Free',
+      'features' => ['calculadora_madurez', 'bmc_ia', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"hypotheses_active":3,"experiments_monthly":2,"copilot_sessions_daily":5,"mentoring_sessions_monthly":0,"bmc_drafts":1,"calculadora_uses":1}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'agroconecta',
+      'name' => 'AgroConecta Free',
+      'features' => ['catalog', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"products":10,"orders_per_month":5,"copilot_uses_per_month":10,"photos_per_product":2,"commission_pct":10,"traceability_qr":0,"analytics_advanced":0,"demand_forecaster":0,"partner_hub":0}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'comercioconecta',
+      'name' => 'ComercioConecta Free',
+      'features' => ['catalog', 'qr_codes', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"products":10,"flash_offers_active":1,"copilot_uses_per_month":20,"qr_codes":1,"seo_local_audit":0,"analytics_advanced":0,"pos_integration":0}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'serviciosconecta',
+      'name' => 'ServiciosConecta Free',
+      'features' => ['booking_engine', 'marketplace_profile', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"services":3,"bookings_per_month":10,"packages":0,"copilot_queries_month":10,"reviews_visible":5,"video_conferencing":0,"analytics_dashboard":0,"calendar_sync":0}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'jarabalex',
+      'name' => 'JarabaLex Free',
+      'features' => ['legal_search', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"cases":5,"searches_per_month":10,"alerts":1,"vault_storage_mb":100,"billing_invoices_month":0,"lexnet_submissions_month":0,"template_generations_month":0}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'andalucia_ei',
+      'name' => 'Andalucia +ei Free',
+      'features' => ['copilot_ia', 'soporte_email'],
+      'limits' => '{"participants":5,"sessions_per_month":3,"copilot_uses_per_month":10}',
+      'weight' => 0,
+    ],
+    [
+      'vertical' => 'formacion',
+      'name' => 'Formacion Free',
+      'features' => ['course_builder', 'student_portal', 'copilot_ia', 'soporte_email'],
+      'limits' => '{"courses":1,"students_per_course":10,"copilot_uses_per_month":10,"certificates_per_month":5}',
+      'weight' => 0,
+    ],
+  ];
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $verticalStorage = $entityTypeManager->getStorage('vertical');
+  $planStorage = $entityTypeManager->getStorage('saas_plan');
+  $logger = \Drupal::logger('ecosistema_jaraba_core');
+
+  // Build vertical machine_name -> entity ID map.
+  $verticalMap = [];
+  $allVerticals = $verticalStorage->loadMultiple();
+  foreach ($allVerticals as $vertical) {
+    $verticalMap[$vertical->getMachineName()] = $vertical->id();
+  }
+
+  $created = [];
+  $skipped = [];
+  $errors = [];
+
+  foreach ($freePlans as $planData) {
+    try {
+      // Check if plan already exists by name (prevent duplicates).
+      $existing = $planStorage->loadByProperties(['name' => $planData['name']]);
+      if (!empty($existing)) {
+        $skipped[] = $planData['name'];
+        continue;
+      }
+
+      $verticalMachine = $planData['vertical'];
+      $verticalId = $verticalMap[$verticalMachine] ?? NULL;
+
+      $entity = $planStorage->create([
+        'name' => $planData['name'],
+        'vertical' => $verticalId,
+        'price_monthly' => '0.00',
+        'price_yearly' => '0.00',
+        'features' => $planData['features'],
+        'limits' => $planData['limits'],
+        'stripe_price_id' => '',
+        'weight' => $planData['weight'],
+        'status' => TRUE,
+      ]);
+      $entity->save();
+
+      $created[] = $planData['name'];
+      $logger->notice('update_9038: Created Free plan "@name" for vertical @vertical.', [
+        '@name' => $planData['name'],
+        '@vertical' => $verticalMachine,
+      ]);
+    }
+    catch (\Throwable $e) {
+      $errors[] = $planData['name'] . ': ' . $e->getMessage();
+      $logger->error('update_9038: Error creating "@name": @error', [
+        '@name' => $planData['name'],
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  $parts = [];
+  if (!empty($created)) {
+    $parts[] = count($created) . ' Free plans created: ' . implode(', ', $created);
+  }
+  if (!empty($skipped)) {
+    $parts[] = count($skipped) . ' already existed: ' . implode(', ', $skipped);
+  }
+  if (!empty($errors)) {
+    $parts[] = count($errors) . ' errors: ' . implode('; ', $errors);
+  }
+
+  return empty($parts) ? 'No Free SaasPlan changes needed.' : implode(' | ', $parts);
+}

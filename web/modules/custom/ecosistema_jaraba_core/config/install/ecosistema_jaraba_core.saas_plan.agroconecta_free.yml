@@ -1,0 +1,12 @@
+langcode: es
+status: true
+name: 'AgroConecta Free'
+price_monthly: '0.00'
+price_yearly: '0.00'
+features:
+  - catalog
+  - copilot_ia
+  - soporte_email
+limits: '{"products":10,"orders_per_month":5,"copilot_uses_per_month":10,"photos_per_product":2,"commission_pct":10,"traceability_qr":0,"analytics_advanced":0,"demand_forecaster":0,"partner_hub":0}'
+stripe_price_id: ''
+weight: 0

@@ -1,0 +1,13 @@
+langcode: es
+status: true
+name: 'Formacion Free'
+price_monthly: '0.00'
+price_yearly: '0.00'
+features:
+  - course_builder
+  - student_portal
+  - copilot_ia
+  - soporte_email
+limits: '{"courses":1,"students_per_course":10,"copilot_uses_per_month":10,"certificates_per_month":5}'
+stripe_price_id: ''
+weight: 0

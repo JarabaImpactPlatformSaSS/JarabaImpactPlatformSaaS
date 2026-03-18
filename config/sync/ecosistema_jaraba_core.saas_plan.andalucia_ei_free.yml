@@ -1,0 +1,11 @@
+langcode: es
+status: true
+name: 'Andalucia +ei Free'
+price_monthly: '0.00'
+price_yearly: '0.00'
+features:
+  - copilot_ia
+  - soporte_email
+limits: '{"participants":5,"sessions_per_month":3,"copilot_uses_per_month":10}'
+stripe_price_id: ''
+weight: 0

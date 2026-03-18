@@ -1,0 +1,13 @@
+langcode: es
+status: true
+name: 'Empleabilidad Free'
+price_monthly: '0.00'
+price_yearly: '0.00'
+features:
+  - basic_profile
+  - community
+  - soporte_email
+  - copilot_ia
+limits: '{"diagnostics":1,"cv_builder":1,"job_applications_per_day":3,"copilot_messages_per_day":5,"job_alerts":1,"offers_visible_per_day":10}'
+stripe_price_id: ''
+weight: 0
