@@ -3,6 +3,8 @@ global-styling:
   css:
     theme:
       css/ecosistema-jaraba-theme.css: {}
+  js:
+    js/bigpipe-safe-once.js: { weight: -20 }
   dependencies:
     - core/drupal
 
