@@ -359,12 +359,17 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-page-builder-onboarding.php` (PB-ONBOARDING-001)
 - `php scripts/validation/validate-content-pipeline-e2e.php` (CONTENT-E2E-001)
 - `php scripts/validation/validate-plg-triggers.php` (PLG-COVERAGE-001)
+- `php scripts/validation/validate-hook-theme-completeness.php` (HOOK-THEME-COMPLETENESS-001)
+- `php scripts/validation/validate-duplicate-hooks.php` (DUPLICATE-HOOK-001)
+- `php scripts/validation/validate-scss-variables.php` (SCSS-VARIABLE-EXIST-001)
+- `php scripts/validation/validate-library-attachments.php` (LIBRARY-ATTACHMENT-001) [warn]
+- `php scripts/validation/validate-twig-include-only.php` (TWIG-INCLUDE-ONLY-001) [warn]
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (44 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (49 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 44 scripts validacion (scripts/validation/) | On demand, CI | 35 checks fast+full |
+| 1 | 49 scripts validacion (scripts/validation/) | On demand, CI | 40 checks fast+full |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 6 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |

@@ -76,6 +76,31 @@ run_check() {
   echo ""
 }
 
+warn_check() {
+  local check_id="$1"
+  local description="$2"
+  shift 2
+  local cmd=("$@")
+
+  TOTAL=$((TOTAL + 1))
+
+  echo -e "${BOLD}[$check_id]${NC} $description"
+
+  local output
+  local exit_code=0
+  output=$("${cmd[@]}" 2>&1) || exit_code=$?
+
+  if [ $exit_code -eq 0 ]; then
+    echo -e "  ${GREEN}PASS${NC}"
+    PASSED=$((PASSED + 1))
+  else
+    # BASELINE-CLEAN-001: Warn but don't block.
+    echo -e "  ${YELLOW}WARN${NC} (non-blocking, baseline violations)"
+    PASSED=$((PASSED + 1))
+  fi
+  echo ""
+}
+
 skip_check() {
   local check_id="$1"
   local description="$2"
@@ -248,6 +273,24 @@ if [ "$MODE" = "full" ]; then
 
   run_check "PLG-COVERAGE-001" "PLG trigger coverage for Page Builder" \
     php "$SCRIPT_DIR/validate-plg-triggers.php"
+
+  run_check "HOOK-THEME-COMPLETENESS-001" "hook_theme() variable completeness (L3 verification)" \
+    php "$SCRIPT_DIR/validate-hook-theme-completeness.php"
+
+  run_check "DUPLICATE-HOOK-001" "Duplicate function definitions in .module files" \
+    php "$SCRIPT_DIR/validate-duplicate-hooks.php"
+
+  run_check "SCSS-VARIABLE-EXIST-001" "SCSS variables defined before use" \
+    php "$SCRIPT_DIR/validate-scss-variables.php"
+
+  # BASELINE-CLEAN-001: Library attachments + Twig include-only tienen
+  # 34+144 violaciones pre-existentes. Registrados como warn_check
+  # hasta completar limpieza. Luego migrar a run_check.
+  warn_check "LIBRARY-ATTACHMENT-001" "Bundle library declaration + CSS existence" \
+    php "$SCRIPT_DIR/validate-library-attachments.php"
+
+  warn_check "TWIG-INCLUDE-ONLY-001" "Twig includes of partials use only keyword" \
+    php "$SCRIPT_DIR/validate-twig-include-only.php"
 
   # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
   # Prefer lando drush (host drush may not have Drupal bootstrap).
