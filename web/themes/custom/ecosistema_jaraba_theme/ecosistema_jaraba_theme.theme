@@ -2908,7 +2908,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
             'subtitle' => t('Marketplace agroalimentario'),
             'icon_cat' => 'verticals',
             'icon_name' => 'agroconecta',
-            'color' => 'verde-oliva',
+            'color' => 'naranja-impulso',
             'url' => $lp . '/agroconecta',
           ],
           [
@@ -2916,7 +2916,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
             'subtitle' => t('Gestión de servicios'),
             'icon_cat' => 'verticals',
             'icon_name' => 'serviciosconecta',
-            'color' => 'verde-innovacion',
+            'color' => 'naranja-impulso',
             'url' => $lp . '/serviciosconecta',
           ],
         ],

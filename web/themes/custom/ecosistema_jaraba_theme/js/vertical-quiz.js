@@ -278,7 +278,7 @@
       };
       var quizImgName = quizImgMap[r.vertical_id] || 'default';
       html += '<div class="quiz-result__illustration">'
-        + '<img src="/themes/custom/ecosistema_jaraba_theme/images/quiz/' + quizImgName + '.png"'
+        + '<img src="/themes/custom/ecosistema_jaraba_theme/images/quiz/' + quizImgName + '.webp"'
         + ' alt="" loading="eager" width="600" height="420" class="quiz-result__illustration-img">'
         + '</div>';
 
