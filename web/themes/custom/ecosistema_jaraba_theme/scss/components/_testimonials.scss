@@ -60,20 +60,19 @@
 
   // ─── Card individual ───────────────────────────────────────────────
   &__card {
-    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.06));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
-    border-radius: var(--ej-radius-xl, 1.5rem);
-    padding: var(--ej-space-lg, 2rem);
+    background: var(--ej-bg-surface, #fff);
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    border-radius: var(--ej-border-radius-xl, 20px);
+    padding: var(--ej-spacing-xl, 2rem);
     display: flex;
     flex-direction: column;
-    gap: var(--ej-space-md, 1rem);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    gap: var(--ej-spacing-md, 1rem);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 12px 32px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+      border-color: var(--ej-color-impulse, #FF8C42);
     }
   }
 
@@ -98,21 +97,22 @@
   }
 
   &__author-avatar {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(
-      135deg,
-      var(--ej-naranja-impulso, #ff8c42) 0%,
-      var(--ej-color-primary-accent, #e67e22) 100%
-    );
+    background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 80%, #fff));
     color: var(--ej-bg-surface, #fff);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 800;
+    font-size: 0.8125rem;
     flex-shrink: 0;
+    letter-spacing: 0.02em;
+
+    &--naranja { background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 70%, #fff)); }
+    &--verde { background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 70%, #fff)); }
+    &--azul { background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), color-mix(in srgb, var(--ej-color-corporate, #233D63) 70%, #fff)); }
   }
 
   &__author-info {
@@ -138,7 +138,7 @@
     align-items: center;
     gap: var(--ej-space-xs, 0.5rem);
     padding-top: var(--ej-space-sm, 0.75rem);
-    border-top: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
+    border-top: 1px solid color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 15%, transparent);
     font-size: var(--ej-text-sm, 0.875rem);
     color: var(--ej-verde-crecimiento, #10b981);
     font-weight: 600;

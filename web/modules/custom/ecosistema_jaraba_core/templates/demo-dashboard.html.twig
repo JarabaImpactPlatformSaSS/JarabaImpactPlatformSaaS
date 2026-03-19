@@ -32,7 +32,7 @@
   <div class="demo-banner">
     <div class="demo-banner__content">
       <span class="demo-banner__badge">
-        {{ jaraba_icon('navigation', 'play', { size: '14px', color: 'blanco' }) }}
+        {{ jaraba_icon('ui', 'play', { size: '14px', color: 'blanco' }) }}
         {{ 'MODO DEMO'|t }}
       </span>
       <span class="demo-banner__tenant-name">{{ tenant_name }}</span>
@@ -48,6 +48,24 @@
       </button>
     </div>
   </div>
+
+  {# S11-07: Setup Wizard — SETUP-WIZARD-DAILY-001 #}
+  {% if wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: wizard,
+      wizard_title: 'Completa tu demo'|t,
+      wizard_subtitle: 'Descubre todo el potencial de la plataforma'|t,
+      collapsed_label: 'Demo completada'|t,
+    } only %}
+  {% endif %}
+
+  {# S11-07: Daily Actions — SETUP-WIZARD-DAILY-001 #}
+  {% if daily_actions %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones rápidas'|t,
+    } only %}
+  {% endif %}
 
   {# Magic Moment Actions #}
   <section class="demo-magic-moment" data-tour-step="demo-magic-moment">
@@ -82,57 +100,60 @@
     </div>
   </section>
 
-  {# Métricas Simuladas #}
+  {# Titular personalizado por vertical #}
+  {% if vertical_context.headline is defined %}
+    <h2 class="demo-vertical-headline">
+      {{ vertical_context.headline }}
+    </h2>
+  {% endif %}
+
+  {# Métricas universales — renderiza TODAS las métricas del perfil #}
   <section id="metrics" data-tour-step="demo-metrics">
     <h2 class="demo-section-title">
       {{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}
       {{ 'Tus Métricas'|t }}
     </h2>
     <div class="demo-metrics-grid">
-      {% if metrics.products_count is defined %}
-        <div class="demo-metric-card">
-          <span class="demo-metric-card__value">{{ metrics.products_count }}</span>
-          <span class="demo-metric-card__label">{{ 'Productos'|t }}</span>
+      {% for metric in formatted_metrics %}
+        <div class="demo-metric-card {{ metric.highlight ? 'demo-metric-card--highlight' : '' }}">
+          <span class="demo-metric-card__value">{{ metric.value }}</span>
+          <span class="demo-metric-card__label">{{ metric.label }}</span>
         </div>
-      {% endif %}
-      {% if metrics.orders_last_month is defined %}
-        <div class="demo-metric-card">
-          <span class="demo-metric-card__value">{{ metrics.orders_last_month }}</span>
-          <span class="demo-metric-card__label">{{ 'Pedidos (mes)'|t }}</span>
-        </div>
-      {% endif %}
-      {% if metrics.revenue_last_month is defined %}
-        <div class="demo-metric-card demo-metric-card--highlight">
-          <span class="demo-metric-card__value">&euro;{{ metrics.revenue_last_month|number_format(0, ',', '.') }}</span>
-          <span class="demo-metric-card__label">{{ 'Ingresos (mes)'|t }}</span>
-        </div>
-      {% endif %}
-      {% if metrics.customers_count is defined %}
-        <div class="demo-metric-card">
-          <span class="demo-metric-card__value">{{ metrics.customers_count }}</span>
-          <span class="demo-metric-card__label">{{ 'Clientes'|t }}</span>
-        </div>
-      {% endif %}
-      {% if metrics.products_available is defined %}
-        <div class="demo-metric-card demo-metric-card--highlight">
-          <span class="demo-metric-card__value">{{ metrics.products_available }}</span>
-          <span class="demo-metric-card__label">{{ 'Productos Disponibles'|t }}</span>
-        </div>
-      {% endif %}
-      {% if metrics.tenants_active is defined %}
-        <div class="demo-metric-card">
-          <span class="demo-metric-card__value">{{ metrics.tenants_active }}</span>
-          <span class="demo-metric-card__label">{{ 'Tiendas Activas'|t }}</span>
-        </div>
-      {% endif %}
-      {% if metrics.categories is defined %}
-        <div class="demo-metric-card">
-          <span class="demo-metric-card__value">{{ metrics.categories }}</span>
-          <span class="demo-metric-card__label">{{ 'Categorías'|t }}</span>
-        </div>
-      {% endif %}
+      {% endfor %}
     </div>
   </section>
+
+  {# Sección "Lo que puedes hacer" — personalizada por vertical #}
+  {% if vertical_context.features is defined and vertical_context.features|length > 0 %}
+    <section class="demo-features-vertical">
+      <h2 class="demo-section-title">
+        {{ jaraba_icon('ai', 'sparkles', { color: 'naranja-impulso', size: '24px' }) }}
+        {{ vertical_context.narrative_cta|default('Lo que puedes hacer'|t) }}
+      </h2>
+      <div class="demo-features-vertical__grid">
+        {% for feature in vertical_context.features %}
+          {% if feature.title is defined %}
+            {# Formato rico: icono + título + descripción #}
+            <div class="demo-features-vertical__card">
+              <div class="demo-features-vertical__card-icon">
+                {{ jaraba_icon(feature.icon_category, feature.icon_name, { size: '28px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              </div>
+              <h3 class="demo-features-vertical__card-title">{{ feature.title }}</h3>
+              <p class="demo-features-vertical__card-desc">{{ feature.description }}</p>
+            </div>
+          {% else %}
+            {# Formato simple: string #}
+            <div class="demo-features-vertical__card">
+              <div class="demo-features-vertical__card-icon">
+                {{ jaraba_icon('status', 'check-circle', { size: '28px', variant: 'duotone', color: 'verde-innovacion' }) }}
+              </div>
+              <p class="demo-features-vertical__card-desc">{{ feature }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
 
   {# S6-05: Gráfico via partial compartido (DRY). #}
   {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
@@ -141,14 +162,18 @@
   {% if products %}
     <section id="products">
       <h2 class="demo-section-title">
-        {{ jaraba_icon('commerce', 'products', { color: 'azul-corporativo', size: '24px' }) }}
-        {{ 'Tus Productos'|t }}
+        {{ jaraba_icon('commerce', 'store', { color: 'azul-corporativo', size: '24px' }) }}
+        {{ vertical_context.products_label|default('Tus Productos'|t) }}
       </h2>
       <div class="demo-products-grid">
         {% for product in products %}
           <article class="demo-product-card">
             <div class="demo-product-card__image">
-              {{ jaraba_icon('commerce', 'product', { size: '32px', color: 'blanco' }) }}
+              {% if product.image starts with 'data:' or product.image starts with '/' %}
+                <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy" width="120" height="80">
+              {% else %}
+                {{ jaraba_icon('commerce', 'store', { size: '32px', color: 'blanco' }) }}
+              {% endif %}
             </div>
             <div class="demo-product-card__info">
               <h4 class="demo-product-card__name">{{ product.name }}</h4>

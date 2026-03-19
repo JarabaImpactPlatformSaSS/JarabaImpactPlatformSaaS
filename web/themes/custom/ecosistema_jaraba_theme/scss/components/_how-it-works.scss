@@ -1,0 +1,191 @@
+// @file scss/components/_how-it-works.scss
+// "Cómo funciona" — 3 pasos premium con iconos duotone y conectores.
+
+@use '../variables' as *;
+
+.how-it-works {
+  padding: var(--ej-spacing-xxl, 4rem) var(--ej-spacing-lg, 2rem);
+  background: var(--ej-bg-subtle, #f8fafc);
+
+  &__container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--ej-spacing-xxl, 3rem);
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-color-impulse, #FF8C42);
+    margin-bottom: var(--ej-spacing-xs, 0.5rem);
+  }
+
+  &__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  // Steps layout.
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ej-spacing-xl, 2rem);
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0;
+    }
+  }
+
+  // Individual step card.
+  &__step {
+    flex: 1;
+    max-width: 300px;
+    text-align: center;
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-radius: var(--ej-border-radius-xl, 20px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+      background: var(--ej-bg-surface, #fff);
+    }
+  }
+
+  // Icon container con número superpuesto.
+  &__step-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    transition: transform 0.3s ease;
+
+    .how-it-works__step:hover & {
+      transform: scale(1.1);
+    }
+
+    img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  &__step-icon--naranja {
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+  }
+
+  &__step-icon--verde {
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 12%, transparent);
+  }
+
+  &__step-icon--azul {
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  }
+
+  // Número pequeño en esquina del icono.
+  &__step-number {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ej-color-impulse, #FF8C42);
+    color: var(--ej-bg-surface, #fff);
+    border-radius: 50%;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 30%, transparent);
+  }
+
+  &__step-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+    margin: 0 0 var(--ej-spacing-xs, 0.5rem);
+  }
+
+  &__step-desc {
+    font-size: 0.9375rem;
+    color: var(--ej-text-muted, #6b7280);
+    line-height: 1.5;
+    margin: 0 0 var(--ej-spacing-sm, 0.75rem);
+  }
+
+  // Trust micro-badge por paso.
+  &__step-trust {
+    display: inline-block;
+    padding: 0.2rem 0.625rem;
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+    color: var(--ej-color-innovation, #00A9A5);
+    border-radius: var(--ej-border-radius-md, 8px);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  // Connector entre pasos.
+  &__connector {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      flex-shrink: 0;
+      padding-top: 2rem; // Alinear con centro del icono.
+    }
+  }
+
+  &__connector-line {
+    width: 32px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-impulse, #FF8C42));
+    border-radius: 1px;
+  }
+
+  &__connector-arrow {
+    font-size: 1.25rem;
+    color: var(--ej-color-impulse, #FF8C42);
+    font-weight: 700;
+    line-height: 1;
+    margin-top: -2px;
+  }
+
+  // CTA.
+  &__cta {
+    text-align: center;
+    margin-top: var(--ej-spacing-xl, 2rem);
+  }
+}
+
+// Dark mode.
+[data-theme='dark'] .how-it-works,
+.dark-mode .how-it-works {
+  background: var(--ej-bg-surface-dark, rgba(26, 26, 46, 0.4));
+
+  .how-it-works__step-title { color: var(--ej-color-heading-dark, #f1f5f9); }
+  .how-it-works__step-desc { color: var(--ej-color-muted-dark, #94a3b8); }
+}

@@ -234,8 +234,12 @@ demo-landing:
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
+  js:
+    js/demo-lead-gate.js: {}
   dependencies:
     - core/drupal
+    - core/once
+    - core/drupalSettings
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE DEMO DASHBOARD

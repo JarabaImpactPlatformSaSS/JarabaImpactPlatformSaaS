@@ -69,7 +69,8 @@ class KitDigitalPendingAction implements DailyActionInterface {
    * {@inheritdoc}
    */
   public function getRoute(): string {
-    return 'entity.kit_digital_agreement.collection';
+    // Ruta pública — NUNCA /admin/* para tenants.
+    return 'jaraba_billing.kit_digital.landing';
   }
 
   /**

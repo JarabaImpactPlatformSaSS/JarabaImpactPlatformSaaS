@@ -77,15 +77,24 @@
         trigger.addEventListener('click', function (e) {
           e.preventDefault();
 
-          const panelSize = this.dataset.slidePanel || 'large';
-          const panelTitle = this.dataset.slidePanelTitle || Drupal.t('Panel');
-          const panelUrl = this.dataset.slidePanelUrl || this.getAttribute('href');
+          var panelSize = this.dataset.slidePanel || 'large';
+          var panelTitle = this.dataset.slidePanelTitle || Drupal.t('Panel');
+          var panelUrl = this.dataset.slidePanelUrl || this.getAttribute('href');
 
           Drupal.behaviors.slidePanel.open({
             size: panelSize,
             title: panelTitle,
             url: panelUrl
           });
+        });
+
+        // Impedir ctrl+click / middle-click en links slide-panel que apuntan
+        // a rutas /admin/* — el usuario no debe navegar directamente a admin.
+        // El contenido solo es accesible via slide-panel AJAX.
+        trigger.addEventListener('auxclick', function (e) {
+          if (e.button === 1) {
+            e.preventDefault();
+          }
         });
       });
 

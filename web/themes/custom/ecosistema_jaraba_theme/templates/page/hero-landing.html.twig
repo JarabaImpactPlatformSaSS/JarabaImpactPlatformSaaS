@@ -53,7 +53,7 @@
   <nav class="intentions-grid" aria-label="{% trans %}Selecciona tu objetivo{% endtrans %}">
 
     {# Card: Buscar Empleo #}
-    <a href="/empleo" class="intention-card intention-card--empleo" role="article">
+    <a href="{{ path('ecosistema_jaraba_core.vertical.empleo') }}" class="intention-card intention-card--empleo" role="article">
       <div class="intention-card__icon">
         {{ jaraba_icon('verticals', 'empleo', { variant: 'duotone', color: 'innovation', size: '40px' }) }}
       </div>
@@ -62,7 +62,7 @@
     </a>
 
     {# Card: Buscar Talento #}
-    <a href="/talento" class="intention-card intention-card--talento" role="article">
+    <a href="{{ path('ecosistema_jaraba_core.vertical.talento') }}" class="intention-card intention-card--talento" role="article">
       <div class="intention-card__icon">
         {{ jaraba_icon('business', 'team', { variant: 'duotone', color: 'innovation', size: '40px' }) }}
       </div>
@@ -71,7 +71,7 @@
     </a>
 
     {# Card: Emprender #}
-    <a href="/emprender" class="intention-card intention-card--emprender" role="article">
+    <a href="{{ path('ecosistema_jaraba_core.vertical.emprender') }}" class="intention-card intention-card--emprender" role="article">
       <div class="intention-card__icon">
         {{ jaraba_icon('business', 'startup', { variant: 'duotone', color: 'impulse', size: '40px' }) }}
       </div>
@@ -80,7 +80,7 @@
     </a>
 
     {# Card: Vender Productos #}
-    <a href="/productos" class="intention-card intention-card--agro" role="article">
+    <a href="{{ lp }}/productos" class="intention-card intention-card--agro" role="article">
       <div class="intention-card__icon">
         {{ jaraba_icon('verticals', 'agro', { variant: 'duotone', color: 'agro', size: '40px' }) }}
       </div>
@@ -93,12 +93,12 @@
   {# CTA Actions #}
   <div class="hero-landing__actions">
 
-    <a href="/user/register" class="btn-primary">
+    <a href="{{ path('user.register') }}" class="btn-primary">
       {{ jaraba_icon('actions', 'rocket', { color: 'corporate', size: '20px' }) }}
       <span>{% trans %}Empezar gratis{% endtrans %}</span>
     </a>
 
-    <a href="/user/login" class="btn-secondary">
+    <a href="{{ path('user.login') }}" class="btn-secondary">
       <span>{% trans %}Ya tengo cuenta{% endtrans %}</span>
       {{ jaraba_icon('ui', 'arrow-right', { color: 'white', size: '20px' }) }}
     </a>

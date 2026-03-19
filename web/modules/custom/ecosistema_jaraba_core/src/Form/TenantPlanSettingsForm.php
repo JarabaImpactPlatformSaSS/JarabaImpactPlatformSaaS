@@ -151,12 +151,18 @@ class TenantPlanSettingsForm extends FormBase {
         . '</p>',
     ];
 
+    // Boton del portal de Stripe via JS (data-portal-trigger).
+    // NO es un submit de formulario — abre el portal de Stripe via API AJAX.
+    // stripe-portal.js conecta [data-portal-trigger] con /api/v1/billing/portal-session.
+    $returnUrl = Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.plan')->toString();
     $form['billing']['portal_button'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Abrir portal de facturacion'),
-      '#name' => 'stripe_portal',
-      '#attributes' => ['class' => ['tenant-form__btn', 'tenant-form__btn--secondary']],
+      '#markup' => '<button type="button" class="tenant-form__btn tenant-form__btn--secondary" data-portal-trigger data-portal-return-url="' . $returnUrl . '">'
+        . $this->t('Abrir portal de facturacion')
+        . '</button>',
     ];
+
+    // Adjuntar JS del portal de Stripe.
+    $form['#attached']['library'][] = 'ecosistema_jaraba_theme/stripe-portal';
 
     return $form;
   }
@@ -164,18 +170,15 @@ class TenantPlanSettingsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+  /**
+   * {@inheritdoc}
+   *
+   * Este form es informativo — no tiene campos editables.
+   * El boton "Abrir portal de facturacion" usa JS (data-portal-trigger),
+   * no submit de formulario.
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $triggeringElement = $form_state->getTriggeringElement();
-    $name = $triggeringElement['#name'] ?? '';
-
-    if ($name === 'stripe_portal') {
-      // Redirect to Stripe Customer Portal via API.
-      // The JS frontend normally calls the API endpoint, but for form submit
-      // we redirect to the pricing page with a portal trigger.
-      $form_state->setRedirectUrl(
-        Url::fromRoute('ecosistema_jaraba_core.pricing.page')
-      );
-    }
+    // No-op: form is read-only display + JS buttons.
   }
 
   /**

@@ -67,10 +67,10 @@
       </a>
       <div class="landing-header__actions">
         {% if logged_in %}
-          <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-          <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+          <a href="{{ path('user.page') }}" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+          <a href="{{ path('user.logout') }}" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
         {% else %}
-          <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+          <a href="{{ path('user.login') }}" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
         {% endif %}
       </div>
     </div>

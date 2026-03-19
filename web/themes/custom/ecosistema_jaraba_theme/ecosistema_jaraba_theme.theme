@@ -1169,6 +1169,25 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
 /**
  * Helper: Obtiene las configuraciones base del tema para inyectar en templates.
  */
+/**
+ * Normaliza las alternativas del quiz desde el campo map de Drupal.
+ *
+ * El campo 'map' solo almacena un mapa plano (no array de mapas).
+ * Esta función detecta si es un mapa plano y lo envuelve en array.
+ */
+function _ecosistema_jaraba_theme_normalize_quiz_alternatives($result): array {
+  $raw = $result->get('alternative_verticals')->first()?->getValue() ?? [];
+  if (empty($raw)) {
+    return [];
+  }
+  // Si tiene 'id' como key directa, es un mapa plano (1 alternativa).
+  if (isset($raw['id'])) {
+    return [$raw];
+  }
+  // Si es array indexado de mapas, devolver tal cual.
+  return array_values($raw);
+}
+
 function _ecosistema_jaraba_theme_get_base_settings($config) {
   return [
     'header_layout' => $config->get('header_layout') ?: 'classic',
@@ -1515,6 +1534,19 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'description' => 'Metodología validada + herramientas digitales + mentoría experta. Todo para emprender con garantías.',
       'og_type' => 'website',
       'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-emprendimiento.jpg',
+    ],
+    // Quiz de Recomendación de Vertical.
+    'ecosistema_jaraba_core.quiz_vertical' => [
+      'title' => 'Descubre tu vertical ideal en 30 segundos | Ecosistema Jaraba',
+      'description' => 'Test gratuito con IA. Responde 3 preguntas y te recomendamos la herramienta perfecta de entre 9 verticales especializados.',
+      'og_type' => 'website',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-default.jpg',
+    ],
+    'ecosistema_jaraba_core.quiz_vertical.result' => [
+      'title' => 'Tu recomendación personalizada | Ecosistema Jaraba',
+      'description' => 'Descubre qué vertical de Jaraba Impact Platform se adapta mejor a tu perfil. Resultado personalizado con IA.',
+      'og_type' => 'article',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-default.jpg',
     ],
   ];
   if (isset($landing_meta[$route])) {
@@ -2157,6 +2189,7 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'jaraba_content_hub.' => 'page-content-hub',
       'ecosistema_jaraba_core.dashboard.' => 'page-dashboard-auto',
       'ecosistema_jaraba_core.demo_' => 'page-demo',
+      'ecosistema_jaraba_core.quiz_vertical' => 'page-quiz',
       'ecosistema_jaraba_core.lead_magnet.' => 'page-lead-magnet',
       'ecosistema_jaraba_core.marketplace.' => 'page-marketplace',
       'ecosistema_jaraba_core.onboarding.' => 'page-onboarding-core',
@@ -2752,10 +2785,14 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $defaultLangcode = $language_manager->getDefaultLanguage()->getId();
 
   // I18N-NAVPREFIX-001: Language prefix for all navigation links.
-  // Non-default languages get "/{langcode}" prefix; default language gets "".
-  // Templates MUST prepend {{ language_prefix }} to ALL hardcoded paths.
-  $variables['language_prefix'] = ($current_language->getId() !== $defaultLangcode)
-    ? '/' . $current_language->getId()
+  // When path_prefix negotiation has a prefix for the current language,
+  // ALWAYS include it — even for the default language. Drupal's
+  // LanguageNegotiationUrl with `es: es` prefix forces /es/ on all requests.
+  $langNegConfig = \Drupal::config('language.negotiation');
+  $prefixes = $langNegConfig->get('url.prefixes') ?? [];
+  $langId = $current_language->getId();
+  $variables['language_prefix'] = !empty($prefixes[$langId])
+    ? '/' . $prefixes[$langId]
     : '';
 
   // Build language switch links for the current page.
@@ -2816,6 +2853,169 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   // =========================================================================
   if (empty($variables['meta_site'])) {
     $variables['theme_settings']['header_megamenu'] = TRUE;
+
+    // Mega menu columns: Fase B — primero intenta datos configurables desde UI
+    // (SiteMenuItem entities via MegaMenuBridgeService). Si no hay menú
+    // configurado, usa fallback hardcodeado (Fase A).
+    $lp = $variables['language_prefix'] ?? '';
+    $dynamicColumns = NULL;
+    if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
+      $dynamicColumns = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge')->getMegaMenuColumns();
+    }
+    $variables['mega_menu_columns'] = $dynamicColumns ?? [
+      [
+        'title' => t('Para Personas'),
+        'items' => [
+          [
+            'title' => t('Empleabilidad'),
+            'subtitle' => t('Impulsa tu carrera con IA'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'empleabilidad',
+            'color' => 'verde-innovacion',
+            'url' => $lp . '/empleabilidad',
+          ],
+          [
+            'title' => t('Formación'),
+            'subtitle' => t('Cursos y certificaciones'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'formacion',
+            'color' => 'verde-innovacion',
+            'url' => $lp . '/formacion',
+          ],
+        ],
+      ],
+      [
+        'title' => t('Para Empresas'),
+        'items' => [
+          [
+            'title' => t('Emprendimiento'),
+            'subtitle' => t('De la idea al negocio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'emprendimiento',
+            'color' => 'naranja-impulso',
+            'url' => $lp . '/emprendimiento',
+          ],
+          [
+            'title' => t('ComercioConecta'),
+            'subtitle' => t('Digitaliza tu comercio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'comercioconecta',
+            'color' => 'naranja-impulso',
+            'url' => $lp . '/comercioconecta',
+          ],
+          [
+            'title' => t('AgroConecta'),
+            'subtitle' => t('Marketplace agroalimentario'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'agroconecta',
+            'color' => 'verde-oliva',
+            'url' => $lp . '/agroconecta',
+          ],
+          [
+            'title' => t('ServiciosConecta'),
+            'subtitle' => t('Gestión de servicios'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'serviciosconecta',
+            'color' => 'verde-innovacion',
+            'url' => $lp . '/serviciosconecta',
+          ],
+        ],
+      ],
+      [
+        'title' => t('Para Profesionales'),
+        'items' => [
+          [
+            'title' => t('JarabaLex'),
+            'subtitle' => t('Inteligencia legal con IA'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'jarabalex',
+            'color' => 'azul-corporativo',
+            'url' => $lp . '/jarabalex',
+          ],
+          [
+            'title' => t('Content Hub'),
+            'subtitle' => t('Crea y publica contenido'),
+            'icon_cat' => 'content',
+            'icon_name' => 'edit',
+            'color' => 'azul-corporativo',
+            'url' => $lp . '/content-hub',
+          ],
+        ],
+      ],
+      [
+        'title' => t('Para Instituciones'),
+        'has_promo' => TRUE,
+        'items' => [
+          [
+            'title' => t('Andalucía +ei'),
+            'subtitle' => t('Empleo e innovación regional'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'andalucia-ei',
+            'color' => 'verde-innovacion',
+            'url' => $lp . '/andalucia-ei',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  // =========================================================================
+  // QUIZ DE RECOMENDACIÓN DE VERTICAL — Datos para templates
+  //
+  // ZERO-REGION-001: El controller devuelve markup vacío. Los datos se
+  // inyectan aquí como variables de template (NO como render arrays con
+  // keys sin # — eso causa InvalidArgumentException en Drupal renderer).
+  // =========================================================================
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if ($route === 'ecosistema_jaraba_core.quiz_vertical') {
+    // Quiz page: inyectar preguntas como JSON en drupalSettings.
+    // Drupal renderer trata arrays con keys sin # como render children →
+    // InvalidArgumentException. La solución es renderizar el quiz 100% client-side
+    // desde drupalSettings, y el servidor solo proporciona el contenedor HTML.
+    if (\Drupal::hasService('ecosistema_jaraba_core.vertical_quiz')) {
+      $quizService = \Drupal::service('ecosistema_jaraba_core.vertical_quiz');
+      // Estructura adaptativa completa: Q1 + Q2/Q3 por perfil + reacciones IA.
+      $structure = $quizService->getQuizStructure();
+      $variables['#attached']['drupalSettings']['verticalQuiz'] = [
+        'structure' => $structure,
+        'submitEndpoint' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.quiz_vertical.submit')->toString(),
+        'resultBaseUrl' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.quiz_vertical', [], ['absolute' => FALSE])->toString() . '/resultado/',
+      ];
+    }
+    // Full-width container — JS renderiza el quiz adaptativo.
+    $variables['quiz_html'] = Markup::create('<div id="quiz-app"></div>');
+  }
+
+  if ($route === 'ecosistema_jaraba_core.quiz_vertical.result') {
+    // Result page: inyectar resultado como JSON en drupalSettings.
+    $variables['quiz_result_html'] = '';
+    $uuid = \Drupal::routeMatch()->getParameter('uuid');
+    if ($uuid && \Drupal::hasService('ecosistema_jaraba_core.vertical_quiz')) {
+      $quizService = \Drupal::service('ecosistema_jaraba_core.vertical_quiz');
+      $result = $quizService->getResultByUuid($uuid);
+      if ($result) {
+        $vertical = $result->getRecommendedVertical();
+        $verticalData = $quizService->getVerticalPresentation($vertical);
+        $variables['#attached']['drupalSettings']['verticalQuizResult'] = [
+          'uuid' => $result->uuid(),
+          'vertical_id' => $vertical,
+          'vertical_title' => $verticalData['title'] ?? $vertical,
+          'path' => $verticalData['path'] ?? $vertical,
+          'icon_cat' => $verticalData['icon_cat'] ?? 'verticals',
+          'icon_name' => $verticalData['icon_name'] ?? $vertical,
+          'color' => $verticalData['color'] ?? 'azul-corporativo',
+          'benefits' => array_map('strval', $verticalData['benefits'] ?? []),
+          'price_from' => $verticalData['price_from'] ?? '0€',
+          'ai_explanation' => $result->get('ai_explanation')->value ?? '',
+          'alternatives' => _ecosistema_jaraba_theme_normalize_quiz_alternatives($result),
+          'demo_profile' => $verticalData['demo_profile'] ?? '',
+          'logged_in' => !empty($variables['logged_in']),
+          'language_prefix' => $variables['language_prefix'] ?? '',
+        ];
+        $variables['quiz_result_html'] = Markup::create('<div class="quiz-result__container" id="quiz-result-app"></div>');
+      }
+    }
   }
 
   // =========================================================================
@@ -2894,6 +3094,14 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         'contacto' => '/contacto',
         'metodo' => '/metodo',
         'empleabilidad' => '/empleabilidad',
+        'emprendimiento' => '/emprendimiento',
+        'agroconecta' => '/agroconecta',
+        'comercioconecta' => '/comercioconecta',
+        'serviciosconecta' => '/serviciosconecta',
+        'formacion' => '/formacion',
+        'andalucia_ei' => '/andalucia-ei',
+        'dashboard' => '/user',
+        'demo' => '/demo',
       ];
       foreach ($pedPaths as $key => $path) {
         try {
@@ -2907,6 +3115,43 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         catch (\Throwable) {
           $variables['ped_urls'][$key] = $path;
         }
+      }
+    }
+  }
+
+  // =========================================================================
+  // GLOBAL ped_urls — Resolve ALL internal URLs with language prefix.
+  // ROUTE-LANGPREFIX-001: Even the generic flow needs properly prefixed URLs
+  // for cross-pollination, CTA banners, etc. PED block above may have already
+  // set these; this block ensures they exist for ALL flows.
+  // =========================================================================
+  if (empty($variables['ped_urls'])) {
+    $globalPaths = [
+      'register' => '/user/register',
+      'empleabilidad' => '/empleabilidad',
+      'emprendimiento' => '/emprendimiento',
+      'agroconecta' => '/agroconecta',
+      'comercioconecta' => '/comercioconecta',
+      'serviciosconecta' => '/serviciosconecta',
+      'jarabalex' => '/jarabalex',
+      'formacion' => '/formacion',
+      'andalucia_ei' => '/andalucia-ei',
+      'dashboard' => '/user',
+      'demo' => '/demo',
+      'contacto' => '/contacto',
+    ];
+    $variables['ped_urls'] = [];
+    foreach ($globalPaths as $key => $path) {
+      try {
+        if ($key === 'register') {
+          $variables['ped_urls'][$key] = \Drupal\Core\Url::fromRoute('user.register')->toString();
+        }
+        else {
+          $variables['ped_urls'][$key] = \Drupal\Core\Url::fromUserInput($path)->toString();
+        }
+      }
+      catch (\Throwable) {
+        $variables['ped_urls'][$key] = $path;
       }
     }
   }
@@ -3023,6 +3268,14 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         'contacto' => '/contacto',
         'metodo' => '/metodo',
         'empleabilidad' => '/empleabilidad',
+        'emprendimiento' => '/emprendimiento',
+        'agroconecta' => '/agroconecta',
+        'comercioconecta' => '/comercioconecta',
+        'serviciosconecta' => '/serviciosconecta',
+        'formacion' => '/formacion',
+        'andalucia_ei' => '/andalucia-ei',
+        'dashboard' => '/user',
+        'demo' => '/demo',
       ];
       $variables['ped_urls'] = [];
       foreach ($pedPaths as $key => $path) {
@@ -4064,6 +4317,18 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
 
   // =========================================================================
+  // QUIZ DE RECOMENDACIÓN DE VERTICAL — Clean frontend page
+  // Template: page--test-vertical.html.twig
+  // =========================================================================
+  $quiz_routes = [
+    'ecosistema_jaraba_core.quiz_vertical',
+    'ecosistema_jaraba_core.quiz_vertical.result',
+  ];
+  if (in_array($route, $quiz_routes, TRUE)) {
+    $suggestions[] = 'page__test_vertical';
+  }
+
+  // =========================================================================
   // VERTICAL EMPLEABILIDAD — Template específico con Copilot FAB
   // Plan Elevación Empleabilidad v1 — Fase 1
   //
@@ -4807,6 +5072,8 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_candidate.dashboard' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_agents.' => ['ecosistema_jaraba_theme/bundle-agent-dashboard'],
     'jaraba_business_tools.entrepreneur_dashboard' => ['ecosistema_jaraba_theme/bundle-entrepreneur-dashboard'],
+    // Quiz de Recomendación de Vertical.
+    'ecosistema_jaraba_core.quiz_vertical' => ['ecosistema_jaraba_theme/route-quiz'],
   ];
 
   // SETUP-WIZARD-DAILY-001: Attach setup-wizard library on dashboard routes

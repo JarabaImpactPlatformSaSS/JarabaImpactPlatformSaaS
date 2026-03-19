@@ -262,6 +262,20 @@ class TenantOnboardingService
             // 8. Enviar email de bienvenida
             $this->sendWelcomeEmail($user, $tenant, $vertical);
 
+            // 9. Vincular QuizResult si viene del quiz de recomendación.
+            if (!empty($data['quiz_uuid']) && \Drupal::hasService('ecosistema_jaraba_core.vertical_quiz')) {
+              try {
+                \Drupal::service('ecosistema_jaraba_core.vertical_quiz')
+                  ->linkResultToUser($data['quiz_uuid'], (int) $user->id(), (int) $tenant->id());
+              }
+              catch (\Throwable $e) {
+                $this->logger->warning('Quiz link failed for @uuid: @e', [
+                  '@uuid' => $data['quiz_uuid'],
+                  '@e' => $e->getMessage(),
+                ]);
+              }
+            }
+
             // Log del evento
             $this->logger->info(
                 '🎉 Nuevo tenant registrado: @name (dominio: @domain) para vertical @vertical',

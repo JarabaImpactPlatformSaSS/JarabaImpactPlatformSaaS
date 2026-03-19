@@ -1,15 +1,14 @@
 // @file scss/components/_cross-pollination.scss
-// Sección cross-pollination de la homepage — 6 verticales.
+// Cross-pollination premium — 8 verticales con iconos duotone.
 //
-// DIRECTRICES:
-// - SSOT Design Tokens: var(--ej-*)
-// - Mobile-first: scroll horizontal → Desktop: grid 3×2
-// - Glassmorphism + gradient accent per vertical
-// - Dark mode
+// Cards con fondo circular para iconos, hover con elevación y borde de marca.
+// Grid 4 columnas desktop, 2 tablet, 1 mobile.
+
+@use '../variables' as *;
 
 .cross-pollination {
-  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
-  background: var(--ej-bg-section-alt, #f8fafc);
+  padding: var(--ej-spacing-xxl, 4rem) var(--ej-spacing-lg, 2rem);
+  background: var(--ej-bg-subtle, #f8fafc);
 
   &__container {
     max-width: 1200px;
@@ -18,118 +17,118 @@
 
   &__header {
     text-align: center;
-    margin-bottom: var(--ej-space-xl, 3rem);
+    margin-bottom: var(--ej-spacing-xxl, 3rem);
   }
 
   &__eyebrow {
     display: block;
-    font-size: var(--ej-text-sm, 0.875rem);
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--ej-naranja-impulso, #ff8c42);
-    margin-bottom: var(--ej-space-xs, 0.5rem);
+    color: var(--ej-color-impulse, #FF8C42);
+    margin-bottom: var(--ej-spacing-xs, 0.5rem);
   }
 
   &__title {
-    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
-    font-size: var(--ej-text-2xl, 1.75rem);
-    font-weight: 700;
-    color: var(--ej-color-heading, #1a1a2e);
-    margin: 0 0 var(--ej-space-xs, 0.5rem);
-    @media (min-width: 768px) { font-size: var(--ej-text-3xl, 2.25rem); }
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+    margin: 0 0 var(--ej-spacing-xs, 0.5rem);
+    letter-spacing: -0.02em;
   }
 
   &__subtitle {
-    color: var(--ej-color-muted, #6b7280);
-    font-size: var(--ej-text-base, 1rem);
-    max-width: 680px;
+    color: var(--ej-text-muted, #6b7280);
+    font-size: 1rem;
+    max-width: 640px;
     margin: 0 auto;
     line-height: 1.6;
   }
 
-  // ─── Grid ──────────────────────────────────────────────────────────
+  // Grid: 4 cols desktop, 2 tablet, 1 mobile.
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--ej-space-md, 1rem);
+    gap: var(--ej-spacing-md, 1rem);
 
     @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-    @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
   }
 
-  // ─── Card ──────────────────────────────────────────────────────────
+  // Card premium.
   &__card {
     display: flex;
     flex-direction: column;
-    gap: var(--ej-space-sm, 0.75rem);
-    padding: var(--ej-space-lg, 2rem);
-    border-radius: var(--ej-radius-xl, 1.5rem);
+    gap: var(--ej-spacing-sm, 0.75rem);
+    padding: var(--ej-spacing-lg, 1.5rem);
+    border-radius: var(--ej-border-radius-xl, 20px);
     text-decoration: none;
+    background: var(--ej-bg-surface, #fff);
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 
-    // Glassmorphism base
-    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.7));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 12px 32px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 12%, transparent);
+      border-color: var(--ej-color-impulse, #FF8C42);
     }
-
-    // Accent colors per vertical
-    &--empleabilidad { &:hover { border-color: var(--ej-color-sky, #0ea5e9); } .cross-pollination__icon { color: var(--ej-color-sky, #0ea5e9); } }
-    &--emprendimiento { &:hover { border-color: var(--ej-color-warning, #f59e0b); } .cross-pollination__icon { color: var(--ej-color-warning, #f59e0b); } }
-    &--agroconecta { &:hover { border-color: var(--ej-color-success, #10b981); } .cross-pollination__icon { color: var(--ej-color-success, #10b981); } }
-    &--comercioconecta { &:hover { border-color: var(--ej-color-violet, #8b5cf6); } .cross-pollination__icon { color: var(--ej-color-violet, #8b5cf6); } }
-    &--servicios { &:hover { border-color: var(--ej-color-pink, #ec4899); } .cross-pollination__icon { color: var(--ej-color-pink, #ec4899); } }
-    &--jarabalex { &:hover { border-color: var(--ej-color-orange, #f97316); } .cross-pollination__icon { color: var(--ej-color-orange, #f97316); } }
   }
 
+  // Icono con fondo circular.
   &__icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--ej-radius-md, 0.75rem);
-    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.5));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, var(--ej-bg-surface, #fff));
+    transition: transform 0.3s ease;
+
+    .cross-pollination__card:hover & {
+      transform: scale(1.1);
+    }
+
+    img {
+      width: 36px;
+      height: 36px;
+    }
   }
 
   &__card-title {
-    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
-    font-size: var(--ej-text-lg, 1.25rem);
+    font-size: 1.0625rem;
     font-weight: 700;
-    color: var(--ej-color-heading, #1a1a2e);
+    color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
     margin: 0;
   }
 
   &__card-desc {
-    color: var(--ej-color-muted, #6b7280);
-    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-text-muted, #6b7280);
+    font-size: 0.875rem;
     line-height: 1.5;
     margin: 0;
     flex: 1;
   }
 
   &__card-cta {
-    font-size: var(--ej-text-sm, 0.875rem);
+    font-size: 0.875rem;
     font-weight: 600;
-    color: var(--ej-naranja-impulso, #ff8c42);
-    transition: color 0.15s ease;
+    color: var(--ej-color-impulse, #FF8C42);
+    transition: color 0.2s;
 
     .cross-pollination__card:hover & {
-      color: var(--ej-naranja-hover, #e07a35);
+      color: var(--ej-color-corporate, #233D63);
     }
   }
 }
 
-// ─── Dark mode ─────────────────────────────────────────────────────────
+// Dark mode.
 [data-theme='dark'] .cross-pollination,
 .dark-mode .cross-pollination {
-  background: var(--ej-bg-section-alt-dark, #0f172a);
+  background: var(--ej-bg-surface-dark, rgba(26, 26, 46, 0.4));
 
   .cross-pollination__title,
   .cross-pollination__card-title { color: var(--ej-color-heading-dark, #f1f5f9); }

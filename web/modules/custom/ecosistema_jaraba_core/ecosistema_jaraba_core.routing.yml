@@ -34,7 +34,7 @@ ecosistema_jaraba_core.tenant.change_plan:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantDashboardController::changePlan'
     _title: 'Cambiar Plan'
   requirements:
-    _role: 'tenant_admin+administrator'
+    _user_is_logged_in: 'TRUE'
   options:
     _admin_route: FALSE
 
@@ -758,6 +758,20 @@ ecosistema_jaraba_core.tenant_self_service.plan:
   options:
     _admin_route: FALSE
 
+# SLIDE-PANEL-RENDER-001: Ruta dedicada para slide-panel del plan.
+# Usa controlador con renderPlain() — NO renderiza pagina completa.
+# Usada por: SubscriptionUpgradeStep (wizard paso 7 con plan paid),
+#           SubscriptionProfileSection (link "Gestionar plan").
+ecosistema_jaraba_core.tenant_self_service.plan.slide_panel:
+  path: '/my-settings/plan/slide-panel'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantSelfServiceController::planSlidePanel'
+    _title: 'Plan y Facturacion'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
 # ---------------------------------------------------------------------------
 # MARKETPLACE - PHASE 13: CROSS-TENANT VISIBILITY
 # ---------------------------------------------------------------------------
@@ -845,6 +859,40 @@ ecosistema_jaraba_core.security_headers_settings:
     _permission: 'administer site configuration'
   options:
     _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# QUIZ DE RECOMENDACIÓN DE VERTICAL — /test-vertical
+# Flujo: Quiz 4 preguntas → Scoring → Resultado personalizado con IA
+# Público: accesible sin login (también útil para logueados → add-on discovery)
+# ---------------------------------------------------------------------------
+
+ecosistema_jaraba_core.quiz_vertical:
+  path: '/test-vertical'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalQuizController::quizPage'
+    _title: 'Descubre tu vertical ideal'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.quiz_vertical.submit:
+  path: '/api/v1/quiz/submit'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalQuizController::submitQuiz'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    _csrf_request_header_token: 'TRUE'
+    no_cache: TRUE
+
+ecosistema_jaraba_core.quiz_vertical.result:
+  path: '/test-vertical/resultado/{uuid}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalQuizController::resultPage'
+    _title: 'Tu recomendación personalizada'
+  requirements:
+    _access: 'TRUE'
+    uuid: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 # ---------------------------------------------------------------------------
 # Q1 2027: DEMO INTERACTIVA - TIME-TO-VALUE < 60s
@@ -935,6 +983,16 @@ ecosistema_jaraba_core.demo_api_dismiss_nudge:
   path: '/api/v1/demo/dismiss-nudge'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::dismissNudge'
+  requirements:
+    _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+  methods: [POST]
+
+# S10-01: Soft gate — captura de lead pre-demo para CRM pipeline.
+ecosistema_jaraba_core.demo_api_lead_gate:
+  path: '/api/v1/demo/lead-gate'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::leadGate'
   requirements:
     _access: 'TRUE'
     _csrf_request_header_token: 'TRUE'

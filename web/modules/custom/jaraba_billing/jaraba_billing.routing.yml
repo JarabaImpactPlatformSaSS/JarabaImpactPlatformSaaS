@@ -160,7 +160,10 @@ jaraba_billing.api.portal_session:
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::createPortalSession'
   requirements:
-    _permission: 'manage payment methods'
+    # Usuarios que gestionan metodos de pago O su propia suscripcion.
+    # manage own subscription: para tenants accediendo via perfil de usuario.
+    # manage payment methods: para admins (backward-compatible).
+    _permission: 'manage payment methods+manage own subscription'
     _csrf_request_header_token: 'TRUE'
   methods: [POST]
 

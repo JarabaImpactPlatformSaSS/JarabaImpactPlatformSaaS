@@ -42,6 +42,49 @@
           });
         });
       });
+
+      // Carrusel de casos de uso — dots + auto-rotación.
+      once('product-demo-carousel', '.product-demo__usecase-carousel', context).forEach(function (carousel) {
+        var usecases = carousel.querySelectorAll('[data-usecase]');
+        var dots = carousel.querySelectorAll('[data-usecase-goto]');
+        var currentIndex = 0;
+        var autoTimer = null;
+
+        function showUsecase(index) {
+          usecases.forEach(function (uc, i) {
+            if (i === index) {
+              uc.style.display = '';
+              uc.classList.add('product-demo__usecase--active');
+            } else {
+              uc.style.display = 'none';
+              uc.classList.remove('product-demo__usecase--active');
+            }
+          });
+          dots.forEach(function (dot, i) {
+            dot.classList.toggle('product-demo__usecase-dot--active', i === index);
+          });
+          currentIndex = index;
+        }
+
+        dots.forEach(function (dot) {
+          dot.addEventListener('click', function () {
+            var idx = parseInt(dot.getAttribute('data-usecase-goto'), 10);
+            showUsecase(idx);
+            // Reiniciar auto-rotación al interactuar.
+            clearInterval(autoTimer);
+            autoTimer = setInterval(function () {
+              showUsecase((currentIndex + 1) % usecases.length);
+            }, 6000);
+          });
+        });
+
+        // Auto-rotar cada 6 segundos.
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          autoTimer = setInterval(function () {
+            showUsecase((currentIndex + 1) % usecases.length);
+          }, 6000);
+        }
+      });
     }
   };
 

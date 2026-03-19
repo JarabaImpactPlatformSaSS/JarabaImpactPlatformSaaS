@@ -89,7 +89,8 @@
           <div class="contact-form__consent">
             <label>
               <input type="checkbox" name="gdpr" required>
-              {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a>{% endtrans %}
+              {% set privacidad_url = path('ecosistema_jaraba_core.static.privacidad') %}
+              {% trans %}Acepto la <a href="{{ privacidad_url }}" target="_blank">política de privacidad</a>{% endtrans %}
             </label>
           </div>
           <button type="submit" class="btn btn--primary btn--lg contact-form__submit">

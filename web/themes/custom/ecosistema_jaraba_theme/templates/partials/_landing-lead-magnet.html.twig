@@ -99,11 +99,12 @@
                class="form-email" />
       </div>
 
+      {% set privacy_url = (language_prefix|default('')) ~ '/politica-de-privacidad' %}
       <div class="lead-magnet-form__field lead-magnet-form__field--checkbox">
         <label class="lead-magnet-form__gdpr-label">
           <input type="checkbox" name="gdpr_consent" required />
           <span>
-            {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos.{% endtrans %}
+            {% trans %}Acepto la <a href="{{ privacy_url }}" target="_blank">política de privacidad</a> y el tratamiento de mis datos.{% endtrans %}
           </span>
         </label>
       </div>

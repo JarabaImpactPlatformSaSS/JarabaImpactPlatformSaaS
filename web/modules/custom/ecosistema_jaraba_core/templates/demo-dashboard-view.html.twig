@@ -36,7 +36,7 @@
   <div class="demo-banner">
     <div class="demo-banner__content">
       <span class="demo-banner__badge">
-        {{ jaraba_icon('navigation', 'play', { size: '14px', color: 'blanco' }) }}
+        {{ jaraba_icon('ui', 'play', { size: '14px', color: 'blanco' }) }}
         {{ 'MODO DEMO'|t }}
       </span>
       <span class="demo-banner__tenant-name">{{ tenant_name }}</span>
@@ -50,7 +50,7 @@
     <div class="demo-banner__actions">
       {# S7-06: Countdown timer — actualizado via JS. #}
       <span class="demo-countdown" data-demo-countdown aria-live="polite" aria-label="{{ 'Tiempo restante de sesión'|t }}">
-        {{ jaraba_icon('dashboard', 'clock', { size: '14px', color: 'blanco' }) }}
+        {{ jaraba_icon('ui', 'clock', { size: '14px', color: 'blanco' }) }}
         <span data-countdown-display>--:--</span>
       </span>
       <button class="demo-start-btn" data-demo-convert-open type="button">
@@ -59,6 +59,24 @@
       </button>
     </div>
   </div>
+
+  {# S11-07: Setup Wizard — SETUP-WIZARD-DAILY-001 #}
+  {% if wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: wizard,
+      wizard_title: 'Completa tu demo'|t,
+      wizard_subtitle: 'Descubre todo el potencial de la plataforma'|t,
+      collapsed_label: 'Demo completada'|t,
+    } only %}
+  {% endif %}
+
+  {# S11-07: Daily Actions — SETUP-WIZARD-DAILY-001 #}
+  {% if daily_actions %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones rápidas'|t,
+    } only %}
+  {% endif %}
 
   {# Magic Moment Actions #}
   {% if magic_actions %}
@@ -98,7 +116,7 @@
   {% if 'ai_playground' not in unlocked %}
     <section class="demo-locked-section" aria-label="{{ 'Sección bloqueada'|t }}">
       <div class="demo-locked-section__overlay">
-        {{ jaraba_icon('navigation', 'lock', { size: '32px', color: 'azul-corporativo' }) }}
+        {{ jaraba_icon('ui', 'lock', { size: '32px', color: 'azul-corporativo' }) }}
         <p class="demo-locked-section__message">
           {{ 'Realiza @count acciones más para desbloquear el AI Playground'|t({'@count': next_actions}) }}
         </p>

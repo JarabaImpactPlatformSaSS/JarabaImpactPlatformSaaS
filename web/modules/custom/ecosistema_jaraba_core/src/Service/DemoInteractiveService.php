@@ -44,93 +44,19 @@ class DemoInteractiveService
      *
      * ICON-EMOJI-001: Iconos del sistema Jaraba (categoría/nombre).
      */
+    /**
+     * Perfiles de demo ordenados por potencialidad de mercado y conversion.
+     *
+     * Criterios de priorizacion:
+     * 1. Ticket medio mensual (mayor = primero)
+     * 2. TAM espanol/andaluz (mayor = primero)
+     * 3. Urgencia de digitalizacion del sector
+     * 4. Viralidad y efecto red del vertical
+     *
+     * @see docs/implementacion/2026-03-19_Plan_Implementacion_Demo_Elevacion_Conversion_Clase_Mundial_v1.md §2.3
+     */
     public const DEMO_PROFILES = [
-        'producer' => [
-            'id' => 'producer',
-            'name' => 'Productor de Aceite',
-            'description' => 'Experimenta cómo sería gestionar tu cooperativa de aceite de oliva',
-            'icon_category' => 'agro',
-            'icon_name' => 'olive',
-            'vertical' => 'agroconecta',
-            'demo_data' => [
-                'products_count' => 12,
-                'orders_last_month' => 34,
-                'revenue_last_month' => 4250.00,
-                'customers_count' => 89,
-            ],
-        ],
-        'winery' => [
-            'id' => 'winery',
-            'name' => 'Bodega de Vinos',
-            'description' => 'Descubre cómo digitalizar tu bodega y llegar a más clientes',
-            'icon_category' => 'agro',
-            'icon_name' => 'wine',
-            'vertical' => 'agroconecta',
-            'demo_data' => [
-                'products_count' => 24,
-                'orders_last_month' => 67,
-                'revenue_last_month' => 8900.00,
-                'customers_count' => 156,
-            ],
-        ],
-        'cheese' => [
-            'id' => 'cheese',
-            'name' => 'Quesería Artesanal',
-            'description' => 'Visualiza el potencial de tu quesería en el marketplace',
-            'icon_category' => 'agro',
-            'icon_name' => 'cheese',
-            'vertical' => 'agroconecta',
-            'demo_data' => [
-                'products_count' => 8,
-                'orders_last_month' => 45,
-                'revenue_last_month' => 3200.00,
-                'customers_count' => 112,
-            ],
-        ],
-        'buyer' => [
-            'id' => 'buyer',
-            'name' => 'Comprador',
-            'description' => 'Explora el marketplace como cliente final',
-            'icon_category' => 'commerce',
-            'icon_name' => 'cart',
-            'vertical' => 'comercioconecta',
-            'demo_data' => [
-                'products_available' => 150,
-                'tenants_active' => 23,
-                'categories' => 12,
-            ],
-        ],
-        // -- Empleabilidad --------------------------------------------------
-        'jobseeker' => [
-            'id' => 'jobseeker',
-            'name' => 'Buscador de Empleo',
-            'description' => 'Descubre cómo encontrar tu próximo empleo con IA',
-            'icon_category' => 'verticals',
-            'icon_name' => 'empleo',
-            'vertical' => 'empleabilidad',
-            'demo_data' => [
-                'jobs_available' => 245,
-                'applications_sent' => 12,
-                'interviews_scheduled' => 3,
-                'profile_views' => 67,
-            ],
-        ],
-        // -- Emprendimiento --------------------------------------------------
-        'startup' => [
-            'id' => 'startup',
-            'name' => 'Startup / Emprendedor',
-            'description' => 'Gestiona y lanza tu startup con herramientas inteligentes',
-            'icon_category' => 'verticals',
-            'icon_name' => 'rocket',
-            'vertical' => 'emprendimiento',
-            'demo_data' => [
-                'monthly_revenue' => 12500.00,
-                'active_clients' => 45,
-                'projects_in_progress' => 8,
-                'conversion_rate' => 23,
-            ],
-        ],
-        // -- JarabaLex -------------------------------------------------------
+        // -- JarabaLex (ticket alto: 200-350 EUR/mes, 147K despachos ES) ----
         'lawfirm' => [
             'id' => 'lawfirm',
             'name' => 'Despacho de Abogados',
@@ -145,7 +71,37 @@ class DemoInteractiveService
                 'revenue_last_month' => 15600.00,
             ],
         ],
-        // -- ServiciosConecta ------------------------------------------------
+        // -- Emprendimiento (ticket medio-alto, alta viralidad) -------------
+        'startup' => [
+            'id' => 'startup',
+            'name' => 'Emprendedor',
+            'description' => 'Gestiona y lanza tu negocio con herramientas inteligentes',
+            'icon_category' => 'verticals',
+            'icon_name' => 'rocket',
+            'vertical' => 'emprendimiento',
+            'demo_data' => [
+                'monthly_revenue' => 12500.00,
+                'active_clients' => 45,
+                'projects_in_progress' => 8,
+                'conversion_rate' => 23,
+            ],
+        ],
+        // -- Formacion (ingresos recurrentes alumnos x cursos) --------------
+        'academy' => [
+            'id' => 'academy',
+            'name' => 'Academia de Formación',
+            'description' => 'Crea y vende cursos online con tu propia plataforma',
+            'icon_category' => 'education',
+            'icon_name' => 'graduation-cap',
+            'vertical' => 'formacion',
+            'demo_data' => [
+                'courses_available' => 18,
+                'students_enrolled' => 456,
+                'completion_rate' => 78,
+                'revenue_last_month' => 9200.00,
+            ],
+        ],
+        // -- ServiciosConecta (alto volumen autonomos Andalucia) -------------
         'servicepro' => [
             'id' => 'servicepro',
             'name' => 'Profesional de Servicios',
@@ -160,7 +116,66 @@ class DemoInteractiveService
                 'revenue_last_month' => 6800.00,
             ],
         ],
-        // -- Andalucía EI ----------------------------------------------------
+        // -- AgroConecta: Bodega (D.O. andaluzas, ticket medio) -------------
+        'winery' => [
+            'id' => 'winery',
+            'name' => 'Bodega de Vinos',
+            'description' => 'Descubre cómo digitalizar tu bodega y llegar a más clientes',
+            'icon_category' => 'verticals',
+            'icon_name' => 'wine',
+            'vertical' => 'agroconecta',
+            'demo_data' => [
+                'products_count' => 24,
+                'orders_last_month' => 67,
+                'revenue_last_month' => 8900.00,
+                'customers_count' => 156,
+            ],
+        ],
+        // -- AgroConecta: Aceite (Jaen lider mundial) -----------------------
+        'producer' => [
+            'id' => 'producer',
+            'name' => 'Productor de Aceite',
+            'description' => 'Experimenta cómo sería gestionar tu cooperativa de aceite de oliva',
+            'icon_category' => 'verticals',
+            'icon_name' => 'olive',
+            'vertical' => 'agroconecta',
+            'demo_data' => [
+                'products_count' => 12,
+                'orders_last_month' => 34,
+                'revenue_last_month' => 4250.00,
+                'customers_count' => 89,
+            ],
+        ],
+        // -- Empleabilidad (alto volumen, freemium) -------------------------
+        'jobseeker' => [
+            'id' => 'jobseeker',
+            'name' => 'Buscador de Empleo',
+            'description' => 'Descubre cómo encontrar tu próximo empleo con IA',
+            'icon_category' => 'verticals',
+            'icon_name' => 'empleo',
+            'vertical' => 'empleabilidad',
+            'demo_data' => [
+                'jobs_available' => 245,
+                'applications_sent' => 12,
+                'interviews_scheduled' => 3,
+                'profile_views' => 67,
+            ],
+        ],
+        // -- ComercioConecta (marketplace, conversion indirecta) ------------
+        'buyer' => [
+            'id' => 'buyer',
+            'name' => 'Comprador',
+            'description' => 'Explora el catálogo digital como cliente final',
+            'icon_category' => 'commerce',
+            'icon_name' => 'cart',
+            'vertical' => 'comercioconecta',
+            'demo_data' => [
+                'products_available' => 150,
+                'tenants_active' => 23,
+                'categories' => 12,
+            ],
+        ],
+        // -- Andalucia EI (nicho institucional, funding publico) ------------
         'socialimpact' => [
             'id' => 'socialimpact',
             'name' => 'Empresa de Impacto Social',
@@ -175,7 +190,7 @@ class DemoInteractiveService
                 'volunteer_hours' => 1200,
             ],
         ],
-        // -- Content Hub -----------------------------------------------------
+        // -- Content Hub (soporte transversal) ------------------------------
         'creator' => [
             'id' => 'creator',
             'name' => 'Creador de Contenido',
@@ -190,19 +205,19 @@ class DemoInteractiveService
                 'engagement_rate' => 8,
             ],
         ],
-        // -- Formación -------------------------------------------------------
-        'academy' => [
-            'id' => 'academy',
-            'name' => 'Academia de Formación',
-            'description' => 'Crea y vende cursos online con tu propia plataforma',
-            'icon_category' => 'education',
-            'icon_name' => 'graduation-cap',
-            'vertical' => 'formacion',
+        // -- AgroConecta: Queso (nicho reducido) ----------------------------
+        'cheese' => [
+            'id' => 'cheese',
+            'name' => 'Quesería Artesanal',
+            'description' => 'Visualiza el potencial de tu quesería en el catálogo digital',
+            'icon_category' => 'verticals',
+            'icon_name' => 'cheese',
+            'vertical' => 'agroconecta',
             'demo_data' => [
-                'courses_available' => 18,
-                'students_enrolled' => 456,
-                'completion_rate' => 78,
-                'revenue_last_month' => 9200.00,
+                'products_count' => 8,
+                'orders_last_month' => 45,
+                'revenue_last_month' => 3200.00,
+                'customers_count' => 112,
             ],
         ],
     ];
@@ -333,7 +348,7 @@ class DemoInteractiveService
                 'name' => 'Consulta Legal Inicial',
                 'price' => 75.00,
                 'stock' => 30,
-                'image' => 'demo/legal-consultation',
+                'image' => 'demo/legal-consulta',
                 'rating' => 4.9,
                 'reviews' => 67,
             ],
@@ -341,7 +356,7 @@ class DemoInteractiveService
                 'name' => 'Asesoría Mercantil',
                 'price' => 200.00,
                 'stock' => 15,
-                'image' => 'demo/legal-corporate',
+                'image' => 'demo/legal-mercantil',
                 'rating' => 4.8,
                 'reviews' => 45,
             ],
@@ -349,7 +364,7 @@ class DemoInteractiveService
                 'name' => 'Gestión Laboral Completa',
                 'price' => 350.00,
                 'stock' => 10,
-                'image' => 'demo/legal-labor',
+                'image' => 'demo/legal-laboral',
                 'rating' => 4.7,
                 'reviews' => 32,
             ],
@@ -524,30 +539,30 @@ class DemoInteractiveService
      */
     protected function getTranslatableStrings(): array {
         return [
-            // Profile names.
-            $this->t('Productor de Aceite'),
-            $this->t('Bodega de Vinos'),
-            $this->t('Quesería Artesanal'),
-            $this->t('Comprador'),
-            $this->t('Buscador de Empleo'),
-            $this->t('Startup / Emprendedor'),
+            // Profile names (ordenados por potencialidad de mercado).
             $this->t('Despacho de Abogados'),
+            $this->t('Emprendedor'),
+            $this->t('Academia de Formación'),
             $this->t('Profesional de Servicios'),
+            $this->t('Bodega de Vinos'),
+            $this->t('Productor de Aceite'),
+            $this->t('Buscador de Empleo'),
+            $this->t('Comprador'),
             $this->t('Empresa de Impacto Social'),
             $this->t('Creador de Contenido'),
-            $this->t('Academia de Formación'),
-            // Profile descriptions.
-            $this->t('Experimenta cómo sería gestionar tu cooperativa de aceite de oliva'),
-            $this->t('Descubre cómo digitalizar tu bodega y llegar a más clientes'),
-            $this->t('Visualiza el potencial de tu quesería en el marketplace'),
-            $this->t('Explora el marketplace como cliente final'),
-            $this->t('Descubre cómo encontrar tu próximo empleo con IA'),
-            $this->t('Gestiona y lanza tu startup con herramientas inteligentes'),
+            $this->t('Quesería Artesanal'),
+            // Profile descriptions (mismo orden).
             $this->t('Digitaliza tu despacho legal con IA y gestión avanzada'),
+            $this->t('Gestiona y lanza tu negocio con herramientas inteligentes'),
+            $this->t('Crea y vende cursos online con tu propia plataforma'),
             $this->t('Conecta con clientes y gestiona tus servicios profesionales'),
+            $this->t('Descubre cómo digitalizar tu bodega y llegar a más clientes'),
+            $this->t('Experimenta cómo sería gestionar tu cooperativa de aceite de oliva'),
+            $this->t('Descubre cómo encontrar tu próximo empleo con IA'),
+            $this->t('Explora el catálogo digital como cliente final'),
             $this->t('Mide y comunica el impacto social de tu organización'),
             $this->t('Publica y gestiona tu blog o portal de contenidos'),
-            $this->t('Crea y vende cursos online con tu propia plataforma'),
+            $this->t('Visualiza el potencial de tu quesería en el catálogo digital'),
         ];
     }
 
@@ -610,11 +625,29 @@ class DemoInteractiveService
         // Generar historial de ventas para gráficos.
         $salesHistory = $this->generateSalesHistory(30);
 
-        // Obtener productos sintéticos con SVG placeholders de marca (S3-07).
+        // Productos con imagen específica por producto > perfil > SVG fallback.
         $vertical = $profile['vertical'];
         $products = self::SYNTHETIC_PRODUCTS[$profileId] ?? [];
+        $themeImgDir = 'themes/custom/ecosistema_jaraba_theme/images/demo/';
+        $basePath = base_path();
+        $productIndex = 0;
         foreach ($products as &$product) {
-            $product['image'] = $this->getPlaceholderSvg($vertical, $product['name']);
+            // 1. Imagen específica del producto (ej: legal-consulta.webp).
+            $productImageKey = $product['image'];
+            $productSlug = preg_replace('/^demo\//', '', $productImageKey);
+            $productImgPath = $themeImgDir . $productSlug . '.webp';
+            if ($productSlug !== '' && file_exists(DRUPAL_ROOT . '/' . $productImgPath)) {
+                $product['image'] = $basePath . $productImgPath;
+            }
+            // 2. Imagen del perfil (ej: lawfirm.webp).
+            elseif (file_exists(DRUPAL_ROOT . '/' . $themeImgDir . $profileId . '.webp')) {
+                $product['image'] = $basePath . $themeImgDir . $profileId . '.webp';
+            }
+            // 3. SVG placeholder.
+            else {
+                $product['image'] = $this->getPlaceholderSvg($vertical, $product['name']);
+            }
+            $productIndex++;
         }
         unset($product);
 
@@ -693,7 +726,7 @@ class DemoInteractiveService
                     'id' => 'view_dashboard',
                     'label' => 'Ver tu Dashboard',
                     'description' => 'Visualiza métricas en tiempo real',
-                    'icon_category' => 'dashboard',
+                    'icon_category' => 'analytics',
                     'icon_name' => 'chart-bar',
                     'url' => '#metrics',
                     'highlight' => TRUE,
@@ -713,7 +746,7 @@ class DemoInteractiveService
                     'label' => 'Ver Productos',
                     'description' => 'Explora el catálogo de ejemplo',
                     'icon_category' => 'commerce',
-                    'icon_name' => 'products',
+                    'icon_name' => 'catalog',
                     'url' => '#products',
                     'highlight' => FALSE,
                     'scroll_target' => TRUE,
@@ -724,7 +757,7 @@ class DemoInteractiveService
                     'id' => 'view_dashboard',
                     'label' => 'Ver tu Dashboard',
                     'description' => 'Métricas de tu bodega',
-                    'icon_category' => 'dashboard',
+                    'icon_category' => 'analytics',
                     'icon_name' => 'chart-bar',
                     'url' => '#metrics',
                     'highlight' => TRUE,
@@ -745,7 +778,7 @@ class DemoInteractiveService
                     'id' => 'view_dashboard',
                     'label' => 'Ver tu Dashboard',
                     'description' => 'Métricas de tu quesería',
-                    'icon_category' => 'dashboard',
+                    'icon_category' => 'analytics',
                     'icon_name' => 'chart-bar',
                     'url' => '#metrics',
                     'highlight' => TRUE,
@@ -766,7 +799,7 @@ class DemoInteractiveService
                     'id' => 'browse_marketplace',
                     'label' => 'Explorar Marketplace',
                     'description' => 'Descubre productos locales',
-                    'icon_category' => 'commerce',
+                    'icon_category' => 'ui',
                     'icon_name' => 'search',
                     'url' => Url::fromRoute('ecosistema_jaraba_core.marketplace.landing')->toString(),
                     'highlight' => TRUE,
@@ -775,7 +808,7 @@ class DemoInteractiveService
                     'id' => 'view_categories',
                     'label' => 'Ver Categorías',
                     'description' => 'Filtra por tipo de producto',
-                    'icon_category' => 'navigation',
+                    'icon_category' => 'ui',
                     'icon_name' => 'filter',
                     'url' => Url::fromRoute('ecosistema_jaraba_core.marketplace.landing')->toString(),
                     'highlight' => FALSE,
@@ -1380,6 +1413,238 @@ class DemoInteractiveService
     }
 
     /**
+     * Obtiene el contexto personalizado por vertical para el dashboard demo.
+     *
+     * Cada vertical recibe: titular, features destacadas, etiqueta de productos
+     * y CTA narrativo. Esto transforma el dashboard genérico en una experiencia
+     * personalizada que muestra el producto real del vertical.
+     *
+     * @param string $profileId
+     *   ID del perfil demo.
+     *
+     * @return array<string, mixed>
+     *   Contexto vertical con headline, features, products_label, narrative_cta.
+     */
+    public function getVerticalContext(string $profileId): array {
+        $contexts = [
+            'lawfirm' => [
+                'headline' => (string) $this->t('Tu despacho legal, bajo control'),
+                'products_label' => (string) $this->t('Tus Servicios Legales'),
+                'narrative_cta' => (string) $this->t('Gestiona tu despacho completo con IA'),
+                'features' => [
+                    [
+                        'icon_category' => 'verticals',
+                        'icon_name' => 'legal',
+                        'title' => (string) $this->t('Gestión de expedientes'),
+                        'description' => (string) $this->t('Numeración automática, estados, plazos y asignación a abogados. Todo el ciclo de vida del caso.'),
+                    ],
+                    [
+                        'icon_category' => 'ai',
+                        'icon_name' => 'sparkles',
+                        'title' => (string) $this->t('IA jurídica especializada'),
+                        'description' => (string) $this->t('Analiza jurisprudencia, sugiere estrategias y genera borradores de contratos con cláusulas RGPD.'),
+                    ],
+                    [
+                        'icon_category' => 'compliance',
+                        'icon_name' => 'signature',
+                        'title' => (string) $this->t('Firma digital eIDAS'),
+                        'description' => (string) $this->t('Firma cualificada con validez legal en toda la UE. Contratos, poderes y documentos procesales.'),
+                    ],
+                    [
+                        'icon_category' => 'legal',
+                        'icon_name' => 'gavel',
+                        'title' => (string) $this->t('Presentación de escritos'),
+                        'description' => (string) $this->t('Conexión con juzgados para presentar escritos y notificaciones electrónicas. Integración con LexNET.'),
+                    ],
+                    [
+                        'icon_category' => 'business',
+                        'icon_name' => 'briefcase',
+                        'title' => (string) $this->t('Gestión de clientes y facturación'),
+                        'description' => (string) $this->t('CRM integrado con historial de consultas, facturación automática y seguimiento de cobros.'),
+                    ],
+                ],
+            ],
+            'startup' => [
+                'headline' => (string) $this->t('Tu negocio, desde la idea hasta la facturación'),
+                'products_label' => (string) $this->t('Tus Servicios'),
+                'narrative_cta' => (string) $this->t('Lanza y gestiona tu negocio con IA'),
+                'features' => [
+                    [
+                        'icon_category' => 'business',
+                        'icon_name' => 'canvas',
+                        'title' => (string) $this->t('Modelo de negocio con IA'),
+                        'description' => (string) $this->t('Plantillas por sector, análisis de competencia y refinamiento automático de tu propuesta de valor.'),
+                    ],
+                    [
+                        'icon_category' => 'analytics',
+                        'icon_name' => 'chart-bar',
+                        'title' => (string) $this->t('Proyecciones financieras'),
+                        'description' => (string) $this->t('Modela tus ingresos, gastos y flujo de caja a 5 años con múltiples escenarios.'),
+                    ],
+                    [
+                        'icon_category' => 'analytics',
+                        'icon_name' => 'gauge',
+                        'title' => (string) $this->t('Diagnóstico de madurez'),
+                        'description' => (string) $this->t('Evalúa tu nivel de desarrollo empresarial y recibe una hoja de ruta personalizada.'),
+                    ],
+                    [
+                        'icon_category' => 'commerce',
+                        'icon_name' => 'cart',
+                        'title' => (string) $this->t('Facturación y cobros'),
+                        'description' => (string) $this->t('Genera facturas, cobra con tarjeta o Bizum y lleva la contabilidad básica integrada.'),
+                    ],
+                ],
+            ],
+            'academy' => [
+                'headline' => (string) $this->t('Tu academia, lista para vender cursos'),
+                'products_label' => (string) $this->t('Tus Cursos'),
+                'narrative_cta' => (string) $this->t('Crea y vende cursos con tu propia marca'),
+                'features' => [
+                    [
+                        'icon_category' => 'education',
+                        'icon_name' => 'book-open',
+                        'title' => (string) $this->t('Creación de cursos completa'),
+                        'description' => (string) $this->t('Lecciones en vídeo, cuestionarios, materiales descargables y certificados automáticos.'),
+                    ],
+                    [
+                        'icon_category' => 'analytics',
+                        'icon_name' => 'gauge',
+                        'title' => (string) $this->t('Seguimiento de progreso'),
+                        'description' => (string) $this->t('Monitoriza el avance de cada alumno en tiempo real con analíticas por curso y lección.'),
+                    ],
+                    [
+                        'icon_category' => 'achievement',
+                        'icon_name' => 'trophy',
+                        'title' => (string) $this->t('Insignias y certificados'),
+                        'description' => (string) $this->t('Sistema de logros que motiva al alumno. Certificados verificables con código QR.'),
+                    ],
+                    [
+                        'icon_category' => 'commerce',
+                        'icon_name' => 'cart',
+                        'title' => (string) $this->t('Cobro integrado'),
+                        'description' => (string) $this->t('Suscripciones, paquetes de cursos y cupones de descuento. Cobra desde el primer día.'),
+                    ],
+                ],
+            ],
+            'servicepro' => [
+                'headline' => (string) $this->t('Gestiona tus servicios con tu propia marca'),
+                'products_label' => (string) $this->t('Tus Servicios'),
+                'narrative_cta' => (string) $this->t('Agenda, presupuestos y reseñas en una sola plataforma'),
+                'features' => [
+                    [
+                        'icon_category' => 'ui',
+                        'icon_name' => 'calendar',
+                        'title' => (string) $this->t('Agenda inteligente'),
+                        'description' => (string) $this->t('Calendario de citas con confirmación automática, recordatorios y gestión de disponibilidad.'),
+                    ],
+                    [
+                        'icon_category' => 'ai',
+                        'icon_name' => 'sparkles',
+                        'title' => (string) $this->t('Presupuestos con IA'),
+                        'description' => (string) $this->t('Genera presupuestos profesionales adaptados a cada cliente en segundos.'),
+                    ],
+                    [
+                        'icon_category' => 'compliance',
+                        'icon_name' => 'signature',
+                        'title' => (string) $this->t('Contratos digitales'),
+                        'description' => (string) $this->t('Firma digital de contratos de servicio con validez legal. Sin papel ni desplazamientos.'),
+                    ],
+                    [
+                        'icon_category' => 'business',
+                        'icon_name' => 'star',
+                        'title' => (string) $this->t('Reseñas verificadas'),
+                        'description' => (string) $this->t('Reputación profesional construida con opiniones reales de tus clientes.'),
+                    ],
+                ],
+            ],
+            'winery' => [
+                'headline' => (string) $this->t('Tu bodega digital, del viñedo a la mesa'),
+                'products_label' => (string) $this->t('Tus Vinos'),
+                'narrative_cta' => (string) $this->t('Vende tus vinos directamente al consumidor'),
+                'features' => [
+                    (string) $this->t('Tienda digital con tu marca y tus precios'),
+                    (string) $this->t('Trazabilidad QR desde el viñedo hasta la botella'),
+                    (string) $this->t('Gestión de pedidos y envíos automatizada'),
+                    (string) $this->t('Analíticas de ventas y demanda por temporada'),
+                ],
+            ],
+            'producer' => [
+                'headline' => (string) $this->t('Tu cooperativa digital, del olivar a tu mesa'),
+                'products_label' => (string) $this->t('Tus Aceites'),
+                'narrative_cta' => (string) $this->t('Vende aceite premium directamente al consumidor'),
+                'features' => [
+                    (string) $this->t('Tienda digital propia con tu marca'),
+                    (string) $this->t('Trazabilidad QR: del olivar a la botella'),
+                    (string) $this->t('Gestión de pedidos con alertas automáticas'),
+                    (string) $this->t('Previsión de demanda con inteligencia artificial'),
+                ],
+            ],
+            'cheese' => [
+                'headline' => (string) $this->t('Tu quesería artesanal en el mundo digital'),
+                'products_label' => (string) $this->t('Tus Quesos'),
+                'narrative_cta' => (string) $this->t('Lleva tus quesos artesanales a toda España'),
+                'features' => [
+                    (string) $this->t('Catálogo digital con certificaciones de calidad'),
+                    (string) $this->t('Trazabilidad QR para cada lote artesanal'),
+                    (string) $this->t('Gestión de pedidos y logística de frío'),
+                    (string) $this->t('Historia de tu quesería generada por IA'),
+                ],
+            ],
+            'buyer' => [
+                'headline' => (string) $this->t('Descubre productos locales de calidad'),
+                'products_label' => (string) $this->t('Productos Destacados'),
+                'narrative_cta' => (string) $this->t('Compra directamente al productor'),
+                'features' => [
+                    (string) $this->t('Productos verificados con trazabilidad completa'),
+                    (string) $this->t('Filtros por categoría, proximidad y certificación'),
+                    (string) $this->t('Pago seguro con múltiples métodos'),
+                    (string) $this->t('Reseñas reales de otros compradores'),
+                ],
+            ],
+            'jobseeker' => [
+                'headline' => (string) $this->t('Tu carrera profesional, impulsada por IA'),
+                'products_label' => (string) $this->t('Ofertas Destacadas'),
+                'narrative_cta' => (string) $this->t('Encuentra tu próximo empleo con IA'),
+                'features' => [
+                    (string) $this->t('CV inteligente en 5 plantillas profesionales'),
+                    (string) $this->t('IA que detecta tus habilidades y sugiere itinerarios'),
+                    (string) $this->t('Preparación de entrevistas con simulador'),
+                    (string) $this->t('Importación directa desde LinkedIn'),
+                ],
+            ],
+            'socialimpact' => [
+                'headline' => (string) $this->t('Mide y amplifica tu impacto social'),
+                'products_label' => (string) $this->t('Tus Programas'),
+                'narrative_cta' => (string) $this->t('Gestiona programas sociales con datos de impacto'),
+                'features' => [
+                    (string) $this->t('Panel de métricas de impacto social'),
+                    (string) $this->t('Gestión de participantes y formación adaptativa'),
+                    (string) $this->t('Memoria de impacto generada por IA'),
+                    (string) $this->t('Seguimiento de inserción laboral'),
+                ],
+            ],
+            'creator' => [
+                'headline' => (string) $this->t('Publica, posiciona y conecta con tu audiencia'),
+                'products_label' => (string) $this->t('Tus Artículos'),
+                'narrative_cta' => (string) $this->t('Escribe con IA y aparece en Google'),
+                'features' => [
+                    (string) $this->t('Editor de artículos con co-escritura IA'),
+                    (string) $this->t('Optimización SEO automática por artículo'),
+                    (string) $this->t('Recomendaciones semánticas para tus lectores'),
+                    (string) $this->t('Analíticas de audiencia y tasa de interacción'),
+                ],
+            ],
+        ];
+
+        return $contexts[$profileId] ?? [
+            'headline' => (string) $this->t('Tu negocio digital'),
+            'products_label' => (string) $this->t('Tus Productos'),
+            'narrative_cta' => (string) $this->t('Gestiona tu negocio con IA'),
+            'features' => [],
+        ];
+    }
+
+    /**
      * Obtiene el número de sesiones demo activas.
      *
      * S7-05: Social proof counter para la landing.
@@ -1544,6 +1809,23 @@ class DemoInteractiveService
             );
             return 0;
         }
+    }
+
+    /**
+     * Dispatches a demo funnel event (público para controllers).
+     *
+     * S10-03: Permite al controller despachar eventos pre-sesión
+     * (LANDING_VIEW, LEAD_CAPTURED, LEAD_SKIPPED) donde no hay sessionId.
+     *
+     * @param string $eventName
+     *   Constante de DemoSessionEvent (e.g., DemoSessionEvent::LANDING_VIEW).
+     * @param string $profileId
+     *   Perfil demo (puede ser vacío para LANDING_VIEW).
+     * @param array<string, mixed> $context
+     *   Datos adicionales del evento.
+     */
+    public function dispatchFunnelEvent(string $eventName, string $profileId = '', array $context = []): void {
+        $this->dispatchEvent($eventName, '', $profileId, $context);
     }
 
     /**

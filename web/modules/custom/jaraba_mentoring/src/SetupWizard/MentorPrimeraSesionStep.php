@@ -140,7 +140,7 @@ class MentorPrimeraSesionStep implements SetupWizardStepInterface {
       $profileStorage = $this->entityTypeManager->getStorage('mentor_profile');
       $profileIds = $profileStorage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('user_id', $this->currentUser->id())
+        ->condition('user_id', (int) $this->currentUser->id())
         ->range(0, 1)
         ->execute();
 

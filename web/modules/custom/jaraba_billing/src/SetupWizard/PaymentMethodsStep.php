@@ -52,16 +52,26 @@ class PaymentMethodsStep implements SetupWizardStepInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * Icono wallet-cards: billetera con tarjetas — representa múltiples métodos
+   * de pago (Bizum, Apple Pay, Google Pay). Diferenciado del credit-card
+   * genérico que usa el step de billing admin.
    */
   public function getIcon(): array {
-    return ['category' => 'finance', 'name' => 'credit-card', 'variant' => 'duotone'];
+    return ['category' => 'finance', 'name' => 'wallet-cards', 'variant' => 'duotone'];
   }
 
   /**
    * {@inheritdoc}
+   *
+   * Ruta tenant-facing: /my-settings/plan (Plan y Facturacion).
+   * NUNCA apuntar a /admin/* ni a rutas con permisos restrictivos.
+   * Historico: billing_payment_method.settings → 403 (admin route).
+   *           financial_dashboard → 403 (permiso view own billing).
+   * /my-settings/plan requiere solo _user_is_logged_in.
    */
   public function getRoute(): string {
-    return 'jaraba_billing.billing_payment_method.settings';
+    return 'ecosistema_jaraba_core.tenant_self_service.plan';
   }
 
   /**

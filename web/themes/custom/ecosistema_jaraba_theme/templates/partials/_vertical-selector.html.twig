@@ -20,6 +20,9 @@
  */
 #}
 
+{% set urls = ped_urls|default({}) %}
+{% set lp = language_prefix|default('') %}
+
 {% set default_verticals = [
   {
     id: 'empleabilidad',
@@ -28,7 +31,7 @@
     icon: 'empleo',
     icon_category: 'verticals',
     color: 'azul-corporativo',
-    url: '/empleabilidad',
+    url: urls.empleabilidad|default(lp ~ '/empleabilidad'),
     cta: 'Explorar'|t
   },
   {
@@ -38,7 +41,7 @@
     icon: 'rocket',
     icon_category: 'verticals',
     color: 'naranja-impulso',
-    url: '/emprendimiento',
+    url: urls.emprendimiento|default(lp ~ '/emprendimiento'),
     cta: 'Explorar'|t
   },
   {
@@ -48,7 +51,7 @@
     icon: 'leaf',
     icon_category: 'verticals',
     color: 'verde-agro',
-    url: '/agroconecta',
+    url: urls.agroconecta|default(lp ~ '/agroconecta'),
     cta: 'Explorar'|t
   },
   {
@@ -58,7 +61,7 @@
     icon: 'store',
     icon_category: 'commerce',
     color: 'naranja-impulso',
-    url: '/comercioconecta',
+    url: urls.comercioconecta|default(lp ~ '/comercioconecta'),
     cta: 'Explorar'|t
   },
   {
@@ -68,7 +71,7 @@
     icon: 'layers',
     icon_category: 'verticals',
     color: 'verde-innovacion',
-    url: '/serviciosconecta',
+    url: urls.serviciosconecta|default(lp ~ '/serviciosconecta'),
     cta: 'Explorar'|t
   },
   {
@@ -78,7 +81,7 @@
     icon: 'legal',
     icon_category: 'verticals',
     color: 'azul-corporativo',
-    url: '/jarabalex',
+    url: urls.jarabalex|default(lp ~ '/jarabalex'),
     cta: 'Explorar'|t
   }
 ] %}

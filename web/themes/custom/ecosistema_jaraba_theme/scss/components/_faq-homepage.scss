@@ -1,0 +1,132 @@
+// @file scss/components/_faq-homepage.scss
+// FAQ homepage — <details>/<summary> nativo accesible.
+//
+// DIRECTRICES:
+// - var(--ej-*) para todos los tokens
+// - Mobile-first
+// - Dart Sass moderno: @use, color-mix()
+
+@use '../variables' as *;
+
+.faq-homepage {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+
+  &__container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--ej-space-xl, 3rem);
+  }
+
+  &__eyebrow {
+    display: block;
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-naranja-impulso, #ff8c42);
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-3xl, 2.25rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0;
+  }
+
+  // ─── FAQ items ────────────────────────────────────────────────────
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-sm, 0.75rem);
+  }
+
+  &__item {
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    border-radius: var(--ej-border-radius-lg, 16px);
+    overflow: hidden;
+    background: var(--ej-bg-surface, #fff);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-corporate, #233D63) 6%, transparent);
+    }
+
+    &[open] {
+      border-color: var(--ej-color-impulse, #FF8C42);
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
+    }
+  }
+
+  &__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--ej-space-md, 1rem) var(--ej-space-lg, 1.5rem);
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-base, 1rem);
+    font-weight: 600;
+    color: var(--ej-color-heading, #1a1a2e);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '+';
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ej-naranja-impulso, #ff8c42);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+      margin-left: var(--ej-space-sm, 0.75rem);
+    }
+
+    [open] > &::after {
+      content: '\2212'; // minus sign
+      transform: rotate(180deg);
+    }
+  }
+
+  &__answer {
+    padding: 0 var(--ej-space-lg, 1.5rem) var(--ej-space-md, 1rem);
+
+    p {
+      margin: 0;
+      font-size: var(--ej-text-sm, 0.9375rem);
+      color: var(--ej-color-muted, #6b7280);
+      line-height: 1.6;
+    }
+  }
+}
+
+// ─── Dark mode ──────────────────────────────────────────────────────
+[data-theme='dark'] .faq-homepage,
+.dark-mode .faq-homepage {
+
+  .faq-homepage__title {
+    color: var(--ej-color-heading-dark, #f1f5f9);
+  }
+
+  .faq-homepage__item {
+    border-color: var(--ej-border-input-dark, rgba(255, 255, 255, 0.1));
+  }
+
+  .faq-homepage__question {
+    color: var(--ej-color-heading-dark, #f1f5f9);
+  }
+
+  .faq-homepage__answer p {
+    color: var(--ej-color-muted-dark, #94a3b8);
+  }
+}

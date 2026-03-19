@@ -63,8 +63,13 @@
           const inputEmail = form.querySelector('input[name="email"]');
           const checkGdpr = form.querySelector('input[name="gdpr_consent"]');
           const btnSubmit = form.querySelector('button[type="submit"]');
-          const successEl = form.querySelector('.lead-magnet-form__success');
-          const errorEl = form.querySelector('.lead-magnet-form__error');
+          // FIX: Success/error elements are siblings of the form, not children.
+          // Fallback chain: BEM class inside form → data-attribute sibling.
+          const formParent = form.parentElement;
+          const successEl = form.querySelector('.lead-magnet-form__success')
+            || (formParent ? formParent.querySelector('[data-lead-magnet-success]') : null);
+          const errorEl = form.querySelector('.lead-magnet-form__error')
+            || (formParent ? formParent.querySelector('[data-lead-magnet-error]') : null);
           const vertical = form.dataset.vertical || '';
           const resourceUrl = form.dataset.resourceUrl || '';
           const originalBtnText = btnSubmit ? btnSubmit.innerHTML : '';
@@ -108,15 +113,18 @@
            * Muestra la sección de éxito y oculta el formulario.
            */
           function showSuccess() {
-            // Hide form fields.
-            const fields = form.querySelectorAll(
-              '.lead-magnet-form__field, .lead-magnet-form__intro, .lead-magnet-form__submit'
-            );
-            fields.forEach(function (el) {
-              el.style.opacity = '0';
-              el.style.transition = 'opacity 0.3s ease';
-              setTimeout(function () { el.hidden = true; }, 300);
-            });
+            // Hide the entire form with fade-out animation.
+            form.style.transition = 'opacity 0.3s ease';
+            form.style.opacity = '0';
+            setTimeout(function () { form.hidden = true; }, 300);
+
+            // Also hide the checklist if present (sibling).
+            var checklist = formParent ? formParent.querySelector('.lead-magnet__checklist') : null;
+            if (checklist) {
+              checklist.style.transition = 'opacity 0.3s ease';
+              checklist.style.opacity = '0';
+              setTimeout(function () { checklist.hidden = true; }, 300);
+            }
 
             // Show success state.
             setTimeout(function () {

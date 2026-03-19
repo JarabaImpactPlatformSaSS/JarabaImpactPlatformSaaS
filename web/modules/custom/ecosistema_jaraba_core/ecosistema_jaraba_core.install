@@ -3299,3 +3299,67 @@ function ecosistema_jaraba_core_update_9038(): string {
 
   return empty($parts) ? 'No Free SaasPlan changes needed.' : implode(' | ', $parts);
 }
+
+/**
+ * S10-03: Añade columnas funnel_lead_captured y funnel_lead_skipped a demo_analytics.
+ *
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable.
+ */
+function ecosistema_jaraba_core_update_9039(): string {
+  $schema = \Drupal::database()->schema();
+  $table = 'demo_analytics';
+  $added = [];
+
+  try {
+    if (!$schema->fieldExists($table, 'funnel_lead_captured')) {
+      $schema->addField($table, 'funnel_lead_captured', [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: leads capturados via soft gate.',
+      ]);
+      $added[] = 'funnel_lead_captured';
+    }
+
+    if (!$schema->fieldExists($table, 'funnel_lead_skipped')) {
+      $schema->addField($table, 'funnel_lead_skipped', [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: visitantes que saltaron el soft gate.',
+      ]);
+      $added[] = 'funnel_lead_skipped';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error adding funnel columns to demo_analytics: ' . $e->getMessage();
+  }
+
+  return empty($added)
+    ? 'demo_analytics: columnas ya existen.'
+    : 'demo_analytics: añadidas ' . implode(', ', $added) . '.';
+}
+
+/**
+ * Instala la entidad QuizResult (Quiz de Recomendación de Vertical).
+ *
+ * UPDATE-HOOK-REQUIRED-001: Toda nueva entity DEBE tener hook_update_N().
+ */
+function ecosistema_jaraba_core_update_9040(): string {
+  try {
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+    $entityType = $entityTypeManager->getDefinition('quiz_result');
+    if ($entityType) {
+      $updateManager->installEntityType($entityType);
+      return 'QuizResult entity type installed successfully.';
+    }
+    return 'QuizResult entity type definition not found — check Entity annotation.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing QuizResult: ' . $e->getMessage();
+  }
+}

@@ -165,6 +165,18 @@
                 data[key] = value;
             });
 
+            // Capturar quiz_uuid y source desde URL query params.
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('quiz_uuid')) {
+                data.quiz_uuid = urlParams.get('quiz_uuid');
+            }
+            if (urlParams.get('source')) {
+                data.source = urlParams.get('source');
+            }
+            if (urlParams.get('vertical') && !data.vertical_id) {
+                data.vertical_hint = urlParams.get('vertical');
+            }
+
             // Mostrar estado de carga
             submitBtn.disabled = true;
             var originalText = submitBtn.textContent;

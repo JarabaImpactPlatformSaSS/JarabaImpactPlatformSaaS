@@ -110,6 +110,17 @@
         </div>
       </div>
 
+      {# ── Schema.org Person (SEO + Rich Snippets) ────────────────── #}
+      {% include '@ecosistema_jaraba_theme/partials/_user-profile-schema.html.twig' with {
+        user_display_name: user_display_name,
+        user_email: user_email,
+        user_avatar_url: user_avatar_url,
+        user_roles: user_roles,
+        user_member_since: user_member_since,
+        profile_view_url: profile_view_url,
+        site_name: site_name,
+      } only %}
+
       {# ── Onboarding Hub: Setup Wizard + Daily Actions ─────────────── #}
       {# Resuelto via AvatarWizardBridgeService según avatar del usuario. #}
       {# Reutiliza los partials probados de los dashboards verticales.    #}

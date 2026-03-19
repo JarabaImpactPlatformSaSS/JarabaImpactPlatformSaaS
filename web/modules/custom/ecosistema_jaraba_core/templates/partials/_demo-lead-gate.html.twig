@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * Partial: Soft gate de captura de lead antes de iniciar demo.
+ *
+ * S10-01: Modal minimo (nombre + email) para capturar leads en jaraba_crm.
+ * Estrategia "soft gate": no bloquea — ofrece opcion de saltar.
+ *
+ * DIRECTRICES:
+ * - A11y: role="dialog", aria-modal, aria-labelledby, focus trap (S5-05)
+ * - i18n: {% trans %} bloque
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ * - ROUTE-LANGPREFIX-001: path() para URLs
+ * - AI-GUARDRAILS-PII-001: email = PII, no almacenar en texto plano en analytics
+ *
+ * Variables:
+ * - (ninguna requerida — formulario standalone activado por JS).
+ *
+ * Activacion: clic en .demo-start-btn interceptado por demo-lead-gate.js.
+ * El JS inyecta profile_id en input hidden antes de mostrar el modal.
+ */
+#}
+<div class="demo-lead-gate"
+     data-demo-lead-gate
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="demo-lead-gate-title"
+     aria-hidden="true"
+     hidden>
+  <div class="demo-lead-gate__overlay" data-demo-lead-gate-close></div>
+  <div class="demo-lead-gate__panel">
+    {# Boton cerrar #}
+    <button class="demo-lead-gate__close"
+            data-demo-lead-gate-close
+            type="button"
+            aria-label="{% trans %}Cerrar formulario{% endtrans %}">&times;</button>
+
+    <h2 id="demo-lead-gate-title" class="demo-lead-gate__title">
+      {{ jaraba_icon('business', 'handshake', { size: '28px', variant: 'duotone', color: 'naranja-impulso' }) }}
+      {% trans %}Un paso para acceder a tu demo{% endtrans %}
+    </h2>
+    <p class="demo-lead-gate__subtitle">
+      {% trans %}Te enviaremos un resumen personalizado de tu experiencia al finalizar.{% endtrans %}
+    </p>
+
+    <form class="demo-lead-gate__form" data-demo-lead-form novalidate>
+      <div class="demo-lead-gate__field">
+        <label for="demo-lead-name">{% trans %}Tu nombre{% endtrans %}</label>
+        <input type="text"
+               id="demo-lead-name"
+               name="name"
+               required
+               minlength="2"
+               maxlength="100"
+               placeholder="{% trans %}Ej: Maria Garcia{% endtrans %}"
+               autocomplete="name">
+      </div>
+      <div class="demo-lead-gate__field">
+        <label for="demo-lead-email">{% trans %}Tu email profesional{% endtrans %}</label>
+        <input type="email"
+               id="demo-lead-email"
+               name="email"
+               required
+               maxlength="254"
+               placeholder="{% trans %}maria@tuempresa.com{% endtrans %}"
+               autocomplete="email">
+      </div>
+      {% set privacy_url = path('ecosistema_jaraba_core.static.privacidad') %}
+      <div class="demo-lead-gate__consent">
+        <label>
+          <input type="checkbox" name="privacy_consent" required>
+          <span>
+            {% trans %}Acepto la <a href="{{ privacy_url }}" target="_blank" rel="noopener">política de privacidad</a>{% endtrans %}
+          </span>
+        </label>
+      </div>
+
+      <input type="hidden" name="profile_id" data-demo-lead-profile value="">
+
+      <button type="submit" class="btn btn--primary btn--lg demo-lead-gate__submit">
+        {{ jaraba_icon('ui', 'play', { size: '18px', color: 'blanco' }) }}
+        {% trans %}Acceder a la demo{% endtrans %}
+      </button>
+
+      {# Zona de feedback de errores #}
+      <div class="demo-lead-gate__feedback" data-demo-lead-feedback role="alert" aria-live="assertive"></div>
+    </form>
+
+    {# Opcion de saltar — no agresivo, respetuoso #}
+    <button type="button" class="demo-lead-gate__skip" data-demo-lead-skip>
+      {% trans %}Explorar sin datos de contacto{% endtrans %}
+    </button>
+  </div>
+</div>

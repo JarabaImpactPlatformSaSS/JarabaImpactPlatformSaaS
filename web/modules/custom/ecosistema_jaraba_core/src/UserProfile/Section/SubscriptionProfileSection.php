@@ -61,9 +61,12 @@ class SubscriptionProfileSection extends AbstractUserProfileSection {
 
   /**
    * {@inheritdoc}
+   *
+   * Usa finance/plan-upgrade (capas con flecha up) — icono especifico
+   * para suscripcion/plan. NUNCA ui/credit-card (no existe → 📌).
    */
   public function getIcon(): array {
-    return ['category' => 'ui', 'name' => 'credit-card'];
+    return ['category' => 'finance', 'name' => 'plan-upgrade'];
   }
 
   /**
@@ -92,35 +95,65 @@ class SubscriptionProfileSection extends AbstractUserProfileSection {
 
   /**
    * {@inheritdoc}
+   *
+   * Hub de conversion PLG: upgrade, add-ons, servicios profesionales.
+   * El perfil es el motor de conversion — el usuario ve que tiene,
+   * que le falta y como escalar.
+   *
+   * Iconos: SOLO categorias con SVGs existentes verificados.
+   * Rutas: SOLO tenant-facing o publicas (NUNCA /admin/*).
    */
   public function getLinks(int $uid): array {
-    $links = [];
+    $hasPlan = $this->hasPaidPlan($uid);
 
-    // Link a la pricing page.
-    $link = $this->makeLink(
-      $this->t('Ver planes disponibles'),
-      'ecosistema_jaraba_core.pricing.page',
-      'ui',
-      'tag',
-      'impulse',
-    );
-    if ($link) {
-      $links[] = $link;
+    return array_values(array_filter([
+      // CTA principal contextual:
+      // Con plan → /tenant/change-plan (comparador con plan actual marcado).
+      // Sin plan → /planes (pricing page con checkout).
+      $hasPlan
+        ? $this->makeLink(
+            $this->t('Cambiar o mejorar plan'),
+            'ecosistema_jaraba_core.tenant.change_plan',
+            'finance', 'plan-upgrade', 'impulse',
+            ['description' => $this->t('Compara planes y cambia el tuyo')],
+          )
+        : $this->makeLink(
+            $this->t('Elegir plan'),
+            'ecosistema_jaraba_core.pricing.page',
+            'finance', 'plan-upgrade', 'impulse',
+            ['description' => $this->t('Compara planes y desbloquea funcionalidades')],
+          ),
+      // Add-ons y complementos (siempre visible — conversion).
+      $this->makeLink(
+        $this->t('Complementos y add-ons'),
+        'jaraba_addons.catalog',
+        'commerce', 'tag', 'impulse',
+        ['description' => $this->t('Amplia las capacidades de tu plan')],
+      ),
+      // Servicios profesionales: mentorias, workshops.
+      $this->makeLink(
+        $this->t('Servicios profesionales'),
+        'jaraba_mentoring.service_catalog',
+        'users', 'users', 'impulse',
+        ['description' => $this->t('Mentorias, workshops y programas con expertos')],
+      ),
+    ]));
+  }
+
+  /**
+   * Determina si el usuario tiene un plan paid (no free).
+   */
+  private function hasPaidPlan(int $uid): bool {
+    if (!$this->subscriptionContext) {
+      return FALSE;
     }
-
-    // Link al dashboard financiero (si existe).
-    $link = $this->makeLink(
-      $this->t('Mi facturación'),
-      'jaraba_billing.financial_dashboard',
-      'ui',
-      'receipt',
-      'corporate',
-    );
-    if ($link) {
-      $links[] = $link;
+    try {
+      $context = $this->subscriptionContext->getContextForUser($uid);
+      return !empty($context['plan']) && !($context['plan']['is_free'] ?? TRUE);
     }
-
-    return $links;
+    catch (\Throwable) {
+      return FALSE;
+    }
   }
 
   /**

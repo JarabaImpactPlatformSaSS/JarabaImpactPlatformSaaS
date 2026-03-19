@@ -334,6 +334,28 @@ function jaraba_billing_update_10006(): string {
 }
 
 /**
+ * Grant 'manage own subscription' to authenticated role.
+ *
+ * El permiso permite a usuarios autenticados acceder al portal de Stripe
+ * para gestionar su propia suscripcion (upgrade, cancelar, metodo de pago).
+ * Anteriormente el portal usaba 'manage payment methods' que solo admin tenia.
+ */
+function jaraba_billing_update_10007(): string {
+  try {
+    $role = \Drupal::entityTypeManager()->getStorage('user_role')->load('authenticated');
+    if ($role) {
+      $role->grantPermission('manage own subscription');
+      $role->save();
+      return 'Permission "manage own subscription" granted to authenticated role.';
+    }
+    return 'Warning: authenticated role not found.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_billing_requirements(string $phase): array {

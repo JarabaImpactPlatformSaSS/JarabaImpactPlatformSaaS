@@ -14,6 +14,8 @@
  */
 #}
 
+{% set urls = ped_urls|default({}) %}
+
 <section class="ped-cta-saas" aria-labelledby="cta-final-title">
   <div class="ped-cta-saas__container">
     <h2 id="cta-final-title">
@@ -22,13 +24,56 @@
     <p>
       {{ plg_register_subtitle|default('Registro gratuito, sin tarjeta de crédito. Acceso inmediato a tu vertical con copiloto IA incluido.'|trans) }}
     </p>
+
+    {# Social proof micro #}
+    <p class="ped-cta-saas__social-proof">
+      {% trans %}+50.000 personas ya confían en nosotros{% endtrans %}
+    </p>
+
     <div class="ped-cta-saas__actions">
-      <a href="{{ ped_urls.register|default(path('user.register')) }}"
-         class="btn-gold"
-         data-track-cta="final_cta_register"
-         data-track-position="homepage_final_cta">
-        {% trans %}Crear cuenta gratuita{% endtrans %}
-      </a>
+      {% if logged_in %}
+        <a href="{{ urls.dashboard|default('/user') }}"
+           class="btn-gold"
+           data-track-cta="final_cta_dashboard"
+           data-track-position="homepage_final_cta">
+          {% trans %}Ir al dashboard{% endtrans %}
+        </a>
+      {% else %}
+        <a href="{{ urls.register|default(path('user.register')) }}"
+           class="btn-gold"
+           data-track-cta="final_cta_register"
+           data-track-position="homepage_final_cta">
+          {% trans %}Crear cuenta gratuita{% endtrans %}
+        </a>
+        <a href="{{ urls.demo|default('/demo') }}"
+           class="btn-secondary btn-secondary--large"
+           data-track-cta="final_cta_demo"
+           data-track-position="homepage_final_cta">
+          {% trans %}Solicitar demo{% endtrans %}
+        </a>
+      {% endif %}
+    </div>
+
+    {# Trust badges micro #}
+    <div class="ped-cta-saas__badges">
+      <span class="ped-cta-saas__badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 22C6.44 22 2 17.56 2 12S6.44 2 12 2s10 4.44 10 10-4.44 10-10 10Zm-1-11H7v2h4v4h2v-4h4v-2h-4V7h-2v4Z" fill="currentColor"/>
+        </svg>
+        {% trans %}RGPD{% endtrans %}
+      </span>
+      <span class="ped-cta-saas__badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 6h18l-2 12H5L3 6z" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="20" r="1" fill="currentColor"/><circle cx="17" cy="20" r="1" fill="currentColor"/>
+        </svg>
+        {% trans %}Sin tarjeta{% endtrans %}
+      </span>
+      <span class="ped-cta-saas__badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Zm4.59 5.58L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42Z" fill="currentColor"/>
+        </svg>
+        {% trans %}Cancelación libre{% endtrans %}
+      </span>
     </div>
   </div>
 </section>

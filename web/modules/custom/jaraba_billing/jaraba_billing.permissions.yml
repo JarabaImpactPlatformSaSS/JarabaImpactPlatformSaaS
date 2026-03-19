@@ -43,3 +43,7 @@ administer kit digital:
 view kit digital agreements:
   title: 'Ver acuerdos Kit Digital'
   description: 'Ver detalles y estado de acuerdos Kit Digital.'
+
+manage own subscription:
+  title: 'Gestionar suscripción propia'
+  description: 'Acceder al portal de pagos para gestionar la propia suscripción (upgrade, cancelar, método de pago).'

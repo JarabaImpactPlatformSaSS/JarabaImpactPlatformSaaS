@@ -228,6 +228,21 @@
     }
   }
 
+  // ─── Sección de error ────────────────────────────────────────────
+  &__error {
+    padding: var(--ej-space-sm, 0.75rem) var(--ej-space-md, 1rem);
+    background: color-mix(in srgb, var(--ej-color-error, #ef4444) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ej-color-error, #ef4444) 25%, transparent);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    margin-top: var(--ej-space-xs, 0.5rem);
+
+    &-text {
+      margin: 0;
+      font-size: var(--ej-text-sm, 0.875rem);
+      color: var(--ej-color-error, #ef4444);
+    }
+  }
+
   // ─── Sección de éxito ────────────────────────────────────────────
   &__success {
     padding: var(--ej-space-xl, 3rem) var(--ej-space-md, 1rem);

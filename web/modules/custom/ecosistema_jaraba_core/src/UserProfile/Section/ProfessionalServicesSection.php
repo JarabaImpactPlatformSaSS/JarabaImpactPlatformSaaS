@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\UserProfile\Section;
 
-use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\UserProfile\AbstractUserProfileSection;
 
 /**
@@ -41,8 +40,13 @@ class ProfessionalServicesSection extends AbstractUserProfileSection {
   /**
    * {@inheritdoc}
    */
+  /**
+   * {@inheritdoc}
+   *
+   * Usa users/users (existe). NUNCA business/users (no existe → 📌).
+   */
   public function getIcon(): array {
-    return ['category' => 'business', 'name' => 'users'];
+    return ['category' => 'users', 'name' => 'users'];
   }
 
   /**
@@ -68,31 +72,26 @@ class ProfessionalServicesSection extends AbstractUserProfileSection {
 
   /**
    * {@inheritdoc}
+   *
+   * Usa makeLink() de AbstractUserProfileSection para generar links con
+   * el schema correcto (label, icon_category, icon_name, color, description).
+   * El schema anterior (title, url) no era compatible con el template.
    */
   public function getLinks(int $uid): array {
-    $links = [];
-
-    try {
-      $links[] = [
-        'title' => $this->t('Explorar servicios'),
-        'url' => Url::fromRoute('jaraba_mentoring.service_catalog')->toString(),
-      ];
-    }
-    catch (\Throwable) {
-      // Route may not exist if module disabled.
-    }
-
-    try {
-      $links[] = [
-        'title' => $this->t('Mis servicios contratados'),
-        'url' => Url::fromRoute('jaraba_mentoring.my_services')->toString(),
-      ];
-    }
-    catch (\Throwable) {
-      // Route may not exist.
-    }
-
-    return $links;
+    return array_values(array_filter([
+      $this->makeLink(
+        $this->t('Explorar servicios'),
+        'jaraba_mentoring.service_catalog',
+        'users', 'users', 'innovation',
+        ['description' => $this->t('Encuentra expertos y mentores')],
+      ),
+      $this->makeLink(
+        $this->t('Mis servicios contratados'),
+        'jaraba_mentoring.my_services',
+        'actions', 'bookmark', 'innovation',
+        ['description' => $this->t('Reservas y sesiones activas')],
+      ),
+    ]));
   }
 
 }

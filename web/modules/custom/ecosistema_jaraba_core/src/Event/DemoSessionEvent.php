@@ -13,12 +13,30 @@ use Drupal\Component\EventDispatcher\Event;
  * notificaciones, integraciones externas) sin acoplar DemoInteractiveService.
  *
  * Events:
+ * - LANDING_VIEW: Visitante ve la landing /demo (S10-03).
+ * - LEAD_CAPTURED: Soft gate completado con éxito (S10-03).
+ * - LEAD_SKIPPED: Visitante saltó el soft gate (S10-03).
  * - CREATED: Sesión generada (después de saveDemoSession).
  * - VALUE_ACTION: Acción de valor registrada (generate_story, browse_marketplace).
  * - CONVERSION: Conversión a cuenta real completada.
  * - EXPIRED: Sesión expirada (antes de eliminar en cleanup).
  */
 class DemoSessionEvent extends Event {
+
+  /**
+   * S10-03: Event name: landing page viewed.
+   */
+  public const LANDING_VIEW = 'ecosistema_jaraba_core.demo_session.landing_view';
+
+  /**
+   * S10-03: Event name: lead captured via soft gate.
+   */
+  public const LEAD_CAPTURED = 'ecosistema_jaraba_core.demo_session.lead_captured';
+
+  /**
+   * S10-03: Event name: visitor skipped soft gate.
+   */
+  public const LEAD_SKIPPED = 'ecosistema_jaraba_core.demo_session.lead_skipped';
 
   /**
    * Event name: demo session created.

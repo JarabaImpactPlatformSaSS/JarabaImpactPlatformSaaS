@@ -332,7 +332,7 @@ class AvatarNavigationService {
         ['id' => 'empleo', 'label' => 'Empleo', 'route' => 'ecosistema_jaraba_core.landing_empleo', 'icon_category' => 'verticals', 'icon_name' => 'briefcase'],
         ['id' => 'emprender', 'label' => 'Emprender', 'route' => 'ecosistema_jaraba_core.landing_emprender', 'icon_category' => 'verticals', 'icon_name' => 'rocket'],
         ['id' => 'comercio', 'label' => 'Comercio', 'route' => 'ecosistema_jaraba_core.landing_comercio', 'icon_category' => 'commerce', 'icon_name' => 'store'],
-        ['id' => 'agroconecta', 'label' => 'AgroConecta', 'route' => 'ecosistema_jaraba_core.landing.agroconecta', 'icon_category' => 'commerce', 'icon_name' => 'leaf'],
+        ['id' => 'agroconecta', 'label' => 'AgroConecta', 'route' => 'ecosistema_jaraba_core.landing.agroconecta', 'icon_category' => 'verticals', 'icon_name' => 'leaf'],
         ['id' => 'jarabalex', 'label' => 'JarabaLex', 'route' => 'ecosistema_jaraba_core.landing.jarabalex', 'icon_category' => 'legal', 'icon_name' => 'gavel'],
         ['id' => 'courses', 'label' => 'Cursos', 'route' => 'jaraba_lms.catalog', 'icon_category' => 'ui', 'icon_name' => 'book'],
         ['id' => 'register', 'label' => 'Registrarse', 'route' => 'user.register', 'icon_category' => 'ui', 'icon_name' => 'user'],

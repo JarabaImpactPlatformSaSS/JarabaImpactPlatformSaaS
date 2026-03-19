@@ -1,0 +1,89 @@
+{#
+/**
+ * @file
+ * _how-it-works.html.twig — "Cómo funciona" en 3 pasos premium.
+ *
+ * Reduce la fricción cognitiva con iconos duotone, números grandes,
+ * conectores animados y micro-copy que genera confianza.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - CSS: BEM .how-it-works__*, var(--ej-*)
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ */
+#}
+
+<section class="how-it-works reveal-element reveal-fade-up" aria-labelledby="how-it-works-title">
+  <div class="how-it-works__container">
+
+    <header class="how-it-works__header">
+      <span class="how-it-works__eyebrow">{% trans %}Empieza en menos de un minuto{% endtrans %}</span>
+      <h2 id="how-it-works-title" class="how-it-works__title">
+        {% trans %}Cómo funciona{% endtrans %}
+      </h2>
+    </header>
+
+    <div class="how-it-works__steps">
+
+      <div class="how-it-works__step reveal-element reveal-fade-up" style="--reveal-delay: 0.1s;">
+        <div class="how-it-works__step-icon how-it-works__step-icon--naranja">
+          {{ jaraba_icon('users', 'user-verified', { variant: 'duotone', size: '36px', color: 'naranja-impulso' }) }}
+          <span class="how-it-works__step-number">1</span>
+        </div>
+        <h3 class="how-it-works__step-title">{% trans %}Regístrate gratis{% endtrans %}</h3>
+        <p class="how-it-works__step-desc">{% trans %}30 segundos, sin tarjeta de crédito. Solo nombre y email.{% endtrans %}</p>
+        <span class="how-it-works__step-trust">{% trans %}Sin compromiso{% endtrans %}</span>
+      </div>
+
+      <div class="how-it-works__connector" aria-hidden="true">
+        <div class="how-it-works__connector-line"></div>
+        <div class="how-it-works__connector-arrow">›</div>
+      </div>
+
+      <div class="how-it-works__step reveal-element reveal-fade-up" style="--reveal-delay: 0.25s;">
+        <div class="how-it-works__step-icon how-it-works__step-icon--verde">
+          {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', size: '36px', color: 'verde-innovacion' }) }}
+          <span class="how-it-works__step-number">2</span>
+        </div>
+        <h3 class="how-it-works__step-title">{% trans %}Elige tu vertical{% endtrans %}</h3>
+        <p class="how-it-works__step-desc">{% trans %}Empleo, legal, agro, comercio… Selecciona tu sector o haz el test de 30 segundos.{% endtrans %}</p>
+        <span class="how-it-works__step-trust">{% trans %}9 verticales especializados{% endtrans %}</span>
+      </div>
+
+      <div class="how-it-works__connector" aria-hidden="true">
+        <div class="how-it-works__connector-line"></div>
+        <div class="how-it-works__connector-arrow">›</div>
+      </div>
+
+      <div class="how-it-works__step reveal-element reveal-fade-up" style="--reveal-delay: 0.4s;">
+        <div class="how-it-works__step-icon how-it-works__step-icon--azul">
+          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', size: '36px', color: 'azul-corporativo' }) }}
+          <span class="how-it-works__step-number">3</span>
+        </div>
+        <h3 class="how-it-works__step-title">{% trans %}Empieza con IA{% endtrans %}</h3>
+        <p class="how-it-works__step-desc">{% trans %}Tu copiloto IA te guía desde el primer momento. Setup wizard + acciones diarias incluidos.{% endtrans %}</p>
+        <span class="how-it-works__step-trust">{% trans %}Resultados desde el día 1{% endtrans %}</span>
+      </div>
+
+    </div>
+
+    <div class="how-it-works__cta">
+      {% if logged_in %}
+        <a href="{{ path('user.page') }}"
+           class="btn-primary btn-primary--glow"
+           data-track-cta="how_it_works_dashboard"
+           data-track-position="homepage_how_it_works">
+          {% trans %}Ir al dashboard{% endtrans %}
+        </a>
+      {% else %}
+        <a href="{{ path('user.register') }}"
+           class="btn-primary btn-primary--glow"
+           data-track-cta="how_it_works_register"
+           data-track-position="homepage_how_it_works">
+          {% trans %}Empieza gratis{% endtrans %}
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+</section>

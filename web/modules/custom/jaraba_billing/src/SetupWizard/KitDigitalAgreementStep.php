@@ -60,16 +60,24 @@ class KitDigitalAgreementStep implements SetupWizardStepInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * Icono kit-digital: documento con check — específico para acuerdos
+   * de prestación de soluciones Kit Digital (ICON-CONVENTION-001).
    */
   public function getIcon(): array {
-    return ['category' => 'compliance', 'name' => 'certificate', 'variant' => 'duotone'];
+    return ['category' => 'compliance', 'name' => 'kit-digital', 'variant' => 'duotone'];
   }
 
   /**
    * {@inheritdoc}
+   *
+   * Ruta pública: /kit-digital (landing Kit Digital accesible sin permisos).
+   * NUNCA apuntar a /admin/* — los tenants no tienen acceso a rutas admin.
+   * La ruta anterior (entity.kit_digital_agreement.collection) iba a
+   * /admin/content/kit-digital-agreements → 403 para tenants.
    */
   public function getRoute(): string {
-    return 'entity.kit_digital_agreement.collection';
+    return 'jaraba_billing.kit_digital.landing';
   }
 
   /**

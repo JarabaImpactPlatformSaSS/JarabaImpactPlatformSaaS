@@ -1,0 +1,96 @@
+{#
+/**
+ * @file
+ * Quiz de Recomendación de Vertical — Página de resultado.
+ *
+ * Muestra la recomendación personalizada con explicación IA,
+ * beneficios, precio y alternativas. CTA diferenciado logged_in.
+ *
+ * Variables:
+ * - quiz_result: Array con datos del resultado (desde VerticalQuizController).
+ *   Keys: uuid, vertical_id, vertical_title, path, icon_cat, icon_name,
+ *          color, benefits, price_from, ai_explanation, alternatives.
+ *
+ * @see VerticalQuizController::resultPage()
+ */
+#}
+{% set r = quiz_result|default({}) %}
+{% set lp = language_prefix|default('') %}
+
+<div class="quiz-result__container">
+  {# Resultado principal #}
+  <div class="quiz-result__card quiz-result__card--primary">
+    <div class="quiz-result__badge">{% trans %}Tu vertical ideal{% endtrans %}</div>
+
+    <div class="quiz-result__icon">
+      {{ jaraba_icon(r.icon_cat|default('verticals'), r.icon_name|default('empleabilidad'), {
+        variant: 'duotone', size: '64px', color: r.color|default('azul-corporativo')
+      }) }}
+    </div>
+
+    <h1 class="quiz-result__title">{{ r.vertical_title }}</h1>
+
+    {% if r.ai_explanation %}
+      <p class="quiz-result__explanation">{{ r.ai_explanation }}</p>
+    {% endif %}
+
+    {# 3 beneficios clave #}
+    {% if r.benefits|default([])|length > 0 %}
+      <ul class="quiz-result__benefits">
+        {% for benefit in r.benefits %}
+          <li>
+            {{ jaraba_icon('actions', 'check-circle', {
+              variant: 'duotone', size: '20px', color: 'verde-innovacion'
+            }) }}
+            {{ benefit }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {# Precio desde #}
+    <div class="quiz-result__pricing">
+      {% trans %}Desde{% endtrans %}
+      <strong>{{ r.price_from|default('0€') }}</strong>/{% trans %}mes{% endtrans %}
+      <span class="quiz-result__pricing-note">{% trans %}Plan gratuito disponible{% endtrans %}</span>
+    </div>
+
+    {# CTA principal — diferenciado logged_in (CTA-LOGGED-IN-001) #}
+    {% if logged_in %}
+      <a href="{{ lp }}/addons" class="btn-primary btn-primary--glow quiz-result__cta"
+         data-track-cta="quiz_result_addons" data-track-position="quiz_result">
+        {% trans %}Activar este vertical{% endtrans %} →
+      </a>
+    {% else %}
+      <a href="{{ lp }}/registro/{{ r.path|default('empleabilidad') }}?source=quiz&quiz_uuid={{ r.uuid }}"
+         class="btn-primary btn-primary--glow quiz-result__cta"
+         data-track-cta="quiz_result_register" data-track-position="quiz_result">
+        {% trans %}Empieza gratis{% endtrans %} →
+      </a>
+    {% endif %}
+  </div>
+
+  {# Alternativas #}
+  {% if r.alternatives|default([])|length > 0 %}
+    <div class="quiz-result__alternatives">
+      <h3>{% trans %}También podría interesarte{% endtrans %}</h3>
+      <div class="quiz-result__alt-grid">
+        {% for alt in r.alternatives %}
+          <a href="{{ lp }}/{{ alt.path }}" class="quiz-result__alt-card"
+             data-track-cta="quiz_result_alt_{{ alt.id }}" data-track-position="quiz_result">
+            {{ jaraba_icon(alt.icon_cat|default('verticals'), alt.icon_name|default('empleabilidad'), {
+              variant: 'duotone', size: '32px', color: alt.color|default('azul-corporativo')
+            }) }}
+            <strong>{{ alt.title }}</strong>
+            <small>{{ alt.match_pct }}% {% trans %}de coincidencia{% endtrans %}</small>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Social proof #}
+  <div class="quiz-result__social-proof">
+    <p>{% trans %}+50.000 profesionales ya usan Jaraba Impact Platform{% endtrans %}</p>
+  </div>
+</div>

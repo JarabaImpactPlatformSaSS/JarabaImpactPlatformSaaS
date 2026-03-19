@@ -88,12 +88,13 @@
         </select>
       </div>
 
+      {% set privacy_url = (language_prefix|default('')) ~ '/politica-de-privacidad' %}
       <div class="lead-magnet__consent">
         <label class="lead-magnet__consent-label">
           <input type="checkbox" name="gdpr_consent" required data-lead-magnet-gdpr>
           <span>
             {% trans %}
-              Acepto la <a href="/politica-de-privacidad" target="_blank" rel="noopener">política de privacidad</a>
+              Acepto la <a href="{{ privacy_url }}" target="_blank" rel="noopener">política de privacidad</a>
             {% endtrans %}
           </span>
         </label>
@@ -105,6 +106,11 @@
         {{ ab_variants.lead_magnet_cta.label|default(lead_magnet_cta_text|default('Descargar Kit Gratuito →'|t)) }}
       </button>
     </form>
+
+    {# Mensaje de error — visible tras fallo de envío #}
+    <div class="lead-magnet__error" data-lead-magnet-error hidden>
+      <p class="lead-magnet__error-text">{{ 'Error al enviar. Inténtalo de nuevo.'|t }}</p>
+    </div>
 
     {# Mensaje de éxito — visible tras submit exitoso #}
     <div class="lead-magnet__success" data-lead-magnet-success hidden>

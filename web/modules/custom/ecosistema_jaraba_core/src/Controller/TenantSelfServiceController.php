@@ -11,6 +11,8 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\TenantSettings\TenantSettingsRegistry;
 use Drupal\jaraba_addons\Service\TenantVerticalService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controlador para el Dashboard del Tenant (Self-Service Portal).
@@ -767,6 +769,36 @@ class TenantSelfServiceController extends ControllerBase
                 ],
             ],
         ];
+    }
+
+    /**
+     * Sirve TenantPlanSettingsForm para slide-panel o pagina completa.
+     *
+     * SLIDE-PANEL-RENDER-001: Detecta isSlidePanelRequest() y usa
+     * renderPlain() para devolver SOLO el formulario sin chrome (header,
+     * footer, blocks). Si es request normal, devuelve render array
+     * que Drupal renderiza como pagina completa.
+     *
+     * FORM-CACHE-001: NO llama setCached(TRUE) — Drupal gestiona cache.
+     *
+     * Ruta: /my-settings/plan/slide-panel
+     * Usada por: SubscriptionUpgradeStep (wizard paso 7 con plan paid),
+     *           SubscriptionProfileSection (seccion "Mi suscripcion").
+     */
+    public function planSlidePanel(Request $request): Response|array
+    {
+        $form = $this->formBuilder()->getForm(
+            'Drupal\ecosistema_jaraba_core\Form\TenantPlanSettingsForm'
+        );
+
+        // SLIDE-PANEL-RENDER-001: slide-panel = AJAX sin _wrapper_format.
+        if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
+            $form['#action'] = $request->getRequestUri();
+            $html = (string) \Drupal::service('renderer')->renderPlain($form);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $form;
     }
 
     /**

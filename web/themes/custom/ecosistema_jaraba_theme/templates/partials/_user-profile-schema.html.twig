@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * _user-profile-schema.html.twig
+ *
+ * Schema.org ProfilePage + Person JSON-LD para /user/{uid}.
+ * Mejora SEO y rich snippets en Google, LinkedIn Knowledge Graph.
+ *
+ * Variables (inyectadas desde hook_preprocess_page__user):
+ *   - user_display_name: Nombre del usuario
+ *   - user_email: Email del usuario
+ *   - user_avatar_url: URL absoluta del avatar (vacia si no tiene)
+ *   - user_roles: Array de labels de roles
+ *   - user_member_since: Fecha formateada de alta
+ *   - profile_view_url: URL canonica del perfil
+ *   - site_name: Nombre del sitio
+ *
+ * DIRECTRICES:
+ *   - SEO-SCHEMA-001: Schema.org estructurado
+ *   - TWIG-URL-RENDER-ARRAY-001: usar path() no url()
+ *   - AUDIT-SEC-003: json dentro de script ld+json, datos del admin
+ *   - TWIG-INCLUDE-ONLY-001: incluir con `only`
+ */
+#}
+{% if user_display_name is defined and user_display_name %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "name": {{ user_display_name|json_encode|raw }},
+  {% if profile_view_url is defined and profile_view_url %}
+  "url": {{ profile_view_url|json_encode|raw }},
+  {% endif %}
+  "mainEntity": {
+    "@type": "Person",
+    "name": {{ user_display_name|json_encode|raw }}
+    {% if user_email is defined and user_email %}
+    ,"email": {{ user_email|json_encode|raw }}
+    {% endif %}
+    {% if user_avatar_url is defined and user_avatar_url %}
+    ,"image": {{ user_avatar_url|json_encode|raw }}
+    {% endif %}
+    {% if user_roles is defined and user_roles is not empty %}
+    ,"jobTitle": {{ user_roles|first|json_encode|raw }}
+    {% endif %}
+    {% if user_member_since is defined and user_member_since %}
+    ,"description": {{ ('Miembro desde ' ~ user_member_since)|json_encode|raw }}
+    {% endif %}
+    ,"memberOf": {
+      "@type": "Organization",
+      "name": {{ (site_name|default('Jaraba Impact Platform'))|json_encode|raw }}
+    }
+  }
+}
+</script>
+{% endif %}

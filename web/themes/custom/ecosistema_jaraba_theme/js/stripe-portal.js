@@ -17,6 +17,34 @@
 
   'use strict';
 
+  /**
+   * Muestra un mensaje de error visible debajo del boton del portal.
+   *
+   * Crea un elemento <p> con estilo de alerta que desaparece tras 8s.
+   * Tambien usa Drupal.announce() para screen readers (WCAG).
+   */
+  function showPortalError(btn, message) {
+    // Eliminar error anterior si existe.
+    var prev = btn.parentElement.querySelector('.subscription-card__portal-error');
+    if (prev) {
+      prev.remove();
+    }
+
+    var errorEl = document.createElement('p');
+    errorEl.className = 'subscription-card__portal-error';
+    errorEl.textContent = message;
+    errorEl.style.cssText = 'color: var(--ej-color-danger, #EF4444); font-size: 0.8125rem; margin: 0.5rem 0 0; padding: 0.5rem 0.75rem; background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 8%, transparent); border-radius: 6px;';
+    btn.parentElement.appendChild(errorEl);
+
+    Drupal.announce(message, 'assertive');
+
+    setTimeout(function () {
+      if (errorEl.parentElement) {
+        errorEl.remove();
+      }
+    }, 8000);
+  }
+
   Drupal.behaviors.stripePortal = {
     attach: function (context) {
       var buttons = once('stripe-portal', '[data-portal-trigger]', context);
@@ -47,7 +75,12 @@
                 }),
               });
             })
-            .then(function (res) { return res.json(); })
+            .then(function (res) {
+              if (!res.ok) {
+                throw new Error('HTTP ' + res.status);
+              }
+              return res.json();
+            })
             .then(function (data) {
               if (data.success && data.data && data.data.url) {
                 window.location.href = data.data.url;
@@ -56,20 +89,16 @@
                 btn.disabled = false;
                 btn.classList.remove('is-loading');
                 btn.textContent = originalText;
-                Drupal.announce(
-                  Drupal.t('No se pudo abrir el portal de pagos. Inténtalo de nuevo.'),
-                  'assertive'
-                );
+                var msg = Drupal.t('El portal de pagos no está disponible en este momento. Contacta con soporte si el problema persiste.');
+                showPortalError(btn, msg);
               }
             })
             .catch(function () {
               btn.disabled = false;
               btn.classList.remove('is-loading');
               btn.textContent = originalText;
-              Drupal.announce(
-                Drupal.t('Error de conexión. Inténtalo de nuevo.'),
-                'assertive'
-              );
+              var msg = Drupal.t('No se pudo conectar con el servicio de pagos. Inténtalo de nuevo.');
+              showPortalError(btn, msg);
             });
         });
       });

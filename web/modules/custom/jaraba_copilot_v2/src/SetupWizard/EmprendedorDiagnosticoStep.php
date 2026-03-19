@@ -142,7 +142,7 @@ class EmprendedorDiagnosticoStep implements SetupWizardStepInterface {
       $storage = $this->entityTypeManager->getStorage('entrepreneur_profile');
       return (int) $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('uid', $this->currentUser->id())
+        ->condition('uid', (int) $this->currentUser->id())
         ->count()
         ->execute();
     }

@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * Quiz de Recomendación de Vertical — Página principal.
+ *
+ * 4 preguntas tipo Typeform (una por pantalla), progress bar, iconos duotone.
+ * JS controla la navegación entre pasos y el envío a /api/v1/quiz/submit.
+ *
+ * Variables:
+ * - quiz_questions: Array de preguntas con opciones (desde VerticalQuizService).
+ *
+ * @see VerticalQuizController::quizPage()
+ * @see VerticalQuizService::getQuizQuestions()
+ */
+#}
+
+<div class="quiz-page__container">
+  {# Progress bar #}
+  <div class="quiz-page__progress" role="progressbar"
+       aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+    <div class="quiz-page__progress-bar">
+      <div class="quiz-page__progress-fill" style="width: 25%"></div>
+    </div>
+    <span class="quiz-page__progress-text">
+      {% trans %}Pregunta 1 de {{ quiz_questions|length }}{% endtrans %}
+    </span>
+  </div>
+
+  {# Steps container — JS controla visibilidad #}
+  <div class="quiz-page__steps" aria-live="polite">
+    {% for question in quiz_questions %}
+      <div class="quiz-step" data-step="{{ loop.index0 }}" {% if loop.index0 > 0 %}hidden{% endif %}>
+        <h2 class="quiz-step__title">{{ question.title }}</h2>
+        <p class="quiz-step__subtitle">{{ question.subtitle }}</p>
+
+        <div class="quiz-step__options" role="radiogroup" aria-label="{{ question.title }}">
+          {% for option in question.options %}
+            <button class="quiz-step__option"
+                    type="button"
+                    data-value="{{ option.value }}"
+                    data-field="{{ question.field }}"
+                    role="radio"
+                    aria-checked="false"
+                    data-track-cta="quiz_{{ question.field }}_{{ option.value }}"
+                    data-track-position="quiz_step_{{ loop.parent.loop.index }}">
+              <span class="quiz-step__option-icon">
+                {{ jaraba_icon(option.icon_cat, option.icon_name, {
+                  variant: 'duotone', size: '40px', color: option.color
+                }) }}
+              </span>
+              <span class="quiz-step__option-text">{{ option.label }}</span>
+            </button>
+          {% endfor %}
+        </div>
+
+        {% if loop.index0 > 0 %}
+          <button class="quiz-step__back" type="button">
+            ← {% trans %}Volver{% endtrans %}
+          </button>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Loading state #}
+  <div class="quiz-page__loading" hidden>
+    <div class="quiz-page__spinner"></div>
+    <p>{% trans %}Analizando tu perfil...{% endtrans %}</p>
+  </div>
+</div>

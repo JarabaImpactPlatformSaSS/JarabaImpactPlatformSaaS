@@ -38,7 +38,7 @@
 
       {# BREADCRUMB + BACK #}
       <div class="legal-case-detail__nav">
-        <a href="/legal/cases" class="legal-case-detail__back">
+        <a href="{{ path('jaraba_legal_cases.dashboard') }}" class="legal-case-detail__back">
           {% trans %}Volver a Expedientes{% endtrans %}
         </a>
       </div>
@@ -142,7 +142,7 @@
       {% else %}
         <div class="legal-case-detail__not-found">
           <p>{% trans %}Expediente no encontrado.{% endtrans %}</p>
-          <a href="/legal/cases">{% trans %}Volver a Expedientes{% endtrans %}</a>
+          <a href="{{ path('jaraba_legal_cases.dashboard') }}">{% trans %}Volver a Expedientes{% endtrans %}</a>
         </div>
       {% endif %}
 

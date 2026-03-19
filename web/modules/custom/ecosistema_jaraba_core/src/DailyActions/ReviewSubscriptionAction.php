@@ -129,7 +129,7 @@ class ReviewSubscriptionAction implements DailyActionInterface {
     }
 
     try {
-      $uid = $this->currentUser->id();
+      $uid = (int) $this->currentUser->id();
       $context = $this->subscriptionContext->getContextForUser($uid);
       if (!isset($context['plan']) || $context['plan'] === NULL) {
         return ['visible' => TRUE, 'badge' => NULL, 'badge_type' => ''];

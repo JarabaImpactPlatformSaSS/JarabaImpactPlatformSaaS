@@ -384,6 +384,26 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // ---------------------------------------------------------------------------
+    // QUIZ DE RECOMENDACIÓN DE VERTICAL — /test-vertical
+    // ---------------------------------------------------------------------------
+
+    'quiz_vertical' => [
+      'variables' => [
+        'quiz_questions' => [],
+      ],
+      'template' => 'quiz-vertical',
+      'path' => $path . '/templates',
+    ],
+
+    'quiz_vertical_result' => [
+      'variables' => [
+        'quiz_result' => [],
+      ],
+      'template' => 'quiz-vertical-result',
+      'path' => $path . '/templates',
+    ],
+
+    // ---------------------------------------------------------------------------
     // Q1 2027: DEMO INTERACTIVA - TIME-TO-VALUE < 60s
     // ---------------------------------------------------------------------------
 
@@ -410,6 +430,12 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'sales_history' => [],
         'magic_actions' => [],
         'tour' => NULL,
+        // S11-07: Setup Wizard + Daily Actions para demo.
+        'wizard' => NULL,
+        'daily_actions' => [],
+        // Métricas universales + contexto vertical personalizado.
+        'formatted_metrics' => [],
+        'vertical_context' => [],
       ],
       'template' => 'demo-dashboard',
       'path' => $path . '/templates',
@@ -424,6 +450,12 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'session' => [],
         'nudges' => [],
         'disclosure' => [],
+        // S11-07: Setup Wizard + Daily Actions para demo.
+        'wizard' => NULL,
+        'daily_actions' => [],
+        // Métricas universales + contexto vertical personalizado.
+        'formatted_metrics' => [],
+        'vertical_context' => [],
       ],
       'template' => 'demo-dashboard-view',
       'path' => $path . '/templates',
@@ -1279,6 +1311,43 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       break;
 
     // =========================================================================
+    // QUIZ FOLLOW-UP DRIP (Fase B — conversión post-quiz)
+    // =========================================================================
+    case 'quiz_followup':
+      $quizResult = $params['quiz_result'] ?? NULL;
+      $vertical = $params['vertical'] ?? '';
+      $dripPhase = $params['drip_phase'] ?? 'reminder_24h';
+
+      $verticalTitles = [
+        'empleabilidad' => 'Empleabilidad', 'emprendimiento' => 'Emprendimiento',
+        'comercioconecta' => 'ComercioConecta', 'agroconecta' => 'AgroConecta',
+        'jarabalex' => 'JarabaLex', 'serviciosconecta' => 'ServiciosConecta',
+        'formacion' => 'Formación', 'andalucia_ei' => 'Andalucía +ei',
+        'jaraba_content_hub' => 'Content Hub',
+      ];
+      $vTitle = $verticalTitles[$vertical] ?? $vertical;
+
+      $message['subject'] = match ($dripPhase) {
+        'reminder_24h' => t('Tu recomendación personalizada: @v te espera', ['@v' => $vTitle]),
+        'reminder_72h' => t('¿Sigues interesado en @v?', ['@v' => $vTitle]),
+        'reminder_7d' => t('Última oportunidad: empieza gratis con @v', ['@v' => $vTitle]),
+        default => t('Tu recomendación: @v', ['@v' => $vTitle]),
+      };
+
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+      $baseUrl = \Drupal::request()->getSchemeAndHttpHost();
+      $registerUrl = $baseUrl . '/es/user/register?vertical=' . $vertical . '&source=quiz_drip';
+
+      $message['body'][] = t('Hola,');
+      $message['body'][] = '';
+      $message['body'][] = t('Según tu perfil, <strong>@v</strong> es la solución ideal para ti.', ['@v' => $vTitle]);
+      $message['body'][] = '';
+      $message['body'][] = t('👉 <a href="@url">Empieza gratis ahora</a>', ['@url' => $registerUrl]);
+      $message['body'][] = '';
+      $message['body'][] = t('El equipo de Jaraba Impact Platform');
+      break;
+
+    // =========================================================================
     // HEALTH ALERTS (Fase 2 Hardening)
     // =========================================================================
     case 'health_alert':
@@ -1634,6 +1703,60 @@ function ecosistema_jaraba_core_cron() {
         ['@message' => $e->getMessage()]
       );
     }
+  }
+
+  // 8b. GDPR-DEMO-RETENTION-001: Borrar contactos CRM de demo sin conversión
+  // después de 90 días. AI-GUARDRAILS-PII-001: email es PII.
+  if (\Drupal::hasService('jaraba_crm.contact')) {
+    try {
+      $retentionDays = 90;
+      $cutoff = (new \DateTime())->modify("-{$retentionDays} days")->getTimestamp();
+      /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $etm */
+      $etm = \Drupal::entityTypeManager();
+      $contactIds = $etm->getStorage('crm_contact')->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('source', 'demo_interactive')
+        ->condition('created', $cutoff, '<')
+        ->execute();
+
+      if (!empty($contactIds)) {
+        // Verificar que no tienen oportunidades ganadas antes de borrar.
+        $oppStorage = $etm->getStorage('crm_opportunity');
+        $deletable = [];
+        foreach ($contactIds as $contactId) {
+          $wonOpps = $oppStorage->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('contact_id', $contactId)
+            ->condition('stage', ['closed_won', 'negotiation', 'proposal'], 'IN')
+            ->count()
+            ->execute();
+          if ((int) $wonOpps === 0) {
+            $deletable[] = $contactId;
+          }
+        }
+
+        if (!empty($deletable)) {
+          $contacts = $etm->getStorage('crm_contact')->loadMultiple($deletable);
+          $etm->getStorage('crm_contact')->delete($contacts);
+          \Drupal::logger('demo_interactive')->info(
+            'GDPR cron: @count contactos demo sin conversión eliminados (> @days días).',
+            ['@count' => count($deletable), '@days' => $retentionDays]
+          );
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('demo_interactive')->error(
+        'Error en GDPR cleanup de contactos demo: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 8c. Quiz follow-up: Email drip sequence para leads del quiz no convertidos.
+  // Fases: 24h, 72h, 7d. Evita duplicados via _drip_sent en answers map.
+  if (class_exists(\Drupal\ecosistema_jaraba_core\DailyActions\QuizFollowUpCron::class)) {
+    \Drupal\ecosistema_jaraba_core\DailyActions\QuizFollowUpCron::processUnconvertedLeads();
   }
 
   // 8. S1-05: Limpieza de sandboxes expirados — ELIMINADO.

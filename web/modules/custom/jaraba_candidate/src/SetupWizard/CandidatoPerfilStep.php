@@ -140,7 +140,7 @@ class CandidatoPerfilStep implements SetupWizardStepInterface {
       $storage = $this->entityTypeManager->getStorage('candidate_profile');
       return (int) $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('uid', $this->currentUser->id())
+        ->condition('uid', (int) $this->currentUser->id())
         ->condition('name', '', '<>')
         ->count()
         ->execute();
@@ -158,7 +158,7 @@ class CandidatoPerfilStep implements SetupWizardStepInterface {
       $storage = $this->entityTypeManager->getStorage('candidate_profile');
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('uid', $this->currentUser->id())
+        ->condition('uid', (int) $this->currentUser->id())
         ->range(0, 1)
         ->execute();
 

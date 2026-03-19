@@ -1,0 +1,144 @@
+{#
+/**
+ * @file
+ * _faq-homepage.html.twig — FAQ SEO + objection handling.
+ *
+ * 6 preguntas frecuentes en <details>/<summary> nativo (accesible, sin JS).
+ * Incluye Schema.org FAQPage JSON-LD para SEO.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - CSS: BEM .faq-homepage__*, var(--ej-*)
+ * - A11y: <details>/<summary> nativo = teclado + screen reader gratis
+ * - SEO: FAQPage JSON-LD schema
+ */
+#}
+
+<section id="faq" class="faq-homepage" aria-labelledby="faq-homepage-title">
+  <div class="faq-homepage__container">
+
+    <header class="faq-homepage__header">
+      <span class="faq-homepage__eyebrow">{% trans %}Preguntas frecuentes{% endtrans %}</span>
+      <h2 id="faq-homepage-title" class="faq-homepage__title">
+        {% trans %}Todo lo que necesitas saber{% endtrans %}
+      </h2>
+    </header>
+
+    <div class="faq-homepage__list">
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Necesito tarjeta de crédito para empezar?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}No. El registro es completamente gratuito y no requiere tarjeta de crédito. Puedes explorar la plataforma, usar el copiloto IA y configurar tu vertical sin ningún compromiso de pago.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Qué verticales están disponibles?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Actualmente ofrecemos 10 verticales: Empleabilidad, Emprendimiento, AgroConecta, ComercioConecta, ServiciosConecta, JarabaLex (legal), Formación, Andalucía +ei, Content Hub y Demo. Cada uno incluye herramientas especializadas y agentes IA entrenados para ese sector.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Mis datos están protegidos?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Sí. Cumplimos con el RGPD y la normativa europea de protección de datos. Los datos están cifrados en tránsito y en reposo, alojados en servidores europeos (IONOS, Alemania). Cada tenant tiene aislamiento completo de datos.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Qué IA utiliza la plataforma?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Utilizamos Claude de Anthropic como modelo principal y Gemini de Google como modelo complementario. 11 agentes IA especializados (Gen 2) cubren desde análisis legal hasta optimización de CV, pasando por copiloto de negocio y asistente de contenido.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Puedo cancelar en cualquier momento?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Sí, sin permanencia ni penalizaciones. Puedes cancelar tu suscripción desde tu panel de control en cualquier momento. Tu acceso continúa hasta el final del período facturado.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Ofrecéis soluciones para instituciones públicas?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Sí. Tenemos una solución B2G específica para programas de empleo y emprendimiento con fondos europeos (FSE). Incluye gestión de participantes, justificación automática, seguimiento de horas y copiloto para técnicos AEDL. Contacta con nosotros para una demo institucional.{% endtrans %}</p>
+        </div>
+      </details>
+
+    </div>
+
+  </div>
+</section>
+
+{# Schema.org FAQPage JSON-LD para SEO #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "{{ '¿Necesito tarjeta de crédito para empezar?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'No. El registro es completamente gratuito y no requiere tarjeta de crédito.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Qué verticales están disponibles?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Actualmente ofrecemos 10 verticales especializados: Empleabilidad, Emprendimiento, AgroConecta, ComercioConecta, ServiciosConecta, JarabaLex, Formación, Andalucía +ei, Content Hub y Demo.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Mis datos están protegidos?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Sí. Cumplimos con el RGPD. Datos cifrados, servidores europeos, aislamiento completo por tenant.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Qué IA utiliza la plataforma?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Claude de Anthropic como modelo principal y Gemini de Google como complementario. 11 agentes IA especializados Gen 2.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Puedo cancelar en cualquier momento?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Sí, sin permanencia ni penalizaciones. Cancela desde tu panel de control en cualquier momento.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Ofrecéis soluciones para instituciones públicas?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Sí. Solución B2G específica para programas de empleo y emprendimiento con fondos europeos (FSE).'|t }}"
+      }
+    }
+  ]
+}
+</script>

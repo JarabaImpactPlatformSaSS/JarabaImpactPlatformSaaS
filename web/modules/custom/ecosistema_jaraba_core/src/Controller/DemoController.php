@@ -11,6 +11,7 @@ use Drupal\Core\Url;
 use Drupal\Component\Utility\Xss;
 use Drupal\ecosistema_jaraba_core\Service\AbTestService;
 use Drupal\jaraba_ai_agents\Agent\StorytellingAgent;
+use Drupal\ecosistema_jaraba_core\Event\DemoSessionEvent;
 use Drupal\ecosistema_jaraba_core\Service\DemoFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService;
 use Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService;
@@ -162,15 +163,39 @@ class DemoController extends ControllerBase
         // S7-05: Social proof — cuántas personas están explorando.
         $activeDemoCount = $this->demoService->getActiveDemoCount();
 
+        // S10-03: Dispatch landing view event.
+        $this->demoService->dispatchFunnelEvent(DemoSessionEvent::LANDING_VIEW);
+
+        // S10-01: Soft gate deshabilitado para usuarios autenticados.
+        // Si ya están logados, sus datos están en el CRM por el registro.
+        $isAuthenticated = $this->currentUser()->isAuthenticated();
+        $gateEnabled = !$isAuthenticated;
+
+        // A/B test: soft gate habilitado/deshabilitado (solo para anónimos).
+        if ($gateEnabled && $this->abTestService !== NULL) {
+            $gateVariant = $this->abTestService->getVariant('demo_soft_gate');
+            $gateEnabled = ($gateVariant !== 'control');
+        }
+
         return [
             '#theme' => 'demo_landing',
             '#profiles' => $profiles,
             '#active_demo_count' => $activeDemoCount,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/demo-landing'],
+                'drupalSettings' => [
+                    'demoLeadGate' => [
+                        // S10-01: ROUTE-LANGPREFIX-001 — endpoint via Url::fromRoute().
+                        'endpoint' => Url::fromRoute('ecosistema_jaraba_core.demo_api_lead_gate')->toString(),
+                        // A/B test: deshabilitar gate para variante 'control'.
+                        'enabled' => $gateEnabled,
+                    ],
+                ],
             ],
             '#cache' => [
+                // Varía por estado de autenticación (gate habilitado/deshabilitado).
                 'max-age' => 60,
+                'contexts' => ['user.roles:authenticated'],
             ],
         ];
     }
@@ -183,6 +208,14 @@ class DemoController extends ControllerBase
      */
     public function startDemo(Request $request, string $profileId): array
     {
+        // S10-03: Si no hay lead_id, el usuario saltó el soft gate.
+        if (!$request->query->has('lead_id')) {
+            $this->demoService->dispatchFunnelEvent(
+                DemoSessionEvent::LEAD_SKIPPED,
+                $profileId,
+            );
+        }
+
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_start',
@@ -233,15 +266,32 @@ class DemoController extends ControllerBase
         // Obtener tour recomendado.
         $tour = $this->tourService->getTour('demo_welcome');
 
+        // S11-07: Setup Wizard + Daily Actions para demo.
+        $wizardData = $this->getDemoWizardAndActions();
+
+        // Métricas formateadas + contexto vertical personalizado.
+        $formattedMetrics = [];
+        $verticalContext = [];
+        if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
+            $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
+            $formattedMetrics = $formatter->prepareForRender($demoData['metrics']);
+        }
+        $verticalContext = $this->demoService->getVerticalContext($profileId);
+
         return [
             '#theme' => 'demo_dashboard',
             '#session_id' => $sessionId,
             '#profile' => $demoData['profile'],
             '#tenant_name' => $demoData['tenant_name'],
             '#metrics' => $demoData['metrics'],
+            '#formatted_metrics' => $formattedMetrics,
+            '#vertical_context' => $verticalContext,
             '#products' => $demoData['products'],
             '#sales_history' => $demoData['sales_history'],
             '#magic_actions' => $demoData['magic_moment_actions'],
+            '#wizard' => $wizardData['wizard'],
+            '#daily_actions' => $wizardData['daily_actions'],
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/demo-dashboard',
@@ -495,11 +545,29 @@ class DemoController extends ControllerBase
         // S7-07: Progressive disclosure level.
         $disclosure = $this->journeyProgression->getDisclosureLevel($sessionId);
 
+        // S11-07: Setup Wizard + Daily Actions para demo.
+        $wizardData = $this->getDemoWizardAndActions();
+
+        // Métricas formateadas + contexto vertical.
+        $formattedMetrics = [];
+        $verticalContext = [];
+        $profileId = $session['profile_id'] ?? $session['profile']['id'] ?? '';
+        if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
+            $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
+            $formattedMetrics = $formatter->prepareForRender($session['metrics'] ?? []);
+        }
+        $verticalContext = $this->demoService->getVerticalContext($profileId);
+
         return [
             '#theme' => 'demo_dashboard_view',
             '#session' => $session,
             '#nudges' => $nudges,
             '#disclosure' => $disclosure,
+            '#formatted_metrics' => $formattedMetrics,
+            '#vertical_context' => $verticalContext,
+            '#wizard' => $wizardData['wizard'],
+            '#daily_actions' => $wizardData['daily_actions'],
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/demo-dashboard',
@@ -813,6 +881,175 @@ class DemoController extends ControllerBase
         $this->journeyProgression->dismissNudge($sessionId, $nudgeId);
 
         return new JsonResponse(['success' => TRUE]);
+    }
+
+    /**
+     * Resuelve datos del wizard y daily actions para el dashboard demo.
+     *
+     * S11-07: Lazy-load de registries (CONTAINER-DEPS-002).
+     * Usa tenantId=0 porque demo es session-scoped, no tenant-scoped.
+     *
+     * @return array{wizard: array<string, mixed>|null, daily_actions: array<int, array<string, mixed>>}
+     */
+    protected function getDemoWizardAndActions(): array {
+        $wizard = NULL;
+        $dailyActions = [];
+
+        if (\Drupal::hasService('ecosistema_jaraba_core.setup_wizard_registry')) {
+            /** @var \Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry $registry */
+            $registry = \Drupal::service('ecosistema_jaraba_core.setup_wizard_registry');
+            if ($registry->hasWizard('demo_visitor')) {
+                $wizard = $registry->getStepsForWizard('demo_visitor', 0);
+            }
+        }
+
+        if (\Drupal::hasService('ecosistema_jaraba_core.daily_actions_registry')) {
+            /** @var \Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry $actionsRegistry */
+            $actionsRegistry = \Drupal::service('ecosistema_jaraba_core.daily_actions_registry');
+            if ($actionsRegistry->hasDashboard('demo_visitor')) {
+                $dailyActions = $actionsRegistry->getActionsForDashboard('demo_visitor', 0);
+            }
+        }
+
+        return ['wizard' => $wizard, 'daily_actions' => $dailyActions];
+    }
+
+    /**
+     * API: Captura lead pre-demo (soft gate).
+     *
+     * S10-01: Crea Contact + Opportunity en jaraba_crm si disponible.
+     * Rate limit: 5 req/min (endpoint sensible con email — RATE_LIMIT_CONVERT).
+     * CSRF: obligatorio via routing.yml.
+     * AI-GUARDRAILS-PII-001: email es PII, no se almacena en demo_sessions.
+     * OPTIONAL-CROSSMODULE-001: jaraba_crm es opcional.
+     */
+    public function leadGate(Request $request): JsonResponse
+    {
+        // S1-01: Rate limiting estricto.
+        $rateLimited = $this->checkRateLimit(
+            'demo_lead_gate',
+            $this->rateLimits['convert'],
+            $request->getClientIp() ?? 'unknown',
+        );
+        if ($rateLimited !== NULL) {
+            return $rateLimited;
+        }
+
+        $data = json_decode($request->getContent(), TRUE);
+        if (!is_array($data)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Formato de datos inválido.'),
+            ], 400);
+        }
+
+        $name = is_string($data['name'] ?? NULL) ? $data['name'] : '';
+        $email = is_string($data['email'] ?? NULL) ? $data['email'] : '';
+        $profileId = is_string($data['profile_id'] ?? NULL) ? $data['profile_id'] : '';
+
+        // S1-02: Validar inputs.
+        if (mb_strlen(trim($name)) < 2 || mb_strlen($name) > 100) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Nombre inválido (mínimo 2 caracteres).'),
+            ], 400);
+        }
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Dirección de email inválida.'),
+            ], 400);
+        }
+        if ($profileId === '' || preg_match('/^[a-z_]+$/', $profileId) !== 1) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Perfil de demo inválido.'),
+            ], 400);
+        }
+
+        // Verificar perfil existe.
+        $profile = $this->demoService->getDemoProfile($profileId);
+        if ($profile === NULL) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Perfil de demo no válido.'),
+            ], 400);
+        }
+
+        $name = trim($name);
+        $vertical = $profile['vertical'] ?? 'demo';
+        $leadId = NULL;
+
+        // S10-02: Crear lead en CRM si disponible (OPTIONAL-CROSSMODULE-001).
+        // Lazy-load via \Drupal::service() (CONTAINER-DEPS-002).
+        if (\Drupal::hasService('jaraba_crm.contact')) {
+            try {
+                /** @var \Drupal\jaraba_crm\Service\ContactService $crmContactService */
+                $crmContactService = \Drupal::service('jaraba_crm.contact');
+                $nameParts = explode(' ', $name, 2);
+                $firstName = $nameParts[0];
+                $lastName = $nameParts[1] ?? '';
+
+                $contact = $crmContactService->create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName !== '' ? $lastName : $firstName,
+                    'email' => $email,
+                    'source' => 'demo_interactive',
+                    'notes' => (string) $this->t('Lead capturado desde demo interactiva. Perfil: @profile, Vertical: @vertical', [
+                        '@profile' => $profileId,
+                        '@vertical' => $vertical,
+                    ]),
+                ]);
+
+                $leadId = (int) $contact->id();
+
+                // Crear oportunidad vinculada al contacto.
+                if (\Drupal::hasService('jaraba_crm.opportunity')) {
+                    /** @var \Drupal\jaraba_crm\Service\OpportunityService $crmOpportunityService */
+                    $crmOpportunityService = \Drupal::service('jaraba_crm.opportunity');
+                    $crmOpportunityService->create([
+                        'title' => (string) $this->t('Demo @vertical — @name', [
+                            '@vertical' => $vertical,
+                            '@name' => $name,
+                        ]),
+                        'contact_id' => $leadId,
+                        'stage' => 'demo',
+                        'probability' => 20,
+                        'notes' => (string) $this->t('Oportunidad creada automáticamente desde demo interactiva.'),
+                    ]);
+                }
+
+                $this->getLogger('demo_controller')->info(
+                    'Demo lead captured: @email for profile @profile (CRM contact @id)',
+                    ['@email' => $email, '@profile' => $profileId, '@id' => $leadId]
+                );
+            }
+            catch (\Throwable $e) {
+                // PRESAVE-RESILIENCE-001: CRM fallo no bloquea la demo.
+                $this->getLogger('demo_controller')->warning(
+                    'CRM lead creation failed for demo: @error',
+                    ['@error' => $e->getMessage()]
+                );
+            }
+        }
+
+        // S10-03: Dispatch LEAD_CAPTURED event.
+        $this->demoService->dispatchFunnelEvent(
+            DemoSessionEvent::LEAD_CAPTURED,
+            $profileId,
+            ['vertical' => $vertical, 'crm_contact_id' => $leadId],
+        );
+
+        // Generar URL de inicio de demo.
+        $startUrl = Url::fromRoute('ecosistema_jaraba_core.demo_start', [
+            'profileId' => $profileId,
+        ])->toString();
+
+        return new JsonResponse([
+            'success' => TRUE,
+            'redirect_url' => $startUrl,
+            'lead_id' => $leadId,
+        ]);
     }
 
 }

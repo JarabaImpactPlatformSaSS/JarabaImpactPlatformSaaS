@@ -470,6 +470,10 @@ services:
   # Q1 2027: INSTANT VALUE (GAP P0)
   # ===========================================
 
+  # Formateador universal de métricas demo (renderiza las 30+ claves de demo_data).
+  ecosistema_jaraba_core.demo_metrics_formatter:
+    class: Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter
+
   # Demo interactiva para Time-to-Value < 60s
   # S1-04: Migrado de State API a tabla demo_sessions (database directa).
   ecosistema_jaraba_core.demo_interactive:
@@ -504,6 +508,32 @@ services:
       - '@logger.factory'
     tags:
       - { name: event_subscriber }
+
+  # ===========================================
+  # MEGA MENÚ BRIDGE (Fase B — datos configurables desde UI)
+  # Lee SiteMenuItems de jaraba_site_builder y genera mega_menu_columns.
+  # Fallback a datos hardcodeados en preprocess si no hay menú configurado.
+  # ===========================================
+  ecosistema_jaraba_core.mega_menu_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\MegaMenuBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # QUIZ DE RECOMENDACIÓN DE VERTICAL
+  # Scoring estático + IA explicación + CRM lead + persistence
+  # ===========================================
+  ecosistema_jaraba_core.vertical_quiz:
+    class: Drupal\ecosistema_jaraba_core\Service\VerticalQuizService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@?jaraba_crm.contact'
+      - '@?jaraba_crm.opportunity'
+      - '@?jaraba_ai_agents.model_router'
+      - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
   # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
@@ -1890,6 +1920,15 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.setup_wizard_step }
 
+  # Setup Wizard step: Quiz de recomendación de vertical (global, opcional).
+  ecosistema_jaraba_core.setup_wizard.completar_quiz:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\CompletarQuizStep
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
   # Setup Wizard step: Suscripción (GAP-PRICING-009, PLG-UPGRADE-UI-001)
   ecosistema_jaraba_core.setup_wizard.subscription_upgrade:
     class: Drupal\ecosistema_jaraba_core\SetupWizard\SubscriptionUpgradeStep
@@ -1906,12 +1945,71 @@ services:
   ecosistema_jaraba_core.daily_actions_registry:
     class: Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry
 
+  # Daily Action: Quiz de recomendación de vertical (global).
+  # Visible solo para usuarios que NO han completado el quiz.
+  ecosistema_jaraba_core.daily_action.explorar_quiz:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\ExplorarQuizAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
   # Daily Action: Revisar suscripción (GAP-PRICING-010, PLG-UPGRADE-UI-001)
   ecosistema_jaraba_core.daily_action.review_subscription:
     class: Drupal\ecosistema_jaraba_core\DailyActions\ReviewSubscriptionAction
     arguments:
       - '@?ecosistema_jaraba_core.subscription_context'
       - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # =========================================================================
+  # Setup Wizard + Daily Actions — Vertical Demo (S11-01 a S11-06)
+  # =========================================================================
+  # SETUP-WIZARD-DAILY-001: Patron premium transversal.
+  # wizard_id = 'demo_visitor', dashboard_id = 'demo_visitor'.
+  # ZEIGARNIK-PRELOAD-001: 2 global + explorar_dashboard = 60% al entrar.
+
+  # S11-01: Wizard step — Explorar dashboard.
+  ecosistema_jaraba_core.setup_wizard.demo_explorar_dashboard:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\DemoExplorarDashboardStep
+    arguments:
+      - '@ecosistema_jaraba_core.demo_interactive'
+      - '@request_stack'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # S11-02: Wizard step — Generar contenido con IA.
+  ecosistema_jaraba_core.setup_wizard.demo_generar_contenido_ia:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\DemoGenerarContenidoIAStep
+    arguments:
+      - '@ecosistema_jaraba_core.demo_interactive'
+      - '@request_stack'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # S11-03: Wizard step — Convertir en cuenta real.
+  ecosistema_jaraba_core.setup_wizard.demo_convertir_cuenta:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\DemoConvertirCuentaRealStep
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # S11-04: Daily Action — Explorar vertical (primaria).
+  ecosistema_jaraba_core.daily_action.demo_explorar_vertical:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\ExplorarVerticalDemoAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # S11-05: Daily Action — Chat con Copiloto IA.
+  ecosistema_jaraba_core.daily_action.demo_chat_copilot:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\ChatCopilotDemoAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # S11-06: Daily Action — Crear cuenta real.
+  ecosistema_jaraba_core.daily_action.demo_convertir_cuenta:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\ConvertirCuentaDemoAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
 
@@ -2032,5 +2130,35 @@ services:
     class: Drupal\ecosistema_jaraba_core\UserProfile\Section\AccountSection
     arguments:
       - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  # Elevacion perfil clase mundial: Facturacion, Mis Paginas, Seguridad.
+  ecosistema_jaraba_core.user_profile_section.billing:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\BillingProfileSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.page_builder:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\PageBuilderProfileSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.security:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\SecurityProfileSection
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.user_profile_section }
+
+  ecosistema_jaraba_core.user_profile_section.recent_activity:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\RecentActivitySection
+    arguments:
+      - '@current_user'
+      - '@entity_type.manager'
     tags:
       - { name: ecosistema_jaraba_core.user_profile_section }

@@ -108,7 +108,7 @@ class MentorSesionesPendientesAction implements DailyActionInterface {
       $ids = $this->entityTypeManager->getStorage('mentor_profile')
         ->getQuery()
         ->accessCheck(FALSE)
-        ->condition('user_id', $this->currentUser->id())
+        ->condition('user_id', (int) $this->currentUser->id())
         ->range(0, 1)
         ->execute();
 

@@ -385,6 +385,19 @@ design-system:
 # Attach via {{ attach_library('ecosistema_jaraba_theme/route-dashboard') }}
 # Build: sass scss/routes/{name}.scss css/routes/{name}.css --style=compressed
 
+route-quiz:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/quiz.css: {}
+  js:
+    js/vertical-quiz.js: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 route-dashboard:
   version: 1.0.0
   css:

@@ -75,6 +75,8 @@ activity_type:
 
 contact_source:
   website: 'Sitio web'
+  demo_interactive: 'Demo interactiva'
+  quiz_vertical: 'Quiz recomendación vertical'
   referral: 'Referencia'
   social: 'Redes sociales'
   event: 'Evento'

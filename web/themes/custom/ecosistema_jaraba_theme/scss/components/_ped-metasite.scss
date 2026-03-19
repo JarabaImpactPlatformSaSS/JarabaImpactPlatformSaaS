@@ -702,6 +702,33 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
       box-shadow: 0 8px 30px color-mix(in srgb, $ped-dorado 45%, transparent);
     }
   }
+
+  &__social-proof {
+    font-size: var(--ej-text-sm, 0.875rem) !important;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: var(--ej-space-md, 1rem) !important;
+  }
+
+  &__badges {
+    display: flex;
+    justify-content: center;
+    gap: var(--ej-space-md, 1rem);
+    flex-wrap: wrap;
+    margin-top: var(--ej-space-lg, 1.5rem);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--ej-text-xs, 0.75rem);
+    color: rgba(255, 255, 255, 0.7);
+
+    svg {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════

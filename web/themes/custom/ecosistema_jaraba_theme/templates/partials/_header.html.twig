@@ -66,6 +66,7 @@
   current_langcode: current_langcode|default('es'),
   language_prefix: lp,
   language_links: language_links|default({}),
+  mega_menu_columns: mega_menu_columns|default([]),
 } %}
 
 {# Mobile Menu Overlay (compartido por todos los layouts) #}
@@ -75,33 +76,17 @@
 <div class="mobile-menu-overlay" aria-hidden="true">
   <nav class="mobile-menu-nav" aria-label="{% trans %}Mobile navigation{% endtrans %}">
     {% if use_megamenu %}
-    {# Grupo: Para Profesionales #}
-    <details class="mobile-menu-group" open>
-      <summary class="mobile-menu-group__title">{% trans %}Para Profesionales{% endtrans %}</summary>
-      <ul class="mobile-menu-list">
-        <li><a href="{{ lp }}/empleabilidad">{% trans %}Empleabilidad{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/talento">{% trans %}Talento{% endtrans %}</a></li>
-      </ul>
-    </details>
-    {# Grupo: Para Empresas #}
-    <details class="mobile-menu-group">
-      <summary class="mobile-menu-group__title">{% trans %}Para Empresas{% endtrans %}</summary>
-      <ul class="mobile-menu-list">
-        <li><a href="{{ lp }}/emprendimiento">{% trans %}Emprendimiento{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/despachos">{% trans %}Despachos{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/comercioconecta">{% trans %}ComercioConecta{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/agroconecta">{% trans %}AgroConecta{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/serviciosconecta">{% trans %}ServiciosConecta{% endtrans %}</a></li>
-      </ul>
-    </details>
-    {# Grupo: Para Instituciones #}
-    <details class="mobile-menu-group">
-      <summary class="mobile-menu-group__title">{% trans %}Para Instituciones{% endtrans %}</summary>
-      <ul class="mobile-menu-list">
-        <li><a href="{{ lp }}/instituciones">{% trans %}Instituciones{% endtrans %}</a></li>
-        <li><a href="{{ lp }}/andalucia-ei">{% trans %}Andalucía +ei{% endtrans %}</a></li>
-      </ul>
-    </details>
+    {# Mega menu accordion — datos desde mega_menu_columns (PHP preprocess) #}
+    {% for column in mega_menu_columns|default([]) %}
+      <details class="mobile-menu-group"{{ loop.first ? ' open' : '' }}>
+        <summary class="mobile-menu-group__title">{{ column.title }}</summary>
+        <ul class="mobile-menu-list">
+          {% for item in column.items|default([]) %}
+            <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </details>
+    {% endfor %}
     {# Links directos #}
     <ul class="mobile-menu-list mobile-menu-list--direct">
       <li><a href="{{ lp }}/planes">{% trans %}Precios{% endtrans %}</a></li>

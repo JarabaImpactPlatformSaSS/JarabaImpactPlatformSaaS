@@ -139,7 +139,7 @@ class EmprendedorCanvasStep implements SetupWizardStepInterface {
       $storage = $this->entityTypeManager->getStorage('copilot_conversation');
       return (int) $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('uid', $this->currentUser->id())
+        ->condition('uid', (int) $this->currentUser->id())
         ->count()
         ->execute();
     }
