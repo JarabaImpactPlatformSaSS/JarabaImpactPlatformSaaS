@@ -256,6 +256,12 @@ if [ "$MODE" = "full" ]; then
   run_check "JS-CACHE-BUST-001" "JS library versions are current" \
     php "$SCRIPT_DIR/validate-js-cache-bust.php"
 
+  run_check "BIGPIPE-TIMING-001" "BigPipe + once() + drupalSettings timing risks" \
+    php "$SCRIPT_DIR/validate-bigpipe-timing.php"
+
+  run_check "IMAGE-WEIGHT-001" "Oversized images in theme" \
+    php "$SCRIPT_DIR/validate-image-weight.php"
+
   run_check "CSS-HIDDEN-OVERRIDE-001" "CSS display vs HTML hidden conflicts" \
     php "$SCRIPT_DIR/validate-css-hidden-override.php"
 
