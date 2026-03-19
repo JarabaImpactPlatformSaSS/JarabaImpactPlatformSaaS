@@ -4,9 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-19
-**Versión:** 177.0.0 (Fase B Quiz Completa: Wizard + Daily + MegaMenuBridge + Email drip + Post-registro linking + aprendizaje #198)
+**Versión:** 178.0.0 (Homepage 10/10 + 9 safeguards (49 total) + IA real + imágenes IA + PSR4 fix + aprendizaje #200)
 
-> **📋 FASE B QUIZ COMPLETA — v148 DIRECTRICES + v136 ARQUITECTURA + v177 INDICE + v101 FLUJO** (2026-03-19)
+> **📋 HOMEPAGE 10/10 + SAFEGUARDS — v150 DIRECTRICES + v137 ARQUITECTURA + v178 INDICE + v102 FLUJO** (2026-03-19)
+>
+> Aprendizaje #200: Library version en ecosistema_jaraba_theme.libraries.yml DEBE actualizarse cada vez que se modifica un JS. Drupal usa `?v=X.Y.Z` como cache key del browser — si no cambia, el browser sirve JS viejo indefinidamente. Solución: incrementar version o usar system.css_js_query_string. Safeguard JS-CACHE-BUST-001 detecta JS modificado después de la library. CSS `display: flex|grid` ANULA el atributo HTML `hidden` — usar `display: none` + `:not([hidden]) { display: flex }`. Safeguard CSS-HIDDEN-OVERRIDE-001 detecta 10+ conflictos. PSR-4: class name DEBE coincidir con filename — PHP autoloader no encuentra la clase. Safeguard PSR4-CLASSNAME-001 encontró 2 mismatches preexistentes en agro. Regla de oro #141: Todo JS en libraries.yml DEBE tener version incrementada tras cada cambio — el browser NO recarga sin cache bust.
 >
 > Aprendizaje #198: Drupal 11 renderer inspecciona recursivamente TODOS los arrays en variables de tema buscando render children (keys sin # prefix). Un array como `['field' => 'perfil', 'title' => 'string']` causa InvalidArgumentException porque `field` es string, no array. Afecta a #theme variables, $variables en preprocess, y $template->render(). Solución: client-side rendering via drupalSettings JSON + Vanilla JS (mismo patrón que demo system). Para datos complejos interactivos, NUNCA pasar arrays con keys arbitrarias como variables Drupal — siempre JSON en drupalSettings. Fase B completada: CompletarQuizStep + ExplorarQuizAction globales, MegaMenuBridgeService (SiteMenuItem → mega_menu_columns con fallback), post-registro quiz_uuid linking via TenantOnboardingService paso 9, email drip 3 fases (24h/72h/7d) con deduplicación _drip_sent. Fix: jaraba_page_builder_preprocess_html() declarada 2 veces → fatal error PHP 8.4 → fusionadas. Regla de oro #139: verificar duplicados de hooks en .module antes de deploy.
 >
