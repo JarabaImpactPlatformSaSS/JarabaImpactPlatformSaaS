@@ -53,6 +53,18 @@
     {% elseif profile.id is defined and (profile.id == 'winery' or profile.id == 'producer' or profile.id == 'cheese') %}
       <p>&ldquo;{% trans %}La trazabilidad QR y la tienda online duplicaron nuestras ventas directas en una campaña.{% endtrans %}&rdquo;</p>
       <cite>— {% trans %}Cooperativa Sierra de Jaén{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'academy' %}
+      <p>&ldquo;{% trans %}Monté mi academia online en una tarde. Los certificados automáticos y la pasarela de pago integrada me ahorraron meses.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Elena V., Formadora en Liderazgo, Barcelona{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'buyer' %}
+      <p>&ldquo;{% trans %}Encuentro proveedores verificados con un filtro. Las reseñas reales me dan confianza para comprar al por mayor.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Restaurante El Olivo, Córdoba{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'socialimpact' %}
+      <p>&ldquo;{% trans %}Los informes de impacto automatizados nos permitieron justificar la subvención europea en la mitad de tiempo.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Fundación Puente Sur, Sevilla{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'creator' %}
+      <p>&ldquo;{% trans %}El co-escritor IA y el SEO automático triplicaron el tráfico de mi blog en 2 meses.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Raúl M., Content Strategist, Valencia{% endtrans %}</cite>
     {% else %}
       <p>&ldquo;{% trans %}Pasé de gestionar todo con hojas de cálculo a tener un panel profesional en 30 minutos. La IA es otro nivel.{% endtrans %}&rdquo;</p>
       <cite>— {% trans %}Ana L., Emprendedora, Córdoba{% endtrans %}</cite>
