@@ -3363,3 +3363,170 @@ function ecosistema_jaraba_core_update_9040(): string {
     return 'Error installing QuizResult: ' . $e->getMessage();
   }
 }
+
+/**
+ * Assign baseline permissions to tenant-member group role.
+ *
+ * El rol tenant-member tenía permissions: {} (vacío), causando que
+ * TODOS los tenant users no pudieran acceder al Page Builder (/my-pages → 403),
+ * Content Hub, ni ver las cards de creación de contenido en su perfil.
+ *
+ * Este hook asigna los permisos básicos que todo miembro de tenant necesita
+ * para usar las funcionalidades core del SaaS.
+ *
+ * Las funcionalidades premium (plantillas premium, A/B testing, admin)
+ * se gestionan via PlanValidator + FeatureAccessService, no via permisos.
+ */
+function ecosistema_jaraba_core_update_9041(): string {
+  try {
+    $roleStorage = \Drupal::entityTypeManager()->getStorage('group_role');
+
+    /** @var \Drupal\group\Entity\GroupRoleInterface|null $role */
+    $role = $roleStorage->load('tenant-member');
+    if ($role === NULL) {
+      return 'Group role tenant-member not found — skipping.';
+    }
+
+    // Permisos básicos para TODO tenant member.
+    $permissions = [
+      // Page Builder — acceso y CRUD propio.
+      'access page builder',
+      'view page templates',
+      'create page content',
+      'view own page content',
+      'view any page content',
+      'edit own page content',
+      'delete own page content',
+      'publish own page content',
+      'edit page builder content',
+      'view page content revisions',
+      'view page experiment',
+
+      // Content Hub — acceso y CRUD propio.
+      'access content article overview',
+      'create content article',
+      'edit own content article',
+      'delete own content article',
+      'publish content article',
+      'view unpublished content article',
+    ];
+
+    $grantedCount = 0;
+    foreach ($permissions as $permission) {
+      if (!$role->hasPermission($permission)) {
+        $role->grantPermission($permission);
+        $grantedCount++;
+      }
+    }
+
+    $role->save();
+
+    return "Granted $grantedCount permissions to tenant-member role (" . count($permissions) . " total checked).";
+  }
+  catch (\Throwable $e) {
+    return 'Error updating tenant-member permissions: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Create tenant_user Drupal role and assign baseline permissions.
+ *
+ * Group module permissions (tenant-member) son permisos de GRUPO, no de Drupal.
+ * Las rutas con _permission: 'X' verifican permisos GLOBALES de Drupal.
+ * Este hook crea un rol Drupal 'tenant_user' con permisos basicos
+ * y lo asigna a todos los usuarios que son miembros de al menos un grupo.
+ *
+ * El control fino de acceso (tenant isolation, plan limits, ownership)
+ * se gestiona via AccessControlHandler + PlanValidator, no via permisos.
+ */
+function ecosistema_jaraba_core_update_9042(): string {
+  try {
+    $roleStorage = \Drupal::entityTypeManager()->getStorage('user_role');
+    $messages = [];
+
+    // 1. Crear rol si no existe.
+    $role = $roleStorage->load('tenant_user');
+    if ($role === NULL) {
+      $role = $roleStorage->create([
+        'id' => 'tenant_user',
+        'label' => 'Usuario de Tenant',
+        'weight' => 5,
+      ]);
+      $role->save();
+      $messages[] = 'Created tenant_user role';
+    }
+
+    // 2. Asignar permisos basicos (las rutas verifican estos).
+    $permissions = [
+      // Page Builder.
+      'access page builder',
+      'view page templates',
+      'create page content',
+      'view own page content',
+      'view any page content',
+      'edit own page content',
+      'delete own page content',
+      'publish own page content',
+      'edit page builder content',
+      'view page content revisions',
+      'view page experiment',
+
+      // Content Hub.
+      'access content article overview',
+      'create content article',
+      'edit own content article',
+      'delete own content article',
+      'publish content article',
+      'view unpublished content article',
+    ];
+
+    $grantedCount = 0;
+    foreach ($permissions as $permission) {
+      if (!$role->hasPermission($permission)) {
+        $role->grantPermission($permission);
+        $grantedCount++;
+      }
+    }
+    $role->save();
+    $messages[] = "Granted $grantedCount permissions";
+
+    // 3. Asignar rol a usuarios existentes que son miembros de grupo.
+    $assignedCount = 0;
+    if (\Drupal::moduleHandler()->moduleExists('group')) {
+      $userStorage = \Drupal::entityTypeManager()->getStorage('user');
+      $membershipStorage = \Drupal::entityTypeManager()->getStorage('group_relationship');
+
+      // Buscar todos los group_relationship de tipo membership.
+      $membershipIds = $membershipStorage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('type', '%group_membership', 'LIKE')
+        ->execute();
+
+      $uids = [];
+      if (!empty($membershipIds)) {
+        $memberships = $membershipStorage->loadMultiple($membershipIds);
+        foreach ($memberships as $membership) {
+          $uid = $membership->getEntity()?->id();
+          if ($uid !== NULL && $uid > 0) {
+            $uids[(int) $uid] = TRUE;
+          }
+        }
+      }
+
+      foreach (array_keys($uids) as $uid) {
+        $user = $userStorage->load($uid);
+        if ($user !== NULL && !$user->hasRole('tenant_user')) {
+          $user->addRole('tenant_user');
+          $user->save();
+          $assignedCount++;
+        }
+      }
+    }
+    $messages[] = "Assigned role to $assignedCount users";
+
+    return implode('. ', $messages) . '.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+}

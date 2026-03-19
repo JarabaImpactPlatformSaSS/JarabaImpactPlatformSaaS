@@ -11,4 +11,21 @@ admin: false
 scope: individual
 global_role: null
 group_type: tenant
-permissions: {  }
+permissions:
+  - 'access page builder'
+  - 'view page templates'
+  - 'create page content'
+  - 'view own page content'
+  - 'view any page content'
+  - 'edit own page content'
+  - 'delete own page content'
+  - 'publish own page content'
+  - 'edit page builder content'
+  - 'view page content revisions'
+  - 'view page experiment'
+  - 'access content article overview'
+  - 'create content article'
+  - 'edit own content article'
+  - 'delete own content article'
+  - 'publish content article'
+  - 'view unpublished content article'
