@@ -230,12 +230,18 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Página de cambio de plan (upgrade/downgrade)
     // Ruta: /tenant/change-plan
-    // Muestra planes disponibles para que el tenant pueda cambiar
+    // Reutiliza diseño glassmorphism de /planes con contexto autenticado.
+    // Tiers vía MetaSitePricingService (cascada: specific → default → fallback).
     'ecosistema_jaraba_change_plan' => [
       'variables' => [
-        'tenant' => NULL,
-        'current_plan' => NULL,
-        'plans' => [],
+        'tiers' => [],
+        'current_tier_key' => '',
+        'vertical_key' => '',
+        'vertical_label' => '',
+        'page_title' => '',
+        'page_subtitle' => '',
+        'guarantee_text' => '',
+        'faq_items' => [],
         'back_url' => NULL,
       ],
       'template' => 'ecosistema-jaraba-change-plan',
@@ -3975,6 +3981,24 @@ function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterfac
   _ecosistema_jaraba_core_review_notification_trigger($entity, 'created');
   _ecosistema_jaraba_core_review_gamification_trigger($entity, 'submitted');
   _ecosistema_jaraba_core_review_webhook_trigger($entity, 'review.created');
+
+  // TENANT-USER-ROLE-001: Auto-asignar rol tenant_user al unirse a un grupo.
+  // Las rutas con _permission: verifican permisos Drupal globales, no de Group.
+  // Sin este rol, el usuario tiene 403 en /my-pages, /content-hub, /page-builder
+  // y las cards de acceso rapido desaparecen del perfil silenciosamente.
+  if ($entity->getEntityTypeId() === 'group_relationship'
+      && str_contains($entity->bundle(), 'group_membership')) {
+    try {
+      $user = $entity->getEntity();
+      if ($user instanceof \Drupal\user\UserInterface && !$user->hasRole('tenant_user')) {
+        $user->addRole('tenant_user');
+        $user->save();
+      }
+    }
+    catch (\Throwable) {
+      // Graceful degradation: el usuario puede no tener el rol pero no rompe nada.
+    }
+  }
 }
 
 /**

@@ -308,6 +308,9 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-library-attachments.php"
 
   warn_check "TWIG-INCLUDE-ONLY-001" "Twig includes of partials use only keyword" \
+
+  run_check "TENANT-USER-ROLE-001" "Group members have tenant_user Drupal role" \
+    php "$SCRIPT_DIR/validate-tenant-user-role.php"
     php "$SCRIPT_DIR/validate-twig-include-only.php"
 
   # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
