@@ -280,3 +280,95 @@
     opacity: 0.5;
     transition: all 0.2s ease;
 }
+
+// ============================================
+// S5-01: Quota Indicator + Upgrade CTA
+// CSS-VAR-ALL-COLORS-001: Solo var(--ej-*) con fallback
+// ============================================
+
+.pb-dashboard__quota {
+    margin: $ej-spacing-lg 0;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-radius-lg, $ej-radius-lg);
+    border: 1px solid var(--ej-border-light, #e2e8f0);
+}
+
+.pb-dashboard__quota-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--ej-bg-muted, #f1f5f9);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: $ej-spacing-sm;
+}
+
+.pb-dashboard__quota-fill {
+    height: 100%;
+    width: var(--quota-pct, 0%);
+    background: var(--ej-color-impulse, $ej-color-impulse);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+
+    // Indicador visual de urgencia al acercarse al limite.
+    // Nota: el cambio de color se maneja desde Twig via clases CSS
+    // ya que el inline style con var() no es seleccionable via SCSS.
+}
+
+.pb-dashboard__quota-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $ej-spacing-sm;
+}
+
+.pb-dashboard__quota-text {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-family: var(--ej-font-body, $ej-font-body);
+}
+
+// ============================================
+// S3-04: Cross-link Content Hub <-> Page Builder
+// ============================================
+
+.pb-dashboard__crosslink {
+    margin-top: $ej-spacing-lg;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-radius: var(--ej-radius-lg, $ej-radius-lg);
+    border: 1px solid var(--ej-border-light, #e2e8f0);
+    transition: border-color 0.2s ease;
+
+    &:hover {
+        border-color: var(--ej-color-corporate, $ej-color-corporate);
+    }
+}
+
+.pb-dashboard__crosslink-content {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    flex-wrap: wrap;
+
+    > div {
+        flex: 1;
+        min-width: 200px;
+    }
+}
+
+.pb-dashboard__crosslink-title {
+    margin: 0 0 $ej-spacing-xs;
+    font-family: var(--ej-font-headings, $ej-font-headings);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+}
+
+.pb-dashboard__crosslink-desc {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    line-height: 1.5;
+}

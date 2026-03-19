@@ -202,3 +202,77 @@ services:
       - '@?jaraba_site_builder.meta_site_resolver'
     tags:
       - { name: path_processor_inbound, priority: 250 }
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SETUP WIZARD STEPS — SETUP-WIZARD-DAILY-001
+  # 4 pasos de onboarding para Page Builder (tenant-scoped).
+  # Recolectados via SetupWizardCompilerPass → SetupWizardRegistry.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  jaraba_page_builder.setup_wizard.crear_primera_pagina:
+    class: Drupal\jaraba_page_builder\SetupWizard\CrearPrimeraPaginaStep
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_page_builder.setup_wizard.elegir_plantilla:
+    class: Drupal\jaraba_page_builder\SetupWizard\ElegirPlantillaStep
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_page_builder.setup_wizard.personalizar_contenido:
+    class: Drupal\jaraba_page_builder\SetupWizard\PersonalizarContenidoStep
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_page_builder.setup_wizard.publicar_pagina:
+    class: Drupal\jaraba_page_builder\SetupWizard\PublicarPaginaStep
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DAILY ACTIONS — SETUP-WIZARD-DAILY-001
+  # 4 acciones recurrentes para el dashboard de Page Builder (tenant-scoped).
+  # Recolectadas via DailyActionsCompilerPass → DailyActionsRegistry.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  jaraba_page_builder.daily_action.nueva_pagina:
+    class: Drupal\jaraba_page_builder\DailyActions\NuevaPaginaAction
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@?jaraba_page_builder.quota_manager'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_page_builder.daily_action.editar_principal:
+    class: Drupal\jaraba_page_builder\DailyActions\EditarPaginaPrincipalAction
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_page_builder.daily_action.explorar_plantillas:
+    class: Drupal\jaraba_page_builder\DailyActions\ExplorarPlantillasAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_page_builder.daily_action.rendimiento:
+    class: Drupal\jaraba_page_builder\DailyActions\RendimientoPaginasAction
+    arguments:
+      - '@?entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

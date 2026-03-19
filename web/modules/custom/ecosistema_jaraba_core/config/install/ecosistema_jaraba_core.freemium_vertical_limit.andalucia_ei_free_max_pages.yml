@@ -1,0 +1,11 @@
+id: andalucia_ei_free_max_pages
+label: 'Andalucia +ei Free: Paginas web'
+vertical: andalucia_ei
+plan: free
+feature_key: max_pages
+limit_value: 3
+description: '3 paginas web en plan gratuito Andalucia +ei.'
+upgrade_message: 'Has usado @current de @limit paginas. Mejora tu plan para crear paginas ilimitadas y desbloquear bloques premium.'
+expected_conversion: 0.18
+weight: 606
+status: true

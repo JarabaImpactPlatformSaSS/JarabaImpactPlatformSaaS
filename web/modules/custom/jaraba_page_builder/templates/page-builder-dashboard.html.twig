@@ -12,10 +12,29 @@
  * Variables disponibles:
  * - stats: Array con estadísticas (pages, templates, experiments).
  * - quick_actions: Array de acciones rápidas.
+ * - setup_wizard: Array con datos del wizard (SETUP-WIZARD-DAILY-001 L4).
+ * - daily_actions: Array con acciones diarias (SETUP-WIZARD-DAILY-001 L4).
  */
 #}
 
 <div class="pb-dashboard">
+  {# ====== SETUP WIZARD — SETUP-WIZARD-DAILY-001 L4 ====== #}
+  {# TWIG-INCLUDE-ONLY-001: keyword only para aislar contexto #}
+  {% if setup_wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: setup_wizard,
+      wizard_title: 'Configura tu Page Builder'|t,
+    } only %}
+  {% endif %}
+
+  {# ====== DAILY ACTIONS — SETUP-WIZARD-DAILY-001 L4 ====== #}
+  {% if daily_actions is not empty %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones rapidas'|t,
+    } only %}
+  {% endif %}
+
   {# ====== HERO HEADER CON PARTÍCULAS ====== #}
   <header class="pb-dashboard__hero">
     <canvas id="page-builder-particles" class="pb-dashboard__particles" aria-hidden="true"></canvas>
@@ -27,6 +46,29 @@
       <p class="pb-dashboard__subtitle">{% trans %}Crea páginas impactantes sin código, optimiza con A/B testing y organiza tu sitio{% endtrans %}</p>
     </div>
   </header>
+
+  {# ====== CUOTA + UPGRADE CTA — S5-01 ====== #}
+  {# FUNNEL-COMPLETENESS-001: data-track-cta + data-track-position en CTAs #}
+  {% if quota.can_upgrade is defined and quota.can_upgrade and quota.limit > 0 %}
+    <section class="pb-dashboard__quota" aria-label="{% trans %}Uso de tu plan{% endtrans %}">
+      <div class="pb-dashboard__quota-bar">
+        <div class="pb-dashboard__quota-fill" style="--quota-pct: {{ quota.percentage }}%"></div>
+      </div>
+      <div class="pb-dashboard__quota-info">
+        <span class="pb-dashboard__quota-text">
+          {% trans %}{{ quota.current }} de {{ quota.limit }} paginas usadas{% endtrans %}
+        </span>
+        {% if quota.percentage >= 80 and quota.upgrade_route %}
+          <a href="{{ quota.upgrade_route }}"
+             class="btn btn--accent btn--sm"
+             data-track-cta="page_builder_upgrade"
+             data-track-position="dashboard_quota">
+            {% trans %}Mejorar plan{% endtrans %}
+          </a>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
 
   {# ====== ESTADÍSTICAS KPI ====== #}
   <section class="pb-dashboard__stats">
@@ -72,7 +114,8 @@
     <div class="pb-dashboard__actions-grid">
       
       {# PLANTILLAS (índice 0) #}
-      <a href="{{ quick_actions[0].url }}" class="pb-card pb-card--impulse">
+      <a href="{{ quick_actions[0].url }}" class="pb-card pb-card--impulse"
+         data-track-cta="page_builder_template_use" data-track-position="dashboard_actions">
         <div class="pb-card__glow"></div>
         <div class="pb-card__icon">
           {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '40px', color: 'impulse' }) }}
@@ -87,7 +130,8 @@
       </a>
 
       {# MIS PÁGINAS (índice 1) #}
-      <a href="{{ quick_actions[1].url }}" class="pb-card pb-card--innovation">
+      <a href="{{ quick_actions[1].url }}" class="pb-card pb-card--innovation"
+         data-track-cta="page_builder_my_pages" data-track-position="dashboard_actions">
         <div class="pb-card__glow"></div>
         <div class="pb-card__icon">
           {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '40px', color: 'innovation' }) }}
@@ -102,7 +146,8 @@
       </a>
 
       {# EXPERIMENTOS A/B (índice 2) #}
-      <a href="{{ quick_actions[2].url }}" class="pb-card pb-card--corporate">
+      <a href="{{ quick_actions[2].url }}" class="pb-card pb-card--corporate"
+         data-track-cta="page_builder_experiments" data-track-position="dashboard_actions">
         <div class="pb-card__glow"></div>
         <div class="pb-card__icon">
           {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', size: '40px', color: 'corporate' }) }}
@@ -117,7 +162,8 @@
       </a>
 
       {# ANALYTICS DE PÁGINAS (índice 3) #}
-      <a href="{{ quick_actions[3].url }}" class="pb-card pb-card--success">
+      <a href="{{ quick_actions[3].url }}" class="pb-card pb-card--success"
+         data-track-cta="page_builder_analytics" data-track-position="dashboard_actions">
         <div class="pb-card__glow"></div>
         <div class="pb-card__icon">
           {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', size: '40px', color: 'success' }) }}
@@ -171,5 +217,23 @@
 
     </div>
   </section>
+
+  {# ====== CROSS-LINK CONTENT HUB — S3-04 ====== #}
+  {# Descubrimiento bidireccional: PB → CH #}
+  {% if content_hub_available is defined and content_hub_available %}
+    <section class="pb-dashboard__crosslink" aria-label="{% trans %}Content Hub{% endtrans %}">
+      <div class="pb-dashboard__crosslink-content">
+        {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
+        <div>
+          <h3 class="pb-dashboard__crosslink-title">{% trans %}Blog y articulos{% endtrans %}</h3>
+          <p class="pb-dashboard__crosslink-desc">{% trans %}Publica contenido editorial optimizado para SEO con el Content Hub.{% endtrans %}</p>
+        </div>
+        <a href="{{ path('jaraba_content_hub.dashboard.frontend') }}" class="btn btn--outline btn--sm"
+           data-track-cta="page_builder_to_content_hub" data-track-position="dashboard_crosslink">
+          {% trans %}Ir al Content Hub{% endtrans %}
+        </a>
+      </div>
+    </section>
+  {% endif %}
 </div>
 

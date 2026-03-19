@@ -1,0 +1,11 @@
+id: jaraba_content_hub_free_max_pages
+label: 'Content Hub Free: Paginas web'
+vertical: jaraba_content_hub
+plan: free
+feature_key: max_pages
+limit_value: 3
+description: '3 paginas web en plan gratuito Content Hub.'
+upgrade_message: 'Has usado @current de @limit paginas. Mejora tu plan para crear paginas ilimitadas y desbloquear bloques premium.'
+expected_conversion: 0.18
+weight: 615
+status: true

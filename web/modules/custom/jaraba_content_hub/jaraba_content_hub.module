@@ -591,6 +591,14 @@ function jaraba_content_hub_preprocess_page(array &$variables): void {
     }
     
     $variables['logged_in'] = \Drupal::currentUser()->isAuthenticated();
+
+    // S3-04: Cross-link al Page Builder (graceful degradation si no instalado).
+    try {
+      $variables['page_builder_available'] = \Drupal::moduleHandler()->moduleExists('jaraba_page_builder');
+    }
+    catch (\Throwable) {
+      $variables['page_builder_available'] = FALSE;
+    }
   }
 }
 

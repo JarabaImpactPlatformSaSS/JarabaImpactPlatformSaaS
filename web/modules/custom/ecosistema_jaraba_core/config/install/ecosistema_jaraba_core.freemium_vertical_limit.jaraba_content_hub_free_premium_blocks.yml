@@ -1,0 +1,11 @@
+id: jaraba_content_hub_free_premium_blocks
+label: 'Content Hub Free: Bloques premium'
+vertical: jaraba_content_hub
+plan: free
+feature_key: premium_blocks
+limit_value: 0
+description: 'Bloques premium no disponibles en plan gratuito Content Hub.'
+upgrade_message: 'Los bloques premium incluyen efectos glassmorphism, 3D y animaciones profesionales. Disponibles desde el plan Profesional.'
+expected_conversion: 0.22
+weight: 617
+status: true

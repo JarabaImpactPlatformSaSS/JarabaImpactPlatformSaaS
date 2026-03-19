@@ -1,0 +1,11 @@
+id: comercioconecta_free_premium_blocks
+label: 'ComercioConecta Free: Bloques premium'
+vertical: comercioconecta
+plan: free
+feature_key: premium_blocks
+limit_value: 0
+description: 'Bloques premium no disponibles en plan gratuito ComercioConecta.'
+upgrade_message: 'Los bloques premium incluyen efectos glassmorphism, 3D y animaciones profesionales. Disponibles desde el plan Profesional.'
+expected_conversion: 0.22
+weight: 620
+status: true

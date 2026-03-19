@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_max_pages
+label: 'Andalucia +ei Starter: Paginas web'
+vertical: andalucia_ei
+plan: starter
+feature_key: max_pages
+limit_value: 5
+description: '5 paginas web en plan Starter Andalucia +ei.'
+upgrade_message: 'Tienes @current de @limit paginas. Con el plan Profesional tendras 25 paginas y bloques premium.'
+expected_conversion: 0.12
+weight: 607
+status: true

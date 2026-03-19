@@ -1,0 +1,11 @@
+id: agroconecta_starter_max_pages
+label: 'AgroConecta Starter: Paginas web'
+vertical: agroconecta
+plan: starter
+feature_key: max_pages
+limit_value: 5
+description: '5 paginas web en plan Starter AgroConecta.'
+upgrade_message: 'Tienes @current de @limit paginas. Con el plan Profesional tendras 25 paginas y bloques premium.'
+expected_conversion: 0.12
+weight: 622
+status: true

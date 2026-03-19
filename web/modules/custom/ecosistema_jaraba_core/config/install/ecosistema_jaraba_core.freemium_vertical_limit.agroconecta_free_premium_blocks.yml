@@ -1,0 +1,11 @@
+id: agroconecta_free_premium_blocks
+label: 'AgroConecta Free: Bloques premium'
+vertical: agroconecta
+plan: free
+feature_key: premium_blocks
+limit_value: 0
+description: 'Bloques premium no disponibles en plan gratuito AgroConecta.'
+upgrade_message: 'Los bloques premium incluyen efectos glassmorphism, 3D y animaciones profesionales. Disponibles desde el plan Profesional.'
+expected_conversion: 0.22
+weight: 623
+status: true

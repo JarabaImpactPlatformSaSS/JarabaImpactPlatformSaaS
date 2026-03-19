@@ -6,6 +6,7 @@ namespace Drupal\jaraba_page_builder\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controlador para el dashboard principal del Page Builder.
@@ -16,9 +17,65 @@ use Drupal\Core\Url;
  * - Mis Páginas: Ver y gestionar páginas creadas
  * - Experimentos A/B: Gestionar tests de conversión
  * - Estructura: Gestionar árbol de navegación (Site Builder)
+ *
+ * SETUP-WIZARD-DAILY-001: Integra Setup Wizard y Daily Actions (L1-L2).
+ * PIPELINE-E2E-001: L1=Service injection, L2=Render array binding.
  */
 class PageBuilderDashboardController extends ControllerBase
 {
+
+    /**
+     * Setup Wizard registry (optional cross-module dependency).
+     *
+     * @var mixed|null
+     */
+    protected $wizardRegistry;
+
+    /**
+     * Daily Actions registry (optional cross-module dependency).
+     *
+     * @var mixed|null
+     */
+    protected $dailyActionsRegistry;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static {
+        $instance = parent::create($container);
+        // OPTIONAL-CROSSMODULE-001: Graceful degradation si modulos no instalados.
+        try {
+            $instance->wizardRegistry = $container->get('ecosistema_jaraba_core.setup_wizard_registry');
+        }
+        catch (\Throwable) {
+            // Module not installed.
+        }
+        try {
+            $instance->dailyActionsRegistry = $container->get('ecosistema_jaraba_core.daily_actions_registry');
+        }
+        catch (\Throwable) {
+            // Module not installed.
+        }
+        return $instance;
+    }
+
+    /**
+     * Resuelve el contextId para wizard/daily actions (tenant-scoped).
+     */
+    protected function resolveContextId(): int {
+        try {
+            /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+            $tenantId = $tenantContext->getCurrentTenantId();
+            if ($tenantId !== NULL && $tenantId > 0) {
+                return $tenantId;
+            }
+        }
+        catch (\Throwable) {
+            // Service not available.
+        }
+        return $this->currentUser()->id();
+    }
 
     /**
      * Renderiza el dashboard principal del Page Builder.
@@ -30,6 +87,34 @@ class PageBuilderDashboardController extends ControllerBase
     {
         // Estadísticas básicas.
         $stats = $this->getStats();
+
+        // SETUP-WIZARD-DAILY-001: L2 — Resolver wizard y daily actions.
+        $contextId = $this->resolveContextId();
+        $setupWizard = NULL;
+        $dailyActions = [];
+
+        if ($this->wizardRegistry !== NULL) {
+            try {
+                $hasWizard = method_exists($this->wizardRegistry, 'hasWizard')
+                    ? $this->wizardRegistry->hasWizard('page_builder')
+                    : TRUE;
+                if ($hasWizard) {
+                    $setupWizard = $this->wizardRegistry->getStepsForWizard('page_builder', $contextId);
+                }
+            }
+            catch (\Throwable) {
+                // Graceful degradation.
+            }
+        }
+
+        if ($this->dailyActionsRegistry !== NULL) {
+            try {
+                $dailyActions = $this->dailyActionsRegistry->getActionsForDashboard('page_builder', $contextId);
+            }
+            catch (\Throwable) {
+                $dailyActions = [];
+            }
+        }
 
         // Acciones rápidas del dashboard.
         $quick_actions = [
@@ -81,13 +166,30 @@ class PageBuilderDashboardController extends ControllerBase
             ],
         ];
 
+        // S5-01: Quota info para upgrade CTA contextual.
+        $quota = $this->getQuotaInfo();
+
+        // S3-04: Cross-link al Content Hub (graceful degradation).
+        $contentHubAvailable = FALSE;
+        try {
+            $contentHubAvailable = \Drupal::moduleHandler()->moduleExists('jaraba_content_hub');
+        }
+        catch (\Throwable) {
+            // Graceful degradation.
+        }
+
         return [
             '#theme' => 'page_builder_dashboard',
             '#stats' => $stats,
             '#quick_actions' => $quick_actions,
+            '#setup_wizard' => $setupWizard,
+            '#daily_actions' => $dailyActions,
+            '#quota' => $quota,
+            '#content_hub_available' => $contentHubAvailable,
             '#attached' => [
                 'library' => [
                     'jaraba_page_builder/page-builder-dashboard',
+                    'ecosistema_jaraba_theme/bundle-page-builder-dashboard',
                     'ecosistema_jaraba_theme/slide-panel',
                 ],
             ],
@@ -144,6 +246,80 @@ class PageBuilderDashboardController extends ControllerBase
                 'icon' => 'chart-line',
             ],
         ];
+    }
+
+    /**
+     * Obtiene informacion de cuota para el upgrade CTA contextual.
+     *
+     * S5-01: Muestra indicador de uso y CTA de upgrade cuando
+     * el tenant se acerca al limite de paginas del plan.
+     *
+     * @return array{current: int, limit: int, percentage: int, plan_label: \Drupal\Core\StringTranslation\TranslatableMarkup, can_upgrade: bool, upgrade_route: string|null}
+     *   Datos de cuota con current, limit, percentage, can_upgrade.
+     */
+    protected function getQuotaInfo(): array {
+        $quota = [
+            'current' => 0,
+            'limit' => 5,
+            'percentage' => 0,
+            'plan_label' => $this->t('Free'),
+            'can_upgrade' => FALSE,
+            'upgrade_route' => NULL,
+        ];
+
+        if (!\Drupal::hasService('jaraba_page_builder.quota_manager')) {
+            return $quota;
+        }
+
+        try {
+            $quotaManager = \Drupal::service('jaraba_page_builder.quota_manager');
+            $check = $quotaManager->checkCanCreatePage();
+
+            // Extraer datos de la respuesta del QuotaManager.
+            $remaining = $check['remaining'] ?? NULL;
+            $limit = NULL;
+
+            // El remaining + current = limit.
+            $page_storage = $this->entityTypeManager()->getStorage('page_content');
+            /** @var int $current */
+            $current = $page_storage->getQuery()
+                ->accessCheck(TRUE)
+                ->count()
+                ->execute();
+
+            if ($remaining !== NULL && $remaining >= 0) {
+                $limit = $current + $remaining;
+            }
+
+            $quota['current'] = $current;
+            $quota['limit'] = $limit ?? 5;
+            $quota['percentage'] = $quota['limit'] > 0
+                ? min(100, (int) round(($current / $quota['limit']) * 100))
+                : 0;
+
+            // Unlimited plan (-1) = no upgrade needed.
+            if ($limit === -1 || $limit === NULL) {
+                $quota['limit'] = -1;
+                $quota['percentage'] = 0;
+                $quota['can_upgrade'] = FALSE;
+            } else {
+                $quota['can_upgrade'] = TRUE;
+            }
+
+            // Resolver ruta de upgrade.
+            try {
+                $quota['upgrade_route'] = Url::fromRoute('jaraba_billing.plan_upgrade')
+                    ->toString();
+            }
+            catch (\Throwable) {
+                $quota['upgrade_route'] = '/planes';
+            }
+        }
+        catch (\Throwable) {
+            // Graceful degradation.
+        }
+
+        return $quota;
     }
 
 }

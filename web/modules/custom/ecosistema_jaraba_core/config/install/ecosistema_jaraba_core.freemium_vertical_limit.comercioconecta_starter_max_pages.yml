@@ -1,0 +1,11 @@
+id: comercioconecta_starter_max_pages
+label: 'ComercioConecta Starter: Paginas web'
+vertical: comercioconecta
+plan: starter
+feature_key: max_pages
+limit_value: 5
+description: '5 paginas web en plan Starter ComercioConecta.'
+upgrade_message: 'Tienes @current de @limit paginas. Con el plan Profesional tendras 25 paginas y bloques premium.'
+expected_conversion: 0.12
+weight: 619
+status: true

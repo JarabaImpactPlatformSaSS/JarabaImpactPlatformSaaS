@@ -1,0 +1,11 @@
+id: empleabilidad_starter_max_pages
+label: 'Empleabilidad Starter: Paginas web'
+vertical: empleabilidad
+plan: starter
+feature_key: max_pages
+limit_value: 5
+description: '5 paginas web en plan Starter Empleabilidad.'
+upgrade_message: 'Tienes @current de @limit paginas. Con el plan Profesional tendras 25 paginas y bloques premium.'
+expected_conversion: 0.12
+weight: 610
+status: true

@@ -1,0 +1,11 @@
+id: jarabalex_free_premium_blocks
+label: 'JarabaLex Free: Bloques premium'
+vertical: jarabalex
+plan: free
+feature_key: premium_blocks
+limit_value: 0
+description: 'Bloques premium no disponibles en plan gratuito JarabaLex.'
+upgrade_message: 'Los bloques premium incluyen efectos glassmorphism, 3D y animaciones profesionales. Disponibles desde el plan Profesional.'
+expected_conversion: 0.22
+weight: 605
+status: true

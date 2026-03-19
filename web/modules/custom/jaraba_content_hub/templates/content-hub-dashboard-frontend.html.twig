@@ -271,6 +271,25 @@
     </aside>
   </div>
 
+  {# S3-04: Cross-link al Page Builder — descubrimiento bidireccional #}
+  {% if page_builder_available is defined and page_builder_available %}
+    <section class="dashboard-panel dashboard-panel--crosslink" aria-label="{% trans %}Page Builder{% endtrans %}">
+      <header class="dashboard-panel__header">
+        <h2 class="dashboard-panel__title">
+          {{ jaraba_icon('ui', 'layout-template', { variant: 'duotone', size: '24px', color: 'verde-innovacion' }) }}
+          {% trans %}Paginas web{% endtrans %}
+        </h2>
+      </header>
+      <div class="dashboard-panel__content">
+        <p>{% trans %}Crea landing pages profesionales con el editor visual drag-and-drop.{% endtrans %}</p>
+        <a href="{{ path('jaraba_page_builder.dashboard') }}" class="btn btn--outline btn--sm"
+           data-track-cta="content_hub_to_page_builder" data-track-position="dashboard_crosslink">
+          {% trans %}Ir al Page Builder{% endtrans %}
+        </a>
+      </div>
+    </section>
+  {% endif %}
+
   {# Performance Summary #}
   <section class="dashboard-panel dashboard-panel--performance">
     <header class="dashboard-panel__header">

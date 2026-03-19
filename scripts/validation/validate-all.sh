@@ -216,6 +216,39 @@ if [ "$MODE" = "full" ]; then
   run_check "BTN-CONTRAST-DARK-001" "Button contrast on dark backgrounds" \
     php "$SCRIPT_DIR/validate-btn-contrast-dark.php"
 
+  run_check "TWIG-LANGPREFIX-001" "Twig hardcoded URLs without language prefix" \
+    php "$SCRIPT_DIR/validate-twig-langprefix.php"
+
+  run_check "CTA-LOGGED-IN-001" "Conversion CTAs with logged_in conditional" \
+    php "$SCRIPT_DIR/validate-cta-logged-in.php"
+
+  run_check "JS-TWIG-SELECTOR-001" "JS↔Twig selector coherence" \
+    php "$SCRIPT_DIR/validate-js-twig-selectors.php"
+
+  run_check "ICON-INTEGRITY-001" "Icon references resolve to existing SVGs" \
+    php "$SCRIPT_DIR/validate-icon-references.php"
+
+  run_check "QUIZ-FUNNEL-001" "Quiz vertical funnel integrity" \
+    php "$SCRIPT_DIR/validate-quiz-funnel.php"
+
+  run_check "CTA-DESTINATION-001" "CTA destinations point to existing routes" \
+    php "$SCRIPT_DIR/validate-cta-destinations.php"
+
+  run_check "FUNNEL-COMPLETENESS-001" "Conversion CTAs have tracking attributes" \
+    php "$SCRIPT_DIR/validate-funnel-tracking.php"
+
+  run_check "VERTICAL-COVERAGE-001" "All 9 commercial verticals in discovery points" \
+    php "$SCRIPT_DIR/validate-vertical-coverage.php"
+
+  run_check "PB-ONBOARDING-001" "Page Builder onboarding integrity (wizard+daily+L1-L4)" \
+    php "$SCRIPT_DIR/validate-page-builder-onboarding.php"
+
+  run_check "CONTENT-E2E-001" "Content pipeline E2E (both PB and CH)" \
+    php "$SCRIPT_DIR/validate-content-pipeline-e2e.php"
+
+  run_check "PLG-COVERAGE-001" "PLG trigger coverage for Page Builder" \
+    php "$SCRIPT_DIR/validate-plg-triggers.php"
+
   # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
   # Prefer lando drush (host drush may not have Drupal bootstrap).
   # Only runs if drush with Drupal is available (skipped in pure-PHP CI).

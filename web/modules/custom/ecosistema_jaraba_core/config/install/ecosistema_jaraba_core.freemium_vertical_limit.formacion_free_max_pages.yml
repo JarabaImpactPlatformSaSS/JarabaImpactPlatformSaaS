@@ -1,0 +1,11 @@
+id: formacion_free_max_pages
+label: 'Formacion Free: Paginas web'
+vertical: formacion
+plan: free
+feature_key: max_pages
+limit_value: 3
+description: '3 paginas web en plan gratuito Formacion.'
+upgrade_message: 'Has usado @current de @limit paginas. Mejora tu plan para crear paginas ilimitadas y desbloquear bloques premium.'
+expected_conversion: 0.18
+weight: 612
+status: true

@@ -1,0 +1,11 @@
+id: agroconecta_free_max_pages
+label: 'AgroConecta Free: Paginas web'
+vertical: agroconecta
+plan: free
+feature_key: max_pages
+limit_value: 3
+description: '3 paginas web en plan gratuito AgroConecta.'
+upgrade_message: 'Has usado @current de @limit paginas. Mejora tu plan para crear paginas ilimitadas y desbloquear bloques premium.'
+expected_conversion: 0.18
+weight: 621
+status: true

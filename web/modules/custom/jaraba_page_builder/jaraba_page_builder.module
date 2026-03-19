@@ -110,10 +110,17 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       'template' => 'blocks/content/recommended-courses',
     ],
     // Dashboard principal del Page Builder - Hub Central.
+    // SETUP-WIZARD-DAILY-001 L3: Variables wizard + daily_actions declaradas.
+    // S5-01: Variable quota para indicador de uso + upgrade CTA.
+    // S3-04: content_hub_available para cross-link bidireccional.
     'page_builder_dashboard' => [
       'variables' => [
         'stats' => [],
         'quick_actions' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
+        'quota' => [],
+        'content_hub_available' => FALSE,
       ],
       'template' => 'page-builder-dashboard',
     ],
@@ -1006,6 +1013,100 @@ function jaraba_page_builder_theme_suggestions_page_alter(array &$suggestions, a
     // Template específico para revisiones con ancho completo.
     $suggestions[] = 'page__revisions';
   }
+
+  // ZERO-REGION-001: Template frontend limpio para rutas del Page Builder dashboard.
+  // Excluye rutas API y canvas editor (ya tienen su propio HtmlResponse).
+  if (is_string($route_name)
+      && str_starts_with($route_name, 'jaraba_page_builder.')
+      && !str_contains($route_name, '.api.')
+      && !str_contains($route_name, '.canvas_editor')) {
+    $suggestions[] = 'page__page_builder';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html() para Page Builder.
+ *
+ * Anade body classes para targeting CSS.
+ * DIRECTRIZ: NUNCA usar attributes.addClass() en template.
+ */
+function jaraba_page_builder_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (!str_starts_with($route_name, 'jaraba_page_builder.')) {
+    return;
+  }
+
+  $variables['attributes']['class'][] = 'page-page-builder';
+  $variables['attributes']['class'][] = 'page--clean-layout';
+
+  if (str_contains($route_name, '.canvas_editor')) {
+    $variables['attributes']['class'][] = 'page--canvas-editor';
+    // Canvas Editor: Layout full-viewport para edición visual.
+    $variables['attributes']['class'][] = 'canvas-editor-page';
+    $variables['attributes']['class'][] = 'full-viewport-layout';
+  }
+
+  if ($route_name === 'jaraba_page_builder.dashboard') {
+    $variables['attributes']['class'][] = 'page-page-builder-dashboard';
+  }
+
+  // Rutas de revisiones: layout purificado ancho completo.
+  $revision_routes = [
+    'jaraba_page_builder.revision_list',
+    'jaraba_page_builder.revision_compare',
+    'jaraba_page_builder.revision_revert',
+  ];
+  if (in_array($route_name, $revision_routes, TRUE)) {
+    $variables['attributes']['class'][] = 'layout-purified';
+    $variables['attributes']['class'][] = 'layout-revisions';
+    $variables['attributes']['class'][] = 'full-width-content';
+  }
+}
+
+/**
+ * Implements hook_preprocess_page() para Page Builder.
+ *
+ * ZERO-REGION-001: Extrae clean_content e inyecta variables del tema.
+ */
+function jaraba_page_builder_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (!str_starts_with($route_name, 'jaraba_page_builder.')) {
+    return;
+  }
+
+  // Excluir canvas editor (usa HtmlResponse propio).
+  if (str_contains($route_name, '.canvas_editor')) {
+    return;
+  }
+
+  // Extraer contenido limpio del render array de la pagina.
+  if (isset($variables['page']['content'])) {
+    $variables['clean_content'] = $variables['page']['content'];
+  }
+
+  // Inyectar contexto de tema para parciales header/footer.
+  $themeConfig = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $variables['theme_settings'] = $themeConfig->get() ?: [];
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+  $variables['logged_in'] = \Drupal::currentUser()->isAuthenticated();
+
+  // Inyectar logo del tema.
+  try {
+    $variables['logo'] = theme_get_setting('logo.url', 'ecosistema_jaraba_theme') ?: '';
+  }
+  catch (\Throwable) {
+    $variables['logo'] = '';
+  }
+
+  // S3-04: Cross-link al Content Hub (graceful degradation si no instalado).
+  try {
+    $variables['content_hub_available'] = \Drupal::moduleHandler()->moduleExists('jaraba_content_hub');
+  }
+  catch (\Throwable) {
+    $variables['content_hub_available'] = FALSE;
+  }
 }
 
 /**
@@ -1040,40 +1141,6 @@ function jaraba_page_builder_preprocess_page_builder_block(array &$variables): v
   }
 }
 
-/**
- * Implements hook_preprocess_html().
- *
- * Añade clases al body para páginas de revisiones.
- * NOTA: Las clases al body DEBEN añadirse via hook_preprocess_html(),
- * no con attributes.addClass() en templates (problema D11).
- *
- * @see docs/tecnicos/aprendizajes/2026-02-03_body_class_ghosting.md
- */
-function jaraba_page_builder_preprocess_html(array &$variables) {
-  $route_match = \Drupal::routeMatch();
-  $route_name = $route_match->getRouteName();
-
-  // Rutas de revisiones.
-  $revision_routes = [
-    'jaraba_page_builder.revision_list',
-    'jaraba_page_builder.revision_compare',
-    'jaraba_page_builder.revision_revert',
-  ];
-
-  if (in_array($route_name, $revision_routes, TRUE)) {
-    // Layout purificado ancho completo.
-    $variables['attributes']['class'][] = 'layout-purified';
-    $variables['attributes']['class'][] = 'layout-revisions';
-    $variables['attributes']['class'][] = 'full-width-content';
-  }
-
-  // Canvas Editor: Layout full-viewport para edición visual.
-  if ($route_name === 'jaraba_page_builder.canvas_editor') {
-    $variables['attributes']['class'][] = 'canvas-editor-page';
-    $variables['attributes']['class'][] = 'full-viewport-layout';
-  }
-
-}
 
 /**
  * Implements hook_entity_operation().

@@ -1,0 +1,11 @@
+id: andalucia_ei_free_premium_blocks
+label: 'Andalucia +ei Free: Bloques premium'
+vertical: andalucia_ei
+plan: free
+feature_key: premium_blocks
+limit_value: 0
+description: 'Bloques premium no disponibles en plan gratuito Andalucia +ei.'
+upgrade_message: 'Los bloques premium incluyen efectos glassmorphism, 3D y animaciones profesionales. Disponibles desde el plan Profesional.'
+expected_conversion: 0.22
+weight: 608
+status: true

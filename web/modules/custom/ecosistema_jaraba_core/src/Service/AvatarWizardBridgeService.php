@@ -89,6 +89,11 @@ class AvatarWizardBridgeService {
     'student' => 'student',
     'legal_professional' => 'legal_professional',
     'tenant_admin' => 'tenant_admin',
+    // Content Hub + Page Builder avatars.
+    'editor_content_hub' => 'editor_content_hub',
+    'editor' => 'editor_content_hub',
+    'page_builder' => 'page_builder',
+    'web_designer' => 'page_builder',
   ];
 
   /**
@@ -177,6 +182,20 @@ class AvatarWizardBridgeService {
       'dashboard_id' => NULL,
       'scope' => 'user',
       'dashboard_route' => NULL,
+    ],
+    // Content Hub editor — Sprint 3 Content Publication 100/100.
+    'editor_content_hub' => [
+      'wizard_id' => 'editor_content_hub',
+      'dashboard_id' => 'editor_content_hub',
+      'scope' => 'tenant',
+      'dashboard_route' => 'jaraba_content_hub.dashboard.frontend',
+    ],
+    // Page Builder — Sprint 1 Content Publication 100/100.
+    'page_builder' => [
+      'wizard_id' => 'page_builder',
+      'dashboard_id' => 'page_builder',
+      'scope' => 'tenant',
+      'dashboard_route' => 'jaraba_page_builder.dashboard',
     ],
   ];
 
