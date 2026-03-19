@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-18
-**Version:** 99.0.0 (ICV 2025 Gaps P0 + PlazoEnforcement + InsercionValidator + aprendizaje #196)
+**Ultima actualizacion:** 2026-03-19
+**Version:** 101.0.0 (Fase B Quiz Completa: Wizard + Daily + MegaMenuBridge + Email drip + Post-registro linking + aprendizaje #198)
 
 ---
 ## 1. Inicio de Sesion

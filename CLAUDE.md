@@ -1,6 +1,6 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-18 | Version: 1.5.4
-# Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
+# Ultima actualizacion: 2026-03-19 | Version: 1.5.6
+# Ecosistema: 10 verticales, 190+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
 - Nombre: Jaraba Impact Platform (Ecosistema Jaraba)
@@ -138,6 +138,24 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Colores SOLO de paleta Jaraba (ICON-COLOR-001): azul-corporativo, naranja-impulso, verde-innovacion, white, neutral
 - SVG en canvas_data: hex explicito en stroke/fill, NUNCA currentColor (ICON-CANVAS-INLINE-001)
 - NO emojis Unicode como iconos visuales en Page Builder (ICON-EMOJI-001)
+- ICON-INTEGRITY-001: Toda referencia jaraba_icon() DEBE resolverse a SVG real. Validacion: `php scripts/validation/validate-icon-references.php`. Detecta categoria incorrecta con hint "Found in category X instead!"
+
+### Quiz de Recomendacion de Vertical
+- Ruta: `/test-vertical` (publica, accesible sin login)
+- Entity: `QuizResult` — persiste respuestas, scores, recomendacion IA, email, UTM, ip_hash (GDPR)
+- Service: `VerticalQuizService` — scoring estatico (reglas) + IA async (tier fast) + CRM lead
+- 4 preguntas: perfil, sector, necesidad, urgencia → scoring 9 verticales → top 1 + 2 alternativas
+- CRM: Auto-crea Contact (source=quiz_vertical) + Opportunity (stage=mql, BANT parcial)
+- QUIZ-FUNNEL-001: Validacion integridad del funnel quiz. 18 checks. `php scripts/validation/validate-quiz-funnel.php`
+- CTA-DESTINATION-001: Validar que CTAs apuntan a rutas existentes. `php scripts/validation/validate-cta-destinations.php`
+- FUNNEL-COMPLETENESS-001: Todo CTA de conversion DEBE tener data-track-cta + data-track-position. `php scripts/validation/validate-funnel-tracking.php`
+- VERTICAL-COVERAGE-001: Los 9 verticales comerciales DEBEN estar en mega menu, quiz y cross-pollination. `php scripts/validation/validate-vertical-coverage.php`
+- Setup Wizard: CompletarQuizStep (global, opcional, weight 85) — incentiva quiz a logueados que no lo hicieron
+- Daily Action: ExplorarQuizAction (global) — visible solo si uid no tiene QuizResult
+- MegaMenuBridgeService: Lee SiteMenuItem entities tipo mega_column → genera mega_menu_columns. Fallback a array PHP estatico si no hay menu configurado en UI
+- Post-registro: TenantOnboardingService paso 9 vincula quiz_uuid → user via VerticalQuizService::linkResultToUser()
+- Email drip: QuizFollowUpCron en hook_cron — 3 fases (24h, 72h, 7d) para leads no convertidos con email
+- QUIZ-FOLLOWUP-DRIP-001: hook_mail case 'quiz_followup' con subject por fase + CTA registro
 
 ### Precios y Valores Configurables (NO-HARDCODE-PRICE-001)
 - NUNCA hardcodear precios EUR en templates Twig. SIEMPRE desde MetaSitePricingService
@@ -176,6 +194,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - TODA accion crear/editar/ver en frontend DEBE abrirse en slide-panel (no navegar fuera)
 - SLIDE-PANEL-RENDER-001: Usar renderPlain() (NO render()). Set $form['#action'] = $request->getRequestUri()
 - Deteccion: isSlidePanelRequest() = isXmlHttpRequest() && !_wrapper_format
+- SLIDE-PANEL-RENDER-002: Rutas con `_form:` en routing.yml NUNCA sirven para slide-panel — Drupal renderiza pagina completa con header/footer/blocks. Para slide-panel, SIEMPRE crear ruta con `_controller:` que detecte isSlidePanelRequest() y use renderPlain(). Patron: ver TenantSelfServiceController::planSlidePanel(), CoordinadorFormController::handleEntityForm()
 - FORM-CACHE-001: NUNCA setCached(TRUE) incondicional (LogicException en GET/HEAD)
 
 ## SEGURIDAD
@@ -262,12 +281,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v146.0.0
-- ARQUITECTURA: v134.0.0
-- INDICE: v175.0.0
-- FLUJO: v99.0.0
-- Ultimo aprendizaje: #196
-- Ultima golden rule: #137
+- DIRECTRICES: v149.0.0
+- ARQUITECTURA: v136.0.0
+- INDICE: v177.0.0
+- FLUJO: v101.0.0
+- Ultimo aprendizaje: #199
+- Ultima golden rule: #140
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -331,15 +350,24 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-circular-deps.php` (CONTAINER-DEPS-002)
 - `php scripts/validation/validate-optional-deps.php` (OPTIONAL-CROSSMODULE-001)
 - `php scripts/validation/validate-logger-injection.php` (LOGGER-INJECT-001)
+- `php scripts/validation/validate-icon-references.php` (ICON-INTEGRITY-001)
+- `php scripts/validation/validate-quiz-funnel.php` (QUIZ-FUNNEL-001)
+- `php scripts/validation/validate-cta-destinations.php` (CTA-DESTINATION-001)
+- `php scripts/validation/validate-funnel-tracking.php` (FUNNEL-COMPLETENESS-001)
+- `php scripts/validation/validate-vertical-coverage.php` (VERTICAL-COVERAGE-001)
+- `php scripts/validation/validate-wizard-daily-coverage.php` (SETUP-WIZARD-DAILY-001)
+- `php scripts/validation/validate-page-builder-onboarding.php` (PB-ONBOARDING-001)
+- `php scripts/validation/validate-content-pipeline-e2e.php` (CONTENT-E2E-001)
+- `php scripts/validation/validate-plg-triggers.php` (PLG-COVERAGE-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (27 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (44 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 27 scripts validacion (scripts/validation/) | On demand, CI | 26 checks fast+full |
+| 1 | 44 scripts validacion (scripts/validation/) | On demand, CI | 35 checks fast+full |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 6 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
-| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/94 modulos (88%) |
+| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
 | 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features | Complitud+Integridad+Consistencia+Coherencia |
 | 6 | PIPELINE-E2E-001 (4 capas L1-L4) | Al completar features con UI dashboard | Service→Controller→hook_theme→Template |
 

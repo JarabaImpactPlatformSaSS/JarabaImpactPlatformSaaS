@@ -3,10 +3,14 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-18
-**Versión:** 175.0.0 (ICV 2025 Gaps P0 — Ficha Técnica + Plazos + Inserción SS + aprendizaje #196)
+**Última actualización:** 2026-03-19
+**Versión:** 177.0.0 (Fase B Quiz Completa: Wizard + Daily + MegaMenuBridge + Email drip + Post-registro linking + aprendizaje #198)
 
-> **📋 ICV 2025 GAPS P0 — FICHA TÉCNICA + PLAZOS + INSERCIÓN SS — v146 DIRECTRICES + v134 ARQUITECTURA + v175 INDICE + v99 FLUJO** (2026-03-18)
+> **📋 FASE B QUIZ COMPLETA — v148 DIRECTRICES + v136 ARQUITECTURA + v177 INDICE + v101 FLUJO** (2026-03-19)
+>
+> Aprendizaje #198: Drupal 11 renderer inspecciona recursivamente TODOS los arrays en variables de tema buscando render children (keys sin # prefix). Un array como `['field' => 'perfil', 'title' => 'string']` causa InvalidArgumentException porque `field` es string, no array. Afecta a #theme variables, $variables en preprocess, y $template->render(). Solución: client-side rendering via drupalSettings JSON + Vanilla JS (mismo patrón que demo system). Para datos complejos interactivos, NUNCA pasar arrays con keys arbitrarias como variables Drupal — siempre JSON en drupalSettings. Fase B completada: CompletarQuizStep + ExplorarQuizAction globales, MegaMenuBridgeService (SiteMenuItem → mega_menu_columns con fallback), post-registro quiz_uuid linking via TenantOnboardingService paso 9, email drip 3 fases (24h/72h/7d) con deduplicación _drip_sent. Fix: jaraba_page_builder_preprocess_html() declarada 2 veces → fatal error PHP 8.4 → fusionadas. Regla de oro #139: verificar duplicados de hooks en .module antes de deploy.
+>
+> Aprendizaje #197: jaraba_icon() con categoría incorrecta (ej: 'content' en vez de 'commerce' para features.svg) cae silenciosamente a fallback emoji (📌 chincheta) sin error en logs. Safeguard ICON-INTEGRITY-001 escanea 650+ archivos, 515+ refs, detecta categoría incorrecta con hint "Found in category X instead!". Quiz de Recomendación de Vertical: 4 preguntas → scoring estático 9 verticales → IA async (Haiku) genera explicación personalizada → QuizResult entity con UUID trazable → CRM auto-lead (Contact source=quiz_vertical + Opportunity stage=mql con BANT parcial). Mega menú rediseñado: 4 columnas por audiencia, mini-cards con iconos duotone, datos desde PHP preprocess. 5 safeguards: ICON-INTEGRITY-001, QUIZ-FUNNEL-001 (18 checks), CTA-DESTINATION-001, FUNNEL-COMPLETENESS-001, VERTICAL-COVERAGE-001. Total scripts validación: 42 (de 27). Regla de oro #138: Todo CTA de conversión DEBE tener data-track-cta + data-track-position.
 >
 > Aprendizaje #196: Auditoría confrontación Pautas Gestión Técnica ICV 2025 (SAE, 22 págs) vs implementación Andalucía +ei: 93%→99%. GAP-1: FichaTecnicaEi entity (17 campos, ratio 1:60, validación SAE). GAP-2: PlazoEnforcementService (15d recibos, 10d hábiles VoBo con festivos Andalucía, 2m incentivo, 18m programa). GAP-3: InsercionValidatorService (4m ajena, 4m propia, 3m agrario NO combinable). Desglose fiscal 528€ IRPF 2% = 10,56€ neto 517,44€. PlazosVencidosAction daily action. 7 tests. ICV25-FICHA-001, ICV25-PLAZO-001, ICV25-INSERCION-001. Regla de oro #137: plazos PIIL en días hábiles, no naturales.
 
