@@ -1463,6 +1463,14 @@ class DemoInteractiveService
                 'question' => (string) $this->t('¿Cómo posiciono mi próximo artículo en Google?'),
                 'answer' => (string) $this->t('La IA de SEO analiza tu borrador: (1) Tu keyword principal "marketing sostenible 2027" tiene baja competencia — buen nicho, (2) Añade 3 subtítulos H2 que responden preguntas frecuentes de Google, (3) El asistente de co-escritura sugiere ampliar la sección de casos prácticos para superar las 1.500 palabras.'),
             ],
+            'buyer' => [
+                'question' => (string) $this->t('¿Qué proveedores tienen aceite ecológico certificado en Jaén?'),
+                'answer' => (string) $this->t('He encontrado 12 proveedores verificados: (1) Filtra por "Aceite Virgen Extra Ecológico" con certificación EU Organic, (2) Los 3 mejor valorados tienen +4.7 estrellas y envío en 48h, (3) Puedes solicitar muestras directamente desde la ficha — el sistema gestiona el pedido automáticamente.'),
+            ],
+            'cheese' => [
+                'question' => (string) $this->t('¿Cómo configuro la trazabilidad por lote de mi queso curado?'),
+                'answer' => (string) $this->t('Con el módulo de trazabilidad: (1) Genera códigos QR únicos por lote vinculados a fecha de elaboración y materia prima, (2) El cliente escanea y ve origen, proceso de curación y certificaciones, (3) Activa alertas de stock mínimo para no quedarte sin tu curado más vendido en temporada alta.'),
+            ],
         ];
 
         // Fallback genérico.
