@@ -42,7 +42,7 @@
 // SYSTEM MESSAGES
 // =============================================================================
 .user-messages {
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto $ej-spacing-lg;
   padding: 0 $ej-spacing-lg;
 }
@@ -74,9 +74,11 @@
 
 // =============================================================================
 // PROFILE VIEW — Premium Design
+// max-width: 1400px — alineado con container global del SaaS (_layout.scss)
+// y consistente con Content Hub, AI Dashboard, Checkout.
 // =============================================================================
 .user-profile {
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 $ej-spacing-lg $ej-spacing-xl;
 
@@ -508,6 +510,11 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: $ej-spacing-md;
+
+    // 4 columnas en el contenedor ampliado (1400px) para aprovechar espacio.
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
 
     @include respond-to(sm) {
       grid-template-columns: repeat(2, 1fr);
@@ -1558,10 +1565,11 @@ button[type="submit"],
     border-radius: var(--ej-radius-xl, 16px);
   }
 
-  // Daily actions — máximo 3 columnas en perfil (no 4 como en dashboards).
+  // Daily actions — 4 columnas en perfil, consistente con dashboards verticales.
+  // Con 1400px hay espacio suficiente para el grid natural de daily actions.
   .daily-actions__grid {
-    @include respond-to(lg) {
-      grid-template-columns: repeat(3, 1fr);
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }

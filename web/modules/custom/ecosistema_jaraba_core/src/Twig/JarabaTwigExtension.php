@@ -289,20 +289,65 @@ class JarabaTwigExtension extends AbstractExtension
 
         $path = $this->getIconPath($category, $name, $variant);
 
-        // Check if the SVG file exists, otherwise return fallback
+        // ICON-INTEGRITY-002: Check if the SVG file exists, cascade fallback.
         $modulePath = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core');
         $fullPath = DRUPAL_ROOT . "/{$modulePath}/images/icons/{$category}/{$name}.svg";
 
         if (!file_exists($fullPath)) {
-            // Return fallback emoji based on category/name
-            $fallback = $this->getFallbackEmoji($category, $name);
-            return sprintf(
-                '<span class="jaraba-icon jaraba-icon--fallback jaraba-icon--%s jaraba-icon--%s" style="font-size: %s; display: inline-block; vertical-align: middle;">%s</span>',
-                htmlspecialchars((string) $category),
-                htmlspecialchars((string) $name),
-                htmlspecialchars($size),
-                $fallback
-            );
+            // Cascade fallback: (1) try category generic, (2) ui/circle, (3) log warning.
+            $categoryFallbacks = [
+                'ai' => 'sparkles',
+                'analytics' => 'gauge',
+                'business' => 'target',
+                'commerce' => 'store',
+                'actions' => 'check',
+                'status' => 'check-circle',
+                'ui' => 'search',
+                'legal' => 'briefcase',
+                'finance' => 'coins',
+                'compliance' => 'check-circle',
+                'verticals' => 'rocket',
+                'users' => 'group',
+                'fiscal' => 'invoice',
+                'general' => 'globe',
+                'achievement' => 'award',
+                'charts' => 'chart-line',
+                'communication' => 'star',
+                'content' => 'book-open',
+                'documents' => 'file-chart',
+                'education' => 'book',
+                'media' => 'play-circle',
+                'social' => 'message-circle',
+            ];
+            $fallbackName = $categoryFallbacks[$category] ?? NULL;
+            $fallbackPath = $fallbackName !== NULL
+                ? DRUPAL_ROOT . "/{$modulePath}/images/icons/{$category}/{$fallbackName}.svg"
+                : NULL;
+
+            if ($fallbackPath !== NULL && file_exists($fallbackPath)) {
+                // Use category generic icon instead of pushpin.
+                $name = $fallbackName;
+                $path = $this->getIconPath($category, $fallbackName, $variant);
+                // Log warning in dev for missing icon detection.
+                if (PHP_SAPI !== 'cli') {
+                    \Drupal::logger('jaraba_icons')->warning('Missing icon SVG: @cat/@name — using fallback @fallback', [
+                        '@cat' => $category,
+                        '@name' => $options['_original_name'] ?? $name,
+                        '@fallback' => $fallbackName,
+                    ]);
+                }
+            } else {
+                // Last resort: invisible placeholder (no pushpin emoji).
+                return sprintf(
+                    '<span class="jaraba-icon jaraba-icon--missing jaraba-icon--%s jaraba-icon--%s" style="width: %s; height: %s; display: inline-block; vertical-align: middle;" title="Icon: %s/%s" aria-hidden="true"></span>',
+                    htmlspecialchars($category),
+                    htmlspecialchars($name),
+                    htmlspecialchars($size),
+                    htmlspecialchars($size),
+                    htmlspecialchars($category),
+                    htmlspecialchars($name)
+                );
+            }
         }
 
         // Build inline styles
@@ -336,33 +381,10 @@ class JarabaTwigExtension extends AbstractExtension
         return sprintf(
             '<img src="%s" alt="%s" class="%s" style="%s" loading="lazy" aria-hidden="true" />',
             $path,
-            htmlspecialchars((string) $name),
-            htmlspecialchars((string) $classAttr),
-            htmlspecialchars((string) $styleAttr)
+            htmlspecialchars($name),
+            htmlspecialchars($classAttr),
+            htmlspecialchars($styleAttr)
         );
-    }
-
-    /**
-     * Gets fallback emoji for icons when SVG doesn't exist.
-     */
-    private function getFallbackEmoji(string $category, string $name): string
-    {
-        $fallbacks = [
-            // Analytics
-            'analytics' => ['gauge' => '📊', 'chart-bar' => '📊', 'chart-line' => '📈', 'trend-down' => '📉', 'radar' => '📊'],
-            // Business
-            'business' => ['target' => '🎯', 'company' => '🏢', 'diagnostic' => '📋', 'achievement' => '⭐', 'shield' => '🛡️', 'pathway' => '🛤️', 'progress' => '📈', 'job' => '👔', 'cart' => '🛒', 'megaphone' => '📣'],
-            // Actions
-            'actions' => ['check' => '✅', 'close' => '❌', 'refresh' => '🔄', 'download' => '⬇️', 'plus' => '➕', 'edit' => '✏️', 'delete' => '🗑️'],
-            // AI
-            'ai' => ['copilot' => '🤖', 'automation' => '⚡', 'lightbulb' => '💡', 'brain' => '🧠', 'sparkle' => '✨'],
-            // UI
-            'ui' => ['home' => '🏠', 'search' => '🔍', 'menu' => '☰', 'settings' => '⚙️', 'user' => '👤', 'bell' => '🔔', 'filter' => '🔍', 'clock' => '⏱️', 'calendar' => '📆', 'book' => '📚', 'wrench' => '🔧', 'database' => '💾', 'globe' => '🌐', 'heartbeat' => '💚', 'hospital' => '🏥', 'users' => '👥', 'map' => '🗺️', 'tools' => '🛠️', 'eye' => '👁️', 'warning' => '⚠️', 'lock' => '🔒', 'bolt' => '⚡', 'shield' => '🛡️', 'chart-bar' => '📊', 'arrow-right' => '→', 'chevron-left' => '‹', 'chevron-right' => '›', 'star' => '⭐', 'play' => '▶️', 'arrows-horizontal' => '↔️', 'info' => 'ℹ️'],
-            // Verticals
-            'verticals' => ['rocket' => '🚀', 'leaf' => '🌱', 'briefcase' => '💼'],
-        ];
-
-        return $fallbacks[$category][$name] ?? '📌';
     }
 
     /**

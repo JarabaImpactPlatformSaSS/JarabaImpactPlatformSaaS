@@ -291,6 +291,7 @@ class DemoController extends ControllerBase
             '#sales_history' => $demoData['sales_history'],
             '#magic_actions' => $demoData['magic_moment_actions'],
             '#ai_scenarios' => $this->demoService->getAiScenarios(),
+            '#copilot_chat' => $this->demoService->getCopilotDemoChat($profileId),
             '#wizard' => $wizardData['wizard'],
             '#daily_actions' => $wizardData['daily_actions'],
             '#attached' => [
@@ -560,8 +561,9 @@ class DemoController extends ControllerBase
         }
         $verticalContext = $this->demoService->getVerticalContext($profileId);
 
-        // Inyectar AI scenarios en session para template.
+        // Inyectar AI scenarios + copilot chat adaptativo en session para template.
         $session['ai_scenarios'] = $this->demoService->getAiScenarios();
+        $session['copilot_chat'] = $this->demoService->getCopilotDemoChat($profileId);
 
         return [
             '#theme' => 'demo_dashboard_view',

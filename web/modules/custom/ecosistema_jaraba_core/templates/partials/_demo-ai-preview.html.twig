@@ -12,6 +12,7 @@
  * - session_id: ID de sesión demo.
  *
  * ICON-CONVENTION-001: jaraba_icon() con variante duotone.
+ * ICON-CANVAS-INLINE-001: SVGs de categoría ai/ tienen hex inline — NO pasar color.
  * ROUTE-LANGPREFIX-001: URLs via path().
  */
 #}
@@ -19,11 +20,11 @@
 <section class="demo-ai-preview" data-tour-step="demo-ai-copilot">
   <div class="demo-ai-preview__header">
     <h2 class="demo-section-title">
-      {{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '24px', variant: 'duotone' }) }}
+      {{ jaraba_icon('ai', 'brain', { size: '28px', variant: 'duotone' }) }}
       {% trans %}Copilot IA — Tu Asistente Inteligente{% endtrans %}
     </h2>
     <span class="demo-ai-preview__badge">
-      {{ jaraba_icon('ai', 'sparkles', { size: '14px', color: 'naranja-impulso' }) }}
+      {{ jaraba_icon('ai', 'sparkles', { size: '14px', variant: 'duotone' }) }}
       {% trans %}Potenciado por IA{% endtrans %}
     </span>
   </div>
@@ -35,22 +36,22 @@
         {{ jaraba_icon('ui', 'user', { size: '16px', color: 'blanco' }) }}
       </span>
       <p class="demo-ai-preview__chat-text" data-ai-demo-question>
-        {% trans %}¿Cómo puedo mejorar mis ventas este mes?{% endtrans %}
+        {{ copilot_chat.question|default('¿Cómo puedo hacer crecer mi negocio este mes?'|t) }}
       </p>
     </div>
     <div class="demo-ai-preview__chat-bubble demo-ai-preview__chat-bubble--ai">
       <span class="demo-ai-preview__chat-avatar demo-ai-preview__chat-avatar--ai">
-        {{ jaraba_icon('ai', 'sparkles', { size: '16px', color: 'blanco' }) }}
+        {{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone' }) }}
       </span>
       <div class="demo-ai-preview__chat-text">
         <p class="demo-ai-preview__typing" data-ai-demo-typing>
-          {% trans %}Analizando tus métricas...{% endtrans %}
+          {% trans %}Analizando tu consulta...{% endtrans %}
           <span class="demo-ai-preview__typing-dots">
             <span></span><span></span><span></span>
           </span>
         </p>
         <p class="demo-ai-preview__response" data-ai-demo-response style="display:none">
-          {% trans %}Basándome en tus datos, te recomiendo 3 estrategias: (1) Optimiza las fichas de tus productos más vendidos, (2) Activa una campaña de email para clientes recurrentes, (3) Publica contenido en redes mostrando tu proceso de producción.{% endtrans %}
+          {{ copilot_chat.answer|default('Basándome en tus datos, te recomiendo 3 estrategias personalizadas para hacer crecer tu negocio.'|t) }}
         </p>
       </div>
     </div>
@@ -62,14 +63,14 @@
       {% trans %}Modos Especializados{% endtrans %}
     </h3>
     <div class="demo-ai-preview__modes-grid">
-      {% if ai_scenarios is defined %}
+      {% if ai_scenarios is defined and ai_scenarios is iterable %}
         {% for scenario in ai_scenarios %}
           <button class="demo-ai-preview__mode-card"
                   data-ai-scenario="{{ scenario.id }}"
                   data-ai-prompt="{{ scenario.prompt }}"
                   type="button">
             <div class="demo-ai-preview__mode-icon">
-              {{ jaraba_icon('ai', scenario.icon|default('sparkles'), { size: '24px', color: 'azul-corporativo', variant: 'duotone' }) }}
+              {{ jaraba_icon('ai', scenario.icon|default('sparkles'), { size: '24px', variant: 'duotone' }) }}
             </div>
             <h4 class="demo-ai-preview__mode-title">{{ scenario.title }}</h4>
             <p class="demo-ai-preview__mode-desc">{{ scenario.description }}</p>
@@ -84,7 +85,7 @@
               data-track-cta="demo_try_copilot"
               data-track-position="ai_preview">
         <div class="demo-ai-preview__mode-icon">
-          {{ jaraba_icon('ai', 'brain', { size: '24px', color: 'blanco', variant: 'duotone' }) }}
+          {{ jaraba_icon('ai', 'brain', { size: '24px', variant: 'duotone' }) }}
         </div>
         <h4 class="demo-ai-preview__mode-title">{% trans %}Probar Copilot Completo{% endtrans %}</h4>
         <p class="demo-ai-preview__mode-desc">{% trans %}Regístrate gratis y accede a todas las capacidades IA{% endtrans %}</p>
@@ -100,10 +101,10 @@
     </div>
     <div class="demo-ai-preview__stat">
       {{ jaraba_icon('ui', 'clock', { size: '16px', color: 'azul-corporativo' }) }}
-      <span>{% trans %}Respuesta en < 3 segundos{% endtrans %}</span>
+      <span>{% trans %}Respuesta en &lt; 3 segundos{% endtrans %}</span>
     </div>
     <div class="demo-ai-preview__stat">
-      {{ jaraba_icon('business', 'achievement', { size: '16px', color: 'naranja-impulso' }) }}
+      {{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone' }) }}
       <span>{% trans %}11 agentes especializados{% endtrans %}</span>
     </div>
   </div>

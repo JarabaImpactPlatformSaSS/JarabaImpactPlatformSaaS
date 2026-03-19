@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * Partial: "Lo que desbloqueas" — comparación demo vs cuenta Starter (gratis).
+ *
+ * MARKETING-TRUTH-001: Las claims DEBEN coincidir con la realidad del billing:
+ * - TODOS los planes incluyen 14 días de prueba gratis (CheckoutSessionService::DEFAULT_TRIAL_DAYS = 14).
+ * - El trial se gestiona via Stripe (trial_period_days en checkout session).
+ * - Precios varían por vertical (ej: Empleabilidad Starter 29€/mes, Emprendimiento 39€/mes).
+ * - "Sin permanencia, cancela cuando quieras" = VERDAD (config: ecosistema_jaraba_core.stripe.yml).
+ * - Fuente de verdad: select-plan.html.twig L34: "Todos los planes incluyen 14 días de prueba gratuita".
+ *
+ * Variables:
+ * - vertical: ID del vertical para el enlace de registro.
+ */
+#}
+<section class="demo-unlock" data-track-cta="demo_unlock_section" data-track-position="demo_unlock">
+  <h2 class="demo-section-title">
+    {{ jaraba_icon('ui', 'lock', { size: '24px', color: 'naranja-impulso' }) }}
+    {% trans %}Lo que desbloqueas con tu cuenta gratuita{% endtrans %}
+  </h2>
+  <div class="demo-unlock__grid">
+    {# Columna DEMO (limitada) #}
+    <div class="demo-unlock__col demo-unlock__col--demo">
+      <h3 class="demo-unlock__col-title">
+        {{ jaraba_icon('ui', 'play', { size: '16px', color: 'azul-corporativo' }) }}
+        {% trans %}Demo{% endtrans %}
+      </h3>
+      <ul class="demo-unlock__list">
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Dashboard con métricas simuladas{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Vista previa de productos{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}1 generación IA de prueba{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--locked">
+          {{ jaraba_icon('ui', 'lock', { size: '16px', color: 'naranja-impulso' }) }}
+          {% trans %}Datos reales de tu negocio{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--locked">
+          {{ jaraba_icon('ui', 'lock', { size: '16px', color: 'naranja-impulso' }) }}
+          {% trans %}CRM y gestión de clientes{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--locked">
+          {{ jaraba_icon('ui', 'lock', { size: '16px', color: 'naranja-impulso' }) }}
+          {% trans %}Page Builder y web propia{% endtrans %}
+        </li>
+      </ul>
+    </div>
+
+    {# Columna TU CUENTA (14 días gratis en todos los planes) #}
+    <div class="demo-unlock__col demo-unlock__col--real">
+      <h3 class="demo-unlock__col-title">
+        {{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone' }) }}
+        {% trans %}Tu cuenta — 14 días gratis{% endtrans %}
+      </h3>
+      <ul class="demo-unlock__list">
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Datos reales de TU negocio{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Todas las funcionalidades del plan{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Copilot IA con 11 agentes{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}CRM + Page Builder + Analytics{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Cancela cuando quieras{% endtrans %}
+        </li>
+      </ul>
+      <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: vertical|default('agroconecta') }) }}"
+         class="demo-unlock__cta"
+         data-track-cta="demo_unlock_register" data-track-position="demo_unlock">
+        {% trans %}Probar 14 Días Gratis{% endtrans %} &rarr;
+      </a>
+      <p class="demo-unlock__trial-note">
+        {% trans %}Sin permanencia · Todos los planes incluyen prueba gratuita{% endtrans %}
+      </p>
+    </div>
+  </div>
+</section>

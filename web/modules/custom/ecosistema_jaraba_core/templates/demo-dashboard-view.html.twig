@@ -106,23 +106,32 @@
     </section>
   {% endif %}
 
+  {# Social Proof Strip #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-social-proof.html.twig' with {
+    profile: profile,
+  } only %}
+
   {# S6-05: Métricas via partial compartido. #}
   {% include '@ecosistema_jaraba_core/partials/_demo-metrics.html.twig' with { metrics: metrics } only %}
 
-  {# S6-05: Gráfico via partial compartido. #}
-  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
-
-  {# AI Copilot Preview — siempre visible, muestra capacidades IA #}
+  {# AI Copilot Preview — siempre visible #}
   {% include '@ecosistema_jaraba_core/partials/_demo-ai-preview.html.twig' with {
     ai_scenarios: session.ai_scenarios|default([]),
+    copilot_chat: session.copilot_chat|default({}),
     profile: profile,
     session_id: session_id,
   } only %}
 
-  {# S6-05: CTA via partial compartido (solo nivel 4). #}
-  {% if 'conversion_prompt' in unlocked %}
-    {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}
-  {% endif %}
+  {# S6-05: Gráfico via partial compartido. #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
+
+  {# "Lo que desbloqueas" #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-unlock-preview.html.twig' with {
+    vertical: profile.vertical|default('agroconecta'),
+  } only %}
+
+  {# S6-05: CTA final. #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}
 </div>
 
 {# HAL-DEMO-V3-FRONT-003: Modal de conversión — antes ausente en dashboard-view. #}

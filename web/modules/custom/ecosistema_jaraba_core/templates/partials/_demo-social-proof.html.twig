@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Partial: Social proof strip para demo dashboard.
+ *
+ * Muestra testimonios con métricas de resultado. Adaptable por vertical.
+ *
+ * Variables:
+ * - profile: Perfil de demo actual.
+ */
+#}
+<section class="demo-social-proof-strip">
+  <div class="demo-social-proof-strip__header">
+    {{ jaraba_icon('business', 'achievement', { size: '18px', color: 'naranja-impulso' }) }}
+    <span>{% trans %}Resultados reales de nuestros clientes{% endtrans %}</span>
+  </div>
+  <div class="demo-social-proof-strip__items">
+    <div class="demo-social-proof-strip__item">
+      <div class="demo-social-proof-strip__metric">+47%</div>
+      <div class="demo-social-proof-strip__label">{% trans %}Productividad media{% endtrans %}</div>
+    </div>
+    <div class="demo-social-proof-strip__divider"></div>
+    <div class="demo-social-proof-strip__item">
+      <div class="demo-social-proof-strip__metric">2.400+</div>
+      <div class="demo-social-proof-strip__label">{% trans %}Profesionales activos{% endtrans %}</div>
+    </div>
+    <div class="demo-social-proof-strip__divider"></div>
+    <div class="demo-social-proof-strip__item">
+      <div class="demo-social-proof-strip__metric">4.8/5</div>
+      <div class="demo-social-proof-strip__label">{% trans %}Satisfacción media{% endtrans %}</div>
+    </div>
+    <div class="demo-social-proof-strip__divider"></div>
+    <div class="demo-social-proof-strip__item">
+      <div class="demo-social-proof-strip__metric">&lt; 60s</div>
+      <div class="demo-social-proof-strip__label">{% trans %}Tiempo de activación{% endtrans %}</div>
+    </div>
+  </div>
+
+  {# Testimonio humano — adaptado por vertical #}
+  <blockquote class="demo-social-proof-strip__quote">
+    {% if profile.id is defined and profile.id == 'lawfirm' %}
+      <p>&ldquo;{% trans %}La IA jurídica nos ahorra 6 horas semanales en investigación de jurisprudencia. LexNET integrado fue la guinda.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}María G., Abogada Laboralista, Málaga{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'startup' %}
+      <p>&ldquo;{% trans %}El diagnóstico de madurez me ayudó a priorizar. En 2 meses pasé de idea a MVP facturando.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Carlos R., Founder, Sevilla{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'servicepro' %}
+      <p>&ldquo;{% trans %}Desde que uso la agenda inteligente, no pierdo ni un presupuesto. Los clientes valoran la rapidez.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Antonio M., Electricista, Granada{% endtrans %}</cite>
+    {% elseif profile.id is defined and profile.id == 'jobseeker' %}
+      <p>&ldquo;{% trans %}El simulador de entrevistas me preparó para preguntas que no esperaba. Conseguí el puesto en 3 semanas.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Laura P., Marketing Digital, Madrid{% endtrans %}</cite>
+    {% elseif profile.id is defined and (profile.id == 'winery' or profile.id == 'producer' or profile.id == 'cheese') %}
+      <p>&ldquo;{% trans %}La trazabilidad QR y la tienda online duplicaron nuestras ventas directas en una campaña.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Cooperativa Sierra de Jaén{% endtrans %}</cite>
+    {% else %}
+      <p>&ldquo;{% trans %}Pasé de gestionar todo con hojas de cálculo a tener un panel profesional en 30 minutos. La IA es otro nivel.{% endtrans %}&rdquo;</p>
+      <cite>— {% trans %}Ana L., Emprendedora, Córdoba{% endtrans %}</cite>
+    {% endif %}
+  </blockquote>
+</section>

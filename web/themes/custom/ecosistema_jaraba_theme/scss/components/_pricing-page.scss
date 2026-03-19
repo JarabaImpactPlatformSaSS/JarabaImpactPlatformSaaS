@@ -249,6 +249,12 @@
         }
     }
 
+    // ── Current plan modifier (change-plan page context) ──
+    &--current {
+        border-color: var(--ej-color-verde-innovacion, #00A9A5);
+        box-shadow: 0 0 30px color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent);
+    }
+
     // ── Badge ──
     &__badge {
         position: absolute;

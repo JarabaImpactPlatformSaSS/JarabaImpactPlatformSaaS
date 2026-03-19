@@ -240,6 +240,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'vertical_label' => '',
         'page_title' => '',
         'page_subtitle' => '',
+        'current_plan_label' => '',
         'guarantee_text' => '',
         'faq_items' => [],
         'back_url' => NULL,
@@ -442,8 +443,9 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         // Métricas universales + contexto vertical personalizado.
         'formatted_metrics' => [],
         'vertical_context' => [],
-        // AI Copilot Preview scenarios.
+        // AI Copilot Preview scenarios + chat adaptativo.
         'ai_scenarios' => [],
+        'copilot_chat' => [],
       ],
       'template' => 'demo-dashboard',
       'path' => $path . '/templates',

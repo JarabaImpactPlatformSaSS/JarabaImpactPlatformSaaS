@@ -100,6 +100,11 @@
     </div>
   </section>
 
+  {# Social Proof Strip — trust inmediato tras magic moment #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-social-proof.html.twig' with {
+    profile: profile,
+  } only %}
+
   {# Titular personalizado por vertical #}
   {% if vertical_context.headline is defined %}
     <h2 class="demo-vertical-headline">
@@ -155,15 +160,16 @@
     </section>
   {% endif %}
 
-  {# S6-05: Gráfico via partial compartido (DRY). #}
-  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
-
-  {# AI Copilot Preview — showcases IA capabilities #}
+  {# AI Copilot Preview — showcases IA capabilities (antes del chart) #}
   {% include '@ecosistema_jaraba_core/partials/_demo-ai-preview.html.twig' with {
     ai_scenarios: ai_scenarios|default([]),
+    copilot_chat: copilot_chat|default({}),
     profile: profile,
     session_id: session_id,
   } only %}
+
+  {# S6-05: Gráfico via partial compartido (DRY). #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
 
   {# Productos (solo para vendedores) #}
   {% if products %}
@@ -198,6 +204,11 @@
       </div>
     </section>
   {% endif %}
+
+  {# "Lo que desbloqueas" — comparación demo vs cuenta real (FOMO funcional) #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-unlock-preview.html.twig' with {
+    vertical: profile.vertical|default('agroconecta'),
+  } only %}
 
   {# S6-05: CTA via partial compartido (DRY). #}
   {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}

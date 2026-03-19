@@ -1,5 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-  <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.3"/>
-  <path d="M12 3c-1.5 2-2.5 4-2.5 6s1 4 2.5 6 2.5 4 2.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M12 3c1.5 2 2.5 4 2.5 6s-1 4-2.5 6-2.5 4-2.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <!-- AI Brain Duotone — fill visible + sparkle central -->
+  <!-- Fill cerebro completo -->
+  <path d="M12 3C9 3 7 5 7 7.5c-2 .5-3 2.5-3 4.5 0 2 1 3.5 2.5 4C7 18 8.5 20 11 20.5l1 .5 1-.5C15.5 20 17 18 17.5 16c1.5-.5 2.5-2 2.5-4 0-2-1-4-3-4.5C17 5 15 3 12 3z" fill="#233D63" opacity="0.07"/>
+  <!-- Hemisferio izquierdo -->
+  <path d="M12 3C9 3 7 5 7 7.5c-2 .5-3 2.5-3 4.5 0 2 1 3.5 2.5 4C7 18 8.5 20 11 20.5l1 .5" stroke="#233D63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Hemisferio derecho -->
+  <path d="M12 3c3 0 5 2 5 4.5 2 .5 3 2.5 3 4.5 0 2-1 3.5-2.5 4C17 18 15.5 20 13 20.5l-1 .5" stroke="#233D63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Punto IA central grande (sparkle/glow) -->
+  <circle cx="12" cy="11" r="3" fill="#FF8C42" opacity="0.25"/>
+  <circle cx="12" cy="11" r="2" fill="#FF8C42"/>
+  <!-- Rayos de actividad IA -->
+  <line x1="12" y1="7" x2="12" y2="8" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="14" x2="12" y2="15" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
+  <line x1="9" y1="11" x2="8" y2="11" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
+  <line x1="15" y1="11" x2="16" y2="11" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
 </svg>

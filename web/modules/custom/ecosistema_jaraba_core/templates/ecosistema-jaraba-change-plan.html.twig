@@ -2,174 +2,313 @@
 /**
  * @file ecosistema-jaraba-change-plan.html.twig
  *
- * Comparador de planes para cambio de suscripcion del tenant.
+ * Comparador de planes para cambio de suscripcion (upgrade/downgrade).
  * Ruta: /tenant/change-plan
  *
+ * Reutiliza clases CSS .pricing-* del tema publico (glassmorphism premium)
+ * con adaptaciones para contexto autenticado:
+ * - Badge "Plan actual" en el tier activo
+ * - CTAs: "Mejorar" / "Cambiar" / "Tu plan actual" (no registro)
+ * - FAQ especificas de cambio de plan
+ * - Sin CTA final de registro (usuario ya logueado)
+ *
  * Variables:
- *   - tenant: TenantInterface entity
- *   - current_plan: SaasPlan entity (o NULL)
- *   - plans: array de planes con id, name, monthly_price, yearly_price,
- *            max_producers, max_storage_mb, features, is_current, stripe_price_id
- *   - back_url: Url al dashboard del tenant
+ *   - tiers: array de tiers desde MetaSitePricingService (cascada)
+ *     - tier_key: string ('starter', 'professional', 'enterprise')
+ *     - label: string (nombre display)
+ *     - description: string
+ *     - features: string[] (labels humanas)
+ *     - limits: object (key -> int, -1 = ilimitado)
+ *     - is_recommended: bool
+ *     - is_current: bool (plan del tenant)
+ *     - price_monthly: float (EUR)
+ *     - price_yearly: float (EUR)
+ *     - saas_plan_id: int|null
+ *     - current_plan_price: float (precio del plan actual para comparacion)
+ *   - current_tier_key: string
+ *   - vertical_key: string
+ *   - vertical_label: string
+ *   - page_title: string
+ *   - page_subtitle: string
+ *   - current_plan_label: string (nombre display del plan actual, vacio si no hay)
+ *   - guarantee_text: string
+ *   - faq_items: array de {question, answer}
+ *   - back_url: Url
  *
  * Directrices:
- *   - i18n: {% trans %} en todo texto estatico (NO filtro |t)
- *   - ICON-CONVENTION-001, ICON-DUOTONE-001: jaraba_icon() siempre
+ *   - i18n: {% trans %} en todo texto estatico
+ *   - ICON-CONVENTION-001: jaraba_icon() siempre
  *   - CSS-VAR-ALL-COLORS-001: var(--ej-*) con fallbacks
  *   - ROUTE-LANGPREFIX-001: URLs via path()
- *   - NO-HARDCODE-PRICE-001: precios desde el array plans (BD)
+ *   - NO-HARDCODE-PRICE-001: precios desde tiers (BD)
  */
 #}
 
-<div class="change-plan-page">
+{# === MAIN WRAPPER — reutiliza .pricing-wrapper del tema === #}
+<div class="pricing-wrapper">
 
-  {# === HEADER === #}
-  <header class="change-plan-page__header">
-    {% if back_url %}
-      <a href="{{ back_url }}" class="change-plan-page__back" aria-label="{% trans %}Volver al dashboard{% endtrans %}">
-        {{ jaraba_icon('ui', 'arrow-left', { variant: 'outline', size: '18px' }) }}
-        {% trans %}Volver{% endtrans %}
-      </a>
-    {% endif %}
-    <h1 class="change-plan-page__title">{% trans %}Cambiar de plan{% endtrans %}</h1>
-    <p class="change-plan-page__subtitle">
-      {% if current_plan %}
-        {% set plan_label = current_plan.label %}
-        {% trans %}Tu plan actual es <strong>{{ plan_label }}</strong>. Compara y elige el que mejor se adapte a tu organización.{% endtrans %}
+{# === BACK BUTTON (fuera del hero para mejor accesibilidad) === #}
+{% if back_url %}
+  <div class="change-plan-back" style="padding: 1rem 1.5rem 0;">
+    <a href="{{ back_url }}"
+       class="change-plan-back__link"
+       aria-label="{% trans %}Volver al dashboard{% endtrans %}"
+       style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--ej-color-text-inverse, #fff); opacity: 0.7; text-decoration: none; font-size: 0.875rem; transition: opacity 0.2s ease;">
+      {{ jaraba_icon('ui', 'arrow-left', { variant: 'outline', size: '16px' }) }}
+      {% trans %}Volver al dashboard{% endtrans %}
+    </a>
+  </div>
+{% endif %}
+
+{# === HERO SECTION === #}
+<section class="pricing-hero reveal-element reveal-fade-up" aria-labelledby="change-plan-title">
+  <canvas class="pricing-hero__particles" aria-hidden="true"></canvas>
+  <div class="pricing-hero__container">
+    <span class="pricing-hero__eyebrow">
+      {% if vertical_label %}
+        {{ vertical_label }}
       {% else %}
-        {% trans %}Elige el plan que mejor se adapte a las necesidades de tu organización.{% endtrans %}
+        {% trans %}Suscripción{% endtrans %}
       {% endif %}
+    </span>
+    <h1 id="change-plan-title" class="pricing-hero__title">
+      {{ page_title }}
+    </h1>
+    <p class="pricing-hero__subtitle">
+      {% if current_plan_label %}
+        {% trans %}Tu plan actual es{% endtrans %} <strong>{{ current_plan_label }}</strong>.
+      {% endif %}
+      {{ page_subtitle }}
     </p>
-  </header>
 
-  {# === GRID DE PLANES === #}
-  {% if plans is not empty %}
-    <div class="plans-grid" role="list" aria-label="{% trans %}Planes disponibles{% endtrans %}">
-      {% for plan in plans %}
-        <article class="plan-card{% if plan.is_current %} plan-card--current{% endif %}"
-                 role="listitem"
-                 aria-labelledby="plan-{{ plan.id }}">
+    {# === BILLING TOGGLE (Mensual / Anual) === #}
+    <div class="pricing-toggle" role="radiogroup" aria-label="{% trans %}Frecuencia de facturación{% endtrans %}">
+      <button type="button"
+              class="pricing-toggle__option pricing-toggle__option--active"
+              data-billing="monthly"
+              aria-pressed="true">
+        {% trans %}Mensual{% endtrans %}
+      </button>
+      <button type="button"
+              class="pricing-toggle__option"
+              data-billing="yearly"
+              aria-pressed="false">
+        {% trans %}Anual{% endtrans %}
+        <span class="pricing-toggle__badge">-17%</span>
+      </button>
+    </div>
+  </div>
+</section>
 
-          {# Badge plan actual #}
-          {% if plan.is_current %}
-            <div class="plan-card__badge">
-              {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
-              {% trans %}Plan actual{% endtrans %}
-            </div>
-          {% endif %}
+{# === PRICING CARDS GRID === #}
+{% if tiers is not empty %}
+<section class="pricing-grid reveal-element reveal-fade-up" aria-label="{% trans %}Comparar planes{% endtrans %}">
+  <div class="pricing-grid__container">
+    {% for tier in tiers %}
+      {# Calcular equivalente mensual anual #}
+      {% set yearly_monthly = tier.price_yearly > 0 ? (tier.price_yearly / 12)|round(0) : 0 %}
+      {% set savings_pct = tier.price_monthly > 0 ? (((tier.price_monthly * 12 - tier.price_yearly) / (tier.price_monthly * 12)) * 100)|round(0) : 0 %}
 
-          {# Nombre #}
-          <h2 id="plan-{{ plan.id }}" class="plan-card__name">{{ plan.name }}</h2>
+      <article class="pricing-card{% if tier.is_recommended %} pricing-card--recommended{% endif %}{% if tier.is_current %} pricing-card--current{% endif %}"
+               id="plan-{{ tier.tier_key }}"
+               aria-labelledby="plan-title-{{ tier.tier_key }}"
+               data-tier="{{ tier.tier_key }}"
+               data-price-monthly="{{ tier.price_monthly }}"
+               data-price-yearly="{{ tier.price_yearly }}"
+               data-price-yearly-monthly="{{ yearly_monthly }}">
 
-          {# Precio mensual #}
-          <div class="plan-card__price">
-            {% if plan.monthly_price <= 0 %}
-              <span class="plan-card__price-value">{% trans %}Gratis{% endtrans %}</span>
-            {% else %}
-              <span class="plan-card__price-value">{{ plan.monthly_price|number_format(0, ',', '.') }}&euro;</span>
-              <span class="plan-card__price-period">/{% trans %}mes{% endtrans %}</span>
-              <span class="plan-card__price-tax">{% trans %}+ IVA{% endtrans %}</span>
-            {% endif %}
+        {# Badge: plan actual O mas popular #}
+        {% if tier.is_current %}
+          <div class="pricing-card__badge" style="background: linear-gradient(135deg, var(--ej-color-verde-innovacion, #00A9A5), #00877f);">
+            {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '14px', color: 'white' }) }}
+            {% trans %}Tu plan actual{% endtrans %}
           </div>
+        {% elseif tier.is_recommended %}
+          <div class="pricing-card__badge" aria-label="{% trans %}Plan mas popular{% endtrans %}">
+            {% trans %}Mas popular{% endtrans %}
+          </div>
+        {% endif %}
 
-          {# Precio anual si disponible #}
-          {% if plan.yearly_price > 0 and plan.monthly_price > 0 %}
-            {% set yearly_monthly = (plan.yearly_price / 12)|round(0) %}
-            {% set savings_pct = (((plan.monthly_price * 12 - plan.yearly_price) / (plan.monthly_price * 12)) * 100)|round(0) %}
-            <p class="plan-card__yearly-note">
-              {% trans %}{{ yearly_monthly|number_format(0, ',', '.') }}&euro;/mes anual{% endtrans %}
+        {# Nombre + descripcion #}
+        <div class="pricing-card__header">
+          <h2 id="plan-title-{{ tier.tier_key }}" class="pricing-card__name">
+            {{ tier.label }}
+          </h2>
+          {% if tier.description %}
+            <p class="pricing-card__description">{{ tier.description }}</p>
+          {% endif %}
+        </div>
+
+        {# Precio — dinamico desde cascada #}
+        <div class="pricing-card__price">
+          {% if tier.tier_key == 'starter' and tier.price_monthly <= 0 %}
+            <span class="pricing-card__amount">{% trans %}Gratis{% endtrans %}</span>
+            <span class="pricing-card__period">{% trans %}para siempre{% endtrans %}</span>
+          {% else %}
+            {# Precio mensual (visible por defecto) #}
+            <span class="pricing-card__amount pricing-card__amount--monthly">
+              {{ tier.price_monthly|number_format(0, ',', '.') }}&euro;
+            </span>
+            {# Equivalente mensual anual (oculto por defecto, toggle JS) #}
+            <span class="pricing-card__amount pricing-card__amount--yearly" hidden>
+              {{ yearly_monthly|number_format(0, ',', '.') }}&euro;
+            </span>
+            <span class="pricing-card__period">/{% trans %}mes{% endtrans %}</span>
+            {# GAP-M01: nota IVA — LSSI-CE Art. 10 #}
+            <span class="pricing-card__tax-note">{% trans %}+ IVA{% endtrans %}</span>
+            {# Nota facturacion anual (oculta por defecto) #}
+            <span class="pricing-card__billing-note pricing-card__billing-note--yearly" hidden>
+              {% trans %}Facturado anualmente{% endtrans %}
               {% if savings_pct > 0 %}
-                <strong>(-{{ savings_pct }}%)</strong>
+                <strong>({% trans %}-{{ savings_pct }}%{% endtrans %})</strong>
               {% endif %}
-            </p>
+            </span>
           {% endif %}
+        </div>
 
-          {# Limites #}
-          <div class="plan-card__limits">
-            {% if plan.max_producers > 0 %}
-              <div class="plan-card__limit">
-                {{ jaraba_icon('ui', 'users', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
-                <span>
-                  {% if plan.max_producers >= 9999 %}
-                    {% trans %}Productores ilimitados{% endtrans %}
+        {# Limites #}
+        {% if tier.limits is not empty %}
+          <div class="pricing-card__limits">
+            {% for limit_key, limit_value in tier.limits %}
+              {% if limit_value != 0 %}
+                <div class="pricing-card__limit">
+                  {% if limit_value == -1 or limit_value >= 9999 %}
+                    <span class="pricing-card__limit-value pricing-card__limit-value--unlimited">
+                      {% trans %}Ilimitado{% endtrans %}
+                    </span>
                   {% else %}
-                    {% trans %}{{ plan.max_producers }} productores{% endtrans %}
+                    <span class="pricing-card__limit-value">{{ limit_value }}</span>
                   {% endif %}
-                </span>
-              </div>
-            {% endif %}
-            {% if plan.max_storage_mb > 0 %}
-              {% set storage_gb = (plan.max_storage_mb / 1024)|round(0) %}
-              <div class="plan-card__limit">
-                {{ jaraba_icon('ui', 'database', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
-                <span>
-                  {% if plan.max_storage_mb >= 99999 %}
-                    {% trans %}Almacenamiento ilimitado{% endtrans %}
-                  {% else %}
-                    {{ storage_gb }} GB {% trans %}almacenamiento{% endtrans %}
-                  {% endif %}
-                </span>
-              </div>
-            {% endif %}
+                  <span class="pricing-card__limit-label">
+                    {{ limit_key|replace({'_': ' '})|capitalize|t }}
+                  </span>
+                </div>
+              {% endif %}
+            {% endfor %}
           </div>
+        {% endif %}
 
-          {# Features #}
-          {% if plan.features is iterable and plan.features is not empty %}
-            <ul class="plan-card__features" role="list">
-              {% for feature in plan.features %}
-                <li class="plan-card__feature">
-                  {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
-                  <span>{{ feature|t }}</span>
-                </li>
-              {% endfor %}
-            </ul>
+        {# Features #}
+        {% if tier.features is not empty %}
+          <ul class="pricing-card__features" role="list">
+            {% for feature in tier.features %}
+              <li class="pricing-card__feature">
+                <span class="pricing-card__check" aria-hidden="true">
+                  {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+                </span>
+                <span>{{ feature|t }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {# CTA — contextual al plan actual (ROUTE-LANGPREFIX-001) #}
+        <div class="pricing-card__cta">
+          {% if tier.is_current %}
+            {# Plan actual: boton deshabilitado con estado visual #}
+            <span class="btn btn--outline btn--lg pricing-card__btn" aria-disabled="true"
+                  style="opacity: 0.6; cursor: default; border-color: var(--ej-color-verde-innovacion, #00A9A5); color: var(--ej-color-verde-innovacion, #00A9A5);">
+              {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+              {% trans %}Tu plan actual{% endtrans %}
+            </span>
+          {% elseif tier.saas_plan_id %}
+            {# Plan con Stripe: checkout directo #}
+            <a href="{{ path('jaraba_billing.checkout', {saas_plan: tier.saas_plan_id}) }}"
+               class="btn btn--primary btn--lg pricing-card__btn pricing-card__btn--checkout"
+               data-checkout-plan="{{ tier.saas_plan_id }}"
+               data-track-cta="change_plan_{{ tier.tier_key }}"
+               data-track-position="change_plan_page"
+               data-track-vertical="{{ vertical_key }}">
+              {% if tier.price_monthly > tier.current_plan_price %}
+                {{ jaraba_icon('ui', 'arrow-up', { variant: 'outline', size: '16px' }) }}
+                {% trans %}Mejorar a este plan{% endtrans %}
+              {% elseif tier.price_monthly < tier.current_plan_price %}
+                {% trans %}Cambiar a este plan{% endtrans %}
+              {% else %}
+                {% trans %}Elegir este plan{% endtrans %}
+              {% endif %}
+            </a>
+          {% else %}
+            {# Enterprise sin Stripe: contacto #}
+            <a href="{{ path('ecosistema_jaraba_core.pricing.page') }}"
+               class="btn btn--outline btn--lg pricing-card__btn"
+               data-track-cta="change_plan_contact"
+               data-track-position="change_plan_page">
+              {% trans %}Contactar para Enterprise{% endtrans %}
+            </a>
           {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+  <section class="pricing-grid" style="padding: 4rem 1.5rem; text-align: center; color: var(--ej-color-text-inverse, #fff);">
+    <p>{% trans %}No hay planes disponibles en este momento. Contacta con soporte.{% endtrans %}</p>
+  </section>
+{% endif %}
 
-          {# CTA — enlace directo al checkout (ROUTE-LANGPREFIX-001) #}
-          <div class="plan-card__actions">
-            {% if plan.is_current %}
-              <span class="plan-card__btn plan-card__btn--current" aria-disabled="true">
-                {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
-                {% trans %}Tu plan actual{% endtrans %}
-              </span>
-            {% elseif plan.stripe_price_id %}
-              <a href="{{ path('jaraba_billing.checkout', {saas_plan: plan.id}) }}"
-                 class="plan-card__btn plan-card__btn--select">
-                {% if current_plan and plan.monthly_price > current_plan.getPriceMonthly() %}
-                  {% trans %}Mejorar a este plan{% endtrans %}
-                {% elseif current_plan and plan.monthly_price < current_plan.getPriceMonthly() %}
-                  {% trans %}Cambiar a este plan{% endtrans %}
-                {% else %}
-                  {% trans %}Seleccionar plan{% endtrans %}
-                {% endif %}
-              </a>
-            {% else %}
-              <a href="{{ path('ecosistema_jaraba_core.pricing.page') }}"
-                 class="plan-card__btn plan-card__btn--contact">
-                {% trans %}Ver planes{% endtrans %}
-              </a>
-            {% endif %}
-          </div>
-        </article>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="change-plan-page__empty">
-      <p>{% trans %}No hay planes disponibles en este momento.{% endtrans %}</p>
-    </div>
-  {% endif %}
-
-  {# Nota prorratas y legal #}
-  <div class="change-plan-page__note">
-    {{ jaraba_icon('ui', 'info', { variant: 'duotone', size: '18px', color: 'azul-corporativo' }) }}
-    <p>
-      {% trans %}Los cambios de plan se aplican inmediatamente. Si mejoras a un plan superior, se te cobrara la diferencia prorrateada. Si reduces el plan, el cambio se aplicara al próximo ciclo de facturación.{% endtrans %}
+{# === TAX DISCLAIMER — GAP-M01: LSSI-CE Art. 10 + Dir 2011/83/UE === #}
+<section class="pricing-tax-disclaimer reveal-element reveal-fade-up" aria-label="{% trans %}Información fiscal{% endtrans %}">
+  <div class="pricing-tax-disclaimer__container">
+    <p class="pricing-tax-disclaimer__text">
+      {% trans %}Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).{% endtrans %}
     </p>
   </div>
+</section>
 
-  {# Disclaimer IVA #}
-  <p class="change-plan-page__disclaimer">
-    {% trans %}Todos los precios son en EUR sin IVA. El IVA aplicable se calculara en el proceso de pago según tu ubicación fiscal.{% endtrans %}
-  </p>
+{# === GUARANTEE SECTION === #}
+{% if guarantee_text %}
+<section class="pricing-guarantee reveal-element reveal-fade-up">
+  <div class="pricing-guarantee__container">
+    <span class="pricing-guarantee__icon" aria-hidden="true">
+      {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '24px', color: 'verde-innovacion' }) }}
+    </span>
+    <p class="pricing-guarantee__text">{{ guarantee_text }}</p>
+  </div>
+</section>
+{% endif %}
 
-</div>
+{# === FAQ SECTION === #}
+{% if faq_items is not empty %}
+  <section class="pricing-faq reveal-element reveal-fade-up" aria-labelledby="change-plan-faq-title">
+    <div class="pricing-faq__container">
+      <h2 id="change-plan-faq-title" class="pricing-faq__title">
+        {% trans %}Preguntas frecuentes{% endtrans %}
+      </h2>
+
+      <div class="pricing-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+        {% for item in faq_items %}
+          <details class="pricing-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <summary class="pricing-faq__question" itemprop="name">
+              {{ item.question }}
+              <span class="pricing-faq__chevron" aria-hidden="true">
+                {{ jaraba_icon('ui', 'chevron-down', { size: '20px' }) }}
+              </span>
+            </summary>
+            <div class="pricing-faq__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">{{ item.answer }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# === PRORATION NOTE (reemplaza el CTA final de registro) === #}
+<section class="pricing-final-cta reveal-element reveal-fade-up">
+  <div class="pricing-final-cta__container">
+    <span style="margin-bottom: 0.75rem;" aria-hidden="true">
+      {{ jaraba_icon('ui', 'info', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+    </span>
+    <h2 class="pricing-final-cta__title" style="font-size: clamp(1.25rem, 3vw, 1.5rem);">
+      {% trans %}Sobre los cambios de plan{% endtrans %}
+    </h2>
+    <p class="pricing-final-cta__subtitle" style="font-size: 0.9375rem;">
+      {% trans %}Los upgrades se aplican inmediatamente con prorrateo. Los downgrades se aplican al próximo ciclo de facturación. Todos los cambios son procesados de forma segura a través de Stripe.{% endtrans %}
+    </p>
+  </div>
+</section>
+
+</div>{# /.pricing-wrapper #}

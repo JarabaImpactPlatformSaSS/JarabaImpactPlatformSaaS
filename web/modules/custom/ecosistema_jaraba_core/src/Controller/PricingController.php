@@ -413,7 +413,7 @@ class PricingController extends ControllerBase
             '#vertical_key' => $vertical_key,
             '#vertical_label' => $verticalLabel,
             '#page_title' => $this->t('Planes @vertical', ['@vertical' => $verticalLabel]),
-            '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. Empieza gratis, sin permanencia.'),
+            '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. 14 días de prueba gratis en todos los planes.'),
             '#guarantee_text' => $this->getPlgGuaranteeText(),
             '#faq_items' => $this->getVerticalPricingFaq($vertical_key),
             '#attached' => [
@@ -538,7 +538,7 @@ class PricingController extends ControllerBase
         catch (\Throwable) {
             // Theme settings no disponibles.
         }
-        return (string) $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.');
+        return (string) $this->t('14 días de prueba gratis. Sin permanencia. Cancela cuando quieras.');
     }
 
     protected function getVerticalPricingFaq(string $vertical_key): array
@@ -571,7 +571,7 @@ class PricingController extends ControllerBase
         return [
             [
                 'question' => $this->t('¿Puedo empezar gratis?'),
-                'answer' => $this->t('Sí. El plan Starter es 100%% gratuito y no requiere tarjeta de crédito. Incluye acceso a la plataforma con funcionalidades básicas.'),
+                'answer' => $this->t('Sí. Todos los planes incluyen 14 días de prueba gratis. Regístrate, elige tu plan y pruébalo sin coste. Si no te convence, cancela antes de los 14 días y no se te cobrará nada.'),
             ],
             [
                 'question' => $this->t('¿Puedo cambiar de plan en cualquier momento?'),
@@ -607,7 +607,7 @@ class PricingController extends ControllerBase
             ],
             [
                 'question' => $this->t('¿Puedo probar el plan Profesional gratis?'),
-                'answer' => $this->t('Sí. Ofrecemos 14 días de prueba del plan Profesional sin necesidad de tarjeta de crédito. Al terminar, puedes continuar con el plan de pago o bajar al Starter gratuito.'),
+                'answer' => $this->t('Sí. Todos los planes, incluido el Profesional, ofrecen 14 días de prueba gratis. Introduce tu método de pago al suscribirte; no se realizará ningún cargo hasta que finalice el período de prueba. Puedes cancelar en cualquier momento.'),
             ],
         ];
     }

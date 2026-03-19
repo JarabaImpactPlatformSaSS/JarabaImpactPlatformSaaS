@@ -1385,31 +1385,93 @@ class DemoInteractiveService
                 'id' => 'marketing',
                 'title' => (string) $this->t('Marketing Digital'),
                 'description' => (string) $this->t('Genera ideas de campañas, contenido para redes sociales y estrategias de marketing.'),
-                'icon' => 'campaign',
+                'icon' => 'automation',
                 'prompt' => (string) $this->t('Necesito ideas para una campaña en redes sociales para una marca de alimentación ecológica dirigida a millennials.'),
             ],
             [
                 'id' => 'legal',
                 'title' => (string) $this->t('Consulta Legal'),
                 'description' => (string) $this->t('Obtén orientación sobre cuestiones legales para emprendedores y empresas.'),
-                'icon' => 'gavel',
+                'icon' => 'screening',
                 'prompt' => (string) $this->t('¿Cuáles son los requisitos legales para crear una cooperativa en España?'),
             ],
             [
                 'id' => 'employment',
                 'title' => (string) $this->t('Empleabilidad'),
                 'description' => (string) $this->t('Optimiza tu CV, prepara entrevistas y descubre itinerarios profesionales.'),
-                'icon' => 'work',
+                'icon' => 'chat',
                 'prompt' => (string) $this->t('Ayúdame a optimizar mi CV para un puesto de marketing digital. Tengo 3 años de experiencia.'),
             ],
             [
                 'id' => 'entrepreneurship',
                 'title' => (string) $this->t('Emprendimiento'),
                 'description' => (string) $this->t('Valida ideas de negocio, construye tu canvas y planifica tu lanzamiento.'),
-                'icon' => 'rocket_launch',
+                'icon' => 'rocket',
                 'prompt' => (string) $this->t('Quiero validar una idea SaaS para gestión de restaurantes. ¿Por dónde empiezo?'),
             ],
         ];
+    }
+
+    /**
+     * Obtiene la conversación demo del copilot IA adaptada al perfil.
+     *
+     * Cada vertical tiene una pregunta y respuesta que demuestra el valor
+     * específico del copilot para ese tipo de profesional.
+     *
+     * @param string $profileId
+     *   ID del perfil demo.
+     *
+     * @return array{question: string, answer: string}
+     *   Pregunta y respuesta adaptadas.
+     */
+    public function getCopilotDemoChat(string $profileId): array
+    {
+        $chats = [
+            'lawfirm' => [
+                'question' => (string) $this->t('¿Cuáles son los plazos para contestar una demanda laboral?'),
+                'answer' => (string) $this->t('Según el art. 82.1 LRJS, tienes 10 días hábiles desde la notificación para contestar. Te recomiendo: (1) Revisa la fecha de notificación en tu expediente, (2) Prepara la documentación con el módulo de gestión documental, (3) Agenda la vista oral usando el calendario integrado con LexNET.'),
+            ],
+            'startup' => [
+                'question' => (string) $this->t('¿Cómo valido si mi idea de negocio tiene mercado?'),
+                'answer' => (string) $this->t('Te guío paso a paso: (1) Usa el Canvas de Modelo de Negocio para mapear tu propuesta de valor, (2) Ejecuta el Diagnóstico de Madurez para identificar gaps, (3) Con la IA de proyecciones financieras, simula escenarios de ingresos a 12 meses con diferentes tasas de conversión.'),
+            ],
+            'academy' => [
+                'question' => (string) $this->t('¿Cómo creo mi primer curso online con certificado?'),
+                'answer' => (string) $this->t('Con el editor de cursos puedes: (1) Estructurar módulos con vídeo, texto y quiz interactivos, (2) Configurar certificados automáticos al completar el 80% del contenido, (3) Publicar en tu catálogo con pasarela de pago integrada. La IA te sugiere la estructura óptima según tu temática.'),
+            ],
+            'servicepro' => [
+                'question' => (string) $this->t('¿Cómo organizo mi agenda de servicios esta semana?'),
+                'answer' => (string) $this->t('Veo que tienes 8 citas pendientes. Te recomiendo: (1) Agrupa las reformas del barrio Nervión para el martes (ahorras 45 min de desplazamiento), (2) El presupuesto de placas solares lleva 3 días sin respuesta — activa el recordatorio automático, (3) Genera la factura del jardín completado ayer con un clic.'),
+            ],
+            'winery' => [
+                'question' => (string) $this->t('¿Cómo mejoro las ventas de mi bodega online?'),
+                'answer' => (string) $this->t('Analizando tus datos: (1) Tu Tinto Reserva tiene un 4.8 de valoración — destácalo como "Más Vendido" en tu catálogo, (2) Activa la trazabilidad QR para la nueva añada — los clientes premium valoran la transparencia, (3) Programa una campaña de email para clientes que compraron hace más de 3 meses.'),
+            ],
+            'producer' => [
+                'question' => (string) $this->t('¿Cómo puedo predecir la demanda de aceite para la próxima campaña?'),
+                'answer' => (string) $this->t('Basándome en tu historial: (1) La demanda de Virgen Extra Premium creció un 23% interanual — aumenta producción, (2) El Picual ecológico tiene lista de espera — considera priorizar 500 unidades, (3) Activa alertas de stock mínimo para no perder ventas en temporada alta.'),
+            ],
+            'jobseeker' => [
+                'question' => (string) $this->t('¿Cómo optimizo mi CV para posiciones de marketing digital?'),
+                'answer' => (string) $this->t('He analizado tu perfil: (1) Añade métricas concretas — "Aumenté el tráfico orgánico un 120% en 6 meses" impacta más que "Gestión de SEO", (2) El simulador de entrevistas detectó 3 preguntas frecuentes para tu perfil, (3) LinkedIn Import puede sincronizar tu experiencia en un clic.'),
+            ],
+            'socialimpact' => [
+                'question' => (string) $this->t('¿Cómo mido el impacto real de nuestro programa de inclusión?'),
+                'answer' => (string) $this->t('Con el módulo de métricas de impacto: (1) Configura indicadores ODS alineados con tu programa, (2) El dashboard muestra participantes activos, empleos generados y horas de formación en tiempo real, (3) Genera informes automáticos para financiadores con datos verificables.'),
+            ],
+            'creator' => [
+                'question' => (string) $this->t('¿Cómo posiciono mi próximo artículo en Google?'),
+                'answer' => (string) $this->t('La IA de SEO analiza tu borrador: (1) Tu keyword principal "marketing sostenible 2027" tiene baja competencia — buen nicho, (2) Añade 3 subtítulos H2 que responden preguntas frecuentes de Google, (3) El asistente de co-escritura sugiere ampliar la sección de casos prácticos para superar las 1.500 palabras.'),
+            ],
+        ];
+
+        // Fallback genérico.
+        $default = [
+            'question' => (string) $this->t('¿Cómo puedo hacer crecer mi negocio este mes?'),
+            'answer' => (string) $this->t('Basándome en tus datos, te recomiendo 3 estrategias: (1) Optimiza tu presencia online con el Page Builder, (2) Activa el CRM para hacer seguimiento de tus contactos, (3) Usa el copilot IA para automatizar tareas repetitivas y ganar 2 horas al día.'),
+        ];
+
+        return $chats[$profileId] ?? $default;
     }
 
     /**

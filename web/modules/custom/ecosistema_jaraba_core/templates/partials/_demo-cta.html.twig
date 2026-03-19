@@ -9,11 +9,16 @@
  * - vertical: ID del vertical para el enlace de registro.
  */
 #}
-<section class="demo-cta-convert" data-tour-step="demo-convert">
-  <h2 class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</h2>
-  <p>{{ 'Convierte esta demo en tu cuenta real.'|t }}</p>
+<section class="demo-cta-convert" data-tour-step="demo-convert"
+         data-track-cta="demo_final_convert" data-track-position="demo_bottom">
+  <h2 class="demo-cta-convert__text">{% trans %}Esto es solo el 10% de lo que puedes hacer{% endtrans %}</h2>
+  <p class="demo-cta-convert__subtitle">{% trans %}Todos los planes incluyen 14 días de prueba gratis. Cancela cuando quieras, sin permanencia.{% endtrans %}</p>
   <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: vertical|default('agroconecta') }) }}"
-     class="demo-cta-convert__btn">
-    {{ 'Crear Mi Cuenta Real'|t }} &rarr;
+     class="demo-cta-convert__btn"
+     data-track-cta="demo_create_account_final" data-track-position="demo_bottom">
+    {% trans %}Probar 14 Días Gratis{% endtrans %} &rarr;
   </a>
+  <p class="demo-cta-convert__trust">
+    {% trans %}+2.400 profesionales ya confían en Jaraba · Sin permanencia{% endtrans %}
+  </p>
 </section>
