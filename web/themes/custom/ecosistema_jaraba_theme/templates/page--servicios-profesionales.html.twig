@@ -18,7 +18,12 @@
     site_slogan: site_slogan|default(''),
     logo: logo,
     logged_in: logged_in|default(false),
-    theme_settings: theme_settings|default({})
+    theme_settings: theme_settings|default({}),
+    'available_languages': available_languages|default([]),
+    'current_langcode': current_langcode|default('es'),
+    'language_prefix': language_prefix|default(''),
+    'language_links': language_links|default({}),
+    'mega_menu_columns': mega_menu_columns|default([]),
   } only %}
 
   <main id="main-content" class="kit-digital-main" role="main">
@@ -35,7 +40,9 @@
     site_name: site_name,
     logo: logo,
     footer_copyright: footer_copyright|default(''),
-    theme_settings: theme_settings|default({})
+    theme_settings: theme_settings|default({}),
+    'language_prefix': language_prefix|default(''),
+    'logged_in': logged_in,
   } only %}
 
 </div>

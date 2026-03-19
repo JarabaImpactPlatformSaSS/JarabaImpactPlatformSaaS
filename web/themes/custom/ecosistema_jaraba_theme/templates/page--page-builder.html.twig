@@ -163,8 +163,10 @@
     {# 6. PARTNERS INSTITUCIONALES — Credibilidad #}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
       theme_path: directory,
-      partners_variant: 'full',
-    } only %}
+      partners_variant: 'full',,
+    'language_prefix': language_prefix|default(''),
+    'mega_menu_columns': mega_menu_columns|default([]),
+  } only %}
 
     {# 7. CTA BANNER FINAL — Ultima oportunidad de conversion #}
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' %}

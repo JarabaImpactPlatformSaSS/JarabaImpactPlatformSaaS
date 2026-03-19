@@ -128,8 +128,13 @@
             {% if legal_activities is defined and legal_activities %}
               {% for activity in legal_activities %}
                 {% include '@jaraba_legal_cases/partials/_activity-entry.html.twig' with {
-                  activity: activity
-                } only %}
+                  activity: activity,
+    'available_languages': available_languages|default([]),
+    'current_langcode': current_langcode|default('es'),
+    'language_prefix': language_prefix|default(''),
+    'language_links': language_links|default({}),
+    'mega_menu_columns': mega_menu_columns|default([]),
+  } only %}
               {% endfor %}
             {% else %}
               <p class="legal-case-detail__no-activity">{% trans %}Sin actividad registrada.{% endtrans %}</p>

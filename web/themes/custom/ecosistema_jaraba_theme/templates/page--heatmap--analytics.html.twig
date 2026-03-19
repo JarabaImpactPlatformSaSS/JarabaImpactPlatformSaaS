@@ -30,7 +30,12 @@
     'logo': logo,
     'logged_in': logged_in,
     'theme_settings': theme_settings|default({}),
-    'avatar_nav': avatar_nav|default(null)
+    'avatar_nav': avatar_nav|default(null),
+    'available_languages': available_languages|default([]),
+    'current_langcode': current_langcode|default('es'),
+    'language_prefix': language_prefix|default(''),
+    'language_links': language_links|default({}),
+    'mega_menu_columns': mega_menu_columns|default([]),
   } only %}
 
   {# CONTENIDO PRINCIPAL #}
@@ -55,7 +60,9 @@
     'site_name': site_name,
     'logo': logo,
     'footer_copyright': footer_copyright,
-    'theme_settings': theme_settings|default({})
+    'theme_settings': theme_settings|default({}),
+    'language_prefix': language_prefix|default(''),
+    'logged_in': logged_in,
   } only %}
 
 </div>
