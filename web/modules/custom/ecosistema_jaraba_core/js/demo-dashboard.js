@@ -309,4 +309,49 @@
     }
   }
 
+  /**
+   * AI Copilot Preview — typing animation + scenario click.
+   */
+  Drupal.behaviors.demoAiPreview = {
+    attach: function (context) {
+      once('demo-ai-preview', '.demo-ai-preview', context).forEach(function (section) {
+        // Typing → response reveal after 2.5s.
+        var typing = section.querySelector('[data-ai-demo-typing]');
+        var response = section.querySelector('[data-ai-demo-response]');
+        if (typing && response) {
+          setTimeout(function () {
+            typing.style.display = 'none';
+            response.style.display = '';
+            response.style.animation = 'fadeIn 0.5s ease';
+          }, 2500);
+        }
+
+        // Scenario cards — update chat question on click.
+        var question = section.querySelector('[data-ai-demo-question]');
+        var cards = section.querySelectorAll('[data-ai-scenario]');
+        cards.forEach(function (card) {
+          card.addEventListener('click', function () {
+            var prompt = this.getAttribute('data-ai-prompt');
+            if (question && prompt) {
+              question.textContent = prompt;
+            }
+            // Reset typing animation.
+            if (typing && response) {
+              typing.style.display = '';
+              response.style.display = 'none';
+              setTimeout(function () {
+                typing.style.display = 'none';
+                response.style.display = '';
+                response.style.animation = 'fadeIn 0.5s ease';
+              }, 1800);
+            }
+            // Visual feedback — active state.
+            cards.forEach(function (c) { c.classList.remove('demo-ai-preview__mode-card--active'); });
+            this.classList.add('demo-ai-preview__mode-card--active');
+          });
+        });
+      });
+    }
+  };
+
 })(Drupal, drupalSettings, once);

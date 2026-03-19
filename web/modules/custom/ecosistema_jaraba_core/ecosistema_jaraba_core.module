@@ -436,6 +436,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         // Métricas universales + contexto vertical personalizado.
         'formatted_metrics' => [],
         'vertical_context' => [],
+        // AI Copilot Preview scenarios.
+        'ai_scenarios' => [],
       ],
       'template' => 'demo-dashboard',
       'path' => $path . '/templates',

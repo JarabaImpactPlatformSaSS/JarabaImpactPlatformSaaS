@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-19
-**Versión:** 149.0.0 (Page Builder Onboarding 100/100 + PLG Triggers + Content Hub Avatar Mapping: 4 SetupWizard steps + 4 DailyActions + L1-L4 pipeline + 27 FreemiumVerticalLimit PB + 3 salvaguardas nuevas + cross-link CH↔PB bidireccional + quota indicator CTA + avatar editor_content_hub + page_builder en AvatarWizardBridgeService + RUNTIME-VERIFY-001 3 gaps descubiertos y corregidos + regla de oro #140 + aprendizaje #199)
+**Versión:** 150.0.0 (Homepage 10/10: Mega Menú Clase Mundial + Quiz IA adaptativo + 9 safeguards nuevos (49 total) + IA real ModelRouter + imágenes Nano Banana + 6 feature cards + timeline María + elevación premium completa homepage + aprendizaje #200 + regla de oro #141) + PLG Triggers + Content Hub Avatar Mapping: 4 SetupWizard steps + 4 DailyActions + L1-L4 pipeline + 27 FreemiumVerticalLimit PB + 3 salvaguardas nuevas + cross-link CH↔PB bidireccional + quota indicator CTA + avatar editor_content_hub + page_builder en AvatarWizardBridgeService + RUNTIME-VERIFY-001 3 gaps descubiertos y corregidos + regla de oro #140 + aprendizaje #199)
 
 ---
 

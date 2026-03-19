@@ -1,6 +1,6 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-19 | Version: 1.5.6
-# Ecosistema: 10 verticales, 190+ especificaciones, 80+ modulos custom, Drupal 11
+# Ultima actualizacion: 2026-03-19 | Version: 1.5.7
+# Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
 - Nombre: Jaraba Impact Platform (Ecosistema Jaraba)
@@ -285,8 +285,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v136.0.0
 - INDICE: v177.0.0
 - FLUJO: v101.0.0
-- Ultimo aprendizaje: #199
-- Ultima golden rule: #140
+- Ultimo aprendizaje: #200
+- Ultima golden rule: #141
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:

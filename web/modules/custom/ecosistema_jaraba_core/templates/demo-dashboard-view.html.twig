@@ -112,17 +112,12 @@
   {# S6-05: Gráfico via partial compartido. #}
   {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
 
-  {# S7-07: Secciones bloqueadas con glass overlay si no desbloqueadas. #}
-  {% if 'ai_playground' not in unlocked %}
-    <section class="demo-locked-section" aria-label="{{ 'Sección bloqueada'|t }}">
-      <div class="demo-locked-section__overlay">
-        {{ jaraba_icon('ui', 'lock', { size: '32px', color: 'azul-corporativo' }) }}
-        <p class="demo-locked-section__message">
-          {{ 'Realiza @count acciones más para desbloquear el AI Playground'|t({'@count': next_actions}) }}
-        </p>
-      </div>
-    </section>
-  {% endif %}
+  {# AI Copilot Preview — siempre visible, muestra capacidades IA #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-ai-preview.html.twig' with {
+    ai_scenarios: session.ai_scenarios|default([]),
+    profile: profile,
+    session_id: session_id,
+  } only %}
 
   {# S6-05: CTA via partial compartido (solo nivel 4). #}
   {% if 'conversion_prompt' in unlocked %}

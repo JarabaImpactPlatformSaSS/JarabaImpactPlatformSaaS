@@ -158,6 +158,13 @@
   {# S6-05: Gráfico via partial compartido (DRY). #}
   {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
 
+  {# AI Copilot Preview — showcases IA capabilities #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-ai-preview.html.twig' with {
+    ai_scenarios: ai_scenarios|default([]),
+    profile: profile,
+    session_id: session_id,
+  } only %}
+
   {# Productos (solo para vendedores) #}
   {% if products %}
     <section id="products">

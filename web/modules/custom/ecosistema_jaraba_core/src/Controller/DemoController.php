@@ -290,6 +290,7 @@ class DemoController extends ControllerBase
             '#products' => $demoData['products'],
             '#sales_history' => $demoData['sales_history'],
             '#magic_actions' => $demoData['magic_moment_actions'],
+            '#ai_scenarios' => $this->demoService->getAiScenarios(),
             '#wizard' => $wizardData['wizard'],
             '#daily_actions' => $wizardData['daily_actions'],
             '#attached' => [
@@ -558,6 +559,9 @@ class DemoController extends ControllerBase
             $formattedMetrics = $formatter->prepareForRender($session['metrics'] ?? []);
         }
         $verticalContext = $this->demoService->getVerticalContext($profileId);
+
+        // Inyectar AI scenarios en session para template.
+        $session['ai_scenarios'] = $this->demoService->getAiScenarios();
 
         return [
             '#theme' => 'demo_dashboard_view',
