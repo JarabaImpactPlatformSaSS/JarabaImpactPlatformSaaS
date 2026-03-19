@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-19
-**Versión:** 137.0.0 (Homepage 10/10 + 9 safeguards (49 total) + IA real ModelRouter + imágenes Nano Banana + PSR4 agro fix + aprendizaje #200): CompletarQuizStep + ExplorarQuizAction + MegaMenuBridgeService + Email drip 3 fases + Post-registro linking + Fix page_builder + aprendizaje #198)
+**Versión:** 138.0.0 (Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth + aprendizaje #203): DEMO-VERTICAL-PATTERN-001 12 secciones dashboard + ICON-INTEGRITY-002 cascade 3 niveles + MARKETING-TRUTH-001 claims vs billing)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1698,6 +1698,22 @@ Toda integración Setup Wizard + Daily Actions DEBE verificar 4 capas:
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
+### Demo Dashboard — Arquitectura PLG (DEMO-VERTICAL-PATTERN-001)
+- 12 secciones: Banner, Wizard, Daily Actions, Magic Moment, Social Proof Strip, Headline, Métricas, Features, AI Copilot Preview, Chart, Productos, Unlock Preview, CTA Final
+- AI Copilot Preview: chat mockup adaptativo (getCopilotDemoChat, 11 perfiles) + 4 scenario cards + stats
+- Social Proof: testimonios humanos por vertical (11/11 perfiles)
+- Unlock Preview: comparación demo vs cuenta real (FOMO funcional)
+- CTAs: "Probar 14 Días Gratis" coherente con Stripe trial_period_days=14
+- Salvaguardas: MARKETING-TRUTH-001, ICON-INTEGRITY-002, ICON-COMPLETENESS-001
+
+### Icon System — Cascade Fallback (ICON-INTEGRITY-002)
+JarabaTwigExtension::renderIcon() con 3 niveles:
+1. SVG exacto: {category}/{name}.svg o {name}-duotone.svg
+2. Fallback categoría: genérico por categoría (ai→sparkles, commerce→store, etc.)
+3. Placeholder invisible: span vacío con title tooltip (NUNCA emoji)
+Logger warning en nivel 2 para detección en dev.
+53+ SVGs nuevos con hex inline de marca. Validador CI: validate-icon-completeness.php
+
 
 ### 7.2 Interactive Content AI-Powered (jaraba_interactive)
 
@@ -3158,6 +3174,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-19 | **137.0.0** | **Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth:** Sección Demo Dashboard PLG: 12 secciones (Banner, Wizard, Daily Actions, Magic Moment, Social Proof, Headline, Métricas, Features, AI Copilot Preview, Chart, Productos, Unlock Preview, CTA Final). AI Copilot Preview adaptativo 11 perfiles. Icon System Cascade Fallback: 3 niveles (SVG exacto → genérico categoría → placeholder invisible), NUNCA emoji. 53+ SVGs con hex inline. MARKETING-TRUTH-001: claims coherentes con Stripe trial_period_days=14. 4 reglas nuevas en Directrices v151.0.0. Aprendizaje #203. |
 | 2026-03-19 | **136.0.0** | **Fase B Quiz Completa — Wizard + Daily + Bridge + Drip + Linking:** CompletarQuizStep (__global__ weight 85, isComplete = QuizResult exists for uid). ExplorarQuizAction (__global__ weight 80, getContext visible = no quiz). MegaMenuBridgeService (SiteMenuItem mega_column → mega_menu_columns, fallback PHP). TenantOnboardingService::processRegistration paso 9: quiz_uuid → linkResultToUser(). ecosistema-jaraba-onboarding.js: URLSearchParams capture quiz_uuid+source. QuizFollowUpCron: cron 24h/72h/7d drip. hook_mail quiz_followup con subject contextual. Fix jaraba_page_builder duplicate preprocess_html. QUIZ-FUNNEL-001 ampliado 27 checks. Aprendizaje #198. |
 | 2026-03-19 | **135.0.0** | **Mega Menú Clase Mundial + Quiz Recomendación Vertical IA:** ecosistema_jaraba_core: QuizResult ContentEntity (18 campos: answers, scores, recommended_vertical, ai_explanation, email, utm_*, ip_hash, crm_contact_id cross-módulo integer). VerticalQuizService (scoring estático 9 verticales, IA async Haiku tier fast, CRM auto-lead Contact+Opportunity, BANT parcial). VerticalQuizController (3 rutas: /test-vertical, /api/v1/quiz/submit con CSRF+FloodInterface 10rpm, /test-vertical/resultado/{uuid}). page--test-vertical.html.twig (ZERO-REGION-001). quiz.scss (mobile-first, cards Typeform-style). vertical-quiz.js (Vanilla JS, CSRF cached, progress bar). Mega menú: 4 columnas, 960px, mini-cards con jaraba_icon() duotone, datos desde preprocess PHP. jaraba_crm: contact_source += quiz_vertical. 5 safeguards nuevos: ICON-INTEGRITY-001 (515 refs), QUIZ-FUNNEL-001 (18 checks), CTA-DESTINATION-001, FUNNEL-COMPLETENESS-001, VERTICAL-COVERAGE-001. Total safeguard scripts: 42 (de 27). Aprendizaje #197. |
 | 2026-03-18 | **134.0.0** | **ICV 2025 Gaps P0 — Ficha Técnica + Plazos + Inserción SS:** jaraba_andalucia_ei: FichaTecnicaEi entity (17 campos, ratio 1:60 personal técnico, estado validación SAE 4 estados). PlazoEnforcementService (4 plazos: 15d recibos, 10d hábiles VoBo con festivos Andalucía, 2m incentivo, 18m programa). InsercionValidatorService (3 tipos: ajena 4m, propia 4m, agrario 3m NO combinable). Desglose fiscal 528€ IRPF 2%. PlazosVencidosAction daily action. 7 tests. 3 reglas ICV25. Aprendizaje #196. |
@@ -3231,4 +3248,4 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | 2026-03-17 | 125.0.0 | **Stripe Checkout E2E Operativo:** 7 bugs P0-P2 corregidos (colisión rutas Commerce, doble /v1/ en URLs, CSP script-src, metadata mismatch, processRegistration incompatible, catch Exception→Throwable). Rutas movidas a /planes/checkout/*. 17 Products + Prices sincronizados. Checkout Embedded con body limpio. 9 email templates transaccionales (trial, payment_failed, cancelled + 6 dunning). Pricing CTAs actualizados. |
 
-> **Versión:** 99.0.0 | **Fecha:** 2026-03-04 | **Autor:** IA Asistente
+> **Versión:** 138.0.0 | **Fecha:** 2026-03-19 | **Autor:** IA Asistente

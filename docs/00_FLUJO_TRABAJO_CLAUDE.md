@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-19
-**Version:** 102.0.0 (Homepage 10/10 + 9 safeguards (49 total) + IA real + imagenes IA + PSR4 fix + aprendizaje #200)
+**Version:** 103.0.0 (Demos Verticales Clase Mundial + ICON-INTEGRITY-002 + MARKETING-TRUTH-001 + aprendizaje #203)
 
 ---
 ## 1. Inicio de Sesion
@@ -864,12 +864,20 @@ Para verticales commerce con 20+ entidades nuevas (como ComercioConecta Sprint 2
 
 Al anadir multiples entidades a un modulo existente, crear un unico `hook_update_NNNNN()` que itere sobre la lista de entity_type_ids, verifique existencia con `getEntityType()`, y solo instale si no existe.
 
+### Verificación de Claims de Marketing (MARKETING-TRUTH-001)
+Antes de escribir CTAs o textos de conversión en templates:
+1. Verificar modelo de billing actual: CheckoutSessionService::DEFAULT_TRIAL_DAYS, SaasPlan entities, Stripe config
+2. NO asumir "gratis para siempre" sin verificar precios reales en DB
+3. Ejecutar `php scripts/validation/validate-marketing-truth.php` post-cambio
+4. Fuente de verdad: select-plan.html.twig L34 + Stripe checkout UI
+
 ---
 
 ## 9. Registro de Cambios
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-03-19 | **93.0.0** | **Demos Verticales Clase Mundial + Marketing Truth Verification. Aprendizaje #201-203:** 3 patrones nuevos: (1) ICON-INTEGRITY-002 — cascade fallback en renderIcon(): SVG exacto → genérico categoría → placeholder invisible, NUNCA emoji chincheta. Logger warning en nivel 2. Descubierto: currentColor en SVGs via `<img>` se interpreta como negro, CSS filter distorsiona formas complejas. Solución: hex inline. (2) MARKETING-TRUTH-001 — claims de marketing en templates DEBEN verificarse contra billing real ANTES de escribir. CheckoutSessionService::DEFAULT_TRIAL_DAYS, SaasPlan entities, Stripe config son fuente de verdad. Descubierto: FAQs decían "Starter gratuito" pero Stripe mostraba 29€/mes con 14d trial. (3) DEMO-VERTICAL-PATTERN-001 — patrón replicable 9 componentes demo parametrizados por profileId. getCopilotDemoChat() + getVerticalContext() + social proof humano + unlock preview FOMO. Regla de oro #141 (sin cambios). |
 | 2026-03-17 | **92.0.0** | **Profile Hub + Avatar Access + Entrepreneur Dashboard Premium. Aprendizaje #189:** 3 patrones nuevos: (1) AVATAR-ACCESS-001 — `_avatar_access` requirement en routing.yml reemplaza `_permission` en 22 rutas frontend de portales. `AvatarAccessCheck` verifica avatar desde JourneyState entity (no Drupal roles). Admin bypass. Nomenclatura dual normalizada via `AVATAR_ALIASES`. (2) JOURNEY-STATE-FIRST-001 — AvatarDetectionService es contextual (depende URL). En /user/{uid} devuelve 'general'. AvatarWizardBridgeService usa cascada JourneyState (fiable) → AvatarDetection (fallback). JOURNEY_TO_CANONICAL normaliza 19 avatares español + 9 inglés. (3) PROFILE-HUB-001 — /user/{uid} renderiza Setup Wizard + Daily Actions del vertical via AvatarWizardBridgeService. Entrepreneur Dashboard premium con datos reales, SCSS bundle, canvas mini-preview. Copilot Dashboard creado (hook_theme + template faltaban). 31 iconos SVG duotone. 30 unit tests. Regla de oro #130: TODA ruta enlazada desde wizard/daily-actions DEBE verificarse con access_manager.checkNamedRoute() para el avatar del usuario. |
 | 2026-03-13 | **85.0.0** | **SETUP-WIZARD-DAILY-001 Patron Transversal. Aprendizaje #182:** 2 patrones nuevos: (1) Setup Wizard tagged services — patron identico a TenantSettingsRegistry (CompilerPass + tag + collector) aplicado a wizard steps. Extensibilidad zero-touch: nuevos verticales registran steps via tag en services.yml solamente, 0 cambios en core. isComplete() count-based rapido + getCompletionData() con quality warnings (patron hibrido). Ring SVG circular progress como alternativa premium a progress bar lineal. JS celebrations: animateNumber (easing cubico), celebrateStep (flash + scale), celebrateCompletion (12 particulas brand colors). (2) ICON-SYMLINK-REL-001 — symlinks SVG entre categorias de iconos DEBEN ser relativos (`../ui/icon.svg`). Symlinks absolutos fallan silenciosamente en Docker/Lando (HTTP 403, fallback emoji sin error visible). Regla de oro #123 (symlinks en proyectos con contenedores siempre relativos — los paths absolutos del host no existen en el filesystem del contenedor). |
 | 2026-03-13 | **84.0.0** | **ORTOGRAFIA-TRANS-001 Salvaguarda Ortografica 3 Capas + Coordinador Hub Premium Elevation. Aprendizaje #181:** 2 patrones nuevos: (1) ORTOGRAFIA-TRANS-001 — salvaguarda ortografica modelada sobre NO-HARDCODE-PRICE-001 (mismo patron 3 capas: post-edit-lint rapido + lint-staged pre-commit + validate-all.sh exhaustivo). Diccionario 402 entradas (tildes -cion/-sion, esdrujulas, toponimos, ñ). Filtro comentarios Twig previo a busqueda trans. Deteccion generica para palabras no listadas. (2) Coordinador Hub Premium UI — tabs "white pill on tinted rail" (fondo 5% brand con pill blanco activo, borde 1.5px 35% opacity + box-shadow), compliance cards con --ring-color cascade a nivel card (1 custom property CSS controla 6 propiedades visuales). Regla de oro #122 (salvaguarda ortografica en {% trans %}: cada tilde incorrecta = clave de traduccion huerfana). |

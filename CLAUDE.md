@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-19 | Version: 1.5.7
+# Ultima actualizacion: 2026-03-19 | Version: 1.5.8
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -139,6 +139,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - SVG en canvas_data: hex explicito en stroke/fill, NUNCA currentColor (ICON-CANVAS-INLINE-001)
 - NO emojis Unicode como iconos visuales en Page Builder (ICON-EMOJI-001)
 - ICON-INTEGRITY-001: Toda referencia jaraba_icon() DEBE resolverse a SVG real. Validacion: `php scripts/validation/validate-icon-references.php`. Detecta categoria incorrecta con hint "Found in category X instead!"
+- ICON-INTEGRITY-002: renderIcon() cascade fallback: SVG exacto → genérico categoría → placeholder invisible. NUNCA emoji chincheta. Logger warning en dev. Validación: `php scripts/validation/validate-icon-completeness.php`
+- ICON-CANVAS-INLINE-002: SVGs via `<img>` NO soportan currentColor (se interpreta como negro). Categoría `ai/` DEBE usar hex inline (#233D63, #FF8C42, #00A9A5)
+- MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
+- DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
 
 ### Quiz de Recomendacion de Vertical
 - Ruta: `/test-vertical` (publica, accesible sin login)
@@ -281,11 +285,11 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v149.0.0
-- ARQUITECTURA: v136.0.0
-- INDICE: v177.0.0
-- FLUJO: v101.0.0
-- Ultimo aprendizaje: #200
+- DIRECTRICES: v151.0.0
+- ARQUITECTURA: v138.0.0
+- INDICE: v179.0.0
+- FLUJO: v103.0.0
+- Ultimo aprendizaje: #203
 - Ultima golden rule: #141
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
@@ -359,17 +363,19 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-page-builder-onboarding.php` (PB-ONBOARDING-001)
 - `php scripts/validation/validate-content-pipeline-e2e.php` (CONTENT-E2E-001)
 - `php scripts/validation/validate-plg-triggers.php` (PLG-COVERAGE-001)
+- `php scripts/validation/validate-icon-completeness.php` (ICON-COMPLETENESS-001)
+- `php scripts/validation/validate-marketing-truth.php` (MARKETING-TRUTH-001)
 - `php scripts/validation/validate-hook-theme-completeness.php` (HOOK-THEME-COMPLETENESS-001)
 - `php scripts/validation/validate-duplicate-hooks.php` (DUPLICATE-HOOK-001)
 - `php scripts/validation/validate-scss-variables.php` (SCSS-VARIABLE-EXIST-001)
 - `php scripts/validation/validate-library-attachments.php` (LIBRARY-ATTACHMENT-001) [warn]
 - `php scripts/validation/validate-twig-include-only.php` (TWIG-INCLUDE-ONLY-001) [warn]
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (49 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (51 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 49 scripts validacion (scripts/validation/) | On demand, CI | 40 checks fast+full |
+| 1 | 51 scripts validacion (scripts/validation/) | On demand, CI | 42 checks fast+full |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 6 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
