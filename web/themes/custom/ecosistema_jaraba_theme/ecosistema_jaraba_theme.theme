@@ -3013,6 +3013,10 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
           'logged_in' => !empty($variables['logged_in']),
           'language_prefix' => $variables['language_prefix'] ?? '',
         ];
+        // El email capture form necesita submitEndpoint para POST.
+        $variables['#attached']['drupalSettings']['verticalQuiz'] = [
+          'submitEndpoint' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.quiz_vertical.submit')->toString(),
+        ];
         $variables['quiz_result_html'] = Markup::create('<div class="quiz-result__container" id="quiz-result-app"></div>');
       }
     }

@@ -533,6 +533,7 @@ services:
       - '@?jaraba_crm.contact'
       - '@?jaraba_crm.opportunity'
       - '@?jaraba_ai_agents.model_router'
+      - '@?ai.provider'
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================

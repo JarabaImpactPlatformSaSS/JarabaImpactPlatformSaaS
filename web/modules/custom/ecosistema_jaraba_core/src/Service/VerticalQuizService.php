@@ -219,6 +219,7 @@ class VerticalQuizService {
     protected ?object $contactService,
     protected ?object $opportunityService,
     protected ?object $modelRouter,
+    protected ?object $aiProvider,
     protected LoggerInterface $logger,
   ) {}
 
@@ -678,23 +679,39 @@ class VerticalQuizService {
       '@vertical' => $verticalTitle,
     ]);
 
-    if ($this->modelRouter === NULL) {
+    if ($this->modelRouter === NULL || $this->aiProvider === NULL) {
       return $fallback;
     }
 
     try {
+      // MODEL-ROUTING-CONFIG-001: tier fast (Haiku) para texto corto.
       $prompt = sprintf(
-        'Eres un asesor de negocios experto. El usuario completó un quiz: perfil=%s, vertical recomendado=%s. '
-        . 'Genera 2 frases explicando POR QUÉ este vertical es ideal. Sé concreto con funcionalidades. '
-        . 'Tono profesional cercano. Español de España. Max 180 caracteres.',
-        $answers['perfil'] ?? '?',
+        'Eres un asesor de negocios experto de Jaraba Impact Platform. '
+        . 'El usuario completó un quiz de recomendación y su perfil es: %s. '
+        . 'El vertical recomendado es: %s. '
+        . 'Genera EXACTAMENTE 2 frases cortas explicando POR QUÉ este vertical es perfecto para su perfil. '
+        . 'Sé MUY concreto con funcionalidades específicas del vertical. '
+        . 'Tono profesional pero cercano. Español de España. '
+        . 'NO uses emojis. NO te presentes. Solo las 2 frases.',
+        $answers['perfil'] ?? 'no especificado',
         $verticalTitle,
       );
 
-      if (method_exists($this->modelRouter, 'route')) {
-        $response = $this->modelRouter->route('fast', $prompt, ['max_tokens' => 100]);
-        if (!empty($response)) {
-          return $response;
+      $routing = $this->modelRouter->route('fast', $prompt);
+      $providerId = $routing['provider_id'] ?? '';
+      $modelId = $routing['model_id'] ?? '';
+      if ($providerId !== '' && $modelId !== '') {
+        $provider = $this->aiProvider->createInstance($providerId);
+        $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
+          new \Drupal\ai\OperationType\Chat\ChatMessage('user', $prompt),
+        ]);
+        $response = $provider->chat($chatInput, $modelId, [
+          'temperature' => 0.7,
+          'max_tokens' => 150,
+        ]);
+        $text = trim($response->getNormalized()->getText());
+        if ($text !== '' && strlen($text) > 20) {
+          return $text;
         }
       }
     }

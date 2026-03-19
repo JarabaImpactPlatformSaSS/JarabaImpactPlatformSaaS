@@ -121,3 +121,5 @@ web/modules/custom/ecosistema_jaraba_core/node_modules
 
 # ----- LOCAL SITES DIRECTORY (Twig cache, generated files) -----
 sites/
+generated_imgs/
+.nano-banana-config.json

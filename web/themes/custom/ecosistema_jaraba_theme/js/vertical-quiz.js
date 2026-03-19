@@ -244,13 +244,15 @@
   /**
    * Renderizar resultado.
    */
-  Drupal.behaviors.verticalQuizResult = {
-    attach: function (context) {
-      var apps = once('vertical-quiz-result', '#quiz-result-app', context);
-      if (!apps.length) { return; }
-      var app = apps[0];
-      var r = drupalSettings.verticalQuizResult;
-      if (!r) { return; }
+  /**
+   * Renderizar resultado — función standalone para evitar timing issues con BigPipe/behaviors.
+   */
+  function renderQuizResult() {
+    var app = document.getElementById('quiz-result-app');
+    if (!app || app.dataset.rendered) { return; }
+    var r = drupalSettings.verticalQuizResult;
+    if (!r) { return; }
+    app.dataset.rendered = 'true';
       var lp = r.language_prefix || '';
 
       var html = '<div class="quiz-result__card quiz-result__card--primary">';
@@ -261,7 +263,26 @@
         + ' ' + Drupal.t('Recomendación personalizada con IA') + '</div>';
 
       html += '<div class="quiz-result__badge">' + Drupal.t('Tu vertical ideal') + '</div>';
-      html += '<div class="quiz-result__icon">' + iconImg(r.icon_cat, r.icon_name, 72, r.color) + '</div>';
+
+      // Ilustración IA por vertical (generada con Nano Banana).
+      var quizImgMap = {
+        'empleabilidad': 'empleabilidad',
+        'jarabalex': 'jarabalex',
+        'emprendimiento': 'emprendimiento',
+        'agroconecta': 'agroconecta',
+        'comercioconecta': 'comercioconecta',
+        'serviciosconecta': 'serviciosconecta',
+        'andalucia_ei': 'andalucia_ei',
+        'jaraba_content_hub': 'jaraba_content_hub',
+        'formacion': 'formacion'
+      };
+      var quizImgName = quizImgMap[r.vertical_id] || 'default';
+      html += '<div class="quiz-result__illustration">'
+        + '<img src="/themes/custom/ecosistema_jaraba_theme/images/quiz/' + quizImgName + '.png"'
+        + ' alt="" loading="eager" width="600" height="420" class="quiz-result__illustration-img">'
+        + '</div>';
+
+      html += '<div class="quiz-result__icon">' + iconImg(r.icon_cat, r.icon_name, 56, r.color) + '</div>';
       html += '<h1 class="quiz-result__title">' + esc(r.vertical_title) + '</h1>';
       if (r.ai_explanation) {
         html += '<p class="quiz-result__explanation">' + esc(r.ai_explanation) + '</p>';
@@ -339,17 +360,38 @@
       // Share buttons.
       var shareUrl = window.location.href;
       var shareText = Drupal.t('Mi vertical ideal es @v. Descubre el tuyo:', {'@v': esc(r.vertical_title)});
+      var shareTextEncoded = encodeURIComponent(shareText + ' ' + shareUrl);
       html += '<div class="quiz-result__share">'
         + '<p>' + Drupal.t('Comparte tu resultado') + '</p>'
         + '<div class="quiz-result__share-buttons">'
+        // WhatsApp — el más usado en España.
+        + '<a href="https://api.whatsapp.com/send?text=' + shareTextEncoded
+        + '" target="_blank" rel="noopener" class="quiz-result__share-btn quiz-result__share-btn--whatsapp" data-track-cta="quiz_share_whatsapp" data-track-position="quiz_result">'
+        + iconImg('social', 'whatsapp', 18, 'verde-innovacion') + ' WhatsApp</a>'
+        // Facebook.
+        + '<a href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl) + '&quote=' + encodeURIComponent(shareText)
+        + '" target="_blank" rel="noopener" class="quiz-result__share-btn quiz-result__share-btn--facebook" data-track-cta="quiz_share_facebook" data-track-position="quiz_result">'
+        + iconImg('social', 'facebook', 18, 'azul-corporativo') + ' Facebook</a>'
+        // Twitter/X.
         + '<a href="https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl)
-        + '" target="_blank" rel="noopener" class="quiz-result__share-btn" data-track-cta="quiz_share_twitter" data-track-position="quiz_result">'
-        + Drupal.t('Twitter') + '</a>'
+        + '" target="_blank" rel="noopener" class="quiz-result__share-btn quiz-result__share-btn--twitter" data-track-cta="quiz_share_twitter" data-track-position="quiz_result">'
+        + iconImg('social', 'twitter', 18, 'azul-corporativo') + ' X</a>'
+        // LinkedIn.
         + '<a href="https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl)
-        + '" target="_blank" rel="noopener" class="quiz-result__share-btn" data-track-cta="quiz_share_linkedin" data-track-position="quiz_result">'
-        + Drupal.t('LinkedIn') + '</a>'
-        + '<button class="quiz-result__share-btn" id="quiz-copy-link" data-track-cta="quiz_share_copy" data-track-position="quiz_result">'
-        + Drupal.t('Copiar enlace') + '</button>'
+        + '" target="_blank" rel="noopener" class="quiz-result__share-btn quiz-result__share-btn--linkedin" data-track-cta="quiz_share_linkedin" data-track-position="quiz_result">'
+        + iconImg('social', 'linkedin', 18, 'azul-corporativo') + ' LinkedIn</a>'
+        // Telegram.
+        + '<a href="https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(shareText)
+        + '" target="_blank" rel="noopener" class="quiz-result__share-btn quiz-result__share-btn--telegram" data-track-cta="quiz_share_telegram" data-track-position="quiz_result">'
+        + iconImg('social', 'message-circle', 18, 'azul-corporativo') + ' Telegram</a>'
+        // Email.
+        + '<a href="mailto:?subject=' + encodeURIComponent(Drupal.t('Mi resultado en Jaraba Impact Platform'))
+        + '&body=' + shareTextEncoded
+        + '" class="quiz-result__share-btn quiz-result__share-btn--email" data-track-cta="quiz_share_email" data-track-position="quiz_result">'
+        + iconImg('ui', 'mail', 18, 'naranja-impulso') + ' Email</a>'
+        // Copiar enlace.
+        + '<button class="quiz-result__share-btn quiz-result__share-btn--copy" id="quiz-copy-link" data-track-cta="quiz_share_copy" data-track-position="quiz_result">'
+        + iconImg('ui', 'link', 18, 'azul-corporativo') + ' ' + Drupal.t('Copiar enlace') + '</button>'
         + '</div></div>';
 
       // Social proof.
@@ -390,7 +432,21 @@
           });
         });
       }
-    }
+  }
+
+  // Triple trigger para máxima fiabilidad contra BigPipe timing:
+  // 1. Drupal.behaviors (estándar — funciona post-BigPipe)
+  Drupal.behaviors.verticalQuizResult = {
+    attach: function () { renderQuizResult(); }
   };
+  // 2. DOMContentLoaded (funciona si drupalSettings está inline en HTML)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderQuizResult);
+  } else {
+    renderQuizResult();
+  }
+  // 3. Retry con delay corto (fallback si BigPipe tarda)
+  setTimeout(renderQuizResult, 500);
+  setTimeout(renderQuizResult, 1500);
 
 })(Drupal, drupalSettings, once);

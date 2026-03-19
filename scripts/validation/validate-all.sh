@@ -247,6 +247,18 @@ if [ "$MODE" = "full" ]; then
   run_check "CTA-LOGGED-IN-001" "Conversion CTAs with logged_in conditional" \
     php "$SCRIPT_DIR/validate-cta-logged-in.php"
 
+  run_check "HOOK-DUPLICATE-001" "Duplicate function declarations in .module files" \
+    php "$SCRIPT_DIR/validate-hook-duplicates.php"
+
+  run_check "PSR4-CLASSNAME-001" "PHP class names match filenames (PSR-4)" \
+    php "$SCRIPT_DIR/validate-psr4-classname.php"
+
+  run_check "JS-CACHE-BUST-001" "JS library versions are current" \
+    php "$SCRIPT_DIR/validate-js-cache-bust.php"
+
+  run_check "CSS-HIDDEN-OVERRIDE-001" "CSS display vs HTML hidden conflicts" \
+    php "$SCRIPT_DIR/validate-css-hidden-override.php"
+
   run_check "JS-TWIG-SELECTOR-001" "JS↔Twig selector coherence" \
     php "$SCRIPT_DIR/validate-js-twig-selectors.php"
 

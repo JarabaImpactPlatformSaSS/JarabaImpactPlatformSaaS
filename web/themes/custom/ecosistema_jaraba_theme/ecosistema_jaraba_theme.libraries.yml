@@ -386,7 +386,7 @@ design-system:
 # Build: sass scss/routes/{name}.scss css/routes/{name}.css --style=compressed
 
 route-quiz:
-  version: 1.0.0
+  version: 2.0.0
   css:
     theme:
       css/routes/quiz.css: {}

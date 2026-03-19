@@ -13,6 +13,13 @@ body.page-quiz {
     var(--ej-bg-body, #F8FAFC) 0%,
     color-mix(in srgb, var(--ej-color-corporate, #233D63) 4%, var(--ej-bg-body, #F8FAFC)) 100%
   );
+
+  // Desactivar sticky header — la card del resultado es alta y el header
+  // se intercala visualmente cortando el contenido.
+  .landing-header,
+  .landing-header--classic {
+    position: relative !important;
+  }
 }
 
 // === QUIZ APP CONTAINER (full-width) ===
@@ -345,8 +352,20 @@ body.page-quiz {
   margin-bottom: var(--ej-spacing-lg, 1.5rem);
 }
 
+// Ilustración IA por vertical.
+.quiz-result__illustration {
+  margin: var(--ej-spacing-md, 1rem) auto;
+  max-width: 400px;
+}
+
+.quiz-result__illustration-img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--ej-border-radius-lg, 16px);
+}
+
 .quiz-result__icon { margin-bottom: var(--ej-spacing-md, 1rem); }
-.quiz-result__icon img { width: 72px; height: 72px; }
+.quiz-result__icon img { width: 56px; height: 56px; }
 
 .quiz-result__title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
@@ -480,26 +499,42 @@ body.page-quiz {
 .quiz-result__email-form {
   display: flex;
   gap: var(--ej-spacing-sm, 0.75rem);
-  max-width: 440px;
+  max-width: 520px;
   margin: 0 auto;
 
   @media (max-width: 480px) {
     flex-direction: column;
   }
+
+  // El botón dentro del form NO debe expandirse.
+  .btn-primary--sm {
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: auto;
+    width: auto;
+    max-width: 200px;
+  }
 }
 
 .quiz-result__email-input {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 100%;
   padding: var(--ej-spacing-sm, 0.75rem) var(--ej-spacing-md, 1rem);
   border: 2px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 15%, transparent);
   border-radius: var(--ej-border-radius-md, 8px);
   font: inherit;
   font-size: 1rem;
   color: var(--ej-text-primary, #1a1d29);
+  background: var(--ej-bg-surface, #fff);
 
   &:focus {
     outline: none;
     border-color: var(--ej-color-impulse, #FF8C42);
+  }
+
+  &::placeholder {
+    color: var(--ej-text-muted, #6b7280);
   }
 }
 
@@ -525,8 +560,9 @@ body.page-quiz {
 }
 
 .quiz-result__share > p {
-  font-size: 0.875rem;
-  color: var(--ej-text-muted, #6b7280);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-text-primary, #1a1d29);
   margin: 0 0 var(--ej-spacing-sm, 0.75rem);
 }
 
@@ -539,25 +575,49 @@ body.page-quiz {
 
 .quiz-result__share-btn {
   display: inline-flex;
-  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-md, 1rem);
-  border: 1px solid color-mix(in srgb, var(--ej-text-muted, #6b7280) 20%, transparent);
-  border-radius: var(--ej-border-radius-md, 8px);
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--ej-text-muted, #6b7280) 15%, transparent);
+  border-radius: var(--ej-border-radius-full, 9999px);
   background: var(--ej-bg-surface, #fff);
   color: var(--ej-text-primary, #1a1d29);
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
 
   &:hover {
-    border-color: var(--ej-color-impulse, #FF8C42);
-    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 5%, transparent);
+    transform: translateY(-2px);
   }
+
+  // Colores por red social al hover.
+  &--whatsapp:hover { border-color: #25D366; color: #25D366; background: color-mix(in srgb, #25D366 8%, transparent); }
+  &--facebook:hover { border-color: #1877F2; color: #1877F2; background: color-mix(in srgb, #1877F2 8%, transparent); }
+  &--twitter:hover { border-color: #1DA1F2; color: #1DA1F2; background: color-mix(in srgb, #1DA1F2 8%, transparent); }
+  &--linkedin:hover { border-color: #0A66C2; color: #0A66C2; background: color-mix(in srgb, #0A66C2 8%, transparent); }
+  &--telegram:hover { border-color: #0088cc; color: #0088cc; background: color-mix(in srgb, #0088cc 8%, transparent); }
+  &--email:hover { border-color: var(--ej-color-impulse, #FF8C42); color: var(--ej-color-impulse, #FF8C42); background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 8%, transparent); }
+  &--copy:hover { border-color: var(--ej-color-corporate, #233D63); color: var(--ej-color-corporate, #233D63); background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent); }
 }
 
-// Social proof.
-.quiz-result__social-proof { text-align: center; margin-top: var(--ej-spacing-xxl, 3rem); color: var(--ej-text-muted, #6b7280); font-size: 0.875rem; }
+// Social proof — prominente, no invisible.
+.quiz-result__social-proof {
+  text-align: center;
+  margin-top: var(--ej-spacing-xxl, 3rem);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 8%, transparent);
+  border-radius: var(--ej-border-radius-lg, 16px);
+
+  p {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--ej-color-innovation, #00A9A5);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .quiz-step { animation: none; }

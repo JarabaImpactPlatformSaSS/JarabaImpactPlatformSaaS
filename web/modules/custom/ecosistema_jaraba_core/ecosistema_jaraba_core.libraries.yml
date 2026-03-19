@@ -235,6 +235,7 @@ demo-landing:
     theme:
       css/ecosistema-jaraba-core.css: {}
   js:
+    js/demo-landing.js: {}
     js/demo-lead-gate.js: {}
   dependencies:
     - core/drupal
