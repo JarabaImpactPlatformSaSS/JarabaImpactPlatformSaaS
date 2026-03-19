@@ -11,7 +11,7 @@
  * ICON-EMOJI-001: Usa jaraba_icon() en lugar de emojis Unicode.
  * ROUTE-LANGPREFIX-001: URLs via path() de Twig.
  *
- * Q1 2027 - Gap P0: Time-to-Value < 60s
+ * Q1 2027 - Gap P0: Resultados inmediatos < 60s (TTFV interno)
  */
 #}
 
@@ -19,22 +19,179 @@
   {# Header #}
   <div class="demo-landing__header">
     <h1 class="demo-landing__title">
-      {{ jaraba_icon('navigation', 'rocket', { color: 'naranja-impulso', size: '32px' }) }}
-      {{ 'Prueba la Plataforma sin Registro'|t }}
+      {{ jaraba_icon('ui', 'rocket', { color: 'naranja-impulso', size: '32px' }) }}
+      {{ 'Prueba la Plataforma en 60 Segundos'|t }}
     </h1>
     <p class="demo-landing__subtitle">
       {% trans %}Experimenta el poder de Jaraba Impact Platform en menos de <strong>60 segundos</strong>. Elige tu perfil y comienza ahora.{% endtrans %}
     </p>
     <div class="demo-landing__timer">
-      {{ jaraba_icon('dashboard', 'clock', { color: 'blanco', size: '18px' }) }}
-      <span>{% trans %}Time-to-Value garantizado: <strong>&lt; 60s</strong>{% endtrans %}</span>
+      {{ jaraba_icon('ui', 'clock', { color: 'blanco', size: '18px' }) }}
+      <span>{% trans %}Resultados en menos de <strong>60 segundos</strong>{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Hero showcase — propuesta de valor por vertical con tabs #}
+  <div class="demo-landing__showcase">
+    {# Iconos naranja-impulso: máximo contraste sobre fondo azul (inactivo) y blanco (activo) #}
+    <div class="demo-landing__showcase-tabs" role="tablist" aria-label="{% trans %}Verticales destacados{% endtrans %}">
+      <button class="demo-landing__showcase-tab demo-landing__showcase-tab--active" role="tab" aria-selected="true" data-showcase-tab="legal">
+        {{ jaraba_icon('verticals', 'legal', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Legal{% endtrans %}
+      </button>
+      <button class="demo-landing__showcase-tab" role="tab" aria-selected="false" data-showcase-tab="emprender">
+        {{ jaraba_icon('verticals', 'emprendimiento', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Emprender{% endtrans %}
+      </button>
+      <button class="demo-landing__showcase-tab" role="tab" aria-selected="false" data-showcase-tab="formacion">
+        {{ jaraba_icon('verticals', 'formacion', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Formación{% endtrans %}
+      </button>
+      <button class="demo-landing__showcase-tab" role="tab" aria-selected="false" data-showcase-tab="comercio">
+        {{ jaraba_icon('verticals', 'comercioconecta', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Comercio{% endtrans %}
+      </button>
+      <button class="demo-landing__showcase-tab" role="tab" aria-selected="false" data-showcase-tab="servicios">
+        {{ jaraba_icon('verticals', 'serviciosconecta', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Servicios{% endtrans %}
+      </button>
+      <button class="demo-landing__showcase-tab" role="tab" aria-selected="false" data-showcase-tab="agro">
+        {{ jaraba_icon('verticals', 'agroconecta', { size: '18px', variant: 'duotone', color: 'naranja-impulso' }) }}
+        {% trans %}Agro{% endtrans %}
+      </button>
+    </div>
+
+    {# Panel Legal #}
+    <div class="demo-landing__showcase-panel demo-landing__showcase-panel--active" data-showcase-panel="legal">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Tu despacho legal, digitalizado{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}IA jurídica que analiza jurisprudencia y sugiere estrategias{% endtrans %}</li>
+          <li>{{ jaraba_icon('compliance', 'signature', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Firma digital cualificada eIDAS con validez legal en la UE{% endtrans %}</li>
+          <li>{{ jaraba_icon('analytics', 'chart-bar', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Panel de control con expedientes, plazos y facturación integrada{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}A diferencia de Aranzadi o vLex, aquí gestionas TODO tu despacho: clientes, expedientes, firmas y facturación en una sola plataforma con IA integrada.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'lawfirm' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar JarabaLex{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/lawfirm.webp"
+             alt="{% trans %}Panel de JarabaLex para despachos de abogados{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
+    </div>
+
+    {# Panel Emprendimiento — sin anglicismos, sin promesas irreales #}
+    <div class="demo-landing__showcase-panel" data-showcase-panel="emprender" style="display:none">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Lanza tu negocio con herramientas reales{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('ai', 'brain', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Copiloto IA que valida tu idea y genera tu modelo de negocio{% endtrans %}</li>
+          <li>{{ jaraba_icon('analytics', 'dashboard', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Panel con métricas de tu negocio: ventas, clientes y proyectos{% endtrans %}</li>
+          <li>{{ jaraba_icon('business', 'handshake', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Diagnóstico de madurez y herramientas de planificación{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}No es solo una hoja de cálculo ni un gestor de contactos. Es la plataforma que te acompaña desde la idea hasta la facturación, con IA que trabaja para ti.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'startup' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar Emprendimiento{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/startup.webp"
+             alt="{% trans %}Panel de emprendimiento con métricas de negocio{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
+    </div>
+
+    {# Panel Formación — sin anglicismos #}
+    <div class="demo-landing__showcase-panel" data-showcase-panel="formacion" style="display:none">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Tu academia en línea, lista para vender{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}IA que genera temarios, cuestionarios y resúmenes automáticos{% endtrans %}</li>
+          <li>{{ jaraba_icon('education', 'graduation-cap', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Plataforma de formación completa: vídeo, progreso, certificados y evaluaciones{% endtrans %}</li>
+          <li>{{ jaraba_icon('commerce', 'cart', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Cobro integrado: suscripciones, paquetes y cupones de descuento{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}No necesitas 5 herramientas distintas para vender cursos. Aquí tienes formación, comunicación con alumnos y pagos en una sola plataforma.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'academy' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar Formación{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/academy.webp"
+             alt="{% trans %}Plataforma de formación con cursos en línea{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
+    </div>
+
+    {# Panel Comercio #}
+    <div class="demo-landing__showcase-panel" data-showcase-panel="comercio" style="display:none">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Tu tienda digital, lista para vender{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('commerce', 'store', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Catálogo de productos con fotos, variantes y control de inventario{% endtrans %}</li>
+          <li>{{ jaraba_icon('commerce', 'qr-code', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Códigos QR para tu escaparate físico que enlazan a tu tienda digital{% endtrans %}</li>
+          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Copiloto IA que optimiza descripciones de producto y sugerencias de venta{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}No necesitas pagar comisiones a grandes plataformas. Aquí controlas tu marca, tus precios y tu relación directa con el cliente.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'buyer' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar Comercio{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/comercio.webp"
+             alt="{% trans %}Tienda digital con catálogo de productos{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
+    </div>
+
+    {# Panel Servicios #}
+    <div class="demo-landing__showcase-panel" data-showcase-panel="servicios" style="display:none">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Gestiona tus servicios profesionales{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('ui', 'calendar', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Agenda de citas y reservas con confirmación automática{% endtrans %}</li>
+          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Presupuestos generados por IA adaptados a cada cliente{% endtrans %}</li>
+          <li>{{ jaraba_icon('business', 'star', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Reseñas verificadas que construyen tu reputación profesional{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}No dependas de portales de terceros que se llevan tu comisión. Aquí gestionas tus servicios, tu agenda y tus clientes con tu propia marca.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'servicepro' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar Servicios{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/servicios.webp"
+             alt="{% trans %}Panel de gestión de servicios profesionales{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
+    </div>
+
+    {# Panel AgroConecta — sin anglicismos #}
+    <div class="demo-landing__showcase-panel" data-showcase-panel="agro" style="display:none">
+      <div class="demo-landing__showcase-content">
+        <h3>{% trans %}Del campo a la mesa, sin intermediarios{% endtrans %}</h3>
+        <ul class="demo-landing__showcase-benefits">
+          <li>{{ jaraba_icon('commerce', 'store', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Tu tienda digital propia: aceite, vino, queso, miel y más{% endtrans %}</li>
+          <li>{{ jaraba_icon('commerce', 'qr-code', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Trazabilidad QR: del olivar a la botella, verificable por el cliente{% endtrans %}</li>
+          <li>{{ jaraba_icon('commerce', 'delivery-truck', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Gestión de pedidos y logística con alertas automáticas{% endtrans %}</li>
+        </ul>
+        <p class="demo-landing__showcase-differentiator">{% trans %}No es una gran plataforma genérica donde te pierdes entre miles. Es TU tienda digital, con tu marca, tus precios y el 100% del margen.{% endtrans %}</p>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="demo-landing__showcase-cta demo-start-btn">
+          {% trans %}Probar AgroConecta{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+        </a>
+      </div>
+      <div class="demo-landing__showcase-image">
+        <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/producer.webp"
+             alt="{% trans %}Tienda digital AgroConecta con productos del campo{% endtrans %}"
+             width="400" height="300" loading="lazy">
+      </div>
     </div>
   </div>
 
   {# S7-05: Social proof — cuántas personas exploran la demo ahora. #}
   {% if active_demo_count > 0 %}
     <div class="demo-social-proof" aria-label="{{ 'Prueba social'|t }}">
-      {{ jaraba_icon('business', 'users', { size: '16px', color: 'verde-innovacion' }) }}
+      {{ jaraba_icon('users', 'users', { size: '16px', color: 'verde-innovacion' }) }}
       {{ '@count personas están explorando la demo ahora'|t({'@count': active_demo_count}) }}
     </div>
   {% endif %}
@@ -62,11 +219,11 @@
 
   {# Features #}
   <div class="demo-features">
-    <h3 class="demo-features__title">{{ '¿Qué podrás hacer?'|t }}</h3>
+    <h3 class="demo-features__title">{{ '¿Qué podrás hacer en la demo?'|t }}</h3>
     <ul class="demo-features__list">
       <li class="demo-features__item">
-        {{ jaraba_icon('ai', 'sparkles', { size: '18px', color: 'naranja-impulso' }) }}
-        <strong>{{ 'Ver tu dashboard'|t }}</strong> {{ 'con métricas simuladas'|t }}
+        {{ jaraba_icon('analytics', 'dashboard', { size: '18px', color: 'naranja-impulso' }) }}
+        <strong>{{ 'Ver tu panel de control'|t }}</strong> {{ 'con métricas simuladas'|t }}
       </li>
       <li class="demo-features__item">
         {{ jaraba_icon('ai', 'brain', { size: '18px', color: 'verde-innovacion' }) }}
@@ -74,7 +231,7 @@
       </li>
       <li class="demo-features__item">
         {{ jaraba_icon('commerce', 'cart', { size: '18px', color: 'azul-corporativo' }) }}
-        <strong>{{ 'Explorar el marketplace'|t }}</strong> {{ 'con productos reales'|t }}
+        <strong>{{ 'Explorar el catálogo digital'|t }}</strong> {{ 'con productos de ejemplo'|t }}
       </li>
       <li class="demo-features__item">
         {{ jaraba_icon('analytics', 'chart-line', { size: '18px', color: 'azul-corporativo' }) }}
@@ -91,12 +248,16 @@
     </p>
   </div>
 
-  {# CTA Conversión #}
+  {# CTA Conversión — ruta genérica, no fija a un vertical #}
   <div class="demo-cta-convert">
-    <p class="demo-cta-convert__text">{{ '¿Te gustó lo que viste?'|t }}</p>
-    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: 'emprendimiento' }) }}"
-       class="demo-cta-convert__btn">
-      {{ 'Crear Cuenta Real'|t }} &rarr;
+    <p class="demo-cta-convert__text">{{ '¿Listo para empezar?'|t }}</p>
+    <a href="{{ path('user.register') }}"
+       class="demo-cta-convert__btn" data-track-cta="demo_bottom_register">
+      {{ 'Crear tu cuenta gratis'|t }} &rarr;
     </a>
+    <p class="demo-cta-convert__subtext">{{ 'Sin compromiso · Sin tarjeta de crédito · Acceso inmediato'|t }}</p>
   </div>
 </div>
+
+{# S10-01: Soft gate — modal de captura de lead pre-demo. #}
+{% include '@ecosistema_jaraba_core/partials/_demo-lead-gate.html.twig' %}

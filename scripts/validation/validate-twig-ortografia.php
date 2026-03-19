@@ -309,6 +309,14 @@ foreach ($files as $file) {
     $context = mb_substr(trim($trans_text), 0, 80);
 
     // 1. Buscar palabras del diccionario (tildes + ñ).
+    // Exclusiones contextuales: palabras que son validas como verbo imperativo
+    // pero incorrectas como adjetivo (ej: "Publica contenido" = verbo OK,
+    // "red Publica" = adjetivo necesita tilde).
+    $verb_imperative_exclusions = [
+      // 'wrong' => regex que detecta uso como verbo imperativo (palabra al inicio o tras punto/coma + seguida de sustantivo/articulo)
+      'Publica' => '/\bPublica\s+(?:y\s+\w+|contenido|tu|el|la|los|las|un|una|en|con|sin|para|desde|hasta)\b/ui',
+      'publica' => '/\bpublica\s+(?:y\s+\w+|contenido|tu|el|la|los|las|un|una|en|con|sin|para|desde|hasta)\b/ui',
+    ];
     foreach ($diccionario as $wrong => $correct) {
       // Skip no-op entries (wrong === correct).
       if ($wrong === $correct) {
@@ -316,6 +324,10 @@ foreach ($files as $file) {
       }
       $word_pattern = '/\b' . preg_quote($wrong, '/') . '\b/u';
       if (preg_match($word_pattern, $trans_text)) {
+        // Check verb imperative context exclusion.
+        if (isset($verb_imperative_exclusions[$wrong]) && preg_match($verb_imperative_exclusions[$wrong], $trans_text)) {
+          continue;
+        }
         $errors[] = [
           'file' => $relative,
           'line' => $line_number,

@@ -43,7 +43,7 @@ class SubscriptionContextService {
     'personalizacion_marca' => ['label' => 'Personalización de colores y logo', 'icon_cat' => 'ui', 'icon_name' => 'palette'],
     'api_access' => ['label' => 'Acceso API completo', 'icon_cat' => 'ui', 'icon_name' => 'code'],
     'webhooks' => ['label' => 'Webhooks', 'icon_cat' => 'ui', 'icon_name' => 'webhook'],
-    'firma_digital' => ['label' => 'Firma digital', 'icon_cat' => 'business', 'icon_name' => 'signature'],
+    'firma_digital' => ['label' => 'Firma digital', 'icon_cat' => 'compliance', 'icon_name' => 'signature'],
     'trazabilidad_basica' => ['label' => 'Trazabilidad básica', 'icon_cat' => 'business', 'icon_name' => 'route'],
     'trazabilidad_avanzada' => ['label' => 'Trazabilidad avanzada', 'icon_cat' => 'business', 'icon_name' => 'route'],
     'agentes_ia_limitados' => ['label' => 'Agentes IA (limitados)', 'icon_cat' => 'ai', 'icon_name' => 'sparkles'],
@@ -51,20 +51,20 @@ class SubscriptionContextService {
     // Emprendimiento.
     'calculadora_madurez' => ['label' => 'Calculadora de madurez digital', 'icon_cat' => 'analytics', 'icon_name' => 'gauge'],
     'bmc_ia' => ['label' => 'Business Model Canvas con IA', 'icon_cat' => 'business', 'icon_name' => 'grid'],
-    'validacion_mvp' => ['label' => 'Validación MVP (Lean Startup)', 'icon_cat' => 'business', 'icon_name' => 'experiment'],
-    'mastermind_grupal' => ['label' => 'Mastermind grupal (max 8 personas)', 'icon_cat' => 'business', 'icon_name' => 'users'],
+    'validacion_mvp' => ['label' => 'Validación MVP (Lean Startup)', 'icon_cat' => 'analytics', 'icon_name' => 'experiment'],
+    'mastermind_grupal' => ['label' => 'Mastermind grupal (max 8 personas)', 'icon_cat' => 'navigation', 'icon_name' => 'users'],
     'proyecciones_financieras' => ['label' => 'Proyecciones financieras', 'icon_cat' => 'analytics', 'icon_name' => 'chart-line'],
     'health_score' => ['label' => 'Health Score empresarial', 'icon_cat' => 'analytics', 'icon_name' => 'heart-pulse'],
-    'credenciales_digitales' => ['label' => 'Credenciales digitales', 'icon_cat' => 'business', 'icon_name' => 'badge'],
+    'credenciales_digitales' => ['label' => 'Credenciales digitales', 'icon_cat' => 'ui', 'icon_name' => 'badge'],
     'copilot_ia' => ['label' => 'Copilot IA básico', 'icon_cat' => 'ai', 'icon_name' => 'sparkles'],
     'copilot_proactivo' => ['label' => 'Copilot proactivo con IA', 'icon_cat' => 'ai', 'icon_name' => 'sparkles'],
     'email_nurturing' => ['label' => 'Email nurturing automatizado', 'icon_cat' => 'ui', 'icon_name' => 'mail'],
     'acceso_financiacion' => ['label' => 'Acceso a financiación', 'icon_cat' => 'business', 'icon_name' => 'banknotes'],
-    'niveles_expertise' => ['label' => 'Niveles de expertise', 'icon_cat' => 'business', 'icon_name' => 'trophy'],
-    'journey_personalizado' => ['label' => 'Itinerario personalizado', 'icon_cat' => 'business', 'icon_name' => 'map'],
+    'niveles_expertise' => ['label' => 'Niveles de expertise', 'icon_cat' => 'achievement', 'icon_name' => 'trophy'],
+    'journey_personalizado' => ['label' => 'Itinerario personalizado', 'icon_cat' => 'ui', 'icon_name' => 'map'],
     'motor_experimentos_ab' => ['label' => 'Motor de experimentos A/B', 'icon_cat' => 'analytics', 'icon_name' => 'split'],
     'puentes_cross_vertical' => ['label' => 'Integraciones cross-vertical', 'icon_cat' => 'ui', 'icon_name' => 'link'],
-    'cross_sell' => ['label' => 'Recomendaciones de productos', 'icon_cat' => 'business', 'icon_name' => 'shopping-cart'],
+    'cross_sell' => ['label' => 'Recomendaciones de productos', 'icon_cat' => 'ui', 'icon_name' => 'shopping-cart'],
     'analytics' => ['label' => 'Panel de analíticas', 'icon_cat' => 'analytics', 'icon_name' => 'chart-bar'],
     'ab_testing' => ['label' => 'Testing A/B avanzado', 'icon_cat' => 'analytics', 'icon_name' => 'split'],
     'premium_blocks' => ['label' => 'Bloques premium del Page Builder', 'icon_cat' => 'ui', 'icon_name' => 'layout'],
@@ -194,6 +194,7 @@ class SubscriptionContextService {
         'status_label' => $this->getStatusLabel($subscriptionStatus),
         'trial_ends' => $trialEnds ? date('d/m/Y', (int) $trialEnds) : NULL,
         'trial_days_remaining' => $trialDaysRemaining,
+        'has_billing_customer' => $this->hasBillingCustomer($tenant),
       ],
       'features' => [
         'included' => $this->mapFeatureLabels($currentFeatures),
@@ -494,6 +495,36 @@ class SubscriptionContextService {
         'billing_cycle' => 'monthly',
       ],
     ];
+  }
+
+  /**
+   * Comprueba si el tenant tiene un billing_customer con Stripe ID.
+   *
+   * Necesario para habilitar el boton "Gestionar suscripcion" del portal
+   * de Stripe. Sin billing_customer, el endpoint portal-session devuelve 404.
+   *
+   * @param object $tenant
+   *   The tenant entity.
+   */
+  protected function hasBillingCustomer(object $tenant): bool {
+    try {
+      if (!$this->entityTypeManager->hasDefinition('billing_customer')) {
+        return FALSE;
+      }
+      $customers = $this->entityTypeManager
+        ->getStorage('billing_customer')
+        ->loadByProperties(['tenant_id' => $tenant->id()]);
+      if ($customers === []) {
+        return FALSE;
+      }
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $customer */
+      $customer = reset($customers);
+      $stripeId = $customer->get('stripe_customer_id')->value ?? '';
+      return $stripeId !== '';
+    }
+    catch (\Throwable) {
+      return FALSE;
+    }
   }
 
   /**

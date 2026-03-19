@@ -109,23 +109,40 @@
     </p>
 
     <div class="ped-hero__actions">
-      <a href="{{ variant ? variant.cta_primary_url : (h.cta_primary.url|default(urls.register|default('/user/register'))) }}"
-         class="btn-primary btn-primary--large"
-         data-track-cta="hero_register"
-         data-track-position="homepage_hero">
-        <span>{{ variant ? variant.cta_primary_text : (h.cta_primary.text|default('Empezar gratis'|t)) }}</span>
-      </a>
+      {% if logged_in %}
+        <a href="{{ urls.dashboard|default('/user') }}"
+           class="btn-primary btn-primary--large"
+           data-track-cta="hero_dashboard"
+           data-track-position="homepage_hero">
+          <span>{% trans %}Ir al dashboard{% endtrans %}</span>
+        </a>
+      {% else %}
+        <a href="{{ variant ? variant.cta_primary_url : (h.cta_primary.url|default(urls.register|default('/user/register'))) }}"
+           class="btn-primary btn-primary--large"
+           data-track-cta="hero_register"
+           data-track-position="homepage_hero">
+          <span>{{ variant ? variant.cta_primary_text : (h.cta_primary.text|default('Empezar gratis'|t)) }}</span>
+        </a>
+      {% endif %}
 
-      <a href="{{ h.cta_secondary.url|default(urls.metodo|default('/metodo')) }}"
+      <a href="#product-demo"
          class="btn-secondary btn-secondary--large"
-         data-track-cta="hero_method"
+         data-track-cta="hero_platform_preview"
          data-track-position="homepage_hero">
-        <span>{{ variant ? variant.cta_secondary_text : (h.cta_secondary.text|default('Conoce el metodo'|t)) }}</span>
+        <span>{{ variant ? variant.cta_secondary_text : (h.cta_secondary.text|default('Ver la plataforma en acción'|t)) }}</span>
         <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
           <path d="M8 4L14 10L8 16" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
       </a>
     </div>
+    {# Quiz CTA — visible para todos #}
+    <p class="hero-landing__quiz-link">
+      {% trans %}¿No sabes cuál elegir?{% endtrans %}
+      <a href="{{ language_prefix|default('') }}/test-vertical"
+         data-track-cta="hero_quiz" data-track-position="homepage_hero">
+        {% trans %}Haz el test de 30 segundos{% endtrans %} →
+      </a>
+    </p>
   </div>
 </section>
 
@@ -170,28 +187,49 @@
     </div>
   </div>
 
-  {# CTAs Principales — Top-of-funnel: registro + método #}
+  {# CTAs Principales — Top-of-funnel: registro + demo visual #}
   <div class="hero-landing__actions">
-    <a href="{{ h.cta_primary.url|default('/user/register') }}"
-       class="btn-primary btn-primary--large btn-primary--glow"
-       data-track-cta="hero_register"
-       data-track-position="homepage_hero">
-      <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
-        <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor"/>
-      </svg>
-      <span>{% if ab_variants.homepage_hero_cta.label is defined %}{{ ab_variants.homepage_hero_cta.label }}{% elseif h.cta_primary.text %}{{ h.cta_primary.text }}{% else %}{% trans %}Empezar gratis{% endtrans %}{% endif %}</span>
-    </a>
+    {% set urls = ped_urls|default({}) %}
+    {% if logged_in %}
+      <a href="{{ urls.dashboard|default(path('user.page')) }}"
+         class="btn-primary btn-primary--large btn-primary--glow"
+         data-track-cta="hero_dashboard"
+         data-track-position="homepage_hero">
+        <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+          <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor"/>
+        </svg>
+        <span>{% trans %}Ir al dashboard{% endtrans %}</span>
+      </a>
+    {% else %}
+      <a href="{{ h.cta_primary.url|default(urls.register|default(path('user.register'))) }}"
+         class="btn-primary btn-primary--large btn-primary--glow"
+         data-track-cta="hero_register"
+         data-track-position="homepage_hero">
+        <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+          <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor"/>
+        </svg>
+        <span>{% if ab_variants.homepage_hero_cta.label is defined %}{{ ab_variants.homepage_hero_cta.label }}{% elseif h.cta_primary.text %}{{ h.cta_primary.text }}{% else %}{% trans %}Empezar gratis{% endtrans %}{% endif %}</span>
+      </a>
+    {% endif %}
 
-    <a href="{{ h.cta_secondary.url|default('/metodo') }}"
+    <a href="#product-demo"
        class="btn-secondary btn-secondary--large"
-       data-track-cta="hero_method"
+       data-track-cta="hero_platform_preview"
        data-track-position="homepage_hero">
-      <span>{% if h.cta_secondary.text %}{{ h.cta_secondary.text }}{% else %}{% trans %}Conoce el método{% endtrans %}{% endif %}</span>
+      <span>{% if h.cta_secondary.text %}{{ h.cta_secondary.text }}{% else %}{% trans %}Ver la plataforma en acción{% endtrans %}{% endif %}</span>
       <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
         <path d="M8 4L14 10L8 16" fill="none" stroke="currentColor" stroke-width="2"/>
       </svg>
     </a>
   </div>
+  {# Quiz CTA — visible para todos (anónimos y logueados) #}
+  <p class="hero-landing__quiz-link">
+    {% trans %}¿No sabes cuál elegir?{% endtrans %}
+    <a href="{{ language_prefix|default('') }}/test-vertical"
+       data-track-cta="hero_quiz" data-track-position="homepage_hero">
+      {% trans %}Haz el test de 30 segundos{% endtrans %} →
+    </a>
+  </p>
 
   {# Trust Bar — Credibilidad verificable #}
   <div class="hero-landing__trust-bar" aria-label="{% trans %}Certificaciones y estándares{% endtrans %}">

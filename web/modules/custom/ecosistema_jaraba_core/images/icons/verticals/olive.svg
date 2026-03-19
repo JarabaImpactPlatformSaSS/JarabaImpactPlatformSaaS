@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Rama de olivo -->
+  <path d="M12 3c0 0-2 4-2 8s2 8 2 8"/>
+  <path d="M12 3c0 0 2 4 2 8s-2 8-2 8"/>
+  <!-- Aceituna -->
+  <ellipse cx="8" cy="10" rx="3" ry="4"/>
+  <!-- Hoja -->
+  <path d="M15 6c2-1 4 0 5 2s0 4-2 5c-2 1-4 0-5-2s0-4 2-5z"/>
+</svg>

@@ -1,22 +1,25 @@
 {#
 /**
  * @file
- * _product-demo.html.twig
+ * _product-demo.html.twig — Sección "Mira la plataforma" de la homepage.
  *
- * Sección de demo / screenshots del producto para homepage.
- *
- * Sprint 4 — Remaining Audit Items (#9)
- * Muestra capturas de pantalla del producto real para que el visitante
- * vea la interfaz antes de registrarse ("try before you buy").
+ * 7 pestañas que muestran lo que el SaaS entrega realmente.
+ * Cada pestaña responde: ¿Qué hace por mí? ¿Cómo resuelve mi problema?
+ * ¿Qué lo diferencia?
  *
  * DIRECTRICES:
- * - i18n: {% trans %}
- * - CSS: BEM + design tokens
- * - A11y: aria-label, alt text
+ * - i18n: {% trans %} bloque, sin anglicismos
+ * - CSS: BEM + tokens --ej-*
+ * - A11y: role="tablist", aria-selected
+ * - ICON-CONVENTION-001: jaraba_icon() categorías verificadas
+ * - ROUTE-LANGPREFIX-001: path() para URLs
+ * - NO-HARDCODE-PRICE-001: precios de ejemplo visual, no reales
+ *
+ * @see docs/implementacion/2026-03-19_Plan_Pestanas_Mira_Plataforma_Clase_Mundial_v1.md
  */
 #}
 
-<section class="product-demo" aria-labelledby="product-demo-title">
+<section id="product-demo" class="product-demo" aria-labelledby="product-demo-title">
   <div class="product-demo__container">
 
     <header class="product-demo__header">
@@ -25,68 +28,136 @@
         {% trans %}Todo lo que necesitas, en un solo lugar{% endtrans %}
       </h2>
       <p class="product-demo__subtitle">
-        {% trans %}Dashboard inteligente, copiloto IA integrado y herramientas especializadas para cada vertical.{% endtrans %}
+        {% trans %}Panel inteligente, copiloto IA, pagos integrados y herramientas para cada sector.{% endtrans %}
       </p>
     </header>
 
     <div class="product-demo__showcase">
-      {# Tabs de features principales #}
       <div class="product-demo__tabs" role="tablist" aria-label="{% trans %}Funcionalidades{% endtrans %}">
-        <button class="product-demo__tab product-demo__tab--active" role="tab" aria-selected="true" data-demo-tab="dashboard">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-          {% trans %}Dashboard{% endtrans %}
+        <button class="product-demo__tab product-demo__tab--active" role="tab" aria-selected="true" data-demo-tab="usecases">
+          {{ jaraba_icon('verticals', 'layers', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Casos de uso{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="dashboard">
+          {{ jaraba_icon('analytics', 'chart-bar', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Tu panel{% endtrans %}
         </button>
         <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="copilot">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26C18.81 13.47 20 11.38 20 9a7 7 0 0 0-7-7Z" stroke="currentColor" stroke-width="1.5"/>
-            <line x1="10" y1="22" x2="14" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+          {{ jaraba_icon('ai', 'copilot', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
           {% trans %}Copiloto IA{% endtrans %}
         </button>
-        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="analytics">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M3 20h18M6 16v-4M10 16V8M14 16v-6M18 16V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          {% trans %}Analytics{% endtrans %}
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="payments">
+          {{ jaraba_icon('commerce', 'cart', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Cobra en línea{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="catalog">
+          {{ jaraba_icon('commerce', 'store', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Tu catálogo{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="publish">
+          {{ jaraba_icon('ui', 'globe', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Publica y posiciona{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="grow">
+          {{ jaraba_icon('verticals', 'rocket', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {% trans %}Crece sin límites{% endtrans %}
         </button>
       </div>
 
-      {# Preview de features — mockup visual #}
       <div class="product-demo__preview">
-        <div class="product-demo__screen" data-demo-panel="dashboard" aria-hidden="false">
+
+        {# ═══ 1. CASOS DE USO: carrusel 6 verticales ═══ #}
+        <div class="product-demo__screen" data-demo-panel="usecases" aria-hidden="false">
+          <div class="product-demo__usecase-carousel">
+            <div class="product-demo__usecase product-demo__usecase--active" data-usecase="0">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/lawfirm.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'legal', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}JarabaLex{% endtrans %}</h3>
+                <p>{% trans %}Gestiona expedientes, analiza jurisprudencia con IA y firma documentos con validez legal europea.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'lawfirm' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase" data-usecase="1" style="display:none">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/startup.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'emprendimiento', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Emprendimiento{% endtrans %}</h3>
+                <p>{% trans %}Valida tu idea con IA, construye tu modelo de negocio y haz seguimiento de tus métricas clave.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'startup' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase" data-usecase="2" style="display:none">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/academy.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'formacion', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Formación{% endtrans %}</h3>
+                <p>{% trans %}Crea cursos, gestiona alumnos, emite certificados y cobra directamente con tu propia academia.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'academy' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase" data-usecase="3" style="display:none">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/comercio.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'comercioconecta', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}ComercioConecta{% endtrans %}</h3>
+                <p>{% trans %}Tu tienda digital con catálogo, códigos QR para el escaparate y copiloto IA que optimiza tus ventas.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'buyer' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase" data-usecase="4" style="display:none">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/servicios.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'serviciosconecta', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}ServiciosConecta{% endtrans %}</h3>
+                <p>{% trans %}Agenda de citas, presupuestos por IA y reseñas verificadas para profesionales autónomos.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'servicepro' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase" data-usecase="5" style="display:none">
+              <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/producer.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
+              <div class="product-demo__usecase-body">
+                <h3>{{ jaraba_icon('verticals', 'agroconecta', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}AgroConecta{% endtrans %}</h3>
+                <p>{% trans %}Del campo a la mesa: tu tienda de aceite, vino o queso con trazabilidad QR y gestión de envíos.{% endtrans %}</p>
+                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+              </div>
+            </div>
+            <div class="product-demo__usecase-dots">
+              <button class="product-demo__usecase-dot product-demo__usecase-dot--active" data-usecase-goto="0" aria-label="JarabaLex"></button>
+              <button class="product-demo__usecase-dot" data-usecase-goto="1" aria-label="{% trans %}Emprendimiento{% endtrans %}"></button>
+              <button class="product-demo__usecase-dot" data-usecase-goto="2" aria-label="{% trans %}Formación{% endtrans %}"></button>
+              <button class="product-demo__usecase-dot" data-usecase-goto="3" aria-label="ComercioConecta"></button>
+              <button class="product-demo__usecase-dot" data-usecase-goto="4" aria-label="ServiciosConecta"></button>
+              <button class="product-demo__usecase-dot" data-usecase-goto="5" aria-label="AgroConecta"></button>
+            </div>
+          </div>
+        </div>
+
+        {# ═══ 2. TU PANEL: dashboard diario ═══ #}
+        <div class="product-demo__screen" data-demo-panel="dashboard" aria-hidden="true" style="display:none">
           <div class="product-demo__mockup">
             <div class="product-demo__browser-bar">
               <span class="product-demo__dot"></span>
               <span class="product-demo__dot"></span>
               <span class="product-demo__dot"></span>
-              <span class="product-demo__url-bar">app.jarabaimpact.com/dashboard</span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/panel</span>
             </div>
             <div class="product-demo__content">
               <div class="product-demo__sidebar">
-                <div class="product-demo__nav-item product-demo__nav-item--active">Dashboard</div>
-                <div class="product-demo__nav-item">Empleabilidad</div>
-                <div class="product-demo__nav-item">Emprendimiento</div>
-                <div class="product-demo__nav-item">AgroConecta</div>
-                <div class="product-demo__nav-item">Copiloto IA</div>
+                <div class="product-demo__nav-item product-demo__nav-item--active">{% trans %}Panel{% endtrans %}</div>
+                <div class="product-demo__nav-item">{% trans %}Productos{% endtrans %}</div>
+                <div class="product-demo__nav-item">{% trans %}Clientes{% endtrans %}</div>
+                <div class="product-demo__nav-item">{% trans %}Facturación{% endtrans %}</div>
+                <div class="product-demo__nav-item">{% trans %}Copiloto IA{% endtrans %}</div>
               </div>
               <div class="product-demo__main">
                 <div class="product-demo__stat-grid">
                   <div class="product-demo__stat-card">
                     <span class="product-demo__stat-value">1.247</span>
-                    <span class="product-demo__stat-label">{% trans %}Usuarios activos{% endtrans %}</span>
+                    <span class="product-demo__stat-label">{% trans %}Clientes activos{% endtrans %}</span>
                   </div>
                   <div class="product-demo__stat-card product-demo__stat-card--highlight">
-                    <span class="product-demo__stat-value">89%</span>
-                    <span class="product-demo__stat-label">{% trans %}Satisfacción{% endtrans %}</span>
+                    <span class="product-demo__stat-value">&euro;8.450</span>
+                    <span class="product-demo__stat-label">{% trans %}Ingresos del mes{% endtrans %}</span>
                   </div>
                   <div class="product-demo__stat-card">
-                    <span class="product-demo__stat-value">342</span>
-                    <span class="product-demo__stat-label">{% trans %}Tareas IA{% endtrans %}</span>
+                    <span class="product-demo__stat-value">89%</span>
+                    <span class="product-demo__stat-label">{% trans %}Satisfacción{% endtrans %}</span>
                   </div>
                 </div>
                 <div class="product-demo__chart-placeholder">
@@ -101,6 +172,7 @@
           </div>
         </div>
 
+        {# ═══ 3. COPILOTO IA ═══ #}
         <div class="product-demo__screen" data-demo-panel="copilot" aria-hidden="true" style="display:none">
           <div class="product-demo__mockup">
             <div class="product-demo__browser-bar">
@@ -111,18 +183,18 @@
             </div>
             <div class="product-demo__content product-demo__content--chat">
               <div class="product-demo__chat-bubble product-demo__chat-bubble--user">
-                {% trans %}Necesito mejorar mi CV para el sector tecnológico{% endtrans %}
+                {% trans %}Necesito redactar un contrato de prestación de servicios para un cliente nuevo{% endtrans %}
               </div>
               <div class="product-demo__chat-bubble product-demo__chat-bubble--ai">
-                {% trans %}He analizado tu perfil. Aquí tienes 3 sugerencias concretas para destacar tu experiencia técnica:{% endtrans %}
+                {% trans %}He preparado un borrador basado en la normativa española vigente. Incluye:{% endtrans %}
                 <ul>
-                  <li>{% trans %}Añade métricas cuantificables a cada rol{% endtrans %}</li>
-                  <li>{% trans %}Destaca tus certificaciones técnicas{% endtrans %}</li>
-                  <li>{% trans %}Adapta las keywords al puesto objetivo{% endtrans %}</li>
+                  <li>{% trans %}Cláusulas de protección de datos (RGPD){% endtrans %}</li>
+                  <li>{% trans %}Condiciones de pago y penalizaciones{% endtrans %}</li>
+                  <li>{% trans %}Jurisdicción y resolución de conflictos{% endtrans %}</li>
                 </ul>
               </div>
               <div class="product-demo__chat-bubble product-demo__chat-bubble--user">
-                {% trans %}¿Puedes reescribir mi experiencia actual?{% endtrans %}
+                {% trans %}¿Puedes adaptarlo para un servicio de consultoría mensual?{% endtrans %}
               </div>
               <div class="product-demo__chat-typing">
                 <span></span><span></span><span></span>
@@ -131,48 +203,170 @@
           </div>
         </div>
 
-        <div class="product-demo__screen" data-demo-panel="analytics" aria-hidden="true" style="display:none">
+        {# ═══ 4. COBRA EN LÍNEA: pasarela de pago ═══ #}
+        <div class="product-demo__screen" data-demo-panel="payments" aria-hidden="true" style="display:none">
           <div class="product-demo__mockup">
             <div class="product-demo__browser-bar">
               <span class="product-demo__dot"></span>
               <span class="product-demo__dot"></span>
               <span class="product-demo__dot"></span>
-              <span class="product-demo__url-bar">app.jarabaimpact.com/analytics</span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/pago</span>
             </div>
-            <div class="product-demo__content product-demo__content--analytics">
-              <h3 class="product-demo__panel-title">{% trans %}Métricas de impacto{% endtrans %}</h3>
-              <div class="product-demo__metric-bars">
-                <div class="product-demo__metric-row">
-                  <span>{% trans %}Empleabilidad{% endtrans %}</span>
-                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:85%"></div></div>
-                  <span>85%</span>
+            <div class="product-demo__content product-demo__content--payments">
+              <div class="product-demo__payment-preview">
+                <div class="product-demo__payment-invoice">
+                  {{ jaraba_icon('ui', 'file-text', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+                  <div>
+                    <strong>{% trans %}Factura #2026-0034{% endtrans %}</strong>
+                    <span>{% trans %}Consultoría estratégica — marzo 2026{% endtrans %}</span>
+                  </div>
+                  <span class="product-demo__payment-amount">&euro;150,00</span>
                 </div>
-                <div class="product-demo__metric-row">
-                  <span>{% trans %}Emprendimiento{% endtrans %}</span>
-                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:72%"></div></div>
-                  <span>72%</span>
+                <div class="product-demo__payment-methods">
+                  <span class="product-demo__payment-method-title">{% trans %}Métodos de pago disponibles{% endtrans %}</span>
+                  <div class="product-demo__payment-icons">
+                    <span class="product-demo__payment-badge">Visa</span>
+                    <span class="product-demo__payment-badge">Mastercard</span>
+                    <span class="product-demo__payment-badge">Bizum</span>
+                    <span class="product-demo__payment-badge">Apple Pay</span>
+                    <span class="product-demo__payment-badge">Google Pay</span>
+                    <span class="product-demo__payment-badge">SEPA</span>
+                  </div>
                 </div>
-                <div class="product-demo__metric-row">
-                  <span>{% trans %}AgroConecta{% endtrans %}</span>
-                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:91%"></div></div>
-                  <span>91%</span>
-                </div>
-                <div class="product-demo__metric-row">
-                  <span>{% trans %}ComercioConecta{% endtrans %}</span>
-                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:68%"></div></div>
-                  <span>68%</span>
+                <div class="product-demo__payment-btn">{% trans %}Pagar ahora{% endtrans %}</div>
+                <div class="product-demo__payment-secure">
+                  {{ jaraba_icon('ui', 'shield-check', { size: '14px', variant: 'duotone', color: 'verde-innovacion' }) }}
+                  {% trans %}Pago seguro · Cifrado SSL · Sin comisiones ocultas{% endtrans %}
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {# ═══ 5. TU CATÁLOGO: tienda digital ═══ #}
+        <div class="product-demo__screen" data-demo-panel="catalog" aria-hidden="true" style="display:none">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/tienda</span>
+            </div>
+            <div class="product-demo__content product-demo__content--catalog">
+              <div class="product-demo__catalog-grid">
+                <div class="product-demo__catalog-card">
+                  <img class="product-demo__catalog-img" src="/themes/custom/ecosistema_jaraba_theme/images/demo/catalog-aceite.webp" alt="{% trans %}Aceite Virgen Extra{% endtrans %}" width="400" height="400" loading="lazy">
+                  <strong>{% trans %}Aceite Virgen Extra{% endtrans %}</strong>
+                  <span class="product-demo__catalog-price">&euro;15,90</span>
+                  <span class="product-demo__catalog-badge">{{ jaraba_icon('commerce', 'qr-code', { size: '12px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Trazabilidad QR{% endtrans %}</span>
+                </div>
+                <div class="product-demo__catalog-card">
+                  <img class="product-demo__catalog-img" src="/themes/custom/ecosistema_jaraba_theme/images/demo/catalog-legal.webp" alt="{% trans %}Consultoría Legal{% endtrans %}" width="400" height="400" loading="lazy">
+                  <strong>{% trans %}Consultoría Legal{% endtrans %}</strong>
+                  <span class="product-demo__catalog-price">&euro;75,00/h</span>
+                  <span class="product-demo__catalog-badge">{{ jaraba_icon('ui', 'calendar', { size: '12px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Reserva en línea{% endtrans %}</span>
+                </div>
+                <div class="product-demo__catalog-card">
+                  <img class="product-demo__catalog-img" src="/themes/custom/ecosistema_jaraba_theme/images/demo/catalog-curso.webp" alt="{% trans %}Curso de Marketing{% endtrans %}" width="400" height="400" loading="lazy">
+                  <strong>{% trans %}Curso de Marketing Digital{% endtrans %}</strong>
+                  <span class="product-demo__catalog-price">&euro;99,00</span>
+                  <span class="product-demo__catalog-badge">{{ jaraba_icon('education', 'graduation-cap', { size: '12px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}12 lecciones{% endtrans %}</span>
+                </div>
+              </div>
+              <div class="product-demo__catalog-footer">
+                {% trans %}Tu marca · Tus precios · Sin comisiones de intermediarios{% endtrans %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══ 6. PUBLICA Y POSICIONA: editor + SEO ═══ #}
+        <div class="product-demo__screen" data-demo-panel="publish" aria-hidden="true" style="display:none">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/publicar</span>
+            </div>
+            <div class="product-demo__content product-demo__content--publish">
+              <div class="product-demo__publish-editor">
+                <span class="product-demo__publish-label">{% trans %}Editor visual{% endtrans %}</span>
+                <div class="product-demo__publish-block">{% trans %}Cabecera{% endtrans %}</div>
+                <div class="product-demo__publish-block">{% trans %}Servicios{% endtrans %}</div>
+                <div class="product-demo__publish-block">{% trans %}Testimonios{% endtrans %}</div>
+                <div class="product-demo__publish-block product-demo__publish-block--add">+ {% trans %}Añadir bloque{% endtrans %}</div>
+              </div>
+              <div class="product-demo__publish-seo">
+                <span class="product-demo__publish-label">{% trans %}Posicionamiento{% endtrans %}</span>
+                <div class="product-demo__seo-score">
+                  <span class="product-demo__seo-number">92</span>
+                  <span>{% trans %}Puntuación SEO{% endtrans %}</span>
+                </div>
+                <ul class="product-demo__seo-checks">
+                  <li>&#10003; {% trans %}Posicionamiento local activado{% endtrans %}</li>
+                  <li>&#10003; {% trans %}Ficha de negocio verificada{% endtrans %}</li>
+                  <li>&#10003; {% trans %}Multiidioma: ES, EN, FR, DE{% endtrans %}</li>
+                  <li>&#10003; {% trans %}Datos estructurados automáticos{% endtrans %}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══ 7. CRECE SIN LÍMITES: migración vertical ═══ #}
+        <div class="product-demo__screen" data-demo-panel="grow" aria-hidden="true" style="display:none">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/mi-ecosistema</span>
+            </div>
+            <div class="product-demo__content product-demo__content--grow">
+              <div class="product-demo__grow-story">
+                <h3>{% trans %}Tu negocio evoluciona. Tu plataforma también.{% endtrans %}</h3>
+                <div class="product-demo__grow-timeline">
+                  <div class="product-demo__grow-step product-demo__grow-step--done">
+                    {{ jaraba_icon('verticals', 'emprendimiento', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+                    <span>{% trans %}Empezaste emprendiendo{% endtrans %}</span>
+                  </div>
+                  <div class="product-demo__grow-arrow">&rarr;</div>
+                  <div class="product-demo__grow-step product-demo__grow-step--done">
+                    {{ jaraba_icon('verticals', 'formacion', { size: '20px', variant: 'duotone', color: 'verde-innovacion' }) }}
+                    <span>{% trans %}Añadiste formación{% endtrans %}</span>
+                  </div>
+                  <div class="product-demo__grow-arrow">&rarr;</div>
+                  <div class="product-demo__grow-step product-demo__grow-step--active">
+                    {{ jaraba_icon('verticals', 'legal', { size: '20px', variant: 'duotone', color: 'naranja-impulso' }) }}
+                    <span>{% trans %}Ahora necesitas asesoría legal{% endtrans %}</span>
+                  </div>
+                </div>
+                <p class="product-demo__grow-benefit">{% trans %}Activa verticales con un clic. Sin migrar datos, sin empezar de cero. Tus clientes, facturas e historial siempre contigo.{% endtrans %}</p>
+                <div class="product-demo__grow-badge">
+                  {% trans %}<strong>10 verticales</strong> disponibles · Activa solo los que necesites · Cancela cuando quieras{% endtrans %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
     <div class="product-demo__cta">
-      <a href="/user/register" class="btn btn--primary btn--lg" data-track-cta="product_demo_register">
-        {% trans %}Pruébalo gratis{% endtrans %}
-      </a>
+      {% if logged_in %}
+        <a href="{{ path('ecosistema_jaraba_core.dashboard.auto') }}" class="btn btn--primary btn--lg" data-track-cta="product_demo_dashboard">
+          {% trans %}Ir a mi panel{% endtrans %}
+        </a>
+      {% else %}
+        <a href="{{ path('ecosistema_jaraba_core.demo_landing') }}" class="btn btn--primary btn--lg" data-track-cta="product_demo_full_demo">
+          {% trans %}Accede a la demo completa{% endtrans %}
+        </a>
+        <a href="{{ path('user.register') }}" class="btn btn--outline btn--lg" data-track-cta="product_demo_register">
+          {% trans %}Crea tu cuenta gratis{% endtrans %}
+        </a>
+      {% endif %}
     </div>
 
   </div>

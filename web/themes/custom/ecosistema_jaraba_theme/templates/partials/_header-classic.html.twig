@@ -51,90 +51,45 @@
           <div class="header__mega-panel" role="menu" aria-label="{% trans %}Solutions menu{% endtrans %}">
             <div class="mega-panel__container">
               <div class="mega-panel__columns">
-
-                {# Columna 1: Para Profesionales #}
-                <div class="mega-panel__column">
-                  <h3 class="mega-panel__title">{% trans %}Para Profesionales{% endtrans %}</h3>
-                  <ul class="mega-panel__list">
-                    <li>
-                      <a href="{{ lp }}/empleabilidad" class="mega-panel__link">
-                        <strong>{% trans %}Empleabilidad{% endtrans %}</strong>
-                        <small>{% trans %}Impulsa tu carrera profesional{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/talento" class="mega-panel__link">
-                        <strong>{% trans %}Talento{% endtrans %}</strong>
-                        <small>{% trans %}Conecta con oportunidades{% endtrans %}</small>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                {# Columna 2: Para Empresas #}
-                <div class="mega-panel__column">
-                  <h3 class="mega-panel__title">{% trans %}Para Empresas{% endtrans %}</h3>
-                  <ul class="mega-panel__list">
-                    <li>
-                      <a href="{{ lp }}/emprendimiento" class="mega-panel__link">
-                        <strong>{% trans %}Emprendimiento{% endtrans %}</strong>
-                        <small>{% trans %}De la idea al negocio{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/jarabalex" class="mega-panel__link">
-                        <strong>{% trans %}JarabaLex{% endtrans %}</strong>
-                        <small>{% trans %}Inteligencia legal con IA{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/comercioconecta" class="mega-panel__link">
-                        <strong>{% trans %}ComercioConecta{% endtrans %}</strong>
-                        <small>{% trans %}Comercio local digital{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/agroconecta" class="mega-panel__link">
-                        <strong>{% trans %}AgroConecta{% endtrans %}</strong>
-                        <small>{% trans %}Marketplace agroalimentario{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/serviciosconecta" class="mega-panel__link">
-                        <strong>{% trans %}ServiciosConecta{% endtrans %}</strong>
-                        <small>{% trans %}Servicios profesionales{% endtrans %}</small>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                {# Columna 3: Para Instituciones + Promo CTA #}
-                <div class="mega-panel__column">
-                  <h3 class="mega-panel__title">{% trans %}Para Instituciones{% endtrans %}</h3>
-                  <ul class="mega-panel__list">
-                    <li>
-                      <a href="{{ lp }}/instituciones" class="mega-panel__link">
-                        <strong>{% trans %}Instituciones{% endtrans %}</strong>
-                        <small>{% trans %}Impulsa tu territorio{% endtrans %}</small>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ lp }}/andalucia-ei" class="mega-panel__link">
-                        <strong>{% trans %}Andalucía +ei{% endtrans %}</strong>
-                        <small>{% trans %}Programa de empleo institucional{% endtrans %}</small>
-                      </a>
-                    </li>
-                  </ul>
-                  {# Promo card #}
-                  <div class="mega-panel__promo" style="margin-top: 1rem;">
-                    <h4>{% trans %}¿No sabes cuál elegir?{% endtrans %}</h4>
-                    <p>{% trans %}Haz nuestro test de 1 minuto y te recomendamos la mejor solución.{% endtrans %}</p>
-                    <a href="{{ lp }}/user/register" class="btn-primary btn-primary--sm">
-                      {% trans %}Empezar gratis{% endtrans %} →
-                    </a>
+                {% for column in mega_menu_columns|default([]) %}
+                  <div class="mega-panel__column">
+                    <h3 class="mega-panel__title">{{ column.title }}</h3>
+                    <ul class="mega-panel__list">
+                      {% for item in column.items|default([]) %}
+                        <li>
+                          <a href="{{ item.url }}" class="mega-panel__link">
+                            <span class="mega-panel__link-icon">
+                              {{ jaraba_icon(item.icon_cat, item.icon_name, { variant: 'duotone', size: '28px', color: item.color }) }}
+                            </span>
+                            <span class="mega-panel__link-text">
+                              <strong>{{ item.title }}</strong>
+                              <small>{{ item.subtitle }}</small>
+                            </span>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    {% if column.has_promo|default(false) %}
+                      <div class="mega-panel__promo">
+                        {% if logged_in %}
+                          <h4>{% trans %}Amplía tu ecosistema{% endtrans %}</h4>
+                          <p>{% trans %}Activa verticales adicionales y desbloquea nuevas herramientas para tu negocio.{% endtrans %}</p>
+                          <a href="{{ lp }}/addons" class="btn-primary btn-primary--sm"
+                             data-track-cta="megamenu_addons" data-track-position="megamenu_promo">
+                            {% trans %}Ver catálogo{% endtrans %} →
+                          </a>
+                        {% else %}
+                          <h4>{% trans %}¿No sabes cuál elegir?{% endtrans %}</h4>
+                          <p>{% trans %}Descubre en 30 segundos cuál es la solución perfecta para ti.{% endtrans %}</p>
+                          <a href="{{ lp }}/test-vertical" class="btn-primary btn-primary--sm"
+                             data-track-cta="megamenu_quiz" data-track-position="megamenu_promo">
+                            {% trans %}Hacer el test{% endtrans %} →
+                          </a>
+                        {% endif %}
+                      </div>
+                    {% endif %}
                   </div>
-                </div>
-
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -188,7 +143,8 @@
 
       {# CTA principal — respeta enable_header_cta de theme settings / SiteConfig #}
       {% if ts.enable_header_cta|default(false) %}
-        <a href="{{ lp }}{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
+        <a href="{{ lp }}{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow"
+           data-track-cta="header_cta_primary" data-track-position="header_classic">
           {{ ts.header_cta_text|default('Empieza gratis'|t) }} →
         </a>
       {% endif %}

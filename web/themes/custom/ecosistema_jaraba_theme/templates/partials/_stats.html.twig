@@ -33,18 +33,18 @@
 
 {# Fallback PED: Métricas de impacto humano verificables #}
 {% set ped_stats = [
-  { value: 100, suffix: 'M+', label: 'EUR dinamizados en proyectos'|t },
-  { value: 30, suffix: '+', label: 'años gestionando fondos europeos'|t },
-  { value: 3, suffix: '', label: 'emprendedores lanzados con éxito'|t },
+  { value: 100, suffix: 'M+', label: 'EUR gestionados en fondos europeos'|t },
+  { value: 50, suffix: '.000+', label: 'personas formadas'|t },
+  { value: 30, suffix: '+', label: 'años de experiencia'|t },
   { value: 11, suffix: '', label: 'agentes IA especializados'|t }
 ] %}
 
-{# Fallback generico: Datos del programa #}
+{# Fallback generico: Métricas orientadas a valor usuario #}
 {% set default_stats = [
-  { value: 10, suffix: '', label: 'Verticales especializados'|t },
-  { value: 11, suffix: '', label: 'Agentes IA Gen 2'|t },
-  { value: 80, suffix: '+', label: 'Módulos custom Drupal 11'|t },
-  { value: 100, suffix: '%', label: 'Recomendarían el programa'|t }
+  { value: 50, suffix: '.000+', label: 'personas formadas'|t },
+  { value: 100, suffix: 'M+', label: 'EUR gestionados'|t },
+  { value: 11, suffix: '', label: 'agentes IA Gen 2'|t },
+  { value: 30, suffix: '+', label: 'años de experiencia'|t }
 ] %}
 
 {% set stat_items = stats|default([])|length > 0 ? stats : (is_ped ? ped_stats : default_stats) %}

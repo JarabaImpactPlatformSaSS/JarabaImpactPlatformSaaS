@@ -12,61 +12,179 @@
  */
 #}
 
-{# Fallback: Si no hay features dinámicas, usar hardcodeadas con SVGs originales #}
+{# Fallback: 6 cards con propuesta de valor completa #}
 {% set default_features = [
   {
     title: 'Configuración en minutos'|t,
-    description: 'Tu ecosistema digital funcionando desde el día uno, sin código'|t,
+    description: 'Registra tu organización, elige tu vertical y empieza a trabajar. Sin código, sin esperas, sin consultor.'|t,
     badge: 'Rápido'|t,
-    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="176" class="icon-circle"/><path d="M32 18v14l10 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="4" fill="currentColor"/></svg>'
+    badge_class: '',
+    icon_cat: 'ui',
+    icon_name: 'clock',
+    icon_color: 'naranja-impulso'
   },
   {
-    title: '11 Agentes IA Gen 2'|t,
-    description: 'Copiloto de carrera, matching inteligente 5D, asistente de emprendimiento, reclutador IA, escritor de contenidos, soporte y 5 agentes más especializados por vertical'|t,
-    badge: 'IA avanzada'|t,
-    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated icon-animated--brain"><ellipse cx="32" cy="28" rx="18" ry="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 44c-2 4 0 8 4 10M40 44c2 4 0 8-4 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 24c4-4 8-4 12 0M30 24c4-4 8-4 12 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="icon-pulse"/><circle cx="26" cy="30" r="3" fill="currentColor" class="icon-blink"/><circle cx="38" cy="30" r="3" fill="currentColor" class="icon-blink"/><path d="M28 38c2 2 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    title: 'IA nativa en cada vertical'|t,
+    description: '11 agentes especializados: copiloto jurídico, asistente de emprendimiento, matching de empleo, escritor de contenidos y más — todos entrenados en tu contexto.'|t,
+    badge: '11 agentes IA'|t,
+    badge_class: ' feature-card__badge--ai',
+    icon_cat: 'ai',
+    icon_name: 'sparkles',
+    icon_color: 'naranja-impulso'
   },
   {
-    title: 'Multi-vertical'|t,
-    description: 'Empleabilidad, emprendimiento, agroalimentario, comercio, servicios, legal, formación, talento, inserción y demo — todos con copiloto IA y firma digital'|t,
-    badge: '10 verticales'|t,
-    icon_svg: '<svg viewBox="0 0 64 64" width="64" height="64" class="icon-animated icon-animated--cube"><path d="M32 8L56 20v24L32 56 8 44V20z" fill="none" stroke="currentColor" stroke-width="2" class="icon-float"/><path d="M32 32L8 20M32 32v24M32 32l24-12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="8" r="3" fill="currentColor"/><circle cx="56" cy="20" r="3" fill="currentColor"/><circle cx="8" cy="20" r="3" fill="currentColor"/><circle cx="32" cy="56" r="3" fill="currentColor"/></svg>'
+    title: 'Crece vertical y horizontalmente'|t,
+    description: 'Empieza con Empleabilidad, añade ComercioConecta cuando lances tu tienda, activa JarabaLex cuando necesites gestión legal. Un ecosistema que crece contigo.'|t,
+    badge: '9 verticales'|t,
+    badge_class: ' feature-card__badge--multi',
+    icon_cat: 'verticals',
+    icon_name: 'ecosystem',
+    icon_color: 'verde-innovacion'
+  },
+  {
+    title: 'Una plataforma, no 10 herramientas'|t,
+    description: 'CRM, facturación, web, marketplace, IA, firma digital, formación — todo integrado. Eliminas suscripciones duplicadas y datos dispersos.'|t,
+    badge: 'Todo en uno'|t,
+    badge_class: '',
+    icon_cat: 'verticals',
+    icon_name: 'layers',
+    icon_color: 'azul-corporativo'
+  },
+  {
+    title: 'Tu marca, tu dominio, tu diseño'|t,
+    description: 'Personaliza colores, logo, tipografía y dominio propio. Tus clientes ven tu marca, no la nuestra. White label desde el plan Profesional.'|t,
+    badge: 'White label'|t,
+    badge_class: '',
+    icon_cat: 'general',
+    icon_name: 'settings',
+    icon_color: 'azul-corporativo'
+  },
+  {
+    title: 'Seguridad y cumplimiento europeo'|t,
+    description: 'RGPD nativo, datos en servidores europeos (IONOS Frankfurt), cifrado en tránsito y reposo, backups diarios. Preparado para auditorías.'|t,
+    badge: 'RGPD'|t,
+    badge_class: '',
+    icon_cat: 'compliance',
+    icon_name: 'shield-check',
+    icon_color: 'verde-innovacion'
   }
 ] %}
 
 {% set feature_items = features|default([])|length > 0 ? features : default_features %}
+{% set lp = language_prefix|default('') %}
+
+{% set color_map = {
+  1: 'primary',
+  2: 'secondary',
+  3: 'corporate',
+  4: 'primary',
+  5: 'secondary',
+  6: 'corporate'
+} %}
 
 <section class="features-section" aria-labelledby="features-title">
   <div class="features-section__container">
     <h2 id="features-title" class="section-title">
       {% trans %}¿Por qué Jaraba Impact Platform?{% endtrans %}
     </h2>
-    
-    <div class="features-grid">
+    <p class="section-subtitle">
+      {% trans %}La única plataforma que crece contigo: empieza con lo que necesitas hoy y amplía sin límites.{% endtrans %}
+    </p>
+
+    <div class="features-grid features-grid--6">
       {% for feature in feature_items %}
-        <article class="feature-card feature-card--animated reveal-element reveal-fade-up" {% if loop.index0 > 0 %}style="--reveal-delay: {{ loop.index0 * 0.1 }}s;"{% endif %}>
+        <article class="feature-card feature-card--animated reveal-element reveal-fade-up" style="--reveal-delay: {{ loop.index0 * 0.08 }}s;">
           <div class="feature-card__visual">
-            <div class="feature-card__bg-pattern{% if loop.index == 2 %} feature-card__bg-pattern--secondary{% elseif loop.index == 3 %} feature-card__bg-pattern--corporate{% endif %}"></div>
-            <div class="feature-card__icon feature-card__icon--{% if loop.index == 1 %}primary{% elseif loop.index == 2 %}secondary{% else %}corporate{% endif %}">
-              {# Si el feature viene de la BD (tiene campo icon), usar jaraba_icon() #}
-              {% if feature.icon and not feature.icon_svg %}
-                {{ jaraba_icon('ui', feature.icon, { size: '64px', color: loop.index == 1 ? 'primary' : (loop.index == 2 ? 'secondary' : 'corporate') }) }}
-              {% else %}
-                {# Fallback: SVG inline para datos por defecto #}
-                {# AUDIT-SEC-02: |raw for SVG from preprocess — sanitize to SVG-safe tags #}
-                {{ feature.icon_svg|striptags('<svg><path><circle><rect><line><polyline><polygon><g><defs><use><symbol><clipPath><mask><text><tspan>')|raw }}
+            <div class="feature-card__bg-pattern feature-card__bg-pattern--{{ color_map[loop.index]|default('primary') }}"></div>
+            <div class="feature-card__icon feature-card__icon--{{ color_map[loop.index]|default('primary') }}">
+              {% if feature.icon_cat is defined %}
+                {{ jaraba_icon(feature.icon_cat, feature.icon_name, { variant: 'duotone', size: '48px', color: feature.icon_color|default('azul-corporativo') }) }}
+              {% elseif feature.icon_svg is defined %}
+                {{ feature.icon_svg|striptags('<svg><path><circle><rect><line><polyline><polygon><g><defs><use><symbol><clipPath><mask><text><tspan><ellipse>')|raw }}
               {% endif %}
             </div>
           </div>
           <h3 class="feature-card__title">{{ feature.title }}</h3>
           <p class="feature-card__description">{{ feature.description }}</p>
           {% if feature.badge %}
-            <span class="feature-card__badge{% if loop.index == 2 %} feature-card__badge--ai{% elseif loop.index == 3 %} feature-card__badge--multi{% endif %}">
+            <span class="feature-card__badge{{ feature.badge_class|default('') }}">
               {{ feature.badge }}
             </span>
           {% endif %}
         </article>
       {% endfor %}
+    </div>
+
+    {# Ejemplo de crecimiento — storytelling visual premium con iconos y animaciones #}
+    <div class="features-growth reveal-element reveal-fade-up" style="--reveal-delay: 0.5s;">
+      <div class="features-growth__header">
+        <span class="features-growth__badge">{% trans %}Caso real{% endtrans %}</span>
+        <h3 class="features-growth__title">{% trans %}Así crece María con la plataforma{% endtrans %}</h3>
+        <p class="features-growth__subtitle">{% trans %}De buscar empleo a gestionar su propio negocio digital en 12 meses.{% endtrans %}</p>
+        <img src="/{{ directory }}/images/features/growth-journey.png"
+             alt="{% trans %}Recorrido de crecimiento: de CV a ecosistema digital completo{% endtrans %}"
+             class="features-growth__illustration"
+             loading="lazy"
+             width="1024" height="1024">
+      </div>
+
+      <div class="features-growth__timeline">
+        {# Línea conectora animada (solo desktop) #}
+        <div class="features-growth__line" aria-hidden="true"></div>
+
+        <div class="features-growth__step" style="--step-delay: 0s;">
+          <div class="features-growth__step-icon features-growth__step-icon--verde-innovacion">
+            {{ jaraba_icon('verticals', 'empleabilidad', { variant: 'duotone', size: '28px', color: 'verde-innovacion' }) }}
+          </div>
+          <span class="features-growth__step-num">1</span>
+          <div class="features-growth__step-content">
+            <strong>{% trans %}Mes 1{% endtrans %}</strong>
+            <p>{% trans %}Empieza con <b>Empleabilidad</b>: crea su CV con IA y consigue 3 entrevistas en 2 semanas.{% endtrans %}</p>
+            <span class="features-growth__step-metric">{% trans %}3 entrevistas en 14 días{% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="features-growth__step" style="--step-delay: 0.15s;">
+          <div class="features-growth__step-icon features-growth__step-icon--naranja-impulso">
+            {{ jaraba_icon('verticals', 'emprendimiento', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+          </div>
+          <span class="features-growth__step-num">2</span>
+          <div class="features-growth__step-content">
+            <strong>{% trans %}Mes 4{% endtrans %}</strong>
+            <p>{% trans %}Activa <b>Emprendimiento</b>: valida su idea con Lean Canvas y lanza su primer servicio de consultoría.{% endtrans %}</p>
+            <span class="features-growth__step-metric">{% trans %}Primera venta en 3 semanas{% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="features-growth__step" style="--step-delay: 0.3s;">
+          <div class="features-growth__step-icon features-growth__step-icon--naranja-impulso">
+            {{ jaraba_icon('verticals', 'comercioconecta', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+          </div>
+          <span class="features-growth__step-num">3</span>
+          <div class="features-growth__step-content">
+            <strong>{% trans %}Mes 8{% endtrans %}</strong>
+            <p>{% trans %}Añade <b>ComercioConecta</b>: abre su tienda online con pagos integrados y gestión de pedidos.{% endtrans %}</p>
+            <span class="features-growth__step-metric">{% trans %}+45 pedidos el primer mes{% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="features-growth__step" style="--step-delay: 0.45s;">
+          <div class="features-growth__step-icon features-growth__step-icon--azul-corporativo">
+            {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', size: '28px', color: 'azul-corporativo' }) }}
+          </div>
+          <span class="features-growth__step-num">4</span>
+          <div class="features-growth__step-content">
+            <strong>{% trans %}Mes 12{% endtrans %}</strong>
+            <p>{% trans %}Su ecosistema completo: <b>3 verticales</b>, copiloto IA, CRM, facturación y web propia — todo desde un solo panel.{% endtrans %}</p>
+            <span class="features-growth__step-metric">{% trans %}Facturación mensual recurrente{% endtrans %}</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="{{ lp }}/test-vertical" class="features-growth__cta btn-primary btn-primary--glow"
+         data-track-cta="features_quiz" data-track-position="homepage_features">
+        {% trans %}Descubre tu punto de partida{% endtrans %} →
+      </a>
     </div>
   </div>
 </section>

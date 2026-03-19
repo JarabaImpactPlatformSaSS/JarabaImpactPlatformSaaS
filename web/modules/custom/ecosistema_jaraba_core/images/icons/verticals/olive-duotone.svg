@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <!-- Rama de olivo - stroke layer -->
+  <path d="M12 3c0 0-2 4-2 8s2 8 2 8" stroke="#233D63" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 3c0 0 2 4 2 8s-2 8-2 8" stroke="#233D63" stroke-width="2" stroke-linecap="round"/>
+  <!-- Aceituna - filled layer -->
+  <ellipse cx="8" cy="10" rx="3" ry="4" fill="#556B2F" stroke="#233D63" stroke-width="1.5"/>
+  <!-- Hoja - filled layer -->
+  <path d="M15 6c2-1 4 0 5 2s0 4-2 5c-2 1-4 0-5-2s0-4 2-5z" fill="#FF8C42" stroke="#233D63" stroke-width="1.5"/>
+</svg>

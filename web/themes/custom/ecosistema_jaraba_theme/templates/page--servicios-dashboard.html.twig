@@ -39,25 +39,25 @@
       </div>
 
       <nav class="servicios-sidebar__nav" aria-label="{% trans %}Provider navigation{% endtrans %}">
-        <a href="/mi-servicio" class="servicios-sidebar__link{{ current_path == '/mi-servicio' ? ' is-active' : '' }}">
+        <a href="{{ path('jaraba_servicios_conecta.provider_portal') }}" class="servicios-sidebar__link{{ current_path == '/mi-servicio' ? ' is-active' : '' }}">
           {{ jaraba_icon('ui', 'dashboard', { variant: 'duotone', size: '20px' }) }}
           <span>{% trans %}Dashboard{% endtrans %}</span>
         </a>
-        <a href="/mi-servicio/servicios" class="servicios-sidebar__link{{ '/mi-servicio/servicios' in current_path ? ' is-active' : '' }}">
+        <a href="{{ path('jaraba_servicios_conecta.provider_portal.offerings') }}" class="servicios-sidebar__link{{ '/mi-servicio/servicios' in current_path ? ' is-active' : '' }}">
           {{ jaraba_icon('ui', 'package', { variant: 'duotone', size: '20px' }) }}
-          <span>{% trans %}My Services{% endtrans %}</span>
+          <span>{% trans %}Mis Servicios{% endtrans %}</span>
         </a>
-        <a href="/mi-servicio/reservas" class="servicios-sidebar__link{{ '/mi-servicio/reservas' in current_path ? ' is-active' : '' }}">
+        <a href="{{ path('jaraba_servicios_conecta.provider_portal.bookings') }}" class="servicios-sidebar__link{{ '/mi-servicio/reservas' in current_path ? ' is-active' : '' }}">
           {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '20px' }) }}
-          <span>{% trans %}Bookings{% endtrans %}</span>
+          <span>{% trans %}Reservas{% endtrans %}</span>
         </a>
-        <a href="/mi-servicio/calendario" class="servicios-sidebar__link{{ '/mi-servicio/calendario' in current_path ? ' is-active' : '' }}">
+        <a href="{{ path('jaraba_servicios_conecta.provider_portal.calendar') }}" class="servicios-sidebar__link{{ '/mi-servicio/calendario' in current_path ? ' is-active' : '' }}">
           {{ jaraba_icon('ui', 'building', { variant: 'duotone', size: '20px' }) }}
-          <span>{% trans %}Calendar{% endtrans %}</span>
+          <span>{% trans %}Calendario{% endtrans %}</span>
         </a>
-        <a href="/mi-servicio/perfil" class="servicios-sidebar__link{{ '/mi-servicio/perfil' in current_path ? ' is-active' : '' }}">
+        <a href="{{ path('jaraba_servicios_conecta.provider_portal.profile') }}" class="servicios-sidebar__link{{ '/mi-servicio/perfil' in current_path ? ' is-active' : '' }}">
           {{ jaraba_icon('ui', 'user', { variant: 'duotone', size: '20px' }) }}
-          <span>{% trans %}Profile{% endtrans %}</span>
+          <span>{% trans %}Perfil{% endtrans %}</span>
         </a>
       </nav>
     </aside>

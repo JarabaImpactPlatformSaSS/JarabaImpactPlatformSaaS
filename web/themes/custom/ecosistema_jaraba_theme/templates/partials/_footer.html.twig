@@ -195,7 +195,7 @@
       { name: 'Jaraba Impact'|t, url: 'https://jarabaimpact.com' },
       { name: 'PED Corporativo'|t, url: 'https://plataformadeecosistemas.es' },
       { name: 'Plataforma SaaS'|t, url: 'https://plataformadeempresas.com', current: (meta_site is null) },
-      { name: 'Centro de Ayuda'|t, url: '/ayuda' },
+      { name: 'Centro de Ayuda'|t, url: lp ~ '/ayuda' },
     ] %}
     {% set eco_links = ts.ecosystem_footer_links|default(eco_links_default) %}
     {% if eco_enabled and eco_links|length > 0 %}
