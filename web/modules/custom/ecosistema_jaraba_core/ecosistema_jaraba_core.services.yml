@@ -1956,6 +1956,18 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
 
+  # Daily Actions globales (__global__): aparecen en TODOS los dashboards.
+  # Cross-vertical: crear contenido es accion frecuente para todo tenant user.
+  ecosistema_jaraba_core.daily_action.crear_pagina_global:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\CrearPaginaGlobalAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  ecosistema_jaraba_core.daily_action.crear_articulo_global:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\CrearArticuloGlobalAction
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
   # Daily Action: Revisar suscripción (GAP-PRICING-010, PLG-UPGRADE-UI-001)
   ecosistema_jaraba_core.daily_action.review_subscription:
     class: Drupal\ecosistema_jaraba_core\DailyActions\ReviewSubscriptionAction

@@ -44,7 +44,8 @@ class DailyActionsRegistry {
    * Quick check if a dashboard has any registered actions.
    */
   public function hasDashboard(string $dashboardId): bool {
-    return !empty($this->actions[$dashboardId]);
+    return isset($this->actions[$dashboardId]) && $this->actions[$dashboardId] !== []
+        || isset($this->actions[self::GLOBAL_DASHBOARD_ID]) && $this->actions[self::GLOBAL_DASHBOARD_ID] !== [];
   }
 
   /**
@@ -74,12 +75,28 @@ class DailyActionsRegistry {
    *   badge_type: string,
    * }>
    */
+  /**
+   * Global dashboard ID for actions injected into ALL dashboards.
+   *
+   * Mirrors SetupWizardRegistry's __global__ pattern (ZEIGARNIK-PRELOAD-001).
+   * Actions with this dashboard ID are appended to EVERY dashboard's actions.
+   * Typical use: cross-vertical actions like "Create page" or "Create article"
+   * that every tenant user should see regardless of their avatar.
+   */
+  public const GLOBAL_DASHBOARD_ID = '__global__';
+
   public function getActionsForDashboard(string $dashboardId, int $tenantId): array {
-    if (!$this->hasDashboard($dashboardId)) {
-      return [];
+    $dashboardActions = $this->actions[$dashboardId] ?? [];
+
+    // Merge global actions into every dashboard (like __global__ wizard steps).
+    $globalActions = $this->actions[self::GLOBAL_DASHBOARD_ID] ?? [];
+    if ($globalActions !== [] && $dashboardId !== self::GLOBAL_DASHBOARD_ID) {
+      $dashboardActions = array_merge($dashboardActions, $globalActions);
     }
 
-    $dashboardActions = $this->actions[$dashboardId];
+    if ($dashboardActions === []) {
+      return [];
+    }
     usort($dashboardActions, fn(DailyActionInterface $a, DailyActionInterface $b) => $a->getWeight() <=> $b->getWeight());
 
     $result = [];
