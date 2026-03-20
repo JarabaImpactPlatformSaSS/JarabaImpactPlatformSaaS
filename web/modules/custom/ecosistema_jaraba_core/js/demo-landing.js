@@ -79,4 +79,65 @@
     },
   };
 
+  // S15-04: Exit-intent — muestra mini-CTA al detectar abandono.
+  Drupal.behaviors.demoExitIntent = {
+    attach: function (context) {
+      once('demo-exit-intent', 'body', context).forEach(function () {
+        // Solo activar en la landing de demo.
+        if (!document.querySelector('.demo-landing')) { return; }
+
+        var shown = false;
+        var EXIT_INTENT_KEY = 'jaraba_demo_exit_shown';
+
+        // No mostrar si ya se mostró en esta sesión.
+        if (sessionStorage.getItem(EXIT_INTENT_KEY)) { return; }
+
+        // Exit-intent: cursor sale por arriba del viewport.
+        document.addEventListener('mouseout', function (e) {
+          if (shown) { return; }
+          if (e.clientY > 20) { return; }
+          if (e.relatedTarget || e.toElement) { return; }
+          showExitBanner();
+        });
+
+        // Scroll-depth: 80% de la página.
+        var scrollTriggered = false;
+        window.addEventListener('scroll', function () {
+          if (shown || scrollTriggered) { return; }
+          var scrollPct = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+          if (scrollPct >= 0.8) {
+            scrollTriggered = true;
+            showExitBanner();
+          }
+        }, { passive: true });
+
+        function showExitBanner() {
+          if (shown) { return; }
+          shown = true;
+          sessionStorage.setItem(EXIT_INTENT_KEY, '1');
+
+          var banner = document.createElement('div');
+          banner.className = 'demo-exit-banner';
+          banner.setAttribute('role', 'alert');
+          banner.innerHTML = '<div class="demo-exit-banner__content">'
+            + '<span class="demo-exit-banner__text">' + Drupal.t('¿Ya te vas? Prueba la demo en 60 segundos — sin registro') + '</span>'
+            + '<a href="#demo-profiles" class="demo-exit-banner__cta">' + Drupal.t('Ver demos') + ' &rarr;</a>'
+            + '<button class="demo-exit-banner__close" type="button" aria-label="' + Drupal.t('Cerrar') + '">&times;</button>'
+            + '</div>';
+          document.body.appendChild(banner);
+
+          // Animación de entrada.
+          requestAnimationFrame(function () {
+            banner.classList.add('demo-exit-banner--visible');
+          });
+
+          banner.querySelector('.demo-exit-banner__close').addEventListener('click', function () {
+            banner.classList.remove('demo-exit-banner--visible');
+            setTimeout(function () { banner.remove(); }, 300);
+          });
+        }
+      });
+    },
+  };
+
 })(Drupal, once);

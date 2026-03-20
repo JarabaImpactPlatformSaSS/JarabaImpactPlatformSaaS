@@ -18,6 +18,7 @@ use Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService;
 use Drupal\ecosistema_jaraba_core\Service\GuidedTourService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -206,7 +207,7 @@ class DemoController extends ControllerBase
      * Rate limit: 10 req/min por IP (S1-01).
      * Validación: profileId ya validado por regex en routing.yml.
      */
-    public function startDemo(Request $request, string $profileId): array
+    public function startDemo(Request $request, string $profileId): array|RedirectResponse
     {
         // S10-03: Si no hay lead_id, el usuario saltó el soft gate.
         if (!$request->query->has('lead_id')) {
@@ -226,6 +227,14 @@ class DemoController extends ControllerBase
             return [
                 '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
             ];
+        }
+
+        // S13-05: Redirect 301 buyer → gourmet (perfil reemplazado 2026-03-20).
+        if ($profileId === 'buyer') {
+            return new RedirectResponse(
+                Url::fromRoute('ecosistema_jaraba_core.demo_start', ['profileId' => 'gourmet'])->toString(),
+                301
+            );
         }
 
         // S1-02: Validar que el profileId existe en los perfiles registrados.

@@ -124,19 +124,33 @@
       </div>
     </div>
 
-    {# Panel Comercio #}
+    {# Panel Comercio — 3 perfiles: gourmet, boutique, beautypro #}
     <div class="demo-landing__showcase-panel" data-showcase-panel="comercio" style="display:none">
       <div class="demo-landing__showcase-content">
-        <h3>{% trans %}Tu tienda digital, lista para vender{% endtrans %}</h3>
+        <h3>{% trans %}Tu negocio digital, listo para vender{% endtrans %}</h3>
         <ul class="demo-landing__showcase-benefits">
           <li>{{ jaraba_icon('commerce', 'store', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}Catálogo de productos con fotos, variantes y control de inventario{% endtrans %}</li>
-          <li>{{ jaraba_icon('commerce', 'qr-code', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Códigos QR para tu escaparate físico que enlazan a tu tienda digital{% endtrans %}</li>
-          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Copiloto IA que optimiza descripciones de producto y sugerencias de venta{% endtrans %}</li>
+          <li>{{ jaraba_icon('commerce', 'qr-code', { size: '16px', variant: 'duotone', color: 'azul-corporativo' }) }} {% trans %}Reservas, pedidos y pagos integrados con Stripe y Bizum{% endtrans %}</li>
+          <li>{{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Copiloto IA que optimiza descripciones, promociones y atención al cliente{% endtrans %}</li>
         </ul>
-        <p class="demo-landing__showcase-differentiator">{% trans %}No necesitas pagar comisiones a grandes plataformas. Aquí controlas tu marca, tus precios y tu relación directa con el cliente.{% endtrans %}</p>
-        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'buyer' }) }}" class="demo-landing__showcase-cta demo-start-btn">
-          {% trans %}Probar Comercio{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
-        </a>
+        <p class="demo-landing__showcase-differentiator">{% trans %}Sin comisiones de grandes plataformas. Controlas tu marca, tus precios y tu relación directa con el cliente.{% endtrans %}</p>
+        <div class="demo-landing__showcase-profiles">
+          <span class="demo-landing__showcase-profiles-label">{% trans %}Elige tu tipo de negocio:{% endtrans %}</span>
+          <div class="demo-landing__showcase-profiles-grid">
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'gourmet' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_gourmet" data-track-position="showcase_comercio">
+              {{ jaraba_icon('business', 'storefront', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Tienda Gourmet{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'boutique' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_boutique" data-track-position="showcase_comercio">
+              {{ jaraba_icon('commerce', 'store', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Boutique de Moda{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'beautypro' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_beautypro" data-track-position="showcase_comercio">
+              {{ jaraba_icon('commerce', 'star', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Centro de Estética{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+          </div>
+        </div>
       </div>
       <div class="demo-landing__showcase-image">
         <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/comercio.webp"
@@ -166,7 +180,7 @@
       </div>
     </div>
 
-    {# Panel AgroConecta — sin anglicismos #}
+    {# Panel AgroConecta — 3 perfiles: producer, winery, cheese #}
     <div class="demo-landing__showcase-panel" data-showcase-panel="agro" style="display:none">
       <div class="demo-landing__showcase-content">
         <h3>{% trans %}Del campo a la mesa, sin intermediarios{% endtrans %}</h3>
@@ -176,9 +190,23 @@
           <li>{{ jaraba_icon('commerce', 'delivery-truck', { size: '16px', variant: 'duotone', color: 'verde-innovacion' }) }} {% trans %}Gestión de pedidos y logística con alertas automáticas{% endtrans %}</li>
         </ul>
         <p class="demo-landing__showcase-differentiator">{% trans %}No es una gran plataforma genérica donde te pierdes entre miles. Es TU tienda digital, con tu marca, tus precios y el 100% del margen.{% endtrans %}</p>
-        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="demo-landing__showcase-cta demo-start-btn">
-          {% trans %}Probar AgroConecta{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
-        </a>
+        <div class="demo-landing__showcase-profiles">
+          <span class="demo-landing__showcase-profiles-label">{% trans %}Elige tu tipo de producción:{% endtrans %}</span>
+          <div class="demo-landing__showcase-profiles-grid">
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_producer" data-track-position="showcase_agro">
+              {{ jaraba_icon('verticals', 'olive', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Aceite{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'winery' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_winery" data-track-position="showcase_agro">
+              {{ jaraba_icon('verticals', 'wine', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Bodega{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'cheese' }) }}" class="demo-landing__showcase-profile-btn demo-start-btn" data-track-cta="demo_showcase_cheese" data-track-position="showcase_agro">
+              {{ jaraba_icon('verticals', 'cheese', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+              {% trans %}Quesería{% endtrans %} <span class="demo-start-btn__arrow">&rarr;</span>
+            </a>
+          </div>
+        </div>
       </div>
       <div class="demo-landing__showcase-image">
         <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/producer.webp"

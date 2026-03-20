@@ -54,11 +54,11 @@
       </ul>
     </div>
 
-    {# Columna TU CUENTA (14 días gratis en todos los planes) #}
+    {# Columna STARTER (14 días gratis) #}
     <div class="demo-unlock__col demo-unlock__col--real">
       <h3 class="demo-unlock__col-title">
         {{ jaraba_icon('ai', 'sparkles', { size: '16px', variant: 'duotone' }) }}
-        {% trans %}Tu cuenta — 14 días gratis{% endtrans %}
+        {% trans %}Starter — 14 días gratis{% endtrans %}
       </h3>
       <ul class="demo-unlock__list">
         <li class="demo-unlock__item demo-unlock__item--included">
@@ -67,15 +67,11 @@
         </li>
         <li class="demo-unlock__item demo-unlock__item--included">
           {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
-          {% trans %}Todas las funcionalidades del plan{% endtrans %}
+          {% trans %}Copilot IA básico{% endtrans %}
         </li>
         <li class="demo-unlock__item demo-unlock__item--included">
           {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
-          {% trans %}Copilot IA con 11 agentes{% endtrans %}
-        </li>
-        <li class="demo-unlock__item demo-unlock__item--included">
-          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
-          {% trans %}CRM + Page Builder + Analytics{% endtrans %}
+          {% trans %}CRM + Page Builder{% endtrans %}
         </li>
         <li class="demo-unlock__item demo-unlock__item--included">
           {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
@@ -85,10 +81,49 @@
       <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: vertical|default('agroconecta') }) }}"
          class="demo-unlock__cta"
          data-track-cta="demo_unlock_register" data-track-position="demo_unlock">
-        {% trans %}Probar 14 Días Gratis{% endtrans %} &rarr;
+        {% trans %}Empezar Gratis{% endtrans %} &rarr;
       </a>
       <p class="demo-unlock__trial-note">
-        {% trans %}Sin permanencia · Todos los planes incluyen prueba gratuita{% endtrans %}
+        {% trans %}Sin permanencia · Sin tarjeta de crédito{% endtrans %}
+      </p>
+    </div>
+
+    {# S15-03: Columna PROFESSIONAL (plan de pago — NO-HARDCODE-PRICE-001) #}
+    <div class="demo-unlock__col demo-unlock__col--pro">
+      <span class="demo-unlock__popular-badge">{% trans %}Más popular{% endtrans %}</span>
+      <h3 class="demo-unlock__col-title">
+        {{ jaraba_icon('business', 'star', { size: '16px', color: 'naranja-impulso' }) }}
+        {% trans %}Professional{% endtrans %}
+      </h3>
+      <ul class="demo-unlock__list">
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Todo lo del plan Starter{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Copilot IA con 11 agentes{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Analytics avanzadas{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Dominio propio + SEO{% endtrans %}
+        </li>
+        <li class="demo-unlock__item demo-unlock__item--included">
+          {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+          {% trans %}Soporte prioritario{% endtrans %}
+        </li>
+      </ul>
+      <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: vertical|default('agroconecta') }) }}"
+         class="demo-unlock__cta demo-unlock__cta--pro"
+         data-track-cta="demo_unlock_pro" data-track-position="demo_unlock">
+        {% trans %}Empezar con Professional{% endtrans %} &rarr;
+      </a>
+      <p class="demo-unlock__trial-note">
+        {% trans %}14 días gratis en todos los planes{% endtrans %}
       </p>
     </div>
   </div>

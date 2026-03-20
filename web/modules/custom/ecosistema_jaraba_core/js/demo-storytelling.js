@@ -9,6 +9,16 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
+  // S14-02: CSRF-JS-CACHE-001 — token cacheado a nivel de módulo.
+  var csrfTokenPromise = null;
+  function getCsrfToken() {
+    if (!csrfTokenPromise) {
+      csrfTokenPromise = fetch(Drupal.url('session/token'), { credentials: 'same-origin' })
+        .then(function (r) { return r.text(); });
+    }
+    return csrfTokenPromise;
+  }
+
   Drupal.behaviors.demoStorytelling = {
     attach(context) {
       once('demo-storytelling', '[data-demo-storytelling]', context).forEach(function (container) {
@@ -50,40 +60,42 @@
               ? drupalSettings.demoStorytelling.regenerateUrl
               : Drupal.url('demo/' + sessionId + '/storytelling');
 
-            fetch(url, {
-              method: 'POST',
-              headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/json',
-              },
-              credentials: 'same-origin',
-            })
-            .then(function (response) {
-              if (!response.ok) {
-                throw new Error(response.status);
-              }
-              return response.json();
-            })
-            .then(function (data) {
-              var storyEl = container.querySelector('[data-story-content]');
-              if (storyEl && data.story) {
-                storyEl.textContent = data.story;
-              }
-              regenBtn.innerHTML = originalHtml;
-              regenBtn.disabled = false;
-            })
-            .catch(function () {
-              var feedback = container.querySelector('[data-story-feedback]');
-              if (feedback) {
-                feedback.textContent = Drupal.t('No se pudo regenerar la historia. Inténtalo de nuevo.');
-                setTimeout(function () {
-                  feedback.textContent = '';
-                }, 4000);
-              }
-              regenBtn.innerHTML = originalHtml;
-              regenBtn.disabled = false;
+            getCsrfToken().then(function (token) {
+              fetch(url, {
+                method: 'POST',
+                headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': token,
+                },
+                credentials: 'same-origin',
+              })
+              .then(function (response) {
+                if (!response.ok) {
+                  throw new Error(response.status);
+                }
+                return response.json();
+              })
+              .then(function (data) {
+                var storyEl = container.querySelector('[data-story-content]');
+                if (storyEl && data.story) {
+                  storyEl.textContent = data.story;
+                }
+                regenBtn.innerHTML = originalHtml;
+                regenBtn.disabled = false;
+              })
+              .catch(function () {
+                var feedback = container.querySelector('[data-story-feedback]');
+                if (feedback) {
+                  feedback.textContent = Drupal.t('No se pudo regenerar la historia. Inténtalo de nuevo.');
+                  setTimeout(function () {
+                    feedback.textContent = '';
+                  }, 4000);
+                }
+                regenBtn.innerHTML = originalHtml;
+                regenBtn.disabled = false;
+              });
             });
-          });
         }
       });
     },

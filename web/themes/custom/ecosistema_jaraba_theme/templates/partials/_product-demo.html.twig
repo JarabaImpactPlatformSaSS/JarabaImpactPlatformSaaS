@@ -97,8 +97,18 @@
               <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/comercio.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
               <div class="product-demo__usecase-body">
                 <h3>{{ jaraba_icon('verticals', 'comercioconecta', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}ComercioConecta{% endtrans %}</h3>
-                <p>{% trans %}Tu tienda digital con catálogo, códigos QR para el escaparate y copiloto IA que optimiza tus ventas.{% endtrans %}</p>
-                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'buyer' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+                <p>{% trans %}Tu negocio digital sin comisiones: catálogo, reservas, pagos y copiloto IA que optimiza tus ventas.{% endtrans %}</p>
+                <div class="product-demo__usecase-profiles">
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'gourmet' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_gourmet" data-track-position="product_demo">
+                    {{ jaraba_icon('business', 'storefront', { size: '14px', variant: 'duotone' }) }} {% trans %}Gourmet{% endtrans %} &rarr;
+                  </a>
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'boutique' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_boutique" data-track-position="product_demo">
+                    {{ jaraba_icon('commerce', 'store', { size: '14px', variant: 'duotone' }) }} {% trans %}Moda{% endtrans %} &rarr;
+                  </a>
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'beautypro' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_beautypro" data-track-position="product_demo">
+                    {{ jaraba_icon('commerce', 'star', { size: '14px', variant: 'duotone' }) }} {% trans %}Estética{% endtrans %} &rarr;
+                  </a>
+                </div>
               </div>
             </div>
             <div class="product-demo__usecase" data-usecase="4" style="display:none">
@@ -113,8 +123,18 @@
               <img src="/themes/custom/ecosistema_jaraba_theme/images/demo/producer.webp" alt="" class="product-demo__usecase-img" width="360" height="270" loading="lazy">
               <div class="product-demo__usecase-body">
                 <h3>{{ jaraba_icon('verticals', 'agroconecta', { size: '22px', variant: 'duotone', color: 'naranja-impulso' }) }} {% trans %}AgroConecta{% endtrans %}</h3>
-                <p>{% trans %}Del campo a la mesa: tu tienda de aceite, vino o queso con trazabilidad QR y gestión de envíos.{% endtrans %}</p>
-                <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="product-demo__usecase-cta demo-start-btn">{% trans %}Probar demo{% endtrans %} &rarr;</a>
+                <p>{% trans %}Del campo a la mesa: tu tienda con trazabilidad QR, gestión de pedidos y copiloto IA.{% endtrans %}</p>
+                <div class="product-demo__usecase-profiles">
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'producer' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_producer" data-track-position="product_demo">
+                    {{ jaraba_icon('verticals', 'olive', { size: '14px', variant: 'duotone' }) }} {% trans %}Aceite{% endtrans %} &rarr;
+                  </a>
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'winery' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_winery" data-track-position="product_demo">
+                    {{ jaraba_icon('verticals', 'wine', { size: '14px', variant: 'duotone' }) }} {% trans %}Bodega{% endtrans %} &rarr;
+                  </a>
+                  <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: 'cheese' }) }}" class="product-demo__usecase-profile-btn demo-start-btn" data-track-cta="hp_demo_cheese" data-track-position="product_demo">
+                    {{ jaraba_icon('verticals', 'cheese', { size: '14px', variant: 'duotone' }) }} {% trans %}Quesería{% endtrans %} &rarr;
+                  </a>
+                </div>
               </div>
             </div>
             <div class="product-demo__usecase-dots">

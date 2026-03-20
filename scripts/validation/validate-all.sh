@@ -386,6 +386,12 @@ if [ "$MODE" = "full" ]; then
   run_check "DEMO-PROFILE-PERSPECTIVE-001" "Demo profiles B2B perspective" \
     php "$SCRIPT_DIR/validate-demo-profile-perspective.php"
 
+  run_check "DEMO-FEATURES-FORMAT-001" "Demo features rich format (icon+title+desc)" \
+    php "$SCRIPT_DIR/validate-demo-features-format.php"
+
+  run_check "DEMO-MULTI-PROFILE-PARITY-001" "Multi-profile verticals discovery parity" \
+    php "$SCRIPT_DIR/validate-demo-multi-profile-parity.php"
+
   warn_check "SVG-CURRENTCOLOR-001" "SVG currentColor usage in img tags" \
     php "$SCRIPT_DIR/validate-svg-currentcolor.php"
 

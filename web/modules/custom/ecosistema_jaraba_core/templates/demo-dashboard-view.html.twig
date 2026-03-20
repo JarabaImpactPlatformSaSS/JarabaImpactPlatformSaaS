@@ -136,3 +136,29 @@
 
 {# HAL-DEMO-V3-FRONT-003: Modal de conversión — antes ausente en dashboard-view. #}
 {% include '@ecosistema_jaraba_core/partials/_demo-convert-modal.html.twig' %}
+
+{# S15-02: Modal post-expiración — opciones tras countdown=0. #}
+<div class="demo-expired-modal" data-demo-expired-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="demo-expired-title">
+  <div class="demo-expired-modal__overlay"></div>
+  <div class="demo-expired-modal__content">
+    <h3 class="demo-expired-modal__title" id="demo-expired-title">
+      {{ jaraba_icon('ui', 'clock', { size: '24px', color: 'naranja-impulso' }) }}
+      {% trans %}Tu sesión demo ha finalizado{% endtrans %}
+    </h3>
+    <p class="demo-expired-modal__text">
+      {% trans %}¿Te ha gustado lo que has visto? Crea tu cuenta real y empieza a vender con todas las funcionalidades.{% endtrans %}
+    </p>
+    <div class="demo-expired-modal__actions">
+      <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: profile.vertical|default('agroconecta') }) }}"
+         class="demo-expired-modal__cta demo-expired-modal__cta--primary"
+         data-track-cta="demo_expired_register" data-track-position="expired_modal">
+        {% trans %}Crear cuenta gratuita{% endtrans %} &rarr;
+      </a>
+      <a href="{{ path('ecosistema_jaraba_core.demo_landing') }}"
+         class="demo-expired-modal__cta demo-expired-modal__cta--secondary"
+         data-track-cta="demo_expired_try_another" data-track-position="expired_modal">
+        {% trans %}Probar otra demo{% endtrans %}
+      </a>
+    </div>
+  </div>
+</div>

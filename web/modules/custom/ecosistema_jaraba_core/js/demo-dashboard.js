@@ -158,6 +158,14 @@
               if (countdownContainer) {
                 countdownContainer.classList.add('demo-countdown--warning');
               }
+              // S15-02: Mostrar modal post-expiración con opciones.
+              var expiredModal = container.querySelector('[data-demo-expired-modal]');
+              if (expiredModal) {
+                expiredModal.classList.add('demo-expired-modal--open');
+                expiredModal.setAttribute('aria-hidden', 'false');
+                var firstBtn = expiredModal.querySelector('a, button');
+                if (firstBtn) { firstBtn.focus(); }
+              }
               return;
             }
 

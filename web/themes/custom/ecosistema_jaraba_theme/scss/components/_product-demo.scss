@@ -346,6 +346,33 @@
     font-size: 0.875rem;
   }
 
+  // Multi-perfil por vertical (ComercioConecta: gourmet, boutique, beautypro).
+  &__usecase-profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  &__usecase-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--ej-color-primary, #233D63) 20%, transparent);
+    color: var(--ej-bg-surface, #fff);
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--ej-color-primary, #233D63) 35%, transparent);
+      transform: translateY(-1px);
+    }
+  }
+
   &__usecase-dots {
     display: flex;
     justify-content: center;

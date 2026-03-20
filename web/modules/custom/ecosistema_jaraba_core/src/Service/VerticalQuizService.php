@@ -118,7 +118,7 @@ class VerticalQuizService {
       'icon_cat' => 'verticals',
       'icon_name' => 'comercioconecta',
       'color' => 'naranja-impulso',
-      'demo_profile' => 'buyer',
+      'demo_profile' => 'gourmet',
       'benefits' => [
         'Tienda online profesional en minutos',
         'Gestión de pedidos, stock e inventario',

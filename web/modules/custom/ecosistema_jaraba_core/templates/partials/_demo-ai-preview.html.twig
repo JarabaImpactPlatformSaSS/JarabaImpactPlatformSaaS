@@ -78,18 +78,17 @@
         {% endfor %}
       {% endif %}
 
-      {# Card de "Probar Copilot" — CTA principal #}
-      <button class="demo-ai-preview__mode-card demo-ai-preview__mode-card--cta"
-              data-demo-convert-open
-              type="button"
-              data-track-cta="demo_try_copilot"
-              data-track-position="ai_preview">
+      {# S14-04: Card de "Probar Copilot" — navega al AI Playground (no al modal de conversión) #}
+      <a class="demo-ai-preview__mode-card demo-ai-preview__mode-card--cta"
+         href="{{ path('ecosistema_jaraba_core.demo_ai_playground') }}"
+         data-track-cta="demo_try_copilot"
+         data-track-position="ai_preview">
         <div class="demo-ai-preview__mode-icon">
           {{ jaraba_icon('ai', 'brain', { size: '24px', variant: 'duotone' }) }}
         </div>
         <h4 class="demo-ai-preview__mode-title">{% trans %}Probar Copilot Completo{% endtrans %}</h4>
-        <p class="demo-ai-preview__mode-desc">{% trans %}Regístrate gratis y accede a todas las capacidades IA{% endtrans %}</p>
-      </button>
+        <p class="demo-ai-preview__mode-desc">{% trans %}Chatea con la IA y descubre sus capacidades{% endtrans %}</p>
+      </a>
     </div>
   </div>
 

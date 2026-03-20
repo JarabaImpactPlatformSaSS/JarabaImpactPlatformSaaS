@@ -14,9 +14,11 @@
 $root = dirname(__DIR__, 2);
 
 // All demo profiles from DemoInteractiveService::PROFILES
+// S17-02: buyer reemplazado por gourmet/boutique/beautypro (2026-03-20).
 $profiles = [
     'lawfirm', 'startup', 'academy', 'servicepro',
-    'winery', 'producer', 'cheese', 'buyer',
+    'winery', 'producer', 'cheese',
+    'gourmet', 'boutique', 'beautypro',
     'jobseeker', 'socialimpact', 'creator',
 ];
 
