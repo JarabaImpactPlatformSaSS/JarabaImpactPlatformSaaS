@@ -115,6 +115,25 @@
       </div>
     {% endif %}
 
+    {# === CASO DE EXITO — enlace a historia completa === #}
+    {% if proof.case_study is defined and proof.case_study.url is defined %}
+      <div class="landing-social-proof__case-study reveal-element reveal-fade-up">
+        <div class="landing-social-proof__case-study-card">
+          {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '24px', color: 'naranja-impulso' }) }}
+          <div>
+            <h3 class="landing-social-proof__case-study-title">{{ proof.case_study.title }}</h3>
+            <p class="landing-social-proof__case-study-subtitle">{{ proof.case_study.subtitle }}</p>
+          </div>
+          <a href="{{ proof.case_study.url }}"
+             class="btn btn--primary btn--sm"
+             data-track-cta="case_study_{{ vertical_key|default('generic') }}"
+             data-track-position="landing_social_proof">
+            {{ proof.case_study.cta_text|default('Leer caso completo'|trans) }}
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
   </div>
 </section>
 {% endif %}

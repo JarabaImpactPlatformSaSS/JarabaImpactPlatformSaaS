@@ -623,13 +623,20 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Inteligencia legal con IA al alcance de todos'),
         'subheadline' => $this->t('Gestiona tu despacho, investiga jurisprudencia, presenta en LexNET y factura — todo con IA integrada, desde 0 €/mes.'),
         'icon' => ['category' => 'legal', 'name' => 'search-legal'],
+        'hero_image' => '/themes/custom/ecosistema_jaraba_theme/images/demo/lawfirm.webp',
         'cta' => [
           'text' => $this->t('Haz tu diagnóstico legal gratuito'),
           'url' => '/jarabalex/diagnostico-legal',
         ],
         'cta_secondary' => [
-          'text' => $this->t('Ya tengo cuenta'),
-          'url' => Url::fromRoute('user.login')->toString(),
+          'text' => $this->t('Probar demo interactiva'),
+          'url' => Url::fromRoute('ecosistema_jaraba_core.demo_start', ['profileId' => 'lawfirm'])->toString(),
+        ],
+        'trust_badges' => [
+          ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'label' => $this->t('RGPD')],
+          ['icon' => ['category' => 'compliance', 'name' => 'signature'], 'label' => $this->t('eIDAS')],
+          ['icon' => ['category' => 'ai', 'name' => 'brain'], 'label' => $this->t('EU AI Act')],
+          ['icon' => ['category' => 'ui', 'name' => 'lock'], 'label' => $this->t('Cifrado E2E')],
         ],
       ],
       'pain_points' => [
@@ -653,15 +660,67 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Facturación Automatizada'), 'description' => $this->t('Minutas, provisiones de fondos y facturación con serie fiscal legal desde Starter.')],
         ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'title' => $this->t('Bóveda Documental Cifrada'), 'description' => $this->t('Almacenamiento cifrado end-to-end con control de acceso granular y trazabilidad.')],
       ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara JarabaLex?'),
+        'competitors' => [
+          [
+            'name' => 'JarabaLex',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('8 fuentes oficiales integradas'), 'included' => TRUE],
+              ['text' => $this->t('IA semántica con embeddings 3072D'), 'included' => TRUE],
+              ['text' => $this->t('Gestión de expedientes completa'), 'included' => TRUE],
+              ['text' => $this->t('Integración LexNET nativa'), 'included' => TRUE],
+              ['text' => $this->t('Facturación legal automatizada'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA incluido'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'Aranzadi',
+            'highlight' => FALSE,
+            'price' => $this->t('~320 €/mes'),
+            'features' => [
+              ['text' => $this->t('Base documental propietaria'), 'included' => TRUE],
+              ['text' => $this->t('Búsqueda por palabras clave'), 'included' => TRUE],
+              ['text' => $this->t('Solo gestión documental'), 'included' => FALSE],
+              ['text' => $this->t('Sin integración LexNET'), 'included' => FALSE],
+              ['text' => $this->t('Sin facturación'), 'included' => FALSE],
+              ['text' => $this->t('Sin IA generativa'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => $this->t('Manual + Excel'),
+            'highlight' => FALSE,
+            'price' => $this->t('"Gratis"'),
+            'features' => [
+              ['text' => $this->t('Búsqueda manual en cada web'), 'included' => FALSE],
+              ['text' => $this->t('Sin IA'), 'included' => FALSE],
+              ['text' => $this->t('Carpetas y hojas de cálculo'), 'included' => FALSE],
+              ['text' => $this->t('Sin integración juzgados'), 'included' => FALSE],
+              ['text' => $this->t('Facturación manual'), 'included' => FALSE],
+              ['text' => $this->t('Sin asistencia inteligente'), 'included' => FALSE],
+            ],
+          ],
+        ],
+      ],
       'social_proof' => [
         'testimonials' => [
-          ['quote' => $this->t('Antes tardaba horas buscando jurisprudencia. Ahora encuentro resoluciones relevantes en segundos con la búsqueda semántica.'), 'author' => 'Elena', 'role' => $this->t('abogada mercantilista en Madrid')],
-          ['quote' => $this->t('La facturación automática y el control de plazos han transformado cómo gestionamos el bufete.'), 'author' => 'Roberto', 'role' => $this->t('socio de bufete en Sevilla')],
+          ['quote' => $this->t('Pagábamos 320 €/mes por Aranzadi y dedicábamos media mañana a buscar jurisprudencia. Ahora pagamos 149 €/mes y encontramos cualquier resolución en segundos.'), 'author' => 'Elena Martínez', 'role' => $this->t('socia fundadora, Martínez & Asociados (Málaga)')],
+          ['quote' => $this->t('La facturación automática y el control de plazos han transformado cómo gestionamos el bufete. 0 plazos perdidos en 6 meses.'), 'author' => 'Roberto García', 'role' => $this->t('socio de bufete de 5 abogados, Sevilla')],
+          ['quote' => $this->t('Como abogada autónoma, no podía pagar Aranzadi. JarabaLex me da acceso a las mismas fuentes oficiales por lo que cuesta un café al día.'), 'author' => 'Carmen López', 'role' => $this->t('abogada laboralista autónoma, Granada')],
         ],
         'metrics' => [
-          ['value' => '8', 'label' => $this->t('fuentes oficiales integradas')],
-          ['value' => '< 3s', 'label' => $this->t('tiempo medio de búsqueda')],
-          ['value' => '0', 'label' => $this->t('plazos incumplidos con alertas')],
+          ['value' => '-75%', 'label' => $this->t('tiempo de búsqueda jurídica')],
+          ['value' => '-53%', 'label' => $this->t('coste vs herramientas tradicionales')],
+          ['value' => '+40%', 'label' => $this->t('capacidad de gestión de casos')],
+          ['value' => '0', 'label' => $this->t('plazos procesales incumplidos')],
+        ],
+        'case_study' => [
+          'title' => $this->t('Caso de éxito: Martínez & Asociados'),
+          'subtitle' => $this->t('Cómo un despacho de 2 abogados en Málaga redujo un 75% el tiempo de búsqueda jurídica'),
+          'url' => '/jarabalex/caso-de-exito/despacho-martinez',
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -699,9 +758,14 @@ class VerticalLandingController extends ControllerBase
       ],
       'final_cta' => [
         'headline' => $this->t('Empieza a investigar con inteligencia'),
+        'subheadline' => $this->t('Únete a los abogados que ya gestionan su despacho con IA.'),
         'cta' => [
           'text' => $this->t('Crea tu cuenta gratuita'),
           'url' => Url::fromRoute('user.register')->toString(),
+        ],
+        'cta_secondary' => [
+          'text' => $this->t('O prueba la demo interactiva'),
+          'url' => Url::fromRoute('ecosistema_jaraba_core.demo_start', ['profileId' => 'lawfirm'])->toString(),
         ],
       ],
     ]);
