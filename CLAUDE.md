@@ -314,6 +314,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Pre-commit hook: max 10% perdida de lineas + umbrales absolutos:
   DIRECTRICES >= 2000 | ARQUITECTURA >= 2400 | INDICE >= 2000 | FLUJO >= 700
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
+- DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
 - DIRECTRICES: v154.0.0

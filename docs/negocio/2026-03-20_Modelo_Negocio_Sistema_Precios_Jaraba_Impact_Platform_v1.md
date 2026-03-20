@@ -34,6 +34,7 @@
 12. [Proyecciones Financieras (SOM)](#12-proyecciones-financieras)
 13. [Riesgos y Mitigaciones](#13-riesgos-y-mitigaciones)
 14. [Hoja de Ruta Comercial](#14-hoja-de-ruta)
+15. [Glosario de Siglas](#glosario-de-siglas)
 
 ---
 
@@ -867,6 +868,85 @@ Cada tenant tiene un vertical primario (incluido en su plan). Puede anadir funci
 - ATA: Estadisticas autonomos 2025
 - ONTSI: Gasto medio SaaS por PYME 2024
 - El Referente: Ecosistema tech Andalucia 862 empresas
+
+---
+
+## GLOSARIO DE SIGLAS
+
+| Sigla | Significado |
+|-------|------------|
+| **ADA** | Agencia Digital de Andalucia — organismo publico de la Junta que impulsa la transformacion digital |
+| **API** | Application Programming Interface — interfaz de programacion para integracion entre sistemas |
+| **ARPU** | Average Revenue Per User — ingreso medio por usuario (metrica SaaS) |
+| **ATA** | Asociacion de Trabajadores Autonomos — federacion nacional de autonomos |
+| **B2B** | Business-to-Business — modelo de venta entre empresas |
+| **B2B2C** | Business-to-Business-to-Consumer — modelo donde se vende a empresas que a su vez atienden consumidores |
+| **B2C** | Business-to-Consumer — modelo de venta directa al consumidor final |
+| **B2G** | Business-to-Government — modelo de venta a administraciones publicas |
+| **BANT** | Budget, Authority, Need, Timeline — marco de cualificacion de leads comerciales |
+| **BMC** | Business Model Canvas — lienzo de modelo de negocio (metodologia Osterwalder) |
+| **BOE** | Boletin Oficial del Estado — publicacion oficial de legislacion en Espana |
+| **CAGR** | Compound Annual Growth Rate — tasa de crecimiento anual compuesto |
+| **CCAA** | Comunidades Autonomas — divisiones administrativas territoriales de Espana |
+| **CEEI** | Centro Europeo de Empresas e Innovacion — incubadora/aceleradora financiada por la UE |
+| **CGAE** | Consejo General de la Abogacia Espanola — organo de gobierno de los colegios de abogados |
+| **CLM** | Contract Lifecycle Management — gestion del ciclo de vida de contratos |
+| **CRM** | Customer Relationship Management — gestion de relacion con clientes |
+| **CSP** | Content Security Policy — politica de seguridad de contenido web |
+| **CTA** | Call to Action — elemento de la interfaz que invita al usuario a realizar una accion |
+| **CUE** | Cuaderno Digital de Explotacion Agricola — registro obligatorio PAC 2025 |
+| **DAFO** | Debilidades, Amenazas, Fortalezas, Oportunidades — analisis estrategico (equivalente a SWOT) |
+| **DIRCE** | Directorio Central de Empresas — registro estadistico de empresas del INE |
+| **DI** | Dependency Injection — patron de inyeccion de dependencias en Drupal |
+| **EU AI Act** | Reglamento Europeo de Inteligencia Artificial — normativa de la UE sobre IA |
+| **EUR** | Euro — moneda oficial de la zona euro |
+| **FSE+** | Fondo Social Europeo Plus — instrumento financiero de la UE para empleo e inclusion |
+| **FUNDAE** | Fundacion Estatal para la Formacion en el Empleo — gestiona la formacion bonificada en Espana |
+| **HMAC** | Hash-based Message Authentication Code — mecanismo de autenticacion criptografica |
+| **IA** | Inteligencia Artificial |
+| **IGIC** | Impuesto General Indirecto Canario — impuesto de Canarias equivalente al IVA (7%) |
+| **INE** | Instituto Nacional de Estadistica — organismo oficial de estadisticas de Espana |
+| **IONOS** | Proveedor de hosting europeo donde se aloja la plataforma |
+| **IPSI** | Impuesto sobre la Produccion, los Servicios y la Importacion — impuesto de Ceuta y Melilla |
+| **IVA** | Impuesto sobre el Valor Anadido — impuesto indirecto general en Espana (21%) |
+| **LCIS** | Legal Coherence Intelligence System — sistema de 9 capas de coherencia juridica de JarabaLex |
+| **LexNET** | Sistema telematico del CGPJ para comunicaciones judiciales electronicas |
+| **LMS** | Learning Management System — sistema de gestion del aprendizaje |
+| **LSSI-CE** | Ley de Servicios de la Sociedad de la Informacion y Comercio Electronico |
+| **MQL** | Marketing Qualified Lead — lead cualificado por marketing |
+| **MRR** | Monthly Recurring Revenue — ingreso recurrente mensual (metrica SaaS clave) |
+| **MVP** | Minimum Viable Product — producto minimo viable |
+| **NextGenEU** | Next Generation EU — fondo europeo de recuperacion post-COVID (750.000M EUR) |
+| **NIF/CIF** | Numero de Identificacion Fiscal / Codigo de Identificacion Fiscal |
+| **NPS** | Net Promoter Score — indice de satisfaccion y recomendacion (rango -100 a +100) |
+| **ONG** | Organizacion No Gubernamental |
+| **ONTSI** | Observatorio Nacional de Tecnologia y Sociedad — organismo de Red.es para estadisticas digitales |
+| **PAC** | Politica Agraria Comun — politica de la UE para el sector agricola |
+| **PED** | Plataforma de Ecosistemas Digitales — entidad promotora de Jaraba Impact Platform |
+| **PIB** | Producto Interior Bruto |
+| **PLG** | Product-Led Growth — estrategia de crecimiento liderada por el producto (freemium, self-service) |
+| **POS** | Point of Sale — terminal de punto de venta fisico |
+| **PYME** | Pequena y Mediana Empresa (< 250 empleados) |
+| **QR** | Quick Response — codigo bidimensional escaneable |
+| **Red.es** | Entidad publica empresarial adscrita al Ministerio de Transformacion Digital |
+| **RGPD** | Reglamento General de Proteccion de Datos — normativa europea de privacidad |
+| **ROPO** | Registro Oficial de Productores y Operadores de medios de defensa fitosanitaria |
+| **SaaS** | Software as a Service — modelo de software por suscripcion en la nube |
+| **SAE** | Servicio Andaluz de Empleo — servicio publico de empleo de Andalucia |
+| **SAM** | Serviceable Addressable Market — porcion del mercado total que se puede servir con el producto |
+| **SCSS** | Sassy CSS — preprocesador de hojas de estilo (Dart Sass) |
+| **SEPA** | Single Euro Payments Area — zona unica de pagos en euros (domiciliacion bancaria) |
+| **SEPE** | Servicio Publico de Empleo Estatal — servicio nacional de empleo de Espana |
+| **SIEX** | Sistema de Informacion de Explotaciones Agrarias y Ganaderas — registro obligatorio PAC |
+| **SLA** | Service Level Agreement — acuerdo de nivel de servicio garantizado |
+| **SOM** | Serviceable Obtainable Market — porcion del mercado que se puede capturar realistamente |
+| **SSE** | Server-Sent Events — protocolo para streaming de datos del servidor al cliente |
+| **STO** | Sistema Telematico de Orientacion — plataforma de la Junta de Andalucia para insercion laboral |
+| **TAM** | Total Addressable Market — tamano total del mercado teorico |
+| **TIC** | Tecnologias de la Informacion y la Comunicacion |
+| **UE** | Union Europea |
+| **WTP** | Willingness to Pay — disposicion a pagar del segmento de mercado |
+| **xAPI** | Experience API — estandar de seguimiento de aprendizaje (sucesor de SCORM) |
 
 ---
 
