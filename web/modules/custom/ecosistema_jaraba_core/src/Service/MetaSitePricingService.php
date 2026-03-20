@@ -83,19 +83,36 @@ class MetaSitePricingService
         // Load SaasPlan ContentEntities for this vertical to get EUR prices.
         $priceMap = $this->loadVerticalPrices($vertical);
 
+        // Cargar features directas del SaasPlan ContentEntity (cada plan
+        // tiene un campo 'features' con las funcionalidades incluidas).
+        $planFeaturesMap = $this->loadPlanFeatures($vertical);
+
+        // Construir features acumulativas: cada tier hereda del anterior + añade las propias.
+        // Esto asegura que Starter muestra "todo lo de Free + sus avanzadas".
+        $accumulatedFeatures = [];
+
         $pricing = [];
         foreach ($tiers as $tier) {
             $tierKey = $tier->getTierKey();
-            $features = $this->planResolver->getFeatures($vertical, $tierKey);
 
-            $rawFeatures = $features ? $features->getFeatures() : [];
+            // 1. Features desde SaasPlanFeatures ConfigEntity (cascade: advanced features).
+            $configFeatures = $this->planResolver->getFeatures($vertical, $tierKey);
+            $configRaw = $configFeatures ? $configFeatures->getFeatures() : [];
 
-            // Starter sin features explícitas → inyectar features base.
-            if (empty($rawFeatures) && $tierKey === 'starter') {
-                $rawFeatures = ['basic_profile', 'community', 'one_vertical', 'email_support'];
-            }
+            // 2. Features del SaasPlan ContentEntity (base features: catalog, copilot, etc.).
+            $planFeatures = $planFeaturesMap[$tierKey] ?? [];
 
-            // EUR prices from SaasPlan ContentEntities (indicative, Stripe is financial truth).
+            // 3. Combinar: plan base + config avanzadas + heredadas del tier anterior.
+            $rawFeatures = array_values(array_unique(array_merge(
+                $accumulatedFeatures,
+                $planFeatures,
+                $configRaw
+            )));
+
+            // Acumular para el siguiente tier.
+            $accumulatedFeatures = $rawFeatures;
+
+            // Precios EUR desde SaasPlan ContentEntities.
             $tierPrices = $priceMap[$tierKey] ?? [];
 
             $pricing[] = [
@@ -104,7 +121,7 @@ class MetaSitePricingService
                 'description' => (string) $tier->getDescription(),
                 'features' => $this->formatFeatureLabels($rawFeatures),
                 'features_raw' => $rawFeatures,
-                'limits' => $features ? $features->getLimits() : [],
+                'limits' => $configFeatures ? $configFeatures->getLimits() : [],
                 'is_recommended' => ($tierKey === 'professional'),
                 'stripe_price_monthly' => $tier->getStripePriceMonthly(),
                 'stripe_price_yearly' => $tier->getStripePriceYearly(),
@@ -327,6 +344,73 @@ class MetaSitePricingService
         }
 
         return $priceMap;
+    }
+
+    /**
+     * Loads features from SaasPlan ContentEntities for a vertical.
+     *
+     * Each SaasPlan has a 'features' field with the base capabilities included
+     * in that plan (e.g. catalog, copilot_ia). These complement the advanced
+     * features in SaasPlanFeatures ConfigEntities (seo_advanced, analytics).
+     *
+     * @param string $vertical
+     *   Machine name of the vertical.
+     *
+     * @return array<string, list<string>>
+     *   Map of tier_key => feature machine names.
+     */
+    protected function loadPlanFeatures(string $vertical): array
+    {
+        $featuresMap = [];
+
+        try {
+            $verticals = $this->entityTypeManager->getStorage('vertical')
+                ->loadByProperties(['machine_name' => $vertical, 'status' => TRUE]);
+
+            if ($verticals === []) {
+                return $featuresMap;
+            }
+
+            $verticalEntity = reset($verticals);
+
+            $planIds = $this->entityTypeManager->getStorage('saas_plan')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vertical', $verticalEntity->id())
+                ->condition('status', TRUE)
+                ->sort('weight', 'ASC')
+                ->execute();
+
+            /** @var \Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface[] $plans */
+            $plans = $this->entityTypeManager->getStorage('saas_plan')
+                ->loadMultiple($planIds);
+
+            $firstPlanPrice = 0.0;
+            $firstPlan = reset($plans);
+            if ($firstPlan) {
+                $firstPlanPrice = $firstPlan->getPriceMonthly();
+            }
+            $tierKeys = $firstPlanPrice <= 0.0
+                ? ['free', 'starter', 'professional', 'enterprise']
+                : ['starter', 'professional', 'enterprise'];
+
+            $index = 0;
+            foreach ($plans as $plan) {
+                if ($index >= count($tierKeys)) {
+                    break;
+                }
+                $features = $plan->getFeatures();
+                if ($features !== []) {
+                    $featuresMap[$tierKeys[$index]] = $features;
+                }
+                $index++;
+            }
+        }
+        catch (\Throwable $e) {
+            // PRESAVE-RESILIENCE-001: nunca fallar por datos de pricing.
+        }
+
+        return $featuresMap;
     }
 
     /**

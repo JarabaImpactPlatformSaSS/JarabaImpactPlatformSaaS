@@ -1,0 +1,27 @@
+uuid: a90263bd-5157-4317-bccb-24fa880d4a33
+langcode: es
+status: true
+dependencies: {  }
+id: _default_free
+label: 'Default - Free'
+vertical: _default
+tier: free
+features:
+  - basic_profile
+  - community
+  - copilot_ia
+  - soporte_email
+limits:
+  max_pages: 1
+  basic_templates: 3
+  premium_templates: 0
+  basic_blocks: 5
+  premium_blocks: 0
+  ab_test_limit: 0
+  max_products: 10
+  orders_per_month: 5
+  copilot_uses_per_month: 10
+  storage_gb: 0.5
+  ai_queries: 20
+  productores: 1
+description: 'Limites por defecto para el tier Free. Funcionalidades basicas para explorar la plataforma.'

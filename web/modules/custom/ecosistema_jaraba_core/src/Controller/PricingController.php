@@ -414,7 +414,7 @@ class PricingController extends ControllerBase
             '#vertical_key' => $vertical_key,
             '#vertical_label' => $verticalLabel,
             '#page_title' => $this->t('Planes @vertical', ['@vertical' => $verticalLabel]),
-            '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. 14 días de prueba gratis en todos los planes.'),
+            '#page_subtitle' => $this->getVerticalValueProposition($vertical_key),
             '#guarantee_text' => $this->getPlgGuaranteeText(),
             '#tax_disclaimer' => $this->getPlgTaxDisclaimer(),
             '#faq_items' => $this->getVerticalPricingFaq($vertical_key),
@@ -491,6 +491,66 @@ class PricingController extends ControllerBase
             'serviciosconecta' => (string) $this->t('Gestiona y promociona tus servicios'),
             'formacion' => (string) $this->t('Tu academia online con IA y gamificación'),
         ];
+    }
+
+    /**
+     * Returns a compelling value proposition for each vertical's pricing page.
+     *
+     * Explains WHAT the vertical does and WHY it matters — the visitor must
+     * immediately understand the value before comparing plans.
+     *
+     * @param string $vertical_key
+     *   Machine name of the vertical.
+     *
+     * @return string
+     *   Translated value proposition string.
+     */
+    protected function getVerticalValueProposition(string $vertical_key): string
+    {
+        // NO-HARDCODE-PRICE-001: Try Theme Settings first (plg_vp_{vertical}).
+        try {
+            $settingKey = 'plg_vp_' . $vertical_key;
+            // @phpstan-ignore-next-line theme_get_setting deprecated in 11.3, keep for compat.
+            $setting = theme_get_setting($settingKey, 'ecosistema_jaraba_theme');
+            if (is_string($setting) && $setting !== '') {
+                return $setting;
+            }
+        }
+        catch (\Throwable) {
+            // Theme settings unavailable.
+        }
+
+        // Try Vertical entity description field.
+        try {
+            $verticals = $this->entityTypeManager()->getStorage('vertical')
+                ->loadByProperties(['machine_name' => $vertical_key, 'status' => TRUE]);
+            $vertical = reset($verticals);
+            /** @var \Drupal\Core\Entity\ContentEntityInterface|false $vertical */
+            if ($vertical !== FALSE && $vertical->hasField('description')) {
+                $desc = $vertical->get('description')->value ?? '';
+                if (is_string($desc) && $desc !== '') {
+                    return $desc;
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Vertical entity unavailable.
+        }
+
+        // Fallback: hardcoded defaults (only if no UI config AND no entity description).
+        $fallbacks = [
+            'empleabilidad' => $this->t('Tu plataforma integral de desarrollo profesional: CV con IA, diagnóstico de competencias, simulador de entrevistas, matching inteligente y copiloto personalizado. Todo lo que necesitas para impulsar tu carrera.'),
+            'emprendimiento' => $this->t('Valida tu idea de negocio con IA: Lean Canvas inteligente, validación de hipótesis, seguimiento de experimentos y copiloto emprendedor. De la idea al MVP en semanas, no meses.'),
+            'comercioconecta' => $this->t('Tu tienda online profesional con catálogo, pedidos, ofertas flash, fidelización, analítica y copiloto IA. Todo lo que necesitas para vender más en tu comercio local y online.'),
+            'agroconecta' => $this->t('Marketplace agroalimentario con trazabilidad QR, gestión de pedidos, logística integrada, previsión de demanda e inteligencia de mercado. Del campo a la mesa con tecnología.'),
+            'jarabalex' => $this->t('Inteligencia legal con IA: búsqueda normativa inteligente, alertas jurídicas, calendario de plazos, bóveda documental, facturación y plantillas. Tu despacho, potenciado con IA.'),
+            'serviciosconecta' => $this->t('Gestiona y promociona tus servicios profesionales: reservas online, videollamadas, calendario sincronizado, paquetes, reseñas y copiloto IA para hacer crecer tu negocio.'),
+            'formacion' => $this->t('Tu academia online con IA: crea cursos, gestiona alumnos, emite certificados, gamifica el aprendizaje y personaliza rutas formativas. Enseña de forma profesional.'),
+            'andalucia_ei' => $this->t('Gestión integral de programas de inserción laboral: participantes, sesiones, expediente digital, formación certificada, exportación STO y copiloto para orientadores.'),
+        ];
+
+        return (string) ($fallbacks[$vertical_key]
+            ?? $this->t('Elige el plan que mejor se adapta a tu negocio. 14 días de prueba gratis en todos los planes de pago.'));
     }
 
     /**

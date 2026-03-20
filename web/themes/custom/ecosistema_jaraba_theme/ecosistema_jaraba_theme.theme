@@ -1200,6 +1200,24 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#rows' => 8,
     '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
   ];
+
+  // NO-HARDCODE-PRICE-001: Value propositions per vertical (pricing page subtitle).
+  $verticalKeys = ['empleabilidad', 'emprendimiento', 'comercioconecta', 'agroconecta', 'jarabalex', 'serviciosconecta', 'formacion', 'andalucia_ei'];
+  $form['plg_texts']['plg_vp_section'] = [
+    '#type' => 'details',
+    '#title' => t('Propuestas de valor por vertical (página de precios)'),
+    '#description' => t('Texto que aparece debajo del título "Planes {Vertical}" explicando qué hace el vertical. Si se deja vacío, se usa el texto por defecto del código o la descripción de la entidad Vertical.'),
+    '#open' => FALSE,
+  ];
+  foreach ($verticalKeys as $vk) {
+    $form['plg_texts']['plg_vp_section']['plg_vp_' . $vk] = [
+      '#type' => 'textarea',
+      '#title' => ucfirst(str_replace('_', ' ', $vk)),
+      '#default_value' => $config->get('plg_vp_' . $vk) ?: '',
+      '#rows' => 2,
+      '#maxlength' => 500,
+    ];
+  }
 }
 
 /**
