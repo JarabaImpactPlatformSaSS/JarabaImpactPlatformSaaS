@@ -1,0 +1,16 @@
+uuid: d43c4553-1c97-42c0-a663-19c71bbb519e
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_free
+label: 'Andalucia EI - Free'
+vertical: andalucia_ei
+tier: free
+features:
+  - copilot_ia
+  - soporte_email
+limits:
+  participants: 5
+  sessions_per_month: 3
+  copilot_uses_per_month: 10
+description: 'Funcionalidades basicas del plan Free para Andalucia EI.'

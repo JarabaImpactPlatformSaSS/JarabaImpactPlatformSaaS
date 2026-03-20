@@ -1,0 +1,58 @@
+{#
+/**
+ * @file _landing-comparison.html.twig
+ * Parcial reutilizable: Tabla comparativa vs competidores.
+ *
+ * VARIABLES:
+ * - comparison.headline: Titulo de la seccion
+ * - comparison.competitors: Array de competidores, cada uno con:
+ *   - name: Nombre del competidor
+ *   - highlight: TRUE si es "nuestra" opcion (resaltada)
+ *   - price: Precio como texto
+ *   - features: Array de { text, included (bool) }
+ * - color: Color del vertical
+ * - vertical_key: ID del vertical
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en textos estaticos
+ * - ICON-CONVENTION-001: jaraba_icon() para checks/crosses
+ * - CSS-VAR-ALL-COLORS-001: colores via tokens --ej-*
+ */
+#}
+
+{% set comp = comparison|default({}) %}
+{% set competitors = comp.competitors|default([]) %}
+
+{% if competitors|length > 0 %}
+<section class="landing-comparison reveal-element reveal-fade-up" aria-labelledby="comparison-title">
+  <div class="landing-comparison__container">
+    <h2 id="comparison-title" class="landing-comparison__title">
+      {{ comp.headline|default('Compara antes de decidir'|trans) }}
+    </h2>
+
+    <div class="landing-comparison__grid" style="--competitors-count: {{ competitors|length }}">
+      {% for competitor in competitors %}
+        <div class="landing-comparison__col {{ competitor.highlight ? 'landing-comparison__col--highlight' : '' }}">
+          {% if competitor.highlight %}
+            <span class="landing-comparison__badge">{% trans %}Recomendado{% endtrans %}</span>
+          {% endif %}
+          <h3 class="landing-comparison__name">{{ competitor.name }}</h3>
+          <div class="landing-comparison__price">{{ competitor.price }}</div>
+          <ul class="landing-comparison__features">
+            {% for feature in competitor.features %}
+              <li class="landing-comparison__feature {{ feature.included ? 'landing-comparison__feature--yes' : 'landing-comparison__feature--no' }}">
+                {% if feature.included %}
+                  {{ jaraba_icon('status', 'check-circle', { size: '16px', color: 'verde-innovacion' }) }}
+                {% else %}
+                  {{ jaraba_icon('status', 'x-circle', { size: '16px', color: 'naranja-impulso' }) }}
+                {% endif %}
+                <span>{{ feature.text }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-20
-**Versión:** 153.0.0 (DEMO-PROFILE-PERSPECTIVE-001 + buyer→3 perfiles comerciante + features rico 13/13 + multi-perfil agro+comercio + 15 WebP Nano Banana + aprendizaje #205 + regla de oro #143)
+**Versión:** 154.0.0 (PRICING-4TIER-001 + modelo 4 tiers + precios 8 verticales + 9 addons + features acumulativas + social proof + winback + pausa UI + SCSS-COMPONENT-BUILD-001 + 72 scripts + aprendizaje #206 + regla de oro #144)
 
 ---
 

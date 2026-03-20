@@ -1,0 +1,249 @@
+{#
+/**
+ * @file empleabilidad-case-study.html.twig
+ * Caso de éxito: Rosa Fernández, Málaga — storytelling de conversión.
+ *
+ * VARIABLES:
+ * - hero_image, rosa_image, before_after_image, diagnostic_image,
+ *   dashboard_image, interview_image: string (URL relativa a WebP)
+ * - metrics: array of {label, before, after, change}
+ * - testimonial: {quote, name, role, company}
+ * - timeline: array of {day, title, text}
+ * - pricing: {free_features, starter_price, starter_features, professional_price, professional_features}
+ * - pricing_url, register_url: string
+ *
+ * DIRECTIVES: ZERO-REGION-001, i18n (trans), ICON-CONVENTION-001,
+ * CSS-VAR-ALL-COLORS-001, DOC-GLOSSARY-001
+ */
+#}
+
+{# === 1. HERO === #}
+<section class="cs-hero" style="background-image: url('{{ hero_image }}');" aria-labelledby="cs-title">
+  <div class="cs-hero__overlay"></div>
+  <div class="cs-hero__container">
+    <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
+    <h1 id="cs-title" class="cs-hero__title">
+      {% trans %}A los 52, pensó que no volvería a trabajar. 21 días después estaba contratada{% endtrans %}
+    </h1>
+    <p class="cs-hero__subtitle">
+      {% trans %}La historia de Rosa Fernández: cómo un diagnóstico de 3 minutos, un CV con IA y un simulador de entrevistas le devolvieron la confianza y el empleo{% endtrans %}
+    </p>
+    <div class="cs-hero__ctas">
+      <a href="{{ register_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_empleo_hero_trial" data-track-position="case_study_hero">
+        {% trans %}Hacer mi diagnóstico gratis{% endtrans %}
+      </a>
+      <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
+        {% trans %}Leer la historia{% endtrans %} ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === 2. ROSA (contexto) === #}
+<section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ rosa_image }}" alt="{% trans %}Rosa Fernández en su nuevo puesto{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}La protagonista{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Rosa Fernández, Málaga{% endtrans %}</h2>
+      <div class="cs-badges">
+        <span class="cs-badge">{% trans %}52 años{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}18 años de experiencia{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Administrativa{% endtrans %}</span>
+      </div>
+      <p>{% trans %}Rosa trabajó 18 años como administrativa en una empresa de logística en Málaga. Coordinaba a 4 personas, gestionaba 180 clientes y formaba a nuevos empleados. Cuando la empresa cerró, se quedó sin trabajo y sin saber cómo buscar empleo en el mundo digital.{% endtrans %}</p>
+      <p>{% trans %}6 meses enviando CVs por InfoJobs. 87 candidaturas. 0 entrevistas. A los 52, Rosa estaba convencida de que nadie la contrataría.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 3. EL DOLOR === #}
+<section class="cs-section cs-pain reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Invisible para el mercado laboral{% endtrans %}</h2>
+    <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y después{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
+    <div class="cs-pain__cards">
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">87</span>
+        <span class="cs-pain__label">{% trans %}CVs enviados, 0 entrevistas{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">0%</span>
+        <span class="cs-pain__label">{% trans %}visibilidad en filtros ATS{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">6</span>
+        <span class="cs-pain__label">{% trans %}meses sin respuesta{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">{{ jaraba_icon('ui', 'alert-circle', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
+        <span class="cs-pain__label">{% trans %}CV formato 2008{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 4. EL DIAGNÓSTICO === #}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento decisivo{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}3 minutos que cambiaron todo{% endtrans %}</h2>
+      <p>{% trans %}Carmen, la hija de Rosa, ve un anuncio de Empleabilidad en LinkedIn: "Diagnóstico Express gratuito." Lo prueba y se lo envía a su madre. Esa noche, Rosa responde 3 preguntas desde el móvil. El resultado le devuelve algo que llevaba 6 meses sin sentir: esperanza.{% endtrans %}</p>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Tu empleabilidad latente es del 72%. Tu barrera no es la edad: es que tu CV no habla el idioma de las máquinas que lo leen.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Diagnóstico Express de Empleabilidad{% endtrans %}</footer>
+      </blockquote>
+    </div>
+    <div class="cs-section__media">
+      <img src="{{ diagnostic_image }}" alt="{% trans %}Resultado del diagnóstico en el móvil{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+  </div>
+</section>
+
+{# === 5. LOS 21 DÍAS (timeline) === #}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}Los 21 días{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}La transformación paso a paso{% endtrans %}</h2>
+    <div class="cs-timeline__split">
+      <div class="cs-timeline__media">
+        <img src="{{ dashboard_image }}" alt="{% trans %}Health Score profesional de Rosa{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      </div>
+      <div class="cs-timeline__steps">
+        {% for step in timeline %}
+          <div class="cs-timeline__step">
+            <span class="cs-timeline__day">{% trans %}Día{% endtrans %} {{ step.day }}</span>
+            <div class="cs-timeline__detail">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 6. LOS RESULTADOS === #}
+<section class="cs-section cs-results reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}21 días después{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
+    <div class="cs-results__grid">
+      {% for m in metrics %}
+        <div class="cs-results__card">
+          <span class="cs-results__change">{{ m.change }}</span>
+          <span class="cs-results__label">{{ m.label }}</span>
+          <div class="cs-results__compare">
+            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === 7. LA ENTREVISTA === #}
+<section class="cs-section cs-chef reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ interview_image }}" alt="{% trans %}Rosa en su entrevista por videollamada{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento cumbre{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}La entrevista que nunca pensó pasar{% endtrans %}</h2>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Es la mejor entrevista que hemos tenido esta semana. Nos habló de situaciones reales, con números. Las otras candidatas hablaban en abstracto. Rosa hablaba en concreto.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Dra. Martínez, directora de la clínica{% endtrans %}</footer>
+      </blockquote>
+      <p class="cs-chef__impact">{% trans %}Lo que la Dra. Martínez no sabe es que Rosa practicó esas respuestas 3 veces con el simulador de entrevistas de Empleabilidad.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 8. TESTIMONIAL === #}
+<section class="cs-section cs-testimonial reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
+      <p class="cs-testimonial__text" itemprop="reviewBody">
+        &ldquo;{{ testimonial.quote }}&rdquo;
+      </p>
+      <footer class="cs-testimonial__author">
+        <div>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+        </div>
+        <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <meta itemprop="ratingValue" content="5">
+          <meta itemprop="bestRating" content="5">
+          ★★★★★
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+{# === 9. MINI PRICING === #}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Planes Empleabilidad{% endtrans %}</h2>
+    <div class="cs-pricing__cards">
+      <div class="cs-pricing__card">
+        <h3>Free</h3>
+        <span class="cs-pricing__price">0 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.free_features }}</p>
+        <a href="{{ register_url }}" class="btn btn--outline" data-track-cta="cs_empleo_free" data-track-position="case_study_pricing">{% trans %}Empezar gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card cs-pricing__card--recommended">
+        <span class="cs-pricing__badge">{% trans %}El plan de Rosa{% endtrans %}</span>
+        <h3>{% trans %}Starter{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.starter_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.starter_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary" data-track-cta="cs_empleo_starter" data-track-position="case_study_pricing">{% trans %}Probar 14 días gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card">
+        <h3>{% trans %}Profesional{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.professional_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.professional_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline" data-track-cta="cs_empleo_professional" data-track-position="case_study_pricing">{% trans %}Ver detalles{% endtrans %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 10. CTA FINAL === #}
+<section class="cs-section cs-final-cta">
+  <div class="cs-section__container cs-section__container--narrow">
+    <h2 class="cs-final-cta__title">{% trans %}¿Y si los próximos 21 días cambian tu carrera profesional?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Sin tarjeta de crédito. Sin permanencia. Diagnóstico 100% gratis.{% endtrans %}</p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_empleo_final_cta" data-track-position="case_study_bottom">
+      {% trans %}Hacer mi diagnóstico gratis{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust">
+      <span>{{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Datos en la UE{% endtrans %}</span>
+      <span>{{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}RGPD 100%{% endtrans %}</span>
+      <span>{{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Privacidad garantizada{% endtrans %}</span>
+    </div>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "A los 52, penso que no volveria a trabajar. 21 dias despues estaba contratada",
+  "author": { "@type": "Organization", "name": "Jaraba Impact Platform" },
+  "datePublished": "2026-03-20",
+  "publisher": { "@type": "Organization", "name": "PED S.L." },
+  "description": "Rosa Fernandez, 52 anos, administrativa en Malaga. Tras 6 meses sin respuesta, un diagnostico IA, un CV optimizado y un simulador de entrevistas la llevaron a un nuevo empleo en 21 dias."
+}
+</script>

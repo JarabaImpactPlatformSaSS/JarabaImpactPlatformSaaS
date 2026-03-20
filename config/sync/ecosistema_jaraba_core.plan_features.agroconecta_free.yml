@@ -1,0 +1,17 @@
+uuid: f5b5854c-ab33-45ff-9ceb-ef378723a0b0
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_free
+label: 'AgroConecta - Free'
+vertical: agroconecta
+tier: free
+features:
+  - catalog
+  - copilot_ia
+  - soporte_email
+limits:
+  products: 10
+  orders_per_month: 5
+  copilot_uses_per_month: 10
+description: 'Funcionalidades basicas del plan Free para AgroConecta.'

@@ -1,0 +1,249 @@
+{#
+/**
+ * @file emprendimiento-case-study.html.twig
+ * Caso de éxito: Carlos Etxebarria, Bilbao — storytelling de conversión.
+ *
+ * VARIABLES:
+ * - hero_image, carlos_image, before_after_image, canvas_image,
+ *   dashboard_image, enisa_image: string (URL relativa a WebP)
+ * - metrics: array of {label, before, after, change}
+ * - testimonial: {quote, name, role, company}
+ * - timeline: array of {day, title, text}
+ * - pricing: {free_features, starter_price, starter_features, professional_price, professional_features}
+ * - pricing_url, register_url: string
+ *
+ * DIRECTIVES: ZERO-REGION-001, i18n (trans), ICON-CONVENTION-001,
+ * CSS-VAR-ALL-COLORS-001, DOC-GLOSSARY-001
+ */
+#}
+
+{# === 1. HERO === #}
+<section class="cs-hero" style="background-image: url('{{ hero_image }}');" aria-labelledby="cs-title">
+  <div class="cs-hero__overlay"></div>
+  <div class="cs-hero__container">
+    <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
+    <h1 id="cs-title" class="cs-hero__title">
+      {% trans %}2 años con una idea en la cabeza. 60 días para convertirla en negocio{% endtrans %}
+    </h1>
+    <p class="cs-hero__subtitle">
+      {% trans %}La historia de Carlos Etxebarria: cómo un ingeniero de Bilbao pasó de 47 documentos desordenados a un MVP con 5 pilotos y 47.000 € de financiación ENISA{% endtrans %}
+    </p>
+    <div class="cs-hero__ctas">
+      <a href="{{ register_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_emprende_hero_trial" data-track-position="case_study_hero">
+        {% trans %}Evaluar mi idea gratis{% endtrans %}
+      </a>
+      <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
+        {% trans %}Leer la historia{% endtrans %} ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === 2. CARLOS (contexto) === #}
+<section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ carlos_image }}" alt="{% trans %}Carlos Etxebarria en su coworking{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El protagonista{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Carlos Etxebarria, Bilbao{% endtrans %}</h2>
+      <div class="cs-badges">
+        <span class="cs-badge">{% trans %}38 años{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Ingeniero industrial{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Logística inversa{% endtrans %}</span>
+      </div>
+      <p>{% trans %}Carlos trabaja en una planta de automoción en Bilbao. Cada día ve cómo las pymes pierden dinero gestionando devoluciones y residuos industriales. Lleva 2 años con una idea: una plataforma SaaS de logística inversa. Pero es ingeniero, no empresario.{% endtrans %}</p>
+      <p>{% trans %}47 documentos en Google Drive, 3 libros de startups subrayados y 0 clientes contactados. Parálisis por análisis.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 3. EL DOLOR === #}
+<section class="cs-section cs-pain reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Invertir a ciegas o no empezar nunca{% endtrans %}</h2>
+    <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y después{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
+    <div class="cs-pain__cards">
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">2</span>
+        <span class="cs-pain__label">{% trans %}años sin avanzar{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">0</span>
+        <span class="cs-pain__label">{% trans %}clientes contactados{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">0</span>
+        <span class="cs-pain__label">{% trans %}hipótesis validadas{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">{{ jaraba_icon('ui', 'alert-circle', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
+        <span class="cs-pain__label">{% trans %}sin modelo de negocio formal{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 4. LA CALCULADORA DE MADUREZ === #}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento decisivo{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}5 minutos que ahorraron 2 años{% endtrans %}</h2>
+      <p>{% trans %}Carlos ve un post en LinkedIn de un emprendedor sevillano: "La calculadora de madurez me abrió los ojos." La prueba esa misma noche. El resultado le impacta: su idea tiene un 78% de madurez conceptual pero un 0% de validación de mercado.{% endtrans %}</p>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Tu mayor riesgo no es la idea: es que llevas 2 años sin hablar con un solo cliente potencial.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Calculadora de Madurez Digital{% endtrans %}</footer>
+      </blockquote>
+    </div>
+    <div class="cs-section__media">
+      <img src="{{ canvas_image }}" alt="{% trans %}Business Model Canvas generado por IA{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+  </div>
+</section>
+
+{# === 5. LOS 60 DÍAS (timeline) === #}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}Los 60 días{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}De la servilleta al MVP{% endtrans %}</h2>
+    <div class="cs-timeline__split">
+      <div class="cs-timeline__media">
+        <img src="{{ dashboard_image }}" alt="{% trans %}Health Score emprendedor de Carlos{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      </div>
+      <div class="cs-timeline__steps">
+        {% for step in timeline %}
+          <div class="cs-timeline__step">
+            <span class="cs-timeline__day">{{ step.day }}</span>
+            <div class="cs-timeline__detail">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 6. LOS RESULTADOS === #}
+<section class="cs-section cs-results reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}60 días después{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
+    <div class="cs-results__grid">
+      {% for m in metrics %}
+        <div class="cs-results__card">
+          <span class="cs-results__change">{{ m.change }}</span>
+          <span class="cs-results__label">{{ m.label }}</span>
+          <div class="cs-results__compare">
+            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === 7. ENISA APROBADO === #}
+<section class="cs-section cs-chef reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ enisa_image }}" alt="{% trans %}Carlos celebra la aprobación de ENISA{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento cumbre{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}ENISA aprueba la financiación{% endtrans %}</h2>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Su dossier era de los mejor documentados que hemos recibido este trimestre. Hipótesis validadas con datos reales, pilotos activos y proyecciones financieras coherentes.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Analista ENISA{% endtrans %}</footer>
+      </blockquote>
+      <p class="cs-chef__impact">{% trans %}47.000 € de préstamo participativo sin aval personal. Todo el dossier generado desde la plataforma en 8 semanas.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 8. TESTIMONIAL === #}
+<section class="cs-section cs-testimonial reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
+      <p class="cs-testimonial__text" itemprop="reviewBody">
+        &ldquo;{{ testimonial.quote }}&rdquo;
+      </p>
+      <footer class="cs-testimonial__author">
+        <div>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+        </div>
+        <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <meta itemprop="ratingValue" content="5">
+          <meta itemprop="bestRating" content="5">
+          ★★★★★
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+{# === 9. MINI PRICING === #}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Planes Emprendimiento{% endtrans %}</h2>
+    <div class="cs-pricing__cards">
+      <div class="cs-pricing__card">
+        <h3>Free</h3>
+        <span class="cs-pricing__price">0 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.free_features }}</p>
+        <a href="{{ register_url }}" class="btn btn--outline" data-track-cta="cs_emprende_free" data-track-position="case_study_pricing">{% trans %}Empezar gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card cs-pricing__card--recommended">
+        <span class="cs-pricing__badge">{% trans %}El plan de Carlos{% endtrans %}</span>
+        <h3>{% trans %}Starter{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.starter_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.starter_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary" data-track-cta="cs_emprende_starter" data-track-position="case_study_pricing">{% trans %}Probar 14 días gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card">
+        <h3>{% trans %}Profesional{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.professional_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.professional_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline" data-track-cta="cs_emprende_professional" data-track-position="case_study_pricing">{% trans %}Ver detalles{% endtrans %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 10. CTA FINAL === #}
+<section class="cs-section cs-final-cta">
+  <div class="cs-section__container cs-section__container--narrow">
+    <h2 class="cs-final-cta__title">{% trans %}¿Y si los próximos 60 días convierten tu idea en negocio?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Sin tarjeta de crédito. Sin permanencia. Calculadora de madurez 100% gratis.{% endtrans %}</p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_emprende_final_cta" data-track-position="case_study_bottom">
+      {% trans %}Evaluar mi idea gratis{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust">
+      <span>{{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Datos en la UE{% endtrans %}</span>
+      <span>{{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}RGPD 100%{% endtrans %}</span>
+      <span>{{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Tu idea es confidencial{% endtrans %}</span>
+    </div>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "2 anos con una idea en la cabeza. 60 dias para convertirla en negocio",
+  "author": { "@type": "Organization", "name": "Jaraba Impact Platform" },
+  "datePublished": "2026-03-20",
+  "publisher": { "@type": "Organization", "name": "PED S.L." },
+  "description": "Carlos Etxebarria, ingeniero industrial de Bilbao, paso de 2 anos de paralisis a un MVP con 5 pilotos y financiacion ENISA aprobada en 60 dias con Emprendimiento."
+}
+</script>

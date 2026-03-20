@@ -1,0 +1,17 @@
+uuid: b4768a61-fbd7-481c-951a-9f0297bee2d0
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_free
+label: 'JarabaLex - Free'
+vertical: jarabalex
+tier: free
+features:
+  - legal_search
+  - copilot_ia
+  - soporte_email
+limits:
+  searches_per_month: 10
+  max_cases: 5
+  vault_storage_mb: 100
+description: 'Funcionalidades basicas del plan Free para JarabaLex.'

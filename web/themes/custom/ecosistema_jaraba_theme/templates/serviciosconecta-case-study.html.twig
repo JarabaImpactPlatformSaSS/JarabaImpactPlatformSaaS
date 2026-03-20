@@ -1,0 +1,249 @@
+{#
+/**
+ * @file serviciosconecta-case-study.html.twig
+ * Caso de éxito: Carmen Navarro, Madrid — storytelling de conversión.
+ *
+ * VARIABLES:
+ * - hero_image, carmen_image, before_after_image, qr_image,
+ *   dashboard_image, review_image: string (URL relativa a WebP)
+ * - metrics: array of {label, before, after, change}
+ * - testimonial: {quote, name, role, company}
+ * - timeline: array of {day, title, text}
+ * - pricing: {free_features, starter_price, starter_features, professional_price, professional_features}
+ * - pricing_url, register_url: string
+ *
+ * DIRECTIVES: ZERO-REGION-001, i18n (trans), ICON-CONVENTION-001,
+ * CSS-VAR-ALL-COLORS-001, DOC-GLOSSARY-001
+ */
+#}
+
+{# === 1. HERO === #}
+<section class="cs-hero" style="background-image: url('{{ hero_image }}');" aria-labelledby="cs-title">
+  <div class="cs-hero__overlay"></div>
+  <div class="cs-hero__container">
+    <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
+    <h1 id="cs-title" class="cs-hero__title">
+      {% trans %}12 pacientes al día y media mañana al teléfono. 90 días para automatizarlo todo{% endtrans %}
+    </h1>
+    <p class="cs-hero__subtitle">
+      {% trans %}La historia de Carmen Navarro: cómo una fisioterapeuta de Chamberí pasó de gestionar citas a mano a tener reservas automáticas, 47 reseñas Google y un 47% más de facturación{% endtrans %}
+    </p>
+    <div class="cs-hero__ctas">
+      <a href="{{ register_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_servicios_hero_trial" data-track-position="case_study_hero">
+        {% trans %}Crear mi perfil profesional gratis{% endtrans %}
+      </a>
+      <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
+        {% trans %}Leer la historia{% endtrans %} ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === 2. CARMEN (contexto) === #}
+<section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ carmen_image }}" alt="{% trans %}Carmen Navarro en su consulta de fisioterapia{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}La protagonista{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Carmen Navarro, Chamberí (Madrid){% endtrans %}</h2>
+      <div class="cs-badges">
+        <span class="cs-badge">{% trans %}41 años{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Fisioterapeuta{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}FisioVital Chamberí{% endtrans %}</span>
+      </div>
+      <p>{% trans %}Carmen tiene una clínica de fisioterapia en Chamberí con 12 pacientes al día. Cada mañana empieza llamando para confirmar citas, gestionando cancelaciones y apuntando reservas en una libreta. Cuando termina, ya ha perdido hora y media.{% endtrans %}</p>
+      <p>{% trans %}3 reseñas en Google, ningún sistema de reservas online y la sensación de que podría atender más pacientes si no gastara tanto tiempo en administración.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 3. EL DOLOR === #}
+<section class="cs-section cs-pain reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Gestionar a mano o perder pacientes{% endtrans %}</h2>
+    <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y después{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
+    <div class="cs-pain__cards">
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">12</span>
+        <span class="cs-pain__label">{% trans %}h/semana en gestión{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">12</span>
+        <span class="cs-pain__label">{% trans %}no-shows al mes{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">3</span>
+        <span class="cs-pain__label">{% trans %}reseñas en Google{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">{{ jaraba_icon('ui', 'alert-circle', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
+        <span class="cs-pain__label">{% trans %}sin reservas online{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 4. EL DESCUBRIMIENTO === #}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento decisivo{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Un QR que cambió su consulta{% endtrans %}</h2>
+      <p>{% trans %}Carmen ve en un grupo de fisioterapeutas de WhatsApp que una compañera ha puesto un código QR en recepción. Los pacientes escanean, eligen hora y reservan solos. Esa misma noche se registra en ServiciosConecta.{% endtrans %}</p>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Lo que más me impactó fue ver que en 20 minutos tenía mi perfil profesional montado, con mis 8 servicios, precios y horarios. Y el primer paciente reservó online a las 2 de la mañana.{% endtrans %}&rdquo;</p>
+        <footer>— Carmen Navarro</footer>
+      </blockquote>
+    </div>
+    <div class="cs-section__media">
+      <img src="{{ qr_image }}" alt="{% trans %}QR de reserva en recepción de la clínica{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+  </div>
+</section>
+
+{# === 5. LOS 90 DÍAS (timeline) === #}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}Los 90 días{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}De la libreta a la automatización{% endtrans %}</h2>
+    <div class="cs-timeline__split">
+      <div class="cs-timeline__media">
+        <img src="{{ dashboard_image }}" alt="{% trans %}Dashboard de ServiciosConecta de Carmen{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      </div>
+      <div class="cs-timeline__steps">
+        {% for step in timeline %}
+          <div class="cs-timeline__step">
+            <span class="cs-timeline__day">{{ step.day }}</span>
+            <div class="cs-timeline__detail">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 6. LOS RESULTADOS === #}
+<section class="cs-section cs-results reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}90 días después{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
+    <div class="cs-results__grid">
+      {% for m in metrics %}
+        <div class="cs-results__card">
+          <span class="cs-results__change">{{ m.change }}</span>
+          <span class="cs-results__label">{{ m.label }}</span>
+          <div class="cs-results__compare">
+            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === 7. RESEÑAS AUTOMATIZADAS === #}
+<section class="cs-section cs-chef reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ review_image }}" alt="{% trans %}Paciente dejando reseña en Google{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento cumbre{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}De 3 a 47 reseñas en 90 días{% endtrans %}</h2>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Cada paciente recibe un WhatsApp automático después de la cita con un enlace directo a Google. Yo no tengo que hacer nada. Y las reseñas atraen nuevos pacientes que ya vienen convencidos.{% endtrans %}&rdquo;</p>
+        <footer>— Carmen Navarro</footer>
+      </blockquote>
+      <p class="cs-chef__impact">{% trans %}47 reseñas con 4,9 estrellas de media. El perfil de Google aparece en el top 3 de fisioterapeutas en Chamberí.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 8. TESTIMONIAL === #}
+<section class="cs-section cs-testimonial reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
+      <p class="cs-testimonial__text" itemprop="reviewBody">
+        &ldquo;{{ testimonial.quote }}&rdquo;
+      </p>
+      <footer class="cs-testimonial__author">
+        <div>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+        </div>
+        <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <meta itemprop="ratingValue" content="5">
+          <meta itemprop="bestRating" content="5">
+          ★★★★★
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+{# === 9. MINI PRICING === #}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Planes ServiciosConecta{% endtrans %}</h2>
+    <div class="cs-pricing__cards">
+      <div class="cs-pricing__card">
+        <h3>{% trans %}Freelance{% endtrans %}</h3>
+        <span class="cs-pricing__price">0 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.free_features }}</p>
+        <a href="{{ register_url }}" class="btn btn--outline" data-track-cta="cs_servicios_free" data-track-position="case_study_pricing">{% trans %}Empezar gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card cs-pricing__card--recommended">
+        <span class="cs-pricing__badge">{% trans %}El plan de Carmen{% endtrans %}</span>
+        <h3>{% trans %}Profesional{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.starter_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.starter_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary" data-track-cta="cs_servicios_profesional" data-track-position="case_study_pricing">{% trans %}Probar 14 días gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card">
+        <h3>{% trans %}Agencia{% endtrans %}</h3>
+        <span class="cs-pricing__price">{{ pricing.professional_price }} &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{{ pricing.professional_features }}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline" data-track-cta="cs_servicios_agencia" data-track-position="case_study_pricing">{% trans %}Ver detalles{% endtrans %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 10. CTA FINAL === #}
+<section class="cs-section cs-final-cta">
+  <div class="cs-section__container cs-section__container--narrow">
+    <h2 class="cs-final-cta__title">{% trans %}¿Y si en 90 días tus pacientes reservan solos y tus reseñas se disparan?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Sin tarjeta de crédito. Sin permanencia. Perfil profesional 100% gratis.{% endtrans %}</p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_servicios_final_cta" data-track-position="case_study_bottom">
+      {% trans %}Crear mi perfil gratis{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust">
+      <span>{{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Datos en la UE{% endtrans %}</span>
+      <span>{{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}RGPD 100%{% endtrans %}</span>
+      <span>{{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Tus datos son confidenciales{% endtrans %}</span>
+    </div>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "12 pacientes al dia y media manana al telefono. 90 dias para automatizarlo todo",
+  "author": { "@type": "Organization", "name": "Jaraba Impact Platform" },
+  "datePublished": "2026-03-20",
+  "publisher": { "@type": "Organization", "name": "PED S.L." },
+  "description": "Carmen Navarro, fisioterapeuta en Chamberi (Madrid), paso de gestionar citas a mano a tener reservas automaticas, 47 resenas Google y un 47% mas de facturacion con ServiciosConecta."
+}
+</script>
