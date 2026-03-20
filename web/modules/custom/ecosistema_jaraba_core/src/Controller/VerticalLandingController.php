@@ -1352,6 +1352,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Encuentra el talento que necesitas'),
         'subheadline' => $this->t('Matching inteligente en 5 dimensiones, mini-ATS con 8 estados, asistente IA del reclutador con 6 acciones, perfil de empresa verificado, notificaciones multi-canal y detección de fraude anti-spam.'),
         'icon' => ['category' => 'business', 'name' => 'talent-search'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-contenthub.mp4',
         'cta' => [
           'text' => $this->t('Publicar oferta'),
           'url' => Url::fromRoute('user.register')->toString(),
@@ -1553,6 +1554,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Tu plataforma de desarrollo local'),
         'subheadline' => $this->t('Formación, empleo y emprendimiento con tu marca. Impulsado por IA.'),
         'icon' => ['category' => 'business', 'name' => 'institution'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-andalucia-ei.mp4',
         'cta' => [
           'text' => $this->t('Solicitar demo'),
           'url' => '/contacto',
