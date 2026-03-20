@@ -15,6 +15,8 @@
  * - hero.icon: { category, name } Icono del vertical
  * - hero.hero_image: URL de imagen visible (opcional — activa split layout)
  * - hero.hero_image_alt: Alt text para la imagen (opcional)
+ * - hero.video_url: URL de vídeo MP4 (opcional — activa video hero autoplaying)
+ * - hero.video_poster: URL de poster image para el vídeo (fallback mobile/reduced-motion)
  * - hero.trust_badges: Array de { icon: {category, name}, label } (opcional)
  * - color: Color del vertical (impulse, agro, innovation, corporate)
  * - vertical_key: ID del vertical
@@ -25,8 +27,10 @@
 
 {% set hero = hero|default({}) %}
 {% set has_image = hero.hero_image is defined and hero.hero_image %}
+{% set has_video = hero.video_url is defined and hero.video_url %}
 
-<section class="landing-hero landing-hero--{{ vertical_key|default('default') }} {{ has_image ? 'landing-hero--split' : '' }}">
+<section class="landing-hero landing-hero--{{ vertical_key|default('default') }} {{ has_image or has_video ? 'landing-hero--split' : '' }}"
+         {% if has_video %}data-hero-video="true"{% endif %}>
   <div class="landing-hero__bg">
     <div class="landing-hero__gradient"></div>
   </div>
@@ -83,8 +87,18 @@
       {% endif %}
     </div>
 
-    {# Imagen visible (split layout — solo si hero_image definido) #}
-    {% if has_image %}
+    {# Media: vídeo autoplaying O imagen estática (split layout) #}
+    {% if has_video %}
+      <div class="landing-hero__media-wrap">
+        <video class="landing-hero__video"
+               autoplay muted loop playsinline
+               poster="{{ hero.video_poster|default('') }}"
+               data-hero-video-el
+               aria-label="{% trans %}Demostración del producto{% endtrans %}">
+          <source src="{{ hero.video_url }}" type="video/mp4">
+        </video>
+      </div>
+    {% elseif has_image %}
       <div class="landing-hero__image-wrap">
         <img class="landing-hero__image"
              src="{{ hero.hero_image }}"

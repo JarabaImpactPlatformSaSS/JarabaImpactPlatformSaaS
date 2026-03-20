@@ -65,6 +65,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Vende tus productos del campo sin intermediarios'),
         'subheadline' => $this->t('Tu tienda online de productor con trazabilidad QR, envío MRW/SEUR, Copilot IA, previsión de demanda, analytics avanzados y cobro seguro via Stripe Connect. Listo en 10 minutos.'),
         'icon' => ['category' => 'verticals', 'name' => 'leaf'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-agroconecta.mp4',
         'cta' => [
           'text' => $this->t('Crea tu tienda gratis'),
           'url' => Url::fromRoute('user.register')->toString(),
@@ -271,6 +272,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Tu tienda de barrio, ahora también en el móvil de tus clientes'),
         'subheadline' => $this->t('Tu tienda online con ofertas flash geolocalizadas, click & collect, carrito con Stripe, copilot IA, envíos con tracking, SEO local y analytics — todo integrado con tu TPV, desde 0 €/mes.'),
         'icon' => ['category' => 'business', 'name' => 'storefront'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-comercioconecta.mp4',
         'cta' => [
           'text' => $this->t('Digitaliza tu comercio'),
           'url' => Url::fromRoute('user.register')->toString(),
@@ -477,6 +479,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Más clientes, menos papeleo. Tu negocio de servicios digitalizado.'),
         'subheadline' => $this->t('Motor de reservas 24/7, videoconsulta online, tu perfil profesional público, presupuestador IA, firma digital y cobro automático via Stripe — todo en un solo lugar, desde 0 €/mes.'),
         'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-serviciosconecta.mp4',
         'cta' => [
           'text' => $this->t('Empieza gratis ahora'),
           'url' => Url::fromRoute('user.register')->toString(),
@@ -678,6 +681,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Nunca es tarde para reinventarte profesionalmente'),
         'subheadline' => $this->t('Diagnóstico IA en 3 minutos, CV Builder con 4 plantillas, matching inteligente, simulador de entrevistas, health score profesional, copilot con 6 modos IA, LMS gamificado y portal de empleo completo. Desde 0 €/mes.'),
         'icon' => ['category' => 'verticals', 'name' => 'briefcase'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-empleabilidad.mp4',
         'cta' => [
           'text' => $this->t('Haz el diagnóstico gratuito'),
           'url' => '/empleabilidad/diagnostico',
@@ -890,6 +894,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('De idea a negocio rentable. Sin humo, sin atajos.'),
         'subheadline' => $this->t('Calculadora de madurez, Business Model Canvas con IA, validación de MVP, Mastermind grupal, health score emprendedor, 15 insignias digitales, copilot proactivo y acceso a financiación. Todo en una plataforma.'),
         'icon' => ['category' => 'verticals', 'name' => 'rocket'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-emprendimiento.mp4',
         'cta' => [
           'text' => $this->t('Evalúa tu madurez digital'),
           'url' => '/emprendimiento/calculadora-madurez',
@@ -1103,8 +1108,8 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Inteligencia legal con IA al alcance de todos'),
         'subheadline' => $this->t('Gestiona tu despacho, investiga jurisprudencia, presenta en LexNET y factura — todo con IA integrada, desde 0 €/mes.'),
         'icon' => ['category' => 'legal', 'name' => 'search-legal'],
-        'hero_image' => '/themes/custom/ecosistema_jaraba_theme/images/landing/jarabalex-hero.webp',
-        'hero_image_alt' => 'Dashboard de JarabaLex con inteligencia artificial',
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-jarabalex.mp4',
+        'video_poster' => '/themes/custom/ecosistema_jaraba_theme/images/landing/jarabalex-hero.webp',
         'cta' => [
           'text' => $this->t('Haz tu diagnóstico legal gratuito'),
           'url' => '/jarabalex/diagnostico-legal',
@@ -1676,6 +1681,7 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Crea tu academia online con IA'),
         'subheadline' => $this->t('Constructor de cursos intuitivo, rutas de aprendizaje adaptativas, gamificación, certificaciones verificables, seguimiento xAPI y copilot pedagógico. Todo en una plataforma SaaS.'),
         'icon' => ['category' => 'verticals', 'name' => 'formacion'],
+        'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-formacion.mp4',
         'cta' => [
           'text' => $this->t('Crea tu primer curso gratis'),
           'url' => Url::fromRoute('user.register')->toString() . '?vertical=formacion',

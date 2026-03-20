@@ -1356,6 +1356,46 @@
 }
 
 // =============================================
+// F5-01: VIDEO HERO
+// =============================================
+.landing-hero__media-wrap {
+  flex: 0 0 auto;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  aspect-ratio: 16 / 10;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+.landing-hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+// Reduced motion: show poster as static image
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero__video {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--ej-bg-card, #fff);
+      opacity: 0.7;
+    }
+  }
+}
+
+// =============================================
 // F3-01: PARTNER LOGOS STRIP
 // =============================================
 .landing-partners {

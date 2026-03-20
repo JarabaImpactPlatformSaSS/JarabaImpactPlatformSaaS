@@ -203,6 +203,7 @@ landing-sections:
   js:
     js/landing-sticky-cta.js: {}
     js/landing-counters.js: {}
+    js/landing-hero-video.js: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_core/icons
