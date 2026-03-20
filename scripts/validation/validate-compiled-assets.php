@@ -107,6 +107,39 @@ foreach ($mappings as $scssFile => $cssFile) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// SCSS-COMPONENT-BUILD-001: Component SCSS → CSS pairs.
+// Partials like _pricing-page.scss compile to css/components/pricing-page.css.
+// These are loaded as separate libraries and MUST be kept fresh.
+// ─────────────────────────────────────────────────────────────
+$componentScss = glob("$scssDir/components/_*.scss") ?: [];
+foreach ($componentScss as $scss) {
+  $name = ltrim(basename($scss, '.scss'), '_');
+  $css = "$cssDir/components/$name.css";
+  if (!file_exists($css)) {
+    // Component CSS not compiled yet — may be only in main bundle.
+    continue;
+  }
+
+  $checked++;
+  $relScss = str_replace($projectRoot . '/', '', $scss);
+  $relCss = str_replace($projectRoot . '/', '', $css);
+  $scssMtime = filemtime($scss);
+  $cssMtime = filemtime($css);
+
+  if ($cssMtime < $scssMtime) {
+    $stale[] = [
+      'scss' => $relScss,
+      'css' => $relCss,
+      'reason' => sprintf(
+        'Component CSS stale (SCSS: %s, CSS: %s). Run: npm run build:components',
+        date('Y-m-d H:i:s', $scssMtime),
+        date('Y-m-d H:i:s', $cssMtime)
+      ),
+    ];
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Check partials: if any _partial.scss is newer than main.css,
 // the main bundle needs recompilation.
 // ─────────────────────────────────────────────────────────────
