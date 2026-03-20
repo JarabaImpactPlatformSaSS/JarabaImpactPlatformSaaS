@@ -442,6 +442,10 @@ if [ "$MODE" = "full" ]; then
   run_check "SCHEMA-PRICING-001" "Schema.org pricing dynamic (no hardcoded EUR)" \
     php "$SCRIPT_DIR/validate-schema-org-pricing.php"
 
+  # Infrastructure health (production-only, skips gracefully in CI).
+  warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \
+    php "$SCRIPT_DIR/validate-infra-health.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -472,6 +476,7 @@ else
   skip_check "VALIDATOR-COVERAGE-001" "Meta-safeguard orphaned validators"
   skip_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference"
   skip_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements coverage"
+  skip_check "INFRA-HEALTH-001" "Infrastructure health"
 fi
 
 fi  # End of non-checklist mode guard.
