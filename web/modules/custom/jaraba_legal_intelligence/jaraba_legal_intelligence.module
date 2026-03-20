@@ -451,6 +451,24 @@ function jaraba_legal_intelligence_theme(): array {
       'template' => 'legal-diagnostico',
       'variables' => [],
     ],
+    // Caso de exito: Martinez & Asociados (storytelling conversion).
+    'jarabalex_case_study' => [
+      'template' => 'jarabalex-case-study',
+      'variables' => [
+        'hero_image' => '',
+        'elena_image' => '',
+        'before_after_image' => '',
+        'elena_pablo_image' => '',
+        'search_image' => '',
+        'dashboard_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
     // === Parciales reutilizables ===
     'legal_resolution_card' => [
       'template' => 'partials/_resolution-card',

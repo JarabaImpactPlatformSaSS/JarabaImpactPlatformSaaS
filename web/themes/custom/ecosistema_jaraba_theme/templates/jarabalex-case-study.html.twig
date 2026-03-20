@@ -1,0 +1,258 @@
+{#
+/**
+ * @file jarabalex-case-study.html.twig
+ * Caso de éxito: Martinez & Asociados — storytelling de conversion.
+ *
+ * VARIABLES:
+ * - hero_image, elena_image, before_after_image, elena_pablo_image,
+ *   search_image, dashboard_image: string (URL relativa a WebP)
+ * - metrics: array of {label, before, after, change}
+ * - testimonial: {quote, name, role, company}
+ * - timeline: array of {day, title, text}
+ * - pricing_url, register_url: string
+ *
+ * DIRECTIVES: ZERO-REGION-001, i18n (trans), ICON-CONVENTION-001,
+ * CSS-VAR-ALL-COLORS-001, TWIG-XSS-001, ROUTE-LANGPREFIX-001,
+ * DOC-GLOSSARY-001
+ */
+#}
+
+{# === 1. HERO === #}
+<section class="cs-hero" style="background-image: url('{{ hero_image }}');" aria-labelledby="cs-title">
+  <div class="cs-hero__overlay"></div>
+  <div class="cs-hero__container">
+    <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
+    <h1 id="cs-title" class="cs-hero__title">
+      {% trans %}Como un pequeño despacho en Málaga redujo un 75% el tiempo de búsqueda jurídica{% endtrans %}
+    </h1>
+    <p class="cs-hero__subtitle">
+      {% trans %}La historia de Martinez &amp; Asociados: de Aranzadi a JarabaLex en 14 dias{% endtrans %}
+    </p>
+    <div class="cs-hero__ctas">
+      <a href="{{ pricing_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_hero_trial" data-track-position="case_study_hero">
+        {% trans %}Empieza tu prueba gratis{% endtrans %}
+      </a>
+      <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
+        {% trans %}Leer la historia{% endtrans %} ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === 2. EL DESPACHO (contexto) === #}
+<section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ elena_image }}" alt="{% trans %}Elena Martinez en su despacho{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El despacho{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Martinez &amp; Asociados, Málaga{% endtrans %}</h2>
+      <div class="cs-badges">
+        <span class="cs-badge">{% trans %}2 abogados{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}12 años experiencia{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Tributario + Mercantil{% endtrans %}</span>
+      </div>
+      <p>{% trans %}Elena Martinez tiene 38 años y lleva 12 ejerciendo como abogada. Abrio su propio despacho junto a su compañero de facultad, Pablo Romero. Se especializan en derecho tributario y mercantil para PYMEs.{% endtrans %}</p>
+      <p>{% trans %}Su dia a dia antes de JarabaLex: 45 minutos buscando sentencias en Aranzadi, plazos calculados a mano, facturas en Excel y contratos versionados como "definitivo_FINAL(2).docx".{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 3. EL DOLOR (metricas negativas) === #}
+<section class="cs-section cs-pain reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Antes de JarabaLex{% endtrans %}</h2>
+    <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y despues{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
+    <div class="cs-pain__cards">
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">45 min</span>
+        <span class="cs-pain__label">{% trans %}por búsqueda jurídica{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">320 &euro;</span>
+        <span class="cs-pain__label">{% trans %}al mes solo en Aranzadi{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">2,5h</span>
+        <span class="cs-pain__label">{% trans %}redactando desde cero{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">1-2</span>
+        <span class="cs-pain__label">{% trans %}plazos vencidos por trimestre{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 4. EL DESCUBRIMIENTO === #}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <span class="cs-section__eyebrow">{% trans %}El descubrimiento{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Un post de LinkedIn a las 10 de la noche{% endtrans %}</h2>
+    <blockquote class="cs-discovery__quote">
+      <p>&ldquo;{% trans %}Llevo dos meses usando esto y no vuelvo a Aranzadi. Busco una sentencia del TEAC y me la encuentra en 3 segundos, con resumen y legislación citada. Y cuesta una cuarta parte.{% endtrans %}&rdquo;</p>
+      <footer>— {% trans %}Compañero de promoción de Elena{% endtrans %}</footer>
+    </blockquote>
+    <div class="cs-discovery__compare">
+      <div class="cs-discovery__old">
+        <h3>Aranzadi</h3>
+        <span class="cs-discovery__price">320 &euro;/{% trans %}mes{% endtrans %}</span>
+        <ul>
+          <li>{% trans %}Base de datos{% endtrans %}</li>
+          <li>{% trans %}Busqueda por palabras clave{% endtrans %}</li>
+          <li class="cs-discovery__missing">{% trans %}Sin IA{% endtrans %}</li>
+          <li class="cs-discovery__missing">{% trans %}Sin gestión de casos{% endtrans %}</li>
+          <li class="cs-discovery__missing">{% trans %}Sin calendario{% endtrans %}</li>
+          <li class="cs-discovery__missing">{% trans %}Sin facturación{% endtrans %}</li>
+        </ul>
+      </div>
+      <div class="cs-discovery__new">
+        <h3>JarabaLex</h3>
+        <span class="cs-discovery__price cs-discovery__price--highlight">149 &euro;/{% trans %}mes{% endtrans %}</span>
+        <ul>
+          <li>{% trans %}Busqueda semantica con IA{% endtrans %}</li>
+          <li>{% trans %}Copiloto legal 8 modos{% endtrans %}</li>
+          <li>{% trans %}Gestión de expedientes{% endtrans %}</li>
+          <li>{% trans %}Calendario dias habiles{% endtrans %}</li>
+          <li>{% trans %}Boveda cifrada AES-256{% endtrans %}</li>
+          <li>{% trans %}Facturación Stripe{% endtrans %}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 5. LOS 14 DIAS (timeline) === #}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}Los 14 dias{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}La transformación paso a paso{% endtrans %}</h2>
+    <div class="cs-timeline__split">
+      <div class="cs-timeline__media">
+        <img src="{{ elena_pablo_image }}" alt="{% trans %}Elena y Pablo descubriendo JarabaLex{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      </div>
+      <div class="cs-timeline__steps">
+        {% for step in timeline %}
+          <div class="cs-timeline__step">
+            <span class="cs-timeline__day">{% trans %}Dia{% endtrans %} {{ step.day }}</span>
+            <div class="cs-timeline__detail">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 6. LOS RESULTADOS (metricas positivas) === #}
+<section class="cs-section cs-results reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}3 meses despues{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
+    <img src="{{ dashboard_image }}" alt="{% trans %}Dashboard JarabaLex{% endtrans %}" class="cs-results__dashboard" loading="lazy" width="800" height="500">
+    <div class="cs-results__grid">
+      {% for m in metrics %}
+        <div class="cs-results__card">
+          <span class="cs-results__change">{{ m.change }}</span>
+          <span class="cs-results__label">{{ m.label }}</span>
+          <div class="cs-results__compare">
+            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === 7. TESTIMONIAL === #}
+<section class="cs-section cs-testimonial reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
+      <p class="cs-testimonial__text" itemprop="reviewBody">
+        &ldquo;{{ testimonial.quote }}&rdquo;
+      </p>
+      <footer class="cs-testimonial__author">
+        <div>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+        </div>
+        <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <meta itemprop="ratingValue" content="5">
+          <meta itemprop="bestRating" content="5">
+          ★★★★★
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+{# === 8. MINI PRICING === #}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Planes JarabaLex{% endtrans %}</h2>
+    <div class="cs-pricing__cards">
+      <div class="cs-pricing__card">
+        <h3>Free</h3>
+        <span class="cs-pricing__price">0 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Explora sin compromiso{% endtrans %}</p>
+        <a href="{{ register_url }}" class="btn btn--outline" data-track-cta="cs_free" data-track-position="case_study_pricing">{% trans %}Empezar gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card cs-pricing__card--recommended">
+        <span class="cs-pricing__badge">{% trans %}El plan de Elena{% endtrans %}</span>
+        <h3>Professional</h3>
+        <span class="cs-pricing__price">149 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Ahorra 171 &euro;/mes vs Aranzadi{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary" data-track-cta="cs_professional" data-track-position="case_study_pricing">{% trans %}Probar 14 dias gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card">
+        <h3>Enterprise</h3>
+        <span class="cs-pricing__price">299 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Multi-usuario + SLA + API{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline" data-track-cta="cs_enterprise" data-track-position="case_study_pricing">{% trans %}Ver detalles{% endtrans %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 9. CTA FINAL === #}
+<section class="cs-section cs-final-cta">
+  <div class="cs-section__container cs-section__container--narrow">
+    <h2 class="cs-final-cta__title">{% trans %}¿Y si los proximos 14 dias cambian tu despacho?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.{% endtrans %}</p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_final_cta" data-track-position="case_study_bottom">
+      {% trans %}Probar JarabaLex gratis{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust">
+      <span>🔒 {% trans %}Datos en la UE{% endtrans %}</span>
+      <span>📋 {% trans %}RGPD 100%%{% endtrans %}</span>
+      <span>🔐 {% trans %}Cifrado AES-256{% endtrans %}</span>
+    </div>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Como un pequeño despacho en Málaga redujo un 75% el tiempo de búsqueda jurídica",
+  "author": {
+    "@type": "Organization",
+    "name": "Jaraba Impact Platform"
+  },
+  "datePublished": "2026-03-20",
+  "publisher": {
+    "@type": "Organization",
+    "name": "PED S.L."
+  },
+  "description": "Martinez & Asociados, despacho de 2 abogados en Málaga, cancelo Aranzadi tras 14 dias con JarabaLex. Ahorro de 171 EUR/mes y 2h/dia."
+}
+</script>

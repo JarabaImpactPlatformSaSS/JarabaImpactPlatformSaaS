@@ -190,4 +190,63 @@ class LegalLandingController extends ControllerBase {
     return $result;
   }
 
+  /**
+   * Pagina de caso de exito: Martinez & Asociados.
+   *
+   * Landing dedicada con storytelling de producto para conversion.
+   * Usa imagenes WebP generadas con Nano Banana.
+   *
+   * @return array<string, mixed>
+   *   Render array con el caso de exito.
+   */
+  public function caseStudy(): array {
+    $themePath = \Drupal::service('extension.list.theme')
+      ->getPath('ecosistema_jaraba_theme');
+    $imgBase = '/' . $themePath . '/images/jarabalex-case-study';
+
+    return [
+      '#theme' => 'jarabalex_case_study',
+      '#hero_image' => $imgBase . '/malaga-hero.webp',
+      '#elena_image' => $imgBase . '/elena-despacho.webp',
+      '#before_after_image' => $imgBase . '/antes-despues.webp',
+      '#elena_pablo_image' => $imgBase . '/elena-pablo.webp',
+      '#search_image' => $imgBase . '/busqueda-ia.webp',
+      '#dashboard_image' => $imgBase . '/dashboard-legal.webp',
+      '#metrics' => [
+        ['label' => $this->t('Tiempo busqueda'), 'before' => '45 min', 'after' => '3 min', 'change' => '-75%'],
+        ['label' => $this->t('Coste herramientas'), 'before' => '320 €/mes', 'after' => '149 €/mes', 'change' => '-53%'],
+        ['label' => $this->t('Plazos vencidos'), 'before' => '1-2/trim', 'after' => '0', 'change' => '-100%'],
+        ['label' => $this->t('Capacidad casos'), 'before' => '15-18', 'after' => '22-25', 'change' => '+40%'],
+        ['label' => $this->t('Ingresos mensuales'), 'before' => '8.500 €', 'after' => '11.200 €', 'change' => '+32%'],
+      ],
+      '#testimonial' => [
+        'quote' => $this->t('Pagabamos 320 €/mes por Aranzadi y dedicabamos media manana a buscar jurisprudencia. Ahora pagamos 149 €/mes por JarabaLex y encontramos cualquier resolucion en segundos, con resumen de IA, legislacion citada y estado de vigencia.'),
+        'name' => 'Elena Martinez',
+        'role' => $this->t('Socia fundadora'),
+        'company' => 'Martinez & Asociados, Malaga',
+      ],
+      '#timeline' => [
+        ['day' => 1, 'title' => $this->t('Primera busqueda'), 'text' => $this->t('3 minutos vs 45 minutos en Aranzadi')],
+        ['day' => 2, 'title' => $this->t('El copiloto convence'), 'text' => $this->t('Pablo: "Vale. Quiero mi propia cuenta."')],
+        ['day' => 4, 'title' => $this->t('Expediente digital'), 'text' => $this->t('Primer caso con plazos automaticos y boveda cifrada')],
+        ['day' => 7, 'title' => $this->t('Alertas activas'), 'text' => $this->t('Digest semanal con novedades del TEAC y BOE')],
+        ['day' => 10, 'title' => $this->t('Plantilla generada'), 'text' => $this->t('Contestacion a demanda en 40 min vs 2,5 horas')],
+        ['day' => 12, 'title' => $this->t('Factura sin Excel'), 'text' => $this->t('Control horario + factura profesional en 2 clics')],
+        ['day' => 14, 'title' => $this->t('Decision tomada'), 'text' => $this->t('Contratan Professional. Cancelan Aranzadi.')],
+      ],
+      '#pricing_url' => '/planes/jarabalex',
+      '#register_url' => '/registro/jarabalex',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_theme/jarabalex-case-study',
+          'ecosistema_jaraba_theme/scroll-animations',
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 86400,
+        'tags' => ['case_study_list'],
+      ],
+    ];
+  }
+
 }

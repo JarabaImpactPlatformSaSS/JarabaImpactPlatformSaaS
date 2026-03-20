@@ -317,6 +317,17 @@ jaraba_legal.api.diagnostico:
     _access: 'TRUE'
   methods: [POST]
 
+# Caso de exito: Martinez & Asociados (storytelling de conversion).
+jaraba_legal.case_study.martinez:
+  path: '/jarabalex/caso-de-exito/despacho-martinez'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalLandingController::caseStudy'
+    _title: 'Caso de exito: Despacho Martinez & Asociados'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE
+
 # Sitemap XML de resoluciones legales publicas.
 jaraba_legal.sitemap:
   path: '/legal/sitemap.xml'
