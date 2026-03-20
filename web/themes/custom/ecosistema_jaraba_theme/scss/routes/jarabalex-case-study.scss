@@ -46,17 +46,21 @@
 
     &__title {
         font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
-        font-size: clamp(1.75rem, 5vw, 3rem);
+        font-size: clamp(2rem, 6vw, 3.5rem);
         font-weight: 800;
-        line-height: 1.15;
-        margin: 0 0 1rem;
+        line-height: 1.1;
+        margin: 0 0 1.25rem;
+        text-shadow: 0 2px 20px color-mix(in srgb, black 30%, transparent);
     }
 
     &__subtitle {
-        font-size: 1.125rem;
-        opacity: 0.85;
-        margin: 0 0 2rem;
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin: 0 0 2.5rem;
         line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     &__ctas {
@@ -107,20 +111,21 @@
 
     &__eyebrow {
         display: block;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--ej-color-naranja-impulso, #FF8C42);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
     &__title {
         font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
-        font-size: clamp(1.5rem, 4vw, 2.25rem);
-        font-weight: 700;
+        font-size: clamp(1.75rem, 5vw, 2.75rem);
+        font-weight: 800;
         margin: 0 0 1.5rem;
-        color: var(--ej-color-text, #1a1a1a);
+        color: var(--ej-color-azul-corporativo, #233D63);
+        line-height: 1.15;
 
         &--center {
             text-align: center;
@@ -184,24 +189,28 @@
 
     &__card {
         text-align: center;
-        padding: 1.5rem 1rem;
+        padding: 1.75rem 1.25rem;
         background: var(--ej-color-surface, #fff);
         border-radius: var(--ej-radius-lg, 0.75rem);
-        box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-text, #333) 6%, transparent);
+        box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-text, #333) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--ej-color-danger, #e53e3e) 15%, transparent);
     }
 
     &__value {
         display: block;
         font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
-        font-size: 1.75rem;
+        font-size: 2.25rem;
         font-weight: 800;
         color: var(--ej-color-danger, #e53e3e);
+        line-height: 1;
     }
 
     &__label {
         display: block;
         font-size: 0.8125rem;
-        color: color-mix(in srgb, var(--ej-color-text, #333) 65%, transparent);
+        font-weight: 500;
+        color: color-mix(in srgb, var(--ej-color-text, #333) 70%, transparent);
+        margin-top: 0.35rem;
         margin-top: 0.25rem;
     }
 }
@@ -352,10 +361,10 @@
 
     &__step-title {
         font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
-        font-size: 1rem;
-        font-weight: 700;
+        font-size: 1.1rem;
+        font-weight: 800;
         margin: 0 0 0.25rem;
-        color: var(--ej-color-text, #1a1a1a);
+        color: var(--ej-color-azul-corporativo, #233D63);
     }
 
     &__step-text {
@@ -391,26 +400,28 @@
 
     &__card {
         text-align: center;
-        padding: 1.25rem 0.75rem;
+        padding: 1.5rem 1rem;
         border-radius: var(--ej-radius-lg, 0.75rem);
-        background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 5%, transparent);
-        border: 1px solid color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent);
+        background: color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 6%, transparent);
+        border: 2px solid color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 25%, transparent);
+        box-shadow: 0 2px 10px color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 8%, transparent);
     }
 
     &__change {
         display: block;
         font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
-        font-size: 1.5rem;
+        font-size: 2rem;
         font-weight: 800;
         color: var(--ej-color-verde-innovacion, #00A9A5);
+        line-height: 1;
     }
 
     &__label {
         display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--ej-color-text, #1a1a1a);
-        margin: 0.25rem 0 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--ej-color-azul-corporativo, #233D63);
+        margin: 0.35rem 0 0.5rem;
     }
 
     &__compare {
