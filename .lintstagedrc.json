@@ -9,6 +9,7 @@
     "bash scripts/maintenance/verify-doc-integrity.sh"
   ],
   "web/**/*.html.twig": [
+    "php scripts/validation/validate-twig-syntax.php",
     "php scripts/validation/validate-twig-ortografia.php"
   ],
   "web/modules/custom/**/*.services.yml": [
@@ -19,5 +20,14 @@
   ],
   "web/modules/custom/**/*.routing.yml": [
     "bash scripts/validation/validate-all.sh --fast"
+  ],
+  "web/modules/custom/**/*.js": [
+    "php scripts/validation/validate-js-syntax.php"
+  ],
+  "web/themes/custom/**/*.js": [
+    "php scripts/validation/validate-js-syntax.php"
+  ],
+  "web/**/*.libraries.yml": [
+    "php scripts/validation/validate-library-attachments.php"
   ]
 }

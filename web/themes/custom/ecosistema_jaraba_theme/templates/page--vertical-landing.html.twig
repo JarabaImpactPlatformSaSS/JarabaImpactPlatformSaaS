@@ -58,13 +58,13 @@
         promo_title: theme_settings.promo_banner_title|default(''),
         promo_text: theme_settings.promo_banner_text|default(''),
         promo_url: theme_settings.promo_banner_url|default(''),
-        promo_cta: theme_settings.promo_banner_cta|default(''),,
-    'available_languages': available_languages|default([]),
-    'current_langcode': current_langcode|default('es'),
-    'language_prefix': language_prefix|default(''),
-    'language_links': language_links|default({}),
-    'mega_menu_columns': mega_menu_columns|default([]),
-  } only %}
+        promo_cta: theme_settings.promo_banner_cta|default(''),
+        available_languages: available_languages|default([]),
+        current_langcode: current_langcode|default('es'),
+        language_prefix: language_prefix|default(''),
+        language_links: language_links|default({}),
+        mega_menu_columns: mega_menu_columns|default([]),
+      } only %}
     {% endif %}
 
   </main>

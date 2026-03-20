@@ -140,13 +140,13 @@
     {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
       theme_path: directory,
-      partners_variant: 'full',,
-    'available_languages': available_languages|default([]),
-    'current_langcode': current_langcode|default('es'),
-    'language_prefix': language_prefix|default(''),
-    'language_links': language_links|default({}),
-    'mega_menu_columns': mega_menu_columns|default([]),
-  } only %}
+      partners_variant: 'full',
+      available_languages: available_languages|default([]),
+      current_langcode: current_langcode|default('es'),
+      language_prefix: language_prefix|default(''),
+      language_links: language_links|default({}),
+      mega_menu_columns: mega_menu_columns|default([]),
+    } only %}
 
     {# 9. LEAD MAGNET — Accion #}
     {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {

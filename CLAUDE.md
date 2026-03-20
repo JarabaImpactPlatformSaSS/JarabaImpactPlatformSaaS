@@ -104,6 +104,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Sin logica de negocio (solo presentacion). Usar preprocess para preparar variables
 - TWIG-URL-RENDER-ARRAY-001: `url()` en Drupal 11 devuelve **render array** (NO string). NUNCA concatenar con `~`. Solo usar dentro de `{{ }}` donde escapeFilter maneja el render array. Para construir URLs concatenadas, pasar la URL como string desde preprocess PHP o usar path relativo (`'/' ~ directory ~ '/logo.svg'`)
 - TWIG-INCLUDE-ONLY-001: Usar `only` en `{% include %}` de parciales para aislar el contexto. Sin `only`, TODAS las variables del template padre se filtran al parcial (incluyendo render arrays que colisionan con variables esperadas como strings). Pasar explicitamente solo las variables necesarias
+- TWIG-SYNTAX-LINT-001: NUNCA doble coma `,,` en mappings Twig (causa SyntaxError en Twig 3.x → 500 en runtime). NUNCA `{#` anidado dentro de comentarios Twig (cierra prematuramente). Usar estilo consistente de keys en mappings (sin comillas preferido). Validacion: `php scripts/validation/validate-twig-syntax.php` + pre-commit lint-staged
 
 ## THEMING — ecosistema_jaraba_theme
 
@@ -285,12 +286,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v151.0.0
-- ARQUITECTURA: v138.0.0
-- INDICE: v179.0.0
-- FLUJO: v103.0.0
-- Ultimo aprendizaje: #203
-- Ultima golden rule: #141
+- DIRECTRICES: v152.0.0
+- ARQUITECTURA: v139.0.0
+- INDICE: v180.0.0
+- FLUJO: v104.0.0
+- Ultimo aprendizaje: #204
+- Ultima golden rule: #142
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -369,14 +370,21 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-duplicate-hooks.php` (DUPLICATE-HOOK-001)
 - `php scripts/validation/validate-scss-variables.php` (SCSS-VARIABLE-EXIST-001)
 - `php scripts/validation/validate-library-attachments.php` (LIBRARY-ATTACHMENT-001) [warn]
+- `php scripts/validation/validate-twig-syntax.php` (TWIG-SYNTAX-LINT-001)
 - `php scripts/validation/validate-twig-include-only.php` (TWIG-INCLUDE-ONLY-001) [warn]
+- `php scripts/validation/validate-route-permissions.php` (ROUTE-PERMISSION-AUDIT-001)
+- `php scripts/validation/validate-hook-update-coverage.php` (HOOK-UPDATE-COVERAGE-001)
+- `php scripts/validation/validate-js-syntax.php` (JS-SYNTAX-LINT-001)
+- `php scripts/validation/validate-csp-completeness.php` (CSP-DOMAIN-COMPLETENESS-001) [warn]
+- `php scripts/validation/validate-hook-requirements-coverage.php` (HOOK-REQUIREMENTS-COVERAGE-001) [warn]
+- `php scripts/validation/validate-validator-coverage.php` (VALIDATOR-COVERAGE-001) — meta-safeguard
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (51 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (67 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 51 scripts validacion (scripts/validation/) | On demand, CI | 42 checks fast+full |
-| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 6 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml |
+| 1 | 67 scripts validacion (scripts/validation/) | On demand, CI | 79 checks fast+full |
+| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 9 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/libraries.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
 | 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features | Complitud+Integridad+Consistencia+Coherencia |
@@ -386,6 +394,8 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `**/*.php`: PHPStan Level 6
 - `**/*.scss`: validate-compiled-assets.php
 - `docs/00_*.md`: verify-doc-integrity.sh (DOC-GUARD-001)
-- `**/*.html.twig`: validate-twig-ortografia.php
+- `**/*.html.twig`: validate-twig-syntax.php (TWIG-SYNTAX-LINT-001) + validate-twig-ortografia.php
+- `**/*.js` (modules+theme): validate-js-syntax.php (JS-SYNTAX-LINT-001)
+- `**/*.libraries.yml`: validate-library-attachments.php (LIBRARY-ATTACHMENT-001)
 - `**/*.services.yml`: validate-phantom-args + validate-optional-deps + validate-circular-deps + validate-logger-injection (~3s)
 - `**/*.routing.yml`: validate-all.sh --fast

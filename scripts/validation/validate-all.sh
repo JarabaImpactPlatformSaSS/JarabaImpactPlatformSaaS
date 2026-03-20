@@ -197,6 +197,9 @@ run_check "LOGGER-INJECT-001" "Logger injection consistency (fast)" \
 run_check "PHANTOM-ARG-001" "Phantom args in services.yml vs constructor params" \
   php "$SCRIPT_DIR/validate-phantom-args.php"
 
+run_check "TWIG-SYNTAX-LINT-001" "Twig static syntax lint (double comma, balance, blocks)" \
+  php "$SCRIPT_DIR/validate-twig-syntax.php"
+
 run_check "ORTOGRAFIA-TRANS-001" "Ortografia en textos traducibles Twig (tildes + ñ)" \
   php "$SCRIPT_DIR/validate-twig-ortografia.php"
 
@@ -364,6 +367,47 @@ if [ "$MODE" = "full" ]; then
   run_check "ADDON-IMPLEMENTATION-001" "Addon module implementation audit" \
     php "$SCRIPT_DIR/validate-addon-implementation.php"
 
+  # Validators previously orphaned — integrated 2026-03-20.
+  run_check "ICON-COMPLETENESS-001" "Icon SVG completeness (cascade fallback coverage)" \
+    php "$SCRIPT_DIR/validate-icon-completeness.php"
+
+  run_check "MARKETING-TRUTH-001" "Marketing claims vs billing reality" \
+    php "$SCRIPT_DIR/validate-marketing-truth.php"
+
+  run_check "TWIG-INCLUDE-VARS-001" "Twig include with only passes required variables" \
+    php "$SCRIPT_DIR/validate-twig-include-vars.php"
+
+  run_check "SETUP-WIZARD-DAILY-001" "Setup Wizard + Daily Actions coverage per vertical" \
+    php "$SCRIPT_DIR/validate-wizard-daily-coverage.php"
+
+  warn_check "DEMO-COVERAGE-001" "Demo vertical coverage (11/11 profiles)" \
+    php "$SCRIPT_DIR/validate-demo-coverage.php"
+
+  warn_check "SVG-CURRENTCOLOR-001" "SVG currentColor usage in img tags" \
+    php "$SCRIPT_DIR/validate-svg-currentcolor.php"
+
+  warn_check "CONFIG-DB-SYNC-001" "Config YAML vs DB sync state" \
+    php "$SCRIPT_DIR/validate-config-db-sync.php"
+
+  # New safeguards added 2026-03-20 (P0-P2).
+  run_check "ROUTE-PERMISSION-AUDIT-001" "Route access control completeness" \
+    php "$SCRIPT_DIR/validate-route-permissions.php"
+
+  run_check "HOOK-UPDATE-COVERAGE-001" "Entity types have install/update hooks" \
+    php "$SCRIPT_DIR/validate-hook-update-coverage.php"
+
+  run_check "JS-SYNTAX-LINT-001" "JavaScript static syntax lint" \
+    php "$SCRIPT_DIR/validate-js-syntax.php"
+
+  run_check "VALIDATOR-COVERAGE-001" "Meta-safeguard: orphaned validator detection" \
+    php "$SCRIPT_DIR/validate-validator-coverage.php"
+
+  warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
+    php "$SCRIPT_DIR/validate-csp-completeness.php"
+
+  warn_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements() coverage" \
+    php "$SCRIPT_DIR/validate-hook-requirements-coverage.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -381,6 +425,19 @@ else
   skip_check "TRANSLATION-INTEG-001" "Translation integrity"
   skip_check "DEPLOY-READY-001" "Production deploy readiness"
   skip_check "ENV-PARITY-001" "Dev/Prod environment parity"
+  skip_check "ICON-COMPLETENESS-001" "Icon SVG completeness"
+  skip_check "MARKETING-TRUTH-001" "Marketing claims vs billing reality"
+  skip_check "TWIG-INCLUDE-VARS-001" "Twig include required variables"
+  skip_check "SETUP-WIZARD-DAILY-001" "Setup Wizard + Daily Actions coverage"
+  skip_check "DEMO-COVERAGE-001" "Demo vertical coverage"
+  skip_check "SVG-CURRENTCOLOR-001" "SVG currentColor in img tags"
+  skip_check "CONFIG-DB-SYNC-001" "Config YAML vs DB sync"
+  skip_check "ROUTE-PERMISSION-AUDIT-001" "Route access control completeness"
+  skip_check "HOOK-UPDATE-COVERAGE-001" "Entity types install/update hooks"
+  skip_check "JS-SYNTAX-LINT-001" "JavaScript static syntax lint"
+  skip_check "VALIDATOR-COVERAGE-001" "Meta-safeguard orphaned validators"
+  skip_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference"
+  skip_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements coverage"
 fi
 
 fi  # End of non-checklist mode guard.

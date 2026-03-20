@@ -89,12 +89,12 @@
           {% for case_item in legal_cases %}
             {% include '@jaraba_legal_cases/partials/_case-card.html.twig' with {
               case_entity: case_item,
-    'available_languages': available_languages|default([]),
-    'current_langcode': current_langcode|default('es'),
-    'language_prefix': language_prefix|default(''),
-    'language_links': language_links|default({}),
-    'mega_menu_columns': mega_menu_columns|default([]),
-  } only %}
+              available_languages: available_languages|default([]),
+              current_langcode: current_langcode|default('es'),
+              language_prefix: language_prefix|default(''),
+              language_links: language_links|default({}),
+              mega_menu_columns: mega_menu_columns|default([]),
+            } only %}
           {% endfor %}
         {% else %}
           <div class="legal-cases-dashboard__empty">
