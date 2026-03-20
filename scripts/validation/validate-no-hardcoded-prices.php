@@ -64,8 +64,15 @@ $exception_patterns = [
 ];
 
 // Archivos excluidos: contienen datos mock/placeholder, no precios de plan.
+// Case studies contienen precios narrativos (datos de la historia del cliente),
+// no precios configurables del SaaS.
 $excluded_files = [
   'page--agent-dashboard.html.twig',
+  'agroconecta-case-study.html.twig',
+  'comercioconecta-case-study.html.twig',
+  'emprendimiento-case-study.html.twig',
+  'empleabilidad-case-study.html.twig',
+  'formacion-case-study.html.twig',
 ];
 
 $errors = [];
