@@ -684,7 +684,7 @@ class PricingController extends ControllerBase
                     'label' => (string) $this->t('verticales'),
                 ],
                 [
-                    'value' => '100%%',
+                    'value' => '100%',
                     'label' => (string) $this->t('datos en la UE'),
                 ],
             ];
