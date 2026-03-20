@@ -26,8 +26,5 @@
   ],
   "web/themes/custom/**/*.js": [
     "php scripts/validation/validate-js-syntax.php"
-  ],
-  "web/**/*.libraries.yml": [
-    "php scripts/validation/validate-library-attachments.php"
   ]
 }

@@ -75,10 +75,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Los intermediarios se quedan con el 40% de tu margen')],
-        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('No tienes tiempo para gestionar una web complicada')],
-        ['icon' => ['category' => 'ui', 'name' => 'eye-off'], 'text' => $this->t('Tus clientes no saben que existes')],
-        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'text' => $this->t('Cobrar es un lío: transferencias, efectivo, recibos...')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Márgenes comprimidos'), 'description' => $this->t('Los intermediarios se quedan con el 40% de tu margen')],
+          ['icon' => ['category' => 'ui', 'name' => 'clock'], 'title' => $this->t('Sin tiempo para tecnología'), 'description' => $this->t('No tienes tiempo para gestionar una web complicada')],
+          ['icon' => ['category' => 'ui', 'name' => 'eye-off'], 'title' => $this->t('Invisible para el cliente'), 'description' => $this->t('Tus clientes no saben que existes')],
+          ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Cobros caóticos'), 'description' => $this->t('Cobrar es un lío: transferencias, efectivo, recibos...')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Sube tus productos'), 'description' => $this->t('Con una foto, la IA escribe la descripcion, sugiere precios y categoriza automaticamente')],
@@ -102,6 +105,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Notificaciones Multi-Canal'), 'description' => $this->t('Email, SMS y push configurables por evento: nuevo pedido, envio, resena, alerta de stock.')],
         ['icon' => ['category' => 'ui', 'name' => 'heart'], 'title' => $this->t('Portal del Cliente'), 'description' => $this->t('Historial de pedidos, direcciones guardadas, favoritos y preferencias alimentarias personalizadas.')],
       ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara AgroConecta?'),
+        'competitors' => [
+          [
+            'name' => 'AgroConecta',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Tienda online con catálogo completo'), 'included' => TRUE],
+              ['text' => $this->t('Trazabilidad QR criptográfica'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA para descripciones y precios'), 'included' => TRUE],
+              ['text' => $this->t('Envío MRW/SEUR integrado'), 'included' => TRUE],
+              ['text' => $this->t('Cobro seguro via Stripe Connect'), 'included' => TRUE],
+              ['text' => $this->t('Previsión de demanda con IA'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => $this->t('Marketplace genérico'),
+            'highlight' => FALSE,
+            'price' => $this->t('15-40% comisión'),
+            'features' => [
+              ['text' => $this->t('Tienda dentro del marketplace'), 'included' => TRUE],
+              ['text' => $this->t('Sin trazabilidad QR'), 'included' => FALSE],
+              ['text' => $this->t('Sin asistente IA'), 'included' => FALSE],
+              ['text' => $this->t('Envío gestionado por el marketplace'), 'included' => TRUE],
+              ['text' => $this->t('Cobro con comisiones altas'), 'included' => TRUE],
+              ['text' => $this->t('Sin previsión de demanda'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => $this->t('Venta tradicional'),
+            'highlight' => FALSE,
+            'price' => $this->t('Intermediarios'),
+            'features' => [
+              ['text' => $this->t('Sin presencia online'), 'included' => FALSE],
+              ['text' => $this->t('Sin trazabilidad digital'), 'included' => FALSE],
+              ['text' => $this->t('Sin herramientas digitales'), 'included' => FALSE],
+              ['text' => $this->t('Logística propia o intermediarios'), 'included' => FALSE],
+              ['text' => $this->t('Cobro manual o a intermediarios'), 'included' => FALSE],
+              ['text' => $this->t('Sin datos de mercado'), 'included' => FALSE],
+            ],
+          ],
+        ],
+      ],
       'social_proof' => [
         'testimonials' => [
           ['quote' => $this->t('Llevamos 60 años vendiendo a granel a 2 €/litro. Ahora vendemos directamente a 17 €/litro. Y el cliente puede ver desde su móvil que este aceite viene de nuestros olivos.'), 'author' => 'Antonio Morales', 'role' => $this->t('presidente, Cooperativa Sierra de Cazorla (Jaén)')],
@@ -122,12 +169,55 @@ class VerticalLandingController extends ControllerBase
       'lead_magnet' => [
         'title' => $this->t('Guia: Vende Online sin Intermediarios'),
         'description' => $this->t('Descarga inmediata en PDF con estrategias probadas.'),
-        'url' => '/agroconecta/guia-vende-online',
+        'url' => '/agroconecta/guia-vende-online/descargar',
         'cta_text' => $this->t('Descargar guia gratis'),
         'icon' => ['category' => 'ui', 'name' => 'download'],
       ],
       'pricing' => [
         'headline' => $this->t('Planes para productores'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('5 productos'),
+              $this->t('Copilot básico'),
+              $this->t('Cobro Stripe'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '29',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('50 productos'),
+              $this->t('Envío MRW/SEUR'),
+              $this->t('QR trazabilidad'),
+              $this->t('Analytics'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/agroconecta',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '79',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Productos ilimitados'),
+              $this->t('Copilot IA avanzado'),
+              $this->t('Previsión demanda'),
+              $this->t('Hub B2B'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/agroconecta',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -191,10 +281,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'business', 'name' => 'cart'], 'text' => $this->t('Las grandes superficies se llevan a tus clientes')],
-        ['icon' => ['category' => 'ui', 'name' => 'search'], 'text' => $this->t('Tu tienda no aparece en Google cuando buscan cerca')],
-        ['icon' => ['category' => 'business', 'name' => 'trending-down'], 'text' => $this->t('No puedes competir con el ecommerce de los grandes')],
-        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Gestionar redes sociales te quita tiempo de atender')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'business', 'name' => 'cart'], 'title' => $this->t('Clientes que se van'), 'description' => $this->t('Las grandes superficies se llevan a tus clientes')],
+          ['icon' => ['category' => 'ui', 'name' => 'search'], 'title' => $this->t('Invisible en Google'), 'description' => $this->t('Tu tienda no aparece en Google cuando buscan cerca')],
+          ['icon' => ['category' => 'business', 'name' => 'trending-down'], 'title' => $this->t('Competencia desleal'), 'description' => $this->t('No puedes competir con el ecommerce de los grandes')],
+          ['icon' => ['category' => 'ui', 'name' => 'clock'], 'title' => $this->t('Sin tiempo'), 'description' => $this->t('Gestionar redes sociales te quita tiempo de atender')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Configura tu tienda online'), 'description' => $this->t('Sube productos, sincroniza con tu TPV y publica tu tienda en minutos')],
@@ -217,6 +310,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'achievement'], 'title' => $this->t('Programa de Fidelización'), 'description' => $this->t('Puntos por compra, cupones de descuento, wishlists de cliente. Retención que convierte compradores en habituales.')],
         ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Notificaciones Multi-canal'), 'description' => $this->t('Email, SMS y push notifications automáticas: confirmación de pedido, envío, carritos abandonados y ofertas personalizadas.')],
         ['icon' => ['category' => 'business', 'name' => 'refresh'], 'title' => $this->t('Devoluciones y RMA'), 'description' => $this->t('Gestión completa de devoluciones con solicitud online, tracking de RMA e incidencias. El cliente resuelve sin llamarte.')],
+      ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara ComercioConecta?'),
+        'competitors' => [
+          [
+            'name' => 'ComercioConecta',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Marketplace de proximidad integrado'), 'included' => TRUE],
+              ['text' => $this->t('QR de escaparate con A/B testing'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA para comerciantes'), 'included' => TRUE],
+              ['text' => $this->t('SEO local automático'), 'included' => TRUE],
+              ['text' => $this->t('Integración TPV bidireccional'), 'included' => TRUE],
+              ['text' => $this->t('Ofertas flash geolocalizadas'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'Shopify',
+            'highlight' => FALSE,
+            'price' => $this->t('29-299 $/mes'),
+            'features' => [
+              ['text' => $this->t('Tienda online propia'), 'included' => TRUE],
+              ['text' => $this->t('Sin QR de escaparate'), 'included' => FALSE],
+              ['text' => $this->t('IA limitada (Shopify Magic)'), 'included' => TRUE],
+              ['text' => $this->t('SEO básico manual'), 'included' => TRUE],
+              ['text' => $this->t('Integración TPV con coste extra'), 'included' => FALSE],
+              ['text' => $this->t('Sin ofertas geolocalizadas'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => 'WooCommerce',
+            'highlight' => FALSE,
+            'price' => $this->t('Hosting + plugins'),
+            'features' => [
+              ['text' => $this->t('Tienda online personalizable'), 'included' => TRUE],
+              ['text' => $this->t('Sin QR dinámico'), 'included' => FALSE],
+              ['text' => $this->t('Sin IA integrada'), 'included' => FALSE],
+              ['text' => $this->t('SEO via plugins externos'), 'included' => FALSE],
+              ['text' => $this->t('Requiere desarrollo técnico'), 'included' => FALSE],
+              ['text' => $this->t('Sin ofertas geolocalizadas'), 'included' => FALSE],
+            ],
+          ],
+        ],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -244,6 +381,49 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para comercios'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('10 productos'),
+              $this->t('1 tienda'),
+              $this->t('Cobro Stripe'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '29',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('100 productos'),
+              $this->t('Multi-tienda'),
+              $this->t('Analytics'),
+              $this->t('Cupones'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/comercioconecta',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '79',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Productos ilimitados'),
+              $this->t('Marketplace'),
+              $this->t('IA merchandising'),
+              $this->t('API'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/comercioconecta',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -307,10 +487,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'ui', 'name' => 'phone'], 'text' => $this->t('Gestionar citas por teléfono consume tu tiempo productivo')],
-        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Tus clientes no pueden reservar fuera de horario y pierdes reservas')],
-        ['icon' => ['category' => 'ui', 'name' => 'eye-off'], 'text' => $this->t('Eres invisible online: sin perfil profesional ni marketplace donde te encuentren')],
-        ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Cobrar en efectivo o por transferencia genera impagos y retrasos')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'ui', 'name' => 'phone'], 'title' => $this->t('Teléfono sin parar'), 'description' => $this->t('Gestionar citas por teléfono consume tu tiempo productivo')],
+          ['icon' => ['category' => 'ui', 'name' => 'clock'], 'title' => $this->t('Reservas perdidas'), 'description' => $this->t('Tus clientes no pueden reservar fuera de horario y pierdes reservas')],
+          ['icon' => ['category' => 'ui', 'name' => 'eye-off'], 'title' => $this->t('Invisible online'), 'description' => $this->t('Eres invisible online: sin perfil profesional ni marketplace donde te encuentren')],
+          ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Cobros impredecibles'), 'description' => $this->t('Cobrar en efectivo o por transferencia genera impagos y retrasos')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Configura tu perfil'), 'description' => $this->t('Crea tu perfil profesional, define servicios, horarios y tarifas')],
@@ -329,6 +512,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Presupuestador con IA'), 'description' => $this->t('Genera presupuestos personalizados en segundos. La IA analiza el servicio y ajusta el precio a la complejidad.')],
         ['icon' => ['category' => 'business', 'name' => 'signature'], 'title' => $this->t('Firma Digital PAdES'), 'description' => $this->t('Contratos de servicio con firma digital avanzada via AutoFirma. Validez legal europea.')],
         ['icon' => ['category' => 'ui', 'name' => 'lock'], 'title' => $this->t('Buzón de Confianza'), 'description' => $this->t('Mensajería cifrada end-to-end entre cliente y profesional. Historial vinculado a cada reserva.')],
+      ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara ServiciosConecta?'),
+        'competitors' => [
+          [
+            'name' => 'ServiciosConecta',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Motor de reservas 24/7'), 'included' => TRUE],
+              ['text' => $this->t('Marketplace profesional público'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA incluido'), 'included' => TRUE],
+              ['text' => $this->t('Videoconsulta integrada'), 'included' => TRUE],
+              ['text' => $this->t('Presupuestador automático con IA'), 'included' => TRUE],
+              ['text' => $this->t('Firma digital PAdES'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'Doctoralia',
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 99 €/mes'),
+            'features' => [
+              ['text' => $this->t('Agenda de citas online'), 'included' => TRUE],
+              ['text' => $this->t('Directorio de profesionales'), 'included' => TRUE],
+              ['text' => $this->t('Sin IA generativa'), 'included' => FALSE],
+              ['text' => $this->t('Videoconsulta con coste extra'), 'included' => FALSE],
+              ['text' => $this->t('Sin presupuestador automático'), 'included' => FALSE],
+              ['text' => $this->t('Sin firma digital'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => $this->t('Gestión manual'),
+            'highlight' => FALSE,
+            'price' => $this->t('"Gratis"'),
+            'features' => [
+              ['text' => $this->t('Citas por teléfono/WhatsApp'), 'included' => FALSE],
+              ['text' => $this->t('Sin visibilidad online'), 'included' => FALSE],
+              ['text' => $this->t('Sin herramientas digitales'), 'included' => FALSE],
+              ['text' => $this->t('Sin videoconsulta profesional'), 'included' => FALSE],
+              ['text' => $this->t('Presupuestos manuales en Word'), 'included' => FALSE],
+              ['text' => $this->t('Sin firma electrónica'), 'included' => FALSE],
+            ],
+          ],
+        ],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -355,6 +582,50 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para profesionales de servicios'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('1 servicio'),
+              $this->t('Perfil profesional'),
+              $this->t('Reservas manuales'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '25',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Reservas online ilimitadas'),
+              $this->t('Reseñas automáticas'),
+              $this->t('QR'),
+              $this->t('Recordatorios'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/serviciosconecta',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '69',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Presupuestador IA'),
+              $this->t('Copilot proactivo'),
+              $this->t('Bonos'),
+              $this->t('Analytics'),
+              $this->t('Firma digital'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/serviciosconecta',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -417,10 +688,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'ui', 'name' => 'help-circle'], 'text' => $this->t('No sabes por dónde empezar en tu búsqueda de empleo')],
-        ['icon' => ['category' => 'business', 'name' => 'cv-optimized'], 'text' => $this->t('Tu CV no destaca entre cientos de candidatos')],
-        ['icon' => ['category' => 'business', 'name' => 'target'], 'text' => $this->t('Las ofertas no encajan con tus habilidades reales')],
-        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Tienes miedo de la entrevista después de tanto tiempo')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'ui', 'name' => 'help-circle'], 'title' => $this->t('Sin rumbo claro'), 'description' => $this->t('No sabes por dónde empezar en tu búsqueda de empleo')],
+          ['icon' => ['category' => 'business', 'name' => 'cv-optimized'], 'title' => $this->t('CV invisible'), 'description' => $this->t('Tu CV no destaca entre cientos de candidatos')],
+          ['icon' => ['category' => 'business', 'name' => 'target'], 'title' => $this->t('Ofertas desalineadas'), 'description' => $this->t('Las ofertas no encajan con tus habilidades reales')],
+          ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'title' => $this->t('Miedo a la entrevista'), 'description' => $this->t('Tienes miedo de la entrevista después de tanto tiempo')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Haz tu diagnóstico'), 'description' => $this->t('En 3 minutos la IA evalúa tu nivel en 3 dimensiones (LinkedIn, CV ATS, estrategia), te asigna un perfil y genera un plan de acción con PDF.')],
@@ -445,6 +719,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Email Nurturing Automatizado'), 'description' => $this->t('5 secuencias automáticas: onboarding, reactivación, upsell, preparación entrevista y post-empleo. Emails adaptados a tu fase real en la plataforma.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('LMS Gamificado'), 'description' => $this->t('Badges, leaderboards, puntos XP y certificaciones verificables. Aprende compitiendo: cada curso completado suma a tu perfil y tus credenciales.')],
         ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Notificaciones Web Push'), 'description' => $this->t('Alertas instantáneas cuando hay una oferta que encaja, cuando te preseleccionan o cuando tu aplicación avanza. Sin abrir la plataforma.')],
+      ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara Empleabilidad?'),
+        'competitors' => [
+          [
+            'name' => 'Empleabilidad',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Diagnóstico IA con plan de acción'), 'included' => TRUE],
+              ['text' => $this->t('CV Builder con IA y 4 plantillas'), 'included' => TRUE],
+              ['text' => $this->t('Matching inteligente de ofertas'), 'included' => TRUE],
+              ['text' => $this->t('Simulador de entrevistas con IA'), 'included' => TRUE],
+              ['text' => $this->t('LMS gamificado con badges'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA con 6 modos'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'InfoJobs',
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 195 €/oferta'),
+            'features' => [
+              ['text' => $this->t('Sin diagnóstico de empleabilidad'), 'included' => FALSE],
+              ['text' => $this->t('Sin generador de CV con IA'), 'included' => FALSE],
+              ['text' => $this->t('Búsqueda básica por filtros'), 'included' => TRUE],
+              ['text' => $this->t('Sin simulador de entrevistas'), 'included' => FALSE],
+              ['text' => $this->t('Sin formación integrada'), 'included' => FALSE],
+              ['text' => $this->t('Sin asistente IA'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => 'LinkedIn Recruiter',
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 600 €/mes'),
+            'features' => [
+              ['text' => $this->t('Sin diagnóstico personalizado'), 'included' => FALSE],
+              ['text' => $this->t('Perfil profesional estándar'), 'included' => TRUE],
+              ['text' => $this->t('Búsqueda de ofertas limitada'), 'included' => TRUE],
+              ['text' => $this->t('Sin simulador de entrevistas'), 'included' => FALSE],
+              ['text' => $this->t('LinkedIn Learning (coste extra)'), 'included' => FALSE],
+              ['text' => $this->t('Sin copilot especializado'), 'included' => FALSE],
+            ],
+          ],
+        ],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -474,6 +792,49 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para tu búsqueda'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Diagnóstico Express'),
+              $this->t('1 CV'),
+              $this->t('3 alertas empleo'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '19',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('CV ilimitados'),
+              $this->t('20 alertas'),
+              $this->t('Matching IA'),
+              $this->t('Analytics'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/empleabilidad',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '49',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Matching 5D completo'),
+              $this->t('Copilot proactivo'),
+              $this->t('Portfolio'),
+              $this->t('Formación incluida'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/empleabilidad',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -539,10 +900,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'ui', 'name' => 'help-circle'], 'text' => $this->t('No sabes si tu idea de negocio es viable')],
-        ['icon' => ['category' => 'ui', 'name' => 'settings'], 'text' => $this->t('Necesitas herramientas digitales pero no sabes cuáles')],
-        ['icon' => ['category' => 'ui', 'name' => 'users'], 'text' => $this->t('No tienes mentor que te guíe en el camino')],
-        ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Miedo a invertir sin validar primero')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'ui', 'name' => 'help-circle'], 'title' => $this->t('Idea sin validar'), 'description' => $this->t('No sabes si tu idea de negocio es viable')],
+          ['icon' => ['category' => 'ui', 'name' => 'settings'], 'title' => $this->t('Herramientas confusas'), 'description' => $this->t('Necesitas herramientas digitales pero no sabes cuáles')],
+          ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Sin mentor'), 'description' => $this->t('No tienes mentor que te guíe en el camino')],
+          ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Miedo a invertir'), 'description' => $this->t('Miedo a invertir sin validar primero')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Diagnostica tu idea'), 'description' => $this->t('Calculadora de madurez digital + evaluación IA de viabilidad. Reporte PDF en 5 minutos con gaps y prioridades.')],
@@ -567,6 +931,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ui', 'name' => 'share-2'], 'title' => $this->t('Puentes a Formación, Comercio y Servicios'), 'description' => $this->t('Cuando tu startup crece, conexión inteligente con otros verticales: formación para tu equipo, comercio para vender, servicios para externalizar.')],
         ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Email Nurturing Automatizado'), 'description' => $this->t('Secuencias de email personalizadas según tu fase: activación, engagement, conversión. Contenido adaptado a tu progreso real en la plataforma.')],
         ['icon' => ['category' => 'business', 'name' => 'cart'], 'title' => $this->t('Cross-Sell Inteligente'), 'description' => $this->t('4 ofertas personalizadas según tu momento: curso modelo de negocio, kit de validación, preparación de pitch y membresía comunidad.')],
+      ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara Emprendimiento?'),
+        'competitors' => [
+          [
+            'name' => 'Emprendimiento',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Calculadora de madurez digital'), 'included' => TRUE],
+              ['text' => $this->t('Business Model Canvas con IA'), 'included' => TRUE],
+              ['text' => $this->t('Motor de experimentos A/B'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA proactivo con 7 reglas'), 'included' => TRUE],
+              ['text' => $this->t('Acceso a financiación ICO/ENISA'), 'included' => TRUE],
+              ['text' => $this->t('Insignias y diplomas digitales'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => $this->t('Incubadora clásica'),
+            'highlight' => FALSE,
+            'price' => $this->t('5-15K € (6-12 meses)'),
+            'features' => [
+              ['text' => $this->t('Diagnóstico presencial limitado'), 'included' => TRUE],
+              ['text' => $this->t('Canvas manual con mentor'), 'included' => TRUE],
+              ['text' => $this->t('Sin motor de experimentos'), 'included' => FALSE],
+              ['text' => $this->t('Sin IA ni automatización'), 'included' => FALSE],
+              ['text' => $this->t('Red de contactos local'), 'included' => TRUE],
+              ['text' => $this->t('Sin credenciales digitales'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => $this->t('Consultora'),
+            'highlight' => FALSE,
+            'price' => $this->t('150+ €/h'),
+            'features' => [
+              ['text' => $this->t('Diagnóstico por horas facturadas'), 'included' => TRUE],
+              ['text' => $this->t('Canvas con consultor (sin IA)'), 'included' => TRUE],
+              ['text' => $this->t('Sin validación estructurada'), 'included' => FALSE],
+              ['text' => $this->t('Sin herramientas digitales'), 'included' => FALSE],
+              ['text' => $this->t('Contactos del consultor'), 'included' => FALSE],
+              ['text' => $this->t('Sin gamificación ni badges'), 'included' => FALSE],
+            ],
+          ],
+        ],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -596,6 +1004,49 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para emprendedores'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('1 calculadora'),
+              $this->t('1 Canvas IA'),
+              $this->t('3 hipótesis'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '39',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Canvas ilimitados'),
+              $this->t('20 hipótesis'),
+              $this->t('Mastermind'),
+              $this->t('Proyecciones'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/emprendimiento',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '99',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Motor A/B'),
+              $this->t('Copilot proactivo'),
+              $this->t('Financiación'),
+              $this->t('Analytics'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/emprendimiento',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -670,10 +1121,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'ui', 'name' => 'search'], 'text' => $this->t('Búsqueda manual en bases de datos desconectadas')],
-        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Expedientes repartidos entre carpetas, emails y discos duros')],
-        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Plazos procesales que se escapan y citas que se solapan')],
-        ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Coste prohibitivo de herramientas premium (3.000–8.000 €/año)')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'ui', 'name' => 'search'], 'title' => $this->t('Búsqueda ineficiente'), 'description' => $this->t('Búsqueda manual en bases de datos desconectadas')],
+          ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'title' => $this->t('Expedientes dispersos'), 'description' => $this->t('Expedientes repartidos entre carpetas, emails y discos duros')],
+          ['icon' => ['category' => 'ui', 'name' => 'clock'], 'title' => $this->t('Plazos que se escapan'), 'description' => $this->t('Plazos procesales que se escapan y citas que se solapan')],
+          ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Coste prohibitivo'), 'description' => $this->t('Coste prohibitivo de herramientas premium (3.000–8.000 €/año)')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Busca'), 'description' => $this->t('Búsqueda semántica con IA en 8 fuentes oficiales (CENDOJ, BOE, EUR-Lex...)')],
@@ -762,6 +1216,50 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para profesionales jurídicos'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('8 fuentes'),
+              $this->t('10 búsquedas/mes'),
+              $this->t('1 expediente'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '49',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Búsquedas ilimitadas'),
+              $this->t('50 expedientes'),
+              $this->t('Alertas'),
+              $this->t('Calendar'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/jarabalex',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '129',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Expedientes ilimitados'),
+              $this->t('IA semántica'),
+              $this->t('LexNET'),
+              $this->t('Facturación'),
+              $this->t('Copilot'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/jarabalex',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),
@@ -890,6 +1388,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ui', 'name' => 'shield'], 'title' => $this->t('Detección de Fraude Anti-Spam'), 'description' => $this->t('Sistema automático que detecta candidaturas sospechosas: más de 20 aplicaciones por hora = 100% spam, más de 10 = revisión manual. Integrado con jaraba_predictive para scoring de calidad.')],
         ['icon' => ['category' => 'business', 'name' => 'api'], 'title' => $this->t('API REST Completa'), 'description' => $this->t('Endpoints para publicar ofertas, recibir candidaturas, consultar scores de matching, gestionar estados del ATS y conectar con tu sistema de RRHH existente. Documentación OpenAPI.')],
       ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara Talento?'),
+        'competitors' => [
+          [
+            'name' => 'Talento',
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Matching IA en 5 dimensiones'), 'included' => TRUE],
+              ['text' => $this->t('Mini-ATS con 8 estados'), 'included' => TRUE],
+              ['text' => $this->t('Asistente IA del reclutador'), 'included' => TRUE],
+              ['text' => $this->t('Detección de fraude anti-spam'), 'included' => TRUE],
+              ['text' => $this->t('Gestión colaborativa en equipo'), 'included' => TRUE],
+              ['text' => $this->t('API REST con documentación OpenAPI'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'InfoJobs',
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 195 €/oferta'),
+            'features' => [
+              ['text' => $this->t('Filtros básicos por keywords'), 'included' => TRUE],
+              ['text' => $this->t('Gestión básica de candidatos'), 'included' => TRUE],
+              ['text' => $this->t('Sin IA para reclutamiento'), 'included' => FALSE],
+              ['text' => $this->t('Sin detección de spam'), 'included' => FALSE],
+              ['text' => $this->t('Sin evaluación en equipo'), 'included' => FALSE],
+              ['text' => $this->t('Sin API pública'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => 'LinkedIn Recruiter',
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 600 €/mes'),
+            'features' => [
+              ['text' => $this->t('Búsqueda avanzada de perfiles'), 'included' => TRUE],
+              ['text' => $this->t('Pipeline básico de candidatos'), 'included' => TRUE],
+              ['text' => $this->t('IA limitada para sugerencias'), 'included' => TRUE],
+              ['text' => $this->t('Sin detección de fraude'), 'included' => FALSE],
+              ['text' => $this->t('InMail con límites mensuales'), 'included' => TRUE],
+              ['text' => $this->t('API con coste adicional'), 'included' => FALSE],
+            ],
+          ],
+        ],
+      ],
       'social_proof' => [
         'metrics' => [
           ['value' => '70', 'suffix' => '%', 'label' => $this->t('Reducción tiempo de contratación')],
@@ -906,8 +1448,9 @@ class VerticalLandingController extends ControllerBase
       'lead_magnet' => [
         'title' => $this->t('Guía: Cómo reducir un 70% el tiempo de contratación con IA'),
         'description' => $this->t('Aprende cómo empresas reales han transformado sus procesos de selección con matching inteligente, ATS automatizado y asistente IA.'),
-        'resource_url' => '/recursos/guia-talento-ia',
+        'url' => '/recursos/guia-talento-ia',
         'cta_text' => $this->t('Descargar guía gratuita'),
+        'icon' => ['category' => 'ui', 'name' => 'download'],
       ],
       'pricing' => [
         'title' => $this->t('Planes para empresas'),
@@ -1036,6 +1579,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Copiloto IA incluido'), 'description' => $this->t('Asistencia inteligente para candidatos y emprendedores')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Métricas de impacto'), 'description' => $this->t('Dashboards ODS y reportes para justificar subvenciones')],
       ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara Andalucía +ei?'),
+        'competitors' => [
+          [
+            'name' => $this->t('Andalucía +ei'),
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Marca blanca con dominio propio'), 'included' => TRUE],
+              ['text' => $this->t('7 verticales activables'), 'included' => TRUE],
+              ['text' => $this->t('Copilot IA integrado'), 'included' => TRUE],
+              ['text' => $this->t('Dashboards ODS y fondos europeos'), 'included' => TRUE],
+              ['text' => $this->t('Multi-tenant con aislamiento'), 'included' => TRUE],
+              ['text' => $this->t('Formación + empleo + emprendimiento'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => $this->t('Software ERP genérico'),
+            'highlight' => FALSE,
+            'price' => $this->t('Desde 500 €/mes'),
+            'features' => [
+              ['text' => $this->t('Personalización limitada'), 'included' => TRUE],
+              ['text' => $this->t('Módulos independientes'), 'included' => TRUE],
+              ['text' => $this->t('Sin IA generativa'), 'included' => FALSE],
+              ['text' => $this->t('Reportes genéricos (sin ODS)'), 'included' => FALSE],
+              ['text' => $this->t('Sin multi-tenancy nativa'), 'included' => FALSE],
+              ['text' => $this->t('Sin verticales especializados'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => $this->t('Excel + papel'),
+            'highlight' => FALSE,
+            'price' => $this->t('"Gratis"'),
+            'features' => [
+              ['text' => $this->t('Sin plataforma digital'), 'included' => FALSE],
+              ['text' => $this->t('Datos dispersos sin integrar'), 'included' => FALSE],
+              ['text' => $this->t('Sin inteligencia artificial'), 'included' => FALSE],
+              ['text' => $this->t('Reportes manuales'), 'included' => FALSE],
+              ['text' => $this->t('Sin aislamiento de datos'), 'included' => FALSE],
+              ['text' => $this->t('Sin trazabilidad de impacto'), 'included' => FALSE],
+            ],
+          ],
+        ],
+      ],
       'social_proof' => [
         'metrics' => [
           ['value' => '7', 'suffix' => '', 'label' => $this->t('Verticales disponibles')],
@@ -1051,8 +1638,9 @@ class VerticalLandingController extends ControllerBase
       'lead_magnet' => [
         'title' => $this->t('Guía: Cómo digitalizar tu servicio de desarrollo local'),
         'description' => $this->t('Descarga nuestra guía con casos reales de municipios que han transformado sus servicios de empleo y emprendimiento.'),
-        'resource_url' => '/recursos/guia-desarrollo-local',
+        'url' => '/recursos/guia-desarrollo-local',
         'cta_text' => $this->t('Descargar guía gratuita'),
+        'icon' => ['category' => 'ui', 'name' => 'download'],
       ],
       'pricing' => [
         'title' => $this->t('Planes para instituciones'),
@@ -1098,10 +1686,13 @@ class VerticalLandingController extends ControllerBase
         ],
       ],
       'pain_points' => [
-        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Las plataformas de formación son caras y difíciles de personalizar')],
-        ['icon' => ['category' => 'ui', 'name' => 'settings'], 'text' => $this->t('Crear cursos atractivos requiere un equipo técnico')],
-        ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'text' => $this->t('No tienes datos reales sobre el aprendizaje de tus alumnos')],
-        ['icon' => ['category' => 'business', 'name' => 'target'], 'text' => $this->t('Tus certificaciones no tienen validez verificable')],
+        'title' => $this->t('¿Te suena esto?'),
+        'items' => [
+          ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'title' => $this->t('Plataformas caras'), 'description' => $this->t('Las plataformas de formación son caras y difíciles de personalizar')],
+          ['icon' => ['category' => 'ui', 'name' => 'settings'], 'title' => $this->t('Dependencia técnica'), 'description' => $this->t('Crear cursos atractivos requiere un equipo técnico')],
+          ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Sin datos reales'), 'description' => $this->t('No tienes datos reales sobre el aprendizaje de tus alumnos')],
+          ['icon' => ['category' => 'business', 'name' => 'target'], 'title' => $this->t('Certificados sin valor'), 'description' => $this->t('Tus certificaciones no tienen validez verificable')],
+        ],
       ],
       'steps' => [
         ['title' => $this->t('Crea cursos con IA'), 'description' => $this->t('El constructor drag & drop genera estructura, lecciones y actividades. El copilot pedagógico sugiere contenido, evalúa dificultad y genera quizzes automáticamente.')],
@@ -1121,6 +1712,50 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Analytics de Formación'), 'description' => $this->t('Tasas de completitud, engagement por módulo, tiempo promedio, NPS de cursos, top alumnos y proyecciones de matrícula. Datos para tomar decisiones.')],
         ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Email Nurturing Educativo'), 'description' => $this->t('Secuencias automatizadas: bienvenida, recordatorios de curso, felicitación por logros, recomendaciones de siguiente curso y reactivación de inactivos.')],
         ['icon' => ['category' => 'ui', 'name' => 'link'], 'title' => $this->t('Integraciones LMS'), 'description' => $this->t('xAPI, SCORM, LTI para integración con otras plataformas. Webhooks para conectar con tu CRM, email marketing o sistemas internos.')],
+      ],
+      'comparison' => [
+        'headline' => $this->t('¿Cómo se compara Formación?'),
+        'competitors' => [
+          [
+            'name' => $this->t('Formación'),
+            'highlight' => TRUE,
+            'price' => $this->t('Desde 0 €/mes'),
+            'features' => [
+              ['text' => $this->t('Constructor drag & drop con IA'), 'included' => TRUE],
+              ['text' => $this->t('Rutas de aprendizaje adaptativas'), 'included' => TRUE],
+              ['text' => $this->t('Gamificación con badges y XP'), 'included' => TRUE],
+              ['text' => $this->t('Certificaciones OpenBadge verificables'), 'included' => TRUE],
+              ['text' => $this->t('Seguimiento xAPI completo'), 'included' => TRUE],
+              ['text' => $this->t('Copilot pedagógico con IA'), 'included' => TRUE],
+            ],
+          ],
+          [
+            'name' => 'Teachable',
+            'highlight' => FALSE,
+            'price' => $this->t('39-199 $/mes'),
+            'features' => [
+              ['text' => $this->t('Constructor de cursos básico'), 'included' => TRUE],
+              ['text' => $this->t('Sin rutas adaptativas'), 'included' => FALSE],
+              ['text' => $this->t('Sin gamificación nativa'), 'included' => FALSE],
+              ['text' => $this->t('Certificados básicos (sin OpenBadge)'), 'included' => TRUE],
+              ['text' => $this->t('Analytics limitados'), 'included' => TRUE],
+              ['text' => $this->t('Sin IA pedagógica'), 'included' => FALSE],
+            ],
+          ],
+          [
+            'name' => 'Moodle',
+            'highlight' => FALSE,
+            'price' => $this->t('Hosting + config'),
+            'features' => [
+              ['text' => $this->t('Muy personalizable (requiere técnico)'), 'included' => TRUE],
+              ['text' => $this->t('Plugins de rutas (configuración manual)'), 'included' => FALSE],
+              ['text' => $this->t('Gamificación via plugins externos'), 'included' => FALSE],
+              ['text' => $this->t('Certificados con plugins'), 'included' => FALSE],
+              ['text' => $this->t('xAPI/SCORM con configuración'), 'included' => TRUE],
+              ['text' => $this->t('Sin IA integrada'), 'included' => FALSE],
+            ],
+          ],
+        ],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -1149,6 +1784,50 @@ class VerticalLandingController extends ControllerBase
       ],
       'pricing' => [
         'headline' => $this->t('Planes para tu academia'),
+        'tiers' => [
+          [
+            'name' => 'Free',
+            'price' => '0',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('1 curso'),
+              $this->t('10 alumnos'),
+              $this->t('Certificados básicos'),
+            ],
+            'cta_text' => $this->t('Empezar gratis'),
+            'cta_url' => Url::fromRoute('user.register')->toString(),
+            'recommended' => FALSE,
+          ],
+          [
+            'name' => 'Starter',
+            'price' => '29',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Cursos ilimitados'),
+              $this->t('100 alumnos'),
+              $this->t('Constructor IA'),
+              $this->t('Quizzes'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/formacion',
+            'recommended' => TRUE,
+          ],
+          [
+            'name' => $this->t('Profesional'),
+            'price' => '79',
+            'period' => $this->t('mes'),
+            'features' => [
+              $this->t('Alumnos ilimitados'),
+              $this->t('Gamificación'),
+              $this->t('Open Badges'),
+              $this->t('Analytics'),
+              $this->t('Copilot'),
+            ],
+            'cta_text' => $this->t('Probar 14 días gratis'),
+            'cta_url' => '/planes/formacion',
+            'recommended' => FALSE,
+          ],
+        ],
         'from_price' => '0',
         'currency' => 'EUR',
         'period' => $this->t('mes'),

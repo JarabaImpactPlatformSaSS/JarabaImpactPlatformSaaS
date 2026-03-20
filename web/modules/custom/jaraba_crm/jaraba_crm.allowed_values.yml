@@ -75,6 +75,7 @@ activity_type:
 
 contact_source:
   website: 'Sitio web'
+  lead_magnet: 'Lead magnet'
   demo_interactive: 'Demo interactiva'
   quiz_vertical: 'Quiz recomendación vertical'
   referral: 'Referencia'

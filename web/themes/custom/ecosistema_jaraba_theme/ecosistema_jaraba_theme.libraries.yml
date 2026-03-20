@@ -199,10 +199,14 @@ landing-sections:
   version: 1.0.0
   css:
     theme:
-      css/ecosistema-jaraba-theme.css: {}
+      css/routes/landing.css: {}
+  js:
+    js/landing-sticky-cta.js: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_core/icons
+    - core/drupal
+    - core/drupalSettings
 
 # Alpine.js - Framework reactivo ligero para interactividad
 # FE-08: Versión fija con SRI hash y crossorigin

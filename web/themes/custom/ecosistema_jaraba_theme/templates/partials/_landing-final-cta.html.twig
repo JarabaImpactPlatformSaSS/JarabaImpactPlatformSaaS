@@ -33,6 +33,15 @@
       {{ cta_data.cta.text }}
     </a>
 
+    {% if cta_data.cta_secondary is defined %}
+      <a href="{{ cta_data.cta_secondary.url }}"
+         class="btn btn--outline btn--lg landing-final-cta__secondary"
+         data-track-cta="final_secondary_{{ vertical_key|default('') }}"
+         data-track-position="landing_final_cta">
+        {{ cta_data.cta_secondary.text }}
+      </a>
+    {% endif %}
+
     <p class="landing-final-cta__hint">
       {{ plg_cta_subtitle|default('Sin tarjeta de crédito. Empieza gratis.'|trans) }}
     </p>

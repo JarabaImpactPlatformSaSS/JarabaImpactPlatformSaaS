@@ -1,68 +1,112 @@
 {#
 /**
  * @file _landing-pricing-preview.html.twig
- * Parcial reutilizable: Vista previa de precios.
+ * Parcial reutilizable: Pricing preview con 2 modos.
  *
- * VARIABLES:
+ * MODO 1 (multi-tier — clase mundial):
+ * - pricing.tiers: Array de { name, price, period, features[], cta_text, cta_url, recommended }
+ *
+ * MODO 2 (single-card — backward compatible):
+ * - pricing.from_price, pricing.features_preview, pricing.cta_text, pricing.cta_url
+ *
+ * VARIABLES COMUNES:
  * - pricing.headline: Titulo de la seccion
- * - pricing.from_price: Precio desde (ej. "9.99")
- * - pricing.currency: Moneda (default: EUR)
- * - pricing.period: Periodo (default: mes)
- * - pricing.cta_text: Texto del CTA
- * - pricing.cta_url: URL a pagina de planes
- * - pricing.features_preview: Array de strings con features incluidas
  * - color: Color del vertical
  * - vertical_key: ID del vertical
  *
- * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ * DIRECTRICES: NO-HARDCODE-PRICE-001 (precios desde controller),
+ * i18n ({% trans %}), FUNNEL-COMPLETENESS-001 (data-track-cta),
+ * CSS-VAR-ALL-COLORS-001
  */
 #}
 
 {% set price = pricing|default({}) %}
-{# Dynamic data from MetaSitePricingService merges with controller data #}
-{% set from_price = price.from_price|default(price.from_price_display|default('0')) %}
-{% set from_label = price.from_label|default('Empieza gratis'|t) %}
-{% set features = price.features_highlights|default(price.features_preview|default([])) %}
+{% set tiers = price.tiers|default([]) %}
 
-{% if from_price is defined %}
-<section class="landing-pricing" aria-labelledby="pricing-title">
+<section class="landing-pricing reveal-element reveal-fade-up" aria-labelledby="pricing-title">
   <div class="landing-pricing__container">
     <h2 id="pricing-title" class="landing-pricing__title">
-      {{ price.headline|default('Planes adaptados a ti'|t) }}
+      {{ price.headline|default('Planes adaptados a ti'|trans) }}
     </h2>
 
-    <div class="landing-pricing__card">
-      <div class="landing-pricing__price-block">
-        <span class="landing-pricing__from">{% trans %}Desde{% endtrans %}</span>
-        <span class="landing-pricing__amount">{{ price.from_price }}<span class="landing-pricing__currency">{{ price.currency|default('EUR') }}</span></span>
-        <span class="landing-pricing__period">/{{ price.period|default('mes'|t) }}</span>
+    {% if tiers|length > 0 %}
+      {# === MODO MULTI-TIER (3-4 cards) === #}
+      <div class="landing-pricing__tiers">
+        {% for tier in tiers %}
+          <div class="landing-pricing__tier {{ tier.recommended ? 'landing-pricing__tier--recommended' : '' }}">
+            {% if tier.recommended %}
+              <span class="landing-pricing__badge">{% trans %}Más popular{% endtrans %}</span>
+            {% endif %}
+
+            <h3 class="landing-pricing__tier-name">{{ tier.name }}</h3>
+
+            <div class="landing-pricing__price-block">
+              <span class="landing-pricing__amount">{{ tier.price }} &euro;</span>
+              <span class="landing-pricing__period">/{{ tier.period|default('mes'|trans) }}</span>
+            </div>
+
+            {% if tier.features is defined and tier.features|length > 0 %}
+              <ul class="landing-pricing__features" role="list">
+                {% for feature in tier.features %}
+                  <li>
+                    <span aria-hidden="true">
+                      {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: color|default('impulse'), size: '16px' }) }}
+                    </span>
+                    {{ feature }}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <a href="{{ tier.cta_url|default(path('ecosistema_jaraba_core.pricing.page')) }}"
+               class="btn {{ tier.recommended ? 'btn--primary' : 'btn--outline' }} btn--lg"
+               data-track-cta="pricing_{{ tier.name|lower|replace({' ': '_'}) }}_{{ vertical_key|default('') }}"
+               data-track-position="landing_pricing"
+               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
+              {{ tier.cta_text|default('Empezar'|trans) }}
+            </a>
+          </div>
+        {% endfor %}
       </div>
 
-      {% if price.features_preview is defined and price.features_preview|length > 0 %}
-        <ul class="landing-pricing__features" role="list">
-          {% for feature in price.features_preview %}
-            <li>
-              <span aria-hidden="true">
-                {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: color|default('impulse'), size: 16 }) }}
-              </span>
-              {{ feature }}
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-
       <p class="landing-pricing__free-note">
-        {{ plg_free_plan_note|default('Plan gratuito disponible. Sin tarjeta de crédito.'|trans) }}
+        {% trans %}14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.{% endtrans %}
       </p>
 
-      <a href="{{ price.cta_url|default(path('ecosistema_jaraba_core.pricing.page')) }}"
-         class="btn btn--primary btn--lg"
-         data-track-cta="pricing_{{ vertical_key|default('') }}"
-         data-track-position="landing_pricing"
-         {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-        {{ price.cta_text|default('Ver todos los planes'|t) }}
-      </a>
-    </div>
+    {% else %}
+      {# === MODO SINGLE CARD (backward compatible) === #}
+      <div class="landing-pricing__card">
+        <div class="landing-pricing__price-block">
+          <span class="landing-pricing__from">{% trans %}Desde{% endtrans %}</span>
+          <span class="landing-pricing__amount">{{ price.from_price|default('0') }}<span class="landing-pricing__currency">{{ price.currency|default('EUR') }}</span></span>
+          <span class="landing-pricing__period">/{{ price.period|default('mes'|trans) }}</span>
+        </div>
+
+        {% if price.features_preview is defined and price.features_preview|length > 0 %}
+          <ul class="landing-pricing__features" role="list">
+            {% for feature in price.features_preview %}
+              <li>
+                <span aria-hidden="true">
+                  {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', color: color|default('impulse'), size: '16px' }) }}
+                </span>
+                {{ feature }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <p class="landing-pricing__free-note">
+          {{ plg_free_plan_note|default('Plan gratuito disponible. Sin tarjeta de crédito.'|trans) }}
+        </p>
+
+        <a href="{{ price.cta_url|default(path('ecosistema_jaraba_core.pricing.page')) }}"
+           class="btn btn--primary btn--lg"
+           data-track-cta="pricing_{{ vertical_key|default('') }}"
+           data-track-position="landing_pricing"
+           {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
+          {{ price.cta_text|default('Ver todos los planes'|trans) }}
+        </a>
+      </div>
+    {% endif %}
   </div>
 </section>
-{% endif %}

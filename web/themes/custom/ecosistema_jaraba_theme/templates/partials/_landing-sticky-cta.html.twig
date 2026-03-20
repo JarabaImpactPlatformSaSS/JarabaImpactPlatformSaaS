@@ -1,0 +1,35 @@
+{#
+/**
+ * @file _landing-sticky-cta.html.twig
+ * Parcial: Sticky CTA bar fija en bottom — visible al hacer scroll.
+ *
+ * VARIABLES:
+ * - sticky_cta.text: Texto de urgencia (ej. "14 días gratis")
+ * - sticky_cta.cta: { text, url } CTA principal
+ * - vertical_key: ID del vertical
+ *
+ * COMPORTAMIENTO JS: Se muestra tras scroll 30vh, se oculta si hero/final-cta
+ * están visibles. IntersectionObserver en viewport (OBSERVER-SCROLL-ROOT-001).
+ *
+ * DIRECTRICES: i18n, FUNNEL-COMPLETENESS-001, CSS-VAR-ALL-COLORS-001
+ */
+#}
+
+{% set cta = sticky_cta|default({}) %}
+
+<div class="landing-sticky-cta" id="landing-sticky-cta" aria-hidden="true">
+  <div class="landing-sticky-cta__container">
+    <span class="landing-sticky-cta__text">
+      {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+      {{ cta.text|default('14 días gratis — Sin tarjeta de crédito'|trans) }}
+    </span>
+    {% if cta.cta is defined %}
+      <a href="{{ cta.cta.url }}"
+         class="btn btn--primary btn--sm"
+         data-track-cta="sticky_{{ vertical_key|default('') }}"
+         data-track-position="sticky_footer">
+        {{ cta.cta.text }}
+      </a>
+    {% endif %}
+  </div>
+</div>

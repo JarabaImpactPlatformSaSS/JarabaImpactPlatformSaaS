@@ -1,0 +1,34 @@
+{#
+/**
+ * @file _landing-trust-badges.html.twig
+ * Parcial: Strip de trust badges horizontal debajo del hero.
+ *
+ * VARIABLES:
+ * - trust_badges: Array de { icon: {category, name}, label } (opcional)
+ * - vertical_key: ID del vertical
+ *
+ * DIRECTRICES: i18n ({% trans %}), ICON-CONVENTION-001, CSS-VAR-ALL-COLORS-001
+ */
+#}
+
+{% set badges = trust_badges|default([]) %}
+
+{# Fallback: badges universales si no se pasan explícitamente #}
+{% if badges|length == 0 %}
+  {% set badges = [
+    { icon: { category: 'ui', name: 'clock' }, label: '14 días gratis'|trans },
+    { icon: { category: 'business', name: 'money' }, label: 'Sin tarjeta de crédito'|trans },
+    { icon: { category: 'ui', name: 'shield' }, label: 'Datos en la UE'|trans },
+    { icon: { category: 'legal', name: 'shield-privacy' }, label: 'RGPD 100%'|trans },
+    { icon: { category: 'ui', name: 'chat' }, label: 'Soporte en español'|trans },
+  ] %}
+{% endif %}
+
+<div class="landing-trust-badges" aria-label="{% trans %}Garantías{% endtrans %}">
+  {% for badge in badges %}
+    <span class="landing-trust-badges__badge">
+      {{ jaraba_icon(badge.icon.category, badge.icon.name, { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+      {{ badge.label }}
+    </span>
+  {% endfor %}
+</div>

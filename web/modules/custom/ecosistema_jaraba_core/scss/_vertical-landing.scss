@@ -1089,12 +1089,402 @@ $landing-radius-md: 12px;
   }
 }
 
+// ---------------------------------------------------------------------------
+// Hero: split layout (texto + imagen) + trust badges
+// ---------------------------------------------------------------------------
+
+// Split layout — texto izquierda + imagen derecha en desktop.
+.landing-hero--split {
+  .landing-hero__inner {
+    display: flex;
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4rem);
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  .landing-hero__content {
+    flex: 1;
+    text-align: left;
+    max-width: none;
+
+    @media (max-width: 768px) {
+      text-align: center;
+    }
+  }
+
+  .landing-hero__actions {
+    justify-content: flex-start;
+
+    @media (max-width: 768px) {
+      justify-content: center;
+    }
+  }
+
+  .landing-hero__trust-badges {
+    justify-content: flex-start;
+
+    @media (max-width: 768px) {
+      justify-content: center;
+    }
+  }
+}
+
+// Cuando NO hay split, el inner no necesita flex.
+.landing-hero:not(.landing-hero--split) .landing-hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-hero__image-wrap {
+  flex: 0 0 auto;
+  max-width: 480px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+
+.landing-hero__image {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.landing-hero__trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.landing-hero__trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+// ---------------------------------------------------------------------------
+// Comparison table (JarabaLex vs Aranzadi vs Manual)
+// ---------------------------------------------------------------------------
+
+.landing-comparison {
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
+  background: var(--ej-bg-surface, #fff);
+}
+
+.landing-comparison__container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.landing-comparison__title {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--ej-text-primary, #1a1d29);
+  margin-bottom: 2rem;
+}
+
+.landing-comparison__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--competitors-count, 3), 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-comparison__col {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--ej-color-primary, #233D63) 10%, transparent);
+  background: var(--ej-bg-surface, #fff);
+  text-align: center;
+
+  &--highlight {
+    position: relative;
+    border-color: var(--ej-vertical-color, var(--ej-color-accent, #FF8C42));
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-vertical-color, var(--ej-color-accent, #FF8C42)) 12%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ej-vertical-color, var(--ej-color-accent)) 4%, var(--ej-bg-surface, #fff)),
+      var(--ej-bg-surface, #fff) 30%
+    );
+  }
+}
+
+.landing-comparison__badge {
+  position: absolute;
+  top: -0.625rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ej-vertical-color, var(--ej-color-accent, #FF8C42));
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.landing-comparison__name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #1a1d29);
+  margin: 0.5rem 0 0.25rem;
+}
+
+.landing-comparison__price {
+  font-size: 0.875rem;
+  color: var(--ej-text-secondary, #555);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.landing-comparison__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.landing-comparison__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ej-text-primary, #1a1d29);
+
+  &--no {
+    opacity: 0.5;
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--ej-text-primary, #1a1d29) 30%, transparent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Final CTA secondary button
+// ---------------------------------------------------------------------------
+
+.landing-final-cta__secondary {
+  margin-top: 0.75rem;
+}
+
+// ===================================================================
+// ELEVACIÓN CLASE MUNDIAL — FASE 1 (Sticky CTA, Trust Badges, Urgency)
+// ===================================================================
+
+// Pricing multi-tier cards
+.landing-pricing__tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto 1.5rem;
+}
+
+.landing-pricing__tier {
+  background: var(--ej-bg-card, #fff);
+  border-radius: $landing-radius-lg;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--ej-border-color, rgba(0, 0, 0, 0.08));
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  &--recommended {
+    border-color: var(--ej-vertical-color, var(--ej-color-primary, #ff8c42));
+    box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-vertical-color, #ff8c42) 15%, transparent);
+  }
+}
+
+.landing-pricing__badge {
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ej-vertical-color, var(--ej-color-primary, #ff8c42));
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.landing-pricing__tier-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0.5rem 0 1rem;
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.landing-pricing__tier .landing-pricing__price-block {
+  margin-bottom: 1.5rem;
+}
+
+.landing-pricing__tier .landing-pricing__features {
+  text-align: left;
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.landing-pricing__tier .btn {
+  margin-top: auto;
+}
+
+// Hero urgency badge
+.landing-hero__urgency {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ej-color-success, #10b981) 12%, transparent);
+  color: var(--ej-color-success, #10b981);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  animation: urgency-pulse 2s ease-in-out infinite;
+}
+
+@keyframes urgency-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+// Trust badges strip
+.landing-trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--ej-border-color, rgba(0, 0, 0, 0.06));
+  max-width: $landing-max-width;
+  margin: 0 auto;
+
+  &__badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ej-text-muted, #64748b);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    gap: 0.75rem 1rem;
+    padding: 1rem 0.75rem;
+
+    &__badge {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// Sticky CTA bar (fixed bottom)
+.landing-sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: var(--ej-bg-card, #fff);
+  border-top: 1px solid var(--ej-border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  padding: 0.75rem 1rem;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.is-visible {
+    transform: translateY(0);
+  }
+
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: $landing-max-width;
+    margin: 0 auto;
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ej-text-muted, #64748b);
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.5rem 0.75rem;
+
+    &__text {
+      display: none; // Solo CTA en mobile
+    }
+
+    &__container {
+      justify-content: stretch;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 44px; // Touch target
+    }
+  }
+}
+
 // Print: hide non-essential sections
 @media print {
   .landing-hero__bg,
+  .landing-hero__bg-image,
   .landing-lead-magnet,
   .landing-final-cta,
-  .landing-social-proof__metrics {
+  .landing-social-proof__metrics,
+  .landing-sticky-cta,
+  .landing-trust-badges {
     display: none;
   }
 }

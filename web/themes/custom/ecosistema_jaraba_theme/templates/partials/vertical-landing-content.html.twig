@@ -35,6 +35,12 @@
     vertical_key: key,
   } only %}
 
+  {# 1b. Trust Badges (debajo del hero) #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-trust-badges.html.twig' with {
+    trust_badges: data.hero.trust_badges|default([]),
+    vertical_key: key,
+  } only %}
+
   {# 2. Pain Points #}
   {% include '@ecosistema_jaraba_theme/partials/_landing-pain-points.html.twig' with {
     pain_points: data.pain_points|default([]),
@@ -55,6 +61,15 @@
     color: vertical_color,
     vertical_key: key,
   } only %}
+
+  {# 4b. Comparison Table (opcional — solo si comparison definido) #}
+  {% if data.comparison is defined %}
+    {% include '@ecosistema_jaraba_theme/partials/_landing-comparison.html.twig' with {
+      comparison: data.comparison|default({}),
+      color: vertical_color,
+      vertical_key: key,
+    } only %}
+  {% endif %}
 
   {# 5. Social Proof #}
   {% include '@ecosistema_jaraba_theme/partials/_landing-social-proof.html.twig' with {
@@ -87,6 +102,15 @@
   {% include '@ecosistema_jaraba_theme/partials/_landing-final-cta.html.twig' with {
     final_cta: data.final_cta|default({}),
     color: vertical_color,
+    vertical_key: key,
+  } only %}
+
+  {# 10. Sticky CTA Bar (fija en bottom, visible on scroll) #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-sticky-cta.html.twig' with {
+    sticky_cta: {
+      text: '14 días gratis — Sin tarjeta de crédito'|trans,
+      cta: data.hero.cta|default({})
+    },
     vertical_key: key,
   } only %}
 

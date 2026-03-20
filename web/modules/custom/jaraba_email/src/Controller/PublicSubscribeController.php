@@ -8,6 +8,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Flood\FloodInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\jaraba_crm\Service\ContactService;
+use Drupal\jaraba_crm\Service\OpportunityService;
 use Drupal\jaraba_email\Service\SubscriberService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -63,6 +65,8 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
         protected SubscriberService $subscriberService,
         protected FloodInterface $flood,
         protected LoggerChannelInterface $logger,
+        protected ?ContactService $contactService = NULL,
+        protected ?OpportunityService $opportunityService = NULL,
     ) {
     }
 
@@ -75,6 +79,11 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
             $container->get('jaraba_email.subscriber_service'),
             $container->get('flood'),
             $container->get('logger.channel.jaraba_email'),
+            // OPTIONAL-CROSSMODULE-001: jaraba_crm may not be installed.
+            // @phpstan-ignore ternary.alwaysTrue
+            $container->has('jaraba_crm.contact') ? $container->get('jaraba_crm.contact') : NULL,
+            // @phpstan-ignore ternary.alwaysTrue
+            $container->has('jaraba_crm.opportunity') ? $container->get('jaraba_crm.opportunity') : NULL,
         );
     }
 
@@ -168,18 +177,19 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
 
         // ─── Crear suscriptor ────────────────────────────────────────────
         try {
+            // Map 'name' field from JS to 'first_name' (JS sends 'name').
+            $firstName = $body['first_name'] ?? $body['name'] ?? NULL;
+
+            $listId = !empty($body['list_id']) ? (int) $body['list_id'] : 1;
+
             $options = [
                 'source' => $source,
-                'first_name' => $body['first_name'] ?? NULL,
+                'first_name' => $firstName,
                 'last_name' => $body['last_name'] ?? NULL,
+                'tenant_id' => $tenantId,
             ];
 
-            // Pasar list_id si se proporciona.
-            if (!empty($body['list_id'])) {
-                $options['list_id'] = $body['list_id'];
-            }
-
-            $result = $this->subscriberService->subscribe($email, $tenantId, $options);
+            $result = $this->subscriberService->subscribe($email, $listId, $options);
 
             // Registrar evento en flood para rate limiting.
             $this->flood->register('jaraba_email.public_subscribe', self::FLOOD_WINDOW, $clientIp);
@@ -191,18 +201,15 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
             ]);
 
             // ─── Auto-enroll en secuencia de bienvenida del meta-sitio ──
-            // Sprint 5: si source es kit_impulso_digital, inscribir en
-            // SEQ_META_001 (Bienvenida + Kit Impulso Digital) automáticamente.
-            if ($source === 'kit_impulso_digital' && !empty($result['id'])) {
+            if ($source === 'kit_impulso_digital') {
               try {
                 if (\Drupal::hasService('ecosistema_jaraba_core.metasite_email_sequence')) {
                   /** @var \Drupal\ecosistema_jaraba_core\Service\MetaSiteEmailSequenceService $metaSiteSequence */
                   $metaSiteSequence = \Drupal::service('ecosistema_jaraba_core.metasite_email_sequence');
-                  $metaSiteSequence->enrollInWelcome((int) $result['id']);
+                  $metaSiteSequence->enrollInWelcome((int) $result->id());
                 }
               }
               catch (\Throwable $e) {
-                // No debe romper la suscripcion principal.
                 $this->logger->warning('MetaSite enroll failed for @email: @error', [
                   '@email' => $email,
                   '@error' => $e->getMessage(),
@@ -210,9 +217,14 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
               }
             }
 
+            // ─── Auto-create CRM Contact + Opportunity for lead magnets ──
+            if (str_starts_with($source, 'lead_magnet_')) {
+                $this->createCrmLead($email, $firstName ?? '', $source, $body);
+            }
+
             return new JsonResponse([
                 'success' => TRUE,
-                'data' => $result,
+                'data' => ['id' => (int) $result->id()],
             ]);
         } catch (\Throwable $e) {
             $this->logger->error('Public subscribe error: @error', ['@error' => $e->getMessage()]);
@@ -220,6 +232,65 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
                 'success' => FALSE,
                 'error' => $this->t('Se produjo un error. Por favor, inténtalo más tarde.')->__toString(),
             ], 500);
+        }
+    }
+
+    /**
+     * Crea un Contact + Opportunity en el CRM para leads de lead magnet.
+     *
+     * Sigue el mismo patron que VerticalQuizService::createCrmLead().
+     * Servicios CRM son opcionales (OPTIONAL-CROSSMODULE-001).
+     *
+     * @param string $email
+     *   Email del lead.
+     * @param string $name
+     *   Nombre del lead.
+     * @param string $source
+     *   Source identifier (lead_magnet_{vertical}).
+     * @param array<string, mixed> $body
+     *   Payload original del request.
+     */
+    protected function createCrmLead(string $email, string $name, string $source, array $body): void
+    {
+        if ($this->contactService === NULL || $this->opportunityService === NULL) {
+            return;
+        }
+
+        try {
+            // Extraer vertical del source: lead_magnet_agroconecta → agroconecta.
+            $vertical = str_replace('lead_magnet_', '', $source);
+
+            $contact = $this->contactService->create([
+                'first_name' => $name !== '' ? $name : 'Visitante',
+                'last_name' => '',
+                'email' => $email,
+                'source' => 'lead_magnet',
+                'engagement_score' => 30,
+                'notes' => (string) $this->t('Lead magnet: @vertical. Recurso: @url', [
+                    '@vertical' => $vertical,
+                    '@url' => $body['resource_url'] ?? '',
+                ]),
+            ]);
+
+            $this->opportunityService->create([
+                'title' => (string) $this->t('Lead Magnet — @v', ['@v' => $vertical]),
+                'contact_id' => $contact->id(),
+                'stage' => 'mql',
+                'probability' => 20,
+                'bant_need' => 'identified',
+            ]);
+
+            $this->logger->info('CRM lead created from lead magnet: @email (@vertical)', [
+                '@email' => $email,
+                '@vertical' => $vertical,
+            ]);
+        }
+        catch (\Throwable $e) {
+            // Non-blocking: CRM failure should not break the subscription.
+            $this->logger->warning('CRM lead creation failed for @email: @error', [
+                '@email' => $email,
+                '@error' => $e->getMessage(),
+            ]);
         }
     }
 
