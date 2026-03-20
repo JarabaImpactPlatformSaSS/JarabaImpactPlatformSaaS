@@ -4,7 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-20
-**Versión:** 180.0.0 (TWIG-SYNTAX-LINT-001 Twig Static Linter + Multi-tenant 500 Fix + aprendizaje #204 + regla de oro #142)
+**Versión:** 181.0.0 (DEMO-PROFILE-PERSPECTIVE-001 + buyer→3 perfiles comerciante + features rico 13/13 + multi-perfil agro+comercio + 70 scripts validacion + aprendizaje #205 + regla de oro #143)
+
+> **📋 DEMO-PROFILE-PERSPECTIVE-001 — v153 DIRECTRICES + v140 ARQUITECTURA + v181 INDICE + v105 FLUJO** (2026-03-20)
+>
+> Aprendizaje #205: DEMO-PROFILE-PERSPECTIVE-001 — En un SaaS B2B2C, la demo SIEMPRE debe mostrar la perspectiva del cliente que paga la suscripción, no del consumidor final. ComercioConecta tenía perfil `buyer` (comprador) cuando nuestros clientes son los comerciantes. Corregido: buyer eliminado, creados 3 perfiles B2B (`gourmet` Tienda Gourmet, `boutique` Boutique Moda, `beautypro` Centro Estética) basados en investigación de mercado (393K empresas comercio minorista España, 8.000M EUR mercado gourmet, 28.700M EUR moda, 10.400M EUR belleza). Redirect 301 `/demo/start/buyer` → `/demo/start/gourmet`. Auditoría cross-vertical: 6 perfiles con features en formato plain string (sin iconos) → migrados a formato rico con icon_category/icon_name/title/description (13/13 ahora). AgroConecta sin multi-perfil en showcase/homepage (tenía 3 perfiles pero solo mostraba producer) → añadidos 3 botones como ComercioConecta. winery sin view_products action + jobseeker con Url::fromRoute externo → corregidos. 3 imágenes perfil faltantes (jobseeker, socialimpact, creator) generadas con Nano Banana. 15 WebP totales generadas. Nuevo validador DEMO-PROFILE-PERSPECTIVE-001 (5 checks: métrica negocio, view_dashboard action, headline posesivo, story B2B, no consumer-only). validate-demo-coverage.php actualizado 11→13 perfiles. 70 scripts validación total. Unlock preview: 3 columnas (Demo/Starter/Professional) con badge "Más popular". Modal post-expiración demo. Exit-intent banner scroll 80%. CSRF token añadido a demo-storytelling.js. CTA "Probar Copilot" → navega a AI Playground (no modal conversión). Regla de oro #143: en un SaaS B2B2C, la demo SIEMPRE muestra al que paga la suscripción — NUNCA al consumidor final del marketplace.
 
 > **📋 TWIG-SYNTAX-LINT-001 — v152 DIRECTRICES + v139 ARQUITECTURA + v180 INDICE + v104 FLUJO** (2026-03-20)
 >

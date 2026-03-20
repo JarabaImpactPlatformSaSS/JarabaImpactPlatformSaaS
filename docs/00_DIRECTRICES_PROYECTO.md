@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-20
-**Versión:** 152.0.0 (TWIG-SYNTAX-LINT-001 Twig Static Linter + 5 doble-coma fixes multi-tenant 500 + safeguard capa 2 pre-commit + aprendizaje #204 + regla de oro #142)
+**Versión:** 153.0.0 (DEMO-PROFILE-PERSPECTIVE-001 + buyer→3 perfiles comerciante + features rico 13/13 + multi-perfil agro+comercio + 15 WebP Nano Banana + aprendizaje #205 + regla de oro #143)
 
 ---
 
