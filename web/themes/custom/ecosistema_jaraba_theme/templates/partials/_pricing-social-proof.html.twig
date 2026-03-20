@@ -74,18 +74,34 @@
           </blockquote>
         {% endfor %}
 
-        {# Enlace a caso de éxito si testimonios contienen "Martínez" o similar #}
+        {# Card de caso de éxito — alto impacto visual #}
         {% if testimonials|length > 0 %}
-          <div class="pricing-social-proof__case-link">
-            <a href="/jarabalex/caso-de-exito/despacho-martinez"
-               class="pricing-social-proof__case-link-btn"
-               data-track-cta="pricing_case_study"
-               data-track-position="pricing_social_proof">
-              {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
-              {% trans %}Leer caso completo: -75% tiempo de búsqueda{% endtrans %}
-              <span aria-hidden="true">&rarr;</span>
-            </a>
-          </div>
+          <a href="/jarabalex/caso-de-exito/despacho-martinez"
+             class="pricing-social-proof__case-card"
+             data-track-cta="pricing_case_study"
+             data-track-position="pricing_social_proof">
+            <div class="pricing-social-proof__case-card-badge">
+              {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '18px', color: 'white' }) }}
+              {% trans %}Caso de éxito{% endtrans %}
+            </div>
+            <h3 class="pricing-social-proof__case-card-title">
+              {% trans %}Un despacho de 2 abogados canceló Aranzadi tras 14 días{% endtrans %}
+            </h3>
+            <div class="pricing-social-proof__case-card-metrics">
+              <span class="pricing-social-proof__case-card-metric">
+                <strong>-75%</strong> {% trans %}búsqueda{% endtrans %}
+              </span>
+              <span class="pricing-social-proof__case-card-metric">
+                <strong>-53%</strong> {% trans %}coste{% endtrans %}
+              </span>
+              <span class="pricing-social-proof__case-card-metric">
+                <strong>+32%</strong> {% trans %}ingresos{% endtrans %}
+              </span>
+            </div>
+            <span class="pricing-social-proof__case-card-cta">
+              {% trans %}Leer la historia completa{% endtrans %} &rarr;
+            </span>
+          </a>
         {% endif %}
       </div>
     {% endif %}
