@@ -1,17 +1,18 @@
 # ==============================================
-# DEPLOY A PRODUCCIÓN (IONOS)
+# DEPLOY A PRODUCCIÓN (SERVIDOR DEDICADO)
 # ==============================================
 # Pipeline PRINCIPAL de deploy a producción.
-# Host: IONOS shared hosting (URL in secrets.PRODUCTION_URL)
+# Host: IONOS Dedicated AE16-128 NVMe XL (Ubuntu 24.04)
+# Stack: Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 7.4
 # Estrategia: git-based deploy con maintenance mode.
 #
-# Flujo: Lint → Test → Backup → Deploy → Smoke Test
+# Flujo: Lint → Test → Backup → Deploy → Reload FPM → Smoke Test
 #
-# Para el pipeline Blue-Green containerizado (futuro),
-# ver: deploy-production.yml
+# SSH: jaraba@<DEPLOY_HOST> puerto 2222 (key ed25519)
+# Path: /var/www/jaraba
 # ==============================================
 
-name: Jaraba SaaS - Deploy to IONOS
+name: Jaraba SaaS - Deploy to Production
 
 on:
   push:
@@ -25,24 +26,22 @@ on:
         default: 'false'
         type: boolean
       force_regenerate_settings:
-        description: 'Force regenerate settings.local.php (useful to update Qdrant/OpenAI credentials)'
+        description: 'Force regenerate settings.local.php'
         required: false
         default: 'false'
         type: boolean
 
 env:
   PHP_VERSION: '8.4'
-  # AUDIT-SEC-N17: IONOS host/user come from env vars here for SSH;
-  # PRODUCTION_URL must come from GitHub Secrets, not hardcoded.
-  IONOS_HOST: 'access834313033.webspace-data.io'
-  IONOS_USER: 'u101456434'
-  SITE_DIR: '~/JarabaImpactPlatformSaaS'
+  DEPLOY_USER: 'jaraba'
+  DEPLOY_PORT: '2222'
+  SITE_DIR: '/var/www/jaraba'
 
 jobs:
   test:
     name: 🧪 Run Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,7 +84,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Verify compiled CSS is up-to-date (SCSS-COMPILE-VERIFY-001)
         run: |
@@ -101,11 +100,11 @@ jobs:
           echo "✅ Compiled CSS/JS is up-to-date"
 
   deploy:
-    name: 🚀 Deploy to IONOS
+    name: 🚀 Deploy to Production
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -115,191 +114,114 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
 
-      - name: Add IONOS to known hosts
+      - name: Add server to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create backup (unless skipped)
+      - name: Create pre-deploy backup
         if: ${{ github.event.inputs.skip_backup != 'true' }}
         continue-on-error: true
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            mkdir -p ~/backups/pre_deploy
-            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/pre_deploy/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz || {
-              echo "⚠️ Drush sql-dump falló. Intentando mysqldump directo..."
-              # Fallback: mysqldump directo sin bootstrap de Drupal
-              # Buscar credenciales en settings.local.php (producción) primero, luego settings.php
-              SETTINGS_FILE="web/sites/default/settings.local.php"
-              if [ ! -f "$SETTINGS_FILE" ]; then
-                SETTINGS_FILE="web/sites/default/settings.php"
-              fi
-              DBNAME=$(grep "'database'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
-              DBUSER=$(grep "'username'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
-              DBPASS=$(grep "'password'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
-              if [ -n "$DBNAME" ] && [ -n "$DBUSER" ]; then
-                mysqldump -u"$DBUSER" -p"$DBPASS" "$DBNAME" | gzip > ~/backups/pre_deploy/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
-                echo "✅ Backup realizado con mysqldump directo"
-              else
-                echo "⚠️ No se pudo extraer credenciales BD. Continuando sin backup."
-              fi
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            mkdir -p /opt/jaraba/backups/pre_deploy
+            BACKUP_FILE="/opt/jaraba/backups/pre_deploy/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz"
+            drush sql-dump --gzip > "$BACKUP_FILE" 2>/dev/null || {
+              echo "⚠️ Drush sql-dump failed. Using mysqldump..."
+              mysqldump -u drupal -p"$(drush eval "echo \Drupal::database()->getConnectionOptions()['password'];")" jaraba | gzip > "$BACKUP_FILE"
             }
+            if [ -s "$BACKUP_FILE" ]; then
+              echo "✅ Backup: $BACKUP_FILE ($(stat -c %s "$BACKUP_FILE") bytes)"
+            else
+              echo "⚠️ Backup failed, continuing deploy"
+            fi
           EOF
 
       - name: Enable maintenance mode
         continue-on-error: true
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 1 || echo "⚠️ No se pudo activar maintenance mode. Continuando deploy."
-          EOF
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "cd /var/www/jaraba && drush state:set system.maintenance_mode 1" \
+            || echo "⚠️ Could not enable maintenance mode"
 
       - name: Ensure settings.local.php exists
         run: |
           FORCE_REGEN="${{ github.event.inputs.force_regenerate_settings }}"
-          SETTINGS_PATH="~/JarabaImpactPlatformSaaS/web/sites/default/settings.local.php"
-          EXISTS=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "test -f $SETTINGS_PATH && echo YES || echo NO")
+          SSH_CMD="ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          SETTINGS_PATH="/var/www/jaraba/web/sites/default/settings.local.php"
+          EXISTS=$($SSH_CMD "test -f $SETTINGS_PATH && echo YES || echo NO")
 
-          # Case 1: File exists and force_regenerate requested — append Qdrant config.
-          if [ "$EXISTS" = "YES" ] && [ "$FORCE_REGEN" = "true" ]; then
-            echo "🔄 Appending Qdrant Cloud config to existing settings.local.php..."
-            ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "chmod 755 ~/JarabaImpactPlatformSaaS/web/sites/default 2>/dev/null || true; chmod 644 $SETTINGS_PATH 2>/dev/null || true"
-            # Remove any previous Qdrant block to avoid duplicates.
-            ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "sed -i '/\/\/ Qdrant Cloud - Production/,/environment.*production/d' $SETTINGS_PATH"
-            if [ -n "${{ secrets.QDRANT_CLOUD_URL }}" ]; then
-              # Trim whitespace/newlines from secret values.
-              QDRANT_URL=$(echo -n "${{ secrets.QDRANT_CLOUD_URL }}" | tr -d '[:space:]')
-              QDRANT_KEY=$(echo -n "${{ secrets.QDRANT_CLOUD_API_KEY }}" | tr -d '[:space:]')
-              # Build the PHP config block locally, then append via scp.
-              # NOTE: Since 2026-02-11, config sync lives in config/sync/ (git-tracked)
-              # and Key entities (qdrant_api, openai_api, etc.) reach production via
-              # drush config:import. This direct JWT override is kept as defense-in-depth
-              # but should be unnecessary once config:import runs successfully.
-              {
-                echo ""
-                echo "// Qdrant Cloud - Production (auto-generated by CI/CD)."
-                echo "\$config['jaraba_rag.settings']['vector_db']['host'] = '${QDRANT_URL}';"
-                echo "\$config['jaraba_rag.settings']['vector_db']['api_key'] = '${QDRANT_KEY}';"
-                echo "\$config['jaraba_rag.settings']['disabled'] = FALSE;"
-                echo "\$config['jaraba_rag.settings']['environment'] = 'production';"
-              } > /tmp/qdrant_config.php
-              echo "--- Qdrant config block ---"
-              cat /tmp/qdrant_config.php
-              echo "---"
-              # Download current settings, append Qdrant block, upload back.
-              scp ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}:$SETTINGS_PATH /tmp/settings.local.php
-              cat /tmp/qdrant_config.php >> /tmp/settings.local.php
-              scp /tmp/settings.local.php ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}:$SETTINGS_PATH
-              rm -f /tmp/qdrant_config.php /tmp/settings.local.php
-            fi
-            ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "chmod 440 $SETTINGS_PATH"
-            echo "✅ Qdrant Cloud config appended to settings.local.php"
+          if [ "$EXISTS" = "YES" ] && [ "$FORCE_REGEN" != "true" ]; then
+            echo "✅ settings.local.php already exists"
+            exit 0
+          fi
 
-          # Case 2: File exists, no force — skip.
-          elif [ "$EXISTS" = "YES" ]; then
-            echo "✅ settings.local.php ya existe en IONOS"
-
-          # Case 3: File doesn't exist — create from scratch with DB + Qdrant secrets.
-          elif [ -n "${{ secrets.IONOS_DB_HOST }}" ]; then
-            echo "⚠️ Creando settings.local.php desde GitHub secrets..."
-            printf '<?php\n// Production DB credentials (auto-generated by CI/CD).\n' > /tmp/settings.local.php
-            printf "\$databases['default']['default'] = [\n" >> /tmp/settings.local.php
-            printf "  'database' => '%s',\n" '${{ secrets.IONOS_DB_NAME }}' >> /tmp/settings.local.php
-            printf "  'username' => '%s',\n" '${{ secrets.IONOS_DB_USER }}' >> /tmp/settings.local.php
-            printf "  'password' => '%s',\n" '${{ secrets.IONOS_DB_PASS }}' >> /tmp/settings.local.php
-            printf "  'host' => '%s',\n" '${{ secrets.IONOS_DB_HOST }}' >> /tmp/settings.local.php
-            printf "  'prefix' => '',\n  'port' => 3306,\n" >> /tmp/settings.local.php
-            printf "  'isolation_level' => 'READ COMMITTED',\n" >> /tmp/settings.local.php
-            printf "  'driver' => 'mysql',\n" >> /tmp/settings.local.php
-            printf "  'namespace' => 'Drupal\\\\\\\\mysql\\\\\\\\Driver\\\\\\\\Database\\\\\\\\mysql',\n" >> /tmp/settings.local.php
-            printf "  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',\n];\n" >> /tmp/settings.local.php
-
-            # Qdrant Cloud - direct config override (defense-in-depth; Key entities now in git via config/sync/).
-            if [ -n "${{ secrets.QDRANT_CLOUD_URL }}" ]; then
-              printf "\n// Qdrant Cloud - Production (auto-generated by CI/CD).\n" >> /tmp/settings.local.php
-              printf "\$config['jaraba_rag.settings']['vector_db']['host'] = '%s';\n" '${{ secrets.QDRANT_CLOUD_URL }}' >> /tmp/settings.local.php
-              printf "\$config['jaraba_rag.settings']['vector_db']['api_key'] = '%s';\n" '${{ secrets.QDRANT_CLOUD_API_KEY }}' >> /tmp/settings.local.php
-              printf "\$config['jaraba_rag.settings']['disabled'] = FALSE;\n" >> /tmp/settings.local.php
-              printf "\$config['jaraba_rag.settings']['environment'] = 'production';\n" >> /tmp/settings.local.php
-            fi
-
-            ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "chmod 755 ~/JarabaImpactPlatformSaaS/web/sites/default 2>/dev/null || true"
-            scp /tmp/settings.local.php ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}:$SETTINGS_PATH
-            ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} "chmod 440 $SETTINGS_PATH"
-            rm -f /tmp/settings.local.php
-            echo "✅ settings.local.php creado"
-          else
-            echo "❌ ERROR: No existe settings.local.php y no hay secrets IONOS_DB_*"
-            echo "📋 Configura estos GitHub secrets: IONOS_DB_HOST, IONOS_DB_NAME, IONOS_DB_USER, IONOS_DB_PASS"
-            echo "O crea settings.local.php manualmente en IONOS vía SSH"
+          if [ -z "${{ secrets.IONOS_DB_HOST }}" ]; then
+            echo "❌ No settings.local.php and no IONOS_DB_* secrets configured"
             exit 1
           fi
 
-      - name: Clean legacy putenv from settings.local.php
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOFCLEAN'
-            cd ~/JarabaImpactPlatformSaaS
-            SETTINGS=web/sites/default/settings.local.php
-            if grep -q 'API Keys - Key module env provider' "$SETTINGS" 2>/dev/null; then
-              chmod 755 web/sites/default 2>/dev/null || true
-              chmod 644 "$SETTINGS" 2>/dev/null || true
-              sed -i '/\/\/ API Keys - Key module env provider/,/\/\/ END API Keys/d' "$SETTINGS"
-              chmod 440 "$SETTINGS"
-              chmod 555 web/sites/default
-              echo "✅ Legacy putenv block removed from settings.local.php"
-            else
-              echo "ℹ️ No legacy putenv block found — clean"
-            fi
-          EOFCLEAN
+          echo "🔄 Generating settings.local.php..."
+          cat > /tmp/settings.local.php << 'SETTINGSEOF'
+          <?php
+          // Production DB credentials (auto-generated by CI/CD).
+          $databases['default']['default'] = [
+            'database' => 'PLACEHOLDER_DB',
+            'username' => 'PLACEHOLDER_USER',
+            'password' => 'PLACEHOLDER_PASS',
+            'host' => 'PLACEHOLDER_HOST',
+            'prefix' => '',
+            'port' => 3306,
+            'isolation_level' => 'READ COMMITTED',
+            'driver' => 'mysql',
+            'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+            'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+          ];
+          SETTINGSEOF
+
+          # Replace placeholders with actual secrets
+          sed -i "s/PLACEHOLDER_DB/${{ secrets.IONOS_DB_NAME }}/" /tmp/settings.local.php
+          sed -i "s/PLACEHOLDER_USER/${{ secrets.IONOS_DB_USER }}/" /tmp/settings.local.php
+          sed -i "s/PLACEHOLDER_PASS/${{ secrets.IONOS_DB_PASS }}/" /tmp/settings.local.php
+          sed -i "s/PLACEHOLDER_HOST/${{ secrets.IONOS_DB_HOST }}/" /tmp/settings.local.php
+
+          $SSH_CMD "chmod 755 /var/www/jaraba/web/sites/default 2>/dev/null || true"
+          scp -P ${{ env.DEPLOY_PORT }} /tmp/settings.local.php ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:$SETTINGS_PATH
+          $SSH_CMD "chmod 440 $SETTINGS_PATH && chmod 555 /var/www/jaraba/web/sites/default"
+          rm -f /tmp/settings.local.php
+          echo "✅ settings.local.php created"
 
       - name: Pull code and install dependencies
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
 
-            # Desbloquear permisos para git (runbook §Deployment)
+            # Unlock permissions for git
             chmod 755 web/sites/default
             chmod 644 web/sites/default/settings.php
 
-            # Pull código (settings.local.php no se ve afectado — no está en git)
+            # Pull latest code
             git fetch origin
             git reset --hard origin/main
 
-            # IONOS: Check if PHP handler needs to be configured
-            # The diagnostic step will identify if web PHP differs from CLI PHP 8.4
-            # If needed, AddHandler will be added in a follow-up commit
-            echo "ℹ️ Web PHP version will be checked by diagnostic step after deploy"
-
-            # Restaurar permisos seguros
+            # Restore secure permissions
             chmod 555 web/sites/default
             chmod 444 web/sites/default/settings.php
 
-            # Verificar que settings.local.php existe post-reset
+            # Verify settings.local.php survived git reset
             if [ ! -f web/sites/default/settings.local.php ]; then
-              echo "❌ FATAL: settings.local.php desapareció después de git reset"
+              echo "❌ FATAL: settings.local.php disappeared after git reset"
               exit 1
             fi
 
-            # Wipe vendor to prevent "Could not delete" / extraction errors
-            # on IONOS shared hosting (stale temp dirs with restrictive perms).
-            # Composer's global cache (~/.cache/composer) speeds up reinstall.
-            rm -rf vendor
-
-            # Instalar dependencias
-            /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
+            # Install dependencies (no vendor wipe needed — dedicated server has no permission issues)
+            composer install --no-dev --optimize-autoloader --no-progress
           EOF
-
-      - name: Patch settings.php and services.yml (ENV-BOOTSTRAP-001 + CSRF-LOGIN-FIX-001)
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} 'cd ~/JarabaImpactPlatformSaaS && /usr/bin/php8.4-cli scripts/maintenance/patch-settings-csrf.php'
 
       # CRITICAL: Generate settings.env.php AFTER git pull (not before).
       # git reset --hard overwrites settings.env.php with the empty stub from
       # the repo. This step must run AFTER pull to write the real API keys.
-      # Without this, reCAPTCHA, Stripe, OAuth, and AI providers have no keys
-      # in production — reCAPTCHA failure causes "La verificación de seguridad
-      # ha fallado" on every login attempt.
       - name: Generate settings.env.php (ENV-BOOTSTRAP-001)
         env:
           KEY_OPENAI: ${{ secrets.OPENAI_API_KEY }}
@@ -318,14 +240,12 @@ jobs:
           KEY_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
           KEY_GOOGLE_CLIENT_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_SECRET }}
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << EOFENV
-            cd ~/JarabaImpactPlatformSaaS
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << EOFENV
+            cd /var/www/jaraba
             ENV_FILE=config/deploy/settings.env.php
 
-            # Unlock for write
             chmod 644 "\$ENV_FILE" 2>/dev/null || true
 
-            # Generate fresh file (idempotent — full replacement each deploy)
             {
               echo "<?php"
               echo ""
@@ -359,149 +279,76 @@ jobs:
               [ -n "${KEY_GOOGLE_CLIENT_SECRET}" ] && echo "putenv('SOCIAL_AUTH_GOOGLE_CLIENT_SECRET=${KEY_GOOGLE_CLIENT_SECRET}');"
             } > "\$ENV_FILE"
 
-            # Lock permissions (read-only for web user)
             chmod 440 "\$ENV_FILE"
             echo "✅ settings.env.php generated with $(grep -c putenv "\$ENV_FILE") env vars"
           EOFENV
 
-      - name: Fix .htaccess for IONOS (after composer scaffold)
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-
-            # composer install runs drupal-scaffold which OVERWRITES web/.htaccess
-            # with the default from drupal/core. We must apply our fix AFTER composer.
-            #
-            # Only uncomment "# RewriteBase /" (exact line), NOT "# RewriteBase /drupal"
-            # IONOS shared hosting requires RewriteBase / for clean URLs to work.
-            sed -i 's|^  # RewriteBase /$|  RewriteBase /|' web/.htaccess
-
-            # Verify the fix was applied
-            echo "RewriteBase lines after fix:"
-            grep -n 'RewriteBase' web/.htaccess
-          EOF
-
-      - name: Setup PHP CLI path for drush subprocesses
-        run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            # vendor/bin/drush usa #!/usr/bin/env php -> en IONOS 'php' puede ser CGI
-            # Creamos symlink php -> php8.4-cli para que subprocesos drush usen CLI
-            mkdir -p ~/bin_cli
-            ln -sf /usr/bin/php8.4-cli ~/bin_cli/php
-            echo "✅ PHP CLI symlink: $(~/bin_cli/php -r 'echo php_sapi_name();')"
-          EOF
-
-      - name: Configure web PHP (error logging + memory)
-        run: |
-          REMOTE_USER="${{ env.IONOS_USER }}"
-          REMOTE_HOST="${{ env.IONOS_HOST }}"
-          ssh "${REMOTE_USER}@${REMOTE_HOST}" << 'EOFPHP'
-            cd ~/JarabaImpactPlatformSaaS
-            SITE_ROOT=$(pwd)
-
-            # Create .user.ini for web PHP (FastCGI/CGI respects this)
-            printf 'memory_limit = 512M\nmax_execution_time = 300\nlog_errors = On\nerror_log = %s/php_web_errors.log\ndisplay_errors = Off\nerror_reporting = E_ALL\n' "$SITE_ROOT" > web/.user.ini
-            echo "✅ web/.user.ini created with memory_limit=512M and error logging"
-            cat web/.user.ini
-
-            # Ensure error log file exists and is writable
-            touch "${SITE_ROOT}/php_web_errors.log"
-            chmod 666 "${SITE_ROOT}/php_web_errors.log"
-          EOFPHP
-
       - name: Pre-deploy diagnostics
         continue-on-error: true
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
-            echo "=== PHP in PATH: $(which php) ==="
-            php -r "echo 'SAPI: ' . php_sapi_name() . PHP_EOL;"
-            echo ""
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
             echo "=== Drush Status ==="
-            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1 || echo "⚠️ drush status failed"
+            drush status --fields=drupal-version,db-status,bootstrap 2>&1 || echo "⚠️ drush status failed"
             echo ""
             echo "=== Pending DB Updates ==="
-            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb:status 2>&1 || echo "⚠️ updatedb:status failed"
+            drush updatedb:status 2>&1 || echo "⚠️ updatedb:status failed"
             echo ""
             echo "=== Pending Config Changes ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php config:status 2>&1 | head -15 || echo "⚠️ config:status failed"
+            drush config:status 2>&1 | head -15 || echo "⚠️ config:status failed"
           EOF
 
       - name: Run database updates
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
-            echo "=== Running updatedb with verbose PHP error output ==="
-            /usr/bin/php8.4-cli -d display_errors=1 -d error_reporting=E_ALL vendor/bin/drush.php updatedb -y -v 2>&1
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            echo "=== Running updatedb ==="
+            drush updatedb -y -v 2>&1
             UPDB_EXIT=$?
-            echo "=== updatedb exit code: $UPDB_EXIT ==="
             if [ $UPDB_EXIT -ne 0 ]; then
-              echo "❌ updatedb failed. Checking PHP error log..."
-              tail -30 ~/logs/error.log 2>/dev/null || tail -30 ~/logs/php_error.log 2>/dev/null || echo "No error log found at ~/logs/"
-              ls -la ~/logs/ 2>/dev/null || echo "~/logs/ directory not found"
+              echo "❌ updatedb failed"
+              tail -50 /var/log/jaraba/php-error.log 2>/dev/null || echo "No PHP error log"
               exit 1
             fi
-
           EOF
 
       - name: Sync site UUID for config import
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
             CONFIG_UUID=$(grep '^uuid:' config/sync/system.site.yml | awk '{print $2}')
-            SITE_UUID=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "echo \Drupal::config('system.site')->get('uuid');" 2>/dev/null)
+            SITE_UUID=$(drush eval "echo \Drupal::config('system.site')->get('uuid');" 2>/dev/null)
             echo "Config UUID: $CONFIG_UUID"
             echo "Site  UUID: $SITE_UUID"
             if [ "$CONFIG_UUID" != "$SITE_UUID" ] && [ -n "$CONFIG_UUID" ]; then
-              echo "UUID mismatch. Forzando UUID del sitio para coincidir con config..."
-              /usr/bin/php8.4-cli vendor/bin/drush.php config:set system.site uuid "$CONFIG_UUID" -y 2>&1
-              echo "Site UUID actualizado a $CONFIG_UUID"
+              drush config:set system.site uuid "$CONFIG_UUID" -y 2>&1
+              echo "✅ Site UUID updated to match config"
             else
-              echo "UUIDs coinciden. config:import procedera normalmente."
+              echo "✅ UUIDs match"
             fi
           EOF
 
       - name: Import config and rebuild cache
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
-            /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            drush config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
+            drush cache:rebuild 2>&1
 
-            # Apply entity definition updates if devel_entity_updates is enabled (post config:import)
-            if /usr/bin/php8.4-cli vendor/bin/drush.php pm:list --status=enabled --filter=devel_entity_updates --format=list 2>/dev/null | grep -q devel_entity_updates; then
-              echo "=== Running devel-entity-updates ==="
-              /usr/bin/php8.4-cli vendor/bin/drush.php devel-entity-updates -y 2>&1 || echo "⚠️ devel-entity-updates had issues"
-            fi
-
-            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
-
-            # ENV-PARITY-001: Invalidate OPcache after code update.
-            # Production uses opcache.validate_timestamps=0 (via .user.ini or FPM pool).
-            # Without explicit invalidation, PHP serves STALE CODE after deploy.
-            echo "=== Invalidating OPcache ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php php:eval "if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset OK'; } else { echo 'OPcache not loaded (CLI)'; }" 2>&1
-            # Note: CLI opcache_reset only clears CLI cache. Web OPcache is cleared
-            # by cache:rebuild triggering a full bootstrap, which invalidates the
-            # file-based OPcache entries. For FPM-based setups, also restart FPM:
-            # sudo systemctl reload php8.4-fpm 2>/dev/null || true
+            # CRITICAL: Reload PHP-FPM to invalidate OPcache.
+            # Production uses opcache.validate_timestamps=0, so without reload
+            # PHP serves STALE CODE after deploy.
+            echo "=== Reloading PHP-FPM (OPcache invalidation) ==="
+            sudo systemctl reload php8.4-fpm
+            echo "✅ PHP-FPM reloaded"
           EOF
 
       - name: Auto-import missing config/install defaults (CONFIG-INSTALL-001)
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
             echo "=== Checking for missing config/install defaults ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php eval "
+            drush eval "
               \$module_handler = \Drupal::moduleHandler();
               \$config_factory = \Drupal::configFactory();
               \$imported = 0;
@@ -511,7 +358,6 @@ jobs:
                 \$files = glob(DRUPAL_ROOT . '/' . \$config_dir . '/*.yml');
                 foreach (\$files as \$file) {
                   \$config_name = basename(\$file, '.yml');
-                  // Only import configs owned by this module (prefix match).
                   if (!str_starts_with(\$config_name, \$module_name . '.')) continue;
                   \$config = \$config_factory->get(\$config_name);
                   if (\$config->isNew()) {
@@ -535,13 +381,11 @@ jobs:
 
       - name: Auto-remediate entity/field schema (UPDATE-HOOK-REQUIRED-001)
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export PATH="$HOME/bin_cli:$PATH"
-            export DRUSH_PHP=/usr/bin/php8.4-cli
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
 
             echo "=== Phase 1: Detect entity/field definition mismatches ==="
-            MISMATCHES=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "
+            MISMATCHES=$(drush eval "
               \$manager = \Drupal::entityDefinitionUpdateManager();
               \$changes = \$manager->getChangeList();
               if (empty(\$changes)) {
@@ -560,18 +404,15 @@ jobs:
             fi
 
             echo ""
-            echo "=== Phase 2: Auto-remediate — applying entity definition updates ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php eval "
+            echo "=== Phase 2: Auto-remediate ==="
+            drush eval "
               \$manager = \Drupal::entityDefinitionUpdateManager();
               \$changes = \$manager->getChangeList();
               \$applied = 0;
               \$errors = [];
-
-              // Constants: DEFINITION_CREATED=1, DEFINITION_UPDATED=2, DEFINITION_DELETED=3
               \$CREATED = 1; \$UPDATED = 2; \$DELETED = 3;
 
               foreach (\$changes as \$entity_type_id => \$change_info) {
-                // Install/update entity types.
                 if (isset(\$change_info['entity_type'])) {
                   \$ct = \$change_info['entity_type'];
                   try {
@@ -589,7 +430,6 @@ jobs:
                   }
                 }
 
-                // Install/update/uninstall individual fields.
                 if (isset(\$change_info['field_storage_definitions'])) {
                   \$field_definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions(\$entity_type_id);
                   foreach (\$change_info['field_storage_definitions'] as \$field_name => \$change_type) {
@@ -627,15 +467,14 @@ jobs:
                 foreach (\$errors as \$err) { echo \"  ❌ \$err\" . PHP_EOL; }
               }
             " 2>&1
-            REMEDIATE_EXIT=$?
 
             echo ""
             echo "=== Phase 3: Post-remediation cache rebuild ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
+            drush cache:rebuild 2>&1
 
             echo ""
             echo "=== Phase 4: Final verification ==="
-            FINAL=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "
+            FINAL=$(drush eval "
               \$manager = \Drupal::entityDefinitionUpdateManager();
               \$changes = \$manager->getChangeList();
               if (empty(\$changes)) {
@@ -649,207 +488,71 @@ jobs:
             echo "$FINAL"
 
             if echo "$FINAL" | grep -q "CLEAN"; then
-              echo "✅ All schema mismatches auto-remediated successfully"
+              echo "✅ All schema mismatches auto-remediated"
             else
               echo "❌ BLOCKING: Schema mismatches persist after auto-remediation"
-              echo "Manual intervention required — check hook_update_N() coverage"
               exit 1
             fi
           EOF
 
-      - name: Disable maintenance mode and verify site
+      - name: Restart AI workers
+        continue-on-error: true
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
-            export DRUSH_PHP=/usr/bin/php8.4-cli
-            /usr/bin/php8.4-cli vendor/bin/drush.php state:set system.maintenance_mode 0 2>&1
-            echo ""
-            echo "=== Quick site verification ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php status --fields=drupal-version,db-status,bootstrap 2>&1
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            echo "=== Restarting AI workers ==="
+            sudo supervisorctl restart jaraba-ai:*
+            sleep 2
+            sudo supervisorctl status jaraba-ai:*
+            echo "✅ AI workers restarted"
           EOF
 
-      - name: Diagnose web PHP configuration
-        continue-on-error: true
-        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      - name: Disable maintenance mode and verify site
         run: |
-          REMOTE_USER="${{ env.IONOS_USER }}"
-          REMOTE_HOST="${{ env.IONOS_HOST }}"
-          DIAG_FILE="_diag_$(openssl rand -hex 8).php"
-
-          # Create diagnostic PHP page on IONOS via scp (avoids heredoc nesting issues)
-          cat > /tmp/diag_page.php << 'LOCALEOF'
-          <?php
-          header('Content-Type: application/json');
-          echo json_encode([
-            'php_version' => phpversion(),
-            'sapi' => php_sapi_name(),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'error_log' => ini_get('error_log'),
-            'display_errors' => ini_get('display_errors'),
-            'loaded_extensions' => get_loaded_extensions(),
-            'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? 'unknown',
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
-            'user_ini_filename' => ini_get('user_ini.filename'),
-          ], JSON_PRETTY_PRINT);
-          LOCALEOF
-
-          cat > /tmp/boot_test.php << 'LOCALEOF2'
-          <?php
-          header('Content-Type: text/plain');
-          error_reporting(E_ALL);
-          ini_set('display_errors', '1');
-          echo "=== Drupal Web Bootstrap Test ===\n";
-          echo "PHP: " . phpversion() . " (" . php_sapi_name() . ")\n";
-          echo "Memory: " . ini_get('memory_limit') . "\n\n";
-          try {
-            $autoloader = require_once __DIR__ . '/../vendor/autoload.php';
-            echo "1. Autoloader: OK\n";
-          } catch (\Throwable $e) {
-            echo "1. Autoloader FAILED: " . $e->getMessage() . "\n";
-            exit(1);
-          }
-          try {
-            $kernel = new \Drupal\Core\DrupalKernel('prod', $autoloader);
-            echo "2. DrupalKernel created: OK\n";
-          } catch (\Throwable $e) {
-            echo "2. DrupalKernel FAILED: " . $e->getMessage() . "\n";
-            exit(1);
-          }
-          try {
-            $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-            $kernel->boot();
-            echo "3. Kernel boot: OK\n";
-            echo "4. Drupal version: " . \Drupal::VERSION . "\n";
-            echo "5. Database: " . (\Drupal::database()->getConnectionOptions()['database'] ?? 'unknown') . "\n";
-            echo "\nAll checks passed!\n";
-          } catch (\Throwable $e) {
-            echo "3. Boot FAILED: " . get_class($e) . ": " . $e->getMessage() . "\n";
-            echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
-            echo "Trace:\n" . $e->getTraceAsString() . "\n";
-          }
-          LOCALEOF2
-
-          # Upload both diagnostic files
-          scp /tmp/diag_page.php "${REMOTE_USER}@${REMOTE_HOST}:~/JarabaImpactPlatformSaaS/web/${DIAG_FILE}"
-          scp /tmp/boot_test.php "${REMOTE_USER}@${REMOTE_HOST}:~/JarabaImpactPlatformSaaS/web/_boot_test.php"
-
-          echo "=== Web PHP Diagnostic (via HTTPS) ==="
-          sleep 3
-          DIAG_RESULT=$(curl -sf "${PRODUCTION_URL}/${DIAG_FILE}" 2>&1 || echo "CURL_FAILED")
-          echo "$DIAG_RESULT"
-
-          # Extract key info
-          WEB_PHP=$(echo "$DIAG_RESULT" | jq -r '.php_version' 2>/dev/null || echo "unknown")
-          WEB_SAPI=$(echo "$DIAG_RESULT" | jq -r '.sapi' 2>/dev/null || echo "unknown")
-          WEB_MEM=$(echo "$DIAG_RESULT" | jq -r '.memory_limit' 2>/dev/null || echo "unknown")
-          echo ""
-          echo "=== SUMMARY ==="
-          echo "Web PHP version: $WEB_PHP"
-          echo "Web PHP SAPI: $WEB_SAPI"
-          echo "Web memory_limit: $WEB_MEM"
-
-          # Compare with CLI
-          CLI_PHP=$(ssh "${REMOTE_USER}@${REMOTE_HOST}" "/usr/bin/php8.4-cli -r 'echo phpversion();'" 2>/dev/null)
-          echo "CLI PHP version: $CLI_PHP"
-          echo ""
-
-          if [ "$WEB_PHP" != "$CLI_PHP" ] && [ "$WEB_PHP" != "unknown" ]; then
-            echo "⚠️ VERSION MISMATCH: Web PHP ($WEB_PHP) ≠ CLI PHP ($CLI_PHP)"
-            echo "This is likely the root cause of the 500 errors!"
-            echo "Fix: Add 'AddHandler application/x-httpd-php84 .php' to .htaccess"
-          elif [ "$WEB_PHP" = "unknown" ]; then
-            echo "⚠️ Could not reach diagnostic page — web PHP may be completely broken"
-            echo "Checking response headers..."
-            curl -sI "${PRODUCTION_URL}/${DIAG_FILE}" 2>&1
-          else
-            echo "✅ Web and CLI PHP versions match: $WEB_PHP"
-          fi
-
-          echo ""
-          echo "=== Drupal Bootstrap Test (via HTTPS) ==="
-          sleep 2
-          BOOT_RESULT=$(curl -sf "${PRODUCTION_URL}/_boot_test.php" 2>&1 || echo "BOOT_TEST_FAILED")
-          echo "$BOOT_RESULT"
-
-          if echo "$BOOT_RESULT" | grep -q "BOOT_TEST_FAILED"; then
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            drush state:set system.maintenance_mode 0 2>&1
             echo ""
-            echo "⚠️ Boot test page also failed. Checking headers..."
-            curl -sI "${PRODUCTION_URL}/_boot_test.php" 2>&1
-          fi
-
-          # Check PHP error log
-          echo ""
-          echo "=== PHP Web Error Log (last 50 lines) ==="
-          ssh "${REMOTE_USER}@${REMOTE_HOST}" "tail -50 ~/JarabaImpactPlatformSaaS/php_web_errors.log 2>/dev/null || echo 'No web error log yet'"
-
-          # Verify .htaccess RewriteBase after sed
-          echo ""
-          echo "=== .htaccess RewriteBase verification ==="
-          ssh "${REMOTE_USER}@${REMOTE_HOST}" "grep -n 'RewriteBase' ~/JarabaImpactPlatformSaaS/web/.htaccess"
-
-          # Test mod_rewrite with a known Drupal path
-          echo ""
-          echo "=== mod_rewrite test: /user/login ==="
-          LOGIN_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}/user/login" 2>/dev/null || echo '000')
-          echo "HTTP status for /user/login: $LOGIN_CODE"
-          if [ "$LOGIN_CODE" = "500" ]; then
-            echo "⚠️ /user/login also returns 500 — mod_rewrite is likely broken"
-            echo "Checking response headers..."
-            curl -sI "${PRODUCTION_URL}/user/login" 2>&1
-          elif [ "$LOGIN_CODE" = "200" ] || [ "$LOGIN_CODE" = "403" ]; then
-            echo "✅ mod_rewrite is working for /user/login"
-          fi
-
-          # Cleanup diagnostic files
-          ssh "${REMOTE_USER}@${REMOTE_HOST}" "rm -f ~/JarabaImpactPlatformSaaS/web/${DIAG_FILE} ~/JarabaImpactPlatformSaaS/web/_boot_test.php"
-          echo "✅ Diagnostic files cleaned up"
+            echo "=== Site verification ==="
+            drush status --fields=drupal-version,db-status,bootstrap 2>&1
+          EOF
 
       - name: Smoke test - Platform status endpoint
-        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
-          echo "⏳ Esperando 10s para estabilización post-deploy..."
-          sleep 10
+          echo "⏳ Waiting 5s for stabilization..."
+          sleep 5
 
-          # Try HTTP health check if PRODUCTION_URL is configured
-          if [ -n "$PRODUCTION_URL" ]; then
-            # Path changed from /health to /api/v1/platform/status to avoid IONOS WAF blocking.
-            HEALTH_URL="${PRODUCTION_URL}/api/v1/platform/status"
-
-            echo "🔍 Verificando platform status endpoint (HTTP)..."
-            for i in 1 2 3; do
-              HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo '000')
-              RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
-              STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
-
-              if [ "$STATUS" = "ok" ]; then
-                echo "✅ Health check passed via HTTP! Platform is healthy."
-                echo "$RESPONSE" | jq .
-                exit 0
-              fi
-
-              echo "⚠️ Intento $i/3: HTTP=$HTTP_CODE status=$STATUS. Reintentando en 5s..."
-              sleep 5
-            done
-
-            echo "⚠️ HTTP health check failed after 3 attempts (HTTP=$HTTP_CODE)."
-          else
-            echo "::warning::PRODUCTION_URL secret is not configured. Skipping HTTP health check."
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "::warning::PRODUCTION_URL not configured. Skipping HTTP health check."
+            exit 0
           fi
 
-          echo "Falling back to SSH-based Drush verification..."
-          echo ""
+          HEALTH_URL="${PRODUCTION_URL}/api/v1/platform/status"
+          echo "🔍 Checking platform status..."
 
-          # Fallback: verify Drupal bootstrap via SSH + drush (bypasses web PHP/CGI issues on IONOS).
-          SSH_STATUS=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'DRUSHEOF'
-            cd ~/JarabaImpactPlatformSaaS
-            BOOTSTRAP=$(/usr/bin/php8.4-cli vendor/bin/drush.php status --field=bootstrap 2>/dev/null)
-            DB_STATUS=$(/usr/bin/php8.4-cli vendor/bin/drush.php status --field=db-status 2>/dev/null)
-            DRUPAL_VER=$(/usr/bin/php8.4-cli vendor/bin/drush.php status --field=drupal-version 2>/dev/null)
+          for i in 1 2 3; do
+            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo '000')
+            RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
+            STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
+
+            if [ "$STATUS" = "ok" ]; then
+              echo "✅ Health check passed! Platform is healthy."
+              echo "$RESPONSE" | jq .
+              exit 0
+            fi
+
+            echo "⚠️ Attempt $i/3: HTTP=$HTTP_CODE status=$STATUS. Retrying in 5s..."
+            sleep 5
+          done
+
+          echo "⚠️ HTTP health check failed. Falling back to SSH drush..."
+
+          SSH_STATUS=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'DRUSHEOF'
+            cd /var/www/jaraba
+            BOOTSTRAP=$(drush status --field=bootstrap 2>/dev/null)
+            DB_STATUS=$(drush status --field=db-status 2>/dev/null)
+            DRUPAL_VER=$(drush status --field=drupal-version 2>/dev/null)
             if [ "$BOOTSTRAP" = "Successful" ] && [ "$DB_STATUS" = "Connected" ]; then
               echo "OK:drupal=$DRUPAL_VER,bootstrap=$BOOTSTRAP,db=$DB_STATUS"
             else
@@ -859,37 +562,22 @@ jobs:
           )
 
           echo "SSH drush result: $SSH_STATUS"
-
           if echo "$SSH_STATUS" | grep -q "^OK:"; then
-            echo "✅ Health check passed via SSH drush! Drupal bootstrap and DB are healthy."
-            if [ -z "$PRODUCTION_URL" ]; then
-              echo "::warning::PRODUCTION_URL secret not set. Deploy verified via SSH only. Set it in Settings → Secrets → Actions."
-            else
-              echo "::warning::HTTP health endpoint unreachable (IONOS web PHP/CGI issue) but deploy verified via SSH."
-            fi
+            echo "✅ Health check passed via SSH drush!"
+            echo "::warning::HTTP unreachable but deploy verified via SSH."
             exit 0
           fi
 
-          echo "❌ Health check failed via SSH!"
-          if [ -n "$PRODUCTION_URL" ]; then
-            echo ""
-            echo "=== Full response headers for status endpoint ==="
-            curl -sI "$HEALTH_URL" 2>&1
-            echo ""
-            echo "=== Full response headers for / ==="
-            curl -sI "${PRODUCTION_URL}/" 2>&1
-          fi
-
+          echo "❌ Health check failed!"
           exit 1
 
       - name: Smoke test - Homepage
         if: success()
-        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
           if [ -z "$PRODUCTION_URL" ]; then
-            echo "⚠️ PRODUCTION_URL not set — skipping homepage check."
+            echo "⚠️ PRODUCTION_URL not set — skipping"
             exit 0
           fi
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}")
@@ -903,58 +591,31 @@ jobs:
         if: failure()
         continue-on-error: true
         run: |
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
             echo "=== Drush Status ==="
-            /usr/bin/php8.4-cli -d display_errors=1 vendor/bin/drush.php status 2>&1
+            drush status 2>&1
             echo ""
             echo "=== Recent Watchdog Errors ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php watchdog:show --count=20 --severity=3 2>&1 || echo "No watchdog available"
+            drush watchdog:show --count=20 --severity=3 2>&1 || echo "No watchdog available"
             echo ""
-            echo "=== PHP Web Error Log (our .user.ini log) ==="
-            if [ -f php_web_errors.log ]; then
-              echo "--- php_web_errors.log (last 80 lines) ---"
-              tail -80 php_web_errors.log
-            else
-              echo "No php_web_errors.log found"
-            fi
+            echo "=== PHP-FPM Error Log (last 50 lines) ==="
+            tail -50 /var/log/jaraba/php-error.log 2>/dev/null || echo "No PHP error log"
             echo ""
-            echo "=== Other PHP Error Logs ==="
-            for LOG_PATH in ~/logs/error.log ~/logs/php_error.log /tmp/php_errors.log; do
-              if [ -f "$LOG_PATH" ]; then
-                echo "--- $LOG_PATH (last 30 lines) ---"
-                tail -30 "$LOG_PATH"
-              fi
-            done
+            echo "=== Nginx Error Log (last 30 lines) ==="
+            tail -30 /var/log/nginx/error.log 2>/dev/null || echo "No nginx error log"
             echo ""
-            echo "=== Find any PHP error log files ==="
-            find ~ -name "*.log" -newer web/.user.ini -size +0 2>/dev/null | head -20 || echo "No recent log files"
+            echo "=== PHP-FPM Status ==="
+            systemctl status php8.4-fpm --no-pager 2>&1 | head -20
             echo ""
-            echo "=== Apache Error Log ==="
-            tail -30 ~/logs/error_log 2>/dev/null || echo "No Apache error log at ~/logs/error_log"
+            echo "=== Supervisor Status ==="
+            sudo supervisorctl status 2>&1
             echo ""
-            echo "=== Web PHP version check ==="
-            # Check all PHP binaries available
-            echo "All PHP binaries:"
-            ls -la /usr/bin/php* 2>/dev/null
+            echo "=== Redis Status ==="
+            redis-cli ping 2>&1
             echo ""
-            echo "Default 'php' resolves to:"
-            which php 2>/dev/null && php -v 2>/dev/null | head -1
-            echo ""
-            echo "CLI PHP 8.4:"
-            /usr/bin/php8.4-cli -v 2>/dev/null | head -1
-            echo ""
-            echo "=== Check .user.ini is in place ==="
-            cat web/.user.ini 2>/dev/null || echo ".user.ini not found!"
-            echo ""
-            echo "=== Compiled service container ==="
-            ls -la web/sites/default/files/php/ 2>/dev/null || echo "No compiled container found"
-            echo ""
-            echo "=== Check Drupal core index.php ==="
-            head -20 web/index.php 2>/dev/null
-            echo ""
-            echo "=== Enabled Custom Modules ==="
-            /usr/bin/php8.4-cli vendor/bin/drush.php pm-list --status=enabled --type=module 2>&1 | grep -i "custom\|jaraba\|ecosistema" || echo "pm-list failed"
+            echo "=== Disk Space ==="
+            df -h /var/www/jaraba
           EOF
 
       - name: Notify success
@@ -975,7 +636,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "❌ *IONOS Deploy Failed*\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Actor:* ${{ github.actor }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
+                    "text": "❌ *Deploy Failed*\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Actor:* ${{ github.actor }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
                   }
                 }
               ]
@@ -990,7 +651,7 @@ jobs:
           echo "❌ Deployment failed! Manual rollback may be required."
           echo ""
           echo "📋 Rollback steps:"
-          echo "  1. SSH into IONOS: ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}"
-          echo "  2. Restore DB: gunzip -c ~/backups/pre_deploy/db_pre_deploy_*.sql.gz | mysql"
-          echo "  3. Revert code: cd ~/JarabaImpactPlatformSaaS && git reset --hard HEAD~1"
-          echo "  4. Rebuild: composer install && drush cr"
+          echo "  1. SSH: ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}"
+          echo "  2. Restore DB: gunzip -c /opt/jaraba/backups/pre_deploy/db_pre_deploy_*.sql.gz | mysql jaraba"
+          echo "  3. Revert code: cd /var/www/jaraba && git reset --hard HEAD~1"
+          echo "  4. Rebuild: composer install --no-dev && drush cr && sudo systemctl reload php8.4-fpm"
