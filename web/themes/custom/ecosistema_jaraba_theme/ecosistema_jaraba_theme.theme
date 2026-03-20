@@ -3457,6 +3457,10 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     try {
       $copilot_service = \Drupal::service('ecosistema_jaraba_core.copilot_context');
       $variables['copilot_context'] = $copilot_service->getContext();
+      // Attach copilot library here (not just in Twig) so CSS/JS are included
+      // in aggregated output. attach_library() in {% include ... only %} partials
+      // does NOT propagate #attached to the render pipeline for CSS aggregation.
+      $variables['#attached']['library'][] = 'ecosistema_jaraba_core/contextual-copilot';
     }
     catch (\Exception $e) {
       // Servicio no disponible, no mostrar copiloto
