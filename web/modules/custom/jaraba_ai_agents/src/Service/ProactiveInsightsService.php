@@ -128,9 +128,12 @@ class ProactiveInsightsService
             try {
                 $usageLimits = \Drupal::service('ecosistema_jaraba_core.usage_limits');
                 $usage = $usageLimits->getCurrentUsage($tenantId);
-                $limits = $usageLimits->getPlanLimits($tenantId);
+                // getPlanLimits may not exist yet — use method_exists guard.
+                $limits = method_exists($usageLimits, 'getPlanLimits')
+                    ? $usageLimits->getPlanLimits($tenantId)
+                    : [];
 
-                if (!empty($usage) && !empty($limits)) {
+                if ($usage !== [] && $limits !== []) {
                     foreach ($usage as $metric => $value) {
                         $limit = $limits[$metric] ?? 0;
                         if ($limit > 0 && $value > 0) {
@@ -148,8 +151,8 @@ class ProactiveInsightsService
                     }
                 }
             }
-            catch (\Exception $e) {
-                // Non-critical.
+            catch (\Throwable $e) {
+                // Non-critical — UsageLimitsService may have incompatible interface.
             }
         }
     }

@@ -256,7 +256,7 @@ class UsageLimitsService
      * @return array
      *   Associative array of resource => current usage value.
      */
-    protected function getCurrentUsage(string $tenantId): array
+    public function getCurrentUsage(string $tenantId): array
     {
         $usage = [
             'products' => 0,
