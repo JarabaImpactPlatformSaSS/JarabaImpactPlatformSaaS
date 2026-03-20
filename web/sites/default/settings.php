@@ -905,6 +905,9 @@ $settings['trusted_host_patterns'] = [
   // Marca Personal - pepejaraba.com
   '^pepejaraba\.com$',
   '^www\.pepejaraba\.com$',
+  // Jaraba Impact B2B
+    '^jarabaimpact\.com$',
+    '^www\.jarabaimpact\.com$',
 ];
 
 // REDIS CACHE BACKEND
