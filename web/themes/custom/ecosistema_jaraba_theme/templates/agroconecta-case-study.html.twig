@@ -1,0 +1,248 @@
+{#
+/**
+ * @file agroconecta-case-study.html.twig
+ * Caso de éxito: Cooperativa Sierra de Cazorla — storytelling de conversión.
+ *
+ * VARIABLES:
+ * - hero_image, antonio_image, before_after_image, qr_image,
+ *   dashboard_image, chef_image: string (URL relativa a WebP)
+ * - metrics: array of {label, before, after, change}
+ * - testimonial: {quote, name, role, company}
+ * - timeline: array of {day, title, text}
+ * - pricing_url, register_url: string
+ *
+ * DIRECTIVES: ZERO-REGION-001, i18n (trans), ICON-CONVENTION-001,
+ * CSS-VAR-ALL-COLORS-001, DOC-GLOSSARY-001
+ */
+#}
+
+{# === 1. HERO === #}
+<section class="cs-hero" style="background-image: url('{{ hero_image }}');" aria-labelledby="cs-title">
+  <div class="cs-hero__overlay"></div>
+  <div class="cs-hero__container">
+    <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
+    <h1 id="cs-title" class="cs-hero__title">
+      {% trans %}Del campo a la mesa: cómo una cooperativa de aceite digitalizó su trazabilidad{% endtrans %}
+    </h1>
+    <p class="cs-hero__subtitle">
+      {% trans %}La historia de la Cooperativa Sierra de Cazorla: de vender a granel a Italia a facturar 30.000 €/mes en venta directa{% endtrans %}
+    </p>
+    <div class="cs-hero__ctas">
+      <a href="{{ pricing_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_agro_hero_trial" data-track-position="case_study_hero">
+        {% trans %}Probar AgroConecta gratis{% endtrans %}
+      </a>
+      <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
+        {% trans %}Leer la historia{% endtrans %} ↓
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === 2. LA COOPERATIVA (contexto) === #}
+<section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ antonio_image }}" alt="{% trans %}Antonio Morales entre olivos{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}La cooperativa{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Cooperativa Sierra de Cazorla, Jaén{% endtrans %}</h2>
+      <div class="cs-badges">
+        <span class="cs-badge">{% trans %}35 socios{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}3 generaciones{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}AOVE Picual Ecológico{% endtrans %}</span>
+      </div>
+      <p>{% trans %}Antonio Morales tiene 52 años y lleva toda la vida entre olivos. Es la tercera generación de su familia que trabaja la tierra en la sierra de Cazorla. La cooperativa produce 180 toneladas de aceite al año con su propia almazara y certificación ecológica.{% endtrans %}</p>
+      <p>{% trans %}Pero el 85% de su producción se vendía a granel a envasadoras italianas que lo mezclaban con aceites de menor calidad y lo vendían como "aceite italiano premium" a 3 veces el precio.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 3. EL DOLOR === #}
+<section class="cs-section cs-pain reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Antes de AgroConecta{% endtrans %}</h2>
+    <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y después{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
+    <div class="cs-pain__cards">
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">85%</span>
+        <span class="cs-pain__label">{% trans %}vendido a granel a Italia{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">2,10 €</span>
+        <span class="cs-pain__label">{% trans %}margen por botella (granel){% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">0</span>
+        <span class="cs-pain__label">{% trans %}clientes directos{% endtrans %}</span>
+      </div>
+      <div class="cs-pain__card">
+        <span class="cs-pain__value">{{ jaraba_icon('ui', 'alert-circle', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
+        <span class="cs-pain__label">{% trans %}sin cuaderno digital PAC{% endtrans %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 4. EL QR QUE LO CAMBIÓ TODO === #}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento decisivo{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Un código QR en cada botella{% endtrans %}</h2>
+      <p>{% trans %}Carlos, el hijo de Antonio (ingeniero en Sevilla), descubre AgroConecta. No es solo un cuaderno de campo: es un marketplace completo con trazabilidad QR inmutable, logística MRW/SEUR integrada y copiloto IA.{% endtrans %}</p>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Papá, mira esto. Tienen un plan gratuito. Es como Agroptima pero con tienda online, códigos QR para las botellas y hasta inteligencia artificial.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Carlos Morales, hijo de Antonio{% endtrans %}</footer>
+      </blockquote>
+    </div>
+    <div class="cs-section__media">
+      <img src="{{ qr_image }}" alt="{% trans %}Escaneando QR en botella de aceite{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+  </div>
+</section>
+
+{# === 5. LOS 14 DÍAS (timeline) === #}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}Los 14 días{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}La transformación paso a paso{% endtrans %}</h2>
+    <div class="cs-timeline__split">
+      <div class="cs-timeline__media">
+        <img src="{{ dashboard_image }}" alt="{% trans %}Dashboard de productor AgroConecta{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      </div>
+      <div class="cs-timeline__steps">
+        {% for step in timeline %}
+          <div class="cs-timeline__step">
+            <span class="cs-timeline__day">{% trans %}Día{% endtrans %} {{ step.day }}</span>
+            <div class="cs-timeline__detail">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 6. LOS RESULTADOS === #}
+<section class="cs-section cs-results reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <span class="cs-section__eyebrow">{% trans %}3 meses después{% endtrans %}</span>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
+    <div class="cs-results__grid">
+      {% for m in metrics %}
+        <div class="cs-results__card">
+          <span class="cs-results__change">{{ m.change }}</span>
+          <span class="cs-results__label">{{ m.label }}</span>
+          <div class="cs-results__compare">
+            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === 7. EL CHEF DE MADRID === #}
+<section class="cs-section cs-chef reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__media">
+      <img src="{{ chef_image }}" alt="{% trans %}Chef de restaurante examinando aceite con QR{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+    </div>
+    <div class="cs-section__content">
+      <span class="cs-section__eyebrow">{% trans %}El momento cumbre{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Un chef con estrella Michelin escanea el QR{% endtrans %}</h2>
+      <blockquote class="cs-discovery__quote">
+        <p>&ldquo;{% trans %}Llevo años buscando un aceite con esta trazabilidad. Mis clientes preguntan de dónde viene cada ingrediente. Con el QR pueden verlo ellos mismos. Necesito 200 cajas al mes.{% endtrans %}&rdquo;</p>
+        <footer>— {% trans %}Chef de restaurante en Madrid{% endtrans %}</footer>
+      </blockquote>
+      <p class="cs-chef__impact">{% trans %}200 cajas/mes = 30.000 € de facturación directa. Más que lo que la cooperativa ganaba en tres meses vendiendo a granel.{% endtrans %}</p>
+    </div>
+  </div>
+</section>
+
+{# === 8. TESTIMONIAL === #}
+<section class="cs-section cs-testimonial reveal-element reveal-fade-up">
+  <div class="cs-section__container cs-section__container--narrow">
+    <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
+      <p class="cs-testimonial__text" itemprop="reviewBody">
+        &ldquo;{{ testimonial.quote }}&rdquo;
+      </p>
+      <footer class="cs-testimonial__author">
+        <div>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+        </div>
+        <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <meta itemprop="ratingValue" content="5">
+          <meta itemprop="bestRating" content="5">
+          ★★★★★
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+{# === 9. MINI PRICING === #}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up">
+  <div class="cs-section__container">
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Planes AgroConecta{% endtrans %}</h2>
+    <div class="cs-pricing__cards">
+      <div class="cs-pricing__card">
+        <h3>Free</h3>
+        <span class="cs-pricing__price">0 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Explora sin compromiso{% endtrans %}</p>
+        <a href="{{ register_url }}" class="btn btn--outline" data-track-cta="cs_agro_free" data-track-position="case_study_pricing">{% trans %}Empezar gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card cs-pricing__card--recommended">
+        <span class="cs-pricing__badge">{% trans %}El plan de Antonio{% endtrans %}</span>
+        <h3>Professional</h3>
+        <span class="cs-pricing__price">129 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Margen × 4 vs venta a granel{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary" data-track-cta="cs_agro_professional" data-track-position="case_study_pricing">{% trans %}Probar 14 días gratis{% endtrans %}</a>
+      </div>
+      <div class="cs-pricing__card">
+        <h3>Enterprise</h3>
+        <span class="cs-pricing__price">249 &euro;</span>
+        <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        <p>{% trans %}Multi-productor + API + SLA{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline" data-track-cta="cs_agro_enterprise" data-track-position="case_study_pricing">{% trans %}Ver detalles{% endtrans %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === 10. CTA FINAL === #}
+<section class="cs-section cs-final-cta">
+  <div class="cs-section__container cs-section__container--narrow">
+    <h2 class="cs-final-cta__title">{% trans %}¿Y si el próximo QR cuenta la historia de tu producción?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Sin tarjeta de crédito. Sin permanencia. 14 días gratis.{% endtrans %}</p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_agro_final_cta" data-track-position="case_study_bottom">
+      {% trans %}Probar AgroConecta gratis{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust">
+      <span>{{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Datos en la UE{% endtrans %}</span>
+      <span>{{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}RGPD 100%{% endtrans %}</span>
+      <span>{{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }} {% trans %}Trazabilidad inmutable{% endtrans %}</span>
+    </div>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Del campo a la mesa: como una cooperativa de aceite digitalizo su trazabilidad",
+  "author": { "@type": "Organization", "name": "Jaraba Impact Platform" },
+  "datePublished": "2026-03-20",
+  "publisher": { "@type": "Organization", "name": "PED S.L." },
+  "description": "Cooperativa Sierra de Cazorla, 35 socios oleicolas en Jaen, paso de vender a granel a Italia a facturar 30.000 EUR/mes en venta directa con trazabilidad QR."
+}
+</script>

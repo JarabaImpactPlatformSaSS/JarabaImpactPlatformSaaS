@@ -3,6 +3,20 @@
 # CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
 
 # ============================================
+# CASO DE ÉXITO: Cooperativa Sierra de Cazorla
+# ============================================
+
+jaraba_agroconecta_core.case_study.sierra_cazorla:
+  path: '/agroconecta/caso-de-exito/cooperativa-sierra-cazorla'
+  defaults:
+    _controller: '\Drupal\jaraba_agroconecta_core\Controller\AgroCaseStudyController::caseStudy'
+    _title: 'Caso de éxito: Cooperativa Sierra de Cazorla'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# ============================================
 # PRODUCTOS AGRO
 # ============================================
 

@@ -189,6 +189,24 @@ function jaraba_agroconecta_core_theme(): array
             ],
             'template' => 'agro-traceability-public',
         ],
+        // Caso de éxito: Cooperativa Sierra de Cazorla.
+        'agroconecta_case_study' => [
+            'variables' => [
+                'hero_image' => '',
+                'antonio_image' => '',
+                'before_after_image' => '',
+                'qr_image' => '',
+                'dashboard_image' => '',
+                'chef_image' => '',
+                'metrics' => [],
+                'testimonial' => [],
+                'timeline' => [],
+                'pricing_url' => '',
+                'register_url' => '',
+            ],
+            'template' => 'agroconecta-case-study',
+            'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+        ],
     ];
 }
 

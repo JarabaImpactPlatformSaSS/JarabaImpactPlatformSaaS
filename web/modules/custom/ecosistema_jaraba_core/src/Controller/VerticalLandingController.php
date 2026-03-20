@@ -104,13 +104,19 @@ class VerticalLandingController extends ControllerBase
       ],
       'social_proof' => [
         'testimonials' => [
-          ['quote' => $this->t('Antes vendia solo en el mercado del pueblo. Ahora envio a toda Espana con MRW y facturo 3x mas. El tracking da confianza al cliente.'), 'author' => 'Antonio', 'role' => $this->t('olivarero en Jaen')],
-          ['quote' => $this->t('La IA me escribio las descripciones y me sugirio precios competitivos. En una tarde tenia 20 productos online con trazabilidad QR.'), 'author' => 'Maria', 'role' => $this->t('quesera en Extremadura')],
+          ['quote' => $this->t('Llevamos 60 años vendiendo a granel a 2 €/litro. Ahora vendemos directamente a 17 €/litro. Y el cliente puede ver desde su móvil que este aceite viene de nuestros olivos.'), 'author' => 'Antonio Morales', 'role' => $this->t('presidente, Cooperativa Sierra de Cazorla (Jaén)')],
+          ['quote' => $this->t('La IA me escribió las descripciones y me sugirió precios competitivos. En una tarde tenía 20 productos online con trazabilidad QR.'), 'author' => 'María', 'role' => $this->t('quesera en Extremadura')],
         ],
         'metrics' => [
-          ['value' => '3x', 'label' => $this->t('mas ingresos promedio')],
-          ['value' => '500+', 'label' => $this->t('productores conectados')],
-          ['value' => '48h', 'label' => $this->t('tiempo medio de cobro')],
+          ['value' => '+305%', 'label' => $this->t('margen por botella')],
+          ['value' => '47', 'label' => $this->t('clientes directos en 3 meses')],
+          ['value' => '0', 'label' => $this->t('intermediarios necesarios')],
+        ],
+        'case_study' => [
+          'title' => $this->t('Caso de éxito: Cooperativa Sierra de Cazorla'),
+          'subtitle' => $this->t('De vender a granel a Italia a facturar 30.000 €/mes en venta directa con un QR en cada botella'),
+          'url' => '/agroconecta/caso-de-exito/cooperativa-sierra-cazorla',
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -623,7 +629,8 @@ class VerticalLandingController extends ControllerBase
         'headline' => $this->t('Inteligencia legal con IA al alcance de todos'),
         'subheadline' => $this->t('Gestiona tu despacho, investiga jurisprudencia, presenta en LexNET y factura — todo con IA integrada, desde 0 €/mes.'),
         'icon' => ['category' => 'legal', 'name' => 'search-legal'],
-        'hero_image' => '/themes/custom/ecosistema_jaraba_theme/images/demo/lawfirm.webp',
+        'hero_image' => '/themes/custom/ecosistema_jaraba_theme/images/landing/jarabalex-hero.webp',
+        'hero_image_alt' => 'Dashboard de JarabaLex con inteligencia artificial',
         'cta' => [
           'text' => $this->t('Haz tu diagnóstico legal gratuito'),
           'url' => '/jarabalex/diagnostico-legal',

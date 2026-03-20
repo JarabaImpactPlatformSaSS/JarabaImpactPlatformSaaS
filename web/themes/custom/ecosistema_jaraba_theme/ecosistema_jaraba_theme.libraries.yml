@@ -288,6 +288,17 @@ pricing-hub:
     - ecosistema_jaraba_theme/scroll-animations
     - ecosistema_jaraba_theme/pricing-hero-particles
 
+# AgroConecta Case Study — /agroconecta/caso-de-exito/cooperativa-sierra-cazorla
+# Reutiliza los mismos estilos cs-* de JarabaLex (misma estructura 9 secciones).
+agroconecta-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
 # JarabaLex Case Study — /jarabalex/caso-de-exito/despacho-martinez
 jarabalex-case-study:
   version: 1.0.0
