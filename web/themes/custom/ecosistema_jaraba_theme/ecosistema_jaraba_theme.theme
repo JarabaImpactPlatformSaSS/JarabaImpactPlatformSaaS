@@ -1218,6 +1218,41 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
       '#maxlength' => 500,
     ];
   }
+
+  // Social proof para pricing (testimonios, logos, estadisticas).
+  $form['plg_texts']['plg_social_proof_section'] = [
+    '#type' => 'details',
+    '#title' => t('Social proof — Paginas de precios'),
+    '#description' => t('Datos de confianza que aparecen en /planes. JSON arrays. Si se dejan vacios, se usan datos del sistema de resenas o valores por defecto.'),
+    '#open' => FALSE,
+  ];
+
+  $form['plg_texts']['plg_social_proof_section']['plg_social_proof_stats'] = [
+    '#type' => 'textarea',
+    '#title' => t('Estadisticas (JSON)'),
+    '#description' => t('Formato: [{"value":"500+","label":"empresas"},{"value":"98%","label":"satisfaccion"}]'),
+    '#default_value' => $config->get('plg_social_proof_stats') ?: '',
+    '#rows' => 3,
+    '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
+  ];
+
+  $form['plg_texts']['plg_social_proof_section']['plg_social_proof_logos'] = [
+    '#type' => 'textarea',
+    '#title' => t('Logos de clientes (JSON)'),
+    '#description' => t('Formato: [{"url":"/sites/default/files/logo1.png","alt":"Empresa X"}]'),
+    '#default_value' => $config->get('plg_social_proof_logos') ?: '',
+    '#rows' => 3,
+    '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
+  ];
+
+  $form['plg_texts']['plg_social_proof_section']['plg_social_proof_testimonials'] = [
+    '#type' => 'textarea',
+    '#title' => t('Testimonios (JSON)'),
+    '#description' => t('Formato: [{"quote":"...","name":"Ana Garcia","role":"CEO","company":"ACME","avatar_url":"/path/to/photo.jpg"}]'),
+    '#default_value' => $config->get('plg_social_proof_testimonials') ?: '',
+    '#rows' => 6,
+    '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
+  ];
 }
 
 /**

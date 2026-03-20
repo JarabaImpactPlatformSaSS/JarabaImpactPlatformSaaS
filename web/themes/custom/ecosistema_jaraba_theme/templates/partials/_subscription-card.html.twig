@@ -206,6 +206,50 @@
         </svg>
         {% trans %}Gestionar suscripción{% endtrans %}
       </button>
+
+      {# === PAUSE / CANCEL OPTIONS — Retencion clase mundial === #}
+      {% if ctx.plan.status is defined and ctx.plan.status in ['active', 'trial'] %}
+        <div class="subscription-card__actions-secondary">
+          {# Pause button — PauseSubscriptionService #}
+          <button type="button"
+                  class="subscription-card__pause-btn"
+                  data-pause-trigger
+                  data-pause-url="{{ path('jaraba_billing.api.pause_subscription') }}"
+                  aria-label="{% trans %}Pausar suscripción temporalmente{% endtrans %}">
+            {{ jaraba_icon('ui', 'pause', { variant: 'duotone', size: '14px', color: 'neutral' }) }}
+            {% trans %}Pausar (1-3 meses){% endtrans %}
+          </button>
+
+          {# Cancel button — opens cancellation flow with reason survey #}
+          <button type="button"
+                  class="subscription-card__cancel-btn"
+                  data-cancel-trigger
+                  data-cancel-url="{{ path('jaraba_billing.api.cancel_subscription') }}"
+                  aria-label="{% trans %}Cancelar suscripción{% endtrans %}">
+            {% trans %}Cancelar suscripción{% endtrans %}
+          </button>
+        </div>
+      {% endif %}
+
+      {# Paused state indicator #}
+      {% if ctx.plan.status is defined and ctx.plan.status == 'paused' %}
+        <div class="subscription-card__paused-notice">
+          {{ jaraba_icon('ui', 'pause', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
+          <span>{% trans %}Suscripción pausada{% endtrans %}</span>
+          {% if ctx.plan.resume_date is defined %}
+            <span class="subscription-card__resume-date">
+              {% trans %}Se reanuda el {{ ctx.plan.resume_date }}{% endtrans %}
+            </span>
+          {% endif %}
+          <button type="button"
+                  class="subscription-card__resume-btn"
+                  data-resume-trigger
+                  data-resume-url="{{ path('jaraba_billing.api.resume_subscription') }}"
+                  aria-label="{% trans %}Reanudar suscripción ahora{% endtrans %}">
+            {% trans %}Reanudar ahora{% endtrans %}
+          </button>
+        </div>
+      {% endif %}
     </div>
   {% endif %}
 

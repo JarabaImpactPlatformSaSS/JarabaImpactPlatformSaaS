@@ -477,3 +477,13 @@ ecosistema_jaraba_theme.settings:
     promo_banner_cta:
       type: string
       label: 'CTA banner promocional'
+    # ── Social Proof Pricing ──
+    plg_social_proof_stats:
+      type: string
+      label: 'Estadisticas social proof (JSON)'
+    plg_social_proof_logos:
+      type: string
+      label: 'Logos clientes (JSON)'
+    plg_social_proof_testimonials:
+      type: string
+      label: 'Testimonios pricing (JSON)'

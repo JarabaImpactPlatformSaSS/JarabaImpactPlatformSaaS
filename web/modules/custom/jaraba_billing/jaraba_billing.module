@@ -395,6 +395,71 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
       . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
     );
   }
+
+  // === WIN-BACK CAMPAIGN — 4 email touches post-cancellation ===
+  // WinBackCampaignService sends these via mailManager->mail().
+  if (str_starts_with($key, 'winback_')) {
+    $tenantName = $params['tenant_name'] ?? $siteName;
+    $subject = $params['subject'] ?? '';
+
+    $message['subject'] = $subject !== '' ? $subject : t('Te echamos de menos en @site', ['@site' => $siteName]);
+
+    switch ($key) {
+      case 'winback_welcome_back_7d':
+        $message['body'][] = \Drupal\Core\Render\Markup::create(
+          "<p $pStyle>" . t('Hola:') . '</p>'
+          . "<p $pStyle>" . t('Hace una semana que cancelaste tu suscripción de @tenant. Queremos que sepas que tu cuenta sigue activa y tus datos están seguros.', [
+            '@tenant' => $tenantName,
+          ]) . '</p>'
+          . "<p $pStyle><strong>" . t('¿Y si te damos 1 mes gratis para que lo reconsideres?') . '</strong></p>'
+          . "<p $pStyle>" . t('Solo tienes que entrar en tu panel de control y reactivar tu suscripción. Se aplicará automáticamente 1 mes sin coste.') . '</p>'
+          . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+        );
+        break;
+
+      case 'winback_feature_update_30d':
+        $message['body'][] = \Drupal\Core\Render\Markup::create(
+          "<p $pStyle>" . t('Hola:') . '</p>'
+          . "<p $pStyle>" . t('Desde que te fuiste, hemos añadido nuevas funcionalidades a @site que creemos que te interesarán:', [
+            '@site' => $siteName,
+          ]) . '</p>'
+          . "<p $pStyle>• " . t('Copiloto IA mejorado con respuestas más precisas') . '<br>'
+          . "• " . t('Nuevo sistema de comparación de planes') . '<br>'
+          . "• " . t('Pausa de suscripción (1-3 meses) si necesitas un descanso') . '</p>'
+          . "<p $pStyle>" . t('Tu cuenta de @tenant sigue esperándote con todos tus datos intactos.', [
+            '@tenant' => $tenantName,
+          ]) . '</p>'
+          . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+        );
+        break;
+
+      case 'winback_discount_60d':
+        $message['body'][] = \Drupal\Core\Render\Markup::create(
+          "<p $pStyle>" . t('Hola:') . '</p>'
+          . "<p $pStyle>" . t('Han pasado 2 meses desde tu cancelación y queremos hacerte una oferta especial:') . '</p>'
+          . "<p $pStyle><strong>" . t('50%% de descuento durante los próximos 3 meses.') . '</strong></p>'
+          . "<p $pStyle>" . t('Es nuestra forma de decirte que valoramos tu confianza. Reactiva tu suscripción de @tenant desde tu panel de control y el descuento se aplicará automáticamente.', [
+            '@tenant' => $tenantName,
+          ]) . '</p>'
+          . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+        );
+        break;
+
+      case 'winback_final_survey_90d':
+        $message['body'][] = \Drupal\Core\Render\Markup::create(
+          "<p $pStyle>" . t('Hola:') . '</p>'
+          . "<p $pStyle>" . t('Han pasado 3 meses desde que dejaste @tenant. Antes de cerrar definitivamente tu cuenta, nos gustaría saber:', [
+            '@tenant' => $tenantName,
+          ]) . '</p>'
+          . "<p $pStyle><strong>" . t('¿Encontraste lo que buscabas en otra herramienta?') . '</strong></p>'
+          . "<p $pStyle>" . t('Tu opinión nos ayuda a mejorar. Si tienes 2 minutos, nos encantaría conocer tu experiencia.') . '</p>'
+          . "<p $pStyle>" . t('Y si cambias de opinión, tu cuenta sigue disponible para reactivación.') . '</p>'
+          . "<p $pStyle>" . t('Gracias por haber sido parte de @site.', ['@site' => $siteName]) . '</p>'
+          . "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>'
+        );
+        break;
+    }
+  }
 }
 
 /**
