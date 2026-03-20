@@ -288,6 +288,16 @@ pricing-hub:
     - ecosistema_jaraba_theme/scroll-animations
     - ecosistema_jaraba_theme/pricing-hero-particles
 
+# JarabaLex Case Study — /jarabalex/caso-de-exito/despacho-martinez
+jarabalex-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
 # Contact Form — /contacto (Sprint 3 Remediation)
 contact-form:
   version: 1.0.0
