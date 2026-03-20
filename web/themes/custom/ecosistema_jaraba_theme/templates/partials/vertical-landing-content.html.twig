@@ -78,6 +78,9 @@
     vertical_key: key,
   } only %}
 
+  {# 5b. Partner Logos #}
+  {% include '@ecosistema_jaraba_theme/partials/_landing-partner-logos.html.twig' only %}
+
   {# 6. Lead Magnet #}
   {% include '@ecosistema_jaraba_theme/partials/_landing-lead-magnet.html.twig' with {
     lead_magnet: data.lead_magnet|default({}),

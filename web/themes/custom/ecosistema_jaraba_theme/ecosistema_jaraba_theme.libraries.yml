@@ -202,11 +202,13 @@ landing-sections:
       css/routes/landing.css: {}
   js:
     js/landing-sticky-cta.js: {}
+    js/landing-counters.js: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_core/icons
     - core/drupal
     - core/drupalSettings
+    - core/once
 
 # Alpine.js - Framework reactivo ligero para interactividad
 # FE-08: Versión fija con SRI hash y crossorigin

@@ -1354,3 +1354,91 @@
     }
   }
 }
+
+// =============================================
+// F3-01: PARTNER LOGOS STRIP
+// =============================================
+.landing-partners {
+  padding: 2.5rem 1rem;
+  text-align: center;
+
+  &__heading {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-text-muted, #64748b);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+    list-style: none;
+    padding: 0;
+  }
+
+  &__item {
+    display: inline-flex;
+  }
+
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    opacity: 0.45;
+    filter: grayscale(1);
+    transition: opacity 0.3s ease, filter 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+      filter: grayscale(0);
+    }
+
+    svg {
+      height: 100%;
+      width: auto;
+    }
+  }
+}
+
+// =============================================
+// F3-02: TESTIMONIAL AVATARS
+// =============================================
+.landing-testimonial__author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.landing-testimonial__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--ej-vertical-color, var(--ej-color-primary, #233d63)) 15%, transparent);
+    color: var(--ej-vertical-color, var(--ej-color-primary, #233d63));
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+}
+
+// =============================================
+// F3-03: METRIC COUNTER ANIMATION
+// =============================================
+.landing-metric__value {
+  &[data-counter-target] {
+    transition: opacity 0.3s ease;
+  }
+}

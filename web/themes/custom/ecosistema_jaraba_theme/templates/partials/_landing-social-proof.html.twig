@@ -4,8 +4,8 @@
  * Parcial reutilizable: Social Proof (testimonios + métricas de impacto).
  *
  * VARIABLES:
- * - social_proof.testimonials: Array de { quote, author, role, vertical, video_url }
- * - social_proof.metrics: Array de { value, label } (ej. "7", "Verticales")
+ * - social_proof.testimonials: Array de { quote, author, role, vertical, video_url, avatar_url }
+ * - social_proof.metrics: Array de { value, label, suffix } (ej. "7", "Verticales", "+")
  * - color: Color del vertical
  * - vertical_key: ID del vertical
  *
@@ -65,7 +65,12 @@
       <div class="landing-social-proof__metrics">
         {% for metric in metrics %}
           <div class="landing-metric">
-            <span class="landing-metric__value">{{ metric.value }}</span>
+            <span class="landing-metric__value"
+                  data-counter-target="{{ metric.value }}"
+                  {% if metric.suffix is defined %}data-counter-suffix="{{ metric.suffix }}"{% endif %}
+                  {% if metric.prefix is defined %}data-counter-prefix="{{ metric.prefix }}"{% endif %}>
+              {{ metric.value }}{{ metric.suffix|default('') }}
+            </span>
             <span class="landing-metric__label">{{ metric.label }}</span>
           </div>
         {% endfor %}
@@ -88,6 +93,14 @@
             </div>
             <p class="landing-testimonial__quote" itemprop="reviewBody">{{ testimonial.quote }}</p>
             <footer class="landing-testimonial__author">
+              {% if testimonial.avatar_url is defined and testimonial.avatar_url %}
+                <img src="{{ testimonial.avatar_url }}" alt="{{ testimonial.author }}"
+                     class="landing-testimonial__avatar" width="48" height="48" loading="lazy">
+              {% else %}
+                <span class="landing-testimonial__avatar landing-testimonial__avatar--placeholder" aria-hidden="true">
+                  {{ testimonial.author|first|upper }}
+                </span>
+              {% endif %}
               <cite itemprop="author" itemscope itemtype="https://schema.org/Person">
                 <strong itemprop="name">{{ testimonial.author }}</strong>
                 {% if testimonial.role is defined %}
