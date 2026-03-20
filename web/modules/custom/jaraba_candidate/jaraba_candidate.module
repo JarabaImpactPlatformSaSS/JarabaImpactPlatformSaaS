@@ -138,6 +138,25 @@ function jaraba_candidate_theme(): array {
       ],
       'template' => 'jobseeker-recommendations',
     ],
+    // Caso de exito: Rosa Fernandez, Malaga (storytelling conversion).
+    'empleabilidad_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'rosa_image' => '',
+        'before_after_image' => '',
+        'diagnostic_image' => '',
+        'dashboard_image' => '',
+        'interview_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'empleabilidad-case-study',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
   ];
 }
 

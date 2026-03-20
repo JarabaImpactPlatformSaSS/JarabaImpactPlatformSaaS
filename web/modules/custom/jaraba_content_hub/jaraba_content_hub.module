@@ -211,6 +211,24 @@ function jaraba_content_hub_theme(): array {
         'article_meta' => [],
       ],
     ],
+    // Caso de éxito: Bodega Montilla, Córdoba
+    'contenthub_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'luis_image' => '',
+        'before_after_image' => '',
+        'editor_image' => '',
+        'analytics_image' => '',
+        'multichannel_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'contenthub-case-study',
+    ],
   ];
 }
 
@@ -567,8 +585,8 @@ function template_preprocess_content_article(array &$variables): void {
 function jaraba_content_hub_preprocess_page(array &$variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-  // Solo procesar rutas del Content Hub frontend.
-  if (str_starts_with($route_name, 'jaraba_content_hub.')) {
+  // Solo procesar rutas del Content Hub frontend (excluir case studies).
+  if (str_starts_with($route_name, 'jaraba_content_hub.') && !str_contains($route_name, '.case_study.')) {
     // Inyectar clean_content desde el controller render array.
     if (isset($variables['page']['content'])) {
       $variables['clean_content'] = $variables['page']['content'];
@@ -610,8 +628,8 @@ function jaraba_content_hub_preprocess_page(array &$variables): void {
 function jaraba_content_hub_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-  // Rutas frontend del vertical (excluir rutas API y admin puras).
-  if (str_starts_with($route_name, 'jaraba_content_hub.') && !str_contains($route_name, '.api.')) {
+  // Rutas frontend del vertical (excluir rutas API, admin y case studies).
+  if (str_starts_with($route_name, 'jaraba_content_hub.') && !str_contains($route_name, '.api.') && !str_contains($route_name, '.case_study.')) {
     $suggestions[] = 'page__content_hub';
   }
 }

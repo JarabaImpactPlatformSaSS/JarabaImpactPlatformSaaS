@@ -94,6 +94,25 @@ function jaraba_business_tools_theme(): array {
         'user_name' => '',
       ],
     ],
+    // Caso de exito: Carlos Etxebarria, Bilbao (storytelling conversion).
+    'emprendimiento_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'carlos_image' => '',
+        'before_after_image' => '',
+        'canvas_image' => '',
+        'dashboard_image' => '',
+        'enisa_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'emprendimiento-case-study',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
   ];
 }
 

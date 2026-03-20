@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-19 | Version: 1.5.8
+# Ultima actualizacion: 2026-03-20 | Version: 1.6.1
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -9,7 +9,9 @@
 - Multi-tenancy: Group Module (soft isolation) + TenantBridgeService
 - Pagos: Stripe Connect (destination charges)
 - IA: Claude API + Gemini API con strict grounding, 11 agentes Gen 2
-- Servidor: IONOS Dedicated L-16 NVMe, 128GB RAM, AMD EPYC
+- Servidor: IONOS Dedicated AE12-128 NVMe (AMD EPYC 4465P 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04)
+- IP produccion: 82.223.204.169, SSH puerto 2222, usuario jaraba
+- Stack nativo: Nginx + PHP-FPM 8.4 (24 workers, JIT) + MariaDB 10.11 (InnoDB 16GB) + Redis 7.4 + Supervisor (5 AI workers) + Tika (Docker)
 - Dev local: Lando (.lando.yml), NO docker-compose.yml
 - URL dev: https://jaraba-saas.lndo.site/
 - Repo privado GitHub, CI: GitHub Actions (ci.yml, security-scan.yml, deploy.yml)
@@ -143,6 +145,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ICON-INTEGRITY-002: renderIcon() cascade fallback: SVG exacto → genérico categoría → placeholder invisible. NUNCA emoji chincheta. Logger warning en dev. Validación: `php scripts/validation/validate-icon-completeness.php`
 - ICON-CANVAS-INLINE-002: SVGs via `<img>` NO soportan currentColor (se interpreta como negro). Categoría `ai/` DEBE usar hex inline (#233D63, #FF8C42, #00A9A5)
 - MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
+- CASE-STUDY-PATTERN-001: Cada vertical comercial tiene landing caso de éxito (10 secciones, 6 WebP, CSS compartido jarabalex-case-study.css, precios desde controller). Módulos con str_starts_with en preprocess_page DEBEN excluir `.case_study.` routes. 9/9 cubiertos (Demo excluido). Validación: `php scripts/validation/validate-case-study-completeness.php`
 - DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
 
 ### Quiz de Recomendacion de Vertical
@@ -397,6 +400,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-plg-triggers.php` (PLG-COVERAGE-001)
 - `php scripts/validation/validate-icon-completeness.php` (ICON-COMPLETENESS-001)
 - `php scripts/validation/validate-marketing-truth.php` (MARKETING-TRUTH-001)
+- `php scripts/validation/validate-case-study-completeness.php` (CASE-STUDY-COMPLETENESS-001)
 - `php scripts/validation/validate-hook-theme-completeness.php` (HOOK-THEME-COMPLETENESS-001)
 - `php scripts/validation/validate-duplicate-hooks.php` (DUPLICATE-HOOK-001)
 - `php scripts/validation/validate-scss-variables.php` (SCSS-VARIABLE-EXIST-001)

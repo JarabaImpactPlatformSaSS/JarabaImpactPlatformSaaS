@@ -1,3 +1,13 @@
+# --- Case Study: Bodega Montilla, Córdoba ---
+
+jaraba_content_hub.case_study.bodega_montilla:
+  path: '/content-hub/caso-de-exito/bodega-montilla-cordoba'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ContentHubCaseStudyController::caseStudy'
+    _title: 'Caso de éxito: Bodega Montilla — Content Hub'
+  requirements:
+    _permission: 'access content'
+
 # Settings form
 jaraba_content_hub.settings:
   path: '/admin/config/content/content-hub'

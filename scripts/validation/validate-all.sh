@@ -374,6 +374,24 @@ if [ "$MODE" = "full" ]; then
   run_check "MARKETING-TRUTH-001" "Marketing claims vs billing reality" \
     php "$SCRIPT_DIR/validate-marketing-truth.php"
 
+  run_check "CASE-STUDY-COMPLETENESS-001" "Case study landing completeness (9 verticals)" \
+    php "$SCRIPT_DIR/validate-case-study-completeness.php"
+
+  run_check "PREPROCESS-ISOLATION-001" "Preprocess hooks exclude .case_study. routes" \
+    php "$SCRIPT_DIR/validate-preprocess-isolation.php"
+
+  run_check "VERTICAL-CROSS-LINK-001" "Case study cross-links in VerticalLandingController" \
+    php "$SCRIPT_DIR/validate-vertical-cross-links.php"
+
+  run_check "DOC-VERSION-DRIFT-001" "Master docs version coherence" \
+    php "$SCRIPT_DIR/validate-doc-version-drift.php"
+
+  warn_check "HOOK-REQUIREMENTS-GAP-001" "Modules with hook_requirements (target 95%)" \
+    php "$SCRIPT_DIR/validate-hook-requirements-gap.php"
+
+  warn_check "PRICING-CASE-STUDY-COHERENCE-001" "Case study pricing vs controller structure" \
+    php "$SCRIPT_DIR/validate-pricing-case-study-coherence.php"
+
   run_check "TWIG-INCLUDE-VARS-001" "Twig include with only passes required variables" \
     php "$SCRIPT_DIR/validate-twig-include-vars.php"
 

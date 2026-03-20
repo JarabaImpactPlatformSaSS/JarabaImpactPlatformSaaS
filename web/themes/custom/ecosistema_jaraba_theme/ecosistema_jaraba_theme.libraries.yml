@@ -299,6 +299,76 @@ agroconecta-case-study:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations
 
+# Emprendimiento Case Study — /emprendimiento/caso-de-exito/carlos-etxebarria-bilbao
+emprendimiento-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Empleabilidad Case Study — /empleabilidad/caso-de-exito/rosa-fernandez-malaga
+empleabilidad-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# ComercioConecta Case Study — /comercioconecta/caso-de-exito/boutique-la-mariposa
+comercioconecta-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Andalucía EI Case Study — /andalucia-ei/caso-de-exito/diputacion-jaen
+andalucia-ei-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Content Hub Case Study — /content-hub/caso-de-exito/bodega-montilla-cordoba
+contenthub-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# ServiciosConecta Case Study — /serviciosconecta/caso-de-exito/carmen-navarro-madrid
+serviciosconecta-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Formación Case Study — /formacion/caso-de-exito/maria-lopez-madrid
+formacion-case-study:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/jarabalex-case-study.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
 # JarabaLex Case Study — /jarabalex/caso-de-exito/despacho-martinez
 jarabalex-case-study:
   version: 1.0.0

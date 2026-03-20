@@ -145,6 +145,24 @@ function jaraba_lms_theme(): array {
       ],
       'template' => 'course-detail',
     ],
+    // Caso de éxito: María López, Madrid
+    'formacion_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'maria_image' => '',
+        'before_after_image' => '',
+        'course_builder_image' => '',
+        'certificate_image' => '',
+        'dashboard_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'formacion-case-study',
+    ],
   ];
 }
 

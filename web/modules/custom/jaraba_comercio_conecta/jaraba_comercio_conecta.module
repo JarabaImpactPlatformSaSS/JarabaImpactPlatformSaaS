@@ -221,6 +221,25 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-import',
     ],
+    // Caso de exito: Boutique La Mariposa (storytelling conversion).
+    'comercioconecta_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'carmen_image' => '',
+        'before_after_image' => '',
+        'qr_image' => '',
+        'dashboard_image' => '',
+        'influencer_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'comercioconecta-case-study',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
   ];
 }
 
@@ -575,7 +594,8 @@ function jaraba_comercio_conecta_preprocess_html(array &$variables): void {
 function jaraba_comercio_conecta_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-  if (str_starts_with($route_name, 'jaraba_comercio_conecta.')) {
+  // Case study usa template de pagina por defecto (zero-region via #theme).
+  if (str_starts_with($route_name, 'jaraba_comercio_conecta.') && !str_contains($route_name, '.case_study.')) {
     $suggestions[] = 'page__comercio_marketplace';
   }
 }
@@ -593,7 +613,7 @@ function jaraba_comercio_conecta_theme_suggestions_page_alter(array &$suggestion
 function jaraba_comercio_conecta_preprocess_page(array &$variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-  if (!str_starts_with($route_name, 'jaraba_comercio_conecta.')) {
+  if (!str_starts_with($route_name, 'jaraba_comercio_conecta.') || str_contains($route_name, '.case_study.')) {
     return;
   }
 

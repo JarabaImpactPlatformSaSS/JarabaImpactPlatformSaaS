@@ -1,6 +1,16 @@
 # Rutas del módulo Andalucía +ei
 # CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
 
+# --- Case Study: Diputación de Jaén ---
+
+jaraba_andalucia_ei.case_study.diputacion_jaen:
+  path: '/andalucia-ei/caso-de-exito/diputacion-jaen'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiCaseStudyController::caseStudy'
+    _title: 'Caso de éxito: Diputación de Jaén — Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
 # === COLECCIÓN DE PARTICIPANTES ===
 entity.programa_participante_ei.collection:
   path: '/admin/content/andalucia-ei'

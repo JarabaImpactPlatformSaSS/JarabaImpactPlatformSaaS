@@ -311,6 +311,23 @@ function jaraba_andalucia_ei_theme(): array {
     'material_didactico_ei' => [
       'render element' => 'elements',
     ],
+    // Caso de éxito: Diputación de Jaén
+    'andalucia_ei_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'ana_image' => '',
+        'before_after_image' => '',
+        'dashboard_image' => '',
+        'mentoring_image' => '',
+        'report_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'andalucia-ei-case-study',
+    ],
   ];
 }
 

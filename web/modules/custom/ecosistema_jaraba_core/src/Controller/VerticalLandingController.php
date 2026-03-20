@@ -228,6 +228,12 @@ class VerticalLandingController extends ControllerBase
           ['value' => '40%', 'label' => $this->t('aumento de ventas promedio')],
           ['value' => '< 3%', 'label' => $this->t('carritos abandonados recuperados')],
         ],
+        'case_study' => [
+          'title' => $this->t('Caso de éxito: Boutique La Mariposa'),
+          'subtitle' => $this->t('+47% de facturación con un QR en el escaparate. De 68 a 157 clientas en 3 meses'),
+          'url' => '/comercioconecta/caso-de-exito/boutique-la-mariposa',
+          'cta_text' => $this->t('Leer la historia completa'),
+        ],
       ],
       'lead_magnet' => [
         'title' => $this->t('Auditoría SEO Local Gratuita'),
@@ -333,6 +339,11 @@ class VerticalLandingController extends ControllerBase
           ['value' => '95%', 'label' => $this->t('satisfacción de clientes')],
           ['value' => '60%', 'label' => $this->t('más reservas con agenda online')],
           ['value' => '< 5%', 'label' => $this->t('tasa de no-shows con recordatorios')],
+        ],
+        'case_study' => [
+          'title' => $this->t('Carmen automatizó su clínica en 90 días'),
+          'url' => '/serviciosconecta/caso-de-exito/carmen-navarro-madrid',
+          'cta' => $this->t('Leer caso de éxito'),
         ],
       ],
       'lead_magnet' => [
@@ -446,6 +457,12 @@ class VerticalLandingController extends ControllerBase
           ['value' => '3 sem.', 'label' => $this->t('promedio para encontrar trabajo')],
           ['value' => '6', 'label' => $this->t('modos IA del copilot')],
           ['value' => '4', 'label' => $this->t('plantillas CV profesional')],
+        ],
+        'case_study' => [
+          'title' => $this->t('Caso de éxito: Rosa Fernández, 52 años'),
+          'subtitle' => $this->t('De 87 CVs sin respuesta a contratada en 21 días. Un diagnóstico de 3 minutos le cambió la vida'),
+          'url' => '/empleabilidad/caso-de-exito/rosa-fernandez-malaga',
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -562,6 +579,12 @@ class VerticalLandingController extends ControllerBase
           ['value' => '€2.3M', 'label' => $this->t('financiación conseguida')],
           ['value' => '15', 'label' => $this->t('insignias digitales')],
           ['value' => '<60d', 'label' => $this->t('tiempo medio a MVP')],
+        ],
+        'case_study' => [
+          'title' => $this->t('Caso de éxito: Carlos Etxebarria, Bilbao'),
+          'subtitle' => $this->t('De 2 años de parálisis a un MVP con 5 pilotos y 47.000 € ENISA en 60 días'),
+          'url' => '/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao',
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -1019,6 +1042,11 @@ class VerticalLandingController extends ControllerBase
           ['value' => '100', 'suffix' => 'M€+', 'label' => $this->t('Fondos europeos gestionados')],
           ['value' => '6', 'suffix' => '', 'label' => $this->t('ODS alineados')],
         ],
+        'case_study' => [
+          'title' => $this->t('La Diputación de Jaén gestiona 180 emprendedores con IA'),
+          'url' => '/andalucia-ei/caso-de-exito/diputacion-jaen',
+          'cta' => $this->t('Leer caso de éxito'),
+        ],
       ],
       'lead_magnet' => [
         'title' => $this->t('Guía: Cómo digitalizar tu servicio de desarrollo local'),
@@ -1105,6 +1133,11 @@ class VerticalLandingController extends ControllerBase
           ['value' => '3.2x', 'label' => $this->t('engagement vs LMS tradicional')],
           ['value' => '15min', 'label' => $this->t('crear un curso básico')],
           ['value' => '12', 'label' => $this->t('funcionalidades LMS integradas')],
+        ],
+        'case_study' => [
+          'title' => $this->t('María pasó de 12 alumnos a 340 en 4 meses'),
+          'url' => '/formacion/caso-de-exito/maria-lopez-madrid',
+          'cta' => $this->t('Leer caso de éxito'),
         ],
       ],
       'lead_magnet' => [

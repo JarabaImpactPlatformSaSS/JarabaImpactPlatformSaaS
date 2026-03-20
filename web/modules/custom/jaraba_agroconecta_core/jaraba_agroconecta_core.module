@@ -672,10 +672,10 @@ function jaraba_agroconecta_core_preprocess_page(array &$variables): void
 {
     $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-    // Solo procesar rutas del vertical AgroConecta.
-    if (str_starts_with($route_name, 'jaraba_agroconecta_core.') ||
+    // Solo procesar rutas del vertical AgroConecta (excluir case studies).
+    if ((str_starts_with($route_name, 'jaraba_agroconecta_core.') ||
         str_starts_with($route_name, 'jaraba_agroconecta.') ||
-        $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
+        $route_name === 'ecosistema_jaraba_core.landing.agroconecta') && !str_contains($route_name, '.case_study.')) {
         // Inyectar clean_content desde el controller render array.
         if (isset($variables['page']['content'])) {
             $variables['clean_content'] = $variables['page']['content'];
@@ -705,7 +705,7 @@ function jaraba_agroconecta_core_theme_suggestions_page_alter(array &$suggestion
     $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
     // Rutas frontend del vertical (excluir rutas API).
-    if (((str_starts_with($route_name, 'jaraba_agroconecta_core.') || str_starts_with($route_name, 'jaraba_agroconecta.')) && !str_contains($route_name, '.api.')) ||
+    if (((str_starts_with($route_name, 'jaraba_agroconecta_core.') || str_starts_with($route_name, 'jaraba_agroconecta.')) && !str_contains($route_name, '.api.') && !str_contains($route_name, '.case_study.')) ||
         $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
         $suggestions[] = 'page__agroconecta';
     }

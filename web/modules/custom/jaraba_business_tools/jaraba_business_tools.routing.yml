@@ -432,3 +432,14 @@ entity.canvas_version.settings:
   requirements:
     _permission: 'administer site configuration'
 
+
+# Caso de exito: Carlos Etxebarria, Bilbao (storytelling de conversion).
+jaraba_business_tools.case_study.carlos_etxebarria:
+  path: '/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao'
+  defaults:
+    _controller: '\Drupal\jaraba_business_tools\Controller\EmprendimientoCaseStudyController::caseStudy'
+    _title: 'Caso de exito: Carlos Etxebarria, Bilbao'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE

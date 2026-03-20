@@ -119,6 +119,24 @@ function jaraba_servicios_conecta_theme(): array {
       ],
       'template' => 'servicios-booking-form',
     ],
+    // Caso de éxito: Carmen Navarro, Madrid
+    'serviciosconecta_case_study' => [
+      'variables' => [
+        'hero_image' => '',
+        'carmen_image' => '',
+        'before_after_image' => '',
+        'qr_image' => '',
+        'dashboard_image' => '',
+        'review_image' => '',
+        'metrics' => [],
+        'testimonial' => [],
+        'timeline' => [],
+        'pricing' => [],
+        'pricing_url' => '',
+        'register_url' => '',
+      ],
+      'template' => 'serviciosconecta-case-study',
+    ],
   ];
 }
 
@@ -162,8 +180,8 @@ function jaraba_servicios_conecta_preprocess_html(array &$variables): void {
 function jaraba_servicios_conecta_preprocess_page(array &$variables): void {
   $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
-  // Solo actuar en rutas de ServiciosConecta.
-  if (!str_starts_with($route_name, 'jaraba_servicios_conecta.')) {
+  // Solo actuar en rutas de ServiciosConecta (excluir case studies).
+  if (!str_starts_with($route_name, 'jaraba_servicios_conecta.') || str_contains($route_name, '.case_study.')) {
     return;
   }
 
