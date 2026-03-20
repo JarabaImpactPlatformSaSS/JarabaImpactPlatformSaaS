@@ -255,21 +255,22 @@
         box-shadow: 0 0 30px color-mix(in srgb, var(--ej-color-verde-innovacion, #00A9A5) 15%, transparent);
     }
 
-    // ── Badge ──
+    // ── Badge — posicion estatica dentro del flow de la card ──
+    // SCSS-COMPONENT-BUILD-001: NO usar position:absolute+top:-14px porque
+    // .pricing-wrapper tiene overflow:hidden para border-radius.
     &__badge {
-        position: absolute;
-        top: -14px;
-        left: 50%;
-        transform: translateX(-50%);
+        display: inline-block;
+        align-self: center;
+        margin: -0.25rem auto 0.75rem;
         background: linear-gradient(135deg,
                 var(--ej-color-naranja-impulso, #FF8C42),
                 var(--ej-color-naranja-oscuro, #E67332));
         color: var(--ej-color-text-inverse, #fff);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
-        padding: 0.35rem 1.25rem;
+        padding: 0.4rem 1.25rem;
         border-radius: 100px;
         white-space: nowrap;
     }
