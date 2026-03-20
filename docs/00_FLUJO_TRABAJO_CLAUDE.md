@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-20
-**Version:** 104.0.0 (TWIG-SYNTAX-LINT-001 Twig Static Linter + Multi-tenant 500 Fix + aprendizaje #204 + regla de oro #142)
+**Version:** 106.0.0 (PRICING-4TIER-001 + SCSS-COMPONENT-BUILD-001 + build:components en npm pipeline + features acumulativas + aprendizaje #206 + regla de oro #144)
 
 ---
 ## 1. Inicio de Sesion

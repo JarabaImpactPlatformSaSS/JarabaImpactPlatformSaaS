@@ -167,8 +167,38 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Inyectar en preprocess: `$variables['ped_pricing']` via `ecosistema_jaraba_core.metasite_pricing`
 - En Twig: `{{ ped_pricing.{vertical}.professional_price|default(fallback) }}`
 - Competidores (Aranzadi, vLex) son excepcion: referencia externa no controlable
+- Textos marketing (FAQs, propuestas de valor, tax disclaimer) DEBEN ser configurables desde Theme Settings. Fallbacks hardcoded solo para instalaciones frescas
 - Validacion: `php scripts/validation/validate-no-hardcoded-prices.php` + post-edit-lint hook
 - Admin: `/admin/structure/saas-plan`
+
+### Modelo de Pricing 4 Tiers (PRICING-4TIER-001)
+- 4 SaasPlanTier ConfigEntities: free (weight=-10), starter (weight=0), professional (weight=10), enterprise (weight=20)
+- El alias 'free' NO es parte de starter — es un tier independiente
+- TODA vertical comercial DEBE tener SaasPlan ContentEntity para cada tier
+- Validacion: `php scripts/validation/validate-pricing-tiers.php`
+
+### Features Acumulativas (PRICING-FEATURES-ACCUMULATE-001)
+- Las features de pricing se ACUMULAN entre tiers: Free < Starter < Professional < Enterprise
+- MetaSitePricingService::getPricingPreview() combina: SaasPlan features (base) + SaasPlanFeatures config (avanzadas) + herencia del tier anterior
+- Fuente unica: SaasPlanFeatures ConfigEntity para TODOS los tiers (incluyendo {vertical}_free)
+- Si falta SaasPlanFeatures para un tier, se usa _default_{tier} como fallback
+
+### Coherencia Addon Pricing (ADDON-PRICING-001)
+- Precio addon DEBE ser <= precio Starter del vertical correspondiente
+- Regla orientativa: addon_price ≈ 60% del Starter price
+- Un addon mas caro que el Starter crea incentivo perverso
+- Validacion: `php scripts/validation/validate-pricing-tiers.php` CHECK 6
+
+### Descuento Anual (ANNUAL-DISCOUNT-001)
+- price_yearly DEBE ser price_monthly x 12 x 0.80 (descuento 20%, "2 meses gratis")
+- Tolerancia: ± 2 EUR por redondeo
+- Badge dinamico en pricing-page.html.twig (calculado desde tiers reales, NO hardcoded)
+- Validacion: `php scripts/validation/validate-pricing-tiers.php` CHECK 3
+
+### Compilacion CSS Componentes (SCSS-COMPONENT-BUILD-001)
+- TODO CSS cargado como library separada (css/components/*.css, css/routes/*.css) DEBE estar incluido en `npm run build` del tema
+- `build:components` en package.json compila pricing-page.css + pricing-hub.css
+- Si un CSS de componente no esta en el pipeline de build, los cambios SCSS no se reflejan y el navegador sirve estilos obsoletos
 
 ## FRONTEND — ZERO REGION PATTERN
 
@@ -286,12 +316,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v152.0.0
-- ARQUITECTURA: v139.0.0
-- INDICE: v180.0.0
-- FLUJO: v104.0.0
-- Ultimo aprendizaje: #204
-- Ultima golden rule: #142
+- DIRECTRICES: v154.0.0
+- ARQUITECTURA: v141.0.0
+- INDICE: v182.0.0
+- FLUJO: v106.0.0
+- Ultimo aprendizaje: #206
+- Ultima golden rule: #144
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -378,12 +408,15 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-csp-completeness.php` (CSP-DOMAIN-COMPLETENESS-001) [warn]
 - `php scripts/validation/validate-hook-requirements-coverage.php` (HOOK-REQUIREMENTS-COVERAGE-001) [warn]
 - `php scripts/validation/validate-validator-coverage.php` (VALIDATOR-COVERAGE-001) — meta-safeguard
+- `php scripts/validation/validate-pricing-tiers.php` (PRICING-TIER-PARITY-001 + PRICING-4TIER-001 + ANNUAL-DISCOUNT-001)
+- `php scripts/validation/validate-schema-org-pricing.php` (SCHEMA-PRICING-001)
+- `php scripts/validation/validate-pricing-coherence.php` (PRICING-COHERENCE-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (67 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (72 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 67 scripts validacion (scripts/validation/) | On demand, CI | 68 checks (59 run + 9 warn) |
+| 1 | 72 scripts validacion (scripts/validation/) | On demand, CI | 78 checks (run + warn) |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 9 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/libraries.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
