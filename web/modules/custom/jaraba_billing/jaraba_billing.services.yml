@@ -282,3 +282,27 @@ services:
       - '@datetime.time'
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # ===========================================
+  # PAUSE + WIN-BACK — Retención clase mundial (Fase 4)
+  # ===========================================
+
+  # Pausa de suscripción (1-3 meses) — salva 15-25% cancelaciones.
+  # Stripe pause_collection nativo + State API para tracking.
+  jaraba_billing.pause_subscription:
+    class: Drupal\jaraba_billing\Service\PauseSubscriptionService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.channel.jaraba_billing'
+      - '@?jaraba_billing.stripe_subscription'
+
+  # Win-back email campaign (4 touches en 90 días).
+  # Recupera 8-15% churned users. Patrón QUIZ-FOLLOWUP-DRIP-001.
+  jaraba_billing.winback_campaign:
+    class: Drupal\jaraba_billing\Service\WinBackCampaignService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@state'
+      - '@logger.channel.jaraba_billing'

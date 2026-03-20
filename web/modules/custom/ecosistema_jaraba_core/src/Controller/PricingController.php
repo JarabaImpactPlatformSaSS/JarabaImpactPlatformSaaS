@@ -360,6 +360,7 @@ class PricingController extends ControllerBase
             '#page_title' => $this->t('Elige tu vertical y encuentra el plan perfecto'),
             '#page_subtitle' => $this->t('7 soluciones verticalizadas. Sin permanencia. Cancela cuando quieras.'),
             '#guarantee_text' => $this->getPlgGuaranteeText(),
+            '#tax_disclaimer' => $this->getPlgTaxDisclaimer(),
             '#faq_items' => $this->getPricingFaq(),
             '#attached' => [
                 'library' => [
@@ -415,6 +416,7 @@ class PricingController extends ControllerBase
             '#page_title' => $this->t('Planes @vertical', ['@vertical' => $verticalLabel]),
             '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. 14 días de prueba gratis en todos los planes.'),
             '#guarantee_text' => $this->getPlgGuaranteeText(),
+            '#tax_disclaimer' => $this->getPlgTaxDisclaimer(),
             '#faq_items' => $this->getVerticalPricingFaq($vertical_key),
             '#attached' => [
                 'library' => [
@@ -566,12 +568,59 @@ class PricingController extends ControllerBase
      * @return array
      *   Array of FAQ items with 'question' and 'answer' keys.
      */
+    /**
+     * Gets the tax disclaimer text from Theme Settings.
+     *
+     * NO-HARDCODE-PRICE-001: Configurable from Appearance > Ecosistema Jaraba
+     * Theme > PLG / Textos de conversión > Aviso fiscal.
+     */
+    protected function getPlgTaxDisclaimer(): string
+    {
+        try {
+            // @phpstan-ignore-next-line theme_get_setting deprecated in 11.3, keep for compat.
+            $setting = theme_get_setting('plg_tax_disclaimer', 'ecosistema_jaraba_theme');
+            if (is_string($setting) && $setting !== '') {
+                return $setting;
+            }
+        }
+        catch (\Throwable) {
+            // Theme settings unavailable.
+        }
+        return (string) $this->t('Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21%% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).');
+    }
+
+    /**
+     * Returns pricing FAQ items.
+     *
+     * NO-HARDCODE-PRICE-001: Reads from Theme Settings first (plg_pricing_faq
+     * JSON field). Falls back to hardcoded defaults only if Theme Settings
+     * is empty or invalid JSON.
+     *
+     * @return array
+     *   Array of FAQ items with 'question' and 'answer' keys.
+     */
     protected function getPricingFaq(): array
     {
+        // Try Theme Settings first (configurable from admin UI).
+        try {
+            // @phpstan-ignore-next-line theme_get_setting deprecated in 11.3, keep for compat.
+            $jsonFaq = theme_get_setting('plg_pricing_faq', 'ecosistema_jaraba_theme');
+            if (is_string($jsonFaq) && $jsonFaq !== '') {
+                $parsed = json_decode($jsonFaq, TRUE);
+                if (is_array($parsed) && $parsed !== [] && isset($parsed[0]['question'])) {
+                    return $parsed;
+                }
+            }
+        }
+        catch (\Throwable) {
+            // Theme settings unavailable.
+        }
+
+        // Fallback: hardcoded defaults (only used if no UI config).
         return [
             [
                 'question' => $this->t('¿Puedo empezar gratis?'),
-                'answer' => $this->t('Sí. Todos los planes incluyen 14 días de prueba gratis. Regístrate, elige tu plan y pruébalo sin coste. Si no te convence, cancela antes de los 14 días y no se te cobrará nada.'),
+                'answer' => $this->t('Sí. Todos los verticales incluyen un plan gratuito para que explores la plataforma sin compromiso. Los planes de pago incluyen 14 días de prueba gratis.'),
             ],
             [
                 'question' => $this->t('¿Puedo cambiar de plan en cualquier momento?'),
@@ -579,15 +628,15 @@ class PricingController extends ControllerBase
             ],
             [
                 'question' => $this->t('¿Qué métodos de pago aceptáis?'),
-                'answer' => $this->t('Aceptamos tarjetas de crédito/débito (Visa, Mastercard, AMEX) y SEPA (domiciliación bancaria) a través de Stripe, nuestro procesador de pagos seguro.'),
+                'answer' => $this->t('Aceptamos tarjetas de crédito/débito (Visa, Mastercard, AMEX), SEPA (domiciliación bancaria), Apple Pay, Google Pay y Bizum.'),
             ],
             [
                 'question' => $this->t('¿Hay permanencia o compromiso?'),
-                'answer' => $this->t('No. Puedes cancelar cuando quieras. Si cancelas, mantienes acceso hasta el final del período facturado.'),
+                'answer' => $this->t('No. Puedes cancelar o pausar tu suscripción cuando quieras. Si cancelas, mantienes acceso hasta el final del período facturado.'),
             ],
             [
                 'question' => $this->t('¿Ofrecéis descuento para instituciones o grandes organizaciones?'),
-                'answer' => $this->t('Sí. El plan Empresa incluye precios personalizados según volumen. Contacta con nosotros para recibir una propuesta a medida.'),
+                'answer' => $this->t('Sí. El plan Enterprise incluye precios personalizados según volumen. Contacta con nosotros para recibir una propuesta a medida.'),
             ],
             [
                 'question' => $this->t('¿Mis datos están seguros?'),
@@ -595,19 +644,19 @@ class PricingController extends ControllerBase
             ],
             [
                 'question' => $this->t('¿Puedo exportar mis datos?'),
-                'answer' => $this->t('Sí. Desde tu panel de control puedes exportar tus datos en formato CSV y JSON en cualquier momento. El plan Empresa incluye además acceso completo a la API REST.'),
+                'answer' => $this->t('Sí. Desde tu panel de control puedes exportar tus datos en formato CSV y JSON en cualquier momento. Los planes Professional y Enterprise incluyen acceso completo a la API REST.'),
             ],
             [
                 'question' => $this->t('¿Qué soporte técnico incluye cada plan?'),
-                'answer' => $this->t('Starter: documentación y comunidad. Profesional: email y chat con respuesta en 24h. Empresa: gestor dedicado, soporte telefónico y SLA garantizado.'),
+                'answer' => $this->t('Free: documentación. Starter: email. Professional: email y chat con respuesta en 24h. Enterprise: gestor dedicado, soporte telefónico y SLA garantizado.'),
             ],
             [
                 'question' => $this->t('¿Cómo funciona la facturación?'),
-                'answer' => $this->t('Procesamos los pagos de forma segura a través de Stripe. Recibirás facturas automáticas en PDF cada mes o año según tu ciclo. Aceptamos tarjeta de crédito/débito y SEPA.'),
+                'answer' => $this->t('Procesamos los pagos de forma segura a través de Stripe. Recibirás facturas automáticas en PDF cada mes o año según tu ciclo.'),
             ],
             [
-                'question' => $this->t('¿Puedo probar el plan Profesional gratis?'),
-                'answer' => $this->t('Sí. Todos los planes, incluido el Profesional, ofrecen 14 días de prueba gratis. Introduce tu método de pago al suscribirte; no se realizará ningún cargo hasta que finalice el período de prueba. Puedes cancelar en cualquier momento.'),
+                'question' => $this->t('¿Puedo probar el plan Professional gratis?'),
+                'answer' => $this->t('Sí. Todos los planes de pago ofrecen 14 días de prueba gratis. Puedes cancelar en cualquier momento antes de que termine la prueba sin ningún cargo.'),
             ],
         ];
     }

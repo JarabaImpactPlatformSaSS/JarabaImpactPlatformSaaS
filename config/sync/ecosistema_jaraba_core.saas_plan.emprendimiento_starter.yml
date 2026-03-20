@@ -1,8 +1,8 @@
 langcode: es
 status: true
 name: 'Emprendimiento Starter'
-price_monthly: '39.00'
-price_yearly: '390.00'
+price_monthly: '19.00'
+price_yearly: '182.00'
 features:
   - calculadora_madurez
   - bmc_ia

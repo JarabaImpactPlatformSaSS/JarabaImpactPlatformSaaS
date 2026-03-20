@@ -3530,3 +3530,159 @@ function ecosistema_jaraba_core_update_9042(): string {
     return 'Error: ' . $e->getMessage();
   }
 }
+
+/**
+ * PRICING-4TIER-001: Re-install SaasPlanTier to support 4-tier model (Free).
+ *
+ * Creates the 'free' SaasPlanTier ConfigEntity (weight=-10) and removes the
+ * 'free' alias from the 'starter' tier. This makes the Free plan visible on
+ * pricing pages — previously 4 SaasPlan entities existed in DB but only 3
+ * SaasPlanTier entities were iterated by MetaSitePricingService.
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService::getPricingPreview()
+ */
+function ecosistema_jaraba_core_update_9043(): string {
+  $messages = [];
+
+  try {
+    // 1. Re-install SaasPlanTier entity type definition.
+    $edm = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('saas_plan_tier');
+    if ($entity_type) {
+      $edm->installEntityType($entity_type);
+      $messages[] = 'SaasPlanTier entity type re-installed';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'SaasPlanTier install: ' . $e->getMessage();
+  }
+
+  try {
+    // 2. Create the 'free' tier if it doesn't exist yet.
+    $storage = \Drupal::entityTypeManager()->getStorage('saas_plan_tier');
+    $freeTier = $storage->load('free');
+    if ($freeTier === NULL) {
+      $freeTier = $storage->create([
+        'id' => 'free',
+        'label' => 'Free',
+        'tier_key' => 'free',
+        'aliases' => ['free', 'gratis', 'gratuito'],
+        'stripe_price_monthly' => '',
+        'stripe_price_yearly' => '',
+        'description' => 'Plan gratuito para explorar la plataforma sin compromiso.',
+        'weight' => -10,
+      ]);
+      $freeTier->save();
+      $messages[] = 'Created SaasPlanTier "free" (weight=-10)';
+    }
+    else {
+      $messages[] = 'SaasPlanTier "free" already exists';
+    }
+
+    // 3. Remove 'free' alias from 'starter' tier.
+    $starterTier = $storage->load('starter');
+    if ($starterTier !== NULL) {
+      $aliases = $starterTier->getAliases();
+      $filtered = array_values(array_filter($aliases, static fn($a) => $a !== 'free'));
+      if (count($filtered) !== count($aliases)) {
+        $starterTier->set('aliases', $filtered);
+        $starterTier->save();
+        $messages[] = 'Removed "free" alias from starter tier';
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Tier creation error: ' . $e->getMessage();
+  }
+
+  return implode('. ', $messages) . '.';
+}
+
+/**
+ * PRICING-4TIER-001 v2: Update all SaasPlan prices + weights in DB.
+ *
+ * The config/sync YAML files are seed data for fresh installs — they do NOT
+ * update existing ContentEntities. This hook applies the pricing changes from
+ * the 2026-03-20 audit to the live database:
+ *
+ * - 8 verticals with price adjustments (Emprendimiento ↓, JarabaLex ↑, etc.)
+ * - All annual prices recalculated at 20% discount (was 17%)
+ * - All weights normalized to 0/10/20/30 pattern
+ *
+ * @see docs/analisis/2026-03-20_Auditoria_Definitiva_Pricing_Suscripciones_Modelo_Negocio_SaaS_v1.md
+ */
+function ecosistema_jaraba_core_update_9044(): string {
+  // Price map: entity_id => [monthly, yearly, weight (optional)].
+  // Annual = monthly × 12 × 0.80 (20% discount, ANNUAL-DISCOUNT-001).
+  $priceUpdates = [
+    // Empleabilidad.
+    5  => ['monthly' => 19.00,  'yearly' => 182.00],
+    6  => ['yearly' => 758.00],
+    7  => ['monthly' => 199.00, 'yearly' => 1910.00],
+    // Emprendimiento.
+    8  => ['monthly' => 19.00,  'yearly' => 182.00],
+    9  => ['monthly' => 49.00,  'yearly' => 470.00],
+    10 => ['monthly' => 99.00,  'yearly' => 950.00],
+    // ComercioConecta.
+    11 => ['monthly' => 29.00,  'yearly' => 278.00],
+    12 => ['monthly' => 79.00,  'yearly' => 758.00, 'weight' => 20],
+    13 => ['yearly' => 1910.00, 'weight' => 30],
+    // AgroConecta.
+    14 => ['monthly' => 39.00,  'yearly' => 374.00],
+    15 => ['yearly' => 1238.00, 'weight' => 20],
+    16 => ['yearly' => 2390.00, 'weight' => 30],
+    // ServiciosConecta.
+    17 => ['monthly' => 19.00,  'yearly' => 182.00],
+    18 => ['yearly' => 758.00, 'weight' => 20],
+    19 => ['yearly' => 1430.00, 'weight' => 30],
+    // Andalucia +ei.
+    20 => ['yearly' => 470.00],
+    21 => ['monthly' => 129.00, 'yearly' => 1238.00],
+    22 => ['yearly' => 2390.00],
+    // Formacion (existing entities with old prices).
+    23 => ['monthly' => 29.00,  'yearly' => 278.00],
+    24 => ['monthly' => 79.00,  'yearly' => 758.00],
+    25 => ['monthly' => 149.00, 'yearly' => 1430.00],
+    // JarabaLex.
+    26 => ['yearly' => 470.00],
+    27 => ['monthly' => 149.00, 'yearly' => 1430.00, 'weight' => 20],
+    28 => ['monthly' => 299.00, 'yearly' => 2870.00, 'weight' => 30],
+  ];
+
+  $storage = \Drupal::entityTypeManager()->getStorage('saas_plan');
+  $updated = 0;
+  $errors = [];
+
+  foreach ($priceUpdates as $entityId => $changes) {
+    try {
+      $plan = $storage->load($entityId);
+      if ($plan === NULL) {
+        $errors[] = "Plan ID $entityId not found";
+        continue;
+      }
+
+      if (isset($changes['monthly'])) {
+        $plan->set('price_monthly', (string) $changes['monthly']);
+      }
+      if (isset($changes['yearly'])) {
+        $plan->set('price_yearly', (string) $changes['yearly']);
+      }
+      if (isset($changes['weight'])) {
+        $plan->set('weight', $changes['weight']);
+      }
+
+      $plan->save();
+      $updated++;
+    }
+    catch (\Throwable $e) {
+      $errors[] = "Plan $entityId: " . $e->getMessage();
+    }
+  }
+
+  $msg = "Updated $updated/" . count($priceUpdates) . " plans.";
+  if (!empty($errors)) {
+    $msg .= ' Errors: ' . implode('; ', $errors);
+  }
+
+  return $msg;
+}

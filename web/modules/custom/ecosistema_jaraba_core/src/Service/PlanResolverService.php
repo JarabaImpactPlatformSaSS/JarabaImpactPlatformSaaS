@@ -156,6 +156,36 @@ class PlanResolverService {
   }
 
   /**
+   * Gets the SaasPlanTier ConfigEntity for a given tier key.
+   *
+   * Used by TenantSubscriptionService to resolve Stripe Price IDs when
+   * processing plan changes (upgrade/downgrade).
+   *
+   * @param string $vertical
+   *   Machine name of the vertical (used for logging context).
+   * @param string $tier
+   *   Canonical tier key or raw plan name (will be normalized).
+   *
+   * @return \Drupal\ecosistema_jaraba_core\Entity\SaasPlanTierInterface|null
+   *   The tier config entity, or NULL if not found.
+   */
+  public function getTierConfig(string $vertical, string $tier): ?SaasPlanTierInterface {
+    $normalized = $this->normalize($tier);
+    try {
+      $tierEntity = $this->entityTypeManager->getStorage('saas_plan_tier')->load($normalized);
+      return $tierEntity instanceof SaasPlanTierInterface ? $tierEntity : NULL;
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('PlanResolver: Cannot load SaasPlanTier "@tier" for vertical "@vertical": @error', [
+        '@tier' => $tier,
+        '@vertical' => $vertical,
+        '@error' => $e->getMessage(),
+      ]);
+      return NULL;
+    }
+  }
+
+  /**
    * Resolves tier key from a Stripe Price ID.
    *
    * Searches all SaasPlanTier entities for matching stripe_price_monthly

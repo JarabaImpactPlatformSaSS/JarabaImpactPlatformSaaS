@@ -72,7 +72,17 @@
               data-billing="yearly"
               aria-pressed="false">
         {% trans %}Anual{% endtrans %}
-        <span class="pricing-toggle__badge">-17%</span>
+        {# MARKETING-TRUTH-001: Badge dinamico calculado desde tiers reales #}
+        {% set max_savings = 0 %}
+        {% for tier in tiers %}
+          {% if tier.price_monthly > 0 and tier.price_yearly > 0 %}
+            {% set s = (((tier.price_monthly * 12 - tier.price_yearly) / (tier.price_monthly * 12)) * 100)|round(0) %}
+            {% if s > max_savings %}{% set max_savings = s %}{% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if max_savings > 0 %}
+          <span class="pricing-toggle__badge">-{{ max_savings }}%</span>
+        {% endif %}
       </button>
     </div>
   </div>
@@ -111,7 +121,7 @@
 
         {# Price display — dynamic from cascade data #}
         <div class="pricing-card__price">
-          {% if tier.tier_key == 'starter' and tier.price_monthly <= 0 %}
+          {% if tier.price_monthly is defined and tier.price_monthly <= 0 %}
             <span class="pricing-card__amount">{% trans %}Gratis{% endtrans %}</span>
             <span class="pricing-card__period">{% trans %}para siempre{% endtrans %}</span>
           {% else %}
@@ -184,7 +194,7 @@
                data-track-cta="pricing_{{ tier.tier_key }}"
                data-track-position="pricing_page"
                {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-              {% if tier.tier_key == 'starter' and tier.price_monthly == 0 %}
+              {% if tier.price_monthly is defined and tier.price_monthly <= 0 %}
                 {% trans %}Empezar gratis{% endtrans %}
               {% else %}
                 {% trans %}Empezar ahora{% endtrans %}
@@ -197,7 +207,7 @@
                data-track-cta="pricing_{{ tier.tier_key }}"
                data-track-position="pricing_page"
                {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
-              {% if tier.tier_key == 'starter' %}
+              {% if tier.price_monthly is defined and tier.price_monthly <= 0 %}
                 {% trans %}Empezar gratis{% endtrans %}
               {% else %}
                 {% trans %}Empezar ahora{% endtrans %}
@@ -214,10 +224,20 @@
 <section class="pricing-tax-disclaimer reveal-element reveal-fade-up" aria-label="{% trans %}Información fiscal{% endtrans %}">
   <div class="pricing-tax-disclaimer__container">
     <p class="pricing-tax-disclaimer__text">
-      {% trans %}Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).{% endtrans %}
+      {# NO-HARDCODE-PRICE-001: Tax disclaimer configurable desde Theme Settings (plg_tax_disclaimer) #}
+      {{ tax_disclaimer|default('Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).'|trans) }}
     </p>
   </div>
 </section>
+
+{# === SOCIAL PROOF — Logos + testimonios (configurable desde Theme Settings) === #}
+{% if social_proof_stats is not empty or social_proof_logos is not empty or social_proof_testimonials is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_pricing-social-proof.html.twig' with {
+    stats: social_proof_stats|default([]),
+    social_logos: social_proof_logos|default([]),
+    testimonials: social_proof_testimonials|default([]),
+  } only %}
+{% endif %}
 
 {# === GUARANTEE SECTION === #}
 <section class="pricing-guarantee reveal-element reveal-fade-up">
@@ -255,6 +275,11 @@
     </div>
   </section>
 {% endif %}
+
+{# === COMPARISON MATRIX — Auto-generated from tiers features === #}
+{% include '@ecosistema_jaraba_theme/partials/_pricing-comparison-matrix.html.twig' with {
+  tiers: tiers,
+} only %}
 
 {# === FINAL CTA === #}
 <section class="pricing-final-cta reveal-element reveal-fade-up">
@@ -295,16 +320,27 @@
     {% for tier in tiers %}
     {
       "@type": "Offer",
-      "name": {{ tier.label|json_encode(constant('JSON_UNESCAPED_UNICODE')) }},
+      "name": "{{ tier.label|replace({'"': '\\"'}) }}",
       "priceCurrency": "EUR",
       "price": "{{ tier.price_monthly|default(0) }}",
       "priceValidUntil": "2027-12-31",
       "availability": "https://schema.org/InStock",
       "url": "{{ url('user.register', {}, {absolute: true}) }}",
-      "description": {{ tier.description|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}
+      "description": "{{ tier.description|default('')|replace({'"': '\\"'}) }}"
     }{% if not loop.last %},{% endif %}
 
     {% endfor %}
   ]
 }
 </script>
+
+{# === STICKY CTA BAR — Mobile only, appears on scroll past pricing cards === #}
+<div class="pricing-sticky-cta" id="pricing-sticky-cta" aria-hidden="true">
+  <span class="pricing-sticky-cta__text">{% trans %}Desde 0&euro;/mes{% endtrans %}</span>
+  <a href="{{ path('user.register') }}{% if vertical_key %}?vertical={{ vertical_key }}{% endif %}"
+     class="btn btn--primary pricing-sticky-cta__btn"
+     data-track-cta="pricing_sticky_cta"
+     data-track-position="pricing_page_sticky">
+    {% trans %}Empezar gratis{% endtrans %}
+  </a>
+</div>

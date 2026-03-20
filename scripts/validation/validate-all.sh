@@ -380,8 +380,11 @@ if [ "$MODE" = "full" ]; then
   run_check "SETUP-WIZARD-DAILY-001" "Setup Wizard + Daily Actions coverage per vertical" \
     php "$SCRIPT_DIR/validate-wizard-daily-coverage.php"
 
-  warn_check "DEMO-COVERAGE-001" "Demo vertical coverage (11/11 profiles)" \
+  warn_check "DEMO-COVERAGE-001" "Demo vertical coverage (13/13 profiles)" \
     php "$SCRIPT_DIR/validate-demo-coverage.php"
+
+  run_check "DEMO-PROFILE-PERSPECTIVE-001" "Demo profiles B2B perspective" \
+    php "$SCRIPT_DIR/validate-demo-profile-perspective.php"
 
   warn_check "SVG-CURRENTCOLOR-001" "SVG currentColor usage in img tags" \
     php "$SCRIPT_DIR/validate-svg-currentcolor.php"
@@ -407,6 +410,13 @@ if [ "$MODE" = "full" ]; then
 
   warn_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements() coverage" \
     php "$SCRIPT_DIR/validate-hook-requirements-coverage.php"
+
+  # Pricing model integrity (added 2026-03-20, pricing audit v2).
+  run_check "PRICING-TIER-PARITY-001" "Pricing tier parity (4 tiers x 8 verticals)" \
+    php "$SCRIPT_DIR/validate-pricing-tiers.php"
+
+  run_check "SCHEMA-PRICING-001" "Schema.org pricing dynamic (no hardcoded EUR)" \
+    php "$SCRIPT_DIR/validate-schema-org-pricing.php"
 
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"

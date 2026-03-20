@@ -1,12 +1,12 @@
 # Plan de Implementacion: Pricing 4 Tiers + Modelo de Negocio Clase Mundial
 
 > **Tipo:** Plan de Implementacion Detallado
-> **Version:** 1.0.0
+> **Version:** 2.0.0 (alineado con auditoria v2: 8 verticales + 9 addons + 20 rutas conversion)
 > **Fecha original:** 2026-03-20
 > **Ultima actualizacion:** 2026-03-20
 > **Estado:** Aprobado para implementacion
-> **Alcance:** Correccion tier Free, ajuste precios, configurabilidad admin, features clase mundial, salvaguardas
-> **Prerequisito:** Auditoria `docs/analisis/2026-03-20_Auditoria_Definitiva_Pricing_Suscripciones_Modelo_Negocio_SaaS_v1.md`
+> **Alcance:** Correccion tier Free, ajuste precios 8 verticales + 9 addons, configurabilidad admin, features clase mundial, salvaguardas
+> **Prerequisito:** Auditoria v2.0.0 `docs/analisis/2026-03-20_Auditoria_Definitiva_Pricing_Suscripciones_Modelo_Negocio_SaaS_v1.md`
 > **Autor:** Claude Opus 4.6 (1M context)
 > **Cross-refs:** Directrices v152.0.0, Arquitectura v139.0.0, Doc 158 (Golden Rule #131)
 
@@ -22,11 +22,11 @@
    - 3.3 [Crear Plans Formacion](#33-crear-plans-formacion)
    - 3.4 [Fix catch Throwable](#34-fix-catch-throwable)
    - 3.5 [Actualizar texto hub](#35-actualizar-texto-hub)
-4. [FASE 2 — P1: Precios y Datos Dinamicos](#4-fase-2-p1-precios-y-datos-dinamicos)
-   - 4.1 [Actualizar precios Emprendimiento](#41-actualizar-precios-emprendimiento)
-   - 4.2 [Actualizar precios JarabaLex](#42-actualizar-precios-jarabalex)
+4. [FASE 2 — P1: Precios y Datos Dinamicos (8 verticales + 9 addons)](#4-fase-2-p1-precios-y-datos-dinamicos)
+   - 4.1 [Tabla maestra de cambios de precio (16 planes + 9 addons)](#41-tabla-maestra)
+   - 4.2 [Justificacion por vertical](#42-justificacion-por-vertical)
    - 4.3 [Descuento anual 17% a 20%](#43-descuento-anual)
-   - 4.4 [Normalizar weights](#44-normalizar-weights)
+   - 4.4 [Normalizar weights AgroConecta](#44-normalizar-weights)
    - 4.5 [Schema.org dinamico hub](#45-schemaorg-dinamico-hub)
    - 4.6 [Badge descuento dinamico](#46-badge-descuento-dinamico)
 5. [FASE 3 — Configurabilidad Admin](#5-fase-3-configurabilidad-admin)
@@ -60,10 +60,12 @@ Adicionalmente, ~10 elementos de marketing/UX estan hardcoded y no son configura
 
 Llevar el sistema de pricing de 6.7/10 a 9.3/10 mediante:
 1. Fix del bug de 4 tiers (Free visible en /planes)
-2. Ajuste de precios (Emprendimiento ↓, JarabaLex ↑, Formacion NEW)
-3. Configurabilidad admin total (FAQs, labels, taglines desde UI)
-4. Features de clase mundial (social proof, pause, win-back)
-5. Salvaguardas automatizadas (5 scripts nuevos)
+2. Ajuste de precios en **8 verticales** (Empleabilidad ↓/↑, Emprendimiento ↓, ComercioConecta ↓, AgroConecta ↓, JarabaLex ↑, ServiciosConecta ↓, Andalucia+ei ↑, Formacion NEW)
+3. Correccion coherencia **9 addon prices** (regla ADDON-PRICING-001: addon = ~60% Starter)
+4. Descuento anual 17% → 20% ("2 meses gratis") en TODOS los planes
+5. Configurabilidad admin total (FAQs, labels, taglines desde UI)
+6. Features de clase mundial (social proof, pause, win-back)
+7. Salvaguardas automatizadas (6 scripts nuevos incluyendo ADDON-PRICING-001)
 
 ---
 
@@ -347,45 +349,82 @@ ReverseTrialService.php tiene 6 instancias de `catch (\Exception $e)`. En PHP 8.
 
 ---
 
-## 4. FASE 2 — P1: PRECIOS Y DATOS DINAMICOS
+## 4. FASE 2 — P1: PRECIOS Y DATOS DINAMICOS (v2 — 8 verticales + 9 addons)
 
-**Estimacion:** 4-6 horas | **Prioridad:** COMPLETAR ANTES DE MERGE
+**Estimacion:** 6-8 horas | **Prioridad:** COMPLETAR ANTES DE MERGE
 
-### 4.1 Actualizar precios Emprendimiento
+### 4.1 Tabla maestra de TODOS los cambios de precio
 
-**Archivos a modificar:**
+**Planes principales (32 archivos YAML):**
 
-| Archivo | Campo | Valor actual | Valor nuevo |
-|---------|-------|-------------|-------------|
-| `saas_plan.emprendimiento_starter.yml` | price_monthly | 39.00 | 19.00 |
-| `saas_plan.emprendimiento_starter.yml` | price_yearly | 390.00 | 182.00 |
-| `saas_plan.emprendimiento_pro.yml` | price_monthly | 99.00 | 49.00 |
-| `saas_plan.emprendimiento_pro.yml` | price_yearly | 990.00 | 470.00 |
-| `saas_plan.emprendimiento_enterprise.yml` | price_monthly | 199.00 | 99.00 |
-| `saas_plan.emprendimiento_enterprise.yml` | price_yearly | 1990.00 | 950.00 |
+| Vertical | Tier | Archivo | Campo | Actual | Nuevo | Anual nuevo (×12×0.80) |
+|----------|------|---------|-------|--------|-------|----------------------|
+| Empleabilidad | Starter | empleabilidad_starter | monthly | 29.00 | **19.00** | 182.00 |
+| Empleabilidad | Enterprise | empleabilidad_enterprise | monthly | 149.00 | **199.00** | 1910.00 |
+| Emprendimiento | Starter | emprendimiento_starter | monthly | 39.00 | **19.00** | 182.00 |
+| Emprendimiento | Pro | emprendimiento_pro | monthly | 99.00 | **49.00** | 470.00 |
+| Emprendimiento | Enterprise | emprendimiento_enterprise | monthly | 199.00 | **99.00** | 950.00 |
+| ComercioConecta | Starter | comercioconecta_starter | monthly | 39.00 | **29.00** | 278.00 |
+| ComercioConecta | Pro | comercioconecta_pro | monthly | 99.00 | **79.00** | 758.00 |
+| AgroConecta | Starter | agroconecta_starter | monthly | 49.00 | **39.00** | 374.00 |
+| JarabaLex | Starter | jarabalex_starter | monthly | 49.00 | 49.00 (sin cambio) | 470.00 |
+| JarabaLex | Pro | jarabalex_pro | monthly | 99.00 | **149.00** | 1430.00 |
+| JarabaLex | Enterprise | jarabalex_enterprise | monthly | 199.00 | **299.00** | 2870.00 |
+| ServiciosConecta | Starter | serviciosconecta_starter | monthly | 29.00 | **19.00** | 182.00 |
+| Andalucia +ei | Pro | andalucia_ei_pro | monthly | 99.00 | **129.00** | 1238.00 |
+| Formacion | Starter | formacion_starter | monthly | NEW | **29.00** | 278.00 |
+| Formacion | Pro | formacion_pro | monthly | NEW | **79.00** | 758.00 |
+| Formacion | Enterprise | formacion_enterprise | monthly | NEW | **149.00** | 1430.00 |
 
-**Justificacion:** Mercado andaluz sensible al precio, WTP 10-25 EUR/mes, competencia gratuita (ChatGPT), valor estrategico como puerta del ecosistema.
+**Planes sin cambio de precio (pero SI recalcular anual al 20%):**
+Todos los demas planes existentes con precio >0 que mantienen su monthly actual pero necesitan yearly recalculado.
 
-### 4.2 Actualizar precios JarabaLex
+**Addon pricing (9 addons — regla ADDON-PRICING-001: ~60% del Starter):**
 
-| Archivo | Campo | Valor actual | Valor nuevo |
-|---------|-------|-------------|-------------|
-| `saas_plan.jarabalex_starter.yml` | price_monthly | 49.00 | 59.00 |
-| `saas_plan.jarabalex_starter.yml` | price_yearly | 490.00 | 566.00 |
-| `saas_plan.jarabalex_pro.yml` | price_monthly | 99.00 | 149.00 |
-| `saas_plan.jarabalex_pro.yml` | price_yearly | 990.00 | 1430.00 |
-| `saas_plan.jarabalex_enterprise.yml` | price_monthly | 199.00 | 299.00 |
-| `saas_plan.jarabalex_enterprise.yml` | price_yearly | 1990.00 | 2870.00 |
+| Addon | Archivo/Entity | Precio actual | Precio nuevo | Justificacion |
+|-------|---------------|-------------|-------------|---------------|
+| Empleabilidad | Addon entity update | 29.00 | **12.00** | 60% de 19€ Starter |
+| Emprendimiento | Addon entity update | 39.00 | **12.00** | 60% de 19€ Starter |
+| ComercioConecta | Addon entity update | 49.00 | **19.00** | 60% de 29€ Starter |
+| AgroConecta | Addon entity update | 49.00 | **25.00** | 60% de 39€ Starter |
+| JarabaLex | Addon entity update | 59.00 | **29.00** | 60% de 49€ Starter |
+| ServiciosConecta | Addon entity update | 39.00 | **12.00** | 60% de 19€ Starter |
+| Andalucia +ei | Addon entity update | 29.00 | 29.00 (sin cambio) | Ya <60% de 49€ |
+| Content Hub | Addon entity update | 19.00 | **12.00** | Alinear con minimo |
+| Formacion | Addon entity update | 39.00 | **19.00** | 60% de 29€ Starter |
 
-**Justificacion:** vLex 75-300 EUR/mes, Aranzadi 100-250 EUR/mes. IA legal integrada es un diferencial premium que justifica precio superior.
+### 4.2 Justificacion por vertical
+
+**Empleabilidad Starter 29→19€:** LinkedIn Premium Career 20-30€. Desempleados (target principal B2C) son extremadamente sensibles al precio. El valor real esta en B2B (RRHH 199€+ Enterprise).
+
+**Empleabilidad Enterprise 149→199€:** RRHH paga 300€+ por Bizneo/LinkedIn Recruiter. 149€ infravalora el producto para empresas.
+
+**Emprendimiento 39/99/199→19/49/99€:** WTP emprendedor andaluz 10-25€/mes. Competencia gratuita (ChatGPT). Valor estrategico como puerta del ecosistema, no como revenue directo.
+
+**ComercioConecta 39/99→29/79€:** Shopify Basic 27€, Palbin 15€. SumUp tienda gratis + 1.9%. Mercado saturado, precio debe ser competitivo.
+
+**AgroConecta 49→39€:** Agroptima Premium 29.90€. PAC 2025 obliga digitalizacion (traccion forzada). 39€ es competitivo y accesible para pequeno agricultor.
+
+**JarabaLex Pro/Enterprise 99/199→149/299€:** vLex 79€+, Aranzadi 150€+. Abogados ESTAN ACOSTUMBRADOS a pagar. IA legal integrada es premium. Starter se mantiene a 49€ para captar turno de oficio.
+
+**ServiciosConecta 29→19€:** Calendly Pro 12€, Setmore 12€. Sin efecto marketplace, debe competir en precio.
+
+**Andalucia +ei Pro 99→129€:** Export STO = alto valor. Las entidades financian con presupuesto del programa, no con bolsillo propio.
 
 ### 4.3 Descuento anual 17% → 20%
 
-Recalcular TODOS los `price_yearly` con formula: `price_monthly × 12 × 0.80` (redondeado a EUR entero).
+Formula: `price_yearly = price_monthly × 12 × 0.80` (redondeado a EUR entero)
 
-Ejemplo: Empleabilidad Starter 29€ × 12 × 0.80 = 278.40 → 278€
+Aplicar a los 32+ archivos `saas_plan.*.yml` que tienen precio >0.
 
-Aplicar a los 32 archivos `saas_plan.*.yml` que tienen precio >0.
+Mensaje marketing: "Ahorra 2 meses con el plan anual" (mas potente que "ahorra 17%").
+
+### 4.4 Normalizar weights AgroConecta
+
+Cambiar weights de 10/11/12 a 10/20/30 en:
+- `saas_plan.agroconecta_starter.yml`: weight 10 (OK)
+- `saas_plan.agroconecta_pro.yml`: weight 11 → 20
+- `saas_plan.agroconecta_enterprise.yml`: weight 12 → 30
 
 ### 4.4 Normalizar weights
 
@@ -633,6 +672,7 @@ Agregar 4 pasos al flujo de cancelacion:
 | `validate-stripe-sync.php` | SaasPlan con precio >0 tienen stripe_price_id | full |
 | `validate-schema-org-pricing.php` | Schema.org en templates usa datos dinamicos | fast |
 | `validate-annual-discount.php` | Yearly = Monthly × 12 × (1 - descuento) ± 1 EUR | fast |
+| `validate-addon-pricing.php` | Addon price <= Starter price del vertical (ADDON-PRICING-001) | fast |
 
 ### Integracion en validate-all.sh
 
@@ -655,6 +695,12 @@ DEBEN existir. El alias 'free' NO es parte de starter — es un tier independien
 price_yearly DEBE ser price_monthly × 12 × (1 - annual_discount). El descuento
 estandar es 20% ("2 meses gratis"). Tolerancia: ± 1 EUR por redondeo.
 Validacion: `php scripts/validation/validate-annual-discount.php`
+
+### ADDON-PRICING-001 (established 2026-03-20)
+El precio de un addon vertical DEBE ser <= precio del plan Starter del vertical principal.
+Regla orientativa: addon_price ≈ 60% del Starter price. Un addon mas caro que el
+Starter crea incentivo perverso (usuario prefiere comprar vertical completo vs addon).
+Validacion: `php scripts/validation/validate-addon-pricing.php`
 ```
 
 ---
@@ -690,6 +736,21 @@ Validacion: `php scripts/validation/validate-annual-discount.php`
 |---------------|------|----------|-------------|
 | Crear SaasPlanTier Free | 1.1 | plan_tier.free.yml, plan_tier.starter.yml, MetaSitePricingService.php | UPDATE-HOOK-REQUIRED-001, PRICING-4TIER-001 |
 | Fix getTierConfig() | 1.2 | PlanResolverService.php, TenantSubscriptionService.php | SERVICE-CALL-CONTRACT-001 |
+| Plans Formacion | 1.3 | saas_plan.formacion_*.yml (3 archivos) | PRICING-TIER-PARITY-001 |
+| Fix catch Throwable | 1.4 | ReverseTrialService.php (6 lineas) | UPDATE-HOOK-CATCH-001 |
+| Texto hub 4 niveles | 1.5 | pricing-hub-page.html.twig | i18n, MARKETING-TRUTH-001 |
+| Precios Empleabilidad | 2.1 | saas_plan.empleabilidad_*.yml (2 archivos) | NO-HARDCODE-PRICE-001 |
+| Precios Emprendimiento | 2.1 | saas_plan.emprendimiento_*.yml (3 archivos) | NO-HARDCODE-PRICE-001 |
+| Precios ComercioConecta | 2.1 | saas_plan.comercioconecta_*.yml (2 archivos) | NO-HARDCODE-PRICE-001 |
+| Precios AgroConecta | 2.1 | saas_plan.agroconecta_*.yml (1 archivo) | NO-HARDCODE-PRICE-001 |
+| Precios JarabaLex | 2.1 | saas_plan.jarabalex_*.yml (2 archivos) | NO-HARDCODE-PRICE-001 |
+| Precios ServiciosConecta | 2.1 | saas_plan.serviciosconecta_*.yml (1 archivo) | NO-HARDCODE-PRICE-001 |
+| Precios Andalucia+ei | 2.1 | saas_plan.andalucia_ei_*.yml (1 archivo) | NO-HARDCODE-PRICE-001 |
+| Addon pricing 9 addons | 2.1 | Addon entity update via hook_update_N | ADDON-PRICING-001 |
+| Descuento 20% | 2.3 | Todos saas_plan.*.yml con precio >0 (~32 archivos) | ANNUAL-DISCOUNT-001 |
+| Weights normalizados | 2.4 | saas_plan.agroconecta_*.yml | Data quality |
+| Schema.org dinamico | 2.5 | pricing-hub-page.html.twig | MARKETING-TRUTH-001, NO-HARDCODE-PRICE-001 |
+| Badge dinamico | 2.6 | pricing-page.html.twig | MARKETING-TRUTH-001 |
 | Plans Formacion | 1.3 | saas_plan.formacion_*.yml (3 archivos) | PRICING-TIER-PARITY-001 |
 | Fix catch Throwable | 1.4 | ReverseTrialService.php (6 lineas) | UPDATE-HOOK-CATCH-001 |
 | Texto hub 4 niveles | 1.5 | pricing-hub-page.html.twig | i18n, MARKETING-TRUTH-001 |

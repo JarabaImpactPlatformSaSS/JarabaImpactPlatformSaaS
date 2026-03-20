@@ -136,7 +136,7 @@ class ReverseTrialService
 
             return TRUE;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->loggerFactory->get('reverse_trial')->error(
                 'Error al iniciar reverse trial: @message',
                 ['@message' => $e->getMessage()]
@@ -177,7 +177,7 @@ class ReverseTrialService
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->loggerFactory->get('reverse_trial')->error(
                 'Error procesando trials expirados: @message',
                 ['@message' => $e->getMessage()]
@@ -242,7 +242,7 @@ class ReverseTrialService
 
             return TRUE;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->loggerFactory->get('reverse_trial')->error(
                 'Error al ejecutar downgrade para @tenant: @message',
                 [
@@ -325,7 +325,7 @@ class ReverseTrialService
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->loggerFactory->get('reverse_trial')->error(
                 'Error procesando notificaciones de trial: @message',
                 ['@message' => $e->getMessage()]
@@ -445,7 +445,7 @@ class ReverseTrialService
             $storage = $this->entityTypeManager->getStorage('saas_plan');
             $plans = $storage->loadByProperties(['name' => $name]);
             return !empty($plans) ? reset($plans) : NULL;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return NULL;
         }
     }
@@ -498,7 +498,7 @@ class ReverseTrialService
                 'conversion_rate' => $activeTrials > 0 ? round(($converted / $activeTrials) * 100, 1) : 0,
             ];
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'active_trials' => 0,
                 'converted' => 0,

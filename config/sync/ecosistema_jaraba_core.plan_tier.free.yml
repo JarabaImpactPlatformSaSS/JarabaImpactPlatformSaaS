@@ -1,0 +1,15 @@
+uuid: 0bba8cf1-495d-41e2-9f2a-a04107104574
+langcode: es
+status: true
+dependencies: {  }
+id: free
+label: Free
+tier_key: free
+aliases:
+  - free
+  - gratis
+  - gratuito
+stripe_price_monthly: ''
+stripe_price_yearly: ''
+description: 'Plan gratuito para explorar la plataforma sin compromiso.'
+weight: -10

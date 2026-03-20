@@ -1,7 +1,7 @@
 # Auditoria Definitiva: Pricing, Suscripciones y Modelo de Negocio SaaS
 
 > **Tipo:** Auditoria Integral de Clase Mundial
-> **Version:** 1.0.0
+> **Version:** 2.0.0 (ampliada: investigacion 8 verticales + 20 rutas conversion + addon coherence)
 > **Fecha original:** 2026-03-20
 > **Ultima actualizacion:** 2026-03-20
 > **Estado:** Vigente
@@ -18,17 +18,18 @@
 3. [HALLAZGO CRITICO: Bug de 4 Tiers vs 3 SaasPlanTier](#3-hallazgo-critico-bug-4-tiers-vs-3-saasplantier)
 4. [Matrix de Precios Verificada en BD](#4-matrix-de-precios-verificada-en-bd)
 5. [Investigacion de Mercado — Benchmarks Espana](#5-investigacion-de-mercado)
-6. [Analisis Especial: Vertical Emprendimiento](#6-analisis-especial-vertical-emprendimiento)
-7. [Recomendacion de Precios Premium](#7-recomendacion-de-precios-premium)
-8. [Compliance NO-HARDCODE-PRICE-001 — Auditoria Real](#8-compliance-no-hardcode-price-001)
-9. [Paginas y Flujos de Suscripcion — Inventario Completo](#9-paginas-y-flujos-de-suscripcion)
-10. [Setup Wizard + Daily Actions — Cobertura Billing](#10-setup-wizard-daily-actions)
-11. [Hallazgos Tecnicos Priorizados (P0-P3)](#11-hallazgos-tecnicos-priorizados)
-12. [Features Faltantes para Clase Mundial](#12-features-faltantes-para-clase-mundial)
-13. [Salvaguardas Propuestas](#13-salvaguardas-propuestas)
-14. [Scorecard Final por Dimension](#14-scorecard-final-por-dimension)
-15. [Plan de Implementacion — Fases](#15-plan-de-implementacion)
-16. [Tabla de Correspondencia Tecnica](#16-tabla-de-correspondencia-tecnica)
+6. [Analisis por Vertical — 8 Verticales Completos](#6-analisis-por-vertical)
+7. [Coherencia Addon Pricing](#7-coherencia-addon-pricing)
+8. [Recomendacion Consolidada de Precios Premium](#8-recomendacion-consolidada-de-precios)
+9. [Compliance NO-HARDCODE-PRICE-001 — Auditoria Real](#9-compliance-no-hardcode-price-001)
+10. [Rutas de Conversion — Inventario Completo 20+ Touchpoints](#10-rutas-de-conversion)
+11. [Setup Wizard + Daily Actions — Cobertura Billing](#11-setup-wizard-daily-actions)
+12. [Hallazgos Tecnicos Priorizados (P0-P3)](#12-hallazgos-tecnicos-priorizados)
+13. [Features Faltantes para Clase Mundial](#13-features-faltantes-para-clase-mundial)
+14. [Salvaguardas Propuestas](#14-salvaguardas-propuestas)
+15. [Scorecard Final por Dimension](#15-scorecard-final-por-dimension)
+16. [Plan de Implementacion — Fases](#16-plan-de-implementacion)
+17. [Tabla de Correspondencia Tecnica](#17-tabla-de-correspondencia-tecnica)
 
 ---
 
@@ -277,38 +278,179 @@ Agroconecta usa weights 10/11/12 en vez de 10/20/30. No afecta al mapping (es se
 
 ---
 
-## 7. RECOMENDACION DE PRECIOS PREMIUM
+## 6. ANALISIS POR VERTICAL — 8 VERTICALES COMPLETOS
+
+### 6.1 Ranking de viabilidad
+
+| Prioridad | Vertical | Score | Mayor fortaleza | Mayor riesgo |
+|-----------|----------|-------|-----------------|-------------|
+| 1 | **JarabaLex** | **8/10** | Abogados pagan 100-300€/mes; IA legal = moat | Mantener base normativa actualizada |
+| 2 | **AgroConecta** | **7/10** | PAC 2025 obliga cuaderno digital; Andalucia #1 agraria | Sector tecnologicamente conservador |
+| 3 | **Andalucia +ei** | **6.5/10** | Nicho sin competencia SaaS; STO export = moat | Mercado pequeno, dependencia financiacion publica |
+| 4 | **Empleabilidad** | **6/10** | Suite unica (CV+diagnostico+matching+IA) | InfoJobs/LinkedIn dominan con efecto red |
+| 5 | **Emprendimiento** | **5.5/10** | Puerta del ecosistema; Kit Digital | ChatGPT commoditiza "Canvas con IA" |
+| 6 | **ServiciosConecta** | **5.5/10** | Plataforma horizontal vs competidores verticales | Calendly/Google Reservas gratis |
+| 7 | **ComercioConecta** | **5/10** | Kit Digital directo; marketplace proximidad | Shopify/WooCommerce imbatibles en features |
+| 8 | **Formacion** | **5/10** | Copilot IA para crear cursos | Moodle gratuito es el elefante |
+
+### 6.2 Competidores y benchmarks por vertical
+
+**EMPLEABILIDAD:**
+- InfoJobs Premium: candidatos gratis, empresas 150€+/oferta
+- LinkedIn Premium Career: 29.99€/mes
+- Bizneo HR ATS: desde 3€/empleado/mes (min ~100€)
+- **Hueco:** No existe suite integrada CV+diagnostico+matching+IA en Espana
+
+**COMERCIOCONECTA:**
+- Shopify: 27€/79€/289€
+- Palbin (espanol): 15€/29€/79€
+- SumUp tienda online: gratis + 1.9%/transaccion
+- **Riesgo:** Mercado MUY saturado
+
+**AGROCONECTA:**
+- Agroptima (Barcelona): 0€/9.90€/19.90€/29.90€
+- Agroslab: desde 5€/mes
+- Crowdfarming: comision 15-20%
+- **Oportunidad:** PAC 2025 obliga digitalizacion → traccion forzada
+
+**JARABALEX:**
+- Aranzadi: desde ~150€/mes individual
+- vLex: desde ~79€/mes
+- Lexter.ai: desde 29€/mes
+- **Oportunidad:** IA legal nativa a precio disruptivo vs incumbentes
+
+**SERVICIOSCONECTA:**
+- Doctoralia: 79€/149€/mes
+- Treatwell: comision 25-35% + 29€/mes
+- Calendly: 0€/8€/12€/16€/mes
+- **Riesgo:** Sin efecto marketplace, no genera clientes nuevos
+
+**ANDALUCIA +ei:**
+- Anova (Andalucia): ~200-500€/mes (personalizado)
+- GestorFormacion: desde 50€/mes
+- **Oportunidad:** Export STO Junta = moat unico
+
+**FORMACION:**
+- Moodle: GRATIS (dominante)
+- Teachable: 0€/36€/119€/mes
+- Evolcampus (espanol): desde 89€/mes
+- **Riesgo:** Moodle + ChatGPT = dificil justificar pago
+
+### 6.3 TAM/SAM/SOM por vertical (Andalucia → Espana)
+
+| Vertical | TAM Espana | SAM | SOM Andalucia (ano 1-2) | SOM Espana (ano 3-5) |
+|----------|-----------|-----|------------------------|---------------------|
+| Empleabilidad | 87M€ | 17.4M€ | 174K€ | 1.44M€ |
+| ComercioConecta | 184M€ | 37.4M€ | 93K€ | 1.26M€ |
+| AgroConecta | 80M€ | 17.6M€ | 88K€ | 960K€ |
+| JarabaLex | 84M€ | 28.3M€ | 141K€ | **2.4M€** |
+| ServiciosConecta | 166M€ | 34.8M€ | 104K€ | 1.2M€ |
+| Andalucia +ei | 4.9M€ | 1.19M€ | 35K€ | 312K€ |
+| Formacion | 41M€ | 9.4M€ | 46K€ | 576K€ |
+| Emprendimiento | 30M€ | 5.1M€ | 120K€ | 900K€ |
+
+**JarabaLex tiene el mayor SOM proyectado a 5 anos (2.4M€)** gracias a alta disposicion a pagar del segmento legal.
+
+### 6.4 Kit Digital compatibilidad
+
+| Vertical | Compatible | Categoria Kit Digital | Importe bono |
+|----------|-----------|----------------------|-------------|
+| **ComercioConecta** | **SI, directo** | Comercio electronico | 2.000€ |
+| **ServiciosConecta** | **SI, directo** | Presencia en Internet | 2.000€ |
+| AgroConecta | SI | Gestion de procesos | 2.000-6.000€ |
+| JarabaLex | Parcial | Gestion de procesos | 2.000-6.000€ |
+| Formacion | Parcial | Gestion de procesos | 2.000-6.000€ |
+| Empleabilidad | Solo B2B/RRHH | Gestion de procesos | 2.000-6.000€ |
+| Emprendimiento | SI | Gestion de procesos | 2.000€ |
+| Andalucia +ei | NO (entidades no son pymes) | N/A | N/A |
+
+**ComercioConecta y ServiciosConecta deben ser la PRIMERA palanca comercial** — el bono Kit Digital cubre anos de suscripcion.
+
+---
+
+## 7. COHERENCIA ADDON PRICING
+
+### Problema detectado: Addons mas caros que Starter
+
+| Addon | Precio addon actual | Starter recomendado | Ratio | Coherencia |
+|-------|-------------------|--------------------|----|-----------|
+| Empleabilidad | 29€ | 19€ | 152% | **INCOHERENTE** — addon > starter |
+| Emprendimiento | 39€ | 19€ | 205% | **INCOHERENTE** — addon >> starter |
+| ComercioConecta | 49€ | 29€ | 169% | **INCOHERENTE** — addon > starter |
+| AgroConecta | 49€ | 39€ | 125% | **INCOHERENTE** — addon > starter |
+| JarabaLex | 59€ | 49€ | 120% | **BORDERLINE** |
+| ServiciosConecta | 39€ | 19€ | 205% | **INCOHERENTE** — addon >> starter |
+| Andalucia +ei | 29€ | 49€ | 59% | OK |
+| Content Hub | 19€ | N/A | N/A | OK |
+| Formacion | 39€ | 29€ | 134% | **INCOHERENTE** — addon > starter |
+
+**Regla propuesta: ADDON-PRICING-001 — Addon = ~60% del precio Starter del vertical.**
+
+Justificacion: El addon aporta funcionalidades del vertical pero sin dashboard propio, onboarding especifico ni experiencia completa. Un 60% refleja ese valor parcial y crea incentivo claro para comprar el vertical completo.
+
+### Precios addon recomendados
+
+| Addon | Actual | Recomendado (60% Starter) | Cambio |
+|-------|--------|--------------------------|--------|
+| Empleabilidad | 29€ | **12€** | ↓ significativo |
+| Emprendimiento | 39€ | **12€** | ↓ significativo |
+| ComercioConecta | 49€ | **19€** | ↓ |
+| AgroConecta | 49€ | **25€** | ↓ |
+| JarabaLex | 59€ | **29€** | ↓ |
+| ServiciosConecta | 39€ | **12€** | ↓ significativo |
+| Andalucia +ei | 29€ | **29€** | Sin cambio |
+| Content Hub | 19€ | **12€** | ↓ |
+| Formacion | 39€ | **19€** | ↓ |
+
+---
+
+## 8. RECOMENDACION CONSOLIDADA DE PRECIOS PREMIUM
 
 ### Decision confirmada: 4 Tiers (Free + Starter + Pro + Enterprise)
 
-### Descuento anual: 20% (cambio de x10 a x9.6, redondeando)
+### Descuento anual: 20% ("2 meses gratis")
 
-### Matrix de precios FINAL RECOMENDADA
+### Matrix de precios FINAL (investigacion 8 verticales)
 
 | Vertical | Free | Starter | Pro | Enterprise | Starter/a | Pro/a | Enterprise/a |
 |----------|------|---------|-----|------------|-----------|-------|-------------|
-| **Empleabilidad** | 0€ | 29€ | 79€ | 149€ | 278€ | 758€ | 1430€ |
+| **Empleabilidad** | 0€ | **19€** ↓ | 79€ | **199€** ↑ | 182€ | 758€ | 1910€ |
 | **Emprendimiento** | 0€ | **19€** ↓ | **49€** ↓ | **99€** ↓ | 182€ | 470€ | 950€ |
-| **ComercioConecta** | 0€ | 39€ | 99€ | 199€ | 374€ | 950€ | 1910€ |
-| **AgroConecta** | 0€ | 49€ | 129€ | 249€ | 470€ | 1238€ | 2390€ |
-| **JarabaLex** | 0€ | **59€** ↑ | **149€** ↑ | **299€** ↑ | 566€ | 1430€ | 2870€ |
-| **ServiciosConecta** | 0€ | 29€ | 79€ | 149€ | 278€ | 758€ | 1430€ |
-| **Andalucia +ei** | 0€ | 49€ | 99€ | 249€ | 470€ | 950€ | 2390€ |
-| **Formacion** | 0€ | **39€** NEW | **79€** NEW | **149€** NEW | 374€ | 758€ | 1430€ |
+| **ComercioConecta** | 0€ | **29€** ↓ | **79€** ↓ | 199€ | 278€ | 758€ | 1910€ |
+| **AgroConecta** | 0€ | **39€** ↓ | 129€ | 249€ | 374€ | 1238€ | 2390€ |
+| **JarabaLex** | 0€ | **49€** ↑ | **149€** ↑ | **299€** ↑ | 470€ | 1430€ | 2870€ |
+| **ServiciosConecta** | 0€ | **19€** ↓ | 79€ | 149€ | 182€ | 758€ | 1430€ |
+| **Andalucia +ei** | 0€ | 49€ | **129€** ↑ | 249€ | 470€ | 1238€ | 2390€ |
+| **Formacion** | 0€ | **29€** NEW | **79€** NEW | **149€** NEW | 278€ | 758€ | 1430€ |
 
-**Cambios respecto a la BD actual:**
+### Resumen de TODOS los cambios vs BD actual
 
-| Vertical | Cambio | Justificacion |
-|----------|--------|---------------|
-| Emprendimiento Starter | 39€ → 19€ | Mercado sensible al precio, cross-sell > ticket directo |
-| Emprendimiento Pro | 99€ → 49€ | Competencia (Leanstack 22€, Strategyzer 25€) |
-| Emprendimiento Enterprise | 199€ → 99€ | Solo funded startups, Kit Digital compatible |
-| JarabaLex Starter | 49€ → 59€ | vLex 75€, Aranzadi 100€ — infravalorado |
-| JarabaLex Pro | 99€ → 149€ | IA legal integrada = diferencial premium |
-| JarabaLex Enterprise | 199€ → 299€ | Despachos medianos pagan 250-500€ por herramientas |
-| Formacion Starter | NO EXISTE → 39€ | Evolcampus 89€, TalentLMS 60€ — competitivo |
-| Formacion Pro | NO EXISTE → 79€ | AI gamificado es diferencial |
-| Formacion Enterprise | NO EXISTE → 149€ | Instituciones educativas |
+| Vertical | Tier | Actual | Nuevo | Direccion | Justificacion |
+|----------|------|--------|-------|-----------|---------------|
+| Empleabilidad | Starter | 29€ | 19€ | ↓ | LinkedIn Premium 20-30€; desempleados sensibles precio |
+| Empleabilidad | Enterprise | 149€ | 199€ | ↑ | B2B RRHH paga 300€+ por ATS; infravalorado |
+| Emprendimiento | Starter | 39€ | 19€ | ↓ | WTP 10-25€; Leanstack 13$; cross-sell > ticket |
+| Emprendimiento | Pro | 99€ | 49€ | ↓ | Strategyzer 25$; competencia ChatGPT |
+| Emprendimiento | Enterprise | 199€ | 99€ | ↓ | Solo funded startups; Kit Digital compatible |
+| ComercioConecta | Starter | 39€ | 29€ | ↓ | Shopify Basic 27€; Palbin 15€ |
+| ComercioConecta | Pro | 99€ | 79€ | ↓ | Alinear con Shopify Standard 79€ |
+| AgroConecta | Starter | 49€ | 39€ | ↓ | Agroptima Premium 29.90€ |
+| JarabaLex | Starter | 49€ | 49€ | = | Equilibrio entre accesibilidad y valor |
+| JarabaLex | Pro | 99€ | 149€ | ↑ | vLex 79€+; Aranzadi 150€+; IA legal premium |
+| JarabaLex | Enterprise | 199€ | 299€ | ↑ | Despachos medianos pagan 250-500€ |
+| ServiciosConecta | Starter | 29€ | 19€ | ↓ | Calendly Pro 12€; Setmore 12€ |
+| Andalucia +ei | Pro | 99€ | 129€ | ↑ | STO export = alto valor; financiado con programa |
+| Formacion | Starter | NO EXISTE | 29€ | NEW | Classonlive 29€; Teachable Free→Basic |
+| Formacion | Pro | NO EXISTE | 79€ | NEW | Evolcampus 89€; AI gamificado |
+| Formacion | Enterprise | NO EXISTE | 149€ | NEW | Instituciones educativas |
+
+### Riesgos honestos del modelo de precios
+
+1. **Dispersion de recursos:** 8 verticales es MUCHO. Recomendacion estrategica: JarabaLex + AgroConecta + Andalucia+ei como pilares prioritarios
+2. **Kit Digital se acaba:** Fondos NextGenEU temporales. Retencion post-subvencion historicamente baja (30-40%)
+3. **Commoditizacion IA:** ChatGPT/Claude pueden hacer "CV con IA", "Canvas con IA", etc. La diferenciacion viene del dato especializado (base normativa legal, datos PAC), no de la IA en si
+4. **Mercado espanol:** Menor penetracion SaaS que UK/Alemania (~30% vs ~50% pymes). Ciclos de venta mas largos
+5. **EU AI Act:** IA en seleccion personal y IA legal = "alto riesgo". Requiere compliance costoso
 
 ---
 
@@ -340,9 +482,9 @@ Agroconecta usa weights 10/11/12 en vez de 10/20/30. No afecta al mapping (es se
 
 ---
 
-## 9. PAGINAS Y FLUJOS DE SUSCRIPCION
+## 10. RUTAS DE CONVERSION — INVENTARIO COMPLETO 20+ TOUCHPOINTS
 
-### Inventario completo de rutas verificadas
+### 10.1 Pricing & Billing (12 rutas)
 
 | Ruta | Template | Controller | Tipo |
 |------|----------|-----------|------|
@@ -359,13 +501,145 @@ Agroconecta usa weights 10/11/12 en vez de 10/20/30. No afecta al mapping (es se
 | `/api/v1/billing/stripe-webhook` | JSON | BillingWebhookController | Webhooks Stripe |
 | `/api/v1/pricing/{vertical}` | JSON | PricingController::getPricing | API precios |
 
-### Templates parciales de billing
+### 10.2 Quiz Vertical Discovery (3 rutas)
+
+| Ruta | Controller | Funcion | Tracking |
+|------|-----------|---------|----------|
+| `/test-vertical` | VerticalQuizController::quizPage | 4 preguntas adaptativas | data-track-cta="quiz_*" |
+| `POST /api/v1/quiz/submit` | VerticalQuizController::submitQuiz | Scoring + IA recomendacion | CSRF required |
+| `/test-vertical/resultado/{uuid}` | VerticalQuizController::resultPage | Resultado personalizado + CTAs | data-track-cta="quiz_result_register" |
+
+**Flujo conversion:** Quiz → Resultado con recomendacion IA → `/registro/{vertical}?source=quiz&quiz_uuid={uuid}`
+
+### 10.3 Demo Interactivo (5 rutas)
+
+| Ruta | Controller | Funcion | Tracking |
+|------|-----------|---------|----------|
+| `/demo` | DemoController::demoLanding | 9 perfiles demo parametrizados | data-track-cta="demo_bottom_register" |
+| `/demo/start/{profileId}` | DemoController::startDemo | Inicia sesion demo efimera | Session creation |
+| `/demo/dashboard/{sessionId}` | DemoController::demoDashboard | Dashboard interactivo con datos fake | data-track-cta="demo_unlock_register" |
+| `/demo/ai-playground` | DemoController::aiPlayground | Chat IA publico (email gate 5 turns) | Lead gate S10-01 |
+| `POST /api/v1/demo/convert` | DemoController::convert | Convierte demo → cuenta real | CSRF required |
+
+**Flujo conversion:** Demo landing → Elegir perfil → Dashboard interactivo → "Crear cuenta real" → `/user/register?demo_session={id}`
+
+### 10.4 Landing Pages Verticales (9 rutas)
+
+| Ruta | Controller | Lead Magnet |
+|------|-----------|-------------|
+| `/empleabilidad` | VerticalLandingController::empleabilidad | Calculadora Madurez Digital |
+| `/emprendimiento` | VerticalLandingController::emprendimientoLanding | Planificador de Negocio |
+| `/comercioconecta` | VerticalLandingController::comercioconecta | Auditoria SEO Local |
+| `/agroconecta` | VerticalLandingController::agroconecta | Guia: Vende sin Intermediarios |
+| `/jarabalex` | VerticalLandingController::jarabalex | (Legal-specific) |
+| `/serviciosconecta` | VerticalLandingController::serviciosconecta | Template: Propuesta Profesional |
+| `/formacion` | VerticalLandingController::formacion | Catalogo cursos gratis |
+| `/despachos` | VerticalLandingController::despachos | (Law firm management) |
+| `/instituciones` | VerticalLandingController::instituciones | Territory impulse program |
+
+**Estructura 9 secciones:** Hero CTA → Pain Points → Solution Steps → Features Grid → Social Proof → Lead Magnet → Pricing Preview → FAQ → Final CTA
+
+### 10.5 Registro y Autenticacion (4 rutas)
+
+| Ruta | Funcion | Query params |
+|------|---------|-------------|
+| `/user/register` | Registro clasico | `?vertical=`, `?plan=`, `?source=`, `?quiz_uuid=`, `?demo_session=`, `?ref=`, `?diagnostic=` |
+| `/registro/{vertical}` | Registro friendly por vertical | Redirige a `/user/register?vertical={vertical}` |
+| `/user/login/google` | Google OAuth redirect | CSRF state en session |
+| `/user/login/google/callback` | Google OAuth callback | Exchange code → create/login user |
+
+### 10.6 Lead Magnets (4+ rutas)
+
+| Ruta | Vertical | Recurso |
+|------|----------|---------|
+| `/emprendimiento/calculadora-madurez` | Emprendimiento | Calculadora interactiva |
+| `/agroconecta/guia-vende-online` | AgroConecta | PDF guia |
+| `/comercioconecta/auditoria-seo` | ComercioConecta | Informe SEO |
+| `/serviciosconecta/template-propuesta` | ServiciosConecta | Template descargable |
+
+**Flujo:** Email capture → Create Contact CRM → Send recurso → CTA `/registro/{vertical}?source=lead_magnet`
+
+### 10.7 Referral Program (3 rutas)
+
+| Ruta | Funcion | Tracking |
+|------|---------|----------|
+| `/referidos` | Dashboard referidos (autenticado) | Codigo + earnings |
+| `/referidos/mi-codigo` | Ver/generar codigo referido | Share WhatsApp/email/LinkedIn |
+| `/ref/{code}` | Landing referido (publica) | data-track-cta="ref_click" |
+
+### 10.8 Kit Digital (2+ rutas)
+
+| Ruta | Funcion |
+|------|---------|
+| `/kit-digital` | Landing programa Kit Digital |
+| `/kit-digital/{paquete}` | Paquetes: comercio-digital, productor-digital, profesional-digital, despacho-digital, emprendedor-digital |
+
+### 10.9 Email Drip Conversion (3 fases)
+
+| Timing | Trigger | CTA destino |
+|--------|---------|-------------|
+| 24h post-quiz | QuizFollowUpCron fase 1 | `/registro/{vertical}?source=quiz_followup_24h` |
+| 72h post-quiz | QuizFollowUpCron fase 2 | `/demo?source=quiz_followup_72h` |
+| 7d post-quiz | QuizFollowUpCron fase 3 | `/user/register?source=quiz_followup_7d` |
+
+### 10.10 Navigation CTAs (persistentes)
+
+| Elemento | Template | CTA configurable |
+|----------|---------|-----------------|
+| Header CTA "Empieza gratis" | _header-classic.html.twig | `header_cta_url` en TenantThemeConfig |
+| Mega menu: "Descubre tu vertical" | _header mega | `/test-vertical` |
+| Mega menu: "Prueba interactiva" | _header mega | `/demo` |
+| Footer: "Planes" | _footer.html.twig | `/planes` |
+| Page Builder: Pricing Table Block | GrapesJS block | `/planes/checkout/{plan_id}` |
+
+### 10.11 Templates parciales de billing
 
 | Parcial | Lineas | Uso |
 |---------|--------|-----|
 | `_subscription-card.html.twig` | 245 | Dashboard widget: plan actual + uso + upgrade |
 | `_plan-badge.html.twig` | ~30 | Badge tier en headers |
 | `_sepa-mandate.html.twig` | ~50 | Texto legal PSD2 para SEPA |
+
+### 10.12 Mapa completo del funnel de conversion
+
+```
+AWARENESS
+  ├─ Homepage hero CTA → /registro/{vertical}
+  ├─ Blog/Content Hub → /planes o /demo
+  ├─ SEO (Schema.org FAQPage) → Organic traffic
+  └─ Referral /ref/{code} → /user/register?ref={code}
+
+CONSIDERATION
+  ├─ Quiz /test-vertical → /test-vertical/resultado/{uuid}
+  ├─ Demo /demo → /demo/dashboard/{sessionId}
+  ├─ Landing /{vertical} (9 paginas) → Lead magnet o registro
+  └─ Kit Digital /kit-digital/{paquete}
+
+EVALUATION
+  ├─ /planes (hub, 8 verticales)
+  ├─ /planes/{vertical} (pricing detallado)
+  └─ /onboarding/seleccionar-plan (post-registro)
+
+PURCHASE
+  ├─ /planes/checkout/{saas_plan} (Stripe Embedded)
+  ├─ Bizum via Redsys
+  └─ SEPA Direct Debit
+
+ACTIVATION
+  ├─ Setup Wizard (61 steps, Zeigarnik -33%)
+  ├─ Daily Actions (69 actions)
+  └─ Copilot IA onboarding
+
+RETENTION
+  ├─ DunningService (6 pasos)
+  ├─ FairUsePolicyService (alertas uso)
+  └─ _subscription-card.html.twig (dashboard)
+
+EXPANSION
+  ├─ /tenant/change-plan (upgrade)
+  ├─ Addon verticals (/api/v1/addons/verticals/)
+  └─ Email drip (quiz followup 3 fases)
+```
 
 ---
 

@@ -102,6 +102,48 @@ function jaraba_billing_cron(): void {
     }
   }
 
+  // 5. Pause: auto-resume subscriptions past their resume date.
+  if (\Drupal::hasService('jaraba_billing.pause_subscription')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\PauseSubscriptionService $pause */
+      $pause = \Drupal::service('jaraba_billing.pause_subscription');
+      $resumed = $pause->processExpiredPauses();
+      if ($resumed > 0) {
+        \Drupal::logger('jaraba_billing')->info(
+          'Pause cron: @count suscripciones auto-reanudadas.',
+          ['@count' => $resumed]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Pause cron error: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 6. Win-back: send re-engagement emails to cancelled tenants.
+  if (\Drupal::hasService('jaraba_billing.winback_campaign')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\WinBackCampaignService $winBack */
+      $winBack = \Drupal::service('jaraba_billing.winback_campaign');
+      $sent = $winBack->processWinBackEmails();
+      if ($sent > 0) {
+        \Drupal::logger('jaraba_billing')->info(
+          'Win-back cron: @count emails de re-engagement enviados.',
+          ['@count' => $sent]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Win-back cron error: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+
   \Drupal::state()->set('jaraba_billing.cron_last_run', $now);
 }
 

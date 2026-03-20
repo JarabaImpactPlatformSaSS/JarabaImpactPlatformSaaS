@@ -76,4 +76,38 @@
     }
   };
 
+  /**
+   * Sticky CTA bar — shows on mobile when pricing cards scroll out of view.
+   *
+   * Uses IntersectionObserver on .pricing-grid to detect when cards
+   * leave the viewport. The sticky bar appears at the bottom on mobile.
+   * OBSERVER-SCROLL-ROOT-001 adapted to viewport (not slide-panel).
+   */
+  Drupal.behaviors.pricingStickyCta = {
+    attach: function (context) {
+      once('pricing-sticky-cta', '#pricing-sticky-cta', context).forEach(function (stickyBar) {
+        var grid = document.querySelector('.pricing-grid');
+        if (!grid || !('IntersectionObserver' in window)) {
+          return;
+        }
+
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) {
+              stickyBar.classList.add('is-visible');
+              stickyBar.setAttribute('aria-hidden', 'false');
+            } else {
+              stickyBar.classList.remove('is-visible');
+              stickyBar.setAttribute('aria-hidden', 'true');
+            }
+          });
+        }, {
+          threshold: 0.1
+        });
+
+        observer.observe(grid);
+      });
+    }
+  };
+
 })(Drupal, once);

@@ -80,10 +80,10 @@
 <section class="pricing-hub-overview reveal-element reveal-fade-up" aria-labelledby="hub-overview-title">
   <div class="pricing-hub-overview__container">
     <h2 id="hub-overview-title" class="pricing-hub-overview__title">
-      {% trans %}3 niveles para cada vertical{% endtrans %}
+      {% trans %}4 niveles para cada vertical{% endtrans %}
     </h2>
     <p class="pricing-hub-overview__subtitle">
-      {% trans %}Todos los verticales ofrecen 3 planes adaptados a tu nivel de necesidad.{% endtrans %}
+      {% trans %}Todos los verticales ofrecen 4 planes — desde gratuito hasta enterprise — adaptados a tu nivel de necesidad.{% endtrans %}
     </p>
 
     {# NO-HARDCODE-PRICE-001: Tiers dinámicos desde MetaSitePricingService #}
@@ -131,7 +131,8 @@
 <section class="pricing-tax-disclaimer reveal-element reveal-fade-up" aria-label="{% trans %}Información fiscal{% endtrans %}">
   <div class="pricing-tax-disclaimer__container">
     <p class="pricing-tax-disclaimer__text">
-      {% trans %}Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente.{% endtrans %}
+      {# NO-HARDCODE-PRICE-001: Tax disclaimer configurable desde Theme Settings (plg_tax_disclaimer) #}
+      {{ tax_disclaimer|default('Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).'|trans) }}
     </p>
   </div>
 </section>
@@ -202,7 +203,8 @@
 
 </div>{# /.pricing-wrapper #}
 
-{# === SCHEMA.ORG === #}
+{# === SCHEMA.ORG — NO-HARDCODE-PRICE-001: dinamico desde overview_tiers === #}
+{% if overview_tiers is not empty %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -212,31 +214,25 @@
   "operatingSystem": "Web",
   "url": "{{ url('ecosistema_jaraba_core.pricing.page', {}, {absolute: true}) }}",
   "offers": [
+    {% for tier in overview_tiers %}
     {
-      "@type": "Offer",
-      "name": "Starter",
-      "priceCurrency": "EUR",
-      "price": "0",
-      "availability": "https://schema.org/InStock",
-      "description": "Plan gratuito para explorar la plataforma"
-    },
-    {
+      {% if tier.price_monthly is defined and tier.price_monthly > 0 %}
       "@type": "AggregateOffer",
-      "name": "Profesional",
+      "name": "{{ tier.label|replace({'"': '\\"'}) }}",
       "priceCurrency": "EUR",
-      "lowPrice": "29",
-      "highPrice": "59",
-      "availability": "https://schema.org/InStock",
-      "description": "Para profesionales y negocios en crecimiento"
-    },
-    {
+      "lowPrice": "{{ tier.price_monthly|number_format(0) }}",
+      "highPrice": "{{ (tier.price_monthly * 3)|number_format(0) }}",
+      {% else %}
       "@type": "Offer",
-      "name": "Empresa",
+      "name": "{{ tier.label|replace({'"': '\\"'}) }}",
       "priceCurrency": "EUR",
       "price": "0",
+      {% endif %}
       "availability": "https://schema.org/InStock",
-      "description": "Precios personalizados para instituciones"
-    }
+      "description": "{{ tier.description|default('')|replace({'"': '\\"'}) }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
   ]
 }
 </script>
+{% endif %}

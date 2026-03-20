@@ -1,0 +1,18 @@
+langcode: es
+status: true
+name: 'Formacion Profesional'
+price_monthly: '79.00'
+price_yearly: '758.00'
+features:
+  - course_builder
+  - student_portal
+  - basic_certificates
+  - learning_paths
+  - gamification
+  - copilot_ia
+  - analytics
+  - soporte_email
+  - soporte_chat
+limits: '{"courses":25,"students_per_course":100,"copilot_uses_per_month":200,"certificates_per_month":-1,"storage_gb":25}'
+stripe_price_id: ''
+weight: 20

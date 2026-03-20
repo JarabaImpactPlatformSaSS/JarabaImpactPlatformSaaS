@@ -1164,6 +1164,42 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#default_value' => $config->get('plg_register_subtitle') ?: 'Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.',
     '#maxlength' => 255,
   ];
+
+  $form['plg_texts']['plg_annual_discount_percent'] = [
+    '#type' => 'number',
+    '#title' => t('Descuento anual (%)'),
+    '#description' => t('Porcentaje de descuento para planes anuales. Se muestra en el badge del toggle mensual/anual y en textos marketing. ANNUAL-DISCOUNT-001.'),
+    '#default_value' => $config->get('plg_annual_discount_percent') ?: 20,
+    '#min' => 0,
+    '#max' => 50,
+    '#step' => 1,
+  ];
+
+  $form['plg_texts']['plg_annual_discount_message'] = [
+    '#type' => 'textfield',
+    '#title' => t('Mensaje descuento anual'),
+    '#description' => t('Texto marketing para el descuento anual. Ej: "Ahorra 2 meses con el plan anual".'),
+    '#default_value' => $config->get('plg_annual_discount_message') ?: 'Ahorra 2 meses con el plan anual',
+    '#maxlength' => 255,
+  ];
+
+  $form['plg_texts']['plg_tax_disclaimer'] = [
+    '#type' => 'textarea',
+    '#title' => t('Aviso fiscal (pricing)'),
+    '#description' => t('Texto legal sobre IVA/IGIC/IPSI que aparece en las paginas de precios. GAP-M01: LSSI-CE Art. 10.'),
+    '#default_value' => $config->get('plg_tax_disclaimer') ?: 'Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).',
+    '#rows' => 3,
+  ];
+
+  // NO-HARDCODE-PRICE-001: FAQs editables desde UI.
+  $form['plg_texts']['plg_pricing_faq'] = [
+    '#type' => 'textarea',
+    '#title' => t('FAQs página de precios (JSON)'),
+    '#description' => t('Array JSON con preguntas frecuentes. Formato: [{"question":"...","answer":"..."}]. Se muestran en /planes y /planes/{vertical}. Dejar vacío para usar las FAQs por defecto.'),
+    '#default_value' => $config->get('plg_pricing_faq') ?: '',
+    '#rows' => 8,
+    '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
+  ];
 }
 
 /**

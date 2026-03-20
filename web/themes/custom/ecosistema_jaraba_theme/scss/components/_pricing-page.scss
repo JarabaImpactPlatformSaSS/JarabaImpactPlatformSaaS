@@ -603,3 +603,358 @@
         padding: 1rem 2.5rem;
     }
 }
+
+// ---------------------------------------------------------------------------
+// SOCIAL PROOF — Trust signals + testimonials
+// ---------------------------------------------------------------------------
+.pricing-social-proof {
+    padding: 3rem 1.5rem;
+    background: var(--ej-color-surface-alt, #f8f9fa);
+
+    @media (min-width: 768px) {
+        padding: 4rem 2rem;
+    }
+
+    &__container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    &__stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #333) 10%, transparent);
+    }
+
+    &__stat {
+        text-align: center;
+    }
+
+    &__stat-value {
+        display: block;
+        font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--ej-color-naranja-impulso, #FF8C42);
+        line-height: 1.1;
+    }
+
+    &__stat-label {
+        display: block;
+        font-size: 0.875rem;
+        color: color-mix(in srgb, var(--ej-color-text, #333) 70%, transparent);
+        margin-top: 0.25rem;
+    }
+
+    &__logos {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2.5rem;
+        opacity: 0.6;
+        filter: grayscale(100%);
+        transition: opacity 0.3s ease, filter 0.3s ease;
+
+        &:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+    }
+
+    &__logo {
+        height: 32px;
+        width: auto;
+        object-fit: contain;
+
+        @media (min-width: 768px) {
+            height: 40px;
+        }
+    }
+
+    &__title {
+        font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
+        font-size: clamp(1.25rem, 3vw, 1.75rem);
+        font-weight: 700;
+        text-align: center;
+        margin: 0 0 2rem;
+        color: var(--ej-color-text, #333);
+    }
+
+    &__testimonials {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+
+        @media (min-width: 768px) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    &__testimonial {
+        background: var(--ej-color-surface, #fff);
+        border-radius: var(--ej-radius-xl, 1rem);
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-color-text, #333) 6%, transparent);
+        margin: 0;
+    }
+
+    &__quote {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: var(--ej-color-text, #333);
+        margin: 0 0 1rem;
+        font-style: italic;
+    }
+
+    &__author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__name {
+        display: block;
+        font-weight: 600;
+        font-style: normal;
+        font-size: 0.875rem;
+        color: var(--ej-color-text, #333);
+    }
+
+    &__role {
+        display: block;
+        font-size: 0.8125rem;
+        color: color-mix(in srgb, var(--ej-color-text, #333) 60%, transparent);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// COMPARISON MATRIX — Desktop table + Mobile accordion
+// ---------------------------------------------------------------------------
+.pricing-comparison {
+    padding: 3rem 1.5rem;
+    background: var(--ej-color-surface, #fff);
+
+    @media (min-width: 768px) {
+        padding: 4rem 2rem;
+    }
+
+    &__container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    &__title {
+        font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
+        font-size: clamp(1.5rem, 4vw, 2.25rem);
+        font-weight: 700;
+        text-align: center;
+        margin: 0 0 0.75rem;
+        color: var(--ej-color-text, #333);
+    }
+
+    &__subtitle {
+        text-align: center;
+        font-size: 1rem;
+        color: color-mix(in srgb, var(--ej-color-text, #333) 70%, transparent);
+        margin: 0 0 2.5rem;
+    }
+
+    // Desktop table
+    &__table-wrapper {
+        display: none;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        @media (min-width: 768px) {
+            display: block;
+        }
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+    }
+
+    &__feature-header,
+    &__tier-header {
+        padding: 1rem 0.75rem;
+        text-align: center;
+        font-weight: 600;
+        border-bottom: 2px solid color-mix(in srgb, var(--ej-color-text, #333) 10%, transparent);
+    }
+
+    &__feature-header {
+        text-align: left;
+        width: 30%;
+    }
+
+    &__tier-header {
+        &--free {
+            color: color-mix(in srgb, var(--ej-color-text, #333) 70%, transparent);
+        }
+
+        &--professional {
+            color: var(--ej-color-naranja-impulso, #FF8C42);
+        }
+    }
+
+    &__tier-price {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 400;
+        margin-top: 0.25rem;
+    }
+
+    &__row {
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #333) 6%, transparent);
+
+        &:hover {
+            background: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 3%, transparent);
+        }
+
+        &--limit {
+            background: color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 3%, transparent);
+        }
+    }
+
+    &__feature-name {
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    &__cell {
+        padding: 0.75rem;
+        text-align: center;
+    }
+
+    &__check {
+        color: var(--ej-color-verde-innovacion, #00A9A5);
+    }
+
+    &__dash {
+        color: color-mix(in srgb, var(--ej-color-text, #333) 25%, transparent);
+    }
+
+    &__unlimited {
+        font-weight: 600;
+        color: var(--ej-color-verde-innovacion, #00A9A5);
+        font-size: 0.8125rem;
+    }
+
+    &__limit-value {
+        font-weight: 600;
+        color: var(--ej-color-text, #333);
+    }
+
+    // Mobile accordion
+    &__mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        @media (min-width: 768px) {
+            display: none;
+        }
+    }
+
+    &__accordion {
+        border: 1px solid color-mix(in srgb, var(--ej-color-text, #333) 10%, transparent);
+        border-radius: var(--ej-radius-lg, 0.75rem);
+        overflow: hidden;
+
+        &[open] {
+            border-color: var(--ej-color-naranja-impulso, #FF8C42);
+        }
+    }
+
+    &__accordion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        font-weight: 600;
+        background: var(--ej-color-surface, #fff);
+    }
+
+    &__accordion-price {
+        font-size: 0.875rem;
+        color: var(--ej-color-naranja-impulso, #FF8C42);
+        font-weight: 700;
+    }
+
+    &__accordion-body {
+        padding: 0 1.25rem 1.25rem;
+    }
+
+    &__feature-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+        font-size: 0.875rem;
+        color: var(--ej-color-text, #333);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// STICKY CTA — Mobile-only fixed bar at bottom
+// ---------------------------------------------------------------------------
+.pricing-sticky-cta {
+    display: none;
+
+    @media (max-width: 767px) {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: var(--ej-z-sticky, 100);
+        background: var(--ej-color-surface, #fff);
+        padding: 0.75rem 1rem;
+        box-shadow: 0 -2px 12px color-mix(in srgb, var(--ej-color-text, #333) 15%, transparent);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+
+        &.is-visible {
+            transform: translateY(0);
+        }
+    }
+
+    &__text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ej-color-text, #333);
+    }
+
+    &__btn {
+        flex-shrink: 0;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+}

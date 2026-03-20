@@ -1,0 +1,23 @@
+langcode: es
+status: true
+name: 'Formacion Enterprise'
+price_monthly: '149.00'
+price_yearly: '1430.00'
+features:
+  - course_builder
+  - student_portal
+  - basic_certificates
+  - learning_paths
+  - gamification
+  - xapi_tracking
+  - copilot_ia
+  - analytics
+  - api_access
+  - personalizacion_marca
+  - premium_blocks
+  - soporte_email
+  - soporte_chat
+  - soporte_dedicado
+limits: '{"courses":-1,"students_per_course":-1,"copilot_uses_per_month":10000,"certificates_per_month":-1,"storage_gb":100}'
+stripe_price_id: ''
+weight: 30

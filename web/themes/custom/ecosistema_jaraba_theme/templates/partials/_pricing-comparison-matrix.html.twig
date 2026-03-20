@@ -1,0 +1,129 @@
+{#
+/**
+ * @file _pricing-comparison-matrix.html.twig
+ * Feature comparison matrix for pricing pages — expandable accordion on mobile.
+ *
+ * VARIABLES (passed with `only`):
+ * - tiers: array of tier data (from MetaSitePricingService)
+ * - comparison_categories: array of {label, features: [{key, label, values: {tier_key: bool|string}}]}
+ *
+ * If comparison_categories is empty, auto-generates from tiers.features_raw.
+ *
+ * DIRECTIVES:
+ * - TWIG-INCLUDE-ONLY-001: Always include with `only`
+ * - a11y: ARIA table roles, screen reader text
+ * - Mobile: accordion via <details> (no JS needed)
+ */
+#}
+{% if tiers is not empty and tiers|length > 1 %}
+<section class="pricing-comparison reveal-element reveal-fade-up" aria-labelledby="comparison-title">
+  <div class="pricing-comparison__container">
+    <h2 id="comparison-title" class="pricing-comparison__title">
+      {% trans %}Compara todos los planes{% endtrans %}
+    </h2>
+    <p class="pricing-comparison__subtitle">
+      {% trans %}Encuentra el plan perfecto comparando todas las funcionalidades incluidas.{% endtrans %}
+    </p>
+
+    {# Desktop: full table #}
+    <div class="pricing-comparison__table-wrapper">
+      <table class="pricing-comparison__table" aria-label="{% trans %}Comparativa de planes{% endtrans %}">
+        <thead>
+          <tr>
+            <th class="pricing-comparison__feature-header" scope="col">
+              {% trans %}Funcionalidad{% endtrans %}
+            </th>
+            {% for tier in tiers %}
+              <th class="pricing-comparison__tier-header pricing-comparison__tier-header--{{ tier.tier_key }}"
+                  scope="col">
+                {{ tier.label }}
+                {% if tier.price_monthly > 0 %}
+                  <span class="pricing-comparison__tier-price">{{ tier.price_monthly|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+                {% else %}
+                  <span class="pricing-comparison__tier-price">{% trans %}Gratis{% endtrans %}</span>
+                {% endif %}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {# Auto-generate rows from features across tiers #}
+          {% set all_features = [] %}
+          {% for tier in tiers %}
+            {% for f in tier.features|default([]) %}
+              {% if f not in all_features %}
+                {% set all_features = all_features|merge([f]) %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+
+          {% for feature in all_features %}
+            <tr class="pricing-comparison__row">
+              <td class="pricing-comparison__feature-name">{{ feature }}</td>
+              {% for tier in tiers %}
+                <td class="pricing-comparison__cell">
+                  {% if feature in tier.features|default([]) %}
+                    <span class="pricing-comparison__check" aria-label="{% trans %}Incluido{% endtrans %}">
+                      {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '18px', color: 'verde-innovacion' }) }}
+                    </span>
+                  {% else %}
+                    <span class="pricing-comparison__dash" aria-label="{% trans %}No incluido{% endtrans %}">&mdash;</span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+
+          {# Limits row #}
+          {% if tiers[0].limits is defined and tiers[0].limits is not empty %}
+            {% for limit_key, limit_val in tiers[0].limits %}
+              <tr class="pricing-comparison__row pricing-comparison__row--limit">
+                <td class="pricing-comparison__feature-name">{{ limit_key|replace({'_': ' '})|capitalize }}</td>
+                {% for tier in tiers %}
+                  <td class="pricing-comparison__cell">
+                    {% set lv = tier.limits[limit_key]|default(0) %}
+                    {% if lv == -1 or lv >= 9999 %}
+                      <span class="pricing-comparison__unlimited">{% trans %}Ilimitado{% endtrans %}</span>
+                    {% elseif lv == 0 %}
+                      <span class="pricing-comparison__dash">&mdash;</span>
+                    {% else %}
+                      <span class="pricing-comparison__limit-value">{{ lv|number_format(0, ',', '.') }}</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {# Mobile: accordion per tier #}
+    <div class="pricing-comparison__mobile">
+      {% for tier in tiers %}
+        <details class="pricing-comparison__accordion"{% if tier.is_recommended %} open{% endif %}>
+          <summary class="pricing-comparison__accordion-header">
+            <span class="pricing-comparison__accordion-name">{{ tier.label }}</span>
+            {% if tier.price_monthly > 0 %}
+              <span class="pricing-comparison__accordion-price">{{ tier.price_monthly|number_format(0, ',', '.') }}&euro;/{% trans %}mes{% endtrans %}</span>
+            {% else %}
+              <span class="pricing-comparison__accordion-price">{% trans %}Gratis{% endtrans %}</span>
+            {% endif %}
+          </summary>
+          <div class="pricing-comparison__accordion-body">
+            <ul class="pricing-comparison__feature-list">
+              {% for feature in tier.features|default([]) %}
+                <li class="pricing-comparison__feature-item">
+                  {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+                  {{ feature }}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+{% endif %}

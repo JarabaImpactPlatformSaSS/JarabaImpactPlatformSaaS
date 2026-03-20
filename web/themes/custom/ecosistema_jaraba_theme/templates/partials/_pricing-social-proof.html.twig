@@ -1,0 +1,80 @@
+{#
+/**
+ * @file _pricing-social-proof.html.twig
+ * Social proof section for pricing pages — logos + testimonials.
+ *
+ * VARIABLES (passed with `only`):
+ * - social_logos: array of {url, alt} — Client/partner logos
+ * - testimonials: array of {quote, name, role, company, avatar_url}
+ * - stats: array of {value, label} — e.g. "500+ empresas confian en nosotros"
+ *
+ * DIRECTIVES:
+ * - TWIG-INCLUDE-ONLY-001: Always include with `only`
+ * - CSS-VAR-ALL-COLORS-001: var(--ej-*) only
+ * - i18n: {% trans %} on all static text
+ * - ICON-CONVENTION-001: jaraba_icon() for decorative icons
+ */
+#}
+<section class="pricing-social-proof reveal-element reveal-fade-up" aria-labelledby="social-proof-title">
+  <div class="pricing-social-proof__container">
+
+    {# Stats bar — key metrics #}
+    {% if stats is not empty %}
+      <div class="pricing-social-proof__stats" role="list">
+        {% for stat in stats %}
+          <div class="pricing-social-proof__stat" role="listitem">
+            <span class="pricing-social-proof__stat-value">{{ stat.value }}</span>
+            <span class="pricing-social-proof__stat-label">{{ stat.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Client logos carousel #}
+    {% if social_logos is not empty %}
+      <div class="pricing-social-proof__logos" aria-label="{% trans %}Empresas que confian en nosotros{% endtrans %}">
+        {% for logo in social_logos %}
+          <img src="{{ logo.url }}"
+               alt="{{ logo.alt }}"
+               class="pricing-social-proof__logo"
+               loading="lazy"
+               width="120"
+               height="40">
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Testimonials grid #}
+    {% if testimonials is not empty %}
+      <h3 id="social-proof-title" class="pricing-social-proof__title">
+        {% trans %}Lo que dicen nuestros clientes{% endtrans %}
+      </h3>
+      <div class="pricing-social-proof__testimonials">
+        {% for t in testimonials|slice(0, 3) %}
+          <blockquote class="pricing-social-proof__testimonial">
+            <p class="pricing-social-proof__quote">&ldquo;{{ t.quote }}&rdquo;</p>
+            <footer class="pricing-social-proof__author">
+              {% if t.avatar_url %}
+                <img src="{{ t.avatar_url }}"
+                     alt="{{ t.name }}"
+                     class="pricing-social-proof__avatar"
+                     loading="lazy"
+                     width="48"
+                     height="48">
+              {% endif %}
+              <div>
+                <cite class="pricing-social-proof__name">{{ t.name }}</cite>
+                {% if t.role or t.company %}
+                  <span class="pricing-social-proof__role">
+                    {{ t.role }}{% if t.role and t.company %}, {% endif %}{{ t.company }}
+                  </span>
+                {% endif %}
+              </div>
+            </footer>
+          </blockquote>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
