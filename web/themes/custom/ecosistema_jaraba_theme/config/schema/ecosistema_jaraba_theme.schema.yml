@@ -434,3 +434,46 @@ ecosistema_jaraba_theme.settings:
     stat_label_4:
       type: string
       label: 'Etiqueta estadística 4'
+    # ── PLG Pricing (PRICING-4TIER-001 / NO-HARDCODE-PRICE-001) ──
+    plg_annual_discount_percent:
+      type: integer
+      label: 'Descuento anual (%)'
+    plg_annual_discount_message:
+      type: string
+      label: 'Mensaje descuento anual'
+    plg_tax_disclaimer:
+      type: string
+      label: 'Aviso fiscal (pricing)'
+    plg_pricing_faq:
+      type: string
+      label: 'FAQs pricing (JSON)'
+    plg_vp_empleabilidad:
+      type: string
+      label: 'Propuesta de valor Empleabilidad'
+    plg_vp_emprendimiento:
+      type: string
+      label: 'Propuesta de valor Emprendimiento'
+    plg_vp_comercioconecta:
+      type: string
+      label: 'Propuesta de valor ComercioConecta'
+    plg_vp_agroconecta:
+      type: string
+      label: 'Propuesta de valor AgroConecta'
+    plg_vp_jarabalex:
+      type: string
+      label: 'Propuesta de valor JarabaLex'
+    plg_vp_serviciosconecta:
+      type: string
+      label: 'Propuesta de valor ServiciosConecta'
+    plg_vp_formacion:
+      type: string
+      label: 'Propuesta de valor Formacion'
+    plg_vp_andalucia_ei:
+      type: string
+      label: 'Propuesta de valor Andalucia +ei'
+    promo_banner_title:
+      type: string
+      label: 'Titulo banner promocional'
+    promo_banner_cta:
+      type: string
+      label: 'CTA banner promocional'

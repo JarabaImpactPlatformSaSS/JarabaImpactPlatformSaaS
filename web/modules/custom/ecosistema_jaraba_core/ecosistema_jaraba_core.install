@@ -3686,3 +3686,56 @@ function ecosistema_jaraba_core_update_9044(): string {
 
   return $msg;
 }
+
+/**
+ * ADDON-PRICING-001: Update addon vertical prices (60% of Starter).
+ *
+ * Addon prices must be <= Starter price of the corresponding vertical.
+ * Rule: addon_price ≈ 60% of Starter, rounded to nearest EUR.
+ * Annual: monthly × 12 × 0.80 (20% discount).
+ *
+ * @see docs/analisis/2026-03-20_Auditoria_Definitiva §7 Coherencia Addon Pricing
+ */
+function ecosistema_jaraba_core_update_9045(): string {
+  // addon_id => [monthly, yearly].
+  $addonUpdates = [
+    1 => ['monthly' => 12.00, 'yearly' => 115.00],   // Empleabilidad: 60% de 19€
+    2 => ['monthly' => 12.00, 'yearly' => 115.00],   // Emprendimiento: 60% de 19€
+    3 => ['monthly' => 19.00, 'yearly' => 182.00],   // ComercioConecta: 60% de 29€
+    4 => ['monthly' => 25.00, 'yearly' => 240.00],   // AgroConecta: 60% de 39€
+    5 => ['monthly' => 29.00, 'yearly' => 278.00],   // JarabaLex: 60% de 49€
+    6 => ['monthly' => 12.00, 'yearly' => 115.00],   // ServiciosConecta: 60% de 19€
+    7 => ['monthly' => 29.00, 'yearly' => 278.00],   // Andalucia +ei: sin cambio (ya OK)
+    8 => ['monthly' => 12.00, 'yearly' => 115.00],   // Content Hub: alineado minimo
+    9 => ['monthly' => 19.00, 'yearly' => 182.00],   // Formacion: 60% de 29€
+  ];
+
+  $storage = \Drupal::entityTypeManager()->getStorage('addon');
+  $updated = 0;
+  $errors = [];
+
+  foreach ($addonUpdates as $addonId => $prices) {
+    try {
+      $addon = $storage->load($addonId);
+      if ($addon === NULL) {
+        $errors[] = "Addon $addonId not found";
+        continue;
+      }
+
+      $addon->set('price_monthly', (string) $prices['monthly']);
+      $addon->set('price_yearly', (string) $prices['yearly']);
+      $addon->save();
+      $updated++;
+    }
+    catch (\Throwable $e) {
+      $errors[] = "Addon $addonId: " . $e->getMessage();
+    }
+  }
+
+  $msg = "ADDON-PRICING-001: Updated $updated/" . count($addonUpdates) . " addon prices.";
+  if ($errors !== []) {
+    $msg .= ' Errors: ' . implode('; ', $errors);
+  }
+
+  return $msg;
+}
