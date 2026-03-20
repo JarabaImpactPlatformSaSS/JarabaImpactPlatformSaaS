@@ -147,6 +147,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
 - CASE-STUDY-PATTERN-001: Cada vertical comercial tiene landing caso de éxito (10 secciones, 6 WebP, CSS compartido jarabalex-case-study.css, precios desde controller). Módulos con str_starts_with en preprocess_page DEBEN excluir `.case_study.` routes. 9/9 cubiertos (Demo excluido). Validación: `php scripts/validation/validate-case-study-completeness.php`
 - DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
+- LEAD-MAGNET-CRM-001: PublicSubscribeController auto-crea CRM Contact (source=lead_magnet) + Opportunity (stage=mql) para sources lead_magnet_*. Servicios CRM opcionales via $container->has(). Patrón idéntico a VerticalQuizService::createCrmLead()
+- VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
+- LANDING-CONVERSION-SCORE-001: 15 criterios para landing 10/10 clase mundial (hero+urgency, trust badges, pain points, steps, features, comparison, social proof, lead magnet, pricing tiers, FAQ, final CTA, sticky CTA, reveal animations, tracking, mobile-first)
 
 ### Quiz de Recomendacion de Vertical
 - Ruta: `/test-vertical` (publica, accesible sin login)
@@ -320,12 +323,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v154.0.0
-- ARQUITECTURA: v141.0.0
-- INDICE: v182.0.0
-- FLUJO: v106.0.0
-- Ultimo aprendizaje: #206
-- Ultima golden rule: #144
+- DIRECTRICES: v156.0.0
+- ARQUITECTURA: v143.0.0
+- INDICE: v184.0.0
+- FLUJO: v108.0.0
+- Ultimo aprendizaje: #208
+- Ultima golden rule: #146
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -417,12 +420,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-schema-org-pricing.php` (SCHEMA-PRICING-001)
 - `php scripts/validation/validate-pricing-coherence.php` (PRICING-COHERENCE-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (72 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (79 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 72 scripts validacion (scripts/validation/) | On demand, CI | 78 checks (run + warn) |
-| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 9 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/libraries.yml |
+| 1 | 79 scripts validacion (scripts/validation/) | On demand, CI | 83 checks (68 run + 15 warn) |
+| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 8 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
 | 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features | Complitud+Integridad+Consistencia+Coherencia |

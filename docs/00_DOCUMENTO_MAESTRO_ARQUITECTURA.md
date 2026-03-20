@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-20
-**Versión:** 142.0.0 (CASE-STUDY-PATTERN-001 + 9 case studies verticales + validate-case-study-completeness + 73 scripts + aprendizaje #207 + regla de oro #145)
+**Fecha:** 2026-03-21
+**Versión:** 143.0.0 (LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001 + 79 scripts + aprendizaje #208 + regla de oro #146)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -3174,6 +3174,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-21 | **143.0.0** | LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001: 5 fases landing verticales (F0-F5), video hero 9/9 verticales, pipeline lead magnet → CRM auto, 79 scripts, 83 checks |
 | 2026-03-19 | **137.0.0** | **Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth:** Sección Demo Dashboard PLG: 12 secciones (Banner, Wizard, Daily Actions, Magic Moment, Social Proof, Headline, Métricas, Features, AI Copilot Preview, Chart, Productos, Unlock Preview, CTA Final). AI Copilot Preview adaptativo 11 perfiles. Icon System Cascade Fallback: 3 niveles (SVG exacto → genérico categoría → placeholder invisible), NUNCA emoji. 53+ SVGs con hex inline. MARKETING-TRUTH-001: claims coherentes con Stripe trial_period_days=14. 4 reglas nuevas en Directrices v151.0.0. Aprendizaje #203. |
 | 2026-03-19 | **136.0.0** | **Fase B Quiz Completa — Wizard + Daily + Bridge + Drip + Linking:** CompletarQuizStep (__global__ weight 85, isComplete = QuizResult exists for uid). ExplorarQuizAction (__global__ weight 80, getContext visible = no quiz). MegaMenuBridgeService (SiteMenuItem mega_column → mega_menu_columns, fallback PHP). TenantOnboardingService::processRegistration paso 9: quiz_uuid → linkResultToUser(). ecosistema-jaraba-onboarding.js: URLSearchParams capture quiz_uuid+source. QuizFollowUpCron: cron 24h/72h/7d drip. hook_mail quiz_followup con subject contextual. Fix jaraba_page_builder duplicate preprocess_html. QUIZ-FUNNEL-001 ampliado 27 checks. Aprendizaje #198. |
 | 2026-03-19 | **135.0.0** | **Mega Menú Clase Mundial + Quiz Recomendación Vertical IA:** ecosistema_jaraba_core: QuizResult ContentEntity (18 campos: answers, scores, recommended_vertical, ai_explanation, email, utm_*, ip_hash, crm_contact_id cross-módulo integer). VerticalQuizService (scoring estático 9 verticales, IA async Haiku tier fast, CRM auto-lead Contact+Opportunity, BANT parcial). VerticalQuizController (3 rutas: /test-vertical, /api/v1/quiz/submit con CSRF+FloodInterface 10rpm, /test-vertical/resultado/{uuid}). page--test-vertical.html.twig (ZERO-REGION-001). quiz.scss (mobile-first, cards Typeform-style). vertical-quiz.js (Vanilla JS, CSRF cached, progress bar). Mega menú: 4 columnas, 960px, mini-cards con jaraba_icon() duotone, datos desde preprocess PHP. jaraba_crm: contact_source += quiz_vertical. 5 safeguards nuevos: ICON-INTEGRITY-001 (515 refs), QUIZ-FUNNEL-001 (18 checks), CTA-DESTINATION-001, FUNNEL-COMPLETENESS-001, VERTICAL-COVERAGE-001. Total safeguard scripts: 42 (de 27). Aprendizaje #197. |

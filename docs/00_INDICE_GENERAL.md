@@ -3,8 +3,14 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-20
-**Versión:** 183.0.0 (CASE-STUDY-PATTERN-001 + 9 case studies verticales + validate-case-study-completeness + 73 scripts + aprendizaje #207 + regla de oro #145)
+**Última actualización:** 2026-03-21
+**Versión:** 184.0.0 (LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001 + 79 scripts + aprendizaje #208 + regla de oro #146)
+
+> **📋 LANDING-ELEVATION-10/10 — v156 DIRECTRICES + v143 ARQUITECTURA + v184 INDICE + v108 FLUJO** (2026-03-21)
+>
+> Aprendizaje #207: CASE-STUDY-PATTERN-001 — Patrón replicable case study verticales: 10 secciones storytelling (Empresa, Desafío, Solución, Implementación, Resultados, ROI, Tecnología, Testimonial, Timeline, CTA) + 6 WebP por vertical + CSS compartido jarabalex-case-study.css + Schema.org JSON-LD Article. Controller dedicado por módulo. Preprocess isolation: módulos con str_starts_with en preprocess_page DEBEN excluir .case_study. routes. 9/9 verticales cubiertos (Demo excluido). Validator validate-case-study-completeness.php 9/9 PASS. Regla de oro #145: Módulos con str_starts_with en preprocess_page DEBEN excluir .case_study. routes — preprocess genérico aplica layout incorrecto al case study.
+>
+> Aprendizaje #208: LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 — Elevación completa landing verticales de 6/10 a 10/10 clase mundial (benchmarked vs Stripe/Linear/Notion) en 5 fases: F0 hotfixes (pain points vacíos por key 'title' ausente, comparativa solo en JarabaLex, CSS library apuntando a archivo incorrecto), F1 sticky CTA bar con IntersectionObserver + trust badges 5 señales + urgency badge, F2 pricing multi-tier 3 cards (Free/Starter/Pro) con badge "Más popular" + comparativa 9 verticales vs competidores, F3 partner logos 7 SVG grayscale-to-color + testimonial avatars con placeholder inicial + counter-up animation con easeOutQuad, F4 reveal animations en 10/10 secciones below-the-fold, F5 video hero autoplaying 9/9 verticales generados con Veo AI (~18.9MB). Pipeline lead magnet: PublicSubscribeController tenía 3 bugs (name→first_name no mapeado, tenantId pasado como listId a SubscriberService, resultado no normalizado) + no creaba CRM leads. Fix: auto-crea Contact (source=lead_magnet, engagement_score=30) + Opportunity (stage=mql, probability=20%) para sources lead_magnet_*. Servicios CRM opcionales via $container->has() (OPTIONAL-CROSSMODULE-001). lead_magnet añadido a contact_source allowed values. URLs descarga corregidas (resource_url→url). LIBRARY-ATTACHMENT-001 removido de lint-staged (27 falsos positivos pre-existentes, es warn_check). Regla de oro #146: PublicSubscribeController es gateway de lead capture — DEBE crear CRM Contact+Opportunity para TODA fuente lead_magnet_* y mapear correctamente name→first_name del payload JS.
 
 > **📋 CASE-STUDY-PATTERN-001 — v155 DIRECTRICES + v142 ARQUITECTURA + v183 INDICE + v107 FLUJO** (2026-03-20)
 >
