@@ -4972,6 +4972,15 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     $suggestions[] = 'page__legal';
   }
 
+  // Caso de éxito + diagnóstico legal → page--jarabalex (landing limpia, sin H1 "Términos Legales").
+  $jarabalex_landing_routes = [
+    'jaraba_legal.case_study.martinez',
+    'jaraba_legal.diagnostico',
+  ];
+  if (in_array($route_str, $jarabalex_landing_routes)) {
+    $suggestions[] = 'page__jarabalex';
+  }
+
   // =========================================================================
   // JARABALEX LEGAL CASES — Templates zero-region para expedientes
   // Plan Implementacion JarabaLex Legal Practice Platform v1 — FASE A1.

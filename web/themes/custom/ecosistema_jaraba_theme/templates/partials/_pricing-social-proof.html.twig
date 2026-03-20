@@ -73,6 +73,20 @@
             </footer>
           </blockquote>
         {% endfor %}
+
+        {# Enlace a caso de éxito si testimonios contienen "Martínez" o similar #}
+        {% if testimonials|length > 0 %}
+          <div class="pricing-social-proof__case-link">
+            <a href="/jarabalex/caso-de-exito/despacho-martinez"
+               class="pricing-social-proof__case-link-btn"
+               data-track-cta="pricing_case_study"
+               data-track-position="pricing_social_proof">
+              {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
+              {% trans %}Leer caso completo: -75% tiempo de búsqueda{% endtrans %}
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
