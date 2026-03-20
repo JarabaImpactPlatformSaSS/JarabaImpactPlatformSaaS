@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-19
-**Versión:** 138.0.0 (Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth + aprendizaje #203): DEMO-VERTICAL-PATTERN-001 12 secciones dashboard + ICON-INTEGRITY-002 cascade 3 niveles + MARKETING-TRUTH-001 claims vs billing)
+**Fecha:** 2026-03-20
+**Versión:** 139.0.0 (TWIG-SYNTAX-LINT-001 Twig Static Linter + Multi-tenant 500 Fix + aprendizaje #204): DEMO-VERTICAL-PATTERN-001 12 secciones dashboard + ICON-INTEGRITY-002 cascade 3 niveles + MARKETING-TRUTH-001 claims vs billing)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -3248,4 +3248,6 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | 2026-03-17 | 125.0.0 | **Stripe Checkout E2E Operativo:** 7 bugs P0-P2 corregidos (colisión rutas Commerce, doble /v1/ en URLs, CSP script-src, metadata mismatch, processRegistration incompatible, catch Exception→Throwable). Rutas movidas a /planes/checkout/*. 17 Products + Prices sincronizados. Checkout Embedded con body limpio. 9 email templates transaccionales (trial, payment_failed, cancelled + 6 dunning). Pricing CTAs actualizados. |
 
-> **Versión:** 138.0.0 | **Fecha:** 2026-03-19 | **Autor:** IA Asistente
+| 2026-03-20 | 139.0.0 | **TWIG-SYNTAX-LINT-001 — Twig Static Linter:** Nuevo validador estático para templates Twig (6 checks, 933 archivos, 0 falsos positivos). Integrado en pre-commit lint-staged + validate-all.sh. Fix de 5 doble-coma en 4 templates que causaban 500 en subdominios multi-tenant. 52 scripts validación total. |
+
+> **Versión:** 139.0.0 | **Fecha:** 2026-03-20 | **Autor:** IA Asistente

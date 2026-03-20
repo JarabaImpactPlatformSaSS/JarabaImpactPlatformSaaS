@@ -3,8 +3,12 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-19
-**Versión:** 179.0.0 (Demos Verticales Clase Mundial + ICON-INTEGRITY-002 + MARKETING-TRUTH-001 + aprendizaje #203)
+**Última actualización:** 2026-03-20
+**Versión:** 180.0.0 (TWIG-SYNTAX-LINT-001 Twig Static Linter + Multi-tenant 500 Fix + aprendizaje #204 + regla de oro #142)
+
+> **📋 TWIG-SYNTAX-LINT-001 — v152 DIRECTRICES + v139 ARQUITECTURA + v180 INDICE + v104 FLUJO** (2026-03-20)
+>
+> Aprendizaje #204: Doble coma `,,` en mappings Twig causa SyntaxError silencioso en Twig 3.x — solo se manifiesta al compilar el template en runtime (HTTP 500). Incidente 2026-03-20: 5 instancias en 4 templates (page--page-builder, page--front, page--user, page--vertical-landing) causaban 500 en subdominios multi-tenant cuya homepage disparaba esos templates. El dominio principal y aceitesdelsur usaban otros templates → funcionaban. Patrón del bug: merge/paste de variables de idioma (`available_languages`, `language_prefix`, etc.) con estilo `'key':` al final de un mapping `key:` → coma del último campo original duplicada. Nuevo validador TWIG-SYNTAX-LINT-001: 6 checks estáticos (DOUBLE-COMMA, UNCLOSED-TAG-BALANCE, UNMATCHED-BLOCK, MIXED-KEY-STYLE, EMPTY-WITH, TWIG-IN-HTML-COMMENT) con stripping inteligente de zonas no-Twig (script, style, verbatim, comentarios). Diseño zero-false-positive: balance global por archivo (no línea por línea), iterative comment stripping para `{#` anidados. Integrado en 3 capas: pre-commit lint-staged, validate-all.sh fast+full, CLAUDE.md. 933 templates, 0 errores, 0 warnings post-fix. También: 6 MIXED-KEY-STYLE normalizados, 1 `{#` anidado en docblock corregido. Regla de oro #142: NUNCA doble coma `,,` en mappings Twig — Twig 3.x lanza SyntaxError sin recovery; el error NO aparece en PHPStan, PHPCS, ni tests, solo en runtime cuando un usuario visita una ruta que compila el template afectado.
 
 > **📋 DEMOS VERTICALES + ICON CASCADE + MARKETING TRUTH — v151 DIRECTRICES + v138 ARQUITECTURA + v179 INDICE + v103 FLUJO** (2026-03-19)
 >
