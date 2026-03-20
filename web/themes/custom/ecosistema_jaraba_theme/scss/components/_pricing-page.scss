@@ -187,9 +187,12 @@
                 box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                 border-color 0.3s ease;
     color: var(--ej-color-text-inverse, #fff);
-    overflow: hidden;
+    // overflow: visible para que el badge "Mas popular" no se corte (top: -14px).
+    // El efecto shine usa clip-path en su lugar.
+    overflow: visible;
 
-    // Shine effect
+    // Shine effect — clip-path contiene el brillo dentro del borde redondeado
+    // sin depender de overflow:hidden (que cortaba el badge "Mas popular").
     &::before {
         content: '';
         position: absolute;
@@ -206,6 +209,8 @@
         transition: left 0.6s ease;
         pointer-events: none;
         z-index: 1;
+        border-radius: inherit;
+        clip-path: inset(0 round var(--ej-radius-xl, 1.25rem));
     }
 
     &:hover {
@@ -230,6 +235,8 @@
         box-shadow: 0 0 40px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 20%, transparent);
         transform: scale(1);
         animation: pricing-glow 3s ease-in-out infinite;
+        // Espacio extra arriba para el badge "Mas popular" (top: -14px).
+        margin-top: 14px;
 
         @media (min-width: 768px) {
             transform: scale(1.05);
@@ -265,11 +272,11 @@
                 var(--ej-color-naranja-impulso, #FF8C42),
                 var(--ej-color-naranja-oscuro, #E67332));
         color: var(--ej-color-text-inverse, #fff);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
-        padding: 0.35rem 1.25rem;
+        padding: 0.35rem 1rem;
         border-radius: 100px;
         white-space: nowrap;
     }

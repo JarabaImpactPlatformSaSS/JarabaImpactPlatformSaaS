@@ -1,0 +1,19 @@
+uuid: d50205bb-331f-4eb4-b4a1-a6eb6e799ff9
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_free
+label: 'Empleabilidad - Free'
+vertical: empleabilidad
+tier: free
+features:
+  - basic_profile
+  - community
+  - soporte_email
+  - copilot_ia
+limits:
+  diagnostics: 1
+  cv_builder: 1
+  job_applications_per_day: 3
+  copilot_messages_per_day: 5
+description: 'Funcionalidades basicas del plan Free para Empleabilidad.'

@@ -1,0 +1,18 @@
+uuid: 1e0634da-2e46-4090-85d7-15dcf6b15592
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_free
+label: 'ComercioConecta - Free'
+vertical: comercioconecta
+tier: free
+features:
+  - catalog
+  - qr_codes
+  - copilot_ia
+  - soporte_email
+limits:
+  products: 10
+  flash_offers_active: 1
+  copilot_uses_per_month: 20
+description: 'Funcionalidades basicas del plan Free para ComercioConecta.'

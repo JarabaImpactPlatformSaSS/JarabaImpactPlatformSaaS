@@ -1,0 +1,18 @@
+uuid: 00602a7c-3533-4e73-be2f-17df9f264371
+langcode: es
+status: true
+dependencies: {  }
+id: formacion_free
+label: 'Formacion - Free'
+vertical: formacion
+tier: free
+features:
+  - course_builder
+  - student_portal
+  - copilot_ia
+  - soporte_email
+limits:
+  courses: 1
+  students_per_course: 10
+  copilot_uses_per_month: 10
+description: 'Funcionalidades basicas del plan Free para Formacion.'

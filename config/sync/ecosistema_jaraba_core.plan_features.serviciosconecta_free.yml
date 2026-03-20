@@ -1,0 +1,18 @@
+uuid: 44d032b3-deb6-425c-a98c-509519efa41c
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_free
+label: 'ServiciosConecta - Free'
+vertical: serviciosconecta
+tier: free
+features:
+  - booking_engine
+  - marketplace_profile
+  - copilot_ia
+  - soporte_email
+limits:
+  services: 3
+  bookings_per_month: 10
+  copilot_queries_month: 10
+description: 'Funcionalidades basicas del plan Free para ServiciosConecta.'

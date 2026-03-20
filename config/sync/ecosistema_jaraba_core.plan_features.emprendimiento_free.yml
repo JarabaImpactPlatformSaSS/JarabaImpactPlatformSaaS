@@ -1,0 +1,18 @@
+uuid: 6c9367a9-0b02-448d-9713-26ccfdf6b827
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_free
+label: 'Emprendimiento - Free'
+vertical: emprendimiento
+tier: free
+features:
+  - calculadora_madurez
+  - bmc_ia
+  - copilot_ia
+  - soporte_email
+limits:
+  hypotheses: 3
+  experiments_per_month: 2
+  copilot_sessions_per_day: 5
+description: 'Funcionalidades basicas del plan Free para Emprendimiento.'
