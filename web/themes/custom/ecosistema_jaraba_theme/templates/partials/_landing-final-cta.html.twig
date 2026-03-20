@@ -17,7 +17,7 @@
 {% set cta_data = final_cta|default({}) %}
 
 {% if cta_data.cta is defined %}
-<section class="landing-final-cta landing-final-cta--{{ vertical_key|default('default') }}">
+<section class="landing-final-cta landing-final-cta--{{ vertical_key|default('default') }} reveal-element reveal-fade-up">
   <div class="landing-final-cta__container">
     <h2 class="landing-final-cta__title">
       {{ cta_data.headline|default('Listo para empezar?'|t) }}

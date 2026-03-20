@@ -18,7 +18,7 @@
 {% set items = section.items|default(section|default([])) %}
 
 {% if items|length > 0 %}
-<section class="landing-solution" aria-labelledby="solution-title">
+<section class="landing-solution reveal-element reveal-fade-up" aria-labelledby="solution-title">
   <div class="landing-solution__container">
     <h2 id="solution-title" class="landing-solution__title">
       {{ section_title }}

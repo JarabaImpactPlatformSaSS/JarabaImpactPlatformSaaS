@@ -16,7 +16,7 @@
 {% set items = faq|default([]) %}
 
 {% if items|length > 0 %}
-<section class="landing-faq" aria-labelledby="faq-title">
+<section class="landing-faq reveal-element reveal-fade-up" aria-labelledby="faq-title">
   <div class="landing-faq__container">
     <h2 id="faq-title" class="landing-faq__title">
       {% trans %}Preguntas frecuentes{% endtrans %}
