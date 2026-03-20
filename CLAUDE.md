@@ -383,7 +383,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 67 scripts validacion (scripts/validation/) | On demand, CI | 79 checks fast+full |
+| 1 | 67 scripts validacion (scripts/validation/) | On demand, CI | 68 checks (59 run + 9 warn) |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 9 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/libraries.yml |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |

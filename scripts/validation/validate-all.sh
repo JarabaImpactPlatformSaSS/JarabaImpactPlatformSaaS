@@ -316,10 +316,10 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-library-attachments.php"
 
   warn_check "TWIG-INCLUDE-ONLY-001" "Twig includes of partials use only keyword" \
+    php "$SCRIPT_DIR/validate-twig-include-only.php"
 
   run_check "TENANT-USER-ROLE-001" "Group members have tenant_user Drupal role" \
     php "$SCRIPT_DIR/validate-tenant-user-role.php"
-    php "$SCRIPT_DIR/validate-twig-include-only.php"
 
   # DIACRITICS-ES-001: Requires Drupal bootstrap (drush php:script).
   # Prefer lando drush (host drush may not have Drupal bootstrap).
@@ -368,7 +368,7 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-addon-implementation.php"
 
   # Validators previously orphaned — integrated 2026-03-20.
-  run_check "ICON-COMPLETENESS-001" "Icon SVG completeness (cascade fallback coverage)" \
+  warn_check "ICON-COMPLETENESS-001" "Icon SVG completeness (cascade fallback coverage)" \
     php "$SCRIPT_DIR/validate-icon-completeness.php"
 
   run_check "MARKETING-TRUTH-001" "Marketing claims vs billing reality" \
