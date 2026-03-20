@@ -442,6 +442,16 @@ if [ "$MODE" = "full" ]; then
   run_check "SCHEMA-PRICING-001" "Schema.org pricing dynamic (no hardcoded EUR)" \
     php "$SCRIPT_DIR/validate-schema-org-pricing.php"
 
+  # Landing elevation safeguards (added 2026-03-21).
+  run_check "LEAD-MAGNET-CRM-001" "Lead magnet → CRM pipeline integrity" \
+    php "$SCRIPT_DIR/validate-lead-magnet-crm.php"
+
+  run_check "VIDEO-HERO-001" "Video hero asset completeness (9 verticals)" \
+    php "$SCRIPT_DIR/validate-video-hero.php"
+
+  warn_check "LANDING-SECTIONS-RENDERED-001" "Landing section completeness (requires Lando)" \
+    php "$SCRIPT_DIR/validate-landing-sections-rendered.php"
+
   # Infrastructure health (production-only, skips gracefully in CI).
   warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \
     php "$SCRIPT_DIR/validate-infra-health.php"
