@@ -4,9 +4,9 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-20
-**Versión:** 182.0.0 (PRICING-4TIER-001 + modelo 4 tiers + precios 8 verticales + 9 addons + social proof + winback + 72 scripts + aprendizaje #206 + regla de oro #144)
+**Versión:** 183.0.0 (CASE-STUDY-PATTERN-001 + 9 case studies verticales + validate-case-study-completeness + 73 scripts + aprendizaje #207 + regla de oro #145)
 
-> **📋 PRICING-4TIER-001 — v154 DIRECTRICES + v141 ARQUITECTURA + v182 INDICE + v106 FLUJO** (2026-03-20)
+> **📋 CASE-STUDY-PATTERN-001 — v155 DIRECTRICES + v142 ARQUITECTURA + v183 INDICE + v107 FLUJO** (2026-03-20)
 >
 > Aprendizaje #206: PRICING-4TIER-001 — Bug critico en modelo de pricing: la BD tenia 4 planes por vertical (Free/Starter/Pro/Enterprise) pero solo 3 SaasPlanTier ConfigEntities (Starter/Pro/Enterprise). El plan Free a 0€ era INVISIBLE en todas las paginas de precios porque getPricingPreview() iteraba SaasPlanTier entities y el key 'free' de loadVerticalPrices() nunca se consumia. Solucion: crear 4to tier 'free' (weight=-10), quitar alias 'free' de starter. Auditoria completa de 8 verticales con investigacion de mercado Espana/Andalucia: Emprendimiento bajado (19/49/99€ — mercado sensible, puerta ecosistema), JarabaLex subido (49/149/299€ — vLex 79€+, Aranzadi 150€+), Formacion creado (29/79/149€ — vertical sin planes). Descuento anual 17→20% ("2 meses gratis"). 9 addon prices corregidos (ADDON-PRICING-001: addon ≤ Starter, ~60%). Features acumulativas (PRICING-FEATURES-ACCUMULATE-001): cada tier hereda del anterior — Free(4) → Starter(5) → Pro(8) → Enterprise(11). 9 SaasPlanFeatures ConfigEntities creadas para tier free (fuente unica). Social proof integrado: stats + testimonios reales desde Theme Settings o ReviewAggregationService. Win-back emails: 4 templates en hook_mail (7d/30d/60d/90d). PauseSubscriptionService con UI (botones pausar/cancelar/reanudar en _subscription-card). Badge "Mas popular": overflow:hidden del wrapper cortaba el badge absolute → cambiado a display:inline-block static. SCSS-COMPONENT-BUILD-001: css/components/*.css deben estar en npm run build (causa raiz del badge cortado). 5 commits, ~3100 lineas, score 6.7→9.2/10. 3 scripts validacion pricing (pricing-tiers, schema-org-pricing, pricing-coherence). Regla de oro #144: TODO CSS cargado como library separada (css/components/, css/routes/) DEBE estar incluido en npm run build — si no, los cambios SCSS no se reflejan y el navegador sirve estilos obsoletos indefinidamente.
 
@@ -1586,6 +1586,28 @@
 | [2026-01-09_2231_sla-por-tier.md](./logica/2026-01-09_2231_sla-por-tier.md) | 📊 **SLAs por Tier** - Uptime 99.5-99.95%, RTO/RPO | 2026-01-09 |
 
 **Total documentos:** 5
+
+---
+
+## 3.1 Case Studies — Storytelling de Conversión (CASE-STUDY-PATTERN-001)
+
+📁 **Ubicación:** `docs/negocio/` (Word) + código en módulos custom + templates en tema
+
+| Vertical | Protagonista | Ruta | Módulo |
+|----------|-------------|------|--------|
+| JarabaLex | Despacho Martínez, Sevilla | `/jarabalex/caso-de-exito/despacho-martinez` | jaraba_legal_billing |
+| AgroConecta | (agricultor Jaén) | `/agroconecta/caso-de-exito/...` | jaraba_agro_catalog |
+| Emprendimiento | Carlos Etxebarria, Bilbao | `/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao` | jaraba_business_tools |
+| Empleabilidad | Rosa Fernández, Málaga | `/empleabilidad/caso-de-exito/rosa-fernandez-malaga` | jaraba_candidate |
+| ComercioConecta | Boutique La Mariposa | `/comercioconecta/caso-de-exito/boutique-la-mariposa` | jaraba_comercio_conecta |
+| ServiciosConecta | Carmen Navarro, Madrid | `/serviciosconecta/caso-de-exito/carmen-navarro-madrid` | jaraba_servicios_conecta |
+| Formación | María López, Madrid | `/formacion/caso-de-exito/maria-lopez-madrid` | jaraba_lms |
+| Andalucía EI | Diputación de Jaén | `/andalucia-ei/caso-de-exito/diputacion-jaen` | jaraba_andalucia_ei |
+| Content Hub | Bodega Montilla, Córdoba | `/content-hub/caso-de-exito/bodega-montilla-cordoba` | jaraba_content_hub |
+
+**Patrón:** 10 secciones, 6 imágenes WebP, CSS compartido `jarabalex-case-study.css`, Schema.org JSON-LD, precios desde controller (NO-HARDCODE-PRICE-001), CTAs con data-track-cta (FUNNEL-COMPLETENESS-001). Demo excluido (vertical interno).
+
+**Total case studies:** 9/9 verticales comerciales
 
 ---
 
