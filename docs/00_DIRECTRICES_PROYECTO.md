@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-21
-**Versión:** 157.0.0 (Activación IA Embudo Ventas + GROUNDING-PROVIDER-001 + CASCADE-SEARCH-001 + ACTIVE-PROMOTION-001 + aprendizaje #210)
+**Versión:** 158.0.0 (HOMEPAGE-ELEVATION-001 F0-F5 + 4 variantes metasitio + HOMEPAGE-COMPLETENESS-001 + aprendizaje #211)
 
 ---
 
