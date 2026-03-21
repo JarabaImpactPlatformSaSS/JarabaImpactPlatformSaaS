@@ -568,14 +568,19 @@
 
   {# STICKY CTA — Conversion persistente al hacer scroll (HOMEPAGE-ELEVATION-001 F0) #}
   {% if theme_settings.homepage_sticky_enabled|default(true) %}
+    {% if logged_in %}
+      {% set sticky_cta_data = {
+        text: theme_settings.homepage_sticky_text|default('14 días gratis — Sin tarjeta de crédito'|trans),
+        cta: { text: 'Ir al dashboard'|trans, url: ped_urls.dashboard|default('/user') }
+      } %}
+    {% else %}
+      {% set sticky_cta_data = {
+        text: theme_settings.homepage_sticky_text|default('14 días gratis — Sin tarjeta de crédito'|trans),
+        cta: { text: 'Empezar gratis'|trans, url: ped_urls.register|default(path('user.register')) }
+      } %}
+    {% endif %}
     {% include '@ecosistema_jaraba_theme/partials/_landing-sticky-cta.html.twig' with {
-      sticky_cta: {
-        text: theme_settings.homepage_sticky_text|default('14 dias gratis — Sin tarjeta de credito'|trans),
-        cta: {
-          text: logged_in ? 'Ir al dashboard'|trans : 'Empezar gratis'|trans,
-          url: logged_in ? (ped_urls.dashboard|default('/user')) : (ped_urls.register|default(path('user.register')))
-        }
-      },
+      sticky_cta: sticky_cta_data,
       vertical_key: 'homepage'
     } only %}
   {% endif %}
