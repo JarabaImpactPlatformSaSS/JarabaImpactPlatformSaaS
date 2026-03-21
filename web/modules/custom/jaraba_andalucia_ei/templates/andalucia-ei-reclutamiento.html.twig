@@ -241,7 +241,7 @@
       ] %}
       {% for beneficio in beneficios %}
         <div class="aei-rec__beneficio-card">
-          <span class="aei-rec__beneficio-icon" aria-hidden="true">{{ benefit_icons[loop.index0] }}</span>
+          <span class="aei-rec__beneficio-icon" aria-hidden="true">{{ benefit_icons[loop.index0]|raw }}</span>
           <span class="aei-rec__beneficio-destacado">{{ beneficio.destacado }}</span>
           <h3 class="aei-rec__beneficio-titulo">{{ beneficio.titulo }}</h3>
           <p class="aei-rec__beneficio-desc">{{ beneficio.desc }}</p>
