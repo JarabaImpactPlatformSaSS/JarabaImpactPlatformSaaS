@@ -178,6 +178,10 @@ jobs:
             'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
             'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
           ];
+
+          // Include production-specific settings (performance, trusted hosts, Redis, etc.)
+          // Uses dirname() because $app_root is not available in settings.local.php.
+          include dirname(__DIR__, 3) . '/config/deploy/settings.production.php';
           SETTINGSEOF
 
           # Replace placeholders with actual secrets
@@ -228,6 +232,7 @@ jobs:
           KEY_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
           KEY_GEMINI: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
           KEY_QDRANT: ${{ secrets.QDRANT_API_KEY }}
+          KEY_QDRANT_URL: ${{ secrets.QDRANT_CLOUD_URL }}
           KEY_RECAPTCHA_SITE: ${{ secrets.RECAPTCHA_SITE_KEY }}
           KEY_RECAPTCHA_SECRET: ${{ secrets.RECAPTCHA_SECRET_KEY }}
           KEY_STRIPE_PUBLIC: ${{ secrets.STRIPE_PUBLIC_KEY }}
@@ -239,6 +244,19 @@ jobs:
           KEY_SMTP_HOST: ${{ secrets.SMTP_HOST }}
           KEY_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
           KEY_GOOGLE_CLIENT_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_SECRET }}
+          KEY_OAUTH_BASE: ${{ secrets.OAUTH_CALLBACK_BASE_URL }}
+          KEY_LINKEDIN_ID: ${{ secrets.SOCIAL_AUTH_LINKEDIN_CLIENT_ID }}
+          KEY_LINKEDIN_SECRET: ${{ secrets.SOCIAL_AUTH_LINKEDIN_CLIENT_SECRET }}
+          KEY_MICROSOFT_ID: ${{ secrets.SOCIAL_AUTH_MICROSOFT_CLIENT_ID }}
+          KEY_MICROSOFT_SECRET: ${{ secrets.SOCIAL_AUTH_MICROSOFT_CLIENT_SECRET }}
+          KEY_VAULT_KEK: ${{ secrets.VAULT_KEK }}
+          KEY_JARABA_PMK: ${{ secrets.JARABA_PMK }}
+          KEY_REDSYS_SECRET: ${{ secrets.REDSYS_SECRET_KEY }}
+          KEY_WHATSAPP: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
+          KEY_HUBSPOT: ${{ secrets.HUBSPOT_API_KEY }}
+          KEY_CDN: ${{ secrets.CDN_BASE_URL }}
+          KEY_CERT_PATH: ${{ secrets.ECOSISTEMA_JARABA_CERT_PATH }}
+          KEY_CERT_PASSWORD: ${{ secrets.ECOSISTEMA_JARABA_CERT_PASSWORD }}
         run: |
           # Generate settings.env.php LOCALLY on the runner, then scp to server.
           # This avoids SSH heredoc escaping issues with API key special characters.
@@ -254,7 +272,9 @@ jobs:
             [ -n "${KEY_OPENAI}" ] && echo "putenv('OPENAI_API_KEY=${KEY_OPENAI}');"
             [ -n "${KEY_ANTHROPIC}" ] && echo "putenv('ANTHROPIC_API_KEY=${KEY_ANTHROPIC}');"
             [ -n "${KEY_GEMINI}" ] && echo "putenv('GOOGLE_GEMINI_API_KEY=${KEY_GEMINI}');"
+            [ -n "${KEY_GEMINI}" ] && echo "putenv('GEMINI_API_KEY=${KEY_GEMINI}');"
             [ -n "${KEY_QDRANT}" ] && echo "putenv('QDRANT_API_KEY=${KEY_QDRANT}');"
+            [ -n "${KEY_QDRANT_URL}" ] && echo "putenv('QDRANT_CLUSTER_URL=${KEY_QDRANT_URL}');"
             echo ""
             echo "// reCAPTCHA v3"
             [ -n "${KEY_RECAPTCHA_SITE}" ] && echo "putenv('RECAPTCHA_SITE_KEY=${KEY_RECAPTCHA_SITE}');"
@@ -274,6 +294,29 @@ jobs:
             echo "// OAuth"
             [ -n "${KEY_GOOGLE_CLIENT_ID}" ] && echo "putenv('SOCIAL_AUTH_GOOGLE_CLIENT_ID=${KEY_GOOGLE_CLIENT_ID}');"
             [ -n "${KEY_GOOGLE_CLIENT_SECRET}" ] && echo "putenv('SOCIAL_AUTH_GOOGLE_CLIENT_SECRET=${KEY_GOOGLE_CLIENT_SECRET}');"
+            [ -n "${KEY_OAUTH_BASE}" ] && echo "putenv('OAUTH_CALLBACK_BASE_URL=${KEY_OAUTH_BASE}');"
+            [ -n "${KEY_LINKEDIN_ID}" ] && echo "putenv('SOCIAL_AUTH_LINKEDIN_CLIENT_ID=${KEY_LINKEDIN_ID}');"
+            [ -n "${KEY_LINKEDIN_SECRET}" ] && echo "putenv('SOCIAL_AUTH_LINKEDIN_CLIENT_SECRET=${KEY_LINKEDIN_SECRET}');"
+            [ -n "${KEY_MICROSOFT_ID}" ] && echo "putenv('SOCIAL_AUTH_MICROSOFT_CLIENT_ID=${KEY_MICROSOFT_ID}');"
+            [ -n "${KEY_MICROSOFT_SECRET}" ] && echo "putenv('SOCIAL_AUTH_MICROSOFT_CLIENT_SECRET=${KEY_MICROSOFT_SECRET}');"
+            echo ""
+            echo "// Security (Vault, PMK)"
+            [ -n "${KEY_VAULT_KEK}" ] && echo "putenv('VAULT_KEK=${KEY_VAULT_KEK}');"
+            [ -n "${KEY_JARABA_PMK}" ] && echo "putenv('JARABA_PMK=${KEY_JARABA_PMK}');"
+            echo ""
+            echo "// Payments (Redsys/Bizum)"
+            [ -n "${KEY_REDSYS_SECRET}" ] && echo "putenv('REDSYS_SECRET_KEY=${KEY_REDSYS_SECRET}');"
+            echo ""
+            echo "// Integrations"
+            [ -n "${KEY_WHATSAPP}" ] && echo "putenv('WHATSAPP_ACCESS_TOKEN=${KEY_WHATSAPP}');"
+            [ -n "${KEY_HUBSPOT}" ] && echo "putenv('HUBSPOT_API_KEY=${KEY_HUBSPOT}');"
+            echo ""
+            echo "// CDN"
+            [ -n "${KEY_CDN}" ] && echo "putenv('CDN_BASE_URL=${KEY_CDN}');"
+            echo ""
+            echo "// Certificates (Firma Digital)"
+            [ -n "${KEY_CERT_PATH}" ] && echo "putenv('ECOSISTEMA_JARABA_CERT_PATH=${KEY_CERT_PATH}');"
+            [ -n "${KEY_CERT_PASSWORD}" ] && echo "putenv('ECOSISTEMA_JARABA_CERT_PASSWORD=${KEY_CERT_PASSWORD}');"
           } > "$ENV_FILE"
 
           PUTENV_COUNT=$(grep -c putenv "$ENV_FILE")
@@ -338,6 +381,12 @@ jobs:
           ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             cd /var/www/jaraba
             drush config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
+
+            # Clean stale aggregated CSS/JS to force lazy regeneration
+            echo "=== Cleaning aggregated CSS/JS ==="
+            rm -rf web/sites/default/files/css/* 2>/dev/null || true
+            rm -rf web/sites/default/files/js/* 2>/dev/null || true
+
             drush cache:rebuild 2>&1
 
             # CRITICAL: Reload PHP-FPM to invalidate OPcache.
@@ -500,6 +549,48 @@ jobs:
             fi
           EOF
 
+      - name: Sync Nginx config (JS-AGGREGATION-LAZY-001)
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+
+            echo "=== Syncing Nginx config ==="
+            # Common snippet (shared by all vhosts)
+            COMMON_SRC="config/deploy/nginx-jaraba-common.conf"
+            COMMON_DST="/etc/nginx/snippets/jaraba-common.conf"
+            if ! diff -q "$COMMON_SRC" "$COMMON_DST" > /dev/null 2>&1; then
+              sudo cp "$COMMON_SRC" "$COMMON_DST"
+              echo "  Updated: $COMMON_DST"
+              NGINX_CHANGED=1
+            else
+              echo "  ✅ jaraba-common.conf is up-to-date"
+            fi
+
+            # Metasites vhost config
+            META_SRC="config/deploy/nginx-metasites.conf"
+            META_DST="/etc/nginx/sites-available/jaraba-metasites.conf"
+            if ! diff -q "$META_SRC" "$META_DST" > /dev/null 2>&1; then
+              sudo cp "$META_SRC" "$META_DST"
+              echo "  Updated: $META_DST"
+              NGINX_CHANGED=1
+            else
+              echo "  ✅ jaraba-metasites.conf is up-to-date"
+            fi
+
+            # Validate and reload only if changed
+            if [ "${NGINX_CHANGED:-0}" = "1" ]; then
+              echo "=== Validating Nginx config ==="
+              sudo nginx -t 2>&1
+              if [ $? -eq 0 ]; then
+                sudo systemctl reload nginx
+                echo "✅ Nginx reloaded with updated config"
+              else
+                echo "❌ Nginx config validation failed — NOT reloading"
+                exit 1
+              fi
+            fi
+          EOF
+
       - name: Restart AI workers
         continue-on-error: true
         run: |
@@ -519,6 +610,21 @@ jobs:
             echo ""
             echo "=== Site verification ==="
             drush status --fields=drupal-version,db-status,bootstrap 2>&1
+          EOF
+
+      - name: Post-deploy infrastructure health check (INFRA-HEALTH-001)
+        continue-on-error: true
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            echo "=== Running infrastructure health check ==="
+            php scripts/validation/validate-infra-health.php
+            INFRA_EXIT=$?
+            if [ $INFRA_EXIT -eq 1 ]; then
+              echo "::warning::Infrastructure health check has FAILURES"
+            elif [ $INFRA_EXIT -eq 2 ]; then
+              echo "::warning::Infrastructure health check has WARNINGS"
+            fi
           EOF
 
       - name: Smoke test - Platform status endpoint

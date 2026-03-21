@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-20 | Version: 1.6.1
+# Ultima actualizacion: 2026-03-21 | Version: 1.7.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -30,6 +30,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - TENANT-002: Usar `ecosistema_jaraba_core.tenant_context` para obtener tenant. NUNCA resolver via queries ad-hoc
 - DOMAIN-ROUTE-CACHE-001: Cada hostname multi-tenant DEBE tener su propia Domain entity. Sin ella, RouteProvider cachea por [domain] key en Redis y path processors NO se ejecutan en cache HIT
 - VARY-HOST-001: SecurityHeadersSubscriber appends `Vary: Host` en prioridad -10 para CDN/reverse proxy multi-tenant
+- JS-AGGREGATION-LAZY-001: Nginx location para `/sites/.*/files/(css|js)/` DEBE usar `try_files $uri /index.php?$query_string` (NO `=404`). Drupal 11 lazy-genera agregados CSS/JS en la primera peticion. Sin PHP fallback, Nginx devuelve 404
 
 ### Servicios Clave
 - TenantContextService: resuelve via admin_user + group membership
@@ -269,8 +270,13 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - AI-IDENTITY-RULE: Centralizado en AIIdentityRule::apply(). NUNCA duplicar
 - AI-GUARDRAILS-PII-001: Detecta DNI, NIE, IBAN ES, NIF/CIF, +34. Bidireccional (input + output)
 - SERVICE-CALL-CONTRACT-001: Firmas de metodo DEBEN coincidir exactamente. hasService() NO protege contra TypeError
-- COPILOT-BRIDGE-COVERAGE-001: Cada vertical con copilot DEBE tener su CopilotBridgeService. Implementados: DemoCopilotBridgeService, LegalCopilotBridgeService, EmpleabilidadCopilotBridgeService, EmprendimientoCopilotBridgeService
+- COPILOT-BRIDGE-COVERAGE-001: Cada vertical DEBE tener CopilotBridgeService. 10/10 implementados (Demo, Legal, Empleabilidad, Emprendimiento, ComercioConecta, AgroConecta, AndaluciaEi, ContentHub, Formacion, ServiciosConecta)
 - STREAMING-PARITY-001: StreamingOrchestratorService y CopilotOrchestratorService deben mantener paridad funcional
+- GROUNDING-PROVIDER-001: Cada vertical DEBE tener GroundingProvider (tagged: jaraba_copilot_v2.grounding_provider). 10/10 implementados. CompilerPass en JarabaCopilotV2ServiceProvider. ContentGroundingService v2 usa providers si disponibles, fallback legacy si no
+- CASCADE-SEARCH-001: Busqueda IA en 4 niveles con coste progresivo. N1=siempre (promotions+verticals, cache ~0). N2=keyword match (GroundingProviders). N3=por necesidad (Qdrant, memory). N4=bajo demanda (ToolUse, max 5 iter). Anonimos: N1+N2+N3(cache). Pro: N1-N4
+- ACTIVE-PROMOTION-001: ActivePromotionService resuelve promociones activas (PromotionConfig ConfigEntity). Inyectado en Nivel 1 cascada. Cache tag promotion_config_list, max-age 300s. Admin: /admin/structure/promotion-config
+- COPILOT-LEAD-CAPTURE-001: CopilotLeadCaptureService detecta intencion de compra (regex, NO LLM) y crea CRM Contact+Opportunity. Patron LEAD-MAGNET-CRM-001. Dependencias CRM opcionales (@?)
+- COPILOT-FUNNEL-TRACKING-001: CopilotFunnelTrackingService loguea eventos embudo en tabla copilot_funnel_event. 8 tipos evento. Alto volumen (tabla directa, no entity)
 
 ### Legal Coherence Intelligence System (LCIS)
 - LCIS-AUDIT-001: Audit trail obligatorio para EU AI Act Art. 12. Toda respuesta legal trazable
@@ -284,6 +290,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - SemanticCacheService (Qdrant), AgentLongTermMemoryService, AgentBenchmarkService
 - AutoDiagnosticService (self-healing via State API), PromptVersionService
 - FairUsePolicyService: enforcement de limites por plan, burst tolerance, grace period
+- ActivePromotionService: conciencia centralizada de promociones activas (PromotionConfig ConfigEntity)
+- ContentGroundingService v2: 10 GroundingProviders (CompilerPass + tagged services). Busca contenido real en TODOS los entity types del ecosistema
+- CopilotLeadCaptureService: deteccion intencion compra (regex) + CRM leads. Patron LEAD-MAGNET-CRM-001
+- CopilotFunnelTrackingService: tabla copilot_funnel_event, 8 tipos evento embudo ventas
 
 ## GRAPESJS / PAGE BUILDER
 
@@ -419,12 +429,20 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-pricing-tiers.php` (PRICING-TIER-PARITY-001 + PRICING-4TIER-001 + ANNUAL-DISCOUNT-001)
 - `php scripts/validation/validate-schema-org-pricing.php` (SCHEMA-PRICING-001)
 - `php scripts/validation/validate-pricing-coherence.php` (PRICING-COHERENCE-001)
+- `php scripts/validation/validate-copilot-grounding-coverage.php` (COPILOT-GROUNDING-COVERAGE-001)
+- `php scripts/validation/validate-promotion-copilot-sync.php` (PROMOTION-COPILOT-SYNC-001)
+- `php scripts/validation/validate-copilot-intent-patterns.php` (COPILOT-INTENT-ACCURACY-001)
+- `php scripts/validation/validate-copilot-response-quality.php` (COPILOT-RESPONSE-QUALITY-001)
+- `php scripts/validation/validate-promotion-expiry-alert.php` (PROMOTION-EXPIRY-ALERT-001)
+- `php scripts/validation/validate-grounding-provider-health.php` (GROUNDING-PROVIDER-HEALTH-001)
+- `php scripts/validation/validate-crm-funnel-attribution.php` (CRM-FUNNEL-ATTRIBUTION-001)
+- `php scripts/validation/validate-copilot-prompt-drift.php` (COPILOT-PROMPT-DRIFT-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (79 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (92 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 79 scripts validacion (scripts/validation/) | On demand, CI | 83 checks (68 run + 15 warn) |
+| 1 | 92 scripts validacion (scripts/validation/) | On demand, CI | 98 checks (81 run + 17 warn) |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 8 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |

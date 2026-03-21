@@ -12,26 +12,29 @@ declare(strict_types=1);
  *   1. PHP-FPM activo y respondiendo
  *   2. MariaDB conectado y jaraba DB accesible
  *   3. Redis conectado y respondiendo PONG
- *   4. Nginx activo y config válida
+ *   4. Nginx activo y config valida
  *   5. Supervisor activo
  *   6. Tika respondiendo en :9998
- *   7. SSL certificados no expirados (>30 días)
+ *   7. SSL certificados no expirados (>30 dias)
  *   8. Disco libre >10%
- *   9. settings.env.php tiene API keys críticas
+ *   9. settings.env.php tiene API keys criticas
  *  10. settings.production.php incluido (jaraba_base_domain definido)
+ *  11. Redis memory usage <90% maxmemory
+ *  12. AI workers running via Supervisor
+ *  13. Pre-deploy backup no older than 7 days
  *
  * USO:
  *   php scripts/validation/validate-infra-health.php
  *
- * NOTA: Solo ejecutable en el servidor de producción (no en CI).
+ * NOTA: Solo ejecutable en el servidor de produccion (no en CI).
  *
  * EXIT CODES:
  *   0 = PASS
- *   1 = FAIL (servicios caídos)
- *   2 = WARN (degradación)
+ *   1 = FAIL (servicios caidos)
+ *   2 = WARN (degradacion)
  */
 
-// Solo ejecutar en producción.
+// Solo ejecutar en produccion.
 if (php_sapi_name() !== 'cli') {
   exit(0);
 }
@@ -113,7 +116,12 @@ else {
 }
 
 // 7. SSL expiry (>30 days).
-$ssl_domains = ['plataformadeecosistemas.com', 'pepejaraba.com', 'jarabaimpact.com'];
+$ssl_domains = [
+  'plataformadeecosistemas.com',
+  'plataformadeecosistemas.es',
+  'pepejaraba.com',
+  'jarabaimpact.com',
+];
 $ssl_ok = TRUE;
 foreach ($ssl_domains as $domain) {
   $expiry = shell_exec("echo | openssl s_client -servername {$domain} -connect {$domain}:443 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null");
@@ -168,6 +176,73 @@ if ($base_domain !== 'NOT_SET' && !empty($base_domain)) {
 }
 else {
   $errors[] = 'jaraba_base_domain not set — settings.production.php not loaded';
+}
+
+// 11. Redis memory usage <90% maxmemory.
+$redis_info = shell_exec('redis-cli info memory 2>/dev/null') ?? '';
+$used_memory = 0;
+$max_memory = 0;
+if (preg_match('/used_memory:(\d+)/', $redis_info, $m)) {
+  $used_memory = (int) $m[1];
+}
+if (preg_match('/maxmemory:(\d+)/', $redis_info, $m)) {
+  $max_memory = (int) $m[1];
+}
+if ($max_memory > 0) {
+  $redis_usage_pct = ($used_memory / $max_memory) * 100;
+  if ($redis_usage_pct < 90) {
+    $passed++;
+  }
+  else {
+    $warnings[] = sprintf('Redis memory usage: %.1f%% (>90%%)', $redis_usage_pct);
+  }
+}
+else {
+  // maxmemory=0 means unlimited — just pass.
+  $passed++;
+}
+
+// 12. AI workers running via Supervisor.
+$sup_output = shell_exec('supervisorctl status jaraba-ai:* 2>/dev/null') ?? '';
+if (!empty(trim($sup_output))) {
+  $ai_lines = array_filter(explode("\n", trim($sup_output)));
+  $running_count = 0;
+  $total_count = count($ai_lines);
+  foreach ($ai_lines as $line) {
+    if (strpos($line, 'RUNNING') !== FALSE) {
+      $running_count++;
+    }
+  }
+  if ($running_count === $total_count && $total_count > 0) {
+    $passed++;
+  }
+  else {
+    $warnings[] = "AI workers: {$running_count}/{$total_count} running";
+  }
+}
+else {
+  $warnings[] = 'AI workers: no jaraba-ai group found in Supervisor';
+}
+
+// 13. Pre-deploy backup freshness (<7 days).
+$backup_dir = '/opt/jaraba/backups/pre_deploy';
+if (is_dir($backup_dir)) {
+  $latest_backup = trim(shell_exec("ls -t {$backup_dir}/*.sql.gz 2>/dev/null | head -1") ?? '');
+  if (!empty($latest_backup) && file_exists($latest_backup)) {
+    $backup_age_days = (int) ((time() - filemtime($latest_backup)) / 86400);
+    if ($backup_age_days <= 7) {
+      $passed++;
+    }
+    else {
+      $warnings[] = "Latest backup is {$backup_age_days} days old (>7 days)";
+    }
+  }
+  else {
+    $warnings[] = 'No pre-deploy backups found in ' . $backup_dir;
+  }
+}
+else {
+  $warnings[] = 'Backup directory not found: ' . $backup_dir;
 }
 
 // Report.
