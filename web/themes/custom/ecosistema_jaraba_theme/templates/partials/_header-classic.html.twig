@@ -28,7 +28,12 @@
     {# ── Logo + Branding ── #}
     <a href="{{ lp }}/" class="landing-header__brand" rel="home">
       {% if logo %}
-        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+        {% set logo_webp = logo|replace({'.png': '.webp', '.jpg': '.webp', '.jpeg': '.webp'}) %}
+        <picture>
+          <source srcset="{{ logo_webp }}" type="image/webp">
+          <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo"
+               width="68" height="48" fetchpriority="high" decoding="async" />
+        </picture>
       {% endif %}
       <div class="landing-header__text">
         <span class="landing-header__name">{{ site_name }}</span>

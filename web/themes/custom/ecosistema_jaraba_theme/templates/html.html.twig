@@ -16,6 +16,12 @@
   <head>
     <head-placeholder token="{{ placeholder_token }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
+    {# PERF-06: Preconnect to external origins for faster font loading #}
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {# PERF-07: DNS-prefetch for analytics and Stripe #}
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://js.stripe.com">
     {# Sprint 13: hreflang tags para SEO internacional (skip en page_content — HreflangService lo cubre) #}
     {% if not is_page_content|default(false) %}
       {% include '@ecosistema_jaraba_theme/partials/_hreflang-meta.html.twig' ignore missing %}
