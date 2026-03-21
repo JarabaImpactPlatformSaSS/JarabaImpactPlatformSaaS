@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-21
-**Versión:** 143.0.0 (LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001 + 79 scripts + aprendizaje #208 + regla de oro #146)
+**Versión:** 144.0.0 (DEDICATED-SERVER-PRODUCTION-001 + JS-AGGREGATION-LAZY-001 + INFRA-HEALTH-001 13 checks + aprendizaje #209)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2024,6 +2024,15 @@ Logger warning en nivel 2 para detección en dev.
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 8.7 Activación IA Embudo de Ventas (2026-03-21)
+- ContentGroundingService v2: 10 GroundingProviders (CompilerPass + tagged services jaraba_copilot_v2.grounding_provider)
+- PromotionConfig: ConfigEntity centralizada para promociones activas. Admin: /admin/structure/promotion-config
+- ActivePromotionService: Nivel 1 cascada (coste ~0, cache 300s, tag promotion_config_list)
+- Cascada 4 niveles: N1 siempre (promotions+verticals) → N2 keyword (providers) → N3 necesidad (Qdrant) → N4 demanda (ToolUse)
+- CopilotLeadCaptureService: regex intent detection + CRM Contact/Opportunity creation
+- CopilotFunnelTrackingService: tabla copilot_funnel_event, 8 tipos evento
+- PublicCopilotController: prompt dinámico con 10 verticales + promociones + precios
+
 ---
 
 ## 9. Seguridad y Cumplimiento
@@ -2226,10 +2235,10 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │                           │                                             │
 │                           ▼ deploy                                      │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
-│   │                    PRODUCCIÓN (IONOS)                            │  │
-│   │  • jarabaimpact.com                                              │  │
-│   │  • PHP 8.4 + MariaDB                                             │  │
-│   │  • Qdrant Cloud                                                  │  │
+│   │              PRODUCCIÓN (IONOS Dedicated AE12-128)              │  │
+│   │  • Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 7.4             │  │
+│   │  • Supervisor (5 AI workers) + Tika (Docker)                    │  │
+│   │  • 4 dominios SSL, SSH :2222, Let's Encrypt                     │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -2416,7 +2425,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │                                                                         │
 │   ESCALADO HORIZONTAL (3 Fases):                                       │
 │   docs/arquitectura/scaling-horizontal-guide.md                        │
-│   Fase 1: Single Server IONOS L-16 (≤50 tenants)                      │
+│   Fase 1: Dedicated Server IONOS AE12-128 NVMe (≤50 tenants)          │
 │   Fase 2: Separated DB (≤200 tenants)                                  │
 │   Fase 3: Load Balanced HAProxy + Redis Cluster (1000+ tenants)        │
 │                                                                         │
@@ -3251,4 +3260,4 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | 2026-03-20 | 139.0.0 | **TWIG-SYNTAX-LINT-001 — Twig Static Linter:** Nuevo validador estático para templates Twig (6 checks, 933 archivos, 0 falsos positivos). Integrado en pre-commit lint-staged + validate-all.sh. Fix de 5 doble-coma en 4 templates que causaban 500 en subdominios multi-tenant. 52 scripts validación total. |
 
-> **Versión:** 139.0.0 | **Fecha:** 2026-03-20 | **Autor:** IA Asistente
+> **Versión:** 145.0.0 | **Fecha:** 2026-03-21 | **Autor:** IA Asistente

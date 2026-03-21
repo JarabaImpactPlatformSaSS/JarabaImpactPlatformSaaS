@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-21
-**Versión:** 156.0.0 (LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001 + 79 scripts + aprendizaje #208 + regla de oro #146)
+**Versión:** 157.0.0 (Activación IA Embudo Ventas + GROUNDING-PROVIDER-001 + CASCADE-SEARCH-001 + ACTIVE-PROMOTION-001 + aprendizaje #210)
 
 ---
 
@@ -249,7 +249,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - Entities: Vertical (Marca Personal) + SaasPlan (Personal Brand Premium) + Tenant + 7 PageContent + SiteMenu + 6 SiteMenuItems
   - Config: domain.record.pepejaraba_com.yml + design_token_config.pepejaraba_tenant.yml
   - Colores marca: #FF8C42 (naranja) + #00A9A5 (teal) + #233D63 (corporate). Tipografia: Montserrat/Roboto
-  - Infra: Nginx vhost (SSL Let's Encrypt), trusted_host_patterns, Lando proxy
+  - Infra: Nginx vhost (SSL Let's Encrypt), trusted_host_patterns, Lando proxy, dedicado AE12-128
 - **Insights Hub** ⭐: Monitoreo técnico unificado (✅ Nuevo módulo):
   - `jaraba_insights_hub` ✅: 6 Content Entities (SearchConsoleConnection, SearchConsoleData, WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident), 6 Services, 6 Controllers, 1 Form
     - Search Console: OAuth2 + API sync diario
@@ -374,8 +374,10 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
 |------------|---------|----------|
 | **Drupal** | 11.x | CMS principal, gestión de contenido y entidades |
 | **PHP** | 8.4+ | Lenguaje backend |
-| **MySQL/MariaDB** | 8.0+ / 10.5+ | Base de datos |
-| **Redis** | 7.x | Cache backend (render, page, copilot_responses) |
+| **MariaDB** | 10.11 | Base de datos (InnoDB 16GB buffer pool, NVMe) |
+| **Redis** | 7.4 | Cache backend (render, page, copilot_responses, 5GB maxmemory) |
+| **Nginx** | 1.24 | Reverse proxy, SSL, static assets (HTTP/2) |
+| **Supervisor** | 4.2.5 | 5 AI workers, process management |
 | **Composer** | 2.x | Gestión de dependencias PHP |
 
 ### 2.2 Frontend
@@ -2275,6 +2277,7 @@ El asistente IA debe:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-21 | **157.0.0** | **Activación IA del Embudo de Ventas (Aprendizaje #210):** 7 reglas nuevas: GROUNDING-PROVIDER-001 (P0, 10 providers tagged jaraba_copilot_v2.grounding_provider con CompilerPass), CASCADE-SEARCH-001 (P0, 4 niveles búsqueda progresiva N1 promotions+verticals → N2 keyword → N3 Qdrant → N4 ToolUse), ACTIVE-PROMOTION-001 (P0, PromotionConfig ConfigEntity + ActivePromotionService cache 300s tag promotion_config_list), COPILOT-LEAD-CAPTURE-001 (P1, CopilotLeadCaptureService regex intent detection + CRM Contact/Opportunity creation), COPILOT-FUNNEL-TRACKING-001 (P1, tabla copilot_funnel_event 8 tipos evento), COPILOT-GROUNDING-COVERAGE-001 (P1, validador cobertura 10 verticales), PROMOTION-COPILOT-SYNC-001 (P1, validador sync promociones↔copilot). ContentGroundingService v2 con GroundingProviderInterface + CompilerPass. Prompt dinámico buildDynamicPublicSystemPrompt() con 10 verticales + promociones + precios. PublicCopilotController enhanced. 3 validadores nuevos. 86 scripts total (91 checks). **Causa raíz:** Copilot público desconectado de promociones activas y contenido de verticales (prompt estático hardcodeado con 4 demos de 10, ContentGroundingService limitado a 3 entity types, sistema de promociones desacoplado, copilot no generaba leads CRM). Regla de oro #147: El copilot público DEBE tener acceso a TODAS las promociones activas y contenido de TODAS las verticales via GroundingProviders — un SaaS de IA nativa NUNCA puede tener su IA desconectada de sus propias ofertas comerciales. Aprendizaje #210. |
 | 2026-03-21 | **156.0.0** | **LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001:** 3 reglas nuevas: LEAD-MAGNET-CRM-001 (P0, PublicSubscribeController auto-crea CRM Contact source=lead_magnet + Opportunity stage=mql para sources lead_magnet_* — servicios CRM opcionales via $container->has() OPTIONAL-CROSSMODULE-001, patrón idéntico a VerticalQuizService::createCrmLead()), VIDEO-HERO-001 (P1, video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion fallback + navigator.connection.saveData check — Veo AI generated, ~18.9MB total), LANDING-CONVERSION-SCORE-001 (P1, definición 15 criterios para landing 10/10 clase mundial benchmarked vs Stripe/Linear/Notion). 5 fases implementadas (F0-F5): F0 hotfixes pain points + comparativa + CSS, F1 sticky CTA + trust badges + urgency badge, F2 pricing multi-tier 3 cards + comparativa 9 verticales, F3 partner logos 7 SVG + testimonial avatars + counter animation JS, F4 reveal animations 10/10 secciones, F5 video hero 9 verticales Veo AI. Fix PublicSubscribeController 3 bugs: name→first_name mapping, tenantId pasado como listId, resultado no normalizado. lead_magnet añadido a jaraba_crm contact_source allowed values. LIBRARY-ATTACHMENT-001 removido de lint-staged (warn_check, 27 falsos positivos pre-existentes). 79 scripts validación, 83 checks (68 run + 15 warn). Regla de oro #146. Aprendizaje #208. |
 | 2026-03-20 | **152.0.0** | **TWIG-SYNTAX-LINT-001 — Twig Static Linter + Multi-tenant 500 Fix:** 1 regla nueva P0: TWIG-SYNTAX-LINT-001 (6 checks estáticos: doble coma, balance tags, bloques sin cerrar, mixed-key-style, empty-with, Twig-in-HTML-comment). Incidente 2026-03-20: 5 instancias de doble coma `,,` en 4 templates (page--page-builder, page--front, page--user, page--vertical-landing) causaban SyntaxError en Twig 3.x → 500 en 5 subdominios multi-tenant. 6 warnings MIXED-KEY-STYLE normalizados a estilo sin comillas. 1 `{#` anidado en docblock corregido. Integrado en 3 capas: pre-commit lint-staged + validate-all.sh (fast+full) + CLAUDE.md. 933 templates, 0 errores, 0 warnings post-fix. Regla de oro #142. Aprendizaje #204. |
 | 2026-03-19 | **150.0.0** | **Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth:** 4 reglas nuevas: ICON-INTEGRITY-002 (P0, cascade fallback en renderIcon: SVG exacto → genérico categoría → placeholder invisible, NUNCA emoji chincheta, getFallbackEmoji() eliminado, logger warning en dev), ICON-CANVAS-INLINE-002 (P0, SVGs via `<img>` NO soportan currentColor — se interpreta como negro, CSS filter distorsiona formas complejas, todos los SVGs ai/ con hex inline de marca), MARKETING-TRUTH-001 (P0, claims marketing DEBEN coincidir con billing real — 14 días trial Stripe en todos los planes, NO "gratis para siempre", registro sí gratis), DEMO-VERTICAL-PATTERN-001 (P1, patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles cubiertos, getCopilotDemoChat + getVerticalContext + social proof humano + unlock preview FOMO + CTAs coherentes con trial). Aprendizaje #201: currentColor en SVGs renderizados como `<img src>` se interpreta SIEMPRE como negro — CSS filter para recolorar distorsiona formas complejas a tamaños ≤28px, solución: hex inline en el SVG. Aprendizaje #202: `{% include ... only %}` descarta TODAS las variables del padre — page--demo.html.twig no pasaba mega_menu_columns al header → mega menú vacío, silencioso (Twig no da error, itera array vacío). Aprendizaje #203: PricingController::getPricingFaq() decía "Starter 100% gratuito" pero Stripe checkout mostraba Starter a 29€/mes con 14 días trial — FAQs DEBEN reflejar CheckoutSessionService::DEFAULT_TRIAL_DAYS y precios reales de SaasPlan entities. Regla de oro #141 (sin cambios). |
