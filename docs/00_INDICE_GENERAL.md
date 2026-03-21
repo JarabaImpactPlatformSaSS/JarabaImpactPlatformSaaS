@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-21
-**Versión:** 186.0.0 (Activación IA Embudo Ventas + GROUNDING-PROVIDER-001 + CASCADE-SEARCH-001 + aprendizaje #210)
+**Versión:** 187.0.0 (DEDICATED-SERVER + Activación IA Embudo Ventas + GROUNDING-PROVIDER-001 + aprendizaje #211)
 
 > **📋 ACTIVACIÓN IA EMBUDO VENTAS — v157 DIRECTRICES + v145 ARQUITECTURA + v186 INDICE + v110 FLUJO** (2026-03-21)
 >
