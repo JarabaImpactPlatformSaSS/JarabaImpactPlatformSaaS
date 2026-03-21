@@ -1,0 +1,141 @@
+{#
+/**
+ * @file _homepage-features.html.twig
+ * Parcial: 12 features universales del ecosistema Jaraba.
+ *
+ * PROPOSITO:
+ * Fallback robusto con features estaticas i18n que funciona SIEMPRE,
+ * independiente de HomepageDataService (FeatureCard entities).
+ * Muestra el valor transversal del ecosistema, no de un vertical.
+ *
+ * VARIABLES:
+ * - homepage_features: Array override desde preprocess (opcional)
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ * - CSS-VAR-ALL-COLORS-001: Solo variables CSS
+ * - BEM: .homepage-features__*
+ *
+ * @see docs/implementacion/20260321b-Plan_Elevacion_Homepage_MetaSitios_Clase_Mundial_10_10_v1_Claude.md
+ */
+#}
+
+{% set features = homepage_features|default([
+  {
+    icon_cat: 'analytics',
+    icon_name: 'chart-bar',
+    color: 'naranja-impulso',
+    title: 'Panel inteligente'|t,
+    description: 'Tu negocio en una pantalla: metricas, tareas pendientes y acciones diarias con IA.'|t
+  },
+  {
+    icon_cat: 'ai',
+    icon_name: 'copilot',
+    color: 'azul-corporativo',
+    title: 'Copiloto IA'|t,
+    description: '11 agentes especializados por sector. Redactan, analizan y automatizan por ti.'|t
+  },
+  {
+    icon_cat: 'legal',
+    icon_name: 'signature',
+    color: 'verde-innovacion',
+    title: 'Firma digital'|t,
+    description: 'Validez legal europea integrada. Firma contratos, presupuestos y documentos sin salir.'|t
+  },
+  {
+    icon_cat: 'commerce',
+    icon_name: 'cart',
+    color: 'naranja-impulso',
+    title: 'Facturacion y cobros'|t,
+    description: 'Stripe + Bizum + SEPA + Apple Pay. Cobra online sin comisiones ocultas.'|t
+  },
+  {
+    icon_cat: 'commerce',
+    icon_name: 'store',
+    color: 'verde-innovacion',
+    title: 'Catalogo digital'|t,
+    description: 'Tu tienda con productos, servicios, reservas, pagos y trazabilidad QR.'|t
+  },
+  {
+    icon_cat: 'legal',
+    icon_name: 'search-legal',
+    color: 'azul-corporativo',
+    title: 'Busqueda legal IA'|t,
+    description: '8 fuentes oficiales: CENDOJ, EUR-Lex, BOE, CURIA, HUDOC, DGT, TEAC, EDPB.'|t
+  },
+  {
+    icon_cat: 'users',
+    icon_name: 'user-group',
+    color: 'naranja-impulso',
+    title: 'CRM integrado'|t,
+    description: 'Contactos, oportunidades, pipeline de ventas y seguimiento automatizado.'|t
+  },
+  {
+    icon_cat: 'ui',
+    icon_name: 'grid',
+    color: 'verde-innovacion',
+    title: 'Editor visual'|t,
+    description: 'Crea tu web sin programar con el constructor visual GrapesJS integrado.'|t
+  },
+  {
+    icon_cat: 'analytics',
+    icon_name: 'trending-up',
+    color: 'azul-corporativo',
+    title: 'SEO automatico'|t,
+    description: 'Schema.org, hreflang, datos estructurados y geo-targeting sin configurar nada.'|t
+  },
+  {
+    icon_cat: 'ui',
+    icon_name: 'globe',
+    color: 'naranja-impulso',
+    title: 'Multi-idioma'|t,
+    description: 'Espanol, catalan e ingles con prefijo de idioma automatico y traduccion IA.'|t
+  },
+  {
+    icon_cat: 'ui',
+    icon_name: 'shield-check',
+    color: 'verde-innovacion',
+    title: 'Seguridad total'|t,
+    description: 'RGPD, cifrado en transito y reposo, aislamiento por tenant, servidor EU.'|t
+  },
+  {
+    icon_cat: 'verticals',
+    icon_name: 'rocket',
+    color: 'azul-corporativo',
+    title: 'Escalabilidad'|t,
+    description: '10 verticales disponibles. Activa lo que necesites sin migrar datos.'|t
+  }
+]) %}
+
+<section class="homepage-features reveal-element reveal-fade-up"
+         id="funcionalidades"
+         aria-labelledby="features-title">
+  <div class="homepage-features__container">
+
+    <header class="homepage-features__header">
+      <span class="homepage-features__eyebrow">{% trans %}Todo incluido{% endtrans %}</span>
+      <h2 id="features-title" class="homepage-features__title">
+        {% trans %}Las herramientas que tu negocio necesita{% endtrans %}
+      </h2>
+      <p class="homepage-features__subtitle">
+        {% trans %}Cada vertical incluye estas capacidades transversales. Sin plugins extra, sin integraciones que mantener.{% endtrans %}
+      </p>
+    </header>
+
+    <div class="homepage-features__grid" role="list">
+      {% for f in features %}
+        <div class="homepage-features__card reveal-element reveal-fade-up"
+             role="listitem"
+             style="--reveal-delay: {{ loop.index0 * 0.05 }}s;">
+          <div class="homepage-features__icon">
+            {{ jaraba_icon(f.icon_cat, f.icon_name, { variant: 'duotone', size: '28px', color: f.color }) }}
+          </div>
+          <h3 class="homepage-features__card-title">{{ f.title }}</h3>
+          <p class="homepage-features__card-desc">{{ f.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>

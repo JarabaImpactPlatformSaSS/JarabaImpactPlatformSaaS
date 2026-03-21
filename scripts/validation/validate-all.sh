@@ -300,6 +300,15 @@ if [ "$MODE" = "full" ]; then
   run_check "PLG-COVERAGE-001" "PLG trigger coverage for Page Builder" \
     php "$SCRIPT_DIR/validate-plg-triggers.php"
 
+  run_check "COPILOT-GROUNDING-COVERAGE-001" "Copilot grounding providers for all verticals" \
+    php "$SCRIPT_DIR/validate-copilot-grounding-coverage.php"
+
+  run_check "PROMOTION-COPILOT-SYNC-001" "Promotion config coherence with copilot" \
+    php "$SCRIPT_DIR/validate-promotion-copilot-sync.php"
+
+  run_check "COPILOT-INTENT-ACCURACY-001" "Copilot intent detection patterns regression" \
+    php "$SCRIPT_DIR/validate-copilot-intent-patterns.php"
+
   run_check "HOOK-THEME-COMPLETENESS-001" "hook_theme() variable completeness (L3 verification)" \
     php "$SCRIPT_DIR/validate-hook-theme-completeness.php"
 
@@ -451,6 +460,33 @@ if [ "$MODE" = "full" ]; then
 
   warn_check "LANDING-SECTIONS-RENDERED-001" "Landing section completeness (requires Lando)" \
     php "$SCRIPT_DIR/validate-landing-sections-rendered.php"
+
+  run_check "HOMEPAGE-COMPLETENESS-001" "Homepage 10/10 conversion completeness" \
+    php "$SCRIPT_DIR/validate-homepage-completeness.php"
+
+  run_check "HOMEPAGE-VARIANT-COHERENCE-001" "Homepage variant differentiation" \
+    php "$SCRIPT_DIR/validate-homepage-variant-coherence.php"
+
+  run_check "HOMEPAGE-VIDEO-A11Y-001" "Video hero accessibility compliance" \
+    php "$SCRIPT_DIR/validate-homepage-video-a11y.php"
+
+  run_check "SAFEGUARD-AEI-CAMPAIGN-001" "Andalucia +ei reclutamiento landing readiness" \
+    php "$SCRIPT_DIR/validate-aei-reclutamiento-campaign.php"
+
+  run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
+    php "$SCRIPT_DIR/validate-copilot-response-quality.php"
+
+  run_check "PROMOTION-EXPIRY-ALERT-001" "Promotion expiry detection" \
+    php "$SCRIPT_DIR/validate-promotion-expiry-alert.php"
+
+  run_check "GROUNDING-PROVIDER-HEALTH-001" "Grounding provider health check" \
+    php "$SCRIPT_DIR/validate-grounding-provider-health.php"
+
+  run_check "CRM-FUNNEL-ATTRIBUTION-001" "CRM funnel attribution pipeline" \
+    php "$SCRIPT_DIR/validate-crm-funnel-attribution.php"
+
+  run_check "COPILOT-PROMPT-DRIFT-001" "Copilot prompt drift detection" \
+    php "$SCRIPT_DIR/validate-copilot-prompt-drift.php"
 
   # Infrastructure health (production-only, skips gracefully in CI).
   warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \

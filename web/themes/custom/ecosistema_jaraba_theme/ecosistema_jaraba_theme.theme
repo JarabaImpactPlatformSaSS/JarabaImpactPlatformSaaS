@@ -3128,9 +3128,15 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $variables['is_meta_homepage'] = FALSE;
   $variables['audience'] = NULL;
   $variables['ped_urls'] = [];
+  // HOMEPAGE-ELEVATION-001 F5: Variante por metasitio.
+  // pepejaraba=5 (marca persona embudo), jarabaimpact=6 (franquicia), pde=7 (corporativo).
+  $variables['homepage_variant'] = 'generic';
 
   if (!empty($variables['meta_site'])) {
-    $variables['is_ped'] = (int) ($variables['meta_site']['group_id'] ?? 0) === 7;
+    $groupId = (int) ($variables['meta_site']['group_id'] ?? 0);
+    $variables['is_ped'] = $groupId === 7;
+    $variantMap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+    $variables['homepage_variant'] = $variantMap[$groupId] ?? 'generic';
 
     // Detectar si estamos en la homepage del meta-sitio.
     $route_match_pb = \Drupal::routeMatch();
@@ -3154,8 +3160,9 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       }
     }
 
-    // Si es homepage de PED: inyectar audiencia y URLs.
-    if ($variables['is_ped'] && $variables['is_meta_homepage']) {
+    // Si es homepage de cualquier metasitio: inyectar audiencia y URLs.
+    // HOMEPAGE-ELEVATION-001 F5: Ampliar a group_id 5 (pepejaraba) y 6 (jarabaimpact).
+    if ($variables['is_meta_homepage'] && in_array($groupId, [5, 6, 7], TRUE)) {
       // Audience detection cascade: UTM → cookie → AvatarDetection.
       $audience = NULL;
       $request = \Drupal::request();

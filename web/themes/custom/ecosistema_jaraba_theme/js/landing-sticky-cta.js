@@ -22,8 +22,9 @@
       }
       stickyBar.dataset.stickyInit = '1';
 
-      const hero = document.querySelector('.landing-hero');
-      const finalCta = document.querySelector('.landing-final-cta');
+      // Support both landing pages and homepage selectors
+      const hero = document.querySelector('.landing-hero, .hero-landing, .ped-hero');
+      const finalCta = document.querySelector('.landing-final-cta, .ped-cta-saas');
 
       if (!hero) {
         return;

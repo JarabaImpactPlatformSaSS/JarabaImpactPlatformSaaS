@@ -210,6 +210,25 @@
     margin-bottom: var(--ej-spacing-xl, 2rem);
   }
 
+  // Urgency badge — HOMEPAGE-ELEVATION-001 F1
+  &__urgency {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ej-color-innovation, #00A9A5);
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 30%, transparent);
+    padding: 0.35rem 1rem;
+    border-radius: 50rem;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+    opacity: 0;
+    animation: fade-in-up 0.5s ease forwards;
+
+    svg { opacity: 0.9; }
+  }
+
   &__eyebrow {
     display: inline-block;
     font-size: 0.875rem;
@@ -555,6 +574,31 @@
 }
 
 // ==========================================================================
+// VIDEO HERO — HOMEPAGE-ELEVATION-001 (demo-showcase autoplaying)
+// ==========================================================================
+
+.hero-landing__video-wrap {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: var(--ej-spacing-xl, 2rem) auto 0;
+  border-radius: var(--ej-border-radius, 12px);
+  overflow: hidden;
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--ej-color-corporate, #233D63) 30%, transparent);
+  opacity: 0;
+  animation: fade-in-up 0.8s ease forwards;
+  animation-delay: 0.6s;
+}
+
+.hero-landing__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+// ==========================================================================
 // REDUCED MOTION (Accessibility)
 // ==========================================================================
 
@@ -564,6 +608,8 @@
   .hero-landing__title,
   .hero-landing__subtitle,
   .hero-landing__eyebrow,
+  .hero-landing__urgency,
+  .hero-landing__video-wrap,
   .intention-card,
   .hero-landing__actions,
   .hero-landing__scroll {
@@ -573,5 +619,11 @@
 
   .hero-landing {
     background-size: 100% 100%;
+  }
+
+  // Pause video on reduced motion preference
+  .hero-landing__video {
+    // stylelint-disable-next-line declaration-no-important
+    animation-play-state: paused !important;
   }
 }

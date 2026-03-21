@@ -11,23 +11,31 @@
  * - A11y: aria-labelledby
  * - Tracking: data-track-cta, data-track-position
  * - ROUTE-LANGPREFIX-001: path() para URLs internas
+ *
+ * VARIABLES (opcionales — HOMEPAGE-ELEVATION-001 F5):
+ * - cta_headline: Titulo personalizado por variante
+ * - cta_subtitle: Subtitulo personalizado
+ * - cta_primary_text: Texto CTA primario
+ * - cta_primary_url: URL CTA primario
+ * - cta_secondary_text: Texto CTA secundario
+ * - cta_secondary_url: URL CTA secundario
  */
 #}
 
 {% set urls = ped_urls|default({}) %}
 
-<section class="ped-cta-saas" aria-labelledby="cta-final-title">
+<section class="ped-cta-saas reveal-element reveal-fade-up" aria-labelledby="cta-final-title">
   <div class="ped-cta-saas__container">
     <h2 id="cta-final-title">
-      {% trans %}Empieza hoy. Sin compromiso.{% endtrans %}
+      {{ cta_headline|default('Empieza hoy. Sin compromiso.'|trans) }}
     </h2>
     <p>
-      {{ plg_register_subtitle|default('Registro gratuito, sin tarjeta de crédito. Acceso inmediato a tu vertical con copiloto IA incluido.'|trans) }}
+      {{ cta_subtitle|default(plg_register_subtitle|default('Registro gratuito, sin tarjeta de credito. Acceso inmediato a tu vertical con copiloto IA incluido.'|trans)) }}
     </p>
 
     {# Social proof micro #}
     <p class="ped-cta-saas__social-proof">
-      {% trans %}+50.000 personas ya confían en nosotros{% endtrans %}
+      {% trans %}+50.000 personas ya confian en nosotros{% endtrans %}
     </p>
 
     <div class="ped-cta-saas__actions">
@@ -39,17 +47,17 @@
           {% trans %}Ir al dashboard{% endtrans %}
         </a>
       {% else %}
-        <a href="{{ urls.register|default(path('user.register')) }}"
+        <a href="{{ cta_primary_url|default(urls.register|default(path('user.register'))) }}"
            class="btn-gold"
            data-track-cta="final_cta_register"
            data-track-position="homepage_final_cta">
-          {% trans %}Crear cuenta gratuita{% endtrans %}
+          {{ cta_primary_text|default('Crear cuenta gratuita'|trans) }}
         </a>
-        <a href="{{ urls.demo|default('/demo') }}"
+        <a href="{{ cta_secondary_url|default(urls.demo|default('/demo')) }}"
            class="btn-secondary btn-secondary--large"
            data-track-cta="final_cta_demo"
            data-track-position="homepage_final_cta">
-          {% trans %}Solicitar demo{% endtrans %}
+          {{ cta_secondary_text|default('Solicitar demo'|trans) }}
         </a>
       {% endif %}
     </div>

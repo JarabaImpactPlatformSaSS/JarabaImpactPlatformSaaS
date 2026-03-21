@@ -36,6 +36,7 @@
 {{ attach_library('ecosistema_jaraba_theme/metasite-tracking') }}
 {{ attach_library('ecosistema_jaraba_theme/product-demo') }}
 {{ attach_library('ecosistema_jaraba_theme/funnel-analytics') }}
+{{ attach_library('ecosistema_jaraba_theme/landing-sections') }}
 
 {# SEO Avanzado — Datos Estructurados Schema.org #}
 {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
@@ -54,13 +55,297 @@
     theme_settings: theme_settings
   } %}
 
-  {# Detectar meta-sitio PED para flujo AIDA optimizado #}
-  {% set is_ped = meta_site is defined and meta_site and meta_site.group_id|default(0) == 7 %}
+  {# Detectar variante de homepage por metasitio (HOMEPAGE-ELEVATION-001 F5) #}
+  {% set variant = homepage_variant|default('generic') %}
+  {% set is_ped = variant == 'pde' %}
 
   {# MAIN CONTENT #}
   <main id="main-content" class="landing-main">
 
-  {% if is_ped %}
+  {% if variant == 'pepejaraba' %}
+    {# ============================================================ #}
+    {# FLUJO PEPEJARABA — Marca personal, embudo de captacion       #}
+    {# 30+ anos de experiencia como senal de confianza              #}
+    {# ============================================================ #}
+
+    {# 1. HERO PEPEJARABA — Autoridad + experiencia #}
+    {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
+      theme_settings: theme_settings,
+      logged_in: logged_in,
+      hero: {
+        eyebrow: '+30 anos de experiencia · +100M EUR en fondos europeos gestionados · +50.000 personas formadas'|t,
+        title: 'Jose Jaraba — La experiencia detras de la plataforma que transforma profesionales, empresas e instituciones'|t,
+        subtitle: 'Emprendedor serial, experto en fondos europeos y fundador de Plataforma de Ecosistemas Digitales. He construido la herramienta que me hubiera gustado tener hace 30 anos.'|t,
+      },
+      ped_urls: ped_urls|default({}),
+      meta_site: meta_site,
+    } %}
+
+    {# 2. PAIN POINTS — Problemas que Pepe ha resuelto #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
+      homepage_pain_points: [
+        {
+          icon_cat: 'navigation',
+          icon_name: 'layers',
+          color: 'azul-corporativo',
+          title: 'Programas sin herramientas digitales'|t,
+          description: 'Instituciones gestionando programas FSE con Excel, papel y buena voluntad. Sin trazabilidad, sin justificacion automatica.'|t
+        },
+        {
+          icon_cat: 'legal',
+          icon_name: 'search-legal',
+          color: 'naranja-impulso',
+          title: 'Profesionales sin acceso a IA'|t,
+          description: 'Abogados, consultores y autonomos pagando herramientas caras y desconectadas. Sin copiloto, sin firma digital.'|t
+        },
+        {
+          icon_cat: 'users',
+          icon_name: 'user-group',
+          color: 'verde-innovacion',
+          title: 'Talento sin orientacion'|t,
+          description: 'Miles de personas en transicion profesional sin diagnostico de competencias, sin CV actualizado, sin matching inteligente.'|t
+        },
+        {
+          icon_cat: 'verticals',
+          icon_name: 'ecosystem',
+          color: 'azul-corporativo',
+          title: 'Ecosistemas desconectados'|t,
+          description: 'Empleo, emprendimiento, comercio, agro y legal en silos. Una plataforma los conecta todos con 11 agentes IA.'|t
+        }
+      ],
+    } only %}
+
+    {# 3. STATS — Resultados verificables de Pepe #}
+    {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
+      stats: [
+        { value: 30, suffix: '+', label: 'anos de experiencia'|t },
+        { value: 100, suffix: 'M+', label: 'EUR gestionados en fondos europeos'|t },
+        { value: 50, suffix: '.000+', label: 'personas formadas y orientadas'|t },
+        { value: 10, suffix: '', label: 'verticales construidos'|t }
+      ],
+      is_ped: true,
+    } %}
+
+    {# 4. COMO FUNCIONA #}
+    {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
+      logged_in: logged_in,
+    } %}
+
+    {# 5. FEATURES — Que ofrece la plataforma #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
+      homepage_features: homepage_features|default([]),
+    } only %}
+
+    {# 6. PRODUCT DEMO #}
+    {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
+      logged_in: logged_in,
+    } %}
+
+    {# 7. PRICING PREVIEW #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
+      ped_pricing: ped_pricing|default({}),
+      ped_urls: ped_urls|default({}),
+      logged_in: logged_in,
+      language_prefix: language_prefix|default(''),
+    } only %}
+
+    {# 8. TESTIMONIOS #}
+    {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
+    {# 9. COMPARATIVA #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
+      ped_urls: ped_urls|default({}),
+    } only %}
+
+    {# 10. TRUST BAR + PARTNERS #}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+      theme_path: directory,
+      partners_variant: 'full',
+    } only %}
+
+    {# 11. LEAD MAGNET #}
+    {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
+      lead_magnet_title: theme_settings.lead_magnet_title|default(null),
+      lead_magnet_subtitle: theme_settings.lead_magnet_subtitle|default(null),
+      lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
+      lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
+      lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
+    } %}
+
+    {# 12. FAQ #}
+    {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
+
+    {# 13. CTA FINAL — Contactar con Pepe (variant-specific) #}
+    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
+      logged_in: logged_in,
+      ped_urls: ped_urls|default({}),
+      cta_headline: 'Hablemos. Tu primer paso hacia la transformacion.'|t,
+      cta_subtitle: '30+ anos de experiencia en empleo, emprendimiento y fondos europeos. Una conversacion puede cambiarlo todo.'|t,
+      cta_primary_text: 'Agendar llamada con Pepe'|t,
+      cta_primary_url: ped_urls.contacto|default('/contacto'),
+      cta_secondary_text: 'Ver la metodologia'|t,
+      cta_secondary_url: ped_urls.metodo|default('/metodo'),
+    } %}
+
+  {% elseif variant == 'jarabaimpact' %}
+    {# ============================================================ #}
+    {# FLUJO JARABAIMPACT — Franquicia digital, escalado            #}
+    {# Vender el modelo replicable a partners                       #}
+    {# ============================================================ #}
+
+    {# 1. HERO JARABAIMPACT — Escalar con franquicia digital #}
+    {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
+      theme_settings: theme_settings,
+      logged_in: logged_in,
+      hero: {
+        eyebrow: 'Franquicia digital con 10 verticales · 11 agentes IA · modelo validado con +30 anos de experiencia'|t,
+        title: 'Escala tu negocio digital con la franquicia que ya funciona'|t,
+        subtitle: 'Red de consultores certificados, franquicias territoriales con royalties y un marketplace de expertos. Tu marca, nuestra tecnologia.'|t,
+        cta_primary: { text: 'Solicitar informacion'|t, url: ped_urls.contacto|default('/contacto') },
+        cta_secondary: { text: 'Ver modelo de negocio'|t },
+      },
+      ped_urls: ped_urls|default({}),
+      meta_site: meta_site,
+    } %}
+
+    {# 2. PAIN POINTS — Problemas de escalar solo #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
+      homepage_pain_points: [
+        {
+          icon_cat: 'ui',
+          icon_name: 'puzzle',
+          color: 'naranja-impulso',
+          title: 'Construir tecnologia desde cero'|t,
+          description: 'Meses de desarrollo, equipo tecnico caro, mantenimiento constante. Una plataforma probada elimina ese riesgo.'|t
+        },
+        {
+          icon_cat: 'commerce',
+          icon_name: 'wallet',
+          color: 'azul-corporativo',
+          title: 'Modelo de ingresos limitado'|t,
+          description: 'Solo vendes servicios por horas. Con la franquicia digital, generas ingresos recurrentes por suscripciones + royalties.'|t
+        },
+        {
+          icon_cat: 'ui',
+          icon_name: 'globe',
+          color: 'verde-innovacion',
+          title: 'Escalabilidad territorial'|t,
+          description: 'Tu experiencia es local. Con la franquicia, replicas tu exito en nuevos territorios sin empezar de cero.'|t
+        },
+        {
+          icon_cat: 'ai',
+          icon_name: 'copilot',
+          color: 'naranja-impulso',
+          title: 'Sin ventaja tecnologica'|t,
+          description: 'Tus competidores ya usan IA. Con 11 agentes especializados, ofreces algo que nadie mas tiene en tu zona.'|t
+        }
+      ],
+    } only %}
+
+    {# 3. STATS — Modelo de negocio en numeros #}
+    {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
+      stats: [
+        { value: 10, suffix: '', label: 'verticales listos para operar'|t },
+        { value: 11, suffix: '', label: 'agentes IA incluidos'|t },
+        { value: 30, suffix: '+', label: 'anos de metodologia validada'|t },
+        { value: 3, suffix: '', label: 'niveles de certificacion'|t }
+      ],
+      is_ped: false,
+    } %}
+
+    {# 4. COMO FUNCIONA #}
+    {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
+      logged_in: logged_in,
+    } %}
+
+    {# 5. FEATURES — Que incluye la franquicia #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
+      homepage_features: homepage_features|default([]),
+    } only %}
+
+    {# 6. PRODUCT DEMO #}
+    {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
+      logged_in: logged_in,
+    } %}
+
+    {# 7. COMPARATIVA — Franquicia vs montar solo (variant-specific) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
+      ped_urls: ped_urls|default({}),
+      comparison_rows: [
+        {
+          feature: 'Tecnologia propia'|t,
+          jaraba: 'Plataforma completa lista para operar'|t,
+          tools: 'Desarrollo desde cero (6-12 meses)'|t,
+          agency: 'Dependes de su tecnologia'|t
+        },
+        {
+          feature: 'Modelo de ingresos'|t,
+          jaraba: 'Suscripciones recurrentes + royalties'|t,
+          tools: 'Solo servicios por horas'|t,
+          agency: 'Comisiones limitadas'|t
+        },
+        {
+          feature: 'Verticales disponibles'|t,
+          jaraba: '10 verticales listos para vender'|t,
+          tools: '1 nicho, empezar de cero en otro'|t,
+          agency: 'Lo que el franquiciador decida'|t
+        },
+        {
+          feature: 'IA integrada'|t,
+          jaraba: '11 agentes especializados por sector'|t,
+          tools: 'Sin IA o ChatGPT generico'|t,
+          agency: 'Sin ventaja tecnologica'|t
+        },
+        {
+          feature: 'Escalabilidad territorial'|t,
+          jaraba: 'Exclusividad por zona geografica'|t,
+          tools: 'Sin proteccion territorial'|t,
+          agency: 'Zonas predefinidas sin flexibilidad'|t
+        }
+      ],
+    } only %}
+
+    {# 8. CROSS-POLLINATION — Los 8 verticales disponibles #}
+    {% include '@ecosistema_jaraba_theme/partials/_cross-pollination.html.twig' with {
+      ped_urls: ped_urls|default({}),
+    } %}
+
+    {# 9. TESTIMONIOS #}
+    {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
+    {# 10. TRUST BAR + PARTNERS #}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
+      theme_path: directory,
+      partners_variant: 'full',
+    } only %}
+
+    {# 11. LEAD MAGNET #}
+    {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
+      lead_magnet_title: theme_settings.lead_magnet_title|default(null),
+      lead_magnet_subtitle: theme_settings.lead_magnet_subtitle|default(null),
+      lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
+      lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
+      lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
+    } %}
+
+    {# 12. FAQ #}
+    {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
+
+    {# 13. CTA FINAL — Franquicia (variant-specific) #}
+    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
+      logged_in: logged_in,
+      ped_urls: ped_urls|default({}),
+      cta_headline: 'Tu franquicia digital. Tu territorio. Nuestra tecnologia.'|t,
+      cta_subtitle: 'Modelo validado con 30+ anos de experiencia, 10 verticales y 11 agentes IA. Solicita informacion sin compromiso.'|t,
+      cta_primary_text: 'Solicitar info franquicia'|t,
+      cta_primary_url: ped_urls.contacto|default('/contacto'),
+      cta_secondary_text: 'Descargar dossier'|t,
+      cta_secondary_url: ped_urls.contacto|default('/contacto'),
+    } %}
+
+  {% elseif is_ped %}
     {# ============================================================ #}
     {# FLUJO AIDA OPTIMIZADO (solo para meta-sitio PED)             #}
     {# Atencion -> Interes -> Deseo -> Accion                       #}
@@ -74,6 +359,11 @@
       audience: audience|default(null),
       meta_site: meta_site,
     } %}
+
+    {# 1b. PAIN POINTS — Empatia antes de segmentar (HOMEPAGE-ELEVATION-001 F0) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
+      homepage_pain_points: homepage_pain_points|default([]),
+    } only %}
 
     {# 2. AUDIENCIA SELECTOR — Interes (segmentar antes de informar) #}
     {% include '@ecosistema_jaraba_theme/partials/_audience-selector.html.twig' %}
@@ -133,6 +423,19 @@
       logged_in: logged_in,
     } %}
 
+    {# 6b. PRICING PREVIEW — Transparencia de precios (HOMEPAGE-ELEVATION-001 F0) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
+      ped_pricing: ped_pricing|default({}),
+      ped_urls: ped_urls|default({}),
+      logged_in: logged_in,
+      language_prefix: language_prefix|default(''),
+    } only %}
+
+    {# 6c. COMPARATIVA ECOSISTEMA — Jaraba vs alternativas (HOMEPAGE-ELEVATION-001 F2) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
+      ped_urls: ped_urls|default({}),
+    } only %}
+
     {# 7. TESTIMONIOS — Social proof antes de captura #}
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
 
@@ -184,6 +487,11 @@
     {# TRUST BAR - Logos tecnologías + badges #}
     {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
 
+    {# PAIN POINTS — Empatia con el visitante (HOMEPAGE-ELEVATION-001 F0) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
+      homepage_pain_points: homepage_pain_points|default([]),
+    } only %}
+
     {# VERTICAL SELECTOR - 6 cards interactivas #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-selector.html.twig' with {
       verticals: verticals|default([]),
@@ -191,10 +499,10 @@
       ped_urls: ped_urls|default({}),
     } %}
 
-    {# FEATURES - Propuesta de valor con datos dinámicos #}
-    {% include '@ecosistema_jaraba_theme/partials/_features.html.twig' with {
-      features: homepage.features|default([])
-    } %}
+    {# FEATURES PREMIUM — 12 capacidades transversales (HOMEPAGE-ELEVATION-001 F3) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
+      homepage_features: homepage_features|default([]),
+    } only %}
 
     {# COMO FUNCIONA — 3 pasos para reducir fricción #}
     {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
@@ -210,6 +518,19 @@
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
     } %}
+
+    {# PRICING PREVIEW — Transparencia de precios (HOMEPAGE-ELEVATION-001 F0) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
+      ped_pricing: ped_pricing|default({}),
+      ped_urls: ped_urls|default({}),
+      logged_in: logged_in,
+      language_prefix: language_prefix|default(''),
+    } only %}
+
+    {# COMPARATIVA ECOSISTEMA — Jaraba vs alternativas (HOMEPAGE-ELEVATION-001 F2) #}
+    {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
+      ped_urls: ped_urls|default({}),
+    } only %}
 
     {# LEAD MAGNET - Kit de Impulso Digital #}
     {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
@@ -243,6 +564,20 @@
       ped_urls: ped_urls|default({}),
     } %}
 
+  {% endif %}
+
+  {# STICKY CTA — Conversion persistente al hacer scroll (HOMEPAGE-ELEVATION-001 F0) #}
+  {% if theme_settings.homepage_sticky_enabled|default(true) %}
+    {% include '@ecosistema_jaraba_theme/partials/_landing-sticky-cta.html.twig' with {
+      sticky_cta: {
+        text: theme_settings.homepage_sticky_text|default('14 dias gratis — Sin tarjeta de credito'|trans),
+        cta: {
+          text: logged_in ? 'Ir al dashboard'|trans : 'Empezar gratis'|trans,
+          url: logged_in ? (ped_urls.dashboard|default('/user')) : (ped_urls.register|default(path('user.register')))
+        }
+      },
+      vertical_key: 'homepage'
+    } only %}
   {% endif %}
 
   {# PROMO BANNER — Configurable desde Theme Settings (NO-HARDCODE-PRICE-001) #}

@@ -14,7 +14,7 @@
  */
 #}
 
-<section id="faq" class="faq-homepage" aria-labelledby="faq-homepage-title">
+<section id="faq" class="faq-homepage reveal-element reveal-fade-up" aria-labelledby="faq-homepage-title">
   <div class="faq-homepage__container">
 
     <header class="faq-homepage__header">
@@ -80,6 +80,43 @@
         </div>
       </details>
 
+      {# 4 preguntas adicionales — HOMEPAGE-ELEVATION-001 F3 #}
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Cuánto cuesta? ¿Hay plan gratuito?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Sí, puedes empezar gratis con funcionalidades básicas. Los planes de pago empiezan desde 19 EUR/mes con 14 días de prueba gratuita sin tarjeta de crédito. Todos los planes incluyen copiloto IA. Si pagas anualmente, ahorras 2 meses (20% de descuento).{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Puedo migrar mis datos desde otra plataforma?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Sí. Puedes importar contactos, productos y contenido desde CSV. Para migraciones complejas (Shopify, WordPress, Moodle), nuestro equipo de soporte te ayuda con el proceso. Los datos existentes en tu cuenta se mantienen siempre.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Funciona para mi sector específico?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}La plataforma cubre 10 verticales: empleo, emprendimiento, comercio local, agroalimentario, servicios profesionales, legal, formación, instituciones públicas, contenido editorial y una demo interactiva. Si tu sector no está cubierto, el vertical de ServiciosConecta se adapta a cualquier profesional autónomo.{% endtrans %}</p>
+        </div>
+      </details>
+
+      <details class="faq-homepage__item">
+        <summary class="faq-homepage__question">
+          {% trans %}¿Qué integraciones tiene?{% endtrans %}
+        </summary>
+        <div class="faq-homepage__answer">
+          <p>{% trans %}Stripe (pagos con tarjeta, Bizum, Apple Pay, Google Pay, SEPA), firma digital con validez europea, envío de emails transaccionales, generación de PDF, exportación a CSV, API REST y MCP para integraciones avanzadas con agentes IA externos.{% endtrans %}</p>
+        </div>
+      </details>
+
     </div>
 
   </div>
@@ -137,6 +174,38 @@
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "{{ 'Sí. Solución B2G específica para programas de empleo y emprendimiento con fondos europeos (FSE).'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Cuánto cuesta? ¿Hay plan gratuito?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Planes desde 19 EUR/mes con 14 días gratis. Plan gratuito con funcionalidades básicas. 20% descuento en plan anual.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Puedo migrar mis datos desde otra plataforma?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Sí. Importación CSV para contactos, productos y contenido. Soporte para migraciones complejas desde Shopify, WordPress o Moodle.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Funciona para mi sector específico?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ '10 verticales especializados cubren empleo, emprendimiento, comercio, agro, servicios, legal, formación, instituciones, contenido y demo.'|t }}"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "{{ '¿Qué integraciones tiene?'|t }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ 'Stripe (tarjeta, Bizum, Apple Pay, Google Pay, SEPA), firma digital europea, emails transaccionales, PDF, CSV, API REST y MCP.'|t }}"
       }
     }
   ]

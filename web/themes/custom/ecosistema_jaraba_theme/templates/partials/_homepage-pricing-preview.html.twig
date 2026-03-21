@@ -1,0 +1,160 @@
+{#
+/**
+ * @file _homepage-pricing-preview.html.twig
+ * Parcial: Preview de precios de 3 verticales destacados.
+ *
+ * PROPOSITO:
+ * Mostrar al visitante que los precios son accesibles ANTES de que
+ * navegue a /planes. Reduce la friccion de "¿cuanto costara esto?".
+ * Precios SIEMPRE desde MetaSitePricingService (NO-HARDCODE-PRICE-001).
+ *
+ * VARIABLES:
+ * - ped_pricing: Array de pricing por vertical desde MetaSitePricingService
+ * - ped_urls: URLs resueltas con prefijo de idioma
+ * - logged_in: TRUE si el usuario esta autenticado
+ *
+ * DIRECTRICES:
+ * - NO-HARDCODE-PRICE-001: Precios desde ped_pricing. Fallbacks numericos son
+ *   valores por defecto de instalacion fresca, DEBEN coincidir con SaasPlan seed.
+ * - PRICING-4TIER-001: 4 tiers (Free/Starter/Professional/Enterprise)
+ * - ANNUAL-DISCOUNT-001: "2 meses gratis" = 20% descuento anual
+ * - MARKETING-TRUTH-001: "14 dias gratis" debe coincidir con Stripe trial
+ * - i18n: {% trans %} en todos los textos
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ * - CSS-VAR-ALL-COLORS-001: Solo variables CSS
+ * - BEM: .homepage-pricing__*
+ * - FUNNEL-COMPLETENESS-001: data-track-* en todos los CTAs
+ *
+ * @see docs/implementacion/20260321b-Plan_Elevacion_Homepage_MetaSitios_Clase_Mundial_10_10_v1_Claude.md
+ */
+#}
+
+{% set pricing = ped_pricing|default({}) %}
+{% set urls = ped_urls|default({}) %}
+
+{% set preview_verticals = [
+  {
+    id: 'jarabalex',
+    name: 'JarabaLex'|t,
+    tagline: 'Inteligencia legal con IA'|t,
+    icon_cat: 'verticals',
+    icon_name: 'jarabalex',
+    color: 'azul-corporativo',
+    price: pricing.jarabalex.starter_price|default(29),
+    features: [
+      'Busqueda IA en 8 fuentes oficiales'|t,
+      'Gestion de expedientes y agenda'|t,
+      'Copiloto legal integrado'|t
+    ],
+    url: urls.jarabalex|default('/jarabalex'),
+    popular: true
+  },
+  {
+    id: 'comercioconecta',
+    name: 'ComercioConecta'|t,
+    tagline: 'Tu tienda digital completa'|t,
+    icon_cat: 'verticals',
+    icon_name: 'comercioconecta',
+    color: 'naranja-impulso',
+    price: pricing.comercioconecta.starter_price|default(19),
+    features: [
+      'Catalogo con pagos Stripe + Bizum'|t,
+      'Reservas y citas online'|t,
+      'Copiloto de ventas IA'|t
+    ],
+    url: urls.comercioconecta|default('/comercioconecta'),
+    popular: false
+  },
+  {
+    id: 'emprendimiento',
+    name: 'Emprendimiento'|t,
+    tagline: 'De la idea al negocio'|t,
+    icon_cat: 'verticals',
+    icon_name: 'emprendimiento',
+    color: 'verde-innovacion',
+    price: pricing.emprendimiento.starter_price|default(19),
+    features: [
+      'Lean Canvas y validacion con IA'|t,
+      'Plan de negocio automatizado'|t,
+      'Copiloto startup integrado'|t
+    ],
+    url: urls.emprendimiento|default('/emprendimiento'),
+    popular: false
+  }
+] %}
+
+<section class="homepage-pricing reveal-element reveal-fade-up"
+         id="precios"
+         aria-labelledby="pricing-preview-title">
+  <div class="homepage-pricing__container">
+
+    <header class="homepage-pricing__header">
+      <span class="homepage-pricing__eyebrow">{% trans %}Precios transparentes{% endtrans %}</span>
+      <h2 id="pricing-preview-title" class="homepage-pricing__title">
+        {% trans %}Empieza desde menos de lo que cuesta un cafe al dia{% endtrans %}
+      </h2>
+      <p class="homepage-pricing__subtitle">
+        {% trans %}14 dias gratis en todos los planes. Sin tarjeta de credito.{% endtrans %}
+      </p>
+    </header>
+
+    <div class="homepage-pricing__cards">
+      {% for v in preview_verticals %}
+        <div class="homepage-pricing__card{{ v.popular ? ' homepage-pricing__card--popular' : '' }} reveal-element reveal-fade-up"
+             style="--reveal-delay: {{ loop.index0 * 0.1 }}s;">
+
+          {% if v.popular %}
+            <span class="homepage-pricing__badge">{% trans %}Mas popular{% endtrans %}</span>
+          {% endif %}
+
+          <div class="homepage-pricing__card-header">
+            <div class="homepage-pricing__card-icon">
+              {{ jaraba_icon(v.icon_cat, v.icon_name, { variant: 'duotone', size: '32px', color: v.color }) }}
+            </div>
+            <h3 class="homepage-pricing__card-name">{{ v.name }}</h3>
+            <p class="homepage-pricing__card-tagline">{{ v.tagline }}</p>
+          </div>
+
+          <div class="homepage-pricing__card-price">
+            <span class="homepage-pricing__price-from">{% trans %}desde{% endtrans %}</span>
+            <span class="homepage-pricing__price-amount">{{ v.price }}<span class="homepage-pricing__price-currency">&euro;</span></span>
+            <span class="homepage-pricing__price-period">/{% trans %}mes{% endtrans %}</span>
+          </div>
+
+          <ul class="homepage-pricing__card-features">
+            {% for feature in v.features %}
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 12l2 2 4-4" stroke="var(--ej-color-innovation, #00A9A5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="10" stroke="var(--ej-color-innovation, #00A9A5)" stroke-width="1.5"/>
+                </svg>
+                {{ feature }}
+              </li>
+            {% endfor %}
+          </ul>
+
+          <a href="{{ v.url }}"
+             class="homepage-pricing__card-cta"
+             data-track-cta="pricing_preview_{{ v.id }}"
+             data-track-position="homepage_pricing">
+            {% trans %}Ver planes{% endtrans %} →
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="homepage-pricing__footer">
+      <a href="{{ urls.planes|default((language_prefix|default('')) ~ '/planes') }}"
+         class="homepage-pricing__all-plans"
+         data-track-cta="pricing_preview_all"
+         data-track-position="homepage_pricing">
+        {% trans %}Ver todos los planes y verticales{% endtrans %} →
+      </a>
+      <div class="homepage-pricing__annual-badge">
+        {{ jaraba_icon('commerce', 'tag', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+        <span>{% trans %}Ahorra 2 meses con el plan anual{% endtrans %}</span>
+      </div>
+    </div>
+
+  </div>
+</section>

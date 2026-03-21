@@ -1,0 +1,88 @@
+{#
+/**
+ * @file _homepage-pain-points.html.twig
+ * Parcial: 4 pain points universales del ecosistema.
+ *
+ * PROPOSITO:
+ * Identifica los problemas comunes que comparten TODOS los visitantes,
+ * independientemente de su vertical. Genera empatia ("me siento identificado")
+ * antes de presentar la solucion.
+ *
+ * VARIABLES:
+ * - homepage_pain_points: Array de { icon_cat, icon_name, color, title, description }
+ *   Fallback i18n estatico si no se provee desde preprocess.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ * - ICON-COLOR-001: Solo colores de paleta Jaraba
+ * - CSS-VAR-ALL-COLORS-001: Solo variables CSS, cero hex
+ * - BEM: .homepage-pain-points__*
+ * - FUNNEL-COMPLETENESS-001: data-track-* en CTAs
+ *
+ * @see docs/implementacion/20260321b-Plan_Elevacion_Homepage_MetaSitios_Clase_Mundial_10_10_v1_Claude.md
+ */
+#}
+
+{% set pain_points = homepage_pain_points|default([
+  {
+    icon_cat: 'ui',
+    icon_name: 'puzzle',
+    color: 'naranja-impulso',
+    title: 'Herramientas desconectadas'|t,
+    description: 'Usas 5-10 herramientas para gestionar tu negocio. Ninguna habla con las demas. Pierdes datos, tiempo y oportunidades.'|t
+  },
+  {
+    icon_cat: 'ui',
+    icon_name: 'clock',
+    color: 'azul-corporativo',
+    title: 'Horas que no facturas'|t,
+    description: 'Copiar datos entre Excel, email y WhatsApp. Perseguir facturas impagadas. Tareas que un copiloto IA resuelve en segundos.'|t
+  },
+  {
+    icon_cat: 'ui',
+    icon_name: 'globe',
+    color: 'verde-innovacion',
+    title: 'Invisible en internet'|t,
+    description: 'Tu web es de 2015 o directamente no tienes. Tus clientes te buscan en Google y encuentran a tu competencia.'|t
+  },
+  {
+    icon_cat: 'commerce',
+    icon_name: 'wallet',
+    color: 'naranja-impulso',
+    title: 'Pagando de mas por menos'|t,
+    description: 'Shopify + Mailchimp + Calendly + Stripe + hosting = 200+ EUR/mes. Y aun asi no tienes IA ni firma digital.'|t
+  }
+]) %}
+
+<section class="homepage-pain-points reveal-element reveal-fade-up"
+         id="problemas"
+         aria-labelledby="pain-points-title">
+  <div class="homepage-pain-points__container">
+
+    <header class="homepage-pain-points__header">
+      <span class="homepage-pain-points__eyebrow">{% trans %}¿Te suena?{% endtrans %}</span>
+      <h2 id="pain-points-title" class="homepage-pain-points__title">
+        {% trans %}Problemas que resolvemos cada dia{% endtrans %}
+      </h2>
+      <p class="homepage-pain-points__subtitle">
+        {% trans %}Si te identificas con alguno, estas en el sitio correcto.{% endtrans %}
+      </p>
+    </header>
+
+    <div class="homepage-pain-points__grid" role="list">
+      {% for item in pain_points %}
+        <div class="homepage-pain-points__card reveal-element reveal-fade-up"
+             role="listitem"
+             style="--reveal-delay: {{ loop.index0 * 0.08 }}s;">
+          <div class="homepage-pain-points__icon">
+            {{ jaraba_icon(item.icon_cat, item.icon_name, { variant: 'duotone', size: '36px', color: item.color }) }}
+          </div>
+          <h3 class="homepage-pain-points__card-title">{{ item.title }}</h3>
+          <p class="homepage-pain-points__card-desc">{{ item.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>

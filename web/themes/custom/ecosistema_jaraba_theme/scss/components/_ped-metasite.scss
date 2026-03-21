@@ -141,6 +141,52 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
       border-color: rgba(255, 255, 255, 0.5);
     }
   }
+
+  // Urgency badge — HOMEPAGE-ELEVATION-001 F1
+  &__urgency {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ej-color-innovation, #00A9A5);
+    background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 30%, transparent);
+    padding: 0.35rem 1rem;
+    border-radius: 50rem;
+    margin-bottom: var(--ej-space-sm, 0.75rem);
+    animation: fadeInDown 0.5s ease both;
+
+    svg { opacity: 0.9; }
+  }
+
+  // Trust badges bar — HOMEPAGE-ELEVATION-001 F1
+  &__trust-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: var(--ej-space-md, 1.5rem);
+    animation: fadeInUp 0.8s ease 0.8s both;
+  }
+
+  &__trust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.02em;
+
+    svg { opacity: 0.6; }
+  }
+
+  &__trust-separator {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.6rem;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════

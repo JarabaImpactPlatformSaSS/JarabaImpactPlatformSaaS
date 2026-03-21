@@ -1,0 +1,129 @@
+{#
+/**
+ * @file _homepage-comparison.html.twig
+ * Parcial: Comparativa ecosistema Jaraba vs alternativas.
+ *
+ * PROPOSITO:
+ * Posicionar el ecosistema Jaraba frente a las alternativas reales
+ * del mercado: herramientas sueltas y contratar agencia/consultor.
+ * Reduce la objecion "¿por que no uso lo que ya tengo?".
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos
+ * - ICON-CONVENTION-001: jaraba_icon() duotone
+ * - CSS-VAR-ALL-COLORS-001: Solo variables CSS
+ * - BEM: .homepage-comparison__*
+ * - FUNNEL-COMPLETENESS-001: data-track-* en CTAs
+ * - NO-HARDCODE-PRICE-001: Solo rangos orientativos de competencia
+ *
+ * @see docs/implementacion/20260321b-Plan_Elevacion_Homepage_MetaSitios_Clase_Mundial_10_10_v1_Claude.md
+ */
+#}
+
+{% set urls = ped_urls|default({}) %}
+
+{% set comparison_rows = comparison_rows|default([
+  {
+    feature: 'CRM + Facturacion + Web'|t,
+    jaraba: 'Una sola plataforma integrada'|t,
+    tools: '3-5 herramientas (Mailchimp + Shopify + Calendly...)'|t,
+    agency: 'Dependencia total del proveedor'|t
+  },
+  {
+    feature: 'Copiloto IA especializado'|t,
+    jaraba: '11 agentes entrenados por sector'|t,
+    tools: 'ChatGPT generico (sin contexto)'|t,
+    agency: 'Consultor humano (coste elevado)'|t
+  },
+  {
+    feature: 'Coste mensual'|t,
+    jaraba: 'Desde 19 EUR/mes todo incluido'|t,
+    tools: '200+ EUR/mes combinando tools'|t,
+    agency: '500-2.000+ EUR/mes'|t
+  },
+  {
+    feature: 'Tiempo de arranque'|t,
+    jaraba: '30 segundos (registro + setup wizard)'|t,
+    tools: 'Dias o semanas de configuracion'|t,
+    agency: 'Semanas o meses de negociacion'|t
+  },
+  {
+    feature: 'Escalabilidad'|t,
+    jaraba: '10 verticales, activa lo que necesites'|t,
+    tools: 'Migrar a otra tool cuando crezcas'|t,
+    agency: 'Renegociar contrato cada vez'|t
+  }
+]) %}
+
+<section class="homepage-comparison reveal-element reveal-fade-up"
+         id="comparativa"
+         aria-labelledby="comparison-title">
+  <div class="homepage-comparison__container">
+
+    <header class="homepage-comparison__header">
+      <span class="homepage-comparison__eyebrow">{% trans %}¿Por que Jaraba?{% endtrans %}</span>
+      <h2 id="comparison-title" class="homepage-comparison__title">
+        {% trans %}Una plataforma vs. el caos de siempre{% endtrans %}
+      </h2>
+    </header>
+
+    {# Desktop: tabla responsive. Mobile: cards apiladas #}
+    <div class="homepage-comparison__table" role="table" aria-label="{% trans %}Comparativa de soluciones{% endtrans %}">
+
+      {# Header row #}
+      <div class="homepage-comparison__row homepage-comparison__row--header" role="row">
+        <div class="homepage-comparison__cell homepage-comparison__cell--feature" role="columnheader">
+          {% trans %}Caracteristica{% endtrans %}
+        </div>
+        <div class="homepage-comparison__cell homepage-comparison__cell--jaraba" role="columnheader">
+          {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
+          {% trans %}Jaraba{% endtrans %}
+        </div>
+        <div class="homepage-comparison__cell" role="columnheader">
+          {% trans %}Herramientas sueltas{% endtrans %}
+        </div>
+        <div class="homepage-comparison__cell" role="columnheader">
+          {% trans %}Agencia / Consultor{% endtrans %}
+        </div>
+      </div>
+
+      {# Data rows #}
+      {% for row in comparison_rows %}
+        <div class="homepage-comparison__row reveal-element reveal-fade-up" role="row" style="--reveal-delay: {{ loop.index0 * 0.06 }}s;">
+          <div class="homepage-comparison__cell homepage-comparison__cell--feature" role="rowheader">
+            {{ row.feature }}
+          </div>
+          <div class="homepage-comparison__cell homepage-comparison__cell--jaraba" role="cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 12l2 2 4-4" stroke="var(--ej-color-innovation, #00A9A5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ row.jaraba }}
+          </div>
+          <div class="homepage-comparison__cell homepage-comparison__cell--neutral" role="cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14" stroke="var(--ej-text-muted, #64748B)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {{ row.tools }}
+          </div>
+          <div class="homepage-comparison__cell homepage-comparison__cell--neutral" role="cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {{ row.agency }}
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+
+    <div class="homepage-comparison__cta">
+      <a href="{{ urls.register|default(path('user.register')) }}"
+         class="btn-primary btn-primary--glow"
+         data-track-cta="comparison_register"
+         data-track-position="homepage_comparison">
+        {% trans %}Empieza gratis — Sin compromiso{% endtrans %}
+      </a>
+    </div>
+
+  </div>
+</section>

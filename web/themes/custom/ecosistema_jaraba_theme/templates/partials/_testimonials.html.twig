@@ -19,7 +19,7 @@
       {% trans %}Profesionales que ya se han transformado{% endtrans %}
     </h2>
     <p class="testimonials__subtitle">
-      {% trans %}Personas reales del programa Andalucía +ei que han reinventado su carrera con el Método Jaraba.{% endtrans %}
+      {{ testimonials_subtitle|default('Personas reales que han reinventado su carrera y su negocio con el Metodo Jaraba.'|trans) }}
     </p>
 
     <div class="testimonials__grid" role="list">

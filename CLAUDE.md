@@ -151,6 +151,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - LEAD-MAGNET-CRM-001: PublicSubscribeController auto-crea CRM Contact (source=lead_magnet) + Opportunity (stage=mql) para sources lead_magnet_*. Servicios CRM opcionales via $container->has(). Patrón idéntico a VerticalQuizService::createCrmLead()
 - VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
 - LANDING-CONVERSION-SCORE-001: 15 criterios para landing 10/10 clase mundial (hero+urgency, trust badges, pain points, steps, features, comparison, social proof, lead magnet, pricing tiers, FAQ, final CTA, sticky CTA, reveal animations, tracking, mobile-first)
+- HOMEPAGE-ELEVATION-001: Homepage SaaS + 3 metasitios elevados a 10/10. 4 variantes via `homepage_variant` en preprocess (pepejaraba=5 marca persona, jarabaimpact=6 franquicia, pde=7 corporativo, generic). Parciales: _homepage-pain-points, _homepage-pricing-preview, _homepage-comparison, _homepage-features. Video hero demo-showcase.mp4. Validator: HOMEPAGE-COMPLETENESS-001 (15 checks)
 
 ### Quiz de Recomendacion de Vertical
 - Ruta: `/test-vertical` (publica, accesible sin login)
@@ -333,12 +334,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v156.0.0
-- ARQUITECTURA: v143.0.0
-- INDICE: v184.0.0
-- FLUJO: v108.0.0
-- Ultimo aprendizaje: #208
-- Ultima golden rule: #146
+- DIRECTRICES: v158.0.0
+- ARQUITECTURA: v145.0.0
+- INDICE: v188.0.0
+- FLUJO: v111.0.0
+- Ultimo aprendizaje: #211
+- Ultima golden rule: #148
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -437,12 +438,15 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-grounding-provider-health.php` (GROUNDING-PROVIDER-HEALTH-001)
 - `php scripts/validation/validate-crm-funnel-attribution.php` (CRM-FUNNEL-ATTRIBUTION-001)
 - `php scripts/validation/validate-copilot-prompt-drift.php` (COPILOT-PROMPT-DRIFT-001)
+- `php scripts/validation/validate-homepage-completeness.php` (HOMEPAGE-COMPLETENESS-001)
+- `php scripts/validation/validate-homepage-variant-coherence.php` (HOMEPAGE-VARIANT-COHERENCE-001)
+- `php scripts/validation/validate-homepage-video-a11y.php` (HOMEPAGE-VIDEO-A11Y-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (92 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (94 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 92 scripts validacion (scripts/validation/) | On demand, CI | 98 checks (81 run + 17 warn) |
+| 1 | 94 scripts validacion (scripts/validation/) | On demand, CI | 101 checks (84 run + 17 warn) |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 8 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
