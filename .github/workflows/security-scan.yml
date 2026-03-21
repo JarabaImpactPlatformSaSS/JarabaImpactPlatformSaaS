@@ -106,7 +106,7 @@ jobs:
       # AUDIT-SEC-N10: Trivy must block on CRITICAL/HIGH vulnerabilities.
       - name: Run Trivy vulnerability scanner
         id: trivy
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -131,7 +131,7 @@ jobs:
 
       - name: Trivy table output (fallback for repos without GHAS)
         if: always()
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
