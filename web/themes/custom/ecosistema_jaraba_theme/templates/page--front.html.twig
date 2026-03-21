@@ -141,50 +141,12 @@
       logged_in: logged_in,
     } %}
 
-    {# 7. PRICING PREVIEW — verticales de Pepe #}
+    {# 7. PRICING PREVIEW #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
       ped_pricing: ped_pricing|default({}),
       ped_urls: ped_urls|default({}),
       logged_in: logged_in,
       language_prefix: language_prefix|default(''),
-      preview_verticals: [
-        {
-          id: 'jarabalex',
-          name: 'JarabaLex'|t,
-          tagline: 'Inteligencia legal con IA'|t,
-          icon_cat: 'verticals',
-          icon_name: 'jarabalex',
-          color: 'azul-corporativo',
-          price: ped_pricing.jarabalex.starter_price|default(29),
-          features: ['Busqueda IA en 8 fuentes oficiales'|t, 'Gestion de expedientes y agenda'|t, 'Copiloto legal integrado'|t],
-          url: ped_urls.jarabalex|default('/jarabalex'),
-          popular: true
-        },
-        {
-          id: 'empleabilidad',
-          name: 'Empleabilidad'|t,
-          tagline: 'Tu proximo paso profesional'|t,
-          icon_cat: 'verticals',
-          icon_name: 'empleabilidad',
-          color: 'verde-innovacion',
-          price: ped_pricing.empleabilidad.starter_price|default(0),
-          features: ['CV con IA y matching inteligente'|t, 'Preparacion de entrevistas'|t, 'Diagnostico de competencias'|t],
-          url: ped_urls.empleabilidad|default('/empleabilidad'),
-          popular: false
-        },
-        {
-          id: 'emprendimiento',
-          name: 'Emprendimiento'|t,
-          tagline: 'De la idea al negocio'|t,
-          icon_cat: 'verticals',
-          icon_name: 'emprendimiento',
-          color: 'naranja-impulso',
-          price: ped_pricing.emprendimiento.starter_price|default(19),
-          features: ['Lean Canvas y validacion con IA'|t, 'Plan de negocio automatizado'|t, 'Copiloto startup integrado'|t],
-          url: ped_urls.emprendimiento|default('/emprendimiento'),
-          popular: false
-        }
-      ],
     } only %}
 
     {# 8. TESTIMONIOS #}
@@ -306,52 +268,6 @@
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
     } %}
-
-    {# 6b. PRICING PREVIEW — verticales franquicia #}
-    {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
-      ped_pricing: ped_pricing|default({}),
-      ped_urls: ped_urls|default({}),
-      logged_in: logged_in,
-      language_prefix: language_prefix|default(''),
-      preview_verticals: [
-        {
-          id: 'agroconecta',
-          name: 'AgroConecta'|t,
-          tagline: 'Del campo a la mesa, digitalizado'|t,
-          icon_cat: 'verticals',
-          icon_name: 'agroconecta',
-          color: 'verde-innovacion',
-          price: ped_pricing.agroconecta.starter_price|default(19),
-          features: ['Marketplace agroalimentario'|t, 'Trazabilidad QR inteligente'|t, 'Copiloto de produccion IA'|t],
-          url: ped_urls.agroconecta|default('/agroconecta'),
-          popular: false
-        },
-        {
-          id: 'comercioconecta',
-          name: 'ComercioConecta'|t,
-          tagline: 'Tu tienda digital completa'|t,
-          icon_cat: 'verticals',
-          icon_name: 'comercioconecta',
-          color: 'naranja-impulso',
-          price: ped_pricing.comercioconecta.starter_price|default(19),
-          features: ['Catalogo con pagos integrados'|t, 'Reservas y citas online'|t, 'Copiloto de ventas IA'|t],
-          url: ped_urls.comercioconecta|default('/comercioconecta'),
-          popular: true
-        },
-        {
-          id: 'serviciosconecta',
-          name: 'ServiciosConecta'|t,
-          tagline: 'Gestiona tu negocio de servicios'|t,
-          icon_cat: 'verticals',
-          icon_name: 'serviciosconecta',
-          color: 'azul-corporativo',
-          price: ped_pricing.serviciosconecta.starter_price|default(19),
-          features: ['CRM y agenda inteligente'|t, 'Presupuestos automaticos'|t, 'Facturacion integrada'|t],
-          url: ped_urls.serviciosconecta|default('/serviciosconecta'),
-          popular: false
-        }
-      ],
-    } only %}
 
     {# 7. COMPARATIVA — Franquicia vs montar solo (variant-specific) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
@@ -507,50 +423,12 @@
       logged_in: logged_in,
     } %}
 
-    {# 6b. PRICING PREVIEW — verticales PDE corporativo #}
+    {# 6b. PRICING PREVIEW — Transparencia de precios (HOMEPAGE-ELEVATION-001 F0) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
       ped_pricing: ped_pricing|default({}),
       ped_urls: ped_urls|default({}),
       logged_in: logged_in,
       language_prefix: language_prefix|default(''),
-      preview_verticals: [
-        {
-          id: 'jarabalex',
-          name: 'JarabaLex'|t,
-          tagline: 'Inteligencia legal con IA'|t,
-          icon_cat: 'verticals',
-          icon_name: 'jarabalex',
-          color: 'azul-corporativo',
-          price: ped_pricing.jarabalex.starter_price|default(29),
-          features: ['Busqueda IA en 8 fuentes oficiales'|t, 'Gestion de expedientes y agenda'|t, 'Copiloto legal integrado'|t],
-          url: ped_urls.jarabalex|default('/jarabalex'),
-          popular: true
-        },
-        {
-          id: 'empleabilidad',
-          name: 'Empleabilidad'|t,
-          tagline: 'Insercion laboral con IA'|t,
-          icon_cat: 'verticals',
-          icon_name: 'empleabilidad',
-          color: 'verde-innovacion',
-          price: ped_pricing.empleabilidad.starter_price|default(0),
-          features: ['CV con IA y matching inteligente'|t, 'Preparacion de entrevistas'|t, 'Diagnostico de competencias'|t],
-          url: ped_urls.empleabilidad|default('/empleabilidad'),
-          popular: false
-        },
-        {
-          id: 'andalucia_ei',
-          name: 'Andalucia +ei'|t,
-          tagline: 'Programas FSE+ para instituciones'|t,
-          icon_cat: 'verticals',
-          icon_name: 'andalucia-ei',
-          color: 'naranja-impulso',
-          price: ped_pricing.andalucia_ei.starter_price|default(0),
-          features: ['Gestion de participantes FSE'|t, 'Justificacion automatica'|t, 'Copiloto para tecnicos AEDL'|t],
-          url: ped_urls.andalucia_ei|default('/andalucia-ei'),
-          popular: false
-        }
-      ],
     } only %}
 
     {# 6c. COMPARATIVA ECOSISTEMA — Jaraba vs alternativas (HOMEPAGE-ELEVATION-001 F2) #}

@@ -32,7 +32,7 @@
 {% set pricing = ped_pricing|default({}) %}
 {% set urls = ped_urls|default({}) %}
 
-{% set preview_verticals = preview_verticals|default([
+{% set preview_verticals = [
   {
     id: 'jarabalex',
     name: 'JarabaLex'|t,
@@ -81,7 +81,7 @@
     url: urls.emprendimiento|default('/emprendimiento'),
     popular: false
   }
-]) %}
+] %}
 
 <section class="homepage-pricing reveal-element reveal-fade-up"
          id="precios"
