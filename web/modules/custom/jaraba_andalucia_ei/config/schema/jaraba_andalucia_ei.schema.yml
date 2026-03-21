@@ -14,6 +14,45 @@ jaraba_andalucia_ei.settings:
     maximo_horas_ia_dia:
       type: float
       label: 'Máximo horas IA por día'
+    plazas_totales:
+      type: integer
+      label: 'Plazas totales del programa'
+    plazas_restantes:
+      type: integer
+      label: 'Plazas restantes'
+    incentivo_euros:
+      type: integer
+      label: 'Incentivo en euros'
+    tasa_insercion_objetivo:
+      type: integer
+      label: 'Tasa de inserción objetivo (%)'
+    fecha_inicio_programa:
+      type: string
+      label: 'Fecha inicio programa'
+    fecha_fin_programa:
+      type: string
+      label: 'Fecha fin programa'
+    subvencion_total:
+      type: string
+      label: 'Subvención total'
+    expediente:
+      type: string
+      label: 'Número de expediente'
+    fecha_limite_solicitudes:
+      type: string
+      label: 'Fecha límite solicitudes'
+    mostrar_countdown:
+      type: boolean
+      label: 'Mostrar countdown en landing'
+    mostrar_popup_saas:
+      type: boolean
+      label: 'Mostrar popup en SaaS principal'
+    popup_campaign_utm:
+      type: string
+      label: 'UTM campaign para popup'
+    popup_ttl_hours:
+      type: integer
+      label: 'Horas antes de re-mostrar popup'
     sto_sync_enabled:
       type: boolean
       label: 'Sincronización STO habilitada'

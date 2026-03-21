@@ -311,6 +311,16 @@ function jaraba_andalucia_ei_theme(): array {
     'material_didactico_ei' => [
       'render element' => 'elements',
     ],
+    // Confirmación post-solicitud (thank-you page).
+    'solicitud_confirmada' => [
+      'variables' => [
+        'guia_url' => '',
+        'dashboard_url' => '',
+        'module_path' => '',
+        'incentivo' => 528,
+      ],
+      'template' => 'solicitud-confirmada',
+    ],
     // Caso de éxito: Diputación de Jaén
     'andalucia_ei_case_study' => [
       'variables' => [
@@ -1488,6 +1498,15 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
   // ZERO-REGION-003: Attach library here — controller #attached is NOT processed.
   $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/reclutamiento';
 
+  // ZERO-REGION-003: Countdown + plazas data via drupalSettings.
+  $config = \Drupal::config('jaraba_andalucia_ei.settings');
+  $attachments['#attached']['drupalSettings']['aeiReclutamiento'] = [
+    'fechaLimite' => $config->get('fecha_limite_solicitudes') ?? '2026-06-30',
+    'mostrarCountdown' => (bool) ($config->get('mostrar_countdown') ?? TRUE),
+    'plazasRestantes' => (int) ($config->get('plazas_restantes') ?? 45),
+    'plazasTotales' => (int) ($config->get('plazas_totales') ?? 45),
+  ];
+
   // Geo meta tags para buscadores (Bing, Yahoo, Yandex).
   $geo_tags = [
     'geo.region' => 'ES-AN',
@@ -1900,7 +1919,7 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
     return;
   }
 
-  // Solo en meta-sitios corporativos.
+  // Meta-sitios corporativos (permanente).
   $host = \Drupal::request()->getHost();
   $metaSiteHosts = [
     'plataformadeecosistemas.es',
@@ -1911,6 +1930,13 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
     'jarabaimpact.jaraba-saas.lndo.site',
   ];
 
+  // SaaS principal: configurable para campañas.
+  $config = \Drupal::config('jaraba_andalucia_ei.settings');
+  if ($config->get('mostrar_popup_saas')) {
+    $metaSiteHosts[] = 'jaraba-saas.lndo.site';
+    // Production SaaS hostname would be added here when deploying.
+  }
+
   if (!in_array($host, $metaSiteHosts, TRUE)) {
     return;
   }
@@ -1918,12 +1944,24 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
   $solicitarUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
   $landingUrl = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
 
+  // UTM campaign params for attribution.
+  $utmCampaign = $config->get('popup_campaign_utm') ?? 'aei_reclutamiento_2026';
+  $utmParams = http_build_query([
+    'utm_source' => $host,
+    'utm_medium' => 'popup',
+    'utm_campaign' => $utmCampaign,
+  ]);
+
   $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/reclutamiento-popup';
   $modulePath = '/' . \Drupal::service('extension.list.module')->getPath('jaraba_andalucia_ei');
   $attachments['#attached']['drupalSettings']['aeiRecPopup'] = [
     'solicitarUrl' => $solicitarUrl,
     'landingUrl' => $landingUrl,
     'modulePath' => $modulePath,
+    'utmParams' => $utmParams,
+    'ttlHours' => (int) ($config->get('popup_ttl_hours') ?? 48),
+    'plazasRestantes' => (int) ($config->get('plazas_restantes') ?? 45),
+    'incentivoEuros' => (int) ($config->get('incentivo_euros') ?? 528),
   ];
 }
 
@@ -1946,6 +1984,9 @@ function jaraba_andalucia_ei_preprocess_html(array &$variables): void {
     }
     elseif ($route === 'jaraba_andalucia_ei.solicitar') {
       $variables['attributes']['class'][] = 'page-andalucia-ei--solicitar';
+    }
+    elseif ($route === 'jaraba_andalucia_ei.solicitud_confirmada') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--confirmada';
     }
     elseif ($route === 'jaraba_andalucia_ei.dashboard') {
       $variables['attributes']['class'][] = 'page-andalucia-ei--dashboard';

@@ -117,3 +117,11 @@ services:
     class: Drupal\jaraba_job_board\Breadcrumb\JobBoardBreadcrumbBuilder
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_job_board.grounding_provider:
+    class: Drupal\jaraba_job_board\Grounding\JobPostingGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

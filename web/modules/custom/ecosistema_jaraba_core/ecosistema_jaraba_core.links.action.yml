@@ -151,3 +151,13 @@ entity.fair_use_policy.add_form:
   title: 'Añadir Fair Use Policy'
   appears_on:
     - entity.fair_use_policy.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - PROMOTION CONFIG
+# ---------------------------------------------------------------------------
+
+entity.promotion_config.add_form:
+  route_name: entity.promotion_config.add_form
+  title: 'Añadir Promoción'
+  appears_on:
+    - entity.promotion_config.collection

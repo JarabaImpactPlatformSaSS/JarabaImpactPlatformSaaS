@@ -4,7 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-21
-**Versión:** 187.0.0 (DEDICATED-SERVER + Activación IA Embudo Ventas + GROUNDING-PROVIDER-001 + aprendizaje #211)
+**Versión:** 188.0.0 (HOMEPAGE-ELEVATION-001 F0-F5 10/10 + 4 variantes metasitio + HOMEPAGE-COMPLETENESS-001 + aprendizaje #211)
+
+> **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
+>
+> Aprendizaje #211: HOMEPAGE-ELEVATION-001 — Homepage SaaS + 3 metasitios elevados de 5/10 a 10/10 clase mundial en 6 fases (F0-F5). 3 gaps criticos cerrados (pain points 0→10, pricing preview 0→10, sticky CTA 0→10). Hero upgrade con urgency badge "14 dias gratis" + trust badges PED + video demo-showcase.mp4 autoplaying con IntersectionObserver + prefers-reduced-motion + saveData. Comparativa ecosistema (tabla responsive Jaraba vs herramientas sueltas vs agencia, variant-aware para franquicia). 12 features grid con fallback i18n estatico. FAQ expandido 6→10 preguntas + Schema.org FAQPage JSON-LD actualizado (4 preguntas nuevas: pricing, migracion, sector, integraciones). Reveal animations en 21 secciones. 28 CTAs con data-track-cta. 4 variantes de homepage por metasitio: pepejaraba (group_id=5, marca persona embudo 30+ anos), jarabaimpact (group_id=6, franquicia digital con comparativa territorial exclusiva), pde (group_id=7, corporativo AIDA), generic (SaaS hub). Variable `homepage_variant` inyectada desde preprocess basada en group_id (variantMap escalable). CTA final variant-aware: pepejaraba→"Agendar llamada con Pepe", jarabaimpact→"Solicitar info franquicia", generic→"Crear cuenta gratuita". Subtitulo testimonios generico (sin Andalucia-only). HOMEPAGE-COMPLETENESS-001 validator 15/15 checks automatizados registrado en validate-all.sh. 9 archivos creados (4 Twig + 4 SCSS + 1 PHP validator), 9 modificados. Regla de oro #148: Homepage de SaaS multi-metasitio DEBE diferenciar contenido por dominio via variable inyectada en preprocess (NUNCA flujo unico generico) — pepejaraba.com es TOP-OF-FUNNEL aprovechando marca persona del fundador, jarabaimpact.com es ESCALADO via franquicia digital, plataformadeecosistemas.es es CORPORATIVO B2B.
 
 > **📋 ACTIVACIÓN IA EMBUDO VENTAS — v157 DIRECTRICES + v145 ARQUITECTURA + v186 INDICE + v110 FLUJO** (2026-03-21)
 >

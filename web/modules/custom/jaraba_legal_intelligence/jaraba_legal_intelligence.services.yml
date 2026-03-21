@@ -284,3 +284,11 @@ services:
     class: Drupal\jaraba_legal_intelligence\DailyActions\ConsultarIaLegalAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_legal_intelligence.grounding_provider:
+    class: Drupal\jaraba_legal_intelligence\Grounding\LegalResolutionGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

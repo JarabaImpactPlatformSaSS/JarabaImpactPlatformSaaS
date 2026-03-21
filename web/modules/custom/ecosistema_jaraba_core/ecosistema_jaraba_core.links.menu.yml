@@ -241,3 +241,10 @@ entity.fair_use_policy.collection:
   route_name: entity.fair_use_policy.collection
   parent: system.admin_config
   weight: 57
+
+entity.promotion_config.collection:
+  title: 'Promociones Activas'
+  description: 'Gestiona promociones, programas y ofertas del SaaS. Estos datos se inyectan en el copilot IA automaticamente.'
+  route_name: entity.promotion_config.collection
+  parent: system.admin_structure
+  weight: 12

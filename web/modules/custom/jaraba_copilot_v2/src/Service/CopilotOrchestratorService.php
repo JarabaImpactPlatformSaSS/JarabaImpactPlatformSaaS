@@ -757,6 +757,12 @@ class CopilotOrchestratorService
      */
     protected function buildSystemPrompt(array $context, string $mode): string
     {
+        // Si el caller proporciona un prompt custom completo (ej: PublicCopilotController
+        // con prompt dinámico enriquecido con promociones activas), usarlo directamente.
+        if (isset($context['_custom_system_prompt']) && $context['_custom_system_prompt'] !== '') {
+            return $context['_custom_system_prompt'];
+        }
+
         // AI-IDENTITY-RULE: usar constante centralizada (SSOT).
         $identityRule = \Drupal\ecosistema_jaraba_core\AI\AIIdentityRule::IDENTITY_PROMPT;
 

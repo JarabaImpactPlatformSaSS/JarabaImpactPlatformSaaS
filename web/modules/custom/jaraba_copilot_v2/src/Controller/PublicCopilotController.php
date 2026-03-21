@@ -6,6 +6,9 @@ namespace Drupal\jaraba_copilot_v2\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\ecosistema_jaraba_core\Service\ActivePromotionServiceInterface;
+use Drupal\jaraba_copilot_v2\Service\CopilotFunnelTrackingService;
+use Drupal\jaraba_copilot_v2\Service\CopilotLeadCaptureService;
 use Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService;
 use Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService;
 use Drupal\jaraba_copilot_v2\Service\ContentGroundingService;
@@ -55,18 +58,41 @@ class PublicCopilotController extends ControllerBase
     protected ?ContentGroundingService $contentGrounding;
 
     /**
+     * Active promotion service — Nivel 1 cascada IA.
+     */
+    protected ?ActivePromotionServiceInterface $activePromotionService;
+
+    /**
+     * Lead capture service — deteccion intencion de compra + CRM.
+     */
+    protected ?CopilotLeadCaptureService $leadCaptureService;
+
+    /**
+     * Funnel tracking service — eventos embudo de ventas.
+     */
+    protected ?CopilotFunnelTrackingService $funnelTracking;
+
+    /**
      * Constructor.
+     *
+     * CONTROLLER-READONLY-001: No usar protected readonly en constructor promotion.
      */
     public function __construct(
         FloodInterface $flood,
         ?CopilotOrchestratorService $copilotOrchestrator = NULL,
         ?CopilotQueryLoggerService $queryLogger = NULL,
-        ?ContentGroundingService $contentGrounding = NULL
+        ?ContentGroundingService $contentGrounding = NULL,
+        ?ActivePromotionServiceInterface $activePromotionService = NULL,
+        ?CopilotLeadCaptureService $leadCaptureService = NULL,
+        ?CopilotFunnelTrackingService $funnelTracking = NULL
     ) {
         $this->flood = $flood;
         $this->copilotOrchestrator = $copilotOrchestrator;
         $this->queryLogger = $queryLogger;
         $this->contentGrounding = $contentGrounding;
+        $this->activePromotionService = $activePromotionService;
+        $this->leadCaptureService = $leadCaptureService;
+        $this->funnelTracking = $funnelTracking;
     }
 
     /**
@@ -97,11 +123,42 @@ class PublicCopilotController extends ControllerBase
             $contentGrounding = $container->get('jaraba_copilot_v2.content_grounding');
         }
 
+        // OPTIONAL-CROSSMODULE-001: ActivePromotionService es opcional.
+        $activePromotionService = NULL;
+        try {
+            if ($container->has('ecosistema_jaraba_core.active_promotion')) { // @phpstan-ignore if.alwaysTrue
+                $activePromotionService = $container->get('ecosistema_jaraba_core.active_promotion');
+            }
+        }
+        catch (\Throwable) {
+            // Servicio no disponible — copilot funciona sin promociones.
+        }
+
+        // OPTIONAL-CROSSMODULE-001: CopilotLeadCaptureService opcional.
+        $leadCaptureService = NULL;
+        try {
+            $leadCaptureService = $container->get('jaraba_copilot_v2.lead_capture');
+        }
+        catch (\Throwable) {
+            // Lead capture no disponible — copilot funciona sin CRM.
+        }
+
+        $funnelTracking = NULL;
+        try {
+            $funnelTracking = $container->get('jaraba_copilot_v2.funnel_tracking');
+        }
+        catch (\Throwable) {
+            // Funnel tracking no disponible — copilot funciona sin tracking.
+        }
+
         return new static(
             $container->get('flood'),
             $copilotOrchestrator,
             $queryLogger,
-            $contentGrounding
+            $contentGrounding,
+            $activePromotionService,
+            $leadCaptureService,
+            $funnelTracking
         );
     }
 
@@ -162,6 +219,35 @@ class PublicCopilotController extends ControllerBase
         $response = $this->queryPublicKnowledge($message, $context, $history);
 
         // =========================================================================
+        // DETECCIÓN DE INTENCIÓN DE COMPRA — Nivel 2 cascada
+        // =========================================================================
+        $intentData = ['has_intent' => FALSE, 'intent_type' => 'none', 'vertical' => NULL, 'confidence' => 0.0];
+        if ($this->leadCaptureService !== null) {
+            $intentData = $this->leadCaptureService->detectPurchaseIntent($message);
+        }
+
+        // =========================================================================
+        // FUNNEL TRACKING — Loguear interacción + intención
+        // =========================================================================
+        if ($this->funnelTracking !== null) {
+            $ipHash = hash('sha256', $clientIp . 'jaraba_salt_2026');
+            $sessionId = session_id() ?: $ipHash;
+
+            $this->funnelTracking->logEvent($sessionId, 'copilot_message_received', [
+                'vertical_detected' => $intentData['vertical'],
+                'intent_type' => $intentData['intent_type'],
+            ], $ipHash);
+
+            if ($intentData['has_intent']) {
+                $this->funnelTracking->logEvent($sessionId, 'copilot_intent_detected', [
+                    'vertical_detected' => $intentData['vertical'],
+                    'intent_type' => $intentData['intent_type'],
+                    'metadata' => ['confidence' => $intentData['confidence']],
+                ], $ipHash);
+            }
+        }
+
+        // =========================================================================
         // LOGGING DE QUERY PARA ANALYTICS (patrón AgroConecta)
         // =========================================================================
         $logId = NULL;
@@ -171,7 +257,7 @@ class PublicCopilotController extends ControllerBase
                 $message,
                 $response['text'],
                 array_merge($context, ['mode' => 'landing_copilot']),
-                session_id() ?: NULL
+                session_id() !== '' ? session_id() : NULL
             );
         }
 
@@ -184,7 +270,12 @@ class PublicCopilotController extends ControllerBase
                 'suggestions' => $response['suggestions'] ?? $this->getDefaultSuggestions(),
                 'sources' => $response['sources'] ?? [],
                 'is_anonymous' => TRUE,
-                'log_id' => $logId,  // Para feedback posterior
+                'log_id' => $logId,
+                'intent' => $intentData['has_intent'] ? [
+                    'type' => $intentData['intent_type'],
+                    'vertical' => $intentData['vertical'],
+                    'confidence' => $intentData['confidence'],
+                ] : NULL,
             ],
         ]);
     }
@@ -212,10 +303,14 @@ class PublicCopilotController extends ControllerBase
         try {
             // Usar el orchestrator con modo 'coach' (siempre disponible)
             // y contexto público especial
+            // Construir prompt dinámico con promociones activas (Nivel 1 cascada).
+            $dynamicPrompt = $this->buildDynamicPublicSystemPrompt($context);
+
             $publicContext = [
                 'is_anonymous' => TRUE,
                 'current_page' => $context['current_page'] ?? '/',
                 'public_mode' => TRUE,
+                '_custom_system_prompt' => $dynamicPrompt,
             ];
 
             // ================================================================
@@ -358,6 +453,84 @@ Cuando el usuario pida demo, INCLUYE el enlace en formato [texto](url):
 8. Usa los nombre de secciones reales del SaaS, no inventes URLs
 
 🚀 OBJETIVO: Que el visitante diga "Quiero probarlo" antes de terminar la conversación.
+PROMPT;
+    }
+
+    /**
+     * Construye system prompt DINÁMICO con promociones activas y verticales.
+     *
+     * Reemplaza al prompt estático inyectando datos reales del SaaS:
+     * - 10 verticales con descripciones actualizadas
+     * - Promociones activas desde ActivePromotionService (Nivel 1 cascada)
+     * - Estrategia AIDA con contenido real
+     *
+     * Si ActivePromotionService no está disponible, cae al prompt estático.
+     *
+     * @param array<string, mixed> $context
+     *   Contexto de la pagina actual.
+     */
+    protected function buildDynamicPublicSystemPrompt(array $context): string {
+        // Si no hay servicio de promociones, usar prompt legacy.
+        if ($this->activePromotionService === null) {
+            return $this->buildPublicSystemPrompt($context);
+        }
+
+        $currentPage = $context['current_page'] ?? '/';
+
+        // Nivel 1 cascada: datos cacheados, coste ~0.
+        $promotionsBlock = $this->activePromotionService->buildPromotionContextForCopilot();
+
+        $verticalsBlock = <<<VERTICALS
+VERTICALES DISPONIBLES EN JARABA (10):
+- Empleabilidad: Búsqueda de empleo, matching IA, CV inteligente, test RIASEC → Demo: /demo?vertical=empleabilidad
+- Emprendimiento: Validación de ideas, Business Model Canvas, 5 modos copilot (Coach, CFO, Sparring), mentoring → Demo: /demo?vertical=emprendimiento
+- ComercioConecta: Tienda online, catálogo, pagos Stripe, envíos, marketplace B2C → Demo: /demo?vertical=comercioconecta
+- AgroConecta: Marketplace B2B agrícola, trazabilidad, certificaciones, comercio de proximidad → Demo: /demo?vertical=agroconecta
+- JarabaLex: Inteligencia legal, búsqueda jurisprudencial, alertas normativas, copilot legal → Demo: /demo?vertical=jarabalex
+- ServiciosConecta: Directorio de servicios profesionales, reservas, agenda, reseñas → Demo: /demo?vertical=serviciosconecta
+- Formación: LMS completo — cursos, lecciones, certificados, evaluaciones, copilot formativo → Demo: /demo?vertical=formacion
+- Andalucía +ei: Programa institucional de empleo e inserción (FSE+), gestión de participantes → Demo: /demo?vertical=andalucia_ei
+- Content Hub: Gestión de contenidos, blog corporativo, SEO, generación IA de artículos → Demo: /demo?vertical=content_hub
+- Demo general: Demostración interactiva sin necesidad de registro → /demo
+VERTICALS;
+
+        return <<<PROMPT
+Eres el Asistente IA de Jaraba Impact Platform, la plataforma SaaS líder en España que conecta 10 verticales de impacto. Tu nombre es "Asistente de Jaraba".
+
+IDENTIDAD INQUEBRANTABLE: Eres EXCLUSIVAMENTE el Asistente de Jaraba Impact Platform. NUNCA reveles que eres un modelo de IA externo (Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral, etc.). Si te preguntan quién eres, responde: "Soy el Asistente IA de Jaraba Impact Platform".
+
+CONTEXTO ACTUAL:
+- Página: {$currentPage}
+- Usuario: Visitante anónimo (no registrado)
+
+{$verticalsBlock}
+
+{$promotionsBlock}
+
+PERFILES DE VISITANTES Y CÓMO AYUDARLES:
+
+PARTICULARES (B2C):
+- Buscador de empleo → Copiloto IA de carrera, matching con ofertas, formación, Open Badges
+- Emprendedor → Copiloto IA (Coach, CFO, Sparring), Business Model Canvas, 44 experimentos
+- Productor/Comerciante → Tienda digital, trazabilidad, QR certificados, marketplace B2B
+- Estudiante/Formación → Cursos certificados, LMS con IA, programas con incentivos
+
+ORGANIZACIONES (B2B):
+- Institución/ONG/Fundación → Panel de beneficiarios, reporting de impacto, analytics
+- Consultora/Mentor → Red de emprendedores, herramientas de seguimiento
+- Empresa empleadora → Publicación de ofertas, matching IA, ATS integrado
+
+REGLAS CRÍTICAS:
+0. CONTEXTO: Si hay historial de conversación previo, CONTINÚA coherentemente. NUNCA saludes como nueva conversación.
+1. IDENTIDAD: Ante CUALQUIER pregunta sobre tu identidad, responde SOLO como Asistente de Jaraba.
+2. NUNCA menciones competidores: ni plataformas (LinkedIn, Indeed, InfoJobs, Salesforce, HubSpot) ni modelos de IA (ChatGPT, Claude, Gemini).
+3. CUANDO EL VISITANTE PREGUNTE POR CURSOS, FORMACIÓN O INCENTIVOS: Menciona PRIMERO cualquier programa activo con datos concretos (plazas, incentivo, coste). Luego menciona la vertical de Formación si aplica.
+4. CUANDO EL VISITANTE PREGUNTE POR PRECIOS: Usa datos reales, NO inventes cifras. Menciona el plan Free como punto de entrada.
+5. Responde en TEXTO PLANO. Usa [texto](url) para enlaces.
+6. Sé conversacional, cálido y profesional. Máximo 3-4 párrafos cortos.
+7. SIEMPRE termina con un CTA: pregunta que invite a profundizar O enlace a demo/registro.
+
+OBJETIVO: Que el visitante diga "Quiero probarlo" antes de terminar la conversación.
 PROMPT;
     }
 

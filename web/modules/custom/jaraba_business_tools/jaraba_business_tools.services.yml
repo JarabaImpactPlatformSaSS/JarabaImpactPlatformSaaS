@@ -115,3 +115,11 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
 
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_business_tools.grounding_provider:
+    class: Drupal\jaraba_business_tools\Grounding\BusinessCanvasGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+

@@ -281,6 +281,11 @@ respond to reviews:
 # S6-08: DEMO INTERACTIVA
 # ===========================================
 
+administer promotions:
+  title: 'Administrar promociones activas'
+  description: 'Crear, editar y eliminar promociones, programas y ofertas activas del SaaS. Estos datos se inyectan en el copilot IA.'
+  restrict access: TRUE
+
 administer demo configuration:
   title: 'Administrar configuracion de demo'
   description: 'Permite gestionar perfiles, limites y tokens de la experiencia demo.'

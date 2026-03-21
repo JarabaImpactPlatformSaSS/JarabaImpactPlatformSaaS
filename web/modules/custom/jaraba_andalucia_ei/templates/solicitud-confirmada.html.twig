@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * Thank-you page after submitting SolicitudEi.
+ *
+ * Variables:
+ *   - guia_url: URL to participant guide (lead magnet).
+ *   - dashboard_url: URL to main Andalucía +ei dashboard.
+ *   - module_path: Path to jaraba_andalucia_ei module.
+ *   - incentivo: Incentive amount in euros (from config).
+ *
+ * FUNNEL-COMPLETENESS-001: All CTAs have data-track-cta + data-track-position.
+ */
+#}
+
+<section class="aei-confirmada" aria-label="{% trans %}Solicitud recibida{% endtrans %}">
+  <div class="aei-confirmada__container">
+
+    {# Hero: Confirmación visual #}
+    <div class="aei-confirmada__hero">
+      <div class="aei-confirmada__hero-icon" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-verde-innovacion, #00A9A5)" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h1 class="aei-confirmada__title">{% trans %}Tu solicitud ha sido recibida{% endtrans %}</h1>
+      <p class="aei-confirmada__subtitle">
+        {% trans %}Hemos enviado un email de confirmación con los detalles. Nuestro equipo revisará tu solicitud y te contactará en menos de 48 horas.{% endtrans %}
+      </p>
+    </div>
+
+    {# Timeline: Próximos pasos #}
+    <div class="aei-confirmada__steps" aria-label="{% trans %}Próximos pasos{% endtrans %}">
+      <h2 class="aei-confirmada__steps-title">{% trans %}¿Qué pasa ahora?{% endtrans %}</h2>
+      <ol class="aei-confirmada__steps-list">
+        <li class="aei-confirmada__step aei-confirmada__step--active">
+          <span class="aei-confirmada__step-num">1</span>
+          <div class="aei-confirmada__step-content">
+            <h3 class="aei-confirmada__step-title">{% trans %}Revisamos tu solicitud{% endtrans %}</h3>
+            <p class="aei-confirmada__step-desc">{% trans %}Nuestro sistema de inteligencia artificial evalúa tu perfil y te asigna el itinerario más adecuado. Respuesta en menos de 48 horas.{% endtrans %}</p>
+          </div>
+        </li>
+        <li class="aei-confirmada__step">
+          <span class="aei-confirmada__step-num">2</span>
+          <div class="aei-confirmada__step-content">
+            <h3 class="aei-confirmada__step-title">{% trans %}Entrevista de acogida{% endtrans %}</h3>
+            <p class="aei-confirmada__step-desc">{% trans %}Te citamos en tu sede más cercana (Málaga o Sevilla) para conocerte, firmar el Acuerdo de Participación y comenzar tu diagnóstico.{% endtrans %}</p>
+          </div>
+        </li>
+        <li class="aei-confirmada__step">
+          <span class="aei-confirmada__step-num">3</span>
+          <div class="aei-confirmada__step-content">
+            <h3 class="aei-confirmada__step-title">{% trans %}Comienzas tu itinerario{% endtrans %}</h3>
+            <p class="aei-confirmada__step-desc">{% trans %}Orientación personalizada, formación certificada, mentoría con IA 24/7 y acompañamiento hasta tu inserción laboral. Incentivo de {{ incentivo }} € al completar.{% endtrans %}</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    {# Acciones post-conversión #}
+    <div class="aei-confirmada__actions">
+      <a href="{{ guia_url }}" class="aei-confirmada__cta aei-confirmada__cta--secondary"
+         data-track-cta="aei_thankyou_guia" data-track-position="solicitud_confirmada">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        {% trans %}Descargar Guía del Participante{% endtrans %}
+      </a>
+    </div>
+
+    {# Compartir #}
+    <div class="aei-confirmada__share">
+      <p class="aei-confirmada__share-title">{% trans %}¿Conoces a alguien que pueda necesitar este programa?{% endtrans %}</p>
+      <div class="aei-confirmada__share-btns">
+        <a href="https://wa.me/?text=%C2%A1Mira%20este%20programa%20gratuito%20de%20empleo%20en%20Andaluc%C3%ADa!%20Formaci%C3%B3n%20%2B%20528%E2%82%AC%20de%20incentivo%3A%20https%3A%2F%2Fplataformadeecosistemas.es%2Fandaluciamasei.html"
+           class="aei-confirmada__share-btn aei-confirmada__share-btn--whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           data-track-cta="aei_thankyou_share_whatsapp" data-track-position="solicitud_confirmada"
+           aria-label="{% trans %}Compartir por WhatsApp{% endtrans %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+          {% trans %}WhatsApp{% endtrans %}
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fplataformadeecosistemas.es%2Fandaluciamasei.html"
+           class="aei-confirmada__share-btn aei-confirmada__share-btn--facebook"
+           target="_blank" rel="noopener noreferrer"
+           data-track-cta="aei_thankyou_share_facebook" data-track-position="solicitud_confirmada"
+           aria-label="{% trans %}Compartir en Facebook{% endtrans %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          {% trans %}Facebook{% endtrans %}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -59,19 +59,25 @@ class AndaluciaEiLandingController extends ControllerBase {
     $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
     $guiaUrl = Url::fromRoute('jaraba_andalucia_ei.guia_participante')->toString();
 
+    // NO-HARDCODE-PRICE-001: Datos del programa desde config editable en UI.
+    $config = $this->config('jaraba_andalucia_ei.settings');
+
     $programa = [
-      'expediente' => 'SC/ICV/0111/2025',
-      'subvencion' => '202.500',
-      'participantes' => 45,
+      'expediente' => $config->get('expediente') ?? 'SC/ICV/0111/2025',
+      'subvencion' => $config->get('subvencion_total') ?? '202.500',
+      'participantes' => $config->get('plazas_restantes') ?? 45,
+      'plazas_totales' => $config->get('plazas_totales') ?? 45,
       'inserciones' => 18,
-      'tasa_insercion' => 40,
-      'incentivo' => 528,
-      'horas_orientacion' => 10,
-      'horas_formacion' => 50,
+      'tasa_insercion' => $config->get('tasa_insercion_objetivo') ?? 40,
+      'incentivo' => $config->get('incentivo_euros') ?? 528,
+      'horas_orientacion' => (int) ($config->get('horas_minimas_orientacion') ?? 10),
+      'horas_formacion' => (int) ($config->get('horas_minimas_formacion') ?? 50),
       'horas_insercion' => 40,
       'duracion_meses' => 18,
       'fecha_inicio' => '29/12/2025',
       'fecha_fin' => '28/06/2027',
+      'fecha_limite_solicitudes' => $config->get('fecha_limite_solicitudes') ?? '2026-06-30',
+      'mostrar_countdown' => (bool) ($config->get('mostrar_countdown') ?? TRUE),
       'sedes' => [
         [
           'ciudad' => 'Málaga',

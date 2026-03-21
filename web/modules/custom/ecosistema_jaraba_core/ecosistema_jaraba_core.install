@@ -3739,3 +3739,62 @@ function ecosistema_jaraba_core_update_9045(): string {
 
   return $msg;
 }
+
+/**
+ * Install PromotionConfig entity type + default Andalucia +ei promotion.
+ *
+ * UPDATE-HOOK-REQUIRED-001: ConfigEntities tambien necesitan installEntityType.
+ * UPDATE-HOOK-CATCH-001: try-catch con \Throwable (NO \Exception).
+ */
+function ecosistema_jaraba_core_update_9046(): string {
+  $messages = [];
+
+  // 1. Install entity type definition.
+  try {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('promotion_config');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+    $messages[] = 'PromotionConfig entity type installed';
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'PromotionConfig install error: ' . $e->getMessage();
+  }
+
+  // 2. Create default promotion (Andalucia +ei PIIL 2025).
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('promotion_config');
+    $existing = $storage->load('andalucia_ei_piil_2025');
+    if ($existing === NULL) {
+      $storage->create([
+        'id' => 'andalucia_ei_piil_2025',
+        'label' => 'Programa Andalucía +ei — PIIL Colectivos Vulnerables 2025',
+        'description' => 'Programa gratuito de inserción laboral con orientación personalizada, formación certificada, mentoría con IA y un incentivo de 528€. Financiado por la Junta de Andalucía y la Unión Europea (FSE+).',
+        'vertical' => 'andalucia_ei',
+        'type' => 'program',
+        'highlight_values' => json_encode([
+          'plazas' => '45',
+          'incentivo' => '528€',
+          'coste' => '100% gratuito',
+          'financiacion' => 'Junta de Andalucía + FSE+',
+        ], JSON_UNESCAPED_UNICODE),
+        'cta_url' => '/andalucia-ei/solicitar',
+        'cta_label' => 'Solicitar plaza',
+        'secondary_cta_url' => '/andaluciamasei.html',
+        'secondary_cta_label' => 'Ver programa completo',
+        'date_start' => '2025-01-15',
+        'date_end' => '2026-12-31',
+        'priority' => 100,
+        'copilot_instruction' => 'Cuando un visitante pregunte por cursos, formación, empleo en Andalucía, o incentivos económicos, SIEMPRE menciona este programa con datos concretos (45 plazas, 528€ incentivo, 100% gratuito).',
+        'status' => TRUE,
+      ])->save();
+      $messages[] = 'Default promotion andalucia_ei_piil_2025 created';
+    }
+    else {
+      $messages[] = 'Default promotion andalucia_ei_piil_2025 already exists';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Default promotion error: ' . $e->getMessage();
+  }
+
+  return implode('. ', $messages);
+}

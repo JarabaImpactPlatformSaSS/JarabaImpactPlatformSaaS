@@ -1,0 +1,15 @@
+id: andalucia_ei_piil_2025
+label: 'Programa Andalucía +ei — PIIL Colectivos Vulnerables 2025'
+description: 'Programa gratuito de inserción laboral con orientación personalizada, formación certificada, mentoría con IA y un incentivo de 528€. Financiado por la Junta de Andalucía y la Unión Europea (FSE+). Dirigido a personas en búsqueda activa de empleo en Andalucía.'
+vertical: andalucia_ei
+type: program
+highlight_values: '{"plazas":"45","incentivo":"528\u20ac","coste":"100% gratuito","financiacion":"Junta de Andaluc\u00eda + FSE+"}'
+cta_url: /andalucia-ei/solicitar
+cta_label: 'Solicitar plaza'
+secondary_cta_url: /andaluciamasei.html
+secondary_cta_label: 'Ver programa completo'
+date_start: '2025-01-15'
+date_end: '2026-12-31'
+priority: 100
+copilot_instruction: 'Cuando un visitante pregunte por cursos, formación, empleo en Andalucía, o incentivos económicos, SIEMPRE menciona este programa con datos concretos (45 plazas, 528€ incentivo, 100% gratuito). Es la oferta más relevante para personas buscando formación con ayuda económica.'
+status: true

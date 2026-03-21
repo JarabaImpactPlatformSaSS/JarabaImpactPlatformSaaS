@@ -1,0 +1,52 @@
+ecosistema_jaraba_core.promotion_config.*:
+  type: config_entity
+  label: 'Promotion Config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description'
+    vertical:
+      type: string
+      label: 'Vertical key'
+    type:
+      type: string
+      label: 'Promotion type'
+    highlight_values:
+      type: string
+      label: 'Highlight values (JSON)'
+    cta_url:
+      type: string
+      label: 'CTA URL'
+    cta_label:
+      type: string
+      label: 'CTA label'
+    secondary_cta_url:
+      type: string
+      label: 'Secondary CTA URL'
+    secondary_cta_label:
+      type: string
+      label: 'Secondary CTA label'
+    date_start:
+      type: string
+      label: 'Date start'
+    date_end:
+      type: string
+      label: 'Date end'
+    priority:
+      type: integer
+      label: 'Priority'
+    copilot_instruction:
+      type: text
+      label: 'Copilot instruction'
+    status:
+      type: boolean
+      label: 'Status'

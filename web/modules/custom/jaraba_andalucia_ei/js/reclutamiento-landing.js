@@ -150,20 +150,164 @@
   }
 
   // =========================================================================
+  // 6. COUNTDOWN DEADLINE TIMER (P0-4)
+  // =========================================================================
+  function initCountdown() {
+    var container = document.querySelector('.aei-rec__countdown');
+    if (!container) return;
+
+    // drupalSettings may not exist in standalone multi-tenant context.
+    var settings = (window.drupalSettings && window.drupalSettings.aeiReclutamiento) || {};
+    if (!settings.mostrarCountdown || !settings.fechaLimite) {
+      container.style.display = 'none';
+      return;
+    }
+
+    var deadline = new Date(settings.fechaLimite + 'T23:59:59').getTime();
+    if (isNaN(deadline)) {
+      container.style.display = 'none';
+      return;
+    }
+
+    var daysEl = container.querySelector('.aei-rec__countdown-days');
+    var hoursEl = container.querySelector('.aei-rec__countdown-hours');
+    var minsEl = container.querySelector('.aei-rec__countdown-mins');
+
+    function update() {
+      var now = Date.now();
+      var diff = deadline - now;
+
+      if (diff <= 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      var days = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins = Math.floor((diff % 3600000) / 60000);
+
+      if (daysEl) daysEl.textContent = days;
+      if (hoursEl) hoursEl.textContent = hours;
+      if (minsEl) minsEl.textContent = mins;
+    }
+
+    update();
+    // P1-1: Static text if reduced motion, no ticking animation.
+    if (!prefersReducedMotion) {
+      setInterval(update, 60000);
+    }
+  }
+
+  // =========================================================================
+  // 8. PRE-QUALIFICATION INLINE FORM (P0-3)
+  // =========================================================================
+  function initPrequalify() {
+    var form = document.querySelector('.aei-rec__prequalify');
+    if (!form) return;
+
+    var questions = form.querySelectorAll('.aei-rec__prequalify-question');
+    var feedback = form.querySelector('.aei-rec__prequalify-feedback');
+    var ctaWrap = form.querySelector('.aei-rec__prequalify-cta-wrap');
+    if (!questions.length || !feedback || !ctaWrap) return;
+
+    var answers = {};
+
+    questions.forEach(function (q) {
+      var btns = q.querySelectorAll('.aei-rec__prequalify-btn');
+      var key = q.getAttribute('data-question');
+
+      btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          // Visual selection.
+          btns.forEach(function (b) { b.classList.remove('aei-rec__prequalify-btn--active'); });
+          btn.classList.add('aei-rec__prequalify-btn--active');
+          btn.setAttribute('aria-pressed', 'true');
+          btns.forEach(function (b) {
+            if (b !== btn) b.setAttribute('aria-pressed', 'false');
+          });
+
+          answers[key] = btn.getAttribute('data-value') === 'si';
+          evaluatePrequalify(answers, feedback, ctaWrap);
+        });
+      });
+    });
+  }
+
+  function evaluatePrequalify(answers, feedback, ctaWrap) {
+    var keys = Object.keys(answers);
+    if (keys.length < 3) {
+      feedback.style.display = 'none';
+      return;
+    }
+
+    var score = 0;
+    if (answers.residencia) score++;
+    if (answers.sae) score++;
+    if (answers.colectivo) score++;
+
+    feedback.style.display = '';
+    var icon = feedback.querySelector('.aei-rec__prequalify-feedback-icon');
+    var text = feedback.querySelector('.aei-rec__prequalify-feedback-text');
+    var cta = ctaWrap.querySelector('a');
+
+    if (score === 3) {
+      feedback.className = 'aei-rec__prequalify-feedback aei-rec__prequalify-feedback--success';
+      if (icon) icon.textContent = '';
+      if (text) text.textContent = window.Drupal ? Drupal.t('Cumples todos los requisitos. Solicita tu plaza ahora.') : 'Cumples todos los requisitos. Solicita tu plaza ahora.';
+      if (cta) {
+        cta.textContent = window.Drupal ? Drupal.t('Solicitar mi plaza') : 'Solicitar mi plaza';
+        cta.className = 'aei-rec__cta aei-rec__cta--primary';
+      }
+    }
+    else if (score >= 1) {
+      feedback.className = 'aei-rec__prequalify-feedback aei-rec__prequalify-feedback--partial';
+      if (icon) icon.textContent = '';
+      if (text) text.textContent = window.Drupal ? Drupal.t('Es posible que cumplas los requisitos. Solicita y lo verificamos contigo.') : 'Es posible que cumplas los requisitos. Solicita y lo verificamos contigo.';
+      if (cta) {
+        cta.textContent = window.Drupal ? Drupal.t('Solicitar y verificar') : 'Solicitar y verificar';
+        cta.className = 'aei-rec__cta aei-rec__cta--primary';
+      }
+    }
+    else {
+      feedback.className = 'aei-rec__prequalify-feedback aei-rec__prequalify-feedback--no';
+      if (icon) icon.textContent = '';
+      if (text) text.textContent = window.Drupal ? Drupal.t('Puede que este programa no sea para ti, pero pregúntanos.') : 'Puede que este programa no sea para ti, pero pregúntanos.';
+      if (cta) {
+        cta.textContent = window.Drupal ? Drupal.t('Pregúntanos por WhatsApp') : 'Pregúntanos por WhatsApp';
+        cta.className = 'aei-rec__cta aei-rec__cta--whatsapp';
+        cta.href = 'https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F';
+        cta.target = '_blank';
+        cta.rel = 'noopener noreferrer';
+      }
+    }
+    ctaWrap.style.display = '';
+  }
+
+  // =========================================================================
   // 5. VIDEO PRELOAD OPTIMIZATION (mobile)
   // =========================================================================
   function optimizeVideo() {
     var video = document.querySelector('.aei-rec__hero-video');
     if (!video) return;
 
-    if (window.innerWidth <= 768) {
-      video.preload = 'metadata';
-    }
-
     // P1-1: Pause autoplay video if user prefers reduced motion.
     if (prefersReducedMotion) {
       video.pause();
       video.removeAttribute('autoplay');
+      return;
+    }
+
+    // Mobile 3G/saveData: don't load video at all — poster is enough.
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var isSlow = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.effectiveType === '3g');
+
+    if (isSlow) {
+      video.removeAttribute('autoplay');
+      video.preload = 'none';
+      video.pause();
+    }
+    else if (window.innerWidth <= 768) {
+      video.preload = 'metadata';
     }
   }
 
@@ -202,6 +346,71 @@
   }
 
   // =========================================================================
+  // 9. LEAD MAGNET INLINE EMAIL CAPTURE
+  // =========================================================================
+  function initLeadMagnetInline() {
+    var form = document.querySelector('.aei-rec__leadmagnet-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var emailInput = form.querySelector('.aei-rec__leadmagnet-email');
+      var submitBtn = form.querySelector('.aei-rec__leadmagnet-submit');
+      var email = (emailInput.value || '').trim();
+
+      if (!email || email.indexOf('@') === -1) return;
+
+      // Disable while submitting.
+      submitBtn.disabled = true;
+      submitBtn.textContent = '...';
+
+      // CSRF token for Drupal API.
+      var tokenUrl = '/session/token';
+      fetch(tokenUrl)
+        .then(function (r) { return r.text(); })
+        .then(function (token) {
+          return fetch('/api/v1/public/subscribe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': token,
+            },
+            body: JSON.stringify({
+              email: email,
+              source: 'lead_magnet_andalucia_ei',
+              tags: ['andalucia_ei', 'lead_magnet', 'guia_participante'],
+            }),
+          });
+        })
+        .then(function (resp) {
+          if (resp.ok || resp.status === 200 || resp.status === 201) {
+            // Success: show confirmation and redirect to guide.
+            var guiaUrl = form.getAttribute('data-guia-url') || '/andalucia-ei/guia-participante';
+            form.innerHTML =
+              '<p class="aei-rec__leadmagnet-success">' +
+              (window.Drupal ? Drupal.t('¡Enviado! Descargando tu guía...') : '¡Enviado! Descargando tu guía...') +
+              '</p>';
+            setTimeout(function () {
+              window.location.href = guiaUrl;
+            }, 1200);
+          } else {
+            // Error: fallback to direct download.
+            submitBtn.disabled = false;
+            submitBtn.textContent = window.Drupal ? Drupal.t('Descargar') : 'Descargar';
+            var guiaUrl = form.getAttribute('data-guia-url') || '/andalucia-ei/guia-participante';
+            window.location.href = guiaUrl;
+          }
+        })
+        .catch(function () {
+          // Network error: fallback to direct download.
+          submitBtn.disabled = false;
+          var guiaUrl = form.getAttribute('data-guia-url') || '/andalucia-ei/guia-participante';
+          window.location.href = guiaUrl;
+        });
+    });
+  }
+
+  // =========================================================================
   // INIT
   // =========================================================================
   function init() {
@@ -233,7 +442,9 @@
         '.aei-rec__beneficio-card, .aei-rec__sede-card, .aei-rec__paso, ' +
         '.aei-rec__equipo-card, .aei-rec__social-proof-card, ' +
         '.aei-rec__testimonio-card, .aei-rec__lead-magnet, ' +
-        '.aei-rec__edicion-anterior, .aei-rec__faq-item'
+        '.aei-rec__edicion-anterior, .aei-rec__faq-item, ' +
+        '.aei-rec__painpoint-card, .aei-rec__comparativa, ' +
+        '.aei-rec__prequalify, .aei-rec__sector-tag'
       ).forEach(function (el) {
         el.classList.add('aei-rec--reveal');
         revealObserver.observe(el);
@@ -251,6 +462,9 @@
     initStickyBar();
     optimizeVideo();
     initVideoControl();
+    initCountdown();
+    initPrequalify();
+    initLeadMagnetInline();
   }
 
   if (document.readyState === 'loading') {

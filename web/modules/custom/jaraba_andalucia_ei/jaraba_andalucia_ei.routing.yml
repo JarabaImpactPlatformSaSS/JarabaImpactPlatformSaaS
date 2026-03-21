@@ -341,6 +341,15 @@ jaraba_andalucia_ei.solicitar:
   requirements:
     _permission: 'access content'
 
+# === CONFIRMACIÓN POST-SOLICITUD ===
+jaraba_andalucia_ei.solicitud_confirmada:
+  path: '/andalucia-ei/solicitud-confirmada'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\SolicitudConfirmadaController::page'
+    _title: 'Solicitud recibida — Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
 # === SOLICITUDES: COLECCIÓN ADMIN ===
 entity.solicitud_ei.collection:
   path: '/admin/content/andalucia-ei/solicitudes'

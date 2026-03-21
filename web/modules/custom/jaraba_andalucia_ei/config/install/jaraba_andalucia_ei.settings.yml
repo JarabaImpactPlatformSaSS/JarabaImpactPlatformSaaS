@@ -8,6 +8,23 @@ horas_minimas_formacion: 50
 horas_por_sesion_ia: 0.25
 maximo_horas_ia_dia: 4
 
+# Datos del programa (NO-HARDCODE-PRICE-001 adaptado)
+plazas_totales: 45
+plazas_restantes: 45
+incentivo_euros: 528
+tasa_insercion_objetivo: 40
+fecha_inicio_programa: '2025-12-29'
+fecha_fin_programa: '2027-06-28'
+subvencion_total: '202.500'
+expediente: 'SC/ICV/0111/2025'
+
+# Campaña de reclutamiento
+fecha_limite_solicitudes: '2026-06-30'
+mostrar_countdown: true
+mostrar_popup_saas: false
+popup_campaign_utm: 'aei_reclutamiento_2026'
+popup_ttl_hours: 48
+
 # Integración STO
 sto_sync_enabled: false
 sto_endpoint: ''

@@ -242,3 +242,11 @@ services:
     class: Drupal\jaraba_lms\DailyActions\LearnerResenasAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_lms.grounding_provider:
+    class: Drupal\jaraba_lms\Grounding\CourseGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

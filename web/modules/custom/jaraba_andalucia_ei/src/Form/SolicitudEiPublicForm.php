@@ -504,7 +504,7 @@ class SolicitudEiPublicForm extends FormBase
             ['@nombre' => $form_state->getValue('nombre')]
         ));
 
-        $form_state->setRedirect('jaraba_andalucia_ei.dashboard');
+        $form_state->setRedirect('jaraba_andalucia_ei.solicitud_confirmada');
     }
 
     /**

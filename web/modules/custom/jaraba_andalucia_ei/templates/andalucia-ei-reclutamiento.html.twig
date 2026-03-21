@@ -21,7 +21,18 @@
       <strong>{{ programa.incentivo }} &euro;</strong> {% trans %}incentivo{% endtrans %} &middot;
       {% trans %}100% gratuito{% endtrans %}
     </span>
-    <a href="{{ solicitar_url }}" class="aei-rec__sticky-bar-cta">{% trans %}Solicitar plaza{% endtrans %}</a>
+    {# Countdown: populated by JS from drupalSettings.aeiReclutamiento #}
+    {% if programa.mostrar_countdown|default(true) %}
+      <span class="aei-rec__countdown" aria-label="{% trans %}Tiempo restante para solicitar{% endtrans %}">
+        <span class="aei-rec__countdown-unit"><span class="aei-rec__countdown-days">--</span>{% trans %}d{% endtrans %}</span>
+        <span class="aei-rec__countdown-sep" aria-hidden="true">:</span>
+        <span class="aei-rec__countdown-unit"><span class="aei-rec__countdown-hours">--</span>{% trans %}h{% endtrans %}</span>
+        <span class="aei-rec__countdown-sep" aria-hidden="true">:</span>
+        <span class="aei-rec__countdown-unit"><span class="aei-rec__countdown-mins">--</span>{% trans %}m{% endtrans %}</span>
+      </span>
+    {% endif %}
+    <a href="{{ solicitar_url }}" class="aei-rec__sticky-bar-cta"
+       data-track-cta="aei_sticky_solicitar" data-track-position="reclutamiento_sticky">{% trans %}Solicitar plaza{% endtrans %}</a>
   </div>
 </div>
 
@@ -45,6 +56,10 @@
     <div class="aei-rec__hero-badges">
       <span class="aei-rec__badge aei-rec__badge--institucional">{% trans %}Programa oficial{% endtrans %}</span>
       <span class="aei-rec__badge aei-rec__badge--gratuito">{% trans %}100% gratuito{% endtrans %}</span>
+      <span class="aei-rec__badge aei-rec__badge--fse">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.18l6.5 3.64v7.36L12 18.82 5.5 15.18V7.82L12 4.18z"/><path d="M12 8l-4 2.25v4.5L12 17l4-2.25v-4.5L12 8z"/></svg>
+        {% trans %}Financiado FSE+{% endtrans %}
+      </span>
     </div>
     {# === VÍDEO HERO: Autoplay muted para máximo impacto visual === #}
     <div class="aei-rec__hero-video-wrapper">
@@ -86,15 +101,18 @@
       </div>
     </div>
     <div class="aei-rec__hero-actions">
-      <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary">
+      <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary"
+         data-track-cta="aei_hero_solicitar" data-track-position="reclutamiento_hero">
         {% trans %}Solicitar plaza ahora{% endtrans %}
       </a>
-      <a href="#que-recibes" class="aei-rec__cta aei-rec__cta--secondary">
+      <a href="#que-recibes" class="aei-rec__cta aei-rec__cta--secondary"
+         data-track-cta="aei_hero_conocer" data-track-position="reclutamiento_hero">
         {% trans %}Conocer el programa{% endtrans %}
       </a>
       <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
          class="aei-rec__cta aei-rec__cta--whatsapp-hero" target="_blank" rel="noopener noreferrer"
-         aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+         aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}"
+         data-track-cta="aei_hero_whatsapp" data-track-position="reclutamiento_hero">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
         {% trans %}WhatsApp{% endtrans %}
       </a>
@@ -132,6 +150,43 @@
     <p class="aei-rec__institucional-expediente">
       {% trans %}Expediente{% endtrans %}: {{ programa.expediente }}
     </p>
+  </div>
+</section>
+
+{# === PAIN POINTS: ¿Te identificas? === #}
+<section class="aei-rec__painpoints" aria-label="{% trans %}Situaciones que resuelve el programa{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}¿Te identificas con alguna de estas situaciones?{% endtrans %}</h2>
+    <div class="aei-rec__painpoints-grid">
+      <div class="aei-rec__painpoint-card aei-rec--reveal">
+        <span class="aei-rec__painpoint-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        <h3 class="aei-rec__painpoint-title">{% trans %}Llevas meses buscando empleo sin resultados{% endtrans %}</h3>
+        <p class="aei-rec__painpoint-desc">{% trans %}Envías currículums, te apuntas a ofertas, pero no recibes respuesta. Necesitas un método estructurado y acompañamiento profesional.{% endtrans %}</p>
+      </div>
+      <div class="aei-rec__painpoint-card aei-rec--reveal">
+        <span class="aei-rec__painpoint-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="2"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+        <h3 class="aei-rec__painpoint-title">{% trans %}No sabes por dónde empezar ni qué formación necesitas{% endtrans %}</h3>
+        <p class="aei-rec__painpoint-desc">{% trans %}Hay tantas opciones que te sientes paralizado/a. Necesitas que alguien analice tu perfil y te oriente hacia lo que realmente funciona.{% endtrans %}</p>
+      </div>
+      <div class="aei-rec__painpoint-card aei-rec--reveal">
+        <span class="aei-rec__painpoint-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        </span>
+        <h3 class="aei-rec__painpoint-title">{% trans %}Los cursos que has hecho no te han servido para nada{% endtrans %}</h3>
+        <p class="aei-rec__painpoint-desc">{% trans %}Formación genérica sin seguimiento real. Terminas el curso y vuelves al punto de partida. Necesitas un itinerario completo hasta la contratación.{% endtrans %}</p>
+      </div>
+      <div class="aei-rec__painpoint-card aei-rec--reveal">
+        <span class="aei-rec__painpoint-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-naranja-impulso, #FF8C42)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/><line x1="12" y1="11" x2="12" y2="15"/></svg>
+        </span>
+        <h3 class="aei-rec__painpoint-title">{% trans %}No puedes permitirte pagar una formación privada{% endtrans %}</h3>
+        <p class="aei-rec__painpoint-desc">{% trans %}Las academias cuestan cientos o miles de euros. T-Acompañamos es 100% gratuito y además recibes 528 € de incentivo al completarlo.{% endtrans %}</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -175,13 +230,155 @@
           destacado: '528 €'|t,
         },
       ] %}
+      {# Benefit cards con iconos SVG — colores de paleta Jaraba #}
+      {% set benefit_icons = [
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 8h2m2 0h2m2 0h2"/><path d="M7 12h10"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00A9A5" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8C42" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+      ] %}
       {% for beneficio in beneficios %}
         <div class="aei-rec__beneficio-card">
+          <span class="aei-rec__beneficio-icon" aria-hidden="true">{{ benefit_icons[loop.index0] }}</span>
           <span class="aei-rec__beneficio-destacado">{{ beneficio.destacado }}</span>
           <h3 class="aei-rec__beneficio-titulo">{{ beneficio.titulo }}</h3>
           <p class="aei-rec__beneficio-desc">{{ beneficio.desc }}</p>
         </div>
       {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === COMPARATIVA: Por qué este programa y no otro === #}
+<section class="aei-rec__comparativa" aria-label="{% trans %}Comparativa con alternativas{% endtrans %}">
+  <div class="aei-rec__container">
+    <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}¿En qué se diferencia T-Acompañamos?{% endtrans %}</h2>
+    <p class="aei-rec__section-desc aei-rec__section-desc--center">
+      {% trans %}Comparación objetiva con las alternativas más comunes para personas desempleadas en Andalucía.{% endtrans %}
+    </p>
+    <div class="aei-rec__comparativa-table-wrap" role="region" aria-label="{% trans %}Tabla comparativa{% endtrans %}" tabindex="0">
+      <table class="aei-rec__comparativa-table">
+        <thead>
+          <tr>
+            <th class="aei-rec__comparativa-th aei-rec__comparativa-th--feature" scope="col">{% trans %}Característica{% endtrans %}</th>
+            <th class="aei-rec__comparativa-th aei-rec__comparativa-th--highlight" scope="col">
+              <span class="aei-rec__comparativa-badge">{% trans %}Recomendado{% endtrans %}</span>
+              {% trans %}T-Acompañamos (nuestro programa){% endtrans %}
+            </th>
+            <th class="aei-rec__comparativa-th" scope="col">{% trans %}Curso estándar del SAE{% endtrans %}</th>
+            <th class="aei-rec__comparativa-th" scope="col">{% trans %}Academia privada{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set rows = [
+            {
+              feature: 'Coste para el participante'|t,
+              ours: '100% gratuito + 528 € de incentivo'|t,
+              sae: 'Gratuito (sin incentivo)'|t,
+              private: 'Desde 500 € a 3.000 €'|t,
+              ours_icon: 'check',
+              sae_icon: 'partial',
+              private_icon: 'cross',
+            },
+            {
+              feature: 'Orientación personalizada'|t,
+              ours: '10+ horas individuales con profesional'|t,
+              sae: 'Puntual (1-2 citas)'|t,
+              private: 'No incluida'|t,
+              ours_icon: 'check',
+              sae_icon: 'partial',
+              private_icon: 'cross',
+            },
+            {
+              feature: 'Formación certificada'|t,
+              ours: '50+ horas adaptativas con IA'|t,
+              sae: '20-200 horas (temario fijo)'|t,
+              private: 'Variable (temario fijo)'|t,
+              ours_icon: 'check',
+              sae_icon: 'check',
+              private_icon: 'partial',
+            },
+            {
+              feature: 'Mentoría con IA 24/7'|t,
+              ours: 'Tutor virtual exclusivo'|t,
+              sae: 'No disponible'|t,
+              private: 'No disponible'|t,
+              ours_icon: 'check',
+              sae_icon: 'cross',
+              private_icon: 'cross',
+            },
+            {
+              feature: 'Acompañamiento a la inserción'|t,
+              ours: '40 horas + seguimiento 6 meses'|t,
+              sae: 'Bolsa de empleo genérica'|t,
+              private: 'Bolsa de empleo (sin seguimiento)'|t,
+              ours_icon: 'check',
+              sae_icon: 'partial',
+              private_icon: 'partial',
+            },
+            {
+              feature: 'Expediente digital seguro'|t,
+              ours: 'CV, certificados, evaluaciones en un solo lugar'|t,
+              sae: 'No incluido'|t,
+              private: 'No incluido'|t,
+              ours_icon: 'check',
+              sae_icon: 'cross',
+              private_icon: 'cross',
+            },
+            {
+              feature: 'Compatible con prestación desempleo'|t,
+              ours: 'Sí — no pierdes tu prestación'|t,
+              sae: 'Sí'|t,
+              private: 'Depende'|t,
+              ours_icon: 'check',
+              sae_icon: 'check',
+              private_icon: 'partial',
+            },
+            {
+              feature: 'Tasa de inserción verificada'|t,
+              ours: '46% (auditado 1.ª edición)'|t,
+              sae: 'No publicada'|t,
+              private: 'No verificable'|t,
+              ours_icon: 'check',
+              sae_icon: 'cross',
+              private_icon: 'cross',
+            },
+          ] %}
+          {% for row in rows %}
+            <tr class="aei-rec__comparativa-row">
+              <td class="aei-rec__comparativa-td aei-rec__comparativa-td--feature">{{ row.feature }}</td>
+              <td class="aei-rec__comparativa-td aei-rec__comparativa-td--highlight" data-label="{{ 'T-Acompañamos'|t }}">
+                <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.ours_icon }}" aria-hidden="true"></span>
+                <span>{{ row.ours }}</span>
+              </td>
+              <td class="aei-rec__comparativa-td" data-label="{{ 'Curso SAE'|t }}">
+                <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.sae_icon }}" aria-hidden="true"></span>
+                <span>{{ row.sae }}</span>
+              </td>
+              <td class="aei-rec__comparativa-td" data-label="{{ 'Academia'|t }}">
+                <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.private_icon }}" aria-hidden="true"></span>
+                <span>{{ row.private }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="aei-rec__comparativa-cta-wrap">
+      <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary"
+         data-track-cta="aei_comparativa_solicitar" data-track-position="reclutamiento_comparativa">
+        {% trans %}Solicitar plaza en T-Acompañamos{% endtrans %}
+      </a>
+      <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
+         class="aei-rec__cta aei-rec__cta--whatsapp aei-rec__comparativa-whatsapp"
+         target="_blank" rel="noopener noreferrer"
+         data-track-cta="aei_comparativa_whatsapp" data-track-position="reclutamiento_comparativa"
+         aria-label="{% trans %}Consultar dudas por WhatsApp{% endtrans %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
+        {% trans %}¿Aún tienes dudas? Pregúntanos{% endtrans %}
+      </a>
     </div>
   </div>
 </section>
@@ -226,8 +423,50 @@
             {% trans %}Estar inscrito/a como demandante de empleo no ocupado/a en el Servicio Andaluz de Empleo (SAE) en el momento del alta en el programa.{% endtrans %}
           </p>
           <div class="aei-rec__requisito-card-action">
-            <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary">
+            <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary"
+             data-track-cta="aei_requisitos_solicitar" data-track-position="reclutamiento_requisitos">
               {% trans %}Comprobar elegibilidad{% endtrans %}
+            </a>
+          </div>
+        </div>
+
+        {# Pre-qualification inline (P0-3): 3 preguntas JS-only, sin servidor #}
+        <div class="aei-rec__prequalify" aria-label="{% trans %}Verificar elegibilidad rápida{% endtrans %}">
+          <h3 class="aei-rec__prequalify-title">{% trans %}Comprueba en 10 segundos si cumples los requisitos{% endtrans %}</h3>
+
+          <div class="aei-rec__prequalify-question" data-question="residencia" role="radiogroup" aria-label="{% trans %}¿Resides en Andalucía?{% endtrans %}">
+            <span class="aei-rec__prequalify-label">{% trans %}¿Resides en Andalucía?{% endtrans %}</span>
+            <div class="aei-rec__prequalify-options">
+              <button type="button" class="aei-rec__prequalify-btn" data-value="si" aria-pressed="false">{% trans %}Sí{% endtrans %}</button>
+              <button type="button" class="aei-rec__prequalify-btn" data-value="no" aria-pressed="false">{% trans %}No{% endtrans %}</button>
+            </div>
+          </div>
+
+          <div class="aei-rec__prequalify-question" data-question="sae" role="radiogroup" aria-label="{% trans %}¿Estás inscrito/a en el SAE?{% endtrans %}">
+            <span class="aei-rec__prequalify-label">{% trans %}¿Estás inscrito/a en el SAE como demandante de empleo?{% endtrans %}</span>
+            <div class="aei-rec__prequalify-options">
+              <button type="button" class="aei-rec__prequalify-btn" data-value="si" aria-pressed="false">{% trans %}Sí{% endtrans %}</button>
+              <button type="button" class="aei-rec__prequalify-btn" data-value="no" aria-pressed="false">{% trans %}No{% endtrans %}</button>
+            </div>
+          </div>
+
+          <div class="aei-rec__prequalify-question" data-question="colectivo" role="radiogroup" aria-label="{% trans %}¿Perteneces a un colectivo prioritario?{% endtrans %}">
+            <span class="aei-rec__prequalify-label">{% trans %}¿Perteneces a alguno de los colectivos prioritarios?{% endtrans %}</span>
+            <div class="aei-rec__prequalify-options">
+              <button type="button" class="aei-rec__prequalify-btn" data-value="si" aria-pressed="false">{% trans %}Sí{% endtrans %}</button>
+              <button type="button" class="aei-rec__prequalify-btn" data-value="no" aria-pressed="false">{% trans %}No{% endtrans %}</button>
+            </div>
+          </div>
+
+          <div class="aei-rec__prequalify-feedback" style="display:none" role="status" aria-live="polite">
+            <span class="aei-rec__prequalify-feedback-icon" aria-hidden="true"></span>
+            <span class="aei-rec__prequalify-feedback-text"></span>
+          </div>
+
+          <div class="aei-rec__prequalify-cta-wrap" style="display:none">
+            <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary"
+               data-track-cta="aei_prequalify_solicitar" data-track-position="reclutamiento_prequalify">
+              {% trans %}Solicitar mi plaza{% endtrans %}
             </a>
           </div>
         </div>
@@ -267,37 +506,47 @@
   <div class="aei-rec__container">
     <h2 class="aei-rec__section-title aei-rec__section-title--center">{% trans %}Cómo funciona{% endtrans %}</h2>
     <div class="aei-rec__pasos-timeline">
-      {% set pasos = [
-        {
-          num: '1',
-          titulo: 'Solicita tu plaza'|t,
-          desc: 'Rellena el formulario online en 2 minutos. Nuestro sistema de inteligencia artificial evalúa tu perfil y te asigna el itinerario más adecuado en menos de 48 horas.'|t,
-        },
-        {
-          num: '2',
-          titulo: 'Acogida y diagnóstico'|t,
-          desc: 'Te recibimos en tu sede más cercana, firmamos el Acuerdo de Participación y evaluamos tu situación laboral, competencias y objetivos profesionales.'|t,
-        },
-        {
-          num: '3',
-          titulo: 'Formación + orientación'|t,
-          desc: 'Mínimo 50 horas de formación certificada y 10 horas de orientación personalizada. Acceso al tutor IA 24/7, expediente digital y seguimiento de tu progreso en tiempo real.'|t,
-        },
-        {
-          num: '4',
-          titulo: 'Inserción laboral'|t,
-          desc: 'Acompañamiento activo en procesos de selección o lanzamiento de tu emprendimiento. Prospección de ofertas, preparación de entrevistas y seguimiento post-contratación durante 6 meses.'|t,
-        },
-      ] %}
-      {% for paso in pasos %}
-        <div class="aei-rec__paso">
-          <span class="aei-rec__paso-num">{{ paso.num }}</span>
-          <div class="aei-rec__paso-content">
-            <h3 class="aei-rec__paso-titulo">{{ paso.titulo }}</h3>
-            <p class="aei-rec__paso-desc">{{ paso.desc }}</p>
-          </div>
+      {# Pasos con iconos SVG para refuerzo visual #}
+      <div class="aei-rec__paso aei-rec--reveal">
+        <span class="aei-rec__paso-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-verde-innovacion,#00A9A5)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </span>
+        <span class="aei-rec__paso-num">1</span>
+        <div class="aei-rec__paso-content">
+          <h3 class="aei-rec__paso-titulo">{% trans %}Solicita tu plaza{% endtrans %}</h3>
+          <p class="aei-rec__paso-desc">{% trans %}Rellena el formulario online en 2 minutos. Nuestro sistema de inteligencia artificial evalúa tu perfil y te asigna el itinerario más adecuado en menos de 48 horas.{% endtrans %}</p>
         </div>
-      {% endfor %}
+      </div>
+      <div class="aei-rec__paso aei-rec--reveal">
+        <span class="aei-rec__paso-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-verde-innovacion,#00A9A5)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="aei-rec__paso-num">2</span>
+        <div class="aei-rec__paso-content">
+          <h3 class="aei-rec__paso-titulo">{% trans %}Acogida y diagnóstico{% endtrans %}</h3>
+          <p class="aei-rec__paso-desc">{% trans %}Te recibimos en tu sede más cercana, firmamos el Acuerdo de Participación y evaluamos tu situación laboral, competencias y objetivos profesionales.{% endtrans %}</p>
+        </div>
+      </div>
+      <div class="aei-rec__paso aei-rec--reveal">
+        <span class="aei-rec__paso-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-verde-innovacion,#00A9A5)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </span>
+        <span class="aei-rec__paso-num">3</span>
+        <div class="aei-rec__paso-content">
+          <h3 class="aei-rec__paso-titulo">{% trans %}Formación + orientación{% endtrans %}</h3>
+          <p class="aei-rec__paso-desc">{% trans %}Mínimo 50 horas de formación certificada y 10 horas de orientación personalizada. Acceso al tutor IA 24/7, expediente digital y seguimiento de tu progreso en tiempo real.{% endtrans %}</p>
+        </div>
+      </div>
+      <div class="aei-rec__paso aei-rec--reveal">
+        <span class="aei-rec__paso-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-verde-innovacion,#00A9A5)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+        <span class="aei-rec__paso-num">4</span>
+        <div class="aei-rec__paso-content">
+          <h3 class="aei-rec__paso-titulo">{% trans %}Inserción laboral{% endtrans %}</h3>
+          <p class="aei-rec__paso-desc">{% trans %}Acompañamiento activo en procesos de selección o lanzamiento de tu emprendimiento. Prospección de ofertas, preparación de entrevistas y seguimiento post-contratación durante 6 meses.{% endtrans %}</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -372,7 +621,8 @@
       {% endfor %}
     </div>
     <div class="aei-rec__equipo-cta-wrap">
-      <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__equipo-cta">
+      <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__equipo-cta"
+         data-track-cta="aei_equipo_solicitar" data-track-position="reclutamiento_equipo">
         {% trans %}Solicita tu plaza y conócenos{% endtrans %}
       </a>
       <p class="aei-rec__equipo-cta-sub">{% trans %}45 plazas entre Málaga y Sevilla — programa 100% subvencionado{% endtrans %}</p>
@@ -459,6 +709,13 @@
             <span class="aei-rec__testimonio-sede">{% trans %}Málaga{% endtrans %}</span>
           </div>
         </div>
+        <div class="aei-rec__testimonio-stars" aria-label="{% trans %}5 de 5 estrellas{% endtrans %}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
         <blockquote class="aei-rec__testimonio-cita">
           <p>{% trans %}No ha sido solamente el curso. Después realmente hay un seguimiento real, que en muchos sitios se queda en el aire. Aquí no. Aquí funciona.{% endtrans %}</p>
         </blockquote>
@@ -480,6 +737,13 @@
             <span class="aei-rec__testimonio-sede">{% trans %}Málaga{% endtrans %}</span>
           </div>
         </div>
+        <div class="aei-rec__testimonio-stars" aria-label="{% trans %}5 de 5 estrellas{% endtrans %}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
         <blockquote class="aei-rec__testimonio-cita">
           <p>{% trans %}A mí me ha sacado de un punto muerto. Te abre el pensamiento, cambias totalmente todo. Desde calcular tu beneficio hasta networking, hasta creer en ti.{% endtrans %}</p>
         </blockquote>
@@ -500,6 +764,13 @@
             <span class="aei-rec__testimonio-rol">{% trans %}Coach de comunicación estratégica{% endtrans %}</span>
             <span class="aei-rec__testimonio-sede">{% trans %}Sevilla{% endtrans %}</span>
           </div>
+        </div>
+        <div class="aei-rec__testimonio-stars" aria-label="{% trans %}5 de 5 estrellas{% endtrans %}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ej-color-naranja-impulso,#FF8C42)" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <blockquote class="aei-rec__testimonio-cita">
           <p>{% trans %}Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.{% endtrans %}</p>
@@ -577,10 +848,30 @@
       <p class="aei-rec__section-desc">
         {% trans %}Toda la información del programa en un documento: fases, requisitos, calendario, derechos del participante y preguntas frecuentes. Descárgala antes de solicitar tu plaza.{% endtrans %}
       </p>
-      <a href="{{ guia_url }}" class="aei-rec__cta aei-rec__cta--secondary aei-rec__cta--lead-magnet">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        {% trans %}Descargar guía gratuita{% endtrans %}
-      </a>
+      {# Inline email capture — JS posts to /api/v1/public/subscribe #}
+      <form class="aei-rec__leadmagnet-form" data-guia-url="{{ guia_url }}" aria-label="{% trans %}Descargar guía con tu email{% endtrans %}">
+        <div class="aei-rec__leadmagnet-input-wrap">
+          <input type="email" class="aei-rec__leadmagnet-email" required
+                 placeholder="{{ 'tu@email.com'|t }}"
+                 aria-label="{% trans %}Tu email{% endtrans %}"
+                 autocomplete="email">
+          <button type="submit" class="aei-rec__leadmagnet-submit"
+                  data-track-cta="aei_leadmagnet_email_submit" data-track-position="reclutamiento_leadmagnet">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {% trans %}Descargar{% endtrans %}
+          </button>
+        </div>
+        <p class="aei-rec__leadmagnet-privacy">
+          {% trans %}Sin spam. Solo información del programa.{% endtrans %}
+        </p>
+      </form>
+      <p class="aei-rec__leadmagnet-alt">
+        {% trans %}o{% endtrans %}
+        <a href="{{ guia_url }}"
+           data-track-cta="aei_leadmagnet_guia" data-track-position="reclutamiento_leadmagnet">
+          {% trans %}descárgala sin dejar tu email{% endtrans %}
+        </a>
+      </p>
     </div>
   </div>
 </section>
@@ -670,13 +961,15 @@
     <div class="aei-rec__faq-escape">
       <p>{% trans %}¿Aún no estás seguro/a?{% endtrans %}</p>
       <div class="aei-rec__faq-escape-actions">
-        <a href="{{ guia_url }}" class="aei-rec__cta aei-rec__cta--secondary aei-rec__cta--escape">
+        <a href="{{ guia_url }}" class="aei-rec__cta aei-rec__cta--secondary aei-rec__cta--escape"
+           data-track-cta="aei_faq_guia" data-track-position="reclutamiento_faq">
           {% trans %}Descarga la guía y decide con calma{% endtrans %}
         </a>
         <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
            class="aei-rec__cta aei-rec__cta--whatsapp"
            target="_blank" rel="noopener noreferrer"
-           aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+           aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}"
+           data-track-cta="aei_faq_whatsapp" data-track-position="reclutamiento_faq">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
           {% trans %}Pregúntanos por WhatsApp{% endtrans %}
         </a>
@@ -709,7 +1002,8 @@
       </li>
     </ul>
 
-    <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__cta--large aei-rec__cta-final-btn">
+    <a href="{{ solicitar_url }}" class="aei-rec__btn aei-rec__btn--primary aei-rec__cta--large aei-rec__cta-final-btn"
+       data-track-cta="aei_final_solicitar" data-track-position="reclutamiento_final">
       {% trans %}Solicitar mi plaza ahora{% endtrans %}
     </a>
     <p class="aei-rec__cta-final-note">
@@ -720,7 +1014,8 @@
     <div class="aei-rec__cta-final-alt">
       <span class="aei-rec__cta-final-alt-sep">{% trans %}o si lo prefieres{% endtrans %}</span>
       <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
-         class="aei-rec__cta-final-whatsapp" target="_blank" rel="noopener noreferrer">
+         class="aei-rec__cta-final-whatsapp" target="_blank" rel="noopener noreferrer"
+         data-track-cta="aei_final_whatsapp" data-track-position="reclutamiento_final">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
         {% trans %}Escríbenos por WhatsApp{% endtrans %}
       </a>
@@ -736,7 +1031,8 @@
 <a href="https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F"
    class="aei-rec__whatsapp-fab"
    target="_blank" rel="noopener noreferrer"
-   aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+   aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}"
+   data-track-cta="aei_fab_whatsapp" data-track-position="reclutamiento_fab">
   <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785c-1.774 0-3.513-.477-5.036-1.378l-.36-.214-3.742.982.999-3.648-.235-.374A9.86 9.86 0 0 1 2.17 12.06C2.17 6.58 6.58 2.17 12.06 2.17c2.67 0 5.156 1.04 7.028 2.912A9.827 9.827 0 0 1 21.93 12.1c-.005 5.49-4.42 9.895-9.88 9.895v-.01zM12.05 0C5.405 0 .005 5.392 0 12.029c0 2.12.555 4.19 1.61 6.013L0 24l6.102-1.6A12.02 12.02 0 0 0 12.05 24C18.69 24 24.1 18.607 24.1 11.97 24.1 5.332 18.69 0 12.05 0z"/></svg>
 </a>
 
@@ -759,6 +1055,45 @@
       }
     }{% if not loop.last %},{% endif %}
     {% endfor %}
+  ]
+}
+</script>
+
+{# === Schema.org Review — Testimonios reales con estrellas para rich results === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "T-Acompañamos — Programa Andalucía +ei",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "3",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Cristina Martín Pereira" },
+      "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+      "reviewBody": "No ha sido solamente el curso. Después realmente hay un seguimiento real, que en muchos sitios se queda en el aire. Aquí no. Aquí funciona.",
+      "datePublished": "2025-06-15"
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Adrian Capatina Tudor" },
+      "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+      "reviewBody": "A mí me ha sacado de un punto muerto. Te abre el pensamiento, cambias totalmente todo. Desde calcular tu beneficio hasta networking, hasta creer en ti.",
+      "datePublished": "2025-06-20"
+    },
+    {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Marcela Calabia" },
+      "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+      "reviewBody": "Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.",
+      "datePublished": "2025-07-01"
+    }
   ]
 }
 </script>

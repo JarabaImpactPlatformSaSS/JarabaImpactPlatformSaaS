@@ -169,3 +169,11 @@ services:
       - '@?ecosistema_jaraba_core.tenant_context'
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_servicios_conecta.grounding_provider:
+    class: Drupal\jaraba_servicios_conecta\Grounding\ServiceOfferingGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

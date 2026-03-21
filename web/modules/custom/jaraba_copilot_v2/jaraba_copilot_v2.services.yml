@@ -187,6 +187,31 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_copilot_v2'
 
+  # Daily Action: Revisar leads del copilot (__global__)
+  jaraba_copilot_v2.daily_action.revisar_leads:
+    class: Drupal\jaraba_copilot_v2\DailyActions\RevisarLeadsCopilotAction
+    arguments:
+      - '@database'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # Funnel Tracking — eventos del embudo de ventas desde copilot
+  jaraba_copilot_v2.funnel_tracking:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotFunnelTrackingService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_copilot_v2'
+
+  # Lead Capture — deteccion de intencion de compra + CRM leads
+  # OPTIONAL-CROSSMODULE-001: CRM services opcionales via @?
+  jaraba_copilot_v2.lead_capture:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotLeadCaptureService
+    arguments:
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@?jaraba_crm.contact'
+      - '@?jaraba_crm.opportunity'
+      - '@?jaraba_crm.activity'
+
   # FAQ Generator - genera FAQs automáticas desde preguntas frecuentes
   # FIX-012: Migrado de ClaudeApiService a ai.provider framework.
   jaraba_copilot_v2.faq_generator:

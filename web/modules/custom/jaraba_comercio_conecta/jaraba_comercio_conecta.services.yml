@@ -383,3 +383,11 @@ services:
     class: Drupal\jaraba_comercio_conecta\DailyActions\OfertasFlashAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # GroundingProvider: busqueda contenido para copilot IA
+  jaraba_comercio_conecta.grounding_provider:
+    class: Drupal\jaraba_comercio_conecta\Grounding\ProductRetailGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
