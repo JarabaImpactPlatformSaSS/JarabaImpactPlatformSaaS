@@ -395,7 +395,10 @@ if [ "$MODE" = "full" ]; then
   run_check "SUCCESS-CASES-SSOT-001" "SuccessCase entity is SSOT for case studies" \
     php "$SCRIPT_DIR/validate-success-cases-ssot.php"
 
-  run_check "SCSS-COMPILE-FRESHNESS-001" "SCSS compiled CSS freshness vs partials" \
+  # SCSS-COMPILE-FRESHNESS-001: downgraded to warn_check because git checkout
+  # in CI sets all file timestamps to checkout time, causing false positives.
+  # The real check is SCSS-COMPILE-VERIFY-001 (npm run build + git diff) in deploy.yml.
+  warn_check "SCSS-COMPILE-FRESHNESS-001" "SCSS compiled CSS freshness vs partials" \
     php "$SCRIPT_DIR/validate-scss-compile-freshness.php"
 
   run_check "ROUTE-SUBSCRIBER-PARITY-001" "Case study route subscriber covers all legacy routes" \
