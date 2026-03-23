@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-21
-**Versión:** 188.0.0 (HOMEPAGE-ELEVATION-001 F0-F5 10/10 + 4 variantes metasitio + HOMEPAGE-COMPLETENESS-001 + aprendizaje #211)
+**Última actualización:** 2026-03-23
+**Versión:** 189.0.0 (CASE-STUDY-ELEVATION 15/15 + SUCCESS-CASES-001 SSOT + plan implementación + aprendizaje #212)
 
 > **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
 >
@@ -1808,8 +1808,9 @@
 | [20260217-Plan_Elevacion_ComercioConecta_Clase_Mundial_v1.md](./implementacion/20260217-Plan_Elevacion_ComercioConecta_Clase_Mundial_v1.md) | Plan Elevacion ComercioConecta Clase Mundial v1 |
 | [20260217-Plan_Implementacion_N2_Growth_Ready_Platform_v1.md](./implementacion/20260217-Plan_Implementacion_N2_Growth_Ready_Platform_v1.md) | Plan Implementacion N2 Growth Ready Platform v1 |
 | [20260321a-Plan_Implementacion_Activacion_IA_Embudo_Ventas_CRM_v1_Claude.md](./implementacion/20260321a-Plan_Implementacion_Activacion_IA_Embudo_Ventas_CRM_v1_Claude.md) | Plan Implementación Activación IA Embudo Ventas CRM v1 — Diagnóstico copilot desconectado de promociones, arquitectura cascada 4 niveles, PromotionConfig ConfigEntity, 10 GroundingProviders, CopilotLeadCaptureService, CopilotFunnelTrackingService, 3 validadores safeguard. Reglas: GROUNDING-PROVIDER-001, CASCADE-SEARCH-001, ACTIVE-PROMOTION-001, COPILOT-LEAD-CAPTURE-001, COPILOT-FUNNEL-TRACKING-001, COPILOT-GROUNDING-COVERAGE-001, PROMOTION-COPILOT-SYNC-001, COPILOT-INTENT-ACCURACY-001 |
+| [20260323-Plan_Elevacion_Casos_Exito_Clase_Mundial_10_10_v1_Claude.md](./implementacion/20260323-Plan_Elevacion_Casos_Exito_Clase_Mundial_10_10_v1_Claude.md) | Plan Elevación Casos de Éxito a Clase Mundial 10/10 — Auditoría 3/15→15/15 LANDING-CONVERSION-SCORE-001. Controller unificado CaseStudyLandingController, template parametrizado con 15 parciales _cs-*, SuccessCase entity SSOT (40+ campos, tenant_id, 8 JSON), VIDEO-HERO-001, CaseStudyRouteSubscriber, MetaSitePricingService, 3 validators, 10 fases, 37 especificaciones técnicas. Reglas: CASE-STUDY-PATTERN-001 (P0 elevado), SUCCESS-CASES-001 (P1 nueva). Aprendizaje #212 |
 
-**Total documentos adicionales:** 37
+**Total documentos adicionales:** 38
 
 ## 7. Documentos Técnicos
 
@@ -2554,6 +2555,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-23 | **189.0.0** | **Elevación Casos de Éxito 15/15:** CASE-STUDY-PATTERN-001 elevado a P0 (controller unificado, template parametrizado 15 parciales, VIDEO-HERO-001, MetaSitePricingService, Url::fromRoute). SUCCESS-CASES-001 nueva (SuccessCase entity SSOT, 40+ campos, tenant_id, 8 JSON). 3 validators nuevos. Plan implementación 37 especificaciones. DIRECTRICES v159. Regla de oro #149. Aprendizaje #212. |
 | 2026-03-21 | **186.0.0** | **Activación IA Embudo de Ventas CRM:** 7 reglas nuevas: GROUNDING-PROVIDER-001, CASCADE-SEARCH-001, ACTIVE-PROMOTION-001, COPILOT-LEAD-CAPTURE-001, COPILOT-FUNNEL-TRACKING-001, COPILOT-GROUNDING-COVERAGE-001, PROMOTION-COPILOT-SYNC-001. ContentGroundingService v2 con 10 GroundingProviders (CompilerPass + tagged services). PromotionConfig ConfigEntity + ActivePromotionService (cache 300s). Cascada 4 niveles búsqueda. CopilotLeadCaptureService + CopilotFunnelTrackingService. Prompt dinámico buildDynamicPublicSystemPrompt() con 10 verticales + promociones + precios. 3 validadores safeguard nuevos. 86 scripts (91 checks). DIRECTRICES v157 + ARQUITECTURA v145 + FLUJO v110. Regla de oro #147. Aprendizaje #210. |
 | 2026-03-19 | **178.0.0** | **Demos Verticales Clase Mundial + Icon Cascade + Marketing Truth:** 4 reglas nuevas en DIRECTRICES v151: ICON-INTEGRITY-002, ICON-CANVAS-INLINE-002, MARKETING-TRUTH-001, DEMO-VERTICAL-PATTERN-001. ARQUITECTURA v138: Demo Dashboard PLG 12 secciones + Icon System Cascade Fallback 3 niveles. Nuevos scripts validación: `scripts/validation/validate-icon-completeness.php` (ICON-COMPLETENESS-001: SVGs referenciados existen), `scripts/validation/validate-marketing-truth.php` (MARKETING-TRUTH-001: claims vs billing reality). FLUJO v103: verificación claims marketing. Aprendizajes #201-203. |
 | 2026-03-18 | **173.0.0** | **Kit Digital Agente Digitalizador + Pagos Rápidos Bizum:** KitDigitalAgreement ContentEntity (17 campos, 7 estados lifecycle). KitDigitalService 10 métodos. 5 landing pages zero-region requisitos Anexo II Red.es. Admin dashboard KPIs. Pagos rápidos: Bizum botón en checkout (bizum-checkout.js + data-bizum-trigger), RedsysCallbackController::notification() callback processing completado (dispatch event jaraba_billing.payment_completed), WhatsApp order button verificado conectado en AgroConecta product detail. Setup Wizard + 2 Daily Actions Kit Digital. 26/26 validaciones safeguard PASS. Regla de oro #135 (landing Kit Digital DEBE cumplir 9 requisitos Anexo II Red.es). Aprendizaje #194. |
