@@ -33,8 +33,13 @@ class LexnetApiClient {
     $config = $this->configFactory->get('jaraba_legal_lexnet.settings');
     $certPath = $config->get('cert_path') ?? '';
 
-    if (empty($certPath) || !file_exists($certPath)) {
-      $this->logger->error('LexNET certificate not found at: @path', ['@path' => $certPath]);
+    if (empty($certPath)) {
+      // No certificate configured — LexNET integration inactive. Not an error.
+      return [];
+    }
+
+    if (!file_exists($certPath)) {
+      $this->logger->warning('LexNET certificate configured but not found at: @path', ['@path' => $certPath]);
       return [];
     }
 

@@ -344,6 +344,82 @@ function jaraba_servicios_conecta_update_10004(): string {
   return implode('. ', $messages);
 }
 
+/**
+ * Install missing availability_slot columns: is_active, valid_from, valid_until.
+ *
+ * The entity code was updated with new fields but the DB schema diverged.
+ * Uses direct schema API because the entity definition tracker already
+ * considers these fields "installed" (key_value mismatch with actual DB).
+ */
+function jaraba_servicios_conecta_update_10005(): string {
+  $schema = \Drupal::database()->schema();
+  $messages = [];
+
+  $columns = [
+    'is_active' => [
+      'type' => 'int',
+      'size' => 'tiny',
+      'not null' => FALSE,
+      'default' => 1,
+      'description' => 'Whether this slot is active.',
+    ],
+    'valid_from' => [
+      'type' => 'varchar',
+      'length' => 20,
+      'not null' => FALSE,
+      'description' => 'Date from which this slot applies (Y-m-d).',
+    ],
+    'valid_until' => [
+      'type' => 'varchar',
+      'length' => 20,
+      'not null' => FALSE,
+      'description' => 'Date until which this slot applies (Y-m-d).',
+    ],
+    'created' => [
+      'type' => 'int',
+      'not null' => FALSE,
+      'default' => 0,
+      'description' => 'Timestamp when the slot was created.',
+    ],
+    'changed' => [
+      'type' => 'int',
+      'not null' => FALSE,
+      'default' => 0,
+      'description' => 'Timestamp when the slot was last modified.',
+    ],
+  ];
+
+  foreach ($columns as $name => $spec) {
+    try {
+      if (!$schema->fieldExists('availability_slot', $name)) {
+        $schema->addField('availability_slot', $name, $spec);
+        $messages[] = "$name (added)";
+      }
+      else {
+        $messages[] = "$name (exists)";
+      }
+    }
+    catch (\Throwable $e) {
+      $messages[] = "$name (ERROR: {$e->getMessage()})";
+    }
+  }
+
+  // Migrate is_available → is_active.
+  try {
+    if ($schema->fieldExists('availability_slot', 'is_available') &&
+        $schema->fieldExists('availability_slot', 'is_active')) {
+      \Drupal::database()->query(
+        'UPDATE {availability_slot} SET is_active = is_available WHERE is_active IS NULL OR is_active = 1'
+      );
+      $messages[] = 'is_available → is_active migrated';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'migration: ' . $e->getMessage();
+  }
+
+  return 'availability_slot: ' . implode(', ', $messages);
+}
 
 /**
  * Implements hook_requirements().
