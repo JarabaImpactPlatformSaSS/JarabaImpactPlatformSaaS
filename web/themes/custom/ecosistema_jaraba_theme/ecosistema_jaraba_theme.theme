@@ -1435,14 +1435,45 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
 
   // Clase page-front para homepage (landing page limpia sin regiones)
   $is_front = \Drupal::service('path.matcher')->isFrontPage();
-  if ($is_front) {
+
+  // SEO-METASITE-001: Detectar homepage de meta-sitio (page_content reescrito por PathProcessor).
+  $is_meta_homepage = FALSE;
+  if (!$is_front && \Drupal::routeMatch()->getRouteName() === 'entity.page_content.canonical') {
+    if (\Drupal::hasService('jaraba_site_builder.meta_site_resolver')) {
+      try {
+        $metaResolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+        $metaData = $metaResolver->resolveFromRequest(\Drupal::request());
+        if ($metaData && $metaData['site_config']) {
+          $homepageId = $metaData['site_config']->get('homepage_id')->target_id ?? NULL;
+          $currentPc = \Drupal::routeMatch()->getParameter('page_content');
+          if ($homepageId && $currentPc && (int) $currentPc->id() === (int) $homepageId) {
+            $is_meta_homepage = TRUE;
+          }
+        }
+      }
+      catch (\Throwable) {}
+    }
+  }
+
+  if ($is_front || $is_meta_homepage) {
     $variables['attributes']['class'][] = 'page-front';
     $variables['attributes']['class'][] = 'landing-page';
 
     // SEO-METASITE-001: <title> diferenciado por metasitio.
-    // Usa Theme Settings > SEO para title configurables por dominio.
+    // preprocess_html se ejecuta ANTES de preprocess_page, así que
+    // homepage_variant aún no está disponible. Resolvemos aquí directamente.
     $theme_config = \Drupal::config('ecosistema_jaraba_theme.settings');
-    $homepage_variant = $variables['homepage_variant'] ?? 'generic';
+    $homepage_variant = 'generic';
+    if (\Drupal::hasService('ecosistema_jaraba_core.unified_theme_resolver')) {
+      try {
+        $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
+        $ctx = $resolver->resolve();
+        $gid = (int) ($ctx['meta_site']['group_id'] ?? 0);
+        $vmap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+        $homepage_variant = $vmap[$gid] ?? 'generic';
+      }
+      catch (\Throwable) {}
+    }
     $title_defaults = [
       'generic' => 'Impulsa tu ecosistema digital | Jaraba',
       'pde' => 'Ecosistemas Digitales de Impacto | PED S.L.',
@@ -2606,10 +2637,7 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       ['#tag' => 'meta', '#attributes' => ['property' => 'og:description', 'content' => $description]],
       'og_description',
     ];
-    $variables['#attached']['html_head'][] = [
-      ['#tag' => 'meta', '#attributes' => ['property' => 'og:url', 'content' => $og_url]],
-      'og_url',
-    ];
+    // og:url eliminado aqui — page_attachments_alter lo inyecta con limpieza de duplicados (SEO-METASITE-001).
     $variables['#attached']['html_head'][] = [
       ['#tag' => 'meta', '#attributes' => ['property' => 'og:image', 'content' => $og_image]],
       'og_image',
@@ -5337,8 +5365,8 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
           return TRUE;
         }
         $key = $item[1];
-        // Eliminar canonical y og:url del metatag module (keys: canonical_url, og_url).
-        return !in_array($key, ['canonical_url', 'og_url', 'og_locale'], TRUE);
+        // Eliminar canonical y og:url de metatag module Y de preprocess_html legacy.
+        return !in_array($key, ['canonical_url', 'og_url', 'og_locale', 'seo_canonical'], TRUE);
       }
     );
   }
