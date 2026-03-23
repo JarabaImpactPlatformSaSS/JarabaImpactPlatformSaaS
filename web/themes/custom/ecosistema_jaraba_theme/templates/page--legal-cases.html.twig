@@ -39,7 +39,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# MAIN CONTENT — Dashboard expedientes #}
   <main id="main-content" class="legal-cases-main">
@@ -113,7 +113,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO — Asesor Legal Contextual #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -121,5 +121,5 @@
     avatar_type: 'legal_advisor',
     fab_color: 'var(--ej-legal-primary, #1E3A5F)',
     greeting: 'Soy tu asistente de gestion de expedientes. Puedo ayudarte a buscar expedientes, gestionar plazos y preparar documentos.'|t
-  } %}
+  } only %}
 

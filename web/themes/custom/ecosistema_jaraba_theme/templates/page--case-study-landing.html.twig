@@ -26,7 +26,7 @@
   logo: logo,
   logged_in: logged_in,
   theme_settings: theme_settings
-} %}
+} only %}
 
 {# DRUPAL MESSAGES #}
 {% if clean_messages %}
@@ -48,7 +48,7 @@
   logo: logo,
   footer_copyright: footer_copyright,
   theme_settings: theme_settings
-} %}
+} only %}
 
 {# FAB COPILOTO — Contextual assistant #}
 {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -56,4 +56,4 @@
   avatar_type: 'ecosystem_advisor',
   fab_color: 'var(--ej-color-corporate, #233D63)',
   greeting: '¡Hola! ¿Tienes alguna pregunta sobre nuestros planes o esta historia de éxito? Estoy aquí para ayudarte.'|t
-} %}
+} only %}

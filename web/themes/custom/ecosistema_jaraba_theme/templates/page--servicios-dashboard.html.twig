@@ -17,7 +17,7 @@
     theme_settings: theme_settings|default({}),
     logged_in: logged_in|default(false),
     site_name: site_name|default('Jaraba'),
-  } %}
+  } only %}
 
   <div class="servicios-dashboard-layout">
     <aside class="servicios-dashboard-sidebar">
@@ -78,12 +78,12 @@
   {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
     theme_settings: theme_settings|default({}),
     footer_copyright: footer_copyright|default(''),
-  } %}
+  } only %}
 
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
     agent_context: 'serviciosconecta_copilot',
     avatar_type: 'profesional',
     fab_color: 'var(--ej-color-corporate, #233D63)',
     is_expanded: false,
-  } %}
+  } only %}
 

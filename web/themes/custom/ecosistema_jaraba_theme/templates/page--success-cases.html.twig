@@ -43,7 +43,7 @@
     logged_in: logged_in,
     theme_settings: theme_settings|default({}),
     avatar_nav: avatar_nav|default(null)
-  } %}
+  } only %}
 
   <main id="main-content" class="success-cases-main">
     {# System messages (status, warning, error) #}
@@ -63,7 +63,7 @@
     site_name: site_name,
     logo: logo|default(''),
     theme_settings: theme_settings|default({})
-  } %}
+  } only %}
 
   {# Slide-panel for CRUD modals (create/edit without leaving the page) #}
   {% include '@ecosistema_jaraba_theme/partials/_slide-panel.html.twig' ignore missing %}

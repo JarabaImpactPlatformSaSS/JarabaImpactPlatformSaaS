@@ -38,7 +38,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# MAIN CONTENT - Full width #}
   <main id="main-content" class="landing-main">
@@ -75,7 +75,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -83,6 +83,6 @@
     avatar_type: 'general',
     fab_color: 'var(--ej-color-impulse, #FF8C42)',
     is_expanded: false
-  } %}
+  } only %}
 
 </div>

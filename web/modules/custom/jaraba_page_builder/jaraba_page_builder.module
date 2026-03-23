@@ -1519,18 +1519,41 @@ function jaraba_page_builder_page_content_presave(\Drupal\Core\Entity\EntityInte
 
     $originalLength = strlen($originalCanvas);
 
-    // CHECK 1: Canvas shrinkage >70% — likely overwrite/corruption.
-    if ($originalLength > 1000 && $newLength > 0 && $newLength < ($originalLength * 0.3)) {
+    // CHECK 1: Canvas shrinkage >50% — auto-backup + log.
+    // CANVAS-REVISION-AUTO-001: Crear snapshot automático antes de permitir save.
+    if ($originalLength > 1000 && $newLength > 0 && $newLength < ($originalLength * 0.5)) {
+      $pctReduction = round((1 - $newLength / $originalLength) * 100, 1);
+
+      // Auto-backup del canvas original antes de sobreescritura.
+      $snapshotDir = \Drupal::service('file_system')->realpath('private://') . '/canvas-snapshots';
+      if ($snapshotDir && !is_dir($snapshotDir)) {
+        @mkdir($snapshotDir, 0755, TRUE);
+      }
+      if ($snapshotDir && is_dir($snapshotDir)) {
+        $timestamp = date('Ymd-His');
+        $filename = "page_content_{$entity->id()}_{$langcode}_{$timestamp}.json";
+        $snapshot = json_encode([
+          'entity_id' => $entity->id(),
+          'langcode' => $langcode,
+          'timestamp' => $timestamp,
+          'original_length' => $originalLength,
+          'new_length' => $newLength,
+          'reduction_pct' => $pctReduction,
+          'canvas_data' => $originalCanvas,
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        @file_put_contents($snapshotDir . '/' . $filename, $snapshot);
+      }
+
       \Drupal::logger('jaraba_page_builder')->critical(
         'SAFEGUARD-CANVAS-001: Canvas shrinkage detected on page_content @id/@lang. ' .
         'Original: @orig chars, New: @new chars (@pct% reduction). ' .
-        'This may indicate content corruption. Save allowed but logged.',
+        'Auto-backup created. Save allowed but logged.',
         [
           '@id' => $entity->id(),
           '@lang' => $langcode,
           '@orig' => $originalLength,
           '@new' => $newLength,
-          '@pct' => round((1 - $newLength / $originalLength) * 100, 1),
+          '@pct' => $pctReduction,
         ]
       );
     }

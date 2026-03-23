@@ -25,7 +25,7 @@
   theme_settings: theme_settings,
   navigation_items: navigation_items,
   logged_in: is_authenticated,
-} %}
+} only %}
 
 <main class="messaging-page" role="main" aria-label="{% trans %}Messaging{% endtrans %}">
   <div class="messaging-layout"
@@ -39,7 +39,7 @@
       {% include '@jaraba_messaging/partials/_conversation-list.html.twig' with {
         conversations: conversations,
         unread_total: unread_total,
-      } %}
+      } only %}
     </aside>
 
     {# Right panel: thread container #}
@@ -69,4 +69,4 @@
 
 {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
   theme_settings: theme_settings,
-} %}
+} only %}

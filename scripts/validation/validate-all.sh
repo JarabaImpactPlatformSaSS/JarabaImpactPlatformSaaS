@@ -528,6 +528,31 @@ if [ "$MODE" = "full" ]; then
   run_check "BACKUP-HEALTH-001" "Backup infrastructure completeness" \
     php "$SCRIPT_DIR/validate-backup-health.php"
 
+  # ── Safeguard System Fase 7 — P1 validators ──────────────
+
+  warn_check "ACCESS-HANDLER-IMPL-001" "AccessControlHandler tenant verification implementation" \
+    php "$SCRIPT_DIR/validate-access-handler-impl.php"
+
+  warn_check "API-CONTRACT-001" "API endpoint structure and CSRF consistency" \
+    php "$SCRIPT_DIR/validate-api-contract.php"
+
+  warn_check "PLUGIN-REGISTRY-VALIDATION-001" "Page Builder JS/CSS asset registry completeness" \
+    php "$SCRIPT_DIR/validate-plugin-registry.php"
+
+  # ── Safeguard System Fase 7 — P2 validators ──────────────
+
+  warn_check "A11Y-HEADING-HIERARCHY-001" "WCAG heading hierarchy (no level gaps)" \
+    php "$SCRIPT_DIR/validate-heading-hierarchy.php"
+
+  warn_check "PERF-N1-QUERY-001" "N+1 query pattern detection in loops" \
+    php "$SCRIPT_DIR/validate-n1-queries.php"
+
+  warn_check "CACHE-KEY-TENANT-001" "Cache keys include tenant scope" \
+    php "$SCRIPT_DIR/validate-cache-key-tenant.php"
+
+  warn_check "EMAIL-TEMPLATE-RENDER-001" "Email template Twig syntax verification" \
+    php "$SCRIPT_DIR/validate-email-template-render.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -559,6 +584,13 @@ else
   skip_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference"
   skip_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements coverage"
   skip_check "INFRA-HEALTH-001" "Infrastructure health"
+  skip_check "ACCESS-HANDLER-IMPL-001" "AccessControlHandler tenant verification"
+  skip_check "API-CONTRACT-001" "API endpoint structure"
+  skip_check "PLUGIN-REGISTRY-VALIDATION-001" "Page Builder asset registry"
+  skip_check "A11Y-HEADING-HIERARCHY-001" "Heading hierarchy"
+  skip_check "PERF-N1-QUERY-001" "N+1 query detection"
+  skip_check "CACHE-KEY-TENANT-001" "Cache key tenant scope"
+  skip_check "EMAIL-TEMPLATE-RENDER-001" "Email template syntax"
 fi
 
 fi  # End of non-checklist mode guard.

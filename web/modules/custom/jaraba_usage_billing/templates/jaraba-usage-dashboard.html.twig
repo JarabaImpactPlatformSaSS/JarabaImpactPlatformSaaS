@@ -93,7 +93,7 @@
   {# Sección de alertas #}
   {% if alerts %}
     <section class="usage-dashboard__alerts">
-      {% include 'jaraba-usage-alerts.html.twig' with { alerts: alerts, tenant_id: tenant_id } %}
+      {% include 'jaraba-usage-alerts.html.twig' with { alerts: alerts, tenant_id: tenant_id } only %}
     </section>
   {% endif %}
 

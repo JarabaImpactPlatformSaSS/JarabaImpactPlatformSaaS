@@ -2202,3 +2202,7 @@ services:
       - '@entity_type.manager'
     tags:
       - { name: ecosistema_jaraba_core.user_profile_section }
+
+  # CANVAS-SANITIZER-EXTRACT-001: Servicio centralizado de sanitización canvas.
+  ecosistema_jaraba_core.canvas_sanitization:
+    class: Drupal\ecosistema_jaraba_core\Service\CanvasSanitizationService

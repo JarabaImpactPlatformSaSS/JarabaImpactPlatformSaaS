@@ -42,7 +42,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# DRUPAL MESSAGES #}
   {% if clean_messages %}
@@ -79,7 +79,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO — Asesor Fiscal Contextual #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -87,5 +87,5 @@
     avatar_type: 'fiscal_manager',
     fab_color: 'var(--ej-fiscal-aeat, #1A365D)',
     greeting: '¡Hola! Soy tu asesor fiscal. Puedo ayudarte con VeriFactu, facturación electrónica B2G y B2B, certificados digitales y cumplimiento normativo. ¿En qué puedo asistirte?'|t
-  } %}
+  } only %}
 

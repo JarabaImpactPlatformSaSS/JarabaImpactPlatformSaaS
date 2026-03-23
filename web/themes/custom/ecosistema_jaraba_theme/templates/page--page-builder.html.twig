@@ -52,7 +52,7 @@
     available_languages: available_languages|default([]),
     current_langcode: current_langcode|default('es'),
     language_links: language_links|default({}),
-  } %}
+  } only %}
 {% else %}
   {# Non-meta-sitio (page-builder dashboard, preview, etc.): header limpio sin nav #}
   <header class="landing-header landing-header--tenant" role="banner">
@@ -110,7 +110,7 @@
       hero: {},
       audience: audience|default(null),
       meta_site: meta_site,
-    } %}
+    } only %}
 
     {# 2. AUDIENCIA SELECTOR — Interes (segmentar antes de informar) #}
     {% include '@ecosistema_jaraba_theme/partials/_audience-selector.html.twig' %}
@@ -119,7 +119,7 @@
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
       stats: [],
       is_ped: true,
-    } %}
+    } only %}
 
     {# 4. VERTICAL DESTACADO: JarabaLex — Deseo (TAM #1 legal) #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
@@ -141,7 +141,7 @@
       ],
       highlight_cta_text: 'Prueba JarabaLex gratis 14 dias'|t,
       highlight_cta_url: ped_urls.jarabalex|default('/jarabalex'),
-    } %}
+    } only %}
 
     {# 5. VERTICAL DESTACADO: Instituciones B2G — Deseo (ventaja competitiva) #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
@@ -158,7 +158,7 @@
       ],
       highlight_cta_text: 'Solicitar demo institucional'|t,
       highlight_cta_url: ped_urls.contacto|default('/contacto'),
-    } %}
+    } only %}
 
     {# 6. PARTNERS INSTITUCIONALES — Credibilidad #}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
@@ -210,11 +210,11 @@
   site_name: site_name,
   logo: logo|default(''),
   theme_settings: theme_settings|default({})
-} %}
+} only %}
 
 {# Copiloto FAB contextual si está habilitado #}
 {% if copilot_context %}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
     copilot: copilot_context
-  } %}
+  } only %}
 {% endif %}

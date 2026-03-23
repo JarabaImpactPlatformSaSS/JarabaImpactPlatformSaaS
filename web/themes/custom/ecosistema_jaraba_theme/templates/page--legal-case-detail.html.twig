@@ -28,7 +28,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# MAIN CONTENT — Detalle del expediente #}
   <main id="main-content" class="legal-case-detail-main">
@@ -160,7 +160,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -168,5 +168,5 @@
     avatar_type: 'legal_advisor',
     fab_color: 'var(--ej-legal-primary, #1E3A5F)',
     greeting: 'Soy tu asistente para este expediente. Puedo ayudarte con plazos, busqueda de jurisprudencia y preparacion de escritos.'|t
-  } %}
+  } only %}
 

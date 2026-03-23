@@ -300,6 +300,19 @@ jobs:
           npm ci --production=false
           npm run build --if-present
 
+      - name: Verify SCSS compilation freshness (SCSS-BUILD-CI-001)
+        run: |
+          cd web/themes/custom/ecosistema_jaraba_theme
+          npm ci --production=false 2>/dev/null || true
+          npm run build 2>/dev/null || true
+          cd "$GITHUB_WORKSPACE"
+          if ! git diff --quiet web/themes/custom/ecosistema_jaraba_theme/css/; then
+            echo "::error::SCSS-BUILD-CI-001: CSS compilado no está actualizado. Ejecutar 'npm run build' en el tema y commitear los cambios."
+            git diff --stat web/themes/custom/ecosistema_jaraba_theme/css/
+            exit 1
+          fi
+          echo "✅ SCSS-BUILD-CI-001: CSS compilado está actualizado"
+
       - name: Check Drupal requirements
         run: |
           php -r "require 'vendor/autoload.php'; echo 'Autoloader OK\n';"

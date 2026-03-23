@@ -63,7 +63,7 @@
       {% include '@jaraba_messaging/partials/_conversation-list.html.twig' with {
         conversations: conversations,
         unread_total: unread_total,
-      } %}
+      } only %}
     </div>
 
     {# Thread view: hidden until conversation is selected #}

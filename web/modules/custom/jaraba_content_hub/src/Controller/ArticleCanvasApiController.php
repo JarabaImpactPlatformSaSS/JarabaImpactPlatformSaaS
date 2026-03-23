@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_content_hub\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\CanvasSanitizationService;
 use Drupal\jaraba_content_hub\Entity\ContentArticleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,8 +23,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Endpoints propios para artículos (no compartidos con PageContent):
  * - Permisos distintos (edit content article vs edit page builder)
  * - Logging y observabilidad independientes
- * - Los sanitizers se replican localmente (métodos protected del
- *   CanvasApiController del Page Builder no son heredables).
+ * - Sanitización centralizada via CanvasSanitizationService
+ *   (CANVAS-SANITIZER-EXTRACT-001).
  *
  * SEGURIDAD:
  * - CSRF-API-001: Ruta PATCH usa _csrf_request_header_token
@@ -38,11 +39,17 @@ class ArticleCanvasApiController extends ControllerBase {
   private const ALLOWED_FIELDS = ['components', 'styles', 'html', 'css'];
 
   /**
+   * Servicio de sanitización canvas.
+   */
+  protected CanvasSanitizationService $canvasSanitization;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     $instance = new static();
     $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->canvasSanitization = $container->get('ecosistema_jaraba_core.canvas_sanitization');
     return $instance;
   }
 
@@ -167,88 +174,28 @@ class ArticleCanvasApiController extends ControllerBase {
   /**
    * Sanitiza HTML con lista blanca ampliada para el editor visual.
    *
-   * Réplica de CanvasApiController::sanitizePageBuilderHtml() del Page Builder.
-   * Se duplica porque el método original es protected y no heredable.
-   *
-   * @param string $html
-   *   HTML a sanitizar.
-   *
-   * @return string
-   *   HTML sanitizado.
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
    */
   protected function sanitizePageBuilderHtml(string $html): string {
-    if (empty($html)) {
-      return '';
-    }
-
-    // Eliminar <script> tags y su contenido.
-    $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
-
-    // Eliminar event handlers on* (onclick, onerror, onload, etc.).
-    $html = preg_replace('/\s+on\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
-
-    // Eliminar atributos javascript: en href/src/action/data/formaction.
-    $html = preg_replace('/\s+(href|src|action|data|formaction)\s*=\s*(?:"javascript:[^"]*"|\'javascript:[^\']*\')/i', '', $html);
-
-    // Eliminar <object> y <embed> (vectores Flash/plugin).
-    $html = preg_replace('/<object\b[^>]*>.*?<\/object>/is', '', $html);
-    $html = preg_replace('/<embed\b[^>]*\/?>/i', '', $html);
-
-    return $html;
+    return $this->canvasSanitization->sanitizePageBuilderHtml($html);
   }
 
   /**
    * Sanitiza HTML para almacenamiento público.
    *
-   * Aplica sanitizePageBuilderHtml() + limpieza de atributos GrapesJS.
-   *
-   * @param string $html
-   *   HTML a sanitizar.
-   *
-   * @return string
-   *   HTML sanitizado.
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
    */
   protected function sanitizeHtml(string $html): string {
-    // Paso 1: Sanitización XSS con lista blanca ampliada.
-    $html = $this->sanitizePageBuilderHtml($html);
-
-    // Paso 2: Limpiar atributos residuales de GrapesJS editor.
-    $html = preg_replace('/\s+data-gjs-[^=]+="[^"]*"/i', '', $html);
-
-    // Paso 3: Solo eliminar clases gjs-*, preservando las demás.
-    $html = preg_replace_callback(
-      '/\sclass="([^"]*)"/i',
-      function ($matches) {
-        $classes = preg_split('/\s+/', $matches[1]);
-        $filtered = array_filter($classes, fn($c) => !str_starts_with($c, 'gjs-'));
-        if (empty($filtered)) {
-          return '';
-        }
-        return ' class="' . implode(' ', $filtered) . '"';
-      },
-      $html
-    );
-
-    return trim($html);
+    return $this->canvasSanitization->sanitizeHtml($html);
   }
 
   /**
    * Sanitiza CSS para prevenir inyección de código.
    *
-   * @param string $css
-   *   CSS a sanitizar.
-   *
-   * @return string
-   *   CSS sanitizado.
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
    */
   protected function sanitizeCss(string $css): string {
-    $css = preg_replace('/javascript\s*:/i', '', $css);
-    $css = preg_replace('/expression\s*\(/i', '', $css);
-    $css = preg_replace('/@import\b/i', '', $css);
-    $css = preg_replace('/behavior\s*:/i', '', $css);
-    $css = preg_replace('/-moz-binding\s*:/i', '', $css);
-
-    return $css;
+    return $this->canvasSanitization->sanitizeCss($css);
   }
 
 }

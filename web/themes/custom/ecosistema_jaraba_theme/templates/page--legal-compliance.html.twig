@@ -42,7 +42,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# DRUPAL MESSAGES #}
   {% if clean_messages %}
@@ -79,7 +79,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO — Asesor Legal Contextual #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -87,5 +87,5 @@
     avatar_type: 'legal_assistant',
     fab_color: 'var(--ej-color-info, #1976d2)',
     greeting: '¡Hola! Soy tu asistente de términos legales. Puedo ayudarte con ToS, SLA, AUP, offboarding de tenants y el canal de denuncias. ¿En qué puedo asistirte?'|t
-  } %}
+  } only %}
 

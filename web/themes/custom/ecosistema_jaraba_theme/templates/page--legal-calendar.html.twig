@@ -35,7 +35,7 @@
         {% if deadlines is not empty %}
           <div class="legal-calendar-dashboard__deadline-list">
             {% for deadline in deadlines %}
-              {% include '@jaraba_legal_calendar/partials/deadline-card.html.twig' with {deadline: deadline} %}
+              {% include '@jaraba_legal_calendar/partials/deadline-card.html.twig' with {deadline: deadline} only %}
             {% endfor %}
           </div>
         {% else %}
@@ -50,7 +50,7 @@
         {% if hearings is not empty %}
           <div class="legal-calendar-dashboard__hearing-list">
             {% for hearing in hearings %}
-              {% include '@jaraba_legal_calendar/partials/hearing-card.html.twig' with {hearing: hearing} %}
+              {% include '@jaraba_legal_calendar/partials/hearing-card.html.twig' with {hearing: hearing} only %}
             {% endfor %}
           </div>
         {% else %}

@@ -6,6 +6,7 @@ namespace Drupal\jaraba_page_builder\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\ecosistema_jaraba_core\Service\CanvasSanitizationService;
 use Drupal\jaraba_page_builder\Entity\PageTemplate;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,12 +33,18 @@ class CanvasApiController extends ControllerBase
     protected const LOCK_DURATION = 300;
 
     /**
+     * Servicio de sanitización canvas.
+     */
+    protected CanvasSanitizationService $canvasSanitization;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container): static
     {
         $instance = new static();
         $instance->entityTypeManager = $container->get('entity_type.manager');
+        $instance->canvasSanitization = $container->get('ecosistema_jaraba_core.canvas_sanitization');
         return $instance;
     }
 
@@ -677,96 +684,28 @@ class CanvasApiController extends ControllerBase
     /**
      * Sanitiza HTML para almacenamiento público.
      *
-     * AUDIT-SEC-003: Usa Xss::filterAdmin() de Drupal que elimina script,
-     * iframe, object, embed, event handlers (onclick, onerror, etc.) y
-     * otros vectores XSS, pero permite tags HTML legítimos del page builder.
-     * Además limpia atributos residuales del editor GrapesJS.
-     *
-     * @param string $html
-     *   HTML a sanitizar.
-     *
-     * @return string
-     *   HTML sanitizado.
+     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
      */
-    protected function sanitizeHtml(string $html): string
-    {
-        // Paso 1: Sanitización XSS con lista blanca ampliada para Page Builder.
-        $html = $this->sanitizePageBuilderHtml($html);
-
-        // Paso 2: Limpiar atributos residuales de GrapesJS editor.
-        $html = preg_replace('/\s+data-gjs-[^=]+="[^"]*"/i', '', $html);
-
-        // FIX A1: Solo eliminar clases gjs-*, preservando las demás clases del usuario.
-        $html = preg_replace_callback(
-            '/\sclass="([^"]*)"/i',
-            function ($matches) {
-                $classes = preg_split('/\s+/', $matches[1]);
-                $filtered = array_filter($classes, fn($c) => !str_starts_with($c, 'gjs-'));
-                if (empty($filtered)) {
-                    return '';
-                }
-                return ' class="' . implode(' ', $filtered) . '"';
-            },
-            $html
-        );
-
-        return trim($html);
+    protected function sanitizeHtml(string $html): string {
+        return $this->canvasSanitization->sanitizeHtml($html);
     }
 
     /**
      * Sanitiza HTML con lista blanca ampliada para el Page Builder.
      *
-     * FIX C2: Reemplaza Xss::filterAdmin() que eliminaba svg, form, input,
-     * button, video, iframe, canvas, picture necesarios para bloques premium.
-     *
-     * @param string $html
-     *   HTML a sanitizar.
-     *
-     * @return string
-     *   HTML sanitizado.
+     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
      */
-    protected function sanitizePageBuilderHtml(string $html): string
-    {
-        if (empty($html)) {
-            return '';
-        }
-
-        // Eliminar <script> tags y su contenido.
-        $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
-
-        // Eliminar event handlers on* (onclick, onerror, onload, etc.).
-        $html = preg_replace('/\s+on\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
-
-        // Eliminar atributos javascript: en href/src/action/data/formaction.
-        $html = preg_replace('/\s+(href|src|action|data|formaction)\s*=\s*(?:"javascript:[^"]*"|\'javascript:[^\']*\')/i', '', $html);
-
-        // Eliminar <object> y <embed> (vectores Flash/plugin).
-        $html = preg_replace('/<object\b[^>]*>.*?<\/object>/is', '', $html);
-        $html = preg_replace('/<embed\b[^>]*\/?>/i', '', $html);
-
-        return $html;
+    protected function sanitizePageBuilderHtml(string $html): string {
+        return $this->canvasSanitization->sanitizePageBuilderHtml($html);
     }
 
     /**
      * Sanitiza CSS para prevenir inyección de código.
      *
-     * AUDIT-SEC-003: CSS del canvas puede contener vectores XSS.
-     *
-     * @param string $css
-     *   CSS a sanitizar.
-     *
-     * @return string
-     *   CSS sanitizado.
+     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
      */
-    protected function sanitizeCss(string $css): string
-    {
-        $css = preg_replace('/javascript\s*:/i', '', $css);
-        $css = preg_replace('/expression\s*\(/i', '', $css);
-        $css = preg_replace('/@import\b/i', '', $css);
-        $css = preg_replace('/behavior\s*:/i', '', $css);
-        $css = preg_replace('/-moz-binding\s*:/i', '', $css);
-
-        return $css;
+    protected function sanitizeCss(string $css): string {
+        return $this->canvasSanitization->sanitizeCss($css);
     }
 
 }

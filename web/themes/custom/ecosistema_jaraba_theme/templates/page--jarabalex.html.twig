@@ -36,7 +36,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# DRUPAL MESSAGES #}
   {% if clean_messages %}
@@ -63,7 +63,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO — Asesor Legal Contextual #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -71,5 +71,5 @@
     avatar_type: 'legal_advisor',
     fab_color: 'var(--ej-legal-primary, #1E3A5F)',
     greeting: '¡Hola! Soy tu asistente legal. Puedo ayudarte con búsquedas de jurisprudencia, legislación, alertas normativas y citaciones cruzadas. ¿En qué puedo asistirte?'|t
-  } %}
+  } only %}
 

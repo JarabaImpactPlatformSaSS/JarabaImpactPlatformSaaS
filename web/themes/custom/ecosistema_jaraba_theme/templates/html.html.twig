@@ -31,7 +31,7 @@
     {# Sprint 11: GTM/GA4 Analytics — Consent Mode v2 + dataLayer #}
     {% include '@ecosistema_jaraba_theme/partials/_gtm-analytics.html.twig' ignore missing with {
       theme_settings: theme_settings|default({})
-    } %}
+    } only %}
     {# PERF-02: Async CSS loading when critical CSS is inline. #}
     <script>
     (function(){

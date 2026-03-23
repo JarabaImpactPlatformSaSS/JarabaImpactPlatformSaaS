@@ -33,7 +33,7 @@
     logo: logo|default(''),
     logged_in: logged_in,
     theme_settings: theme_settings|default({})
-  } %}
+  } only %}
 
   {# MAIN CONTENT - Full-width layout (mismo patrón que /pixels) #}
   <main id="main-content" class="dashboard-main revisions-main">
@@ -53,5 +53,5 @@
     site_name: site_name,
     logo: logo|default(''),
     theme_settings: theme_settings|default({})
-  } %}
+  } only %}
 

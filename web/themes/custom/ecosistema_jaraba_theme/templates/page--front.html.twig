@@ -53,7 +53,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# Detectar variante de homepage por metasitio (HOMEPAGE-ELEVATION-001 F5) #}
   {% set variant = homepage_variant|default('generic') %}
@@ -79,7 +79,7 @@
       },
       ped_urls: ped_urls|default({}),
       meta_site: meta_site,
-    } %}
+    } only %}
 
     {# 2. PAIN POINTS — Problemas que Pepe ha resuelto #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
@@ -124,12 +124,12 @@
         { value: 10, suffix: '', label: 'verticales construidos'|t }
       ],
       is_ped: true,
-    } %}
+    } only %}
 
     {# 4. COMO FUNCIONA #}
     {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 5. FEATURES — Que ofrece la plataforma #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
@@ -139,7 +139,7 @@
     {# 6. PRODUCT DEMO #}
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 7. PRICING PREVIEW #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
@@ -171,7 +171,7 @@
       lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
       lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
       lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
-    } %}
+    } only %}
 
     {# 12. FAQ #}
     {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
@@ -186,7 +186,7 @@
       cta_primary_url: ped_urls.contacto|default('/contacto'),
       cta_secondary_text: 'Ver la metodologia'|t,
       cta_secondary_url: ped_urls.metodo|default('/metodo'),
-    } %}
+    } only %}
 
   {% elseif variant == 'jarabaimpact' %}
     {# ============================================================ #}
@@ -207,7 +207,7 @@
       },
       ped_urls: ped_urls|default({}),
       meta_site: meta_site,
-    } %}
+    } only %}
 
     {# 2. PAIN POINTS — Problemas de escalar solo #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
@@ -252,12 +252,12 @@
         { value: 3, suffix: '', label: 'niveles de certificacion'|t }
       ],
       is_ped: false,
-    } %}
+    } only %}
 
     {# 4. COMO FUNCIONA #}
     {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 5. FEATURES — Que incluye la franquicia #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
@@ -267,7 +267,7 @@
     {# 6. PRODUCT DEMO #}
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 7. COMPARATIVA — Franquicia vs montar solo (variant-specific) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-comparison.html.twig' with {
@@ -309,7 +309,7 @@
     {# 8. CROSS-POLLINATION — Los 8 verticales disponibles #}
     {% include '@ecosistema_jaraba_theme/partials/_cross-pollination.html.twig' with {
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
     {# 9. TESTIMONIOS #}
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
@@ -328,7 +328,7 @@
       lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
       lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
       lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
-    } %}
+    } only %}
 
     {# 12. FAQ #}
     {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
@@ -343,7 +343,7 @@
       cta_primary_url: ped_urls.contacto|default('/contacto'),
       cta_secondary_text: 'Descargar dossier'|t,
       cta_secondary_url: ped_urls.contacto|default('/contacto'),
-    } %}
+    } only %}
 
   {% elseif is_ped %}
     {# ============================================================ #}
@@ -358,7 +358,7 @@
       hero: homepage.hero|default({}),
       audience: audience|default(null),
       meta_site: meta_site,
-    } %}
+    } only %}
 
     {# 1b. PAIN POINTS — Empatia antes de segmentar (HOMEPAGE-ELEVATION-001 F0) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {
@@ -372,12 +372,12 @@
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
       stats: homepage.stats|default([]),
       is_ped: true,
-    } %}
+    } only %}
 
     {# 3b. COMO FUNCIONA — 3 pasos para reducir fricción #}
     {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 4. VERTICAL DESTACADO: JarabaLex — Deseo (TAM #1) #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
@@ -399,7 +399,7 @@
       ],
       highlight_cta_text: 'Prueba JarabaLex gratis 14 dias'|t,
       highlight_cta_url: ped_urls.jarabalex|default('/jarabalex'),
-    } %}
+    } only %}
 
     {# 5. VERTICAL DESTACADO: Instituciones B2G — Deseo (ventaja competitiva) #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-highlight.html.twig' with {
@@ -416,12 +416,12 @@
       ],
       highlight_cta_text: 'Solicitar demo institucional'|t,
       highlight_cta_url: ped_urls.contacto|default('/contacto'),
-    } %}
+    } only %}
 
     {# 6. PRODUCT DEMO — Deseo (sin cambios) #}
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# 6b. PRICING PREVIEW — Transparencia de precios (HOMEPAGE-ELEVATION-001 F0) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
@@ -458,7 +458,7 @@
       lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
       lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
       lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
-    } %}
+    } only %}
 
     {# 10. FAQ — SEO + objection handling #}
     {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
@@ -467,7 +467,7 @@
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
       logged_in: logged_in,
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
   {% else %}
     {# ============================================================ #}
@@ -482,7 +482,7 @@
       hero: homepage.hero|default({}),
       intentions: homepage.intentions|default([]),
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
     {# TRUST BAR - Logos tecnologías + badges #}
     {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
@@ -497,7 +497,7 @@
       verticals: verticals|default([]),
       detected_vertical: detected_vertical|default(null),
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
     {# FEATURES PREMIUM — 12 capacidades transversales (HOMEPAGE-ELEVATION-001 F3) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-features.html.twig' with {
@@ -507,17 +507,17 @@
     {# COMO FUNCIONA — 3 pasos para reducir fricción #}
     {% include '@ecosistema_jaraba_theme/partials/_how-it-works.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# STATS - Social proof con datos dinámicos #}
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
       stats: homepage.stats|default([])
-    } %}
+    } only %}
 
     {# PRODUCT DEMO - Screenshots + tabs interactivos #}
     {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' with {
       logged_in: logged_in,
-    } %}
+    } only %}
 
     {# PRICING PREVIEW — Transparencia de precios (HOMEPAGE-ELEVATION-001 F0) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pricing-preview.html.twig' with {
@@ -539,12 +539,12 @@
       lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
       lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
       lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
-    } %}
+    } only %}
 
     {# CROSS-POLLINATION — 8 verticales del ecosistema #}
     {% include '@ecosistema_jaraba_theme/partials/_cross-pollination.html.twig' with {
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
     {# TESTIMONIOS — Casos de éxito reales #}
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
@@ -562,7 +562,7 @@
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
       logged_in: logged_in,
       ped_urls: ped_urls|default({}),
-    } %}
+    } only %}
 
   {% endif %}
 
@@ -605,7 +605,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO - Asesor Comercial Premium (orientado a ventas y demos) #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -613,11 +613,11 @@
     avatar_type: 'general',
     fab_color: 'var(--ej-color-impulse, #FF8C42)',
     greeting: '¡Hola! Soy tu asesor de Jaraba. Puedo mostrarte demos personalizadas, ayudarte a explorar la plataforma o resolver cualquier duda. ¿Qué te trae por aquí?'|t
-  } %}
+  } only %}
 
   {# WHATSAPP FAB — Contacto rápido móvil (Sprint 2) #}
   {% include '@ecosistema_jaraba_theme/partials/_whatsapp-fab.html.twig' with {
     whatsapp_number: theme_settings.whatsapp_number|default('34600000000'),
     whatsapp_message: theme_settings.whatsapp_message|default('Hola, me interesa conocer más sobre la Plataforma de Ecosistemas Digitales.'|t|url_encode)
-  } %}
+  } only %}
 

@@ -40,7 +40,7 @@
   </div>
 
   <div class="ej-notification-panel__list" id="notification-list" role="tabpanel">
-    {% include '@ecosistema_jaraba_theme/partials/_skeleton.html.twig' with { variant: 'list' } %}
+    {% include '@ecosistema_jaraba_theme/partials/_skeleton.html.twig' with { variant: 'list' } only %}
   </div>
 
   <div class="ej-notification-panel__empty is-hidden" id="notification-empty">
@@ -49,6 +49,6 @@
       icon_name: 'bell',
       title: 'Sin notificaciones'|trans,
       description: 'Cuando haya novedades, apareceran aqui.'|trans
-    } %}
+    } only %}
   </div>
 </div>

@@ -10,7 +10,7 @@
   {# Eliminamos 'only' para permitir que pasen las variables site_name, logo, etc. #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     'clean_layout': true
-  } %}
+  } only %}
 
   <main role="main" id="main-content" class="main-content-clean">
     <div class="canvas-clean-container">
@@ -20,6 +20,6 @@
 
   {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
     'clean_layout': true
-  } %}
+  } only %}
 
 </div>

@@ -55,7 +55,7 @@
       <div id="site-tree-container" class="site-tree-manager" data-tree="{{ tree|json_encode }}" data-can-edit="{{ can_edit ? 'true' : 'false' }}">
         <ul class="site-tree-list" data-sortable="true">
           {% for node in tree %}
-            {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {'node': node, 'depth': 0} %}
+            {% include '@jaraba_site_builder/partials/tree-node.html.twig' with {'node': node, 'depth': 0} only %}
           {% endfor %}
         </ul>
       </div>

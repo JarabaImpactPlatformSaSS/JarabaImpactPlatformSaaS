@@ -42,7 +42,7 @@
     logo: logo,
     logged_in: logged_in,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# DRUPAL MESSAGES #}
   {% if clean_messages %}
@@ -79,7 +79,7 @@
     logo: logo,
     footer_copyright: footer_copyright,
     theme_settings: theme_settings
-  } %}
+  } only %}
 
   {# FAB COPILOTO — Asesor Compliance Contextual #}
   {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
@@ -87,5 +87,5 @@
     avatar_type: 'dpo_assistant',
     fab_color: 'var(--ej-color-success, #43a047)',
     greeting: '¡Hola! Soy tu asistente de privacidad GDPR. Puedo ayudarte con DPAs, cookies, solicitudes ARCO-POL, brechas de seguridad y registro de actividades de tratamiento. ¿En qué puedo asistirte?'|t
-  } %}
+  } only %}
 

@@ -112,7 +112,7 @@ foreach ($twig_files as $twig_file) {
     }
 
     $has_with = (bool) preg_match('/\bwith\s*\{/', $include_stmt);
-    $has_only = (bool) preg_match('/\bonly\s*[-~]?%\}/', $include_stmt);
+    $has_only = (bool) preg_match('/\bonly\b/', $include_stmt);
 
     if (!$has_with) {
       // No 'with' — simple include without passing variables. Not flagged.

@@ -308,12 +308,49 @@ jobs:
           fi
 
   # ===========================================
-  # JOB 6: FITNESS REPORT
+  # JOB 6: DEPRECATED API SCAN (DEPRECATED-API-SCAN-001)
+  # ===========================================
+  deprecated-api-scan:
+    name: 🕰️ Deprecated API Monitor
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Count PHPStan deprecation baseline entries
+        run: |
+          BASELINE_FILE="phpstan-baseline.neon"
+          if [ ! -f "$BASELINE_FILE" ]; then
+            echo "No baseline file found, skipping"
+            exit 0
+          fi
+          DEPRECATED_COUNT=$(grep -c "deprecated" "$BASELINE_FILE" 2>/dev/null || echo "0")
+          echo "## 🕰️ Deprecated API Baseline" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Deprecation entries in baseline:** $DEPRECATED_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$DEPRECATED_COUNT" -gt 500 ]; then
+            echo "::warning::DEPRECATED-API-SCAN-001: $DEPRECATED_COUNT deprecation entries in baseline. Consider cleanup sprint."
+          fi
+          echo "deprecation_count=$DEPRECATED_COUNT" >> $GITHUB_ENV
+
+  # ===========================================
+  # JOB 7: FITNESS REPORT
   # ===========================================
   fitness-report:
     name: 📊 Fitness Report
     runs-on: ubuntu-latest
-    needs: [phpstan, dependency-freshness, module-structure, architecture-patterns, service-integrity]
+    needs: [phpstan, dependency-freshness, module-structure, architecture-patterns, service-integrity, deprecated-api-scan]
     if: always()
     
     steps:
@@ -334,6 +371,7 @@ jobs:
           echo "| Module Structure | ${{ needs.module-structure.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Architecture Patterns | ${{ needs.architecture-patterns.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Service & Tenant Integrity | ${{ needs.service-integrity.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deprecated API Baseline | ${{ needs.deprecated-api-scan.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Overall status
