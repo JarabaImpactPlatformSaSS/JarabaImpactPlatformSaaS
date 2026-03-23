@@ -16,7 +16,7 @@
     attach: function (context, settings) {
 
       // Only run once per element
-      const animatedElements = context.querySelectorAll('.animate-on-scroll:not(.is-observed)');
+      const animatedElements = context.querySelectorAll('.animate-on-scroll:not(.is-observed), .reveal-element:not(.is-observed)');
 
       if (animatedElements.length === 0) {
         return;
@@ -161,7 +161,9 @@
    */
   Drupal.behaviors.animatedCounter = {
     attach: function (context) {
-      const counters = context.querySelectorAll('.stat-item__number[data-count]:not(.counter-attached), .ped-cifras__number[data-count]:not(.counter-attached)');
+      // Always search from document to handle Big Pipe late-injected content.
+      // The .counter-attached class prevents double-processing.
+      const counters = document.querySelectorAll('.stat-item__number[data-count]:not(.counter-attached), .ped-cifras__number[data-count]:not(.counter-attached), .cs-proof__metric-value[data-count]:not(.counter-attached)');
 
       if (counters.length === 0) {
         return;

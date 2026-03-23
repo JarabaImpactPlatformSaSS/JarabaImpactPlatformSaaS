@@ -395,6 +395,18 @@ if [ "$MODE" = "full" ]; then
   run_check "SUCCESS-CASES-SSOT-001" "SuccessCase entity is SSOT for case studies" \
     php "$SCRIPT_DIR/validate-success-cases-ssot.php"
 
+  run_check "SCSS-COMPILE-FRESHNESS-001" "SCSS compiled CSS freshness vs partials" \
+    php "$SCRIPT_DIR/validate-scss-compile-freshness.php"
+
+  run_check "ROUTE-SUBSCRIBER-PARITY-001" "Case study route subscriber covers all legacy routes" \
+    php "$SCRIPT_DIR/validate-route-subscriber-parity.php"
+
+  run_check "JS-DATA-ATTR-PARITY-001" "Twig data-* attributes match JS selectors" \
+    php "$SCRIPT_DIR/validate-js-data-attr-parity.php"
+
+  warn_check "ENTITY-FIELD-DB-SYNC-001" "Entity field definitions match DB columns (static)" \
+    php "$SCRIPT_DIR/validate-entity-field-db-sync.php"
+
   run_check "PREPROCESS-ISOLATION-001" "Preprocess hooks exclude .case_study. routes" \
     php "$SCRIPT_DIR/validate-preprocess-isolation.php"
 

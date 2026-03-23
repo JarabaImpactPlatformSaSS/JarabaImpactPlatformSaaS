@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * _cs-how-it-works.html.twig — 3 steps section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §4: 3 clear steps oriented to the prospect.
+ *
+ * Variables:
+ *   - steps: array of {icon_category, icon_name, title, description}.
+ *   - vertical: string.
+ */
+#}
+{% set default_steps = [
+  { icon_category: 'actions', icon_name: 'add-circle', title: 'Regístrate gratis'|t, description: 'Crea tu cuenta en menos de 2 minutos. Sin tarjeta de crédito.'|t },
+  { icon_category: 'ui', icon_name: 'settings', title: 'Configura tu espacio'|t, description: 'Personaliza tu panel con las herramientas que necesitas.'|t },
+  { icon_category: 'analytics', icon_name: 'chart-line', title: 'Empieza a crecer'|t, description: 'Resultados visibles desde la primera semana.'|t },
+] %}
+{% set active_steps = steps is not empty ? steps : default_steps %}
+
+<section class="cs-section cs-how-it-works reveal-element reveal-fade-up"
+  aria-labelledby="cs-how-title"
+  data-track-position="case_study_how_it_works">
+  <div class="cs-section__container">
+    <h2 id="cs-how-title" class="cs-section__title">{% trans %}Así de fácil{% endtrans %}</h2>
+    <p class="cs-section__subtitle">{% trans %}3 pasos para transformar tu negocio{% endtrans %}</p>
+    <div class="cs-how__steps">
+      {% for step in active_steps %}
+        <div class="cs-how__step">
+          <div class="cs-how__number" aria-hidden="true">{{ loop.index }}</div>
+          <div class="cs-how__icon" aria-hidden="true">
+            {{ jaraba_icon(step.icon_category|default('ui'), step.icon_name|default('check-circle'), { variant: 'duotone', size: '48px', color: 'naranja-impulso' }) }}
+          </div>
+          <h3 class="cs-how__step-title">{{ step.title }}</h3>
+          <p class="cs-how__step-text">{{ step.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

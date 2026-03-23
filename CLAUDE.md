@@ -338,12 +338,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v158.0.0
+- DIRECTRICES: v159.0.0
 - ARQUITECTURA: v145.0.0
-- INDICE: v188.0.0
+- INDICE: v189.0.0
 - FLUJO: v111.0.0
-- Ultimo aprendizaje: #211
-- Ultima golden rule: #148
+- Ultimo aprendizaje: #212
+- Ultima golden rule: #149
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -402,6 +402,9 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
 - `php scripts/validation/validate-service-consumers.php` (SERVICE-ORPHAN-001)
 - `php scripts/validation/validate-compiled-assets.php` (ASSET-FRESHNESS-001)
+- `php scripts/validation/validate-scss-compile-freshness.php` (SCSS-COMPILE-FRESHNESS-001) — verifica que CADA CSS route/bundle es más reciente que TODOS los SCSS parciales que importa
+- `php scripts/validation/validate-case-study-conversion-score.php` (CASE-STUDY-CONVERSION-001) — 15/15 LANDING-CONVERSION-SCORE
+- `php scripts/validation/validate-success-cases-ssot.php` (SUCCESS-CASES-SSOT-001) — SuccessCase entity es SSOT
 - `php scripts/validation/validate-tenant-isolation.php` (TENANT-CHECK-001)
 - `php scripts/validation/validate-test-coverage-map.php` (TEST-COVERAGE-MAP-001)
 - `php scripts/validation/validate-circular-deps.php` (CONTAINER-DEPS-002)

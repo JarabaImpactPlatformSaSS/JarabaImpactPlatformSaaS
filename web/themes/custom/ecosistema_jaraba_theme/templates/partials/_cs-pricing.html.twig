@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * _cs-pricing.html.twig — 4-tier pricing section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §9: 3-4 pricing tiers inline.
+ * PRICING-4TIER-001: 4 tiers (Free, Starter, Professional, Enterprise).
+ * NO-HARDCODE-PRICE-001: Prices from MetaSitePricingService.
+ *
+ * Variables:
+ *   - pricing: array from MetaSitePricingService::getPricingPreview().
+ *   - pricing_url: string.
+ *   - register_url: string.
+ *   - vertical: string.
+ *   - vertical_label: string.
+ */
+#}
+<section class="cs-section cs-pricing reveal-element reveal-fade-up"
+  aria-labelledby="cs-pricing-title"
+  data-track-position="case_study_pricing">
+  <div class="cs-section__container">
+    <h2 id="cs-pricing-title" class="cs-section__title">{% trans %}Elige tu plan{% endtrans %}</h2>
+    <p class="cs-section__subtitle">{% trans %}Todos los planes incluyen 14 días de prueba gratuita{% endtrans %}</p>
+
+    <div class="cs-pricing__cards">
+      {# Free tier #}
+      <div class="cs-pricing__card">
+        <h3 class="cs-pricing__plan-name">{% trans %}Free{% endtrans %}</h3>
+        <div class="cs-pricing__price">
+          <span class="cs-pricing__amount">0 €</span>
+          <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        </div>
+        <p class="cs-pricing__description">{% trans %}Para explorar la plataforma{% endtrans %}</p>
+        <a href="{{ register_url }}" class="btn btn--outline btn--block"
+           data-track-cta="cs_{{ vertical }}_free"
+           data-track-position="case_study_pricing">
+          {% trans %}Empezar gratis{% endtrans %}
+        </a>
+      </div>
+
+      {# Starter tier #}
+      <div class="cs-pricing__card">
+        <h3 class="cs-pricing__plan-name">{% trans %}Starter{% endtrans %}</h3>
+        <div class="cs-pricing__price">
+          <span class="cs-pricing__amount">{{ pricing.starter_price|default('29') }} €</span>
+          <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        </div>
+        <p class="cs-pricing__description">{% trans %}Para profesionales individuales{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline btn--block"
+           data-track-cta="cs_{{ vertical }}_starter"
+           data-track-position="case_study_pricing">
+          {% trans %}Elegir Starter{% endtrans %}
+        </a>
+      </div>
+
+      {# Professional tier — highlighted #}
+      <div class="cs-pricing__card cs-pricing__card--popular">
+        <span class="cs-pricing__badge">{% trans %}Más popular{% endtrans %}</span>
+        <h3 class="cs-pricing__plan-name">{% trans %}Professional{% endtrans %}</h3>
+        <div class="cs-pricing__price">
+          <span class="cs-pricing__amount">{{ pricing.professional_price|default('79') }} €</span>
+          <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        </div>
+        <p class="cs-pricing__description">{% trans %}Para equipos en crecimiento{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--primary btn--block"
+           data-track-cta="cs_{{ vertical }}_professional"
+           data-track-position="case_study_pricing">
+          {% trans %}Elegir Professional{% endtrans %}
+        </a>
+      </div>
+
+      {# Enterprise tier #}
+      <div class="cs-pricing__card">
+        <h3 class="cs-pricing__plan-name">{% trans %}Enterprise{% endtrans %}</h3>
+        <div class="cs-pricing__price">
+          <span class="cs-pricing__amount">{{ pricing.enterprise_price|default('199') }} €</span>
+          <span class="cs-pricing__period">/{% trans %}mes{% endtrans %}</span>
+        </div>
+        <p class="cs-pricing__description">{% trans %}Para organizaciones{% endtrans %}</p>
+        <a href="{{ pricing_url }}" class="btn btn--outline btn--block"
+           data-track-cta="cs_{{ vertical }}_enterprise"
+           data-track-position="case_study_pricing">
+          {% trans %}Contactar ventas{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * _cs-lead-magnet.html.twig — Lead magnet with email capture.
+ *
+ * LANDING-CONVERSION-SCORE-001 §8: Email capture.
+ * LEAD-MAGNET-CRM-001: PublicSubscribeController auto-creates CRM Contact.
+ * CSRF-JS-CACHE-001: Token cached in module variable.
+ *
+ * Variables:
+ *   - protagonist_name: string.
+ *   - vertical: string.
+ *   - vertical_label: string.
+ */
+#}
+<section class="cs-section cs-lead-magnet reveal-element reveal-fade-up"
+  aria-labelledby="cs-lead-title"
+  data-track-position="case_study_lead_magnet">
+  <div class="cs-section__container cs-lead-magnet__container">
+    <div class="cs-lead-magnet__content">
+      <div class="cs-lead-magnet__icon" aria-hidden="true">
+        {{ jaraba_icon('content', 'book-open', { variant: 'duotone', size: '48px', color: 'naranja-impulso' }) }}
+      </div>
+      <h2 id="cs-lead-title" class="cs-lead-magnet__title">
+        {% trans %}Descarga la guía gratuita{% endtrans %}
+      </h2>
+      <p class="cs-lead-magnet__text">
+        {% trans %}Descubre paso a paso cómo conseguir resultados como los de {{ protagonist_name }} con {{ vertical_label }}.{% endtrans %}
+      </p>
+    </div>
+    <form class="cs-lead-magnet__form" data-lead-source="lead_magnet_case_study_{{ vertical }}"
+      action="/api/v1/subscribe" method="POST">
+      <div class="cs-lead-magnet__field">
+        <label for="cs-lead-email" class="visually-hidden">{% trans %}Tu email{% endtrans %}</label>
+        <input type="email" id="cs-lead-email" name="email" required
+          placeholder="{{ 'Tu email profesional'|t }}"
+          class="cs-lead-magnet__input"
+          autocomplete="email">
+        <input type="hidden" name="source" value="lead_magnet_case_study_{{ vertical }}">
+      </div>
+      <button type="submit" class="btn btn--primary btn--lg cs-lead-magnet__btn"
+        data-track-cta="cs_{{ vertical }}_lead_magnet"
+        data-track-position="case_study_lead_magnet">
+        {% trans %}Descargar gratis{% endtrans %}
+      </button>
+    </form>
+    <p class="cs-lead-magnet__disclaimer">
+      {% trans %}Sin spam. Puedes darte de baja en cualquier momento. RGPD compliant.{% endtrans %}
+    </p>
+  </div>
+</section>

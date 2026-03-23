@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * _cs-discovery.html.twig — Product discovery section.
+ *
+ * Variables:
+ *   - solution_during: string — Narrative text.
+ *   - discovery_image, discovery_image_alt: string.
+ *   - before_after_image, before_after_image_alt: string.
+ *   - vertical_label: string.
+ */
+#}
+<section class="cs-section cs-discovery reveal-element reveal-fade-up"
+  aria-labelledby="cs-discovery-title"
+  data-track-position="case_study_discovery">
+  <div class="cs-section__container cs-section__container--split">
+    {% if discovery_image or before_after_image %}
+      <div class="cs-section__media">
+        {% if before_after_image %}
+          <img src="{{ before_after_image }}" alt="{{ before_after_image_alt|default('Antes y después'|t) }}"
+            loading="lazy" class="cs-section__image" width="560" height="400">
+        {% elseif discovery_image %}
+          <img src="{{ discovery_image }}" alt="{{ discovery_image_alt|default(vertical_label) }}"
+            loading="lazy" class="cs-section__image" width="560" height="400">
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="cs-section__content">
+      <h2 id="cs-discovery-title" class="cs-section__title">{% trans %}El descubrimiento{% endtrans %}</h2>
+      {% if solution_during %}
+        <div class="cs-discovery__narrative">
+          {{ solution_during|nl2br }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

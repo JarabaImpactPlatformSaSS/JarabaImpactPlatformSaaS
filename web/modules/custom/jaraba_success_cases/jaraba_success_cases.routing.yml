@@ -31,6 +31,21 @@ jaraba_success_cases.detail:
     _access: 'TRUE'
 
 # =============================================================================
+# Case Study Landing Pages (CASE-STUDY-PATTERN-001)
+# Unified route replacing 8 vertical-specific routes.
+# =============================================================================
+
+jaraba_success_cases.case_study_landing:
+  path: '/{vertical_path}/caso-de-exito/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_success_cases\Controller\CaseStudyLandingController::caseStudy'
+    _title: 'Caso de éxito'
+  requirements:
+    vertical_path: 'jarabalex|agroconecta|comercioconecta|empleabilidad|emprendimiento|formacion|serviciosconecta|andalucia-ei|content-hub'
+    slug: '[a-z0-9-]+'
+    _access: 'TRUE'
+
+# =============================================================================
 # API route (for GrapesJS Page Builder integration)
 # =============================================================================
 

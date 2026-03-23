@@ -1,0 +1,92 @@
+{#
+/**
+ * @file
+ * _cs-hero.html.twig — Case study hero section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §1-2: Hero + Trust badges.
+ * VIDEO-HERO-001: Autoplaying video with IntersectionObserver pause/play,
+ *   prefers-reduced-motion and navigator.connection.saveData checks.
+ *   JS: landing-hero-video.js (attached via landing-sections library).
+ * TWIG-INCLUDE-ONLY-001: Receives only explicit variables.
+ * ICON-CONVENTION-001: jaraba_icon() with duotone variant.
+ *
+ * Variables:
+ *   - hero_image: string — URL of hero background/poster image.
+ *   - hero_video_url: string — URL of MP4 video (optional, activates video hero).
+ *   - headline: string — H1 text.
+ *   - subtitle: string — Subtitle text.
+ *   - urgency_text: string — Urgency badge text (optional).
+ *   - vertical: string — Vertical key.
+ *   - vertical_label: string — Human-readable vertical name.
+ *   - register_url: string — Registration URL.
+ */
+#}
+{% set has_video = hero_video_url is defined and hero_video_url %}
+
+<section class="cs-hero {{ has_video ? 'cs-hero--split' : '' }}"
+  aria-labelledby="cs-title"
+  {% if not has_video and hero_image %}style="background-image: url('{{ hero_image }}');"{% endif %}
+  {% if has_video %}data-hero-video="true"{% endif %}
+  data-track-position="case_study_hero">
+
+  {% if not has_video %}
+    <div class="cs-hero__overlay"></div>
+  {% endif %}
+
+  <div class="cs-hero__container">
+
+    {# Urgency badge (Criterio 1) #}
+    {% if urgency_text %}
+      <div class="cs-hero__urgency-badge" aria-label="{{ urgency_text }}">
+        {{ jaraba_icon('status', 'clock', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        <span>{{ urgency_text }}</span>
+      </div>
+    {% endif %}
+
+    <p class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %} · {{ vertical_label }}</p>
+    <h1 id="cs-title" class="cs-hero__title">{{ headline }}</h1>
+    <p class="cs-hero__subtitle">{{ subtitle }}</p>
+
+    <div class="cs-hero__ctas">
+      <a href="{{ register_url }}" class="btn btn--primary btn--lg"
+         data-track-cta="cs_{{ vertical }}_hero_trial"
+         data-track-position="case_study_hero">
+        {% trans %}Empieza gratis 14 días{% endtrans %}
+      </a>
+      <a href="#cs-results" class="btn btn--outline-light btn--lg"
+         data-track-cta="cs_{{ vertical }}_hero_results"
+         data-track-position="case_study_hero">
+        {% trans %}Ver resultados{% endtrans %}
+      </a>
+    </div>
+
+    {# Trust badges under CTAs (Criterio 2) #}
+    <div class="cs-hero__trust" role="list" aria-label="{% trans %}Garantías{% endtrans %}">
+      <span class="cs-hero__trust-badge" role="listitem">
+        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}14 días gratis{% endtrans %}
+      </span>
+      <span class="cs-hero__trust-badge" role="listitem">
+        {{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}RGPD compliant{% endtrans %}
+      </span>
+      <span class="cs-hero__trust-badge" role="listitem">
+        {{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}Sin tarjeta de crédito{% endtrans %}
+      </span>
+    </div>
+  </div>
+
+  {# VIDEO-HERO-001: Autoplaying video with a11y controls #}
+  {% if has_video %}
+    <div class="cs-hero__media-wrap">
+      <video class="cs-hero__video"
+             autoplay muted loop playsinline
+             poster="{{ hero_image|default('') }}"
+             data-hero-video-el
+             aria-label="{% trans %}Demostración del producto{% endtrans %}">
+        <source src="{{ hero_video_url }}" type="video/mp4">
+      </video>
+    </div>
+  {% endif %}
+</section>

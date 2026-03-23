@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * _cs-results.html.twig — Results metrics section.
+ *
+ * Variables:
+ *   - metrics: array — Decoded metrics_json (key-value or array of objects).
+ *   - result_after: string — Narrative result text.
+ */
+#}
+<section class="cs-section cs-results reveal-element reveal-fade-up"
+  id="cs-results"
+  aria-labelledby="cs-results-title"
+  data-track-position="case_study_results">
+  <div class="cs-section__container">
+    <h2 id="cs-results-title" class="cs-section__title">{% trans %}Los resultados{% endtrans %}</h2>
+    {% if result_after %}
+      <p class="cs-section__subtitle">{{ result_after|striptags|slice(0, 200) }}{% if result_after|striptags|length > 200 %}...{% endif %}</p>
+    {% endif %}
+    <div class="cs-results__grid">
+      {% for key, value in metrics %}
+        {% if value is iterable %}
+          {# Array format: [{label, before, after, change}] #}
+          <div class="cs-results__card">
+            <span class="cs-results__change">{{ value.change|default('') }}</span>
+            <span class="cs-results__label">{{ value.label|default(key) }}</span>
+            {% if value.before and value.after %}
+              <div class="cs-results__comparison">
+                <span class="cs-results__before">{{ value.before }}</span>
+                <span class="cs-results__arrow" aria-hidden="true">→</span>
+                <span class="cs-results__after">{{ value.after }}</span>
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          {# Key-value format: {"revenue_increase": "120%"} #}
+          <div class="cs-results__card">
+            <span class="cs-results__change">{{ value }}</span>
+            <span class="cs-results__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

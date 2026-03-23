@@ -386,6 +386,17 @@ jarabalex-case-study:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations
 
+# Unified Case Study Landing — CASE-STUDY-PATTERN-001 + LANDING-CONVERSION-SCORE-001
+case-study-landing:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/case-study-landing.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+    - ecosistema_jaraba_theme/landing-sticky-cta
+
 # Contact Form — /contacto (Sprint 3 Remediation)
 contact-form:
   version: 1.0.0

@@ -226,7 +226,18 @@ class SuccessCasesController extends ControllerBase
         if ($metrics_raw) {
             $decoded = json_decode($metrics_raw, TRUE);
             if (is_array($decoded)) {
-                $metrics = $decoded;
+                // Flatten array-of-objects format [{label,change}] to key-value
+                // for card template compatibility (sc-card__metric-value/label).
+                foreach ($decoded as $item) {
+                    if (is_array($item) && isset($item['label'])) {
+                        $metrics[$item['label']] = $item['change'] ?? $item['after'] ?? '';
+                    }
+                    else {
+                        // Already key-value format.
+                        $metrics = $decoded;
+                        break;
+                    }
+                }
             }
         }
 
@@ -328,7 +339,7 @@ class SuccessCasesController extends ControllerBase
                 if ($v && !isset($verticals[$v])) {
                     $verticals[$v] = [
                         'value' => $v,
-                        'label' => ucfirst(str_replace('_', ' ', $v)),
+                        'name' => ucfirst(str_replace('_', ' ', $v)),
                     ];
                 }
             }

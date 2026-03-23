@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * _cs-comparison.html.twig — 3-column comparison table.
+ *
+ * LANDING-CONVERSION-SCORE-001 §6: Comparison vs competitors.
+ *
+ * Variables:
+ *   - comparison: object with {traditional: {label, items}, competitor: {label, items}, platform: {label, items}}.
+ */
+#}
+<section class="cs-section cs-comparison reveal-element reveal-fade-up"
+  aria-labelledby="cs-comparison-title"
+  data-track-position="case_study_comparison">
+  <div class="cs-section__container">
+    <h2 id="cs-comparison-title" class="cs-section__title">{% trans %}¿Por qué elegirnos?{% endtrans %}</h2>
+    <div class="cs-comparison__table" role="table" aria-label="{% trans %}Comparativa de soluciones{% endtrans %}">
+      <div class="cs-comparison__header" role="row">
+        <div class="cs-comparison__cell cs-comparison__cell--header" role="columnheader">
+          {{ comparison.traditional.label|default('Método tradicional'|t) }}
+        </div>
+        <div class="cs-comparison__cell cs-comparison__cell--header" role="columnheader">
+          {{ comparison.competitor.label|default('Otros servicios'|t) }}
+        </div>
+        <div class="cs-comparison__cell cs-comparison__cell--header cs-comparison__cell--highlight" role="columnheader">
+          {{ comparison.platform.label|default('Nuestra plataforma'|t) }}
+        </div>
+      </div>
+      {% set max_items = max(comparison.traditional.items|default([])|length, comparison.competitor.items|default([])|length, comparison.platform.items|default([])|length) %}
+      {% for i in 0..max_items - 1 %}
+        <div class="cs-comparison__row" role="row">
+          <div class="cs-comparison__cell" role="cell">
+            {% if comparison.traditional.items[i] is defined %}
+              <span class="cs-comparison__cross" aria-hidden="true">✗</span>
+              {{ comparison.traditional.items[i] }}
+            {% endif %}
+          </div>
+          <div class="cs-comparison__cell" role="cell">
+            {% if comparison.competitor.items[i] is defined %}
+              <span class="cs-comparison__partial" aria-hidden="true">~</span>
+              {{ comparison.competitor.items[i] }}
+            {% endif %}
+          </div>
+          <div class="cs-comparison__cell cs-comparison__cell--highlight" role="cell">
+            {% if comparison.platform.items[i] is defined %}
+              <span class="cs-comparison__check" aria-hidden="true">✓</span>
+              {{ comparison.platform.items[i] }}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

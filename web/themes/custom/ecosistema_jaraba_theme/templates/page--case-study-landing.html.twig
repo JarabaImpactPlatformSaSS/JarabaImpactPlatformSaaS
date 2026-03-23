@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * page--case-study-landing.html.twig — Case study landing page template.
+ *
+ * ZERO-REGION-001: No {{ page.* }}, uses {{ clean_content }}.
+ * Template for jaraba_success_cases.case_study_landing route.
+ * Full-width marketing layout with header, footer, copilot FAB.
+ *
+ * Body class 'page-case-study-landing' via hook_preprocess_html() in
+ * jaraba_success_cases.module.
+ *
+ * @see jaraba_success_cases_preprocess_html()
+ * @see CaseStudyLandingController::caseStudy()
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_core/global') }}
+
+{# HEADER — Partial reutilizable con menu movil #}
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  site_name: site_name,
+  site_slogan: site_slogan,
+  logo: logo,
+  logged_in: logged_in,
+  theme_settings: theme_settings
+} %}
+
+{# DRUPAL MESSAGES #}
+{% if clean_messages %}
+  <div class="cs-landing-messages">
+    {{ clean_messages }}
+  </div>
+{% endif %}
+
+{# MAIN CONTENT — Case study landing from CaseStudyLandingController #}
+<main id="main-content" class="cs-landing-main">
+  {% if clean_content %}
+    {{ clean_content }}
+  {% endif %}
+</main>
+
+{# FOOTER — Partial configurable desde UI #}
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  site_name: site_name,
+  logo: logo,
+  footer_copyright: footer_copyright,
+  theme_settings: theme_settings
+} %}
+
+{# FAB COPILOTO — Contextual assistant #}
+{% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+  agent_context: 'sales_copilot',
+  avatar_type: 'ecosystem_advisor',
+  fab_color: 'var(--ej-color-corporate, #233D63)',
+  greeting: '¡Hola! ¿Tienes alguna pregunta sobre nuestros planes o esta historia de éxito? Estoy aquí para ayudarte.'|t
+} %}

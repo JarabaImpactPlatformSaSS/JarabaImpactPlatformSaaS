@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * _cs-faq.html.twig — FAQ section with Schema.org FAQPage.
+ *
+ * LANDING-CONVERSION-SCORE-001 §10: 10+ questions with Schema.org.
+ *
+ * Variables:
+ *   - faq: array of {question, answer}.
+ */
+#}
+<section class="cs-section cs-faq reveal-element reveal-fade-up"
+  aria-labelledby="cs-faq-title"
+  data-track-position="case_study_faq">
+  <div class="cs-section__container">
+    <h2 id="cs-faq-title" class="cs-section__title">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
+    <div class="cs-faq__list">
+      {% for item in faq %}
+        <details class="cs-faq__item">
+          <summary class="cs-faq__question">
+            <span>{{ item.question }}</span>
+            <span class="cs-faq__toggle" aria-hidden="true">+</span>
+          </summary>
+          <div class="cs-faq__answer">
+            <p>{{ item.answer }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Schema.org FAQPage JSON-LD #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.question|json_encode|raw }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.answer|json_encode|raw }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

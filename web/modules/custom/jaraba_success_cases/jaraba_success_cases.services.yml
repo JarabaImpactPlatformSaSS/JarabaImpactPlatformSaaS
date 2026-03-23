@@ -1,0 +1,5 @@
+services:
+  jaraba_success_cases.route_subscriber:
+    class: Drupal\jaraba_success_cases\Routing\CaseStudyRouteSubscriber
+    tags:
+      - { name: event_subscriber }

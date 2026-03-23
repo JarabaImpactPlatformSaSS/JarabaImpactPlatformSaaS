@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * _cs-features.html.twig — Features grid section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §5: 12+ features with duotone brand icons.
+ *
+ * Variables:
+ *   - features: array of {icon_category, icon_name, title, description}.
+ *   - vertical_label: string.
+ */
+#}
+<section class="cs-section cs-features reveal-element reveal-fade-up"
+  aria-labelledby="cs-features-title"
+  data-track-position="case_study_features">
+  <div class="cs-section__container">
+    <h2 id="cs-features-title" class="cs-section__title">
+      {% trans %}Todo lo que incluye {{ vertical_label }}{% endtrans %}
+    </h2>
+    <div class="cs-features__grid">
+      {% for feature in features %}
+        <div class="cs-features__card">
+          <div class="cs-features__icon" aria-hidden="true">
+            {{ jaraba_icon(feature.icon_category|default('ui'), feature.icon_name|default('check-circle'), { variant: 'duotone', size: '32px', color: 'verde-innovacion' }) }}
+          </div>
+          <h3 class="cs-features__title">{{ feature.title }}</h3>
+          {% if feature.description %}
+            <p class="cs-features__text">{{ feature.description }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

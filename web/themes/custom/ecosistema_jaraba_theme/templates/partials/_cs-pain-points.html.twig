@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * _cs-pain-points.html.twig — Pain points with metrics.
+ *
+ * LANDING-CONVERSION-SCORE-001 §3: Pain points with icons.
+ * ICON-CONVENTION-001: jaraba_icon() duotone.
+ *
+ * Variables:
+ *   - pain_points: array of {icon_category, icon_name, title, description,
+ *     metric_before, metric_after, metric_change}.
+ *   - vertical: string.
+ */
+#}
+<section class="cs-section cs-pain reveal-element reveal-fade-up"
+  aria-labelledby="cs-pain-title"
+  data-track-position="case_study_pain_points">
+  <div class="cs-section__container">
+    <h2 id="cs-pain-title" class="cs-section__title">{% trans %}El problema{% endtrans %}</h2>
+    <div class="cs-pain__cards">
+      {% for point in pain_points %}
+        <div class="cs-pain__card">
+          <div class="cs-pain__icon" aria-hidden="true">
+            {{ jaraba_icon(point.icon_category|default('status'), point.icon_name|default('alert-circle'), { variant: 'duotone', size: '32px', color: 'naranja-impulso' }) }}
+          </div>
+          <h3 class="cs-pain__title">{{ point.title }}</h3>
+          {% if point.description %}
+            <p class="cs-pain__description">{{ point.description }}</p>
+          {% endif %}
+          {% if point.metric_before or point.metric_after %}
+            <div class="cs-pain__metrics">
+              {% if point.metric_before %}
+                <span class="cs-pain__before">{{ point.metric_before }}</span>
+              {% endif %}
+              {% if point.metric_after %}
+                <span class="cs-pain__arrow" aria-hidden="true">→</span>
+                <span class="cs-pain__after">{{ point.metric_after }}</span>
+              {% endif %}
+              {% if point.metric_change %}
+                <span class="cs-pain__change cs-pain__change--{{ point.metric_change starts with '+' ? 'positive' : 'negative' }}">{{ point.metric_change }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

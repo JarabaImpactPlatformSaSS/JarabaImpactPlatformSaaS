@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * _cs-timeline.html.twig — Timeline adoption journey.
+ *
+ * Variables:
+ *   - timeline: array of {day, title, text}.
+ *   - dashboard_image, dashboard_image_alt: string.
+ */
+#}
+<section class="cs-section cs-timeline reveal-element reveal-fade-up"
+  aria-labelledby="cs-timeline-title"
+  data-track-position="case_study_timeline">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <h2 id="cs-timeline-title" class="cs-section__title">{% trans %}Los 14 días que lo cambiaron todo{% endtrans %}</h2>
+      <ol class="cs-timeline__list" role="list">
+        {% for step in timeline %}
+          <li class="cs-timeline__item">
+            <div class="cs-timeline__marker">
+              <span class="cs-timeline__day">{% trans %}Día {{ step.day }}{% endtrans %}</span>
+            </div>
+            <div class="cs-timeline__content">
+              <h3 class="cs-timeline__step-title">{{ step.title }}</h3>
+              <p class="cs-timeline__step-text">{{ step.text }}</p>
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% if dashboard_image %}
+      <div class="cs-section__media cs-timeline__media">
+        <img src="{{ dashboard_image }}" alt="{{ dashboard_image_alt|default('Dashboard de resultados'|t) }}"
+          loading="lazy" class="cs-section__image cs-section__image--sticky" width="560" height="400">
+      </div>
+    {% endif %}
+  </div>
+</section>

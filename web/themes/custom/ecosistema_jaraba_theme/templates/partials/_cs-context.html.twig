@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * _cs-context.html.twig — Protagonist context section.
+ *
+ * Variables:
+ *   - protagonist_name, protagonist_role, protagonist_company: strings.
+ *   - protagonist_image, protagonist_image_alt: string.
+ *   - challenge_before: string — Narrative text.
+ *   - sector, location: strings.
+ */
+#}
+<section class="cs-section cs-context reveal-element reveal-fade-up"
+  aria-labelledby="cs-context-title"
+  data-track-position="case_study_context">
+  <div class="cs-section__container cs-section__container--split">
+    <div class="cs-section__content">
+      <h2 id="cs-context-title" class="cs-section__title">{{ protagonist_name }}</h2>
+      <p class="cs-context__role">{{ protagonist_role }}{% if protagonist_company %}, {{ protagonist_company }}{% endif %}</p>
+      {% if sector or location %}
+        <div class="cs-context__badges">
+          {% if sector %}
+            <span class="cs-context__badge">
+              {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
+              {{ sector }}
+            </span>
+          {% endif %}
+          {% if location %}
+            <span class="cs-context__badge">
+              {{ jaraba_icon('general', 'map-pin', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
+              {{ location }}
+            </span>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if challenge_before %}
+        <div class="cs-context__narrative">
+          {{ challenge_before|nl2br }}
+        </div>
+      {% endif %}
+    </div>
+    {% if protagonist_image %}
+      <div class="cs-section__media">
+        <img src="{{ protagonist_image }}" alt="{{ protagonist_image_alt|default(protagonist_name) }}"
+          loading="lazy" class="cs-section__image" width="560" height="400">
+      </div>
+    {% endif %}
+  </div>
+</section>

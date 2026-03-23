@@ -33,7 +33,7 @@
       {% for v in verticals %}
         <a href="{{ path('jaraba_success_cases.list', {vertical: v.value}) }}" 
            class="sc-filters__btn {{ current_vertical == v.value ? 'sc-filters__btn--active' : '' }}">
-          {{ v.label }}
+          {{ v.name }}
         </a>
       {% endfor %}
     </div>

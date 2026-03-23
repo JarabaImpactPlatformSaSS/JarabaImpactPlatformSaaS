@@ -28,7 +28,13 @@ class SuccessCaseForm extends PremiumEntityFormBase {
         'label' => $this->t('Personal Details'),
         'icon' => ['category' => 'users', 'name' => 'user'],
         'description' => $this->t('Core identity information for the success case protagonist.'),
-        'fields' => ['name', 'slug', 'hero_image', 'profession', 'company', 'sector', 'location', 'website', 'linkedin'],
+        'fields' => ['name', 'slug', 'hero_image', 'profession', 'company', 'sector', 'location', 'website', 'linkedin', 'tenant_id'],
+      ],
+      'protagonist' => [
+        'label' => $this->t('Landing — Protagonist'),
+        'icon' => ['category' => 'achievement', 'name' => 'star'],
+        'description' => $this->t('How the protagonist appears on the case study landing page.'),
+        'fields' => ['protagonist_name', 'protagonist_role', 'protagonist_company', 'headline', 'subtitle', 'cta_urgency_text'],
       ],
       'narrative' => [
         'label' => $this->t('History (Challenge → Solution → Result)'),
@@ -40,13 +46,25 @@ class SuccessCaseForm extends PremiumEntityFormBase {
         'label' => $this->t('Testimonial Quotes'),
         'icon' => ['category' => 'ui', 'name' => 'chat'],
         'description' => $this->t('Direct quotes from the protagonist for cards and detail pages.'),
-        'fields' => ['quote_short', 'quote_long'],
+        'fields' => ['quote_short', 'quote_long', 'additional_testimonials_json'],
+      ],
+      'media' => [
+        'label' => $this->t('Landing — Images'),
+        'icon' => ['category' => 'media', 'name' => 'play-circle'],
+        'description' => $this->t('Additional images for the case study landing page sections.'),
+        'fields' => ['protagonist_image', 'before_after_image', 'discovery_image', 'dashboard_image', 'video_url'],
       ],
       'metrics' => [
         'label' => $this->t('Quantifiable Metrics'),
         'icon' => ['category' => 'fiscal', 'name' => 'coins'],
         'description' => $this->t('Key-value metrics and satisfaction rating.'),
-        'fields' => ['metrics_json', 'rating'],
+        'fields' => ['metrics_json', 'rating', 'pain_points_json'],
+      ],
+      'landing_sections' => [
+        'label' => $this->t('Landing — Sections Data'),
+        'icon' => ['category' => 'content', 'name' => 'file-text'],
+        'description' => $this->t('Structured JSON data for landing page sections: timeline, features, comparison, how-it-works, FAQ.'),
+        'fields' => ['timeline_json', 'discovery_features_json', 'how_it_works_json', 'comparison_json', 'faq_json', 'partner_logos_json'],
       ],
       'program' => [
         'label' => $this->t('Program / Vertical'),
@@ -57,8 +75,8 @@ class SuccessCaseForm extends PremiumEntityFormBase {
       'seo_control' => [
         'label' => $this->t('SEO & Display Control'),
         'icon' => ['category' => 'ui', 'name' => 'settings'],
-        'description' => $this->t('SEO metadata, display weight, and publication status.'),
-        'fields' => ['meta_description', 'weight', 'featured', 'status'],
+        'description' => $this->t('SEO metadata, display weight, publication status, and Schema.org date.'),
+        'fields' => ['meta_description', 'schema_date_published', 'weight', 'featured', 'status'],
       ],
     ];
   }

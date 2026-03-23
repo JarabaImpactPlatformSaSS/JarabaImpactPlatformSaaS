@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * _cs-final-cta.html.twig — Final CTA section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §11: Final CTA with urgency.
+ *
+ * Variables:
+ *   - register_url: string.
+ *   - protagonist_name: string.
+ *   - vertical: string.
+ */
+#}
+<section class="cs-section cs-final-cta"
+  aria-labelledby="cs-cta-title"
+  data-track-position="case_study_bottom">
+  <div class="cs-section__container cs-final-cta__container">
+    <h2 id="cs-cta-title" class="cs-final-cta__title">
+      {% trans %}¿Y si los próximos 14 días cambian tu negocio?{% endtrans %}
+    </h2>
+    <p class="cs-final-cta__subtitle">
+      {% trans %}{{ protagonist_name }} lo hizo. Tú también puedes.{% endtrans %}
+    </p>
+    <a href="{{ register_url }}" class="btn btn--primary btn--xl"
+       data-track-cta="cs_{{ vertical }}_final_cta"
+       data-track-position="case_study_bottom">
+      {% trans %}Empieza gratis ahora{% endtrans %}
+    </a>
+    <div class="cs-final-cta__trust" role="list" aria-label="{% trans %}Garantías{% endtrans %}">
+      <span class="cs-final-cta__trust-badge" role="listitem">
+        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}14 días gratis{% endtrans %}
+      </span>
+      <span class="cs-final-cta__trust-badge" role="listitem">
+        {{ jaraba_icon('legal', 'shield-privacy', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}RGPD compliant{% endtrans %}
+      </span>
+      <span class="cs-final-cta__trust-badge" role="listitem">
+        {{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '16px', color: 'white' }) }}
+        {% trans %}Sin tarjeta de crédito{% endtrans %}
+      </span>
+    </div>
+  </div>
+</section>

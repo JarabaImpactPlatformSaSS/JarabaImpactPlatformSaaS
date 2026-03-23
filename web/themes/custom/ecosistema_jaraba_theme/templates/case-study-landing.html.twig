@@ -1,0 +1,188 @@
+{#
+/**
+ * @file
+ * case-study-landing.html.twig — Unified case study landing template.
+ *
+ * CASE-STUDY-PATTERN-001: Single parametrized template for all 9 verticals.
+ * LANDING-CONVERSION-SCORE-001: 15/15 sections for world-class conversion.
+ * SUCCESS-CASES-001: All data from SuccessCase entity, no hardcoded content.
+ * TWIG-INCLUDE-ONLY-001: All includes use `only` keyword.
+ *
+ * Variables:
+ *   - case: array — Flat primitives from SuccessCase entity.
+ *   - pricing: array — From MetaSitePricingService.
+ *   - pricing_url: string — URL to pricing page via Url::fromRoute().
+ *   - register_url: string — URL to registration via Url::fromRoute().
+ *   - vertical: string — Vertical key (e.g. 'agroconecta').
+ *   - vertical_label: string — Human label (e.g. 'AgroConecta').
+ *   - cross_case: array|null — Cross-vertical case for social proof.
+ *   - global_metrics: array — Platform-wide metrics.
+ *
+ * @see CaseStudyLandingController::caseStudy()
+ * @see jaraba_success_cases_theme()
+ */
+#}
+
+{# === 1. HERO — Criterios 1+2: headline, 2 CTAs, urgency badge, trust badges === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-hero.html.twig' with {
+  hero_image: case.hero_image,
+  hero_video_url: case.hero_video_url,
+  headline: case.headline,
+  subtitle: case.subtitle,
+  urgency_text: case.cta_urgency_text,
+  vertical: vertical,
+  vertical_label: vertical_label,
+  register_url: register_url,
+} only %}
+
+{# === 2. CONTEXT — Who is the protagonist === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-context.html.twig' with {
+  protagonist_name: case.protagonist_name,
+  protagonist_role: case.protagonist_role,
+  protagonist_company: case.protagonist_company,
+  protagonist_image: case.protagonist_image,
+  protagonist_image_alt: case.protagonist_image_alt,
+  challenge_before: case.challenge_before,
+  sector: case.sector,
+  location: case.location,
+} only %}
+
+{# === 3. PAIN POINTS — Criterio 3: metrics with icons === #}
+{% if case.pain_points is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-pain-points.html.twig' with {
+    pain_points: case.pain_points,
+    vertical: vertical,
+  } only %}
+{% endif %}
+
+{# === 4. HOW IT WORKS — Criterio 4: 3 clear steps === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-how-it-works.html.twig' with {
+  steps: case.how_it_works,
+  vertical: vertical,
+} only %}
+
+{# === 5. DISCOVERY — Product discovery section === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-discovery.html.twig' with {
+  solution_during: case.solution_during,
+  discovery_image: case.discovery_image,
+  discovery_image_alt: case.discovery_image_alt,
+  before_after_image: case.before_after_image,
+  before_after_image_alt: case.before_after_image_alt,
+  vertical_label: vertical_label,
+} only %}
+
+{# === 6. TIMELINE — 14-day adoption journey === #}
+{% if case.timeline is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-timeline.html.twig' with {
+    timeline: case.timeline,
+    dashboard_image: case.dashboard_image,
+    dashboard_image_alt: case.dashboard_image_alt,
+  } only %}
+{% endif %}
+
+{# === 7. RESULTS — Metrics + dashboard === #}
+{% if case.metrics is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-results.html.twig' with {
+    metrics: case.metrics,
+    result_after: case.result_after,
+  } only %}
+{% endif %}
+
+{# === 8. FEATURES — Criterio 5: 12+ features with icons === #}
+{% if case.discovery_features is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-features.html.twig' with {
+    features: case.discovery_features,
+    vertical_label: vertical_label,
+  } only %}
+{% endif %}
+
+{# === 9. COMPARISON — Criterio 6: 3-column comparison === #}
+{% if case.comparison is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-comparison.html.twig' with {
+    comparison: case.comparison,
+  } only %}
+{% endif %}
+
+{# === 10. SOCIAL PROOF — Criterio 7: 4+ testimonials, metrics, logos === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-social-proof.html.twig' with {
+  testimonial: case.testimonial,
+  additional_testimonials: case.additional_testimonials,
+  global_metrics: global_metrics,
+  partner_logos: case.partner_logos,
+  cross_case: cross_case,
+  vertical: vertical,
+} only %}
+
+{# === 11. LEAD MAGNET — Criterio 8: email capture === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-lead-magnet.html.twig' with {
+  protagonist_name: case.protagonist_name,
+  vertical: vertical,
+  vertical_label: vertical_label,
+} only %}
+
+{# === 12. PRICING — Criterio 9: 4 tiers inline === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-pricing.html.twig' with {
+  pricing: pricing,
+  pricing_url: pricing_url,
+  register_url: register_url,
+  vertical: vertical,
+  vertical_label: vertical_label,
+} only %}
+
+{# === 13. FAQ — Criterio 10: 10+ questions with Schema.org === #}
+{% if case.faq is not empty %}
+  {% include '@ecosistema_jaraba_theme/partials/_cs-faq.html.twig' with {
+    faq: case.faq,
+  } only %}
+{% endif %}
+
+{# === 14. FINAL CTA — Criterio 11: urgency === #}
+{% include '@ecosistema_jaraba_theme/partials/_cs-final-cta.html.twig' with {
+  register_url: register_url,
+  protagonist_name: case.protagonist_name,
+  vertical: vertical,
+} only %}
+
+{# === 15. STICKY CTA — Criterio 12 === #}
+{% include '@ecosistema_jaraba_theme/partials/_landing-sticky-cta.html.twig' with {
+  cta_url: register_url,
+  cta_text: 'Empieza gratis 14 días'|t,
+} only %}
+
+{# === SCHEMA.ORG — Article + FAQPage + Review (Criterio 10 + SEO) === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ case.headline|json_encode|raw }},
+  "description": {{ case.meta_description|json_encode|raw }},
+  {% if case.hero_image %}
+  "image": {{ case.hero_image|json_encode|raw }},
+  {% endif %}
+  "datePublished": {{ (case.schema_date_published ?: case.changed)|json_encode|raw }},
+  "dateModified": {{ case.changed|json_encode|raw }},
+  "author": {
+    "@type": "Organization",
+    "name": "Plataforma de Ecosistemas"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Plataforma de Ecosistemas"
+  }
+  {% if case.testimonial.quote %},
+  "review": {
+    "@type": "Review",
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": {{ case.testimonial.rating|default(5) }},
+      "bestRating": 5
+    },
+    "author": {
+      "@type": "Person",
+      "name": {{ case.testimonial.name|json_encode|raw }}
+    },
+    "reviewBody": {{ case.testimonial.quote|json_encode|raw }}
+  }
+  {% endif %}
+}
+</script>

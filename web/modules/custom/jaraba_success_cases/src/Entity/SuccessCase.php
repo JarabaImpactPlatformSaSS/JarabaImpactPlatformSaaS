@@ -379,6 +379,21 @@ class SuccessCase extends ContentEntityBase implements EntityOwnerInterface, Ent
             ->setDisplayConfigurable('view', TRUE);
 
         // =========================================================================
+        // Tenant (TENANT-001: TODA query DEBE filtrar por tenant)
+        // =========================================================================
+
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('The group (tenant) this success case belongs to.'))
+            ->setSetting('target_type', 'group')
+            ->setRequired(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => -7,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // =========================================================================
         // Program / Vertical
         // =========================================================================
 
@@ -393,12 +408,23 @@ class SuccessCase extends ContentEntityBase implements EntityOwnerInterface, Ent
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
-        $fields['vertical'] = BaseFieldDefinition::create('string')
+        $fields['vertical'] = BaseFieldDefinition::create('list_string')
             ->setLabel(t('Vertical'))
-            ->setDescription(t('The vertical this case belongs to: emprendimiento, empleabilidad, pymes, agroconecta, comercioconecta, serviciosconecta.'))
-            ->setSetting('max_length', 64)
+            ->setDescription(t('The vertical this case belongs to.'))
+            ->setRequired(TRUE)
+            ->setSetting('allowed_values', [
+                'jarabalex' => 'JarabaLex',
+                'agroconecta' => 'AgroConecta',
+                'comercioconecta' => 'ComercioConecta',
+                'empleabilidad' => 'Empleabilidad',
+                'emprendimiento' => 'Emprendimiento',
+                'formacion' => 'Formación',
+                'serviciosconecta' => 'ServiciosConecta',
+                'andalucia_ei' => 'Andalucía +ei',
+                'content_hub' => 'Content Hub',
+            ])
             ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
+                'type' => 'options_select',
                 'weight' => 41,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -421,6 +447,240 @@ class SuccessCase extends ContentEntityBase implements EntityOwnerInterface, Ent
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
                 'weight' => 43,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // =========================================================================
+        // Landing Page — Protagonist
+        // =========================================================================
+
+        $fields['protagonist_name'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Protagonist Display Name'))
+            ->setDescription(t('Name as shown on the landing page hero (e.g. "Antonio Morales").'))
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 44,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['protagonist_role'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Protagonist Role'))
+            ->setDescription(t('Role/title shown in testimonial (e.g. "Presidente").'))
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 45,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['protagonist_company'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Protagonist Company'))
+            ->setDescription(t('Company/org shown in testimonial (e.g. "Cooperativa Sierra de Cazorla, Jaén").'))
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 46,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // =========================================================================
+        // Landing Page — Additional Images
+        // =========================================================================
+
+        $fields['protagonist_image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Protagonist Image'))
+            ->setDescription(t('Photo of the protagonist for context section.'))
+            ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+            ->setSetting('alt_field', TRUE)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('max_filesize', '5 MB')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 47,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['before_after_image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Before/After Image'))
+            ->setDescription(t('Image showing the before/after transformation.'))
+            ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+            ->setSetting('alt_field', TRUE)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('max_filesize', '5 MB')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 48,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['discovery_image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Discovery Image'))
+            ->setDescription(t('Image for the product discovery section.'))
+            ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+            ->setSetting('alt_field', TRUE)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('max_filesize', '5 MB')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 49,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['dashboard_image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Dashboard Image'))
+            ->setDescription(t('Screenshot of the dashboard/results.'))
+            ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+            ->setSetting('alt_field', TRUE)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('max_filesize', '5 MB')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 50,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // NOTE: climax_image removed due to MariaDB row size limit (65535 bytes).
+        // Use hero_image or protagonist_image for the climax section instead.
+
+        // =========================================================================
+        // Landing Page — Structured JSON Data
+        // =========================================================================
+
+        $fields['pain_points_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Pain Points (JSON)'))
+            ->setDescription(t('Array of pain point objects: [{icon_category, icon_name, title, description, metric_before, metric_after, metric_change}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 52,
+                'settings' => ['rows' => 6],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['timeline_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Timeline (JSON)'))
+            ->setDescription(t('Array of timeline steps: [{day, title, text}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 53,
+                'settings' => ['rows' => 6],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['discovery_features_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Discovery Features (JSON)'))
+            ->setDescription(t('Array of features discovered: [{icon_category, icon_name, title, description}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 54,
+                'settings' => ['rows' => 6],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['comparison_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Comparison Table (JSON)'))
+            ->setDescription(t('Comparison columns: {traditional: {label, items: [...]}, competitor: {label, items: [...]}, platform: {label, items: [...]}}.'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 55,
+                'settings' => ['rows' => 6],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['additional_testimonials_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Additional Testimonials (JSON)'))
+            ->setDescription(t('Array of short testimonials for social proof: [{quote, name, role}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 56,
+                'settings' => ['rows' => 4],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['faq_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('FAQ (JSON)'))
+            ->setDescription(t('Array of FAQ items (min 10): [{question, answer}]. Used for Schema.org FAQPage.'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 57,
+                'settings' => ['rows' => 8],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['partner_logos_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Partner Logos (JSON)'))
+            ->setDescription(t('Array of partner logos: [{name, url}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 58,
+                'settings' => ['rows' => 3],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['how_it_works_json'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('How It Works Steps (JSON)'))
+            ->setDescription(t('Array of 3 steps: [{icon_category, icon_name, title, description}].'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 59,
+                'settings' => ['rows' => 4],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // =========================================================================
+        // Landing Page — Optional Extras
+        // =========================================================================
+
+        $fields['video_url'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Video URL'))
+            ->setDescription(t('Optional video testimonial URL (YouTube/Vimeo embed).'))
+            ->setSetting('max_length', 512)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 60,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // NOTE: cta_urgency_text, headline, subtitle use string_long (TEXT)
+        // instead of string (VARCHAR) to avoid MariaDB row size limit.
+
+        $fields['cta_urgency_text'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('CTA Urgency Text'))
+            ->setDescription(t('Text for the urgency badge in the hero (e.g. "Solo quedan 3 plazas esta semana").'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 61,
+                'settings' => ['rows' => 1],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['schema_date_published'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Published Date (Schema.org)'))
+            ->setDescription(t('Date for Schema.org Article (YYYY-MM-DD format).'))
+            ->setSetting('max_length', 20)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 62,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['headline'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Landing Headline'))
+            ->setDescription(t('H1 headline for the case study landing page.'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 63,
+                'settings' => ['rows' => 2],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['subtitle'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Landing Subtitle'))
+            ->setDescription(t('Subtitle shown below the headline in the hero.'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 64,
+                'settings' => ['rows' => 2],
             ])
             ->setDisplayConfigurable('form', TRUE);
 

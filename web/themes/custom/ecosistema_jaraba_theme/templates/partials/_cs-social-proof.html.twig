@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * _cs-social-proof.html.twig — Dense social proof section.
+ *
+ * LANDING-CONVERSION-SCORE-001 §7: 4+ testimonials, metrics, logos, cross-case.
+ *
+ * Variables:
+ *   - testimonial: {quote, name, role, company, rating}.
+ *   - additional_testimonials: array of {quote, name, role}.
+ *   - global_metrics: array of {value, label}.
+ *   - partner_logos: array of {name, url}.
+ *   - cross_case: {title, subtitle, url, image} or null.
+ *   - vertical: string.
+ */
+#}
+<section class="cs-section cs-social-proof reveal-element reveal-fade-up"
+  aria-labelledby="cs-proof-title"
+  data-track-position="case_study_social_proof">
+  <div class="cs-section__container">
+    <h2 id="cs-proof-title" class="cs-section__title">{% trans %}No solo lo decimos nosotros{% endtrans %}</h2>
+
+    {# Global platform metrics #}
+    {% if global_metrics is not empty %}
+      <div class="cs-proof__metrics">
+        {% for metric in global_metrics %}
+          <div class="cs-proof__metric">
+            <span class="cs-proof__metric-value" data-counter-target="{{ metric.value }}">0</span>
+            <span class="cs-proof__metric-label">{{ metric.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Main testimonial with Schema.org Review #}
+    {% if testimonial.quote %}
+      <blockquote class="cs-proof__main-quote"
+        itemscope itemtype="https://schema.org/Review">
+        <p class="cs-proof__quote-text" itemprop="reviewBody">"{{ testimonial.quote }}"</p>
+        <footer class="cs-proof__quote-footer">
+          <cite itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <span class="cs-proof__quote-name" itemprop="name">{{ testimonial.name }}</span>
+          </cite>
+          <span class="cs-proof__quote-role">{{ testimonial.role }}{% if testimonial.company %}, {{ testimonial.company }}{% endif %}</span>
+          <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" class="cs-proof__rating">
+            <meta itemprop="ratingValue" content="{{ testimonial.rating|default(5) }}">
+            <meta itemprop="bestRating" content="5">
+            {% set rating_val = testimonial.rating|default(5) %}
+            <span aria-label="{% trans %}{{ rating_val }} de 5 estrellas{% endtrans %}" class="cs-proof__stars">
+              {% for i in 1..5 %}{% if i <= rating_val %}★{% else %}☆{% endif %}{% endfor %}
+            </span>
+          </div>
+        </footer>
+      </blockquote>
+    {% endif %}
+
+    {# Additional short testimonials #}
+    {% if additional_testimonials is not empty %}
+      <div class="cs-proof__testimonials-grid">
+        {% for extra in additional_testimonials %}
+          <blockquote class="cs-proof__short-quote">
+            <p>"{{ extra.quote }}"</p>
+            <footer>
+              <cite>{{ extra.name }}</cite>
+              {% if extra.role %}<span> — {{ extra.role }}</span>{% endif %}
+            </footer>
+          </blockquote>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Partner logos #}
+    {% if partner_logos is not empty %}
+      <div class="cs-proof__logos" aria-label="{% trans %}Partners y asociaciones{% endtrans %}">
+        {% for logo in partner_logos %}
+          <img src="{{ logo.url }}" alt="{{ logo.name }}" loading="lazy" width="120" height="40"
+            class="cs-proof__logo">
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Cross-case card #}
+    {% if cross_case %}
+      <div class="cs-proof__cross-case">
+        <h3 class="cs-proof__cross-title">{% trans %}Más historias de éxito{% endtrans %}</h3>
+        <a href="{{ cross_case.url }}" class="cs-proof__case-card"
+           data-track-cta="cs_{{ vertical }}_cross_case"
+           data-track-position="case_study_social_proof">
+          <div class="cs-proof__case-info">
+            <strong>{{ cross_case.title }}</strong>
+            <p>{{ cross_case.subtitle }}</p>
+          </div>
+          <span class="cs-proof__case-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
