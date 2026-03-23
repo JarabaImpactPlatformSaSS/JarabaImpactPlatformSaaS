@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 147.0.0 (Migración dedicado 10/10 + SEO multi-dominio + Safeguard 104 scripts + CLAUDE.md optimización + aprendizaje #214)
+**Versión:** 148.0.0 (Content Seeding Pipeline CONTENT-SEED-PIPELINE-001 — 33 pages × 3 metasitios, UUID-anchored export/import, 105 scripts + aprendizaje #215)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2402,7 +2402,59 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 10.6 Per-Tenant Backup/Restore (F10 Scaling Infrastructure)
+### 10.6 Content Seeding Pipeline — CONTENT-SEED-PIPELINE-001
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CONTENT SEEDING PIPELINE                             │
+│   Clasificación: L2 Content (entre Config y Content de Tenant)         │
+│   Directriz: CONTENT-SEED-PIPELINE-001 (P0)                           │
+│                                                                         │
+│   PROBLEMA RESUELTO:                                                   │
+│   Deploy pipeline sincroniza Config (drush cim) y Schema               │
+│   (hook_update_N), pero NUNCA sincronizó contenido de plataforma       │
+│   (homepages, páginas legales, navegación). Producción tenía           │
+│   0 PageContent → homepage_id NULL → homepage genérica.                │
+│                                                                         │
+│   3 CAPAS DE DATOS EN SAAS:                                           │
+│   L1: Config        (drush cex/cim)           → ✅ Automático         │
+│   L2: Content plat. (PageContent, SPT, SC)    → ✅ Content Seed       │
+│   L3: Content tenant (Productos, CRM, etc.)   → N/A (usuario crea)    │
+│                                                                         │
+│   PIPELINE:                                                             │
+│   ┌─────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐       │
+│   │ Export  │───▶│ JSON/git  │───▶│  Import   │───▶│ Validate │       │
+│   │ (local) │    │ (review)  │    │  (prod)   │    │ (45 chk) │       │
+│   └─────────┘    └───────────┘    └───────────┘    └──────────┘       │
+│                                                                         │
+│   SCRIPTS:                                                              │
+│   scripts/content-seed/                                                 │
+│   ├── export-metasite-content.php  (Entity API → JSON UUID-anchored)  │
+│   ├── import-metasite-content.php  (--dry-run, idempotente)           │
+│   ├── validate-content-sync.php    (45 checks, 15 × 3 metasitios)    │
+│   └── data/metasite-{slug}.json    (versionados en git)               │
+│                                                                         │
+│   ESTRATEGIA UUID-ANCHORED:                                            │
+│   - IDs autoincrementales DIFIEREN entre entornos                      │
+│   - UUIDs son ESTABLES globalmente (ancla de idempotencia)             │
+│   - Import busca por UUID: si existe → actualiza, si no → crea        │
+│   - Resolución de tenant: domain → Tenant → group_id (en destino)     │
+│                                                                         │
+│   ORDEN DE IMPORTACIÓN (dependencias):                                 │
+│   1. PageContent        (sin dependencias externas)                    │
+│   2. SitePageTree       (depende de PageContent.page_id)              │
+│   3. SiteMenu/MenuItem  (depende de Menu + PageContent)               │
+│   4. SiteConfig UPDATE  (depende de PageContent.homepage_id)          │
+│                                                                         │
+│   INVENTARIO PRODUCCIÓN:                                               │
+│   PepeJaraba:    8 pages + 9 SPT + 1 menu + 6 items                  │
+│   JarabaImpact: 12 pages + 9 SPT                                      │
+│   PED:          13 pages + 14 SPT                                      │
+│   Total: 33 pages, 32 SPT, 1 menu, 6 items, 3 SiteConfig             │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.7 Per-Tenant Backup/Restore (F10 Scaling Infrastructure)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐

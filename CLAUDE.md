@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-23 | Version: 1.8.0
+# Ultima actualizacion: 2026-03-23 | Version: 1.9.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -242,6 +242,17 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - OPCACHE-PROD-001: `validate_timestamps=0`, 256MB, 20k files. Config en `config/deploy/php/10-opcache-prod.ini`. FPM reload en deploy invalida cache
 - SUPERVISOR-SLEEP-001: Workers Supervisor DEBEN tener sleep 30-60s entre ejecuciones. Sin sleep, hot-loop de bootstrap Drupal quema CPU 350%+. Script wrapper: `/opt/jaraba/scripts/queue-worker.sh`
 
+### Content Seeding Pipeline (CONTENT-SEED-PIPELINE-001)
+- 3 capas datos SaaS: L1 Config (drush cim), L2 Content plataforma (homepages, legal, nav), L3 Content tenant (usuario)
+- L2 NO se sincroniza con drush cex/cim. Requiere pipeline dedicado: scripts/content-seed/
+- Export: `drush php:script scripts/content-seed/export-metasite-content.php` (Entity API → JSON UUID-anchored)
+- Import: `drush php:script scripts/content-seed/import-metasite-content.php` (--dry-run disponible, idempotente)
+- Validate: `drush php:script scripts/content-seed/validate-content-sync.php` (45 checks, 15 × 3 metasitios)
+- JSONs versionados en git: scripts/content-seed/data/metasite-{slug}.json
+- Orden importación: PageContent → SitePageTree → SiteMenu/MenuItem → SiteConfig UPDATE
+- UUID como ancla de idempotencia (IDs difieren entre entornos, UUIDs son estables)
+- CONTENT-SEED-INTEGRITY-001: Validador en validate-all.sh (run_check)
+
 ### CLI Context
 - DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
 - EMAIL-SENDER-MATCH-001: `system.site.mail` DEBE coincidir con sender SMTP permitido. IONOS rechaza remitentes sin buzon configurado
@@ -341,12 +352,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v162.0.0
-- ARQUITECTURA: v147.0.0
-- INDICE: v191.0.0
-- FLUJO: v112.0.0
-- Ultimo aprendizaje: #214
-- Ultima golden rule: #151
+- DIRECTRICES: v163.0.0
+- ARQUITECTURA: v148.0.0
+- INDICE: v192.0.0
+- FLUJO: v114.0.0
+- Ultimo aprendizaje: #215
+- Ultima golden rule: #152
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -408,7 +419,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 104 scripts validacion (88 run + 16 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 105 scripts validacion (88 run + 17 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia

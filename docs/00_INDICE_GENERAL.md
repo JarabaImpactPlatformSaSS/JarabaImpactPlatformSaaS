@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-23
-**Versión:** 191.0.0 (Migración dedicado 10/10 + Safeguard 104 scripts + CLAUDE.md optimización + validators-reference.md + aprendizaje #214)
+**Versión:** 192.0.0 (Content Seeding Pipeline CONTENT-SEED-PIPELINE-001 + 105 scripts + aprendizaje #215)
 
 > **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
 >
@@ -1811,7 +1811,9 @@
 | [20260321a-Plan_Implementacion_Activacion_IA_Embudo_Ventas_CRM_v1_Claude.md](./implementacion/20260321a-Plan_Implementacion_Activacion_IA_Embudo_Ventas_CRM_v1_Claude.md) | Plan Implementación Activación IA Embudo Ventas CRM v1 — Diagnóstico copilot desconectado de promociones, arquitectura cascada 4 niveles, PromotionConfig ConfigEntity, 10 GroundingProviders, CopilotLeadCaptureService, CopilotFunnelTrackingService, 3 validadores safeguard. Reglas: GROUNDING-PROVIDER-001, CASCADE-SEARCH-001, ACTIVE-PROMOTION-001, COPILOT-LEAD-CAPTURE-001, COPILOT-FUNNEL-TRACKING-001, COPILOT-GROUNDING-COVERAGE-001, PROMOTION-COPILOT-SYNC-001, COPILOT-INTENT-ACCURACY-001 |
 | [20260323-Plan_Elevacion_Casos_Exito_Clase_Mundial_10_10_v1_Claude.md](./implementacion/20260323-Plan_Elevacion_Casos_Exito_Clase_Mundial_10_10_v1_Claude.md) | Plan Elevación Casos de Éxito a Clase Mundial 10/10 — Auditoría 3/15→15/15 LANDING-CONVERSION-SCORE-001. Controller unificado CaseStudyLandingController, template parametrizado con 15 parciales _cs-*, SuccessCase entity SSOT (40+ campos, tenant_id, 8 JSON), VIDEO-HERO-001, CaseStudyRouteSubscriber, MetaSitePricingService, 3 validators, 10 fases, 37 especificaciones técnicas. Reglas: CASE-STUDY-PATTERN-001 (P0 elevado), SUCCESS-CASES-001 (P1 nueva). Aprendizaje #212 |
 
-**Total documentos adicionales:** 38
+| [20260323c-Plan_Content_Seeding_Pipeline_Metasitios_Produccion_v1_Claude.md](./implementacion/20260323c-Plan_Content_Seeding_Pipeline_Metasitios_Produccion_v1_Claude.md) | Content Seeding Pipeline — Exportación/importación de contenido de plataforma (L2 content) entre entornos. UUID-anchored, idempotente. 33 PageContent + 32 SitePageTree + 3 SiteConfig × 3 metasitios. Resuelve homepage_id NULL en producción → PathProcessor devolvía NULL. 5 fases, 15 salvaguardas, 45 checks validación. Reglas: CONTENT-SEED-PIPELINE-001 (P0), CONTENT-SEED-BACKUP-001 (P1), CONTENT-SEED-INTEGRITY-001 (P1). Aprendizaje #215 |
+
+**Total documentos adicionales:** 39
 
 ## 7. Documentos Técnicos
 
