@@ -3161,6 +3161,14 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         'has_promo' => TRUE,
         'items' => [
           [
+            'title' => t('Desarrollo Local'),
+            'subtitle' => t('Digitaliza tu territorio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'desarrollo-local',
+            'color' => 'verde-innovacion',
+            'url' => $lp . '/instituciones',
+          ],
+          [
             'title' => t('Andalucía +ei'),
             'subtitle' => t('Empleo e innovación regional'),
             'icon_cat' => 'verticals',

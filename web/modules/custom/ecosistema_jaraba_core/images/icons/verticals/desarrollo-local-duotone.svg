@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Duotone fill: building body -->
+  <path d="M5 7l7-4 7 4v14H5z" fill="currentColor" opacity="0.2"/>
+  <!-- Duotone fill: door -->
+  <rect x="9" y="15" width="6" height="6" rx="0.5" fill="currentColor" opacity="0.15"/>
+  <!-- Building/town hall outline -->
+  <path d="M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M5 21V7l7-4 7 4v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Pediment -->
+  <path d="M5 7l7-4 7 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Door -->
+  <path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Windows -->
+  <rect x="8" y="9" width="3" height="3" rx="0.5" stroke="currentColor" stroke-width="1.5"/>
+  <rect x="13" y="9" width="3" height="3" rx="0.5" stroke="currentColor" stroke-width="1.5"/>
+  <!-- People dots -->
+  <circle cx="7" cy="18" r="1" fill="currentColor" stroke="currentColor" stroke-width="0.5"/>
+  <circle cx="17" cy="18" r="1" fill="currentColor" stroke="currentColor" stroke-width="0.5"/>
+  <!-- Growth arrow -->
+  <path d="M20 3l-3 0m3 0l0 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M20 3l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>
