@@ -2590,8 +2590,9 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'meta_description',
     ];
 
-    // Open Graph tags
-    $og_url = $request->getSchemeAndHttpHost() . '/';
+    // Open Graph tags.
+    // SEO-METASITE-001: og:url DEBE ser absoluta con prefijo de idioma.
+    $og_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
 
     $variables['#attached']['html_head'][] = [
       ['#tag' => 'meta', '#attributes' => ['property' => 'og:type', 'content' => 'website']],
@@ -3016,6 +3017,9 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       $language_links[$langcode] = $host_ls . '/' . $langcode;
     }
   }
+  // SEO-HREFLANG-ACTIVE-001: Filtrar language switcher a idiomas con contenido real.
+  $seo_active_page = array_map('trim', explode(',', theme_get_setting('seo_active_languages') ?? 'es'));
+  $language_links = array_filter($language_links, fn($k) => in_array($k, $seo_active_page, TRUE), ARRAY_FILTER_USE_KEY);
   $variables['available_languages'] = array_keys($language_links);
   $variables['language_links'] = $language_links;
 
@@ -5323,6 +5327,22 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
   // Canonical y og:url absolutas en TODAS las paginas.
   $canonical_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
   $canonical_url = strtok($canonical_url, '?');
+
+  // Eliminar canonical/og:url duplicados del metatag module antes de inyectar los nuestros.
+  if (!empty($attachments['#attached']['html_head'])) {
+    $attachments['#attached']['html_head'] = array_filter(
+      $attachments['#attached']['html_head'],
+      function ($item) {
+        if (!is_array($item) || !isset($item[1])) {
+          return TRUE;
+        }
+        $key = $item[1];
+        // Eliminar canonical y og:url del metatag module (keys: canonical_url, og_url).
+        return !in_array($key, ['canonical_url', 'og_url', 'og_locale'], TRUE);
+      }
+    );
+  }
+
   $attachments['#attached']['html_head'][] = [
     ['#tag' => 'link', '#attributes' => ['rel' => 'canonical', 'href' => $canonical_url]],
     'seo_canonical',

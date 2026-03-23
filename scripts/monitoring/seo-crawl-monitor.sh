@@ -123,8 +123,8 @@ for DOMAIN in "${DOMAINS[@]}"; do
     check "$SHORT" "og:locale presente" 1 "No encontrado"
   fi
 
-  # CHECK 8: No hay idiomas fantasma en hreflang (en, pt-br sin contenido).
-  PHANTOM_LANGS=$(echo "$HTML" | grep -cE 'hreflang="(en|pt-br)"' || true)
+  # CHECK 8: No hay idiomas fantasma en hreflang meta tags <link> (no language switcher).
+  PHANTOM_LANGS=$(echo "$HTML" | grep -cE '<link[^>]+hreflang="(en|pt-br)"' || true)
   if [ "$PHANTOM_LANGS" -eq 0 ]; then
     check "$SHORT" "Sin idiomas fantasma en hreflang" 0 ""
   else
