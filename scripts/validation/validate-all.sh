@@ -386,6 +386,12 @@ if [ "$MODE" = "full" ]; then
   run_check "CASE-STUDY-COMPLETENESS-001" "Case study landing completeness (9 verticals)" \
     php "$SCRIPT_DIR/validate-case-study-completeness.php"
 
+  run_check "CASE-STUDY-CONVERSION-001" "Case study conversion score 15/15" \
+    php "$SCRIPT_DIR/validate-case-study-conversion-score.php"
+
+  run_check "SUCCESS-CASES-SSOT-001" "SuccessCase entity is SSOT for case studies" \
+    php "$SCRIPT_DIR/validate-success-cases-ssot.php"
+
   run_check "PREPROCESS-ISOLATION-001" "Preprocess hooks exclude .case_study. routes" \
     php "$SCRIPT_DIR/validate-preprocess-isolation.php"
 
@@ -491,6 +497,15 @@ if [ "$MODE" = "full" ]; then
   # Infrastructure health (production-only, skips gracefully in CI).
   warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \
     php "$SCRIPT_DIR/validate-infra-health.php"
+
+  run_check "EMAIL-SENDER-001" "Email sender vs SMTP allowed domain" \
+    php "$SCRIPT_DIR/validate-email-sender.php"
+
+  run_check "DEPLOY-MAINTENANCE-SAFETY-001" "Deploy maintenance mode safety gate" \
+    php "$SCRIPT_DIR/validate-deploy-safety.php"
+
+  run_check "BACKUP-HEALTH-001" "Backup infrastructure completeness" \
+    php "$SCRIPT_DIR/validate-backup-health.php"
 
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
