@@ -407,6 +407,9 @@ if [ "$MODE" = "full" ]; then
   run_check "ROUTE-SUBSCRIBER-PARITY-001" "Case study route subscriber covers all legacy routes" \
     php "$SCRIPT_DIR/validate-route-subscriber-parity.php"
 
+  run_check "MEGAMENU-INJECT-001" "Mega menu columns injected via theme_settings fallback" \
+    php "$SCRIPT_DIR/validate-megamenu-inject.php"
+
   run_check "JS-DATA-ATTR-PARITY-001" "Twig data-* attributes match JS selectors" \
     php "$SCRIPT_DIR/validate-js-data-attr-parity.php"
 

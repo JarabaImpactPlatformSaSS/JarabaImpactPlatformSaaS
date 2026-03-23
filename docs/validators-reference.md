@@ -9,8 +9,8 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 108 |
-| run_check (CI blocker) | 90 |
+| Total scripts PHP | 109 |
+| run_check (CI blocker) | 91 |
 | warn_check (no blocker) | 18 |
 | Orphaned validators | 0 |
 
@@ -88,6 +88,7 @@
 | ROUTE-CTRL-001 | Route-Controller method validation |
 | ROUTE-PERMISSION-AUDIT-001 | Route access control completeness |
 | ROUTE-SUBSCRIBER-PARITY-001 | Case study route subscriber covers legacy routes |
+| MEGAMENU-INJECT-001 | Mega menu columns injected via theme_settings fallback (3 checks) |
 | SAFEGUARD-AEI-CAMPAIGN-001 | Andalucia +ei reclutamiento landing readiness |
 | SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
 | SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |

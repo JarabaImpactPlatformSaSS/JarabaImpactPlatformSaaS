@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 148.0.0 (Content Seeding Pipeline CONTENT-SEED-PIPELINE-001 — 33 pages × 3 metasitios, UUID-anchored export/import, 105 scripts + aprendizaje #215)
+**Versión:** 149.0.0 (MEGAMENU-INJECT-001 canal secundario theme_settings, isDefault() guard MetaSiteResolverService, caso éxito PED S.L., 106 scripts + aprendizaje #216)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1014,6 +1014,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── resolveFromPageContent(): PageContent → meta-site context       │
 │   ├── resolveFromRequest(): 3-strategy domain → tenant resolution    │
 │   │   ├── Strategy 1: Domain Access hostname match                   │
+│   │   │   └── GUARD: isDefault()=TRUE → skip (dominio SaaS principal)│
 │   │   ├── Strategy 2: Tenant.domain field match                      │
 │   │   └── Strategy 3: Subdomain prefix → Tenant.domain STARTS_WITH  │
 │   ├── buildMetaSiteContext(): SiteConfig + SitePageTree → nav/footer  │
@@ -1029,6 +1030,9 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   │   + body class meta-site meta-site-tenant-{id}                    │
 │   ├── preprocess_page: site_name, navigation, header/footer,         │
 │   │   logo, CTA, copyright desde SiteConfig + SitePageTree            │
+│   │   MEGAMENU-INJECT-001: mega_menu_columns inyectado en             │
+│   │   theme_settings._mega_menu_columns (canal secundario para        │
+│   │   sobrevivir {% include ... only %} sin variable explícita)       │
 │   ├── preprocess_page__user: attach skills_manager + section_manager │
 │   ├── CWV Optimization (Sprint 5):                                    │
 │   │   ├── 7 CSS bundles extracted from main.scss (code splitting)    │
@@ -3238,6 +3242,8 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-23 | **149.0.0** | **MEGAMENU-INJECT-001 + Caso Éxito PED S.L.:** Canal secundario theme_settings._mega_menu_columns para mega menú (35 templates protegidos). isDefault() guard en MetaSiteResolverService Strategy 1. Caso de éxito Andalucía EI reescrito con datos reales PIIL (PED S.L., 50 participantes, 23 inserciones). "Desarrollo Local" en mega menú instituciones. validate-megamenu-inject.php (3 checks). 106 scripts (89 run + 17 warn). Aprendizaje #216. |
+| 2026-03-23 | **148.0.0** | **Content Seeding Pipeline CONTENT-SEED-PIPELINE-001:** 33 pages × 3 metasitios migrados a producción. Export/import UUID-anchored idempotente. 105 scripts (88 run + 17 warn). Aprendizaje #215. |
 | 2026-03-23 | **147.0.0** | **Migración Dedicado 10/10 + SEO Multi-Dominio + Safeguard 104 scripts:** IONOS AE12-128 NVMe (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2. SEO: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. 104 validators (88 run + 16 warn), 0 orphans. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md (SSOT lista completa). Regla de oro #151. Aprendizaje #214. |
 | 2026-03-21 | **143.0.0** | LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001: 5 fases landing verticales (F0-F5), video hero 9/9 verticales, pipeline lead magnet → CRM auto, 79 scripts, 83 checks |
 | 2026-03-19 | **137.0.0** | **Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth:** Sección Demo Dashboard PLG: 12 secciones (Banner, Wizard, Daily Actions, Magic Moment, Social Proof, Headline, Métricas, Features, AI Copilot Preview, Chart, Productos, Unlock Preview, CTA Final). AI Copilot Preview adaptativo 11 perfiles. Icon System Cascade Fallback: 3 niveles (SVG exacto → genérico categoría → placeholder invisible), NUNCA emoji. 53+ SVGs con hex inline. MARKETING-TRUTH-001: claims coherentes con Stripe trial_period_days=14. 4 reglas nuevas en Directrices v151.0.0. Aprendizaje #203. |

@@ -107,6 +107,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Sin logica de negocio (solo presentacion). Usar preprocess para preparar variables
 - TWIG-URL-RENDER-ARRAY-001: `url()` en Drupal 11 devuelve **render array** (NO string). NUNCA concatenar con `~`. Solo usar dentro de `{{ }}` donde escapeFilter maneja el render array. Para construir URLs concatenadas, pasar la URL como string desde preprocess PHP o usar path relativo (`'/' ~ directory ~ '/logo.svg'`)
 - TWIG-INCLUDE-ONLY-001: Usar `only` en `{% include %}` de parciales para aislar el contexto. Sin `only`, TODAS las variables del template padre se filtran al parcial (incluyendo render arrays que colisionan con variables esperadas como strings). Pasar explicitamente solo las variables necesarias
+- MEGAMENU-INJECT-001: Variables criticas de layout (mega_menu_columns) DEBEN viajar por canal secundario en theme_settings (`_mega_menu_columns`) para sobrevivir `{% include ... only %}`. _header.html.twig resuelve `resolved_mega_columns` con fallback a `ts._mega_menu_columns`. Validacion: `validate-megamenu-inject.php`
 - TWIG-SYNTAX-LINT-001: NUNCA doble coma `,,` en mappings Twig (causa SyntaxError en Twig 3.x → 500 en runtime). NUNCA `{#` anidado dentro de comentarios Twig (cierra prematuramente). Usar estilo consistente de keys en mappings (sin comillas preferido). Validacion: `php scripts/validation/validate-twig-syntax.php` + pre-commit lint-staged
 
 ## THEMING — ecosistema_jaraba_theme
@@ -352,12 +353,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v163.0.0
-- ARQUITECTURA: v148.0.0
-- INDICE: v192.0.0
-- FLUJO: v114.0.0
-- Ultimo aprendizaje: #215
-- Ultima golden rule: #152
+- DIRECTRICES: v164.0.0
+- ARQUITECTURA: v149.0.0
+- INDICE: v193.0.0
+- FLUJO: v115.0.0
+- Ultimo aprendizaje: #216
+- Ultima golden rule: #153
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -414,7 +415,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 104 validators individuales en `scripts/validation/` (88 run + 16 warn). Lista completa: `docs/validators-reference.md`
+- 109 validators individuales en `scripts/validation/` (91 run + 18 warn). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
