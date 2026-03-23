@@ -48,6 +48,15 @@ $settings['trusted_host_patterns'] = [
 ];
 
 // ============================================================================
+// BASE URL — CLI & Cron
+// ============================================================================
+// Drupal uses $base_url to generate absolute URLs. In CLI context (drush, cron,
+// Supervisor), there is no HTTP request, so $GLOBALS['base_url'] defaults to
+// "http://default". This breaks all generated URLs in emails, tokens, etc.
+// Setting $base_url here ensures correct URLs in ALL contexts.
+$base_url = 'https://plataformadeecosistemas.com';
+
+// ============================================================================
 // PERFORMANCE — Production Tuning
 // ============================================================================
 $settings['cache']['default'] = 'cache.backend.redis';

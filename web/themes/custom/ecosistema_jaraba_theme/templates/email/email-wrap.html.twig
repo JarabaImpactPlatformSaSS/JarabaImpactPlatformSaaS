@@ -73,8 +73,9 @@
         <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
 
           {# ═══ BRANDED HEADER WITH LOGO ═══ #}
+          {# background-color is the Outlook/Windows Mail fallback (ignores linear-gradient). #}
           <tr>
-            <td style="background: linear-gradient(135deg, {{ _color_corporate }} 0%, #1a2d4a 50%, {{ _color_corporate }} 100%); padding: 40px 40px 32px 40px; text-align: center;">
+            <td style="background-color: {{ _color_corporate }}; background: linear-gradient(135deg, {{ _color_corporate }} 0%, #1a2d4a 50%, {{ _color_corporate }} 100%); padding: 40px 40px 32px 40px; text-align: center;">
               <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
                 <tr>
                   {# Logo con fallback: fondo blanco para que las 3 partes del icono (J azul, flecha naranja, flecha verde) contrasten sobre el header oscuro. #}
