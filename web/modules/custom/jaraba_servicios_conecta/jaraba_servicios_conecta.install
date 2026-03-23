@@ -345,80 +345,50 @@ function jaraba_servicios_conecta_update_10004(): string {
 }
 
 /**
- * Install missing availability_slot columns: is_active, valid_from, valid_until.
+ * Add missing availability_slot columns (is_active, valid_from, valid_until).
  *
- * The entity code was updated with new fields but the DB schema diverged.
- * Uses direct schema API because the entity definition tracker already
- * considers these fields "installed" (key_value mismatch with actual DB).
+ * Partial fix — superseded by 10006 which rebuilds the full entity.
  */
 function jaraba_servicios_conecta_update_10005(): string {
-  $schema = \Drupal::database()->schema();
-  $messages = [];
+  // Intentionally empty — 10006 handles the complete rebuild.
+  return 'Superseded by 10006.';
+}
 
-  $columns = [
-    'is_active' => [
-      'type' => 'int',
-      'size' => 'tiny',
-      'not null' => FALSE,
-      'default' => 1,
-      'description' => 'Whether this slot is active.',
-    ],
-    'valid_from' => [
-      'type' => 'varchar',
-      'length' => 20,
-      'not null' => FALSE,
-      'description' => 'Date from which this slot applies (Y-m-d).',
-    ],
-    'valid_until' => [
-      'type' => 'varchar',
-      'length' => 20,
-      'not null' => FALSE,
-      'description' => 'Date until which this slot applies (Y-m-d).',
-    ],
-    'created' => [
-      'type' => 'int',
-      'not null' => FALSE,
-      'default' => 0,
-      'description' => 'Timestamp when the slot was created.',
-    ],
-    'changed' => [
-      'type' => 'int',
-      'not null' => FALSE,
-      'default' => 0,
-      'description' => 'Timestamp when the slot was last modified.',
-    ],
-  ];
-
-  foreach ($columns as $name => $spec) {
-    try {
-      if (!$schema->fieldExists('availability_slot', $name)) {
-        $schema->addField('availability_slot', $name, $spec);
-        $messages[] = "$name (added)";
-      }
-      else {
-        $messages[] = "$name (exists)";
-      }
-    }
-    catch (\Throwable $e) {
-      $messages[] = "$name (ERROR: {$e->getMessage()})";
-    }
-  }
-
-  // Migrate is_available → is_active.
+/**
+ * Rebuild availability_slot entity: drop legacy table, reinstall from code.
+ *
+ * The DB table had 5 legacy columns (mentor_id, timezone, is_recurring,
+ * specific_date, is_available) that no longer exist in baseFieldDefinitions(),
+ * and was missing columns the code requires (provider_id, uid, valid_from,
+ * valid_until). With 0 rows in the table, a clean reinstall is the correct
+ * approach — no data migration needed.
+ */
+function jaraba_servicios_conecta_update_10006(): string {
   try {
-    if ($schema->fieldExists('availability_slot', 'is_available') &&
-        $schema->fieldExists('availability_slot', 'is_active')) {
-      \Drupal::database()->query(
-        'UPDATE {availability_slot} SET is_active = is_available WHERE is_active IS NULL OR is_active = 1'
-      );
-      $messages[] = 'is_available → is_active migrated';
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = $update_manager->getEntityType('availability_slot');
+
+    if (!$entity_type) {
+      return 'availability_slot entity type not found — skipped.';
     }
+
+    // Safety: abort if table has data.
+    $count = (int) \Drupal::database()->query('SELECT COUNT(*) FROM {availability_slot}')->fetchField();
+    if ($count > 0) {
+      return "availability_slot has $count rows — manual migration required. Skipped.";
+    }
+
+    // Drop and recreate: uninstall removes table + tracker, install recreates.
+    $update_manager->uninstallEntityType($entity_type);
+    // Re-read the entity type from code (annotation).
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('availability_slot');
+    $update_manager->installEntityType($entity_type);
+
+    return 'availability_slot: table rebuilt from baseFieldDefinitions (0 rows, clean install).';
   }
   catch (\Throwable $e) {
-    $messages[] = 'migration: ' . $e->getMessage();
+    return 'availability_slot rebuild ERROR: ' . $e->getMessage();
   }
-
-  return 'availability_slot: ' . implode(', ', $messages);
 }
 
 /**
