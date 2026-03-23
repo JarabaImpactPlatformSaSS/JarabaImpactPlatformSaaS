@@ -5435,3 +5435,41 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     ];
   }
 }
+
+/**
+ * Implements hook_html_head_alter().
+ *
+ * SEO-METASITE-001: Deduplicar og:url y canonical tags.
+ * Se ejecuta justo antes del render — limpia duplicados de metatag module
+ * y preprocess_html, dejando solo los inyectados en page_attachments_alter.
+ */
+function ecosistema_jaraba_theme_html_head_alter(array &$head_elements): void {
+  $seen_og_url = FALSE;
+  $seen_canonical = FALSE;
+
+  // Recorrer en orden inverso para mantener los ÚLTIMOS (nuestros, de page_attachments_alter).
+  $keys = array_keys($head_elements);
+  $keys_reversed = array_reverse($keys);
+
+  foreach ($keys_reversed as $key) {
+    $element = $head_elements[$key] ?? [];
+    $tag = $element['#tag'] ?? '';
+    $attrs = $element['#attributes'] ?? [];
+
+    // Deduplicar og:url: mantener solo el primero encontrado (desde el final = el nuestro).
+    if ($tag === 'meta' && ($attrs['property'] ?? '') === 'og:url') {
+      if ($seen_og_url) {
+        unset($head_elements[$key]);
+      }
+      $seen_og_url = TRUE;
+    }
+
+    // Deduplicar canonical: mantener solo el primero encontrado (desde el final = el nuestro).
+    if ($tag === 'link' && ($attrs['rel'] ?? '') === 'canonical') {
+      if ($seen_canonical) {
+        unset($head_elements[$key]);
+      }
+      $seen_canonical = TRUE;
+    }
+  }
+}
