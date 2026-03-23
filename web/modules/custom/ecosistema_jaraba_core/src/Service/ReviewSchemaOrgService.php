@@ -249,9 +249,11 @@ class ReviewSchemaOrgService {
     }
 
     // Mapeo por tipo de entidad.
+    // SOLO tipos de la lista de Google para review snippets.
+    // Service (schema.org/Service) NO es valido — usar LocalBusiness.
     $typeMap = [
       'merchant_profile' => 'LocalBusiness',
-      'provider_profile' => 'Service',
+      'provider_profile' => 'LocalBusiness',
       'producer_profile' => 'Product',
       'lms_course' => 'Course',
       'mentoring_session' => 'Event',

@@ -1703,11 +1703,18 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
   ];
 
   // Schema.org Review + AggregateRating — testimonios para rich snippets.
+  // Google solo acepta review snippets en 17 tipos (Course, Product, LocalBusiness, etc.).
+  // EducationalOccupationalProgram NO esta en la lista de Google — usar Course.
   $reviews_schema = [
     '@context' => 'https://schema.org',
-    '@type' => 'EducationalOccupationalProgram',
+    '@type' => 'Course',
     'name' => (string) t('Programa T-Acompañamos — Andalucia +ei'),
+    'description' => (string) t('Formacion gratuita en emprendimiento, orientacion personalizada y mentoria con IA para personas desempleadas en Andalucia.'),
     'url' => $canonicalUrl,
+    'provider' => [
+      '@type' => 'Organization',
+      'name' => 'Plataforma de Ecosistemas Digitales S.L.',
+    ],
     'aggregateRating' => [
       '@type' => 'AggregateRating',
       'ratingValue' => '4.8',

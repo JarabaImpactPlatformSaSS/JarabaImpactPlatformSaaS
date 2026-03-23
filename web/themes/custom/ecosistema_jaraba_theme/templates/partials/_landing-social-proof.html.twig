@@ -85,13 +85,13 @@
 
       <div class="landing-social-proof__testimonials">
         {% for testimonial in testimonials %}
-          <blockquote class="landing-testimonial" itemscope itemtype="https://schema.org/Review">
+          <blockquote class="landing-testimonial">
             <div class="landing-testimonial__quote-mark" aria-hidden="true">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path d="M3 21V13C3 7.5 7.5 3 13 3H14V5C9 5 5 9.5 5 14V15H11V21H3ZM13 21V13C13 7.5 17.5 3 23 3H24V5C19 5 15 9.5 15 14V15H21V21H13Z" fill="currentColor" opacity="0.2"/>
               </svg>
             </div>
-            <p class="landing-testimonial__quote" itemprop="reviewBody">{{ testimonial.quote }}</p>
+            <p class="landing-testimonial__quote">{{ testimonial.quote }}</p>
             <footer class="landing-testimonial__author">
               {% if testimonial.avatar_url is defined and testimonial.avatar_url %}
                 <img src="{{ testimonial.avatar_url }}" alt="{{ testimonial.author }}"
@@ -101,10 +101,10 @@
                   {{ testimonial.author|first|upper }}
                 </span>
               {% endif %}
-              <cite itemprop="author" itemscope itemtype="https://schema.org/Person">
-                <strong itemprop="name">{{ testimonial.author }}</strong>
+              <cite>
+                <strong>{{ testimonial.author }}</strong>
                 {% if testimonial.role is defined %}
-                  <span class="landing-testimonial__role" itemprop="jobTitle">{{ testimonial.role }}</span>
+                  <span class="landing-testimonial__role">{{ testimonial.role }}</span>
                 {% endif %}
                 {% if testimonial.vertical is defined %}
                   <span class="landing-testimonial__vertical">{{ testimonial.vertical }}</span>

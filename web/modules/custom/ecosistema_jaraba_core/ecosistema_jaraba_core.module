@@ -108,6 +108,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'variables' => [
         'vertical' => '',
         'vertical_label' => '',
+        'schema_type' => 'Product',
         'reviews' => [],
         'stats' => [],
         'page' => 1,

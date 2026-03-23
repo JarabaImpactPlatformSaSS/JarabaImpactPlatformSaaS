@@ -11,9 +11,10 @@
  #   - page: int — current page
  #   - total_pages: int
  #   - total_reviews: int
+ #   - schema_type: string — Schema.org type (Product, LocalBusiness, Service, etc.)
  #}
 
-<div class="review-seo" itemscope itemtype="https://schema.org/Organization">
+<div class="review-seo" itemscope itemtype="https://schema.org/{{ schema_type|default('Product') }}">
   <meta itemprop="name" content="{{ vertical_label }}">
 
   {# === Summary Header === #}

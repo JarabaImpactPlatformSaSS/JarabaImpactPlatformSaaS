@@ -74,6 +74,27 @@ class ReviewSeoController extends ControllerBase {
     'course_review' => 'course_id',
   ];
 
+  /**
+   * Mapeo vertical → Schema.org type valido para Google review snippets.
+   *
+   * Google SOLO acepta 17 tipos para review snippets:
+   * Book, Course, CreativeWorkSeason, CreativeWorkSeries, Episode, Event,
+   * Game, HowTo, LocalBusiness, MediaObject, Movie, MusicPlaylist,
+   * MusicRecording, Organization, Product, Recipe, SoftwareApplication.
+   *
+   * NOTA: Service (schema.org/Service) NO es valido — hereda de Intangible.
+   * ProfessionalService SI es valido porque hereda de LocalBusiness.
+   *
+   * @see https://developers.google.com/search/docs/appearance/structured-data/review-snippet
+   */
+  private const VERTICAL_SCHEMA_TYPE_MAP = [
+    'comercioconecta' => 'LocalBusiness',
+    'agroconecta' => 'Product',
+    'serviciosconecta' => 'LocalBusiness',
+    'formacion' => 'Course',
+    'mentoring' => 'Event',
+  ];
+
   public function __construct(
     protected readonly ReviewAggregationService $aggregation,
     EntityTypeManagerInterface $entityTypeManager,
@@ -193,9 +214,10 @@ class ReviewSeoController extends ControllerBase {
     catch (\Exception) {}
 
     // JSON-LD AggregateRating.
+    $schemaType = self::VERTICAL_SCHEMA_TYPE_MAP[$vertical] ?? 'Product';
     $jsonLd = [
       '@context' => 'https://schema.org',
-      '@type' => 'Organization',
+      '@type' => $schemaType,
       'name' => $this->getVerticalLabel($vertical),
       'aggregateRating' => [
         '@type' => 'AggregateRating',
@@ -212,6 +234,7 @@ class ReviewSeoController extends ControllerBase {
       '#theme' => 'review_seo_page',
       '#vertical' => $vertical,
       '#vertical_label' => $this->getVerticalLabel($vertical),
+      '#schema_type' => $schemaType,
       '#reviews' => $items,
       '#stats' => $stats,
       '#page' => $page,

@@ -32,7 +32,7 @@
   <span>{{ case.name }}</span>
 </nav>
 
-<article class="sc-detail" itemscope itemtype="https://schema.org/Review">
+<article class="sc-detail" itemscope itemtype="https://schema.org/Article">
 
   {# ═══════════════════════════════════════════════════════════════
      HERO HEADER — Gradient background, large avatar, identity info
@@ -203,7 +203,7 @@
      ═══════════════════════════════════════════════════════════════ #}
   {% set quote_text = case.quote_long ?? case.quote_short ?? null %}
   {% if quote_text %}
-    <section class="sc-testimonial" itemprop="reviewBody">
+    <section class="sc-testimonial" itemprop="articleBody">
       <div class="sc-testimonial__decoration" aria-hidden="true">
         <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 8H6v12h8l-4 12h4l4-12V8zm16 0H22v12h8l-4 12h4l4-12V8z" fill="currentColor"/>
