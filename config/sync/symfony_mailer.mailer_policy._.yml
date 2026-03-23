@@ -6,6 +6,12 @@ _core:
   default_config_hash: oUtf135g-IPzmggtfsOOX5ZINxbSe5Kno64BN2NUKn0
 id: _
 configuration:
+  mailer_default_headers:
+    from:
+      addresses:
+        -
+          value: contacto@plataformadeecosistemas.com
+          display: 'Plataforma de Ecosistemas'
   mailer_url_to_absolute: {  }
   mailer_inline_css: {  }
   mailer_wrap_and_convert:
