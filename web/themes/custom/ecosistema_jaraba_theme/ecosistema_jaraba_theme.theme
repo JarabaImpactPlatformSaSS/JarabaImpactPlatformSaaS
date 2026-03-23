@@ -3747,15 +3747,16 @@ function ecosistema_jaraba_theme_preprocess_email_wrap(array &$variables): void 
   $site_config = \Drupal::config('system.site');
 
   // Logo absoluto para emails.
-  // generateAbsoluteString() usa el host de la request actual. En subrequests
-  // internas (curl a localhost, cron, drush) genera http://localhost/... que
-  // no es accesible para clientes de email. Usamos $GLOBALS['base_url'] que
-  // refleja el base_url real de Drupal.
+  // En CLI (drush, cron, Supervisor), $GLOBALS['base_url'] es "http://default"
+  // que no es accesible para clientes de email. Usamos una cascada:
+  // 1. OAUTH_CALLBACK_BASE_URL (siempre correcto, definido en settings.env.php)
+  // 2. $GLOBALS['base_url'] (correcto solo en request HTTP real)
   $logo_settings = theme_get_setting('logo', 'ecosistema_jaraba_theme');
   if (!empty($logo_settings['path'])) {
     $file_url_generator = \Drupal::service('file_url_generator');
     $relative_url = $file_url_generator->generateString($logo_settings['path']);
-    $variables['logo_url'] = $GLOBALS['base_url'] . $relative_url;
+    $base = getenv('OAUTH_CALLBACK_BASE_URL') ?: $GLOBALS['base_url'];
+    $variables['logo_url'] = rtrim($base, '/') . $relative_url;
   }
   else {
     $variables['logo_url'] = '';
