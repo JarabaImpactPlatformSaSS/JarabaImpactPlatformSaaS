@@ -163,7 +163,7 @@ class VerticalLandingController extends ControllerBase
         'case_study' => [
           'title' => $this->t('Caso de éxito: Cooperativa Sierra de Cazorla'),
           'subtitle' => $this->t('De vender a granel a Italia a facturar 30.000 €/mes en venta directa con un QR en cada botella'),
-          'url' => '/agroconecta/caso-de-exito/cooperativa-sierra-cazorla',
+          'url' => $this->caseStudyUrl('jaraba_agroconecta_core.case_study.sierra_cazorla', '/agroconecta/caso-de-exito/cooperativa-sierra-cazorla'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -370,7 +370,7 @@ class VerticalLandingController extends ControllerBase
         'case_study' => [
           'title' => $this->t('Caso de éxito: Boutique La Mariposa'),
           'subtitle' => $this->t('+47% de facturación con un QR en el escaparate. De 68 a 157 clientas en 3 meses'),
-          'url' => '/comercioconecta/caso-de-exito/boutique-la-mariposa',
+          'url' => $this->caseStudyUrl('jaraba_comercio_conecta.case_study.boutique_mariposa', '/comercioconecta/caso-de-exito/boutique-la-mariposa'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -572,8 +572,9 @@ class VerticalLandingController extends ControllerBase
         ],
         'case_study' => [
           'title' => $this->t('Carmen automatizó su clínica en 90 días'),
-          'url' => '/serviciosconecta/caso-de-exito/carmen-navarro-madrid',
-          'cta' => $this->t('Leer caso de éxito'),
+          'subtitle' => $this->t('De gestionar citas por WhatsApp a 60% más reservas con agenda online y cobro automático'),
+          'url' => $this->caseStudyUrl('jaraba_servicios_conecta.case_study.carmen_navarro', '/serviciosconecta/caso-de-exito/carmen-navarro-madrid'),
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -783,7 +784,7 @@ class VerticalLandingController extends ControllerBase
         'case_study' => [
           'title' => $this->t('Caso de éxito: Rosa Fernández, 52 años'),
           'subtitle' => $this->t('De 87 CVs sin respuesta a contratada en 21 días. Un diagnóstico de 3 minutos le cambió la vida'),
-          'url' => '/empleabilidad/caso-de-exito/rosa-fernandez-malaga',
+          'url' => $this->caseStudyUrl('jaraba_candidate.case_study.rosa_fernandez', '/empleabilidad/caso-de-exito/rosa-fernandez-malaga'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -996,7 +997,7 @@ class VerticalLandingController extends ControllerBase
         'case_study' => [
           'title' => $this->t('Caso de éxito: Carlos Etxebarria, Bilbao'),
           'subtitle' => $this->t('De 2 años de parálisis a un MVP con 5 pilotos y 47.000 € ENISA en 60 días'),
-          'url' => '/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao',
+          'url' => $this->caseStudyUrl('jaraba_business_tools.case_study.carlos_etxebarria', '/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1208,7 +1209,7 @@ class VerticalLandingController extends ControllerBase
         'case_study' => [
           'title' => $this->t('Caso de éxito: Martínez & Asociados'),
           'subtitle' => $this->t('Cómo un despacho de 2 abogados en Málaga redujo un 75% el tiempo de búsqueda jurídica'),
-          'url' => '/jarabalex/caso-de-exito/despacho-martinez',
+          'url' => $this->caseStudyUrl('jaraba_legal.case_study.martinez', '/jarabalex/caso-de-exito/despacho-martinez'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1638,8 +1639,9 @@ class VerticalLandingController extends ControllerBase
         ],
         'case_study' => [
           'title' => $this->t('La Diputación de Jaén gestiona 180 emprendedores con IA'),
-          'url' => '/andalucia-ei/caso-de-exito/diputacion-jaen',
-          'cta' => $this->t('Leer caso de éxito'),
+          'subtitle' => $this->t('Cómo la Diputación de Jaén digitalizó sus programas de emprendimiento rural con 7 verticales y copilot IA'),
+          'url' => $this->caseStudyUrl('jaraba_andalucia_ei.case_study.diputacion_jaen', '/andalucia-ei/caso-de-exito/diputacion-jaen'),
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -1779,8 +1781,9 @@ class VerticalLandingController extends ControllerBase
         ],
         'case_study' => [
           'title' => $this->t('María pasó de 12 alumnos a 340 en 4 meses'),
-          'url' => '/formacion/caso-de-exito/maria-lopez-madrid',
-          'cta' => $this->t('Leer caso de éxito'),
+          'subtitle' => $this->t('De dar clases presenciales a 12 alumnos a vender cursos online a 340 con IA generando quizzes automáticos'),
+          'url' => $this->caseStudyUrl('jaraba_lms.case_study.maria_lopez', '/formacion/caso-de-exito/maria-lopez-madrid'),
+          'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
       'lead_magnet' => [
@@ -1912,6 +1915,29 @@ class VerticalLandingController extends ControllerBase
         'max-age' => 3600,
       ],
     ];
+  }
+
+  /**
+   * Resolves a case study URL via Url::fromRoute() with fallback.
+   *
+   * Complies with ROUTE-LANGPREFIX-001: URLs MUST go through the routing
+   * system so the language prefix (/es/) is applied correctly.
+   *
+   * @param string $routeName
+   *   The route name (e.g. 'jaraba_agroconecta_core.case_study.sierra_cazorla').
+   * @param string $fallbackPath
+   *   Hardcoded path used only if the route does not exist.
+   *
+   * @return string
+   *   The resolved URL string.
+   */
+  private function caseStudyUrl(string $routeName, string $fallbackPath): string {
+    try {
+      return Url::fromRoute($routeName)->toString();
+    }
+    catch (\Exception $e) {
+      return $fallbackPath;
+    }
   }
 
 }
