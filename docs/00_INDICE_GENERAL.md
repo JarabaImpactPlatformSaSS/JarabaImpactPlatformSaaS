@@ -1619,7 +1619,7 @@
 | ComercioConecta | Boutique La Mariposa | `/comercioconecta/caso-de-exito/boutique-la-mariposa` | jaraba_comercio_conecta |
 | ServiciosConecta | Carmen Navarro, Madrid | `/serviciosconecta/caso-de-exito/carmen-navarro-madrid` | jaraba_servicios_conecta |
 | Formación | María López, Madrid | `/formacion/caso-de-exito/maria-lopez-madrid` | jaraba_lms |
-| Andalucía EI | Diputación de Jaén | `/andalucia-ei/caso-de-exito/diputacion-jaen` | jaraba_andalucia_ei |
+| Andalucía EI | PED S.L. | `/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales` | jaraba_andalucia_ei |
 | Content Hub | Bodega Montilla, Córdoba | `/content-hub/caso-de-exito/bodega-montilla-cordoba` | jaraba_content_hub |
 
 **Patrón:** 10 secciones, 6 imágenes WebP, CSS compartido `jarabalex-case-study.css`, Schema.org JSON-LD, precios desde controller (NO-HARDCODE-PRICE-001), CTAs con data-track-cta (FUNNEL-COMPLETENESS-001). Demo excluido (vertical interno).
