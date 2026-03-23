@@ -263,6 +263,29 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - STRIPE-URL-PREFIX-001: stripeRequest() endpoints SIN /v1/ (base URL ya incluye /v1). /products NO /v1/products
 - CSP-STRIPE-SCRIPT-001: js.stripe.com en script-src + connect-src + frame-src de CSP
 
+## INFRAESTRUCTURA PRODUCCION
+
+### Backup 3 Capas (BACKUP-3LAYER-001)
+- Capa 1: Local `/opt/jaraba/backups/latest.sql.gz` (24h retencion)
+- Capa 2: Hetzner Object Storage S3 `jaraba-backups/database/` (30 dias, lifecycle rule)
+- Capa 3: NAS 16TB via GoodSync SFTP `/home/jaraba/backups/daily/` (retencion indefinida)
+- Script: `/opt/jaraba/scripts/backup.sh`, cron cada 6h (00:00, 06:00, 12:00, 18:00 UTC)
+- RPO <6h, RTO <1h desde Hetzner, minutos desde local
+- GoodSync SFTP: usuario `goodsync` chrooted a `/home/goodsync/backups/` con bind mounts
+
+### Deploy Safety
+- DEPLOY-MAINTENANCE-SAFETY-001: Step "Disable maintenance mode" en deploy.yml DEBE tener `if: always()`. Sin esto, deploy fallido deja sitio en 503 indefinidamente
+- OPCACHE-PROD-001: `validate_timestamps=0`, 256MB, 20k files. Config en `config/deploy/php/10-opcache-prod.ini`. FPM reload en deploy invalida cache
+- SUPERVISOR-SLEEP-001: Workers Supervisor DEBEN tener sleep 30-60s entre ejecuciones. Sin sleep, hot-loop de bootstrap Drupal quema CPU 350%+. Script wrapper: `/opt/jaraba/scripts/queue-worker.sh`
+
+### CLI Context
+- DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
+- EMAIL-SENDER-MATCH-001: `system.site.mail` DEBE coincidir con sender SMTP permitido. IONOS rechaza remitentes sin buzon configurado
+
+### Monitoring
+- UptimeRobot: 4 dominios (5min) + API status (5min) + SSL expiry (14 dias alerta)
+- Email alertas CI: `scripts/ci-notify-email.php` via SMTP (reemplaza Slack)
+
 ## SEO MULTI-DOMINIO
 
 ### Reglas Criticas
@@ -358,12 +381,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v160.0.0
+- DIRECTRICES: v161.0.0
 - ARQUITECTURA: v146.0.0
 - INDICE: v190.0.0
 - FLUJO: v112.0.0
-- Ultimo aprendizaje: #213
-- Ultima golden rule: #149
+- Ultimo aprendizaje: #214
+- Ultima golden rule: #151
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
