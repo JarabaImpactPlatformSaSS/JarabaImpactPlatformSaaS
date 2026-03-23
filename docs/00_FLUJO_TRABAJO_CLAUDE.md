@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-21
-**Version:** 111.0.0 (HOMEPAGE-ELEVATION-001 F0-F5 + 4 variantes metasitio + HOMEPAGE-COMPLETENESS-001 15/15 + aprendizaje #211)
+**Version:** 112.0.0 (CASE-STUDY-ELEVATION 15/15 + SUCCESS-CASES-001 + aprendizaje #213)
 
 ---
 ## 1. Inicio de Sesion

@@ -78,8 +78,9 @@ function jaraba_success_cases_theme_suggestions_page_alter(array &$suggestions, 
     return;
   }
 
-  // Case study landing pages get their own page template.
-  if ($route_name === 'jaraba_success_cases.case_study_landing') {
+  // CASE-STUDY-PATTERN-001: Exclude .case_study. routes — they use their own
+  // page template via CaseStudyLandingController.
+  if (str_contains($route_name, '.case_study')) {
     $suggestions[] = 'page__case_study_landing';
     return;
   }

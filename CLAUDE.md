@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-21 | Version: 1.7.0
+# Ultima actualizacion: 2026-03-23 | Version: 1.8.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -263,6 +263,26 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - STRIPE-URL-PREFIX-001: stripeRequest() endpoints SIN /v1/ (base URL ya incluye /v1). /products NO /v1/products
 - CSP-STRIPE-SCRIPT-001: js.stripe.com en script-src + connect-src + frame-src de CSP
 
+## SEO MULTI-DOMINIO
+
+### Reglas Criticas
+- SEO-HREFLANG-FRONT-001: Url::fromRoute('<front>') genera /es/node porque system.site.front=/node. SIEMPRE interceptar homepage y construir URL limpia $host/$langcode
+- SEO-METASITE-001: Cada dominio/metasitio DEBE tener title y description unicos en homepage. Configurables desde Theme Settings > TAB 17 SEO Multi-Dominio. 4 variantes: generic, pde, jarabaimpact, pepejaraba
+- SEO-HREFLANG-ACTIVE-001: Campo seo_active_languages en Theme Settings filtra hreflang a idiomas con contenido real (default: 'es'). Idiomas en/pt-br configurados sin contenido NO se emiten en hreflang
+- SEO-MULTIDOMAIN-001: Validador 10 checks. `php scripts/validation/validate-seo-multi-domain.php`
+
+### robots.txt Dinamico
+- web/robots.txt ELIMINADO (renombrado a .drupal-default). composer.json scaffold excluye robots.txt
+- Controller dinamico: jaraba_page_builder/SitemapController::robots() genera Sitemap: con hostname del request
+- Nginx: try_files $uri /index.php?$query_string para /robots.txt
+
+### Schema.org Review Snippets
+- Google SOLO acepta 17 tipos como parent de AggregateRating: Product, Course, LocalBusiness, Event, Book, Recipe, SoftwareApplication, HowTo, Organization, Movie, Game, etc.
+- EducationalOccupationalProgram y Service (schema.org/Service) NO estan en la lista
+- ProfessionalService SI es valido (subtipo de LocalBusiness)
+- ReviewSeoController::VERTICAL_SCHEMA_TYPE_MAP mapea verticales a tipos validos
+- ReviewSchemaOrgService::resolveSchemaType() mapea entity types a tipos validos
+
 ## IA — STACK COMPLETO
 
 ### Arquitectura (11 Agentes Gen 2)
@@ -338,11 +358,11 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v159.0.0
-- ARQUITECTURA: v145.0.0
-- INDICE: v189.0.0
-- FLUJO: v111.0.0
-- Ultimo aprendizaje: #212
+- DIRECTRICES: v160.0.0
+- ARQUITECTURA: v146.0.0
+- INDICE: v190.0.0
+- FLUJO: v112.0.0
+- Ultimo aprendizaje: #213
 - Ultima golden rule: #149
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
@@ -448,6 +468,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-homepage-completeness.php` (HOMEPAGE-COMPLETENESS-001)
 - `php scripts/validation/validate-homepage-variant-coherence.php` (HOMEPAGE-VARIANT-COHERENCE-001)
 - `php scripts/validation/validate-homepage-video-a11y.php` (HOMEPAGE-VIDEO-A11Y-001)
+- `php scripts/validation/validate-seo-multi-domain.php` (SEO-MULTIDOMAIN-001)
 - `php scripts/validation/validate-email-sender.php` (EMAIL-SENDER-001)
 - `php scripts/validation/validate-deploy-safety.php` (DEPLOY-MAINTENANCE-SAFETY-001)
 - `php scripts/validation/validate-backup-health.php` (BACKUP-HEALTH-001)
