@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and requirements for the Jaraba Performance module.
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * Verifica dependencias del módulo de rendimiento.
+ */
+function jaraba_performance_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Verificar servicio extension.list.theme disponible.
+  $has_service = \Drupal::hasService('extension.list.theme');
+
+  $requirements['jaraba_performance_theme_list'] = [
+    'title' => t('Jaraba Performance: servicio extension.list.theme'),
+    'severity' => $has_service ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => $has_service
+      ? t('Servicio extension.list.theme disponible.')
+      : t('Servicio extension.list.theme no disponible. El análisis de rendimiento de temas no funcionará.'),
+  ];
+
+  return $requirements;
+}

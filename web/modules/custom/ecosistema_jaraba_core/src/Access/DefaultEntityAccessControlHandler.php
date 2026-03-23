@@ -8,6 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Generic default access control handler for entities without explicit handler.
@@ -39,7 +40,7 @@ class DefaultEntityAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     $adminPermission = $this->entityType->getAdminPermission();
 
     // Admin bypass (uid=1 or admin_permission).

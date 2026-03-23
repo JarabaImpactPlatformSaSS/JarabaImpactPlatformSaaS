@@ -166,6 +166,56 @@ function jaraba_rag_update_10001(): void {
 }
 
 /**
+ * Implements hook_requirements().
+ *
+ * Verifica dependencias clave para el módulo RAG.
+ */
+function jaraba_rag_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Verificar host de Qdrant configurado.
+  $config = \Drupal::config('jaraba_rag.settings');
+  $qdrant_host = $config->get('vector_db.host') ?: getenv('QDRANT_HOST');
+
+  $requirements['jaraba_rag_qdrant'] = [
+    'title' => t('Jaraba RAG: Qdrant host'),
+    'severity' => !empty($qdrant_host) ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => !empty($qdrant_host)
+      ? t('Qdrant host configurado: @host', ['@host' => $qdrant_host])
+      : t('Qdrant host no configurado. Establezca vector_db.host en jaraba_rag.settings o la variable de entorno QDRANT_HOST.'),
+  ];
+
+  // Verificar módulo ai_search habilitado.
+  $module_handler = \Drupal::moduleHandler();
+  $ai_search_enabled = $module_handler->moduleExists('ai_search');
+
+  $requirements['jaraba_rag_ai_search'] = [
+    'title' => t('Jaraba RAG: módulo ai_search'),
+    'severity' => $ai_search_enabled ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => $ai_search_enabled
+      ? t('Módulo ai_search habilitado.')
+      : t('Módulo ai_search no habilitado. La búsqueda semántica no funcionará.'),
+  ];
+
+  // Verificar módulo group habilitado.
+  $group_enabled = $module_handler->moduleExists('group');
+
+  $requirements['jaraba_rag_group'] = [
+    'title' => t('Jaraba RAG: módulo group'),
+    'severity' => $group_enabled ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => $group_enabled
+      ? t('Módulo group habilitado.')
+      : t('Módulo group no habilitado. Multi-tenancy RAG requiere el módulo group.'),
+  ];
+
+  return $requirements;
+}
+
+/**
  * Implements hook_uninstall().
  */
 function jaraba_rag_uninstall(): void {

@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para la entidad SiteConfig.
@@ -55,8 +56,7 @@ class SiteConfigAccessControlHandler extends EntityAccessControlHandler implemen
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
-    {
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
         // TENANT-ISOLATION-ACCESS-001: verificar tenant match para update/delete.
         if (in_array($operation, ['update', 'delete'], TRUE)) {
             $tenantCheck = $this->checkTenantIsolation($entity, $account);

@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for ai_provider_google_gemini.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function ai_provider_google_gemini_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Check: key module enabled.
+  $moduleHandler = \Drupal::moduleHandler();
+  if ($moduleHandler->moduleExists('key')) {
+    $requirements['ai_provider_google_gemini_key_module'] = [
+      'title' => t('Google Gemini AI: Key module'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['ai_provider_google_gemini_key_module'] = [
+      'title' => t('Google Gemini AI: Key module'),
+      'value' => t('Not installed'),
+      'description' => t('The Key module is required for secure API key storage. Install it with <code>drush en key</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check: API key configured (not empty).
+  $config = \Drupal::config('ai_provider_google_gemini.settings');
+  $apiKey = $config->get('api_key') ?? '';
+  if (!empty($apiKey)) {
+    $requirements['ai_provider_google_gemini_api_key'] = [
+      'title' => t('Google Gemini AI: API Key'),
+      'value' => t('Configured'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['ai_provider_google_gemini_api_key'] = [
+      'title' => t('Google Gemini AI: API Key'),
+      'value' => t('Not configured'),
+      'description' => t('The Google Gemini API key is empty. Configure it at the module settings page or via <code>ai_provider_google_gemini.settings</code> config.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  return $requirements;
+}

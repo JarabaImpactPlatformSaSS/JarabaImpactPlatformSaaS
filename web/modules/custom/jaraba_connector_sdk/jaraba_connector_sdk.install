@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_connector_sdk.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_connector_sdk_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Check: jaraba_integrations module enabled (optional, warn if missing).
+  $moduleHandler = \Drupal::moduleHandler();
+  if ($moduleHandler->moduleExists('jaraba_integrations')) {
+    $requirements['jaraba_connector_sdk_integrations'] = [
+      'title' => t('Connector SDK: Integrations module'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_connector_sdk_integrations'] = [
+      'title' => t('Connector SDK: Integrations module'),
+      'value' => t('Not installed'),
+      'description' => t('The jaraba_integrations module is recommended for full connector functionality. The SDK works standalone but some features will be unavailable.'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

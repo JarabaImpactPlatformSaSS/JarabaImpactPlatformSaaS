@@ -11,6 +11,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para entidades de Tenant Knowledge.
@@ -47,8 +48,7 @@ class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
-    {
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
         // Admin global puede todo.
         if ($account->hasPermission('administer tenant knowledge')) {
             return AccessResult::allowed()->cachePerPermissions();

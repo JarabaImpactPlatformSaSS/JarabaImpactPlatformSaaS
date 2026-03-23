@@ -8,6 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para la entidad NotificationPreferenceAgro.
@@ -21,7 +22,7 @@ class NotificationPreferenceAgroAccessControlHandler extends EntityAccessControl
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
         /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationPreferenceAgro $entity */
         $admin_permission = $this->entityType->getAdminPermission();
@@ -52,7 +53,7 @@ class NotificationPreferenceAgroAccessControlHandler extends EntityAccessControl
     /**
      * {@inheritdoc}
      */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         // Cualquier usuario autenticado puede crear sus preferencias.
         return AccessResult::allowedIf($account->isAuthenticated())

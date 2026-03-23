@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_geo.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_geo_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $moduleHandler = \Drupal::moduleHandler();
+
+  // Check: node module enabled.
+  if ($moduleHandler->moduleExists('node')) {
+    $requirements['jaraba_geo_node'] = [
+      'title' => t('Jaraba Geo: Node module'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_geo_node'] = [
+      'title' => t('Jaraba Geo: Node module'),
+      'value' => t('Not installed'),
+      'description' => t('The node module is required for geo content features.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check: entity_type.manager service available.
+  if (\Drupal::hasService('entity_type.manager')) {
+    $requirements['jaraba_geo_entity_manager'] = [
+      'title' => t('Jaraba Geo: Entity Type Manager'),
+      'value' => t('Available'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_geo_entity_manager'] = [
+      'title' => t('Jaraba Geo: Entity Type Manager'),
+      'value' => t('Not available'),
+      'description' => t('The entity_type.manager service is not registered. This indicates a serious Drupal container issue.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  return $requirements;
+}

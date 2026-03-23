@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Access control handler para zonas y tarifas de envío.
@@ -20,7 +21,7 @@ class AgroShippingAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Admin de AgroConecta tiene acceso total.
     if ($account->hasPermission('manage agro shipping')) {
       return AccessResult::allowed();

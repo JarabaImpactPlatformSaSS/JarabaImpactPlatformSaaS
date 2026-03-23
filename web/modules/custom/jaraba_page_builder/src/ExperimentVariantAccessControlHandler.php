@@ -8,6 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para la entidad ExperimentVariant.
@@ -28,7 +29,7 @@ class ExperimentVariantAccessControlHandler extends EntityAccessControlHandler
      * Verifica acceso a variantes existentes.
      * Las variantes se gestionan dentro del contexto del experimento padre.
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
         // Administradores tienen acceso total.
         if ($account->hasPermission('administer page builder')) {
@@ -56,7 +57,7 @@ class ExperimentVariantAccessControlHandler extends EntityAccessControlHandler
      * Verifica acceso para crear nuevas variantes.
      * Se requiere permiso de edición de experimentos.
      */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         return AccessResult::allowedIfHasPermissions($account, [
             'administer page builder',

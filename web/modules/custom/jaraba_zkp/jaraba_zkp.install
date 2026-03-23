@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and requirements for the Jaraba ZKP module.
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * Verifica que los módulos dependientes estén habilitados.
+ */
+function jaraba_zkp_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $module_handler = \Drupal::moduleHandler();
+
+  // Verificar jaraba_predictive habilitado.
+  $predictive_enabled = $module_handler->moduleExists('jaraba_predictive');
+
+  $requirements['jaraba_zkp_predictive'] = [
+    'title' => t('Jaraba ZKP: módulo jaraba_predictive'),
+    'severity' => $predictive_enabled ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => $predictive_enabled
+      ? t('Módulo jaraba_predictive habilitado.')
+      : t('Módulo jaraba_predictive no habilitado. Las pruebas zero-knowledge sobre predicciones no estarán disponibles.'),
+  ];
+
+  // Verificar jaraba_credentials habilitado.
+  $credentials_enabled = $module_handler->moduleExists('jaraba_credentials');
+
+  $requirements['jaraba_zkp_credentials'] = [
+    'title' => t('Jaraba ZKP: módulo jaraba_credentials'),
+    'severity' => $credentials_enabled ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => $credentials_enabled
+      ? t('Módulo jaraba_credentials habilitado.')
+      : t('Módulo jaraba_credentials no habilitado. La emisión de credenciales verificables ZKP no estará disponible.'),
+  ];
+
+  // Verificar jaraba_billing habilitado.
+  $billing_enabled = $module_handler->moduleExists('jaraba_billing');
+
+  $requirements['jaraba_zkp_billing'] = [
+    'title' => t('Jaraba ZKP: módulo jaraba_billing'),
+    'severity' => $billing_enabled ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => $billing_enabled
+      ? t('Módulo jaraba_billing habilitado.')
+      : t('Módulo jaraba_billing no habilitado. La verificación de planes de suscripción mediante ZKP no estará disponible.'),
+  ];
+
+  return $requirements;
+}

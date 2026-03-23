@@ -6,6 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Access handler para IntentionCard.
@@ -16,8 +17,7 @@ class IntentionCardAccessControlHandler extends EntityAccessControlHandler
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
-    {
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
         if ($account->hasPermission('administer page builder')) {
             return AccessResult::allowed()->cachePerPermissions();
         }

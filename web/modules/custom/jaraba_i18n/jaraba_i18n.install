@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_i18n.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_i18n_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $moduleHandler = \Drupal::moduleHandler();
+
+  // Check: language module with 2+ languages configured.
+  if ($moduleHandler->moduleExists('language')) {
+    $languages = \Drupal::languageManager()->getLanguages();
+    $count = count($languages);
+    if ($count >= 2) {
+      $requirements['jaraba_i18n_languages'] = [
+        'title' => t('Jaraba i18n: Languages'),
+        'value' => t('@count languages configured', ['@count' => $count]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    else {
+      $requirements['jaraba_i18n_languages'] = [
+        'title' => t('Jaraba i18n: Languages'),
+        'value' => t('Only @count language configured', ['@count' => $count]),
+        'description' => t('At least 2 languages are needed for internationalization. Add languages at <a href=":url">Languages</a>.', [
+          ':url' => '/admin/config/regional/language',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+  }
+  else {
+    $requirements['jaraba_i18n_languages'] = [
+      'title' => t('Jaraba i18n: Language module'),
+      'value' => t('Not installed'),
+      'description' => t('The language module is required for internationalization. Install it with <code>drush en language</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check: content_translation module enabled.
+  if ($moduleHandler->moduleExists('content_translation')) {
+    $requirements['jaraba_i18n_content_translation'] = [
+      'title' => t('Jaraba i18n: Content Translation'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_i18n_content_translation'] = [
+      'title' => t('Jaraba i18n: Content Translation'),
+      'value' => t('Not installed'),
+      'description' => t('The content_translation module is required for translating content entities. Install it with <code>drush en content_translation</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check: jaraba_ai_agents module enabled (warn if missing).
+  if ($moduleHandler->moduleExists('jaraba_ai_agents')) {
+    $requirements['jaraba_i18n_ai_agents'] = [
+      'title' => t('Jaraba i18n: AI Agents'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_i18n_ai_agents'] = [
+      'title' => t('Jaraba i18n: AI Agents'),
+      'value' => t('Not installed'),
+      'description' => t('The jaraba_ai_agents module is recommended for AI-assisted translation. Translations will work without it but automated translation features will be unavailable.'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

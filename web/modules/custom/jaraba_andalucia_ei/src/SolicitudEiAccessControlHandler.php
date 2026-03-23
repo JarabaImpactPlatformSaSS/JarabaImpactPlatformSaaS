@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Access control handler para SolicitudEi.
@@ -57,7 +58,7 @@ class SolicitudEiAccessControlHandler extends EntityAccessControlHandler impleme
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     switch ($operation) {
       case 'view':
         return AccessResult::allowedIfHasPermission($account, 'view solicitud ei')

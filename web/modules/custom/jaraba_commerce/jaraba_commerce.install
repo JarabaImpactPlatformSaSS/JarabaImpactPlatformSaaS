@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_commerce.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_commerce_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $moduleHandler = \Drupal::moduleHandler();
+
+  // Check: commerce_store module enabled.
+  if ($moduleHandler->moduleExists('commerce_store')) {
+    $requirements['jaraba_commerce_store'] = [
+      'title' => t('Jaraba Commerce: Commerce Store'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_commerce_store'] = [
+      'title' => t('Jaraba Commerce: Commerce Store'),
+      'value' => t('Not installed'),
+      'description' => t('The commerce_store module is required. Install Drupal Commerce with <code>drush en commerce_store</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check: commerce_product module enabled.
+  if ($moduleHandler->moduleExists('commerce_product')) {
+    $requirements['jaraba_commerce_product'] = [
+      'title' => t('Jaraba Commerce: Commerce Product'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_commerce_product'] = [
+      'title' => t('Jaraba Commerce: Commerce Product'),
+      'value' => t('Not installed'),
+      'description' => t('The commerce_product module is required. Install it with <code>drush en commerce_product</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  return $requirements;
+}

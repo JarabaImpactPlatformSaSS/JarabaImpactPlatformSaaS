@@ -8,6 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para la entidad NotificationTemplateAgro.
@@ -21,7 +22,7 @@ class NotificationTemplateAgroAccessControlHandler extends EntityAccessControlHa
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
         $admin_permission = $this->entityType->getAdminPermission();
 
@@ -35,7 +36,7 @@ class NotificationTemplateAgroAccessControlHandler extends EntityAccessControlHa
     /**
      * {@inheritdoc}
      */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         $admin_permission = $this->entityType->getAdminPermission();
 

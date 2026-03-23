@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para ConnectorInstallation con aislamiento por tenant.
@@ -40,7 +41,7 @@ class ConnectorInstallationAccessControlHandler extends EntityAccessControlHandl
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('administer integrations')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

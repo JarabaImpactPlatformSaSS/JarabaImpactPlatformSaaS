@@ -8,13 +8,14 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para Digital Twin.
  */
 class DigitalTwinAccessControlHandler extends EntityAccessControlHandler {
 
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('administer jaraba agent market')) {
       return AccessResult::allowed();
     }

@@ -8,6 +8,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Controlador de acceso para la entidad ContentArticle.
@@ -39,8 +40,7 @@ class ContentArticleAccessControlHandler extends EntityAccessControlHandler
      * Las reglas varían según operación (view/update/delete) y
      * propiedad del contenido (own vs any).
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
-    {
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
         /** @var \Drupal\jaraba_content_hub\Entity\ContentArticleInterface $entity */
 
         // Los administradores tienen acceso completo.

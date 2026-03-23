@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_ambient_ux.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_ambient_ux_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Check: jaraba_predictive module enabled.
+  $moduleHandler = \Drupal::moduleHandler();
+  if ($moduleHandler->moduleExists('jaraba_predictive')) {
+    $requirements['jaraba_ambient_ux_predictive'] = [
+      'title' => t('Ambient UX: Predictive module'),
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+  else {
+    $requirements['jaraba_ambient_ux_predictive'] = [
+      'title' => t('Ambient UX: Predictive module'),
+      'value' => t('Not installed'),
+      'description' => t('The jaraba_predictive module is required for ambient UX features. Install it with <code>drush en jaraba_predictive</code>.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  return $requirements;
+}

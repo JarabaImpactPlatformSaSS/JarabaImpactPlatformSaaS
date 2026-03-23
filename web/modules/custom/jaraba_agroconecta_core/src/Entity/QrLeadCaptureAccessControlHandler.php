@@ -12,7 +12,7 @@ use Drupal\Core\Session\AccountInterface;
 
 class QrLeadCaptureAccessControlHandler extends DefaultEntityAccessControlHandler
 {
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
       // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
       $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -26,7 +26,7 @@ class QrLeadCaptureAccessControlHandler extends DefaultEntityAccessControlHandle
         };
     }
 
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         return AccessResult::allowedIfHasPermission($account, 'manage agro qr');
     }

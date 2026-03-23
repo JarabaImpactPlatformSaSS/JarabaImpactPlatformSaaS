@@ -8,10 +8,11 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 class TraceEventAgroAccessControlHandler extends EntityAccessControlHandler
 {
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
         return match ($operation) {
             'view' => AccessResult::allowedIfHasPermission($account, 'view agro traceability'),
@@ -20,7 +21,7 @@ class TraceEventAgroAccessControlHandler extends EntityAccessControlHandler
         };
     }
 
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         return AccessResult::allowedIfHasPermission($account, 'manage agro traceability');
     }

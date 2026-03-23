@@ -338,6 +338,52 @@ function jaraba_heatmap_install() {
 }
 
 /**
+ * Implements hook_requirements().
+ *
+ * Verifica que las tablas de heatmap y la configuración existen.
+ */
+function jaraba_heatmap_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Verificar tablas de base de datos.
+  $schema = \Drupal::database()->schema();
+  $required_tables = ['heatmap_events', 'heatmap_aggregated'];
+  $missing_tables = [];
+
+  foreach ($required_tables as $table) {
+    if (!$schema->tableExists($table)) {
+      $missing_tables[] = $table;
+    }
+  }
+
+  $requirements['jaraba_heatmap_tables'] = [
+    'title' => t('Jaraba Heatmap: tablas de datos'),
+    'severity' => empty($missing_tables) ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => empty($missing_tables)
+      ? t('Todas las tablas requeridas existen.')
+      : t('Tablas ausentes: @tables', ['@tables' => implode(', ', $missing_tables)]),
+  ];
+
+  // Verificar configuración.
+  $config = \Drupal::config('jaraba_heatmap.settings');
+  $has_config = !$config->isNew();
+
+  $requirements['jaraba_heatmap_config'] = [
+    'title' => t('Jaraba Heatmap: configuración'),
+    'severity' => $has_config ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'value' => $has_config
+      ? t('Configuración presente.')
+      : t('Configuración jaraba_heatmap.settings no encontrada. Visite /admin/config/jaraba/heatmap.'),
+  ];
+
+  return $requirements;
+}
+
+/**
  * Implements hook_uninstall().
  *
  * Limpieza al desinstalar el módulo.

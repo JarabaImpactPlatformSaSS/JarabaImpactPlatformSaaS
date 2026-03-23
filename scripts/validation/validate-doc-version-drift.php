@@ -96,6 +96,35 @@ if (file_exists($docs['INDICE'])) {
     }
 }
 
+// DOC-VERSION-INDEX-SYNC-001: Check "Documentos Raíz" table in INDICE.
+// The table lists version numbers for each master doc; verify they match reality.
+if (file_exists($docs['INDICE'])) {
+    $indiceContent = file_get_contents($docs['INDICE']);
+    // Match lines like: | [00_DIRECTRICES_PROYECTO.md](...) | ... **v162.0.0** ... |
+    $docPatterns = [
+        'DIRECTRICES' => 'DIRECTRICES_PROYECTO',
+        'ARQUITECTURA' => 'DOCUMENTO_MAESTRO_ARQUITECTURA',
+        'INDICE' => 'INDICE_GENERAL',
+        'FLUJO' => 'FLUJO_TRABAJO',
+    ];
+    foreach ($docPatterns as $docName => $filePattern) {
+        if (!isset($versions[$docName])) {
+            continue;
+        }
+        $actualMajor = (int) explode('.', $versions[$docName])[0];
+        // Find the table row containing this doc filename.
+        if (preg_match('/\|\s*\[00_' . $filePattern . '.*?\*\*v(\d+)\.\d+\.\d+\*\*/', $indiceContent, $tableMatch)) {
+            $tableMajor = (int) $tableMatch[1];
+            $drift = abs($actualMajor - $tableMajor);
+            if ($drift > 5) {
+                $errors[] = "DOC-VERSION-INDEX-SYNC-001: INDICE table shows $docName v{$tableMajor} but actual is v{$actualMajor} (drift=$drift)";
+            } elseif ($drift > 0) {
+                $warnings[] = "DOC-VERSION-INDEX-SYNC-001: INDICE table shows $docName v{$tableMajor}, actual v{$actualMajor} (drift=$drift, acceptable)";
+            }
+        }
+    }
+}
+
 // Report
 if (empty($errors) && empty($warnings)) {
     $versionStr = implode(', ', array_map(fn($k, $v) => "$k=v$v", array_keys($versions), $versions));

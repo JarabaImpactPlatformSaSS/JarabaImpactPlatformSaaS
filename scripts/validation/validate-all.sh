@@ -226,6 +226,9 @@ if [ "$MODE" = "full" ]; then
   run_check "TENANT-CHECK-001" "Tenant isolation verification" \
     php "$SCRIPT_DIR/validate-tenant-isolation.php"
 
+  run_check "TENANT-VIEWS-ISOLATION-001" "Views with tenant entities filter by tenant_id" \
+    php "$SCRIPT_DIR/validate-views-tenant-isolation.php"
+
   run_check "TEST-COVERAGE-MAP-001" "Test coverage map" \
     php "$SCRIPT_DIR/validate-test-coverage-map.php"
 

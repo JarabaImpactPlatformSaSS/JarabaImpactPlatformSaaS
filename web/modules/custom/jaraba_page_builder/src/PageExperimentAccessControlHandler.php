@@ -34,7 +34,7 @@ class PageExperimentAccessControlHandler extends DefaultEntityAccessControlHandl
      * - update: Editar el experimento
      * - delete: Eliminar el experimento
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
       // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
       $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -68,7 +68,7 @@ class PageExperimentAccessControlHandler extends DefaultEntityAccessControlHandl
      *
      * Verifica acceso para crear nuevos experimentos.
      */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         // Verificar permiso de administración o de creación específico.
         return AccessResult::allowedIfHasPermissions($account, [

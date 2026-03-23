@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and requirements for the Jaraba Social Commerce module.
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * Verifica dependencias del módulo de social commerce.
+ */
+function jaraba_social_commerce_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Verificar módulo commerce habilitado.
+  $commerce_enabled = \Drupal::moduleHandler()->moduleExists('commerce');
+
+  $requirements['jaraba_social_commerce_commerce'] = [
+    'title' => t('Jaraba Social Commerce: módulo commerce'),
+    'severity' => $commerce_enabled ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => $commerce_enabled
+      ? t('Módulo commerce habilitado.')
+      : t('Módulo commerce no habilitado. Social Commerce requiere Drupal Commerce como dependencia.'),
+  ];
+
+  // Verificar servicio http_client disponible.
+  $has_http_client = \Drupal::hasService('http_client');
+
+  $requirements['jaraba_social_commerce_http'] = [
+    'title' => t('Jaraba Social Commerce: servicio HTTP client'),
+    'severity' => $has_http_client ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'value' => $has_http_client
+      ? t('Servicio http_client disponible.')
+      : t('Servicio http_client no disponible. La integración con APIs de redes sociales no funcionará.'),
+  ];
+
+  return $requirements;
+}

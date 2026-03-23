@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Control de acceso para la entidad Tenant.
@@ -37,8 +38,7 @@ class TenantAccessControlHandler extends EntityAccessControlHandler implements E
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
-    {
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
         /** @var \Drupal\ecosistema_jaraba_core\Entity\TenantInterface $entity */
 
         // Los administradores de plataforma tienen acceso total.

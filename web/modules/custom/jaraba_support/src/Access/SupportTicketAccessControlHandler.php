@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Access control handler for Support entities.
@@ -48,7 +49,7 @@ class SupportTicketAccessControlHandler extends EntityAccessControlHandler imple
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // Admin bypass.
     $admin = AccessResult::allowedIfHasPermission($account, 'administer support system');
     if ($admin->isAllowed()) {

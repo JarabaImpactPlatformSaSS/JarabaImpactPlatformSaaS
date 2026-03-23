@@ -19,7 +19,7 @@ class ProductAgroAccessControlHandler extends DefaultEntityAccessControlHandler
     /**
      * {@inheritdoc}
      */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
+    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
       // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
       $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -43,7 +43,7 @@ class ProductAgroAccessControlHandler extends DefaultEntityAccessControlHandler
     /**
      * {@inheritdoc}
      */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult
+    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
     {
         return AccessResult::allowedIfHasPermissions($account, [
             'administer agroconecta',
