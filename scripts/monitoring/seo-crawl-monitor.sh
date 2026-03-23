@@ -136,7 +136,7 @@ done
 
 # CHECK 9: Titles diferentes entre dominios.
 echo -e "  ${BOLD}Verificando diferenciación de titles...${NC}"
-UNIQUE_TITLES=$(printf '%s\n' "${TITLES[@]}" | cut -d'::' -f2- | sort -u | wc -l)
+UNIQUE_TITLES=$(printf '%s\n' "${TITLES[@]}" | sed 's/^[^:]*:://' | sort -u | wc -l)
 TOTAL_DOMAINS=${#TITLES[@]}
 if [ "$UNIQUE_TITLES" -ge 2 ] && [ "$TOTAL_DOMAINS" -ge 2 ]; then
   TOTAL=$((TOTAL + 1))
