@@ -11,7 +11,10 @@
 - IA: Claude API + Gemini API con strict grounding, 11 agentes Gen 2
 - Servidor: IONOS Dedicated AE12-128 NVMe (AMD EPYC 4465P 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04)
 - IP produccion: 82.223.204.169, SSH puerto 2222, usuario jaraba
-- Stack nativo: Nginx + PHP-FPM 8.4 (24 workers, JIT) + MariaDB 10.11 (InnoDB 16GB) + Redis 7.4 + Supervisor (5 AI workers) + Tika (Docker)
+- Stack nativo: Nginx + PHP-FPM 8.4 (24 workers, OPcache 256MB validate_timestamps=0) + MariaDB 10.11 (InnoDB 16GB) + Redis 7.4 + Supervisor (4 AI workers con sleep) + Tika (Docker)
+- Backup 3 capas: local (24h) + Hetzner Object Storage S3 (30d) + NAS GoodSync SFTP (indefinido). Cron cada 6h. RPO <6h
+- Email: SMTP IONOS (smtp.ionos.es:587), From: contacto@plataformadeecosistemas.com. Symfony Mailer + email-wrap.html.twig premium
+- Monitoring: UptimeRobot (4 dominios + API status + SSL expiry)
 - Dev local: Lando (.lando.yml), NO docker-compose.yml
 - URL dev: https://jaraba-saas.lndo.site/
 - Repo privado GitHub, CI: GitHub Actions (ci.yml, security-scan.yml, deploy.yml)
@@ -146,7 +149,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ICON-INTEGRITY-002: renderIcon() cascade fallback: SVG exacto → genérico categoría → placeholder invisible. NUNCA emoji chincheta. Logger warning en dev. Validación: `php scripts/validation/validate-icon-completeness.php`
 - ICON-CANVAS-INLINE-002: SVGs via `<img>` NO soportan currentColor (se interpreta como negro). Categoría `ai/` DEBE usar hex inline (#233D63, #FF8C42, #00A9A5)
 - MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
-- CASE-STUDY-PATTERN-001: Cada vertical comercial tiene landing caso de éxito (10 secciones, 6 WebP, CSS compartido jarabalex-case-study.css, precios desde controller). Módulos con str_starts_with en preprocess_page DEBEN excluir `.case_study.` routes. 9/9 cubiertos (Demo excluido). Validación: `php scripts/validation/validate-case-study-completeness.php`
+- CASE-STUDY-PATTERN-001: Cada vertical comercial tiene landing caso de éxito (15 secciones, LANDING-CONVERSION-SCORE-001 15/15). Controller unificado `CaseStudyLandingController` en `jaraba_success_cases`. Template único `case-study-landing.html.twig` con 15 parciales `_cs-*.html.twig`. Datos desde `SuccessCase` entity (SUCCESS-CASES-001). Precios desde `MetaSitePricingService` (NO-HARDCODE-PRICE-001). URLs via `Url::fromRoute()` (ROUTE-LANGPREFIX-001). Módulos con str_starts_with en preprocess_page DEBEN excluir `.case_study.` routes. 9/9 cubiertos (Demo excluido). Validación: `php scripts/validation/validate-case-study-completeness.php` + `php scripts/validation/validate-case-study-conversion-score.php` + `php scripts/validation/validate-success-cases-ssot.php`
+- SUCCESS-CASES-001: Todo caso de éxito publicado DEBE provenir de la entidad centralizada `SuccessCase`. NUNCA hardcodear métricas, testimonios o narrativas en controllers/templates. API: `/api/success-cases`. Seed: `scripts/migration/seed-success-cases.php`. Validación: `php scripts/validation/validate-success-cases-ssot.php`
 - DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
 - LEAD-MAGNET-CRM-001: PublicSubscribeController auto-crea CRM Contact (source=lead_magnet) + Opportunity (stage=mql) para sources lead_magnet_*. Servicios CRM opcionales via $container->has(). Patrón idéntico a VerticalQuizService::createCrmLead()
 - VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
@@ -441,12 +445,15 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-homepage-completeness.php` (HOMEPAGE-COMPLETENESS-001)
 - `php scripts/validation/validate-homepage-variant-coherence.php` (HOMEPAGE-VARIANT-COHERENCE-001)
 - `php scripts/validation/validate-homepage-video-a11y.php` (HOMEPAGE-VIDEO-A11Y-001)
+- `php scripts/validation/validate-email-sender.php` (EMAIL-SENDER-001)
+- `php scripts/validation/validate-deploy-safety.php` (DEPLOY-MAINTENANCE-SAFETY-001)
+- `php scripts/validation/validate-backup-health.php` (BACKUP-HEALTH-001)
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (94 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa (99 scripts, 100% madurez)
 
 | Capa | Mecanismo | Cuando | Cobertura |
 |------|-----------|--------|-----------|
-| 1 | 94 scripts validacion (scripts/validation/) | On demand, CI | 101 checks (84 run + 17 warn) |
+| 1 | 99 scripts validacion (scripts/validation/) | On demand, CI | 105 checks (87 run + 18 warn) |
 | 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 8 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS |
 | 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
 | 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
