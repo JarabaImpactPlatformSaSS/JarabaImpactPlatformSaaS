@@ -557,6 +557,15 @@ if [ "$MODE" = "full" ]; then
   run_check "CONTENT-SEED-INTEGRITY-001" "Metasite content seed JSON integrity" \
     php "$SCRIPT_DIR/validate-content-seed-integrity.php"
 
+  run_check "HOMEPAGE-SMOKE-TEST-001" "Homepage differentiation per metasite" \
+    php "$SCRIPT_DIR/validate-homepage-smoke-test.php"
+
+  run_check "RENDERED-HTML-FRESHNESS-001" "Canvas pages rendered_html completeness" \
+    php "$SCRIPT_DIR/validate-rendered-html-freshness.php"
+
+  warn_check "CONTENT-DRIFT-DETECTION-001" "Content seed JSON vs DB drift detection" \
+    php "$SCRIPT_DIR/validate-content-drift-detection.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

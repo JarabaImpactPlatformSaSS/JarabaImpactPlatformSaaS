@@ -419,7 +419,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 105 scripts validacion (88 run + 17 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 108 scripts validacion (90 run + 18 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia

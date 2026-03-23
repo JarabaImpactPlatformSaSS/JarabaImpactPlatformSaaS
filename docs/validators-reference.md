@@ -9,12 +9,12 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 105 |
-| run_check (CI blocker) | 88 |
-| warn_check (no blocker) | 17 |
+| Total scripts PHP | 108 |
+| run_check (CI blocker) | 90 |
+| warn_check (no blocker) | 18 |
 | Orphaned validators | 0 |
 
-## Run Checks — 88 (bloquean CI)
+## Run Checks — 90 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -104,16 +104,19 @@
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |
+| HOMEPAGE-SMOKE-TEST-001 | Homepage differentiation per metasite (homepage_id, rendered_html, meta_title_suffix) |
+| RENDERED-HTML-FRESHNESS-001 | Canvas pages rendered_html completeness (detects missing pre-render) |
 | VALIDATOR-COVERAGE-001 | Meta-safeguard: orphaned validator detection |
 | VERTICAL-COVERAGE-001 | All 9 commercial verticals in discovery points |
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 
-## Warn Checks — 16 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 18 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
 | CONFIG-DB-SYNC-001 | Config YAML vs DB sync state | Requiere DB |
+| CONTENT-DRIFT-DETECTION-001 | Content seed JSON vs DB drift detection | Post-lanzamiento |
 | CSP-DOMAIN-COMPLETENESS-001 | CSP external domain cross-reference | |
 | DEMO-COVERAGE-001 | Demo vertical coverage (13/13 profiles) | |
 | ENTITY-FIELD-DB-SYNC-001 | Entity field definitions match DB columns | Static check |
