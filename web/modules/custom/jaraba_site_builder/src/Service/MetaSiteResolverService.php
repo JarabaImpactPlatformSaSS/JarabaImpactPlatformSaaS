@@ -134,14 +134,20 @@ class MetaSiteResolverService {
 
         if (!empty($domains)) {
           $domain = reset($domains);
-          $tenants = $this->entityTypeManager->getStorage('tenant')
-            ->loadByProperties(['domain_id' => $domain->id()]);
+          // El dominio default (is_default=TRUE) es el sitio SaaS principal,
+          // NO un meta-sitio de tenant. Ignorarlo evita desactivar el mega
+          // menú y otras features SaaS en el dominio principal.
+          /** @var \Drupal\domain\DomainInterface $domain */
+          if (!$domain->isDefault()) {
+            $tenants = $this->entityTypeManager->getStorage('tenant')
+              ->loadByProperties(['domain_id' => $domain->id()]);
 
-          if (!empty($tenants)) {
-            $tenant = reset($tenants);
-            $groupId = $tenant->get('group_id')->target_id ?? NULL;
-            if ($groupId) {
-              return (int) $groupId;
+            if (!empty($tenants)) {
+              $tenant = reset($tenants);
+              $groupId = $tenant->get('group_id')->target_id ?? NULL;
+              if ($groupId) {
+                return (int) $groupId;
+              }
             }
           }
         }

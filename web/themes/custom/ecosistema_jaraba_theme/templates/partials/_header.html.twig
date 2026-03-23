@@ -54,6 +54,11 @@
 {# I18N-NAVPREFIX-001: language_prefix = "" for default lang, "/en" or "/pt-br" for others #}
 {% set lp = language_prefix|default('') %}
 
+{# MEGAMENU-INJECT-001: Si mega_menu_columns no fue pasado explícitamente
+   por el page template (include ... only sin la variable), usar el fallback
+   inyectado en theme_settings._mega_menu_columns desde preprocess_page. #}
+{% set resolved_mega_columns = mega_menu_columns|default(ts._mega_menu_columns|default([])) %}
+
 {# Incluir sub-partial según layout validado — pasamos nav_items parseados #}
 {% include '@ecosistema_jaraba_theme/partials/_header-' ~ layout ~ '.html.twig' with {
   site_name: site_name,
@@ -66,7 +71,7 @@
   current_langcode: current_langcode|default('es'),
   language_prefix: lp,
   language_links: language_links|default({}),
-  mega_menu_columns: mega_menu_columns|default([]),
+  mega_menu_columns: resolved_mega_columns,
 } only %}
 
 {# Mobile Menu Overlay (compartido por todos los layouts) #}
@@ -77,7 +82,7 @@
   <nav class="mobile-menu-nav" aria-label="{% trans %}Mobile navigation{% endtrans %}">
     {% if use_megamenu %}
     {# Mega menu accordion — datos desde mega_menu_columns (PHP preprocess) #}
-    {% for column in mega_menu_columns|default([]) %}
+    {% for column in resolved_mega_columns %}
       <details class="mobile-menu-group"{{ loop.first ? ' open' : '' }}>
         <summary class="mobile-menu-group__title">{{ column.title }}</summary>
         <ul class="mobile-menu-list">

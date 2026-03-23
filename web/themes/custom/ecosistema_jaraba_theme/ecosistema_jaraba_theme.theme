@@ -3067,6 +3067,10 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     // Mega menu columns: Fase B — primero intenta datos configurables desde UI
     // (SiteMenuItem entities via MegaMenuBridgeService). Si no hay menú
     // configurado, usa fallback hardcodeado (Fase A).
+    // MEGAMENU-INJECT-001: Inyectar columnas TANTO en $variables (para
+    // templates que pasan mega_menu_columns explícitamente) COMO en
+    // theme_settings._mega_menu_columns (para que viaje automáticamente
+    // con theme_settings y no dependa de cada page template).
     $lp = $variables['language_prefix'] ?? '';
     $dynamicColumns = NULL;
     if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
@@ -3167,6 +3171,11 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         ],
       ],
     ];
+
+    // MEGAMENU-INJECT-001: Duplicar en theme_settings para que viaje con
+    // {% include ... with { theme_settings: theme_settings } only %} sin
+    // necesidad de pasar mega_menu_columns explícitamente en cada template.
+    $variables['theme_settings']['_mega_menu_columns'] = $variables['mega_menu_columns'];
   }
 
   // =========================================================================
