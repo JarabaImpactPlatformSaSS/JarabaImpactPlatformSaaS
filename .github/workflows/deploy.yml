@@ -566,6 +566,17 @@ jobs:
               echo "  ✅ jaraba-common.conf is up-to-date"
             fi
 
+            # PHP-FPM upstream definition (required by jaraba-common.conf)
+            UP_SRC="config/deploy/nginx-upstream-php-fpm.conf"
+            UP_DST="/etc/nginx/conf.d/upstream-php-fpm.conf"
+            if ! diff -q "$UP_SRC" "$UP_DST" > /dev/null 2>&1; then
+              sudo cp "$UP_SRC" "$UP_DST"
+              echo "  Updated: $UP_DST"
+              NGINX_CHANGED=1
+            else
+              echo "  ✅ upstream-php-fpm.conf is up-to-date"
+            fi
+
             # Metasites vhost config
             META_SRC="config/deploy/nginx-metasites.conf"
             META_DST="/etc/nginx/sites-available/jaraba-metasites.conf"
