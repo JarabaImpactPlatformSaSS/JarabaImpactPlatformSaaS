@@ -252,22 +252,11 @@ jobs:
           echo "  Size: ${{ steps.backup.outputs.size }} bytes"
           echo "  Integrity: ${{ steps.verify.outputs.integrity }}"
 
-      - name: Notify failure via Slack
+      - name: Notify failure via email
         if: failure()
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "❌ *Daily Backup Failed*\n*Status:* `${{ steps.backup.outputs.status || 'unknown' }}`\n*Integrity:* `${{ steps.verify.outputs.integrity || 'not checked' }}`\n*File:* `${{ steps.backup.outputs.file || 'none' }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         continue-on-error: true
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "cd /var/www/jaraba && php scripts/ci-notify-email.php \
+              '[CI] Daily Backup FAILED' \
+              '<h2>Daily Backup Failed</h2><p><b>Status:</b> ${{ steps.backup.outputs.status || 'unknown' }}</p><p><b>Integrity:</b> ${{ steps.verify.outputs.integrity || 'not checked' }}</p><p><b>File:</b> ${{ steps.backup.outputs.file || 'none' }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Logs</a></p>'"

@@ -131,25 +131,14 @@ jobs:
           echo "  Size: ${{ steps.check.outputs.latest_size }} bytes"
           echo "  Age: ${{ steps.check.outputs.latest_age }}h"
 
-      - name: Notify failure via Slack
+      - name: Notify failure via email
         if: steps.check.outputs.status != 'ok'
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "⚠️ *Backup Verification Failed*\n*Status:* `${{ steps.check.outputs.status }}`\n*Issue:* ${{ steps.check.outputs.issues }}\n*Total backups:* ${{ steps.check.outputs.total }}\n*Latest age:* ${{ steps.check.outputs.latest_age }}h\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         continue-on-error: true
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "cd /var/www/jaraba && php scripts/ci-notify-email.php \
+              '[CI] Backup Verification FAILED' \
+              '<h2>Backup Verification Failed</h2><p><b>Status:</b> ${{ steps.check.outputs.status }}</p><p><b>Issue:</b> ${{ steps.check.outputs.issues }}</p><p><b>Total backups:</b> ${{ steps.check.outputs.total }}</p><p><b>Latest age:</b> ${{ steps.check.outputs.latest_age }}h</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Details</a></p>'"
 
       - name: Fail if backups are critical
         if: steps.check.outputs.status == 'critical'
