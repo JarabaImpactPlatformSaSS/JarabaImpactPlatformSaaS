@@ -48,7 +48,7 @@ jobs:
 
       - name: PHP CodeSniffer (Drupal Standard)
         run: |
-          phpcs --standard=Drupal,DrupalPractice \
+          vendor/bin/phpcs --standard=Drupal,DrupalPractice \
             --extensions=php,module,inc,install,theme \
             --ignore=*/vendor/*,*/node_modules/* \
             web/modules/custom
