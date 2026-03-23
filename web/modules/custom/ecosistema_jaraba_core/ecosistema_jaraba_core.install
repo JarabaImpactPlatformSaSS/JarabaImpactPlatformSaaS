@@ -732,10 +732,10 @@ function ecosistema_jaraba_core_schema() {
       ],
       'client_ip' => [
         'type' => 'varchar',
-        'length' => 45,
+        'length' => 64,
         'not null' => TRUE,
         'default' => '',
-        'description' => 'IP del cliente (IPv4 o IPv6).',
+        'description' => 'SHA-256 hash of client IP (GDPR anonymized, daily rotation).',
       ],
       'session_data' => [
         'type' => 'text',
@@ -3797,4 +3797,31 @@ function ecosistema_jaraba_core_update_9046(): string {
   }
 
   return implode('. ', $messages);
+}
+
+/**
+ * Ampliar demo_sessions.client_ip de varchar(45) a varchar(64).
+ *
+ * El campo almacena hashes SHA-256 (64 hex chars) para anonimización
+ * GDPR de IPs. La columna original era varchar(45) — diseñada para
+ * IPv6 plain, no para hashes. Causa SQLSTATE[22001] Data too long.
+ */
+function ecosistema_jaraba_core_update_9047(): string {
+  try {
+    $schema = \Drupal::database()->schema();
+    if ($schema->tableExists('demo_sessions') && $schema->fieldExists('demo_sessions', 'client_ip')) {
+      $schema->changeField('demo_sessions', 'client_ip', 'client_ip', [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'SHA-256 hash of client IP (GDPR anonymized, daily rotation).',
+      ]);
+      return 'demo_sessions.client_ip ampliado a varchar(64) para SHA-256 hashes.';
+    }
+    return 'demo_sessions table o client_ip column no encontrada — skipped.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
 }
