@@ -31,6 +31,7 @@ class CaseStudyRouteSubscriber extends RouteSubscriberBase {
     'jaraba_servicios_conecta.case_study.carmen_navarro' => ['vertical_path' => 'serviciosconecta', 'slug' => 'carmen-navarro-madrid'],
     'jaraba_lms.case_study.maria_lopez' => ['vertical_path' => 'formacion', 'slug' => 'maria-lopez-madrid'],
     'jaraba_andalucia_ei.case_study.ped' => ['vertical_path' => 'andalucia-ei', 'slug' => 'plataforma-ecosistemas-digitales'],
+    'jaraba_andalucia_ei.case_study.diputacion_jaen' => ['vertical_path' => 'andalucia-ei', 'slug' => 'diputacion-jaen'],
     'jaraba_content_hub.case_study.bodega_montilla' => ['vertical_path' => 'content-hub', 'slug' => 'bodega-montilla-cordoba'],
   ];
 

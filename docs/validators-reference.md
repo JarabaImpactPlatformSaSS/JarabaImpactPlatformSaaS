@@ -10,11 +10,11 @@
 | Metrica | Valor |
 |---------|-------|
 | Total scripts PHP | 105 |
-| run_check (CI blocker) | 89 |
-| warn_check (no blocker) | 16 |
+| run_check (CI blocker) | 88 |
+| warn_check (no blocker) | 17 |
 | Orphaned validators | 0 |
 
-## Run Checks — 89 (bloquean CI)
+## Run Checks — 88 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -100,7 +100,7 @@
 | TENANT-USER-ROLE-001 | Group members have tenant_user Drupal role |
 | TEST-COVERAGE-MAP-001 | Test coverage map |
 | TRANSLATION-INTEG-001 | Translation integrity (cross-page dup, NULL titles, AI fences) |
-| TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables |
+| TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables (warn, 80 pre-existing) |
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |

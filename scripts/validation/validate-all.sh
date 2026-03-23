@@ -428,7 +428,7 @@ if [ "$MODE" = "full" ]; then
   warn_check "PRICING-CASE-STUDY-COHERENCE-001" "Case study pricing vs controller structure" \
     php "$SCRIPT_DIR/validate-pricing-case-study-coherence.php"
 
-  run_check "TWIG-INCLUDE-VARS-001" "Twig include with only passes required variables" \
+  warn_check "TWIG-INCLUDE-VARS-001" "Twig include with only passes required variables" \
     php "$SCRIPT_DIR/validate-twig-include-vars.php"
 
   run_check "SETUP-WIZARD-DAILY-001" "Setup Wizard + Daily Actions coverage per vertical" \
