@@ -7,9 +7,13 @@
 #}
 <div class="page-wrapper page-wrapper--clean page-wrapper--full-width">
 
-  {# Eliminamos 'only' para permitir que pasen las variables site_name, logo, etc. #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
-    'clean_layout': true
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings,
+    clean_layout: true,
   } only %}
 
   <main role="main" id="main-content" class="main-content-clean">
@@ -19,7 +23,9 @@
   </main>
 
   {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
-    'clean_layout': true
+    site_name: site_name,
+    theme_settings: theme_settings,
+    clean_layout: true,
   } only %}
 
 </div>

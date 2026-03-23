@@ -569,6 +569,20 @@ if [ "$MODE" = "full" ]; then
   warn_check "CONTENT-DRIFT-DETECTION-001" "Content seed JSON vs DB drift detection" \
     php "$SCRIPT_DIR/validate-content-drift-detection.php"
 
+  # ── Safeguard System Fase 8 — Complitud, integridad y regresión silenciosa ──
+
+  run_check "TEMPLATE-CONTRACT-001" "Page template include-only contract compliance" \
+    php "$SCRIPT_DIR/validate-template-contract.php"
+
+  warn_check "ROUTE-REFERENCE-INTEGRITY-001" "Url::fromRoute() references existing routes" \
+    php "$SCRIPT_DIR/validate-route-reference-integrity.php"
+
+  run_check "DOMAIN-DEFAULT-GUARD-001" "Default domain protected from meta-site resolution" \
+    php "$SCRIPT_DIR/validate-domain-default-guard.php"
+
+  warn_check "VISUAL-REGRESSION-001" "Critical page structural smoke test (requires Lando)" \
+    php "$SCRIPT_DIR/validate-visual-smoke.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

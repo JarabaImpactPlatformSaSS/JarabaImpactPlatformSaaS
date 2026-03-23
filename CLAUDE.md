@@ -415,7 +415,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 109 validators individuales en `scripts/validation/` (91 run + 18 warn). Lista completa: `docs/validators-reference.md`
+- 113 validators individuales en `scripts/validation/` (93 run + 20 warn). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa

@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 109 |
-| run_check (CI blocker) | 91 |
-| warn_check (no blocker) | 18 |
+| Total scripts PHP | 113 |
+| run_check (CI blocker) | 93 |
+| warn_check (no blocker) | 20 |
 | Orphaned validators | 0 |
 
 ## Run Checks — 90 (bloquean CI)
@@ -89,6 +89,8 @@
 | ROUTE-PERMISSION-AUDIT-001 | Route access control completeness |
 | ROUTE-SUBSCRIBER-PARITY-001 | Case study route subscriber covers legacy routes |
 | MEGAMENU-INJECT-001 | Mega menu columns injected via theme_settings fallback (3 checks) |
+| TEMPLATE-CONTRACT-001 | Page template include-only contract compliance (theme_settings required) |
+| DOMAIN-DEFAULT-GUARD-001 | Default domain protected from meta-site resolution |
 | SAFEGUARD-AEI-CAMPAIGN-001 | Andalucia +ei reclutamiento landing readiness |
 | SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
 | SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |
@@ -112,7 +114,7 @@
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 
-## Warn Checks — 18 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 20 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
@@ -133,6 +135,8 @@
 | SCSS-COMPILE-FRESHNESS-001 | SCSS compiled CSS freshness vs partials | Git checkout issue |
 | SVG-CURRENTCOLOR-001 | SVG currentColor usage in img tags | |
 | TWIG-INCLUDE-ONLY-001 | Twig includes use only keyword | 144 pre-existing |
+| ROUTE-REFERENCE-INTEGRITY-001 | Url::fromRoute() references existing routes | 12 pre-existing |
+| VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 
 ## Pre-commit lint-staged (9 hooks)
 
