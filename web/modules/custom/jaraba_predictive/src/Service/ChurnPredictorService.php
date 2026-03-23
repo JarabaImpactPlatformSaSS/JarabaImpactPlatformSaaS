@@ -92,7 +92,14 @@ class ChurnPredictorService {
     $tenant = $groupStorage->load($tenantId);
 
     if (!$tenant) {
-      throw new \InvalidArgumentException("Tenant con ID {$tenantId} no encontrado.");
+      $this->logger->warning('ChurnPredictor: Tenant con ID @id no encontrado. Devolviendo riesgo neutro.', ['@id' => $tenantId]);
+      return [
+        'risk_score' => 0,
+        'risk_level' => 'unknown',
+        'signals' => [],
+        'tenant_id' => $tenantId,
+        'error' => 'tenant_not_found',
+      ];
     }
 
     $config = $this->configFactory->get('jaraba_predictive.settings');
