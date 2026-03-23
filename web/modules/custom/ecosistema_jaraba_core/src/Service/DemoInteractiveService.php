@@ -1260,7 +1260,9 @@ class DemoInteractiveService
     {
         try {
             // S6-09: Anonimizar IP con hash diario (GDPR).
-            $hashedIp = $clientIp ? hash('sha256', $clientIp . date('Y-m-d') . Settings::getHashSalt()) : '';
+            // Truncar a 45 chars (max client_ip column) — SHA-256 truncado sigue
+            // siendo suficiente para rate limiting y anonimización GDPR.
+            $hashedIp = $clientIp ? substr(hash('sha256', $clientIp . date('Y-m-d') . Settings::getHashSalt()), 0, 45) : '';
 
             $this->database->merge('demo_sessions')
                 ->keys(['session_id' => $sessionId])
