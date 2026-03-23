@@ -9,12 +9,9 @@
 - Multi-tenancy: Group Module (soft isolation) + TenantBridgeService
 - Pagos: Stripe Connect (destination charges)
 - IA: Claude API + Gemini API con strict grounding, 11 agentes Gen 2
-- Servidor: IONOS Dedicated AE12-128 NVMe (AMD EPYC 4465P 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04)
-- IP produccion: 82.223.204.169, SSH puerto 2222, usuario jaraba
-- Stack nativo: Nginx + PHP-FPM 8.4 (24 workers, OPcache 256MB validate_timestamps=0) + MariaDB 10.11 (InnoDB 16GB) + Redis 7.4 + Supervisor (4 AI workers con sleep) + Tika (Docker)
-- Backup 3 capas: local (24h) + Hetzner Object Storage S3 (30d) + NAS GoodSync SFTP (indefinido). Cron cada 6h. RPO <6h
-- Email: SMTP IONOS (smtp.ionos.es:587), From: contacto@plataformadeecosistemas.com. Symfony Mailer + email-wrap.html.twig premium
-- Monitoring: UptimeRobot (4 dominios + API status + SSL expiry)
+- Servidor: IONOS Dedicated (AMD EPYC 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04). IP: 82.223.204.169, SSH: 2222
+- Stack nativo: Nginx + PHP-FPM 8.4 + MariaDB 10.11 + Redis 7.4 + Supervisor (4 AI workers) + Tika
+- Email: SMTP IONOS (smtp.ionos.es:587), From: contacto@plataformadeecosistemas.com
 - Dev local: Lando (.lando.yml), NO docker-compose.yml
 - URL dev: https://jaraba-saas.lndo.site/
 - Repo privado GitHub, CI: GitHub Actions (ci.yml, security-scan.yml, deploy.yml)
@@ -149,63 +146,35 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ICON-INTEGRITY-002: renderIcon() cascade fallback: SVG exacto → genérico categoría → placeholder invisible. NUNCA emoji chincheta. Logger warning en dev. Validación: `php scripts/validation/validate-icon-completeness.php`
 - ICON-CANVAS-INLINE-002: SVGs via `<img>` NO soportan currentColor (se interpreta como negro). Categoría `ai/` DEBE usar hex inline (#233D63, #FF8C42, #00A9A5)
 - MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
-- CASE-STUDY-PATTERN-001: Cada vertical comercial tiene landing caso de éxito (15 secciones, LANDING-CONVERSION-SCORE-001 15/15). Controller unificado `CaseStudyLandingController` en `jaraba_success_cases`. Template único `case-study-landing.html.twig` con 15 parciales `_cs-*.html.twig`. Datos desde `SuccessCase` entity (SUCCESS-CASES-001). Precios desde `MetaSitePricingService` (NO-HARDCODE-PRICE-001). URLs via `Url::fromRoute()` (ROUTE-LANGPREFIX-001). Módulos con str_starts_with en preprocess_page DEBEN excluir `.case_study.` routes. 9/9 cubiertos (Demo excluido). Validación: `php scripts/validation/validate-case-study-completeness.php` + `php scripts/validation/validate-case-study-conversion-score.php` + `php scripts/validation/validate-success-cases-ssot.php`
-- SUCCESS-CASES-001: Todo caso de éxito publicado DEBE provenir de la entidad centralizada `SuccessCase`. NUNCA hardcodear métricas, testimonios o narrativas en controllers/templates. API: `/api/success-cases`. Seed: `scripts/migration/seed-success-cases.php`. Validación: `php scripts/validation/validate-success-cases-ssot.php`
+- CASE-STUDY-PATTERN-001: Landing caso de éxito 15/15. Controller unificado `CaseStudyLandingController`, template `case-study-landing.html.twig` + 15 parciales `_cs-*.html.twig`. Datos desde SuccessCase entity (SUCCESS-CASES-001). preprocess_page DEBE excluir `.case_study.` routes. 9/9 verticales
+- SUCCESS-CASES-001: Todo caso de éxito DEBE provenir de SuccessCase entity. NUNCA hardcodear en controllers/templates. API: `/api/success-cases`
 - DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
 - LEAD-MAGNET-CRM-001: PublicSubscribeController auto-crea CRM Contact (source=lead_magnet) + Opportunity (stage=mql) para sources lead_magnet_*. Servicios CRM opcionales via $container->has(). Patrón idéntico a VerticalQuizService::createCrmLead()
 - VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
 - LANDING-CONVERSION-SCORE-001: 15 criterios para landing 10/10 clase mundial (hero+urgency, trust badges, pain points, steps, features, comparison, social proof, lead magnet, pricing tiers, FAQ, final CTA, sticky CTA, reveal animations, tracking, mobile-first)
-- HOMEPAGE-ELEVATION-001: Homepage SaaS + 3 metasitios elevados a 10/10. 4 variantes via `homepage_variant` en preprocess (pepejaraba=5 marca persona, jarabaimpact=6 franquicia, pde=7 corporativo, generic). Parciales: _homepage-pain-points, _homepage-pricing-preview, _homepage-comparison, _homepage-features. Video hero demo-showcase.mp4. Validator: HOMEPAGE-COMPLETENESS-001 (15 checks)
+- HOMEPAGE-ELEVATION-001: 4 variantes homepage via `homepage_variant` en preprocess (pepejaraba=5, jarabaimpact=6, pde=7, generic). Parciales: _homepage-pain-points, _homepage-pricing-preview, _homepage-comparison, _homepage-features
 
 ### Quiz de Recomendacion de Vertical
-- Ruta: `/test-vertical` (publica, accesible sin login)
-- Entity: `QuizResult` — persiste respuestas, scores, recomendacion IA, email, UTM, ip_hash (GDPR)
-- Service: `VerticalQuizService` — scoring estatico (reglas) + IA async (tier fast) + CRM lead
-- 4 preguntas: perfil, sector, necesidad, urgencia → scoring 9 verticales → top 1 + 2 alternativas
-- CRM: Auto-crea Contact (source=quiz_vertical) + Opportunity (stage=mql, BANT parcial)
-- QUIZ-FUNNEL-001: Validacion integridad del funnel quiz. 18 checks. `php scripts/validation/validate-quiz-funnel.php`
-- CTA-DESTINATION-001: Validar que CTAs apuntan a rutas existentes. `php scripts/validation/validate-cta-destinations.php`
-- FUNNEL-COMPLETENESS-001: Todo CTA de conversion DEBE tener data-track-cta + data-track-position. `php scripts/validation/validate-funnel-tracking.php`
-- VERTICAL-COVERAGE-001: Los 9 verticales comerciales DEBEN estar en mega menu, quiz y cross-pollination. `php scripts/validation/validate-vertical-coverage.php`
-- Setup Wizard: CompletarQuizStep (global, opcional, weight 85) — incentiva quiz a logueados que no lo hicieron
-- Daily Action: ExplorarQuizAction (global) — visible solo si uid no tiene QuizResult
-- MegaMenuBridgeService: Lee SiteMenuItem entities tipo mega_column → genera mega_menu_columns. Fallback a array PHP estatico si no hay menu configurado en UI
-- Post-registro: TenantOnboardingService paso 9 vincula quiz_uuid → user via VerticalQuizService::linkResultToUser()
-- Email drip: QuizFollowUpCron en hook_cron — 3 fases (24h, 72h, 7d) para leads no convertidos con email
-- QUIZ-FOLLOWUP-DRIP-001: hook_mail case 'quiz_followup' con subject por fase + CTA registro
+- Ruta: `/test-vertical` (publica). Entity: `QuizResult`. Service: `VerticalQuizService` (scoring + IA + CRM lead)
+- QUIZ-FUNNEL-001: Validacion integridad funnel quiz (18 checks)
+- CTA-DESTINATION-001: CTAs DEBEN apuntar a rutas existentes
+- FUNNEL-COMPLETENESS-001: Todo CTA de conversion DEBE tener data-track-cta + data-track-position
+- VERTICAL-COVERAGE-001: 9 verticales comerciales DEBEN estar en mega menu, quiz y cross-pollination
+- MegaMenuBridgeService: SiteMenuItem → mega_menu_columns (DB priority, PHP fallback)
+- QUIZ-FOLLOWUP-DRIP-001: hook_cron drip 3 fases (24h, 72h, 7d) para leads no convertidos
 
 ### Precios y Valores Configurables (NO-HARDCODE-PRICE-001)
 - NUNCA hardcodear precios EUR en templates Twig. SIEMPRE desde MetaSitePricingService
 - Inyectar en preprocess: `$variables['ped_pricing']` via `ecosistema_jaraba_core.metasite_pricing`
 - En Twig: `{{ ped_pricing.{vertical}.professional_price|default(fallback) }}`
-- Competidores (Aranzadi, vLex) son excepcion: referencia externa no controlable
-- Textos marketing (FAQs, propuestas de valor, tax disclaimer) DEBEN ser configurables desde Theme Settings. Fallbacks hardcoded solo para instalaciones frescas
-- Validacion: `php scripts/validation/validate-no-hardcoded-prices.php` + post-edit-lint hook
-- Admin: `/admin/structure/saas-plan`
+- Textos marketing configurables desde Theme Settings. Admin: `/admin/structure/saas-plan`
 
-### Modelo de Pricing 4 Tiers (PRICING-4TIER-001)
-- 4 SaasPlanTier ConfigEntities: free (weight=-10), starter (weight=0), professional (weight=10), enterprise (weight=20)
-- El alias 'free' NO es parte de starter — es un tier independiente
-- TODA vertical comercial DEBE tener SaasPlan ContentEntity para cada tier
-- Validacion: `php scripts/validation/validate-pricing-tiers.php`
-
-### Features Acumulativas (PRICING-FEATURES-ACCUMULATE-001)
-- Las features de pricing se ACUMULAN entre tiers: Free < Starter < Professional < Enterprise
-- MetaSitePricingService::getPricingPreview() combina: SaasPlan features (base) + SaasPlanFeatures config (avanzadas) + herencia del tier anterior
-- Fuente unica: SaasPlanFeatures ConfigEntity para TODOS los tiers (incluyendo {vertical}_free)
-- Si falta SaasPlanFeatures para un tier, se usa _default_{tier} como fallback
-
-### Coherencia Addon Pricing (ADDON-PRICING-001)
-- Precio addon DEBE ser <= precio Starter del vertical correspondiente
-- Regla orientativa: addon_price ≈ 60% del Starter price
-- Un addon mas caro que el Starter crea incentivo perverso
-- Validacion: `php scripts/validation/validate-pricing-tiers.php` CHECK 6
-
-### Descuento Anual (ANNUAL-DISCOUNT-001)
-- price_yearly DEBE ser price_monthly x 12 x 0.80 (descuento 20%, "2 meses gratis")
-- Tolerancia: ± 2 EUR por redondeo
-- Badge dinamico en pricing-page.html.twig (calculado desde tiers reales, NO hardcoded)
-- Validacion: `php scripts/validation/validate-pricing-tiers.php` CHECK 3
+### Pricing 4 Tiers (PRICING-4TIER-001)
+- 4 SaasPlanTier ConfigEntities: free (weight=-10), starter (0), professional (10), enterprise (20)
+- 'free' es tier independiente (NO parte de starter). TODA vertical DEBE tener SaasPlan por tier
+- PRICING-FEATURES-ACCUMULATE-001: Features se ACUMULAN entre tiers. MetaSitePricingService::getPricingPreview() hereda del tier anterior. SaasPlanFeatures ConfigEntity como fuente unica
+- ADDON-PRICING-001: Precio addon DEBE ser <= precio Starter (~60%). Incentivo perverso si mayor
+- ANNUAL-DISCOUNT-001: price_yearly = price_monthly x 12 x 0.80 (±2 EUR tolerancia)
 
 ### Compilacion CSS Componentes (SCSS-COMPONENT-BUILD-001)
 - TODO CSS cargado como library separada (css/components/*.css, css/routes/*.css) DEBE estar incluido en `npm run build` del tema
@@ -266,12 +235,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ## INFRAESTRUCTURA PRODUCCION
 
 ### Backup 3 Capas (BACKUP-3LAYER-001)
-- Capa 1: Local `/opt/jaraba/backups/latest.sql.gz` (24h retencion)
-- Capa 2: Hetzner Object Storage S3 `jaraba-backups/database/` (30 dias, lifecycle rule)
-- Capa 3: NAS 16TB via GoodSync SFTP `/home/jaraba/backups/daily/` (retencion indefinida)
-- Script: `/opt/jaraba/scripts/backup.sh`, cron cada 6h (00:00, 06:00, 12:00, 18:00 UTC)
-- RPO <6h, RTO <1h desde Hetzner, minutos desde local
-- GoodSync SFTP: usuario `goodsync` chrooted a `/home/goodsync/backups/` con bind mounts
+- Local (24h) + Hetzner S3 (30d) + NAS GoodSync SFTP (indefinido). Cron cada 6h. RPO <6h
 
 ### Deploy Safety
 - DEPLOY-MAINTENANCE-SAFETY-001: Step "Disable maintenance mode" en deploy.yml DEBE tener `if: always()`. Sin esto, deploy fallido deja sitio en 503 indefinidamente
@@ -326,22 +290,18 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COPILOT-LEAD-CAPTURE-001: CopilotLeadCaptureService detecta intencion de compra (regex, NO LLM) y crea CRM Contact+Opportunity. Patron LEAD-MAGNET-CRM-001. Dependencias CRM opcionales (@?)
 - COPILOT-FUNNEL-TRACKING-001: CopilotFunnelTrackingService loguea eventos embudo en tabla copilot_funnel_event. 8 tipos evento. Alto volumen (tabla directa, no entity)
 
-### Legal Coherence Intelligence System (LCIS)
-- LCIS-AUDIT-001: Audit trail obligatorio para EU AI Act Art. 12. Toda respuesta legal trazable
-- LCIS-GRAPH-001: Normative graph con derogaciones/modificaciones entre normas juridicas
+### LCIS (Legal Coherence Intelligence System)
+- LCIS-AUDIT-001: Audit trail obligatorio EU AI Act Art. 12. LCIS-GRAPH-001: Normative graph con derogaciones
 - 9 capas: KB → IntentClassifier → NormativeGraph → PromptRule → Response → Validator → Verifier → Disclaimer → Feedback
 
 ### Servicios Clave IA
 - ModelRouterService, ProviderFallbackService (circuit breaker), ContextWindowManager
-- ReActLoopService, HandoffDecisionService, ToolRegistry (tagged services)
-- StreamingOrchestratorService (SSE via PHP Generator), TraceContextService
-- SemanticCacheService (Qdrant), AgentLongTermMemoryService, AgentBenchmarkService
-- AutoDiagnosticService (self-healing via State API), PromptVersionService
-- FairUsePolicyService: enforcement de limites por plan, burst tolerance, grace period
-- ActivePromotionService: conciencia centralizada de promociones activas (PromotionConfig ConfigEntity)
-- ContentGroundingService v2: 10 GroundingProviders (CompilerPass + tagged services). Busca contenido real en TODOS los entity types del ecosistema
-- CopilotLeadCaptureService: deteccion intencion compra (regex) + CRM leads. Patron LEAD-MAGNET-CRM-001
-- CopilotFunnelTrackingService: tabla copilot_funnel_event, 8 tipos evento embudo ventas
+- StreamingOrchestratorService (SSE via PHP Generator), ReActLoopService, ToolRegistry (tagged)
+- SemanticCacheService (Qdrant), FairUsePolicyService, AutoDiagnosticService (self-healing)
+- ActivePromotionService: PromotionConfig ConfigEntity, cache tag promotion_config_list
+- ContentGroundingService v2: 10 GroundingProviders (CompilerPass + tagged)
+- CopilotLeadCaptureService: intent detection (regex) + CRM leads (LEAD-MAGNET-CRM-001)
+- CopilotFunnelTrackingService: tabla copilot_funnel_event, 8 tipos evento
 
 ## GRAPESJS / PAGE BUILDER
 
@@ -381,9 +341,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v161.0.0
-- ARQUITECTURA: v146.0.0
-- INDICE: v190.0.0
+- DIRECTRICES: v162.0.0
+- ARQUITECTURA: v147.0.0
+- INDICE: v191.0.0
 - FLUJO: v112.0.0
 - Ultimo aprendizaje: #214
 - Ultima golden rule: #151
@@ -442,77 +402,14 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - Memory files actualizados si patron nuevo
 
 ### Automatizacion
-- `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- `php scripts/validation/validate-service-consumers.php` (SERVICE-ORPHAN-001)
-- `php scripts/validation/validate-compiled-assets.php` (ASSET-FRESHNESS-001)
-- `php scripts/validation/validate-scss-compile-freshness.php` (SCSS-COMPILE-FRESHNESS-001) — verifica que CADA CSS route/bundle es más reciente que TODOS los SCSS parciales que importa
-- `php scripts/validation/validate-case-study-conversion-score.php` (CASE-STUDY-CONVERSION-001) — 15/15 LANDING-CONVERSION-SCORE
-- `php scripts/validation/validate-success-cases-ssot.php` (SUCCESS-CASES-SSOT-001) — SuccessCase entity es SSOT
-- `php scripts/validation/validate-tenant-isolation.php` (TENANT-CHECK-001)
-- `php scripts/validation/validate-test-coverage-map.php` (TEST-COVERAGE-MAP-001)
-- `php scripts/validation/validate-circular-deps.php` (CONTAINER-DEPS-002)
-- `php scripts/validation/validate-optional-deps.php` (OPTIONAL-CROSSMODULE-001)
-- `php scripts/validation/validate-logger-injection.php` (LOGGER-INJECT-001)
-- `php scripts/validation/validate-icon-references.php` (ICON-INTEGRITY-001)
-- `php scripts/validation/validate-quiz-funnel.php` (QUIZ-FUNNEL-001)
-- `php scripts/validation/validate-cta-destinations.php` (CTA-DESTINATION-001)
-- `php scripts/validation/validate-funnel-tracking.php` (FUNNEL-COMPLETENESS-001)
-- `php scripts/validation/validate-vertical-coverage.php` (VERTICAL-COVERAGE-001)
-- `php scripts/validation/validate-wizard-daily-coverage.php` (SETUP-WIZARD-DAILY-001)
-- `php scripts/validation/validate-page-builder-onboarding.php` (PB-ONBOARDING-001)
-- `php scripts/validation/validate-content-pipeline-e2e.php` (CONTENT-E2E-001)
-- `php scripts/validation/validate-plg-triggers.php` (PLG-COVERAGE-001)
-- `php scripts/validation/validate-icon-completeness.php` (ICON-COMPLETENESS-001)
-- `php scripts/validation/validate-marketing-truth.php` (MARKETING-TRUTH-001)
-- `php scripts/validation/validate-case-study-completeness.php` (CASE-STUDY-COMPLETENESS-001)
-- `php scripts/validation/validate-hook-theme-completeness.php` (HOOK-THEME-COMPLETENESS-001)
-- `php scripts/validation/validate-duplicate-hooks.php` (DUPLICATE-HOOK-001)
-- `php scripts/validation/validate-scss-variables.php` (SCSS-VARIABLE-EXIST-001)
-- `php scripts/validation/validate-library-attachments.php` (LIBRARY-ATTACHMENT-001) [warn]
-- `php scripts/validation/validate-twig-syntax.php` (TWIG-SYNTAX-LINT-001)
-- `php scripts/validation/validate-twig-include-only.php` (TWIG-INCLUDE-ONLY-001) [warn]
-- `php scripts/validation/validate-route-permissions.php` (ROUTE-PERMISSION-AUDIT-001)
-- `php scripts/validation/validate-hook-update-coverage.php` (HOOK-UPDATE-COVERAGE-001)
-- `php scripts/validation/validate-js-syntax.php` (JS-SYNTAX-LINT-001)
-- `php scripts/validation/validate-csp-completeness.php` (CSP-DOMAIN-COMPLETENESS-001) [warn]
-- `php scripts/validation/validate-hook-requirements-coverage.php` (HOOK-REQUIREMENTS-COVERAGE-001) [warn]
-- `php scripts/validation/validate-validator-coverage.php` (VALIDATOR-COVERAGE-001) — meta-safeguard
-- `php scripts/validation/validate-pricing-tiers.php` (PRICING-TIER-PARITY-001 + PRICING-4TIER-001 + ANNUAL-DISCOUNT-001)
-- `php scripts/validation/validate-schema-org-pricing.php` (SCHEMA-PRICING-001)
-- `php scripts/validation/validate-pricing-coherence.php` (PRICING-COHERENCE-001)
-- `php scripts/validation/validate-copilot-grounding-coverage.php` (COPILOT-GROUNDING-COVERAGE-001)
-- `php scripts/validation/validate-promotion-copilot-sync.php` (PROMOTION-COPILOT-SYNC-001)
-- `php scripts/validation/validate-copilot-intent-patterns.php` (COPILOT-INTENT-ACCURACY-001)
-- `php scripts/validation/validate-copilot-response-quality.php` (COPILOT-RESPONSE-QUALITY-001)
-- `php scripts/validation/validate-promotion-expiry-alert.php` (PROMOTION-EXPIRY-ALERT-001)
-- `php scripts/validation/validate-grounding-provider-health.php` (GROUNDING-PROVIDER-HEALTH-001)
-- `php scripts/validation/validate-crm-funnel-attribution.php` (CRM-FUNNEL-ATTRIBUTION-001)
-- `php scripts/validation/validate-copilot-prompt-drift.php` (COPILOT-PROMPT-DRIFT-001)
-- `php scripts/validation/validate-homepage-completeness.php` (HOMEPAGE-COMPLETENESS-001)
-- `php scripts/validation/validate-homepage-variant-coherence.php` (HOMEPAGE-VARIANT-COHERENCE-001)
-- `php scripts/validation/validate-homepage-video-a11y.php` (HOMEPAGE-VIDEO-A11Y-001)
-- `php scripts/validation/validate-seo-multi-domain.php` (SEO-MULTIDOMAIN-001)
-- `php scripts/validation/validate-email-sender.php` (EMAIL-SENDER-001)
-- `php scripts/validation/validate-deploy-safety.php` (DEPLOY-MAINTENANCE-SAFETY-001)
-- `php scripts/validation/validate-backup-health.php` (BACKUP-HEALTH-001)
+- Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
+- 104 validators individuales en `scripts/validation/` (88 run + 16 warn). Lista completa: `docs/validators-reference.md`
+- Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
-## SAFEGUARD SYSTEM — 6 Capas de Defensa (99 scripts, 100% madurez)
+## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-| Capa | Mecanismo | Cuando | Cobertura |
-|------|-----------|--------|-----------|
-| 1 | 99 scripts validacion (scripts/validation/) | On demand, CI | 105 checks (87 run + 18 warn) |
-| 2 | Pre-commit hooks (Husky + lint-staged, chmod +x obligatorio) | Antes de cada commit | 8 file types: PHP/SCSS/MD/Twig/services.yml/routing.yml/JS |
-| 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | Push + PR | PHPStan L6, tests, security scan, 26 arch checks |
-| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status | 83/86 modulos (96%) |
-| 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features | Complitud+Integridad+Consistencia+Coherencia |
-| 6 | PIPELINE-E2E-001 (4 capas L1-L4) | Al completar features con UI dashboard | Service→Controller→hook_theme→Template |
+6 capas: (1) 104 scripts validacion (88 run + 16 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
-### Pre-commit lint-staged (detalle)
-- `**/*.php`: PHPStan Level 6
-- `**/*.scss`: validate-compiled-assets.php
-- `docs/00_*.md`: verify-doc-integrity.sh (DOC-GUARD-001)
-- `**/*.html.twig`: validate-twig-syntax.php (TWIG-SYNTAX-LINT-001) + validate-twig-ortografia.php
-- `**/*.js` (modules+theme): validate-js-syntax.php (JS-SYNTAX-LINT-001)
-- `**/*.libraries.yml`: validate-library-attachments.php (LIBRARY-ATTACHMENT-001)
-- `**/*.services.yml`: validate-phantom-args + validate-optional-deps + validate-circular-deps + validate-logger-injection (~3s)
-- `**/*.routing.yml`: validate-all.sh --fast
+### Pre-commit lint-staged
+- PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
+- JS: js-syntax | libraries.yml: library-attachments | services.yml: phantom-args+optional-deps+circular-deps+logger-injection | routing.yml: validate-all --fast

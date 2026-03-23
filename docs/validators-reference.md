@@ -1,0 +1,143 @@
+# Validators Reference — Jaraba Impact Platform
+
+> Fuente de verdad: `scripts/validation/validate-all.sh`
+> Orchestrator: `bash scripts/validation/validate-all.sh [--full|--fast|--checklist web/modules/custom/{modulo}]`
+> Meta-safeguard: VALIDATOR-COVERAGE-001 detecta orphaned validators
+> Ultima actualizacion: 2026-03-23
+
+## Estadisticas
+
+| Metrica | Valor |
+|---------|-------|
+| Total scripts PHP | 104 |
+| run_check (CI blocker) | 88 |
+| warn_check (no blocker) | 16 |
+| Orphaned validators | 0 |
+
+## Run Checks — 88 (bloquean CI)
+
+| Rule ID | Descripcion |
+|---------|-------------|
+| ADDON-IMPLEMENTATION-001 | Addon module implementation audit |
+| BACKUP-HEALTH-001 | Backup infrastructure completeness |
+| BIGPIPE-TIMING-001 | BigPipe + once() + drupalSettings timing risks |
+| BTN-CONTRAST-DARK-001 | Button contrast on dark backgrounds |
+| CASE-STUDY-COMPLETENESS-001 | Case study landing completeness (9 verticals) |
+| CASE-STUDY-CONVERSION-001 | Case study conversion score 15/15 |
+| CONFIG-SYNC-001 | Config install/sync consistency |
+| CONTAINER-DEPS-001 | Container dependency integrity (fast) |
+| CONTAINER-DEPS-002 | Circular reference detection (fast) |
+| CONTENT-E2E-001 | Content pipeline E2E (both PB and CH) |
+| CONTROLLER-READONLY-001 | Controller readonly inherited property detection |
+| COPILOT-GROUNDING-COVERAGE-001 | Copilot grounding providers for all verticals |
+| COPILOT-INTENT-ACCURACY-001 | Copilot intent detection patterns regression |
+| COPILOT-PROMPT-DRIFT-001 | Copilot prompt drift detection |
+| COPILOT-RESPONSE-QUALITY-001 | Copilot context quality (10 queries) |
+| CRM-FUNNEL-ATTRIBUTION-001 | CRM funnel attribution pipeline |
+| CSS-HIDDEN-OVERRIDE-001 | CSS display vs HTML hidden conflicts |
+| CTA-DESTINATION-001 | CTA destinations point to existing routes |
+| CTA-LOGGED-IN-001 | Conversion CTAs with logged_in conditional |
+| DEMO-FEATURES-FORMAT-001 | Demo features rich format (icon+title+desc) |
+| DEMO-MULTI-PROFILE-PARITY-001 | Multi-profile verticals discovery parity |
+| DEMO-PROFILE-PERSPECTIVE-001 | Demo profiles B2B perspective |
+| DEPLOY-MAINTENANCE-SAFETY-001 | Deploy maintenance mode safety gate |
+| DEPLOY-READY-001 | Production deploy readiness |
+| DI-TYPE-001 | Service DI type consistency |
+| DIACRITICS-ES-001 | Spanish diacritics in page_content canvas_data |
+| DOC-VERSION-DRIFT-001 | Master docs version coherence |
+| DUPLICATE-HOOK-001 | Duplicate function definitions in .module files |
+| EMAIL-SENDER-001 | Email sender vs SMTP allowed domain |
+| ENTITY-INTEG-001 | Entity convention compliance |
+| ENTITY-SCHEMA-SYNC-001 | Entity schema sync (computed orphans, translatable fields) |
+| ENV-PARITY-001 | Dev/Prod environment parity |
+| FEATURE-GATING-001 | Feature enforcement audit (limits vs controllers) |
+| FUNNEL-COMPLETENESS-001 | Conversion CTAs have tracking attributes |
+| GROUNDING-PROVIDER-HEALTH-001 | Grounding provider health check |
+| HOMEPAGE-COMPLETENESS-001 | Homepage 10/10 conversion completeness |
+| HOMEPAGE-VARIANT-COHERENCE-001 | Homepage variant differentiation |
+| HOMEPAGE-VIDEO-A11Y-001 | Video hero accessibility compliance |
+| HOOK-DUPLICATE-001 | Duplicate function declarations in .module files |
+| HOOK-THEME-COMPLETENESS-001 | hook_theme() variable completeness (L3) |
+| HOOK-UPDATE-COVERAGE-001 | Entity types have install/update hooks |
+| I18N-NAVPREFIX-001 | Navigation links use language_prefix |
+| ICON-INTEGRITY-001 | Icon references resolve to existing SVGs |
+| JS-CACHE-BUST-001 | JS library versions are current |
+| JS-DATA-ATTR-PARITY-001 | Twig data-* attributes match JS selectors |
+| JS-SYNTAX-LINT-001 | JavaScript static syntax lint |
+| JS-TWIG-SELECTOR-001 | JS-Twig selector coherence |
+| LANDING-PLAN-COHERENCE-001 | Landing page vs plan coherence (Doc 158 v3) |
+| LEAD-MAGNET-CRM-001 | Lead magnet to CRM pipeline integrity |
+| LOGGER-INJECT-001 | Logger injection consistency (fast) |
+| MARKETING-TRUTH-001 | Marketing claims vs billing reality |
+| MODULE-ORPHAN-001 | Module consistency (orphan/ghost detection) |
+| NO-HARDCODE-PRICE-001 | No hardcoded EUR prices in templates |
+| OPTIONAL-CROSSMODULE-001 | Cross-module hard dependency detection |
+| ORTOGRAFIA-TRANS-001 | Ortografia en textos traducibles Twig |
+| PB-ONBOARDING-001 | Page Builder onboarding integrity (wizard+daily+L1-L4) |
+| PHANTOM-ARG-001 | Phantom args in services.yml vs constructor params |
+| PLG-COVERAGE-001 | PLG trigger coverage for Page Builder |
+| PREPROCESS-ISOLATION-001 | Preprocess hooks exclude .case_study. routes |
+| PRESAVE-RESILIENCE-001 | Presave hook resilience detection |
+| PRICING-COHERENCE-001 | Pricing vs delivery consistency (Doc 158 v3) |
+| PRICING-TIER-PARITY-001 | Pricing tier parity (4 tiers x 8 verticals) |
+| PROMOTION-COPILOT-SYNC-001 | Promotion config coherence with copilot |
+| PROMOTION-EXPIRY-ALERT-001 | Promotion expiry detection |
+| PSR4-CLASSNAME-001 | PHP class names match filenames (PSR-4) |
+| QUERY-CHAIN-001 | Dangerous query method chaining |
+| QUIZ-FUNNEL-001 | Quiz vertical funnel integrity |
+| ROUTE-CTRL-001 | Route-Controller method validation |
+| ROUTE-PERMISSION-AUDIT-001 | Route access control completeness |
+| ROUTE-SUBSCRIBER-PARITY-001 | Case study route subscriber covers legacy routes |
+| SAFEGUARD-AEI-CAMPAIGN-001 | Andalucia +ei reclutamiento landing readiness |
+| SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
+| SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |
+| SEO-MULTIDOMAIN-001 | SEO multi-domain integrity (10 checks) |
+| SERVICE-ORPHAN-001 | Orphaned service detection |
+| SETUP-WIZARD-DAILY-001 | Setup Wizard + Daily Actions coverage per vertical |
+| STRIPE-SYNC-001 | Stripe integration verification (Price IDs in config) |
+| SUCCESS-CASES-SSOT-001 | SuccessCase entity is SSOT for case studies |
+| TENANT-CHECK-001 | Tenant isolation verification |
+| TENANT-USER-ROLE-001 | Group members have tenant_user Drupal role |
+| TEST-COVERAGE-MAP-001 | Test coverage map |
+| TRANSLATION-INTEG-001 | Translation integrity (cross-page dup, NULL titles, AI fences) |
+| TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables |
+| TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
+| TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
+| VALIDATOR-COVERAGE-001 | Meta-safeguard: orphaned validator detection |
+| VERTICAL-COVERAGE-001 | All 9 commercial verticals in discovery points |
+| VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
+| VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
+
+## Warn Checks — 16 (no bloquean, baseline violations aceptadas)
+
+| Rule ID | Descripcion | Notas |
+|---------|-------------|-------|
+| CONFIG-DB-SYNC-001 | Config YAML vs DB sync state | Requiere DB |
+| CSP-DOMAIN-COMPLETENESS-001 | CSP external domain cross-reference | |
+| DEMO-COVERAGE-001 | Demo vertical coverage (13/13 profiles) | |
+| ENTITY-FIELD-DB-SYNC-001 | Entity field definitions match DB columns | Static check |
+| HOOK-REQUIREMENTS-COVERAGE-001 | Module hook_requirements() coverage | Target 95% |
+| HOOK-REQUIREMENTS-GAP-001 | Modules with hook_requirements gap | 11 modules |
+| ICON-COMPLETENESS-001 | Icon SVG completeness cascade | |
+| ICON-DYNAMIC-001 | Dynamic icon refs resolve to SVGs | |
+| IMAGE-WEIGHT-001 | Oversized images in theme | 62 pre-existing |
+| INFRA-HEALTH-001 | Infrastructure health | Production only |
+| LANDING-SECTIONS-RENDERED-001 | Landing section completeness | Requires Lando |
+| LIBRARY-ATTACHMENT-001 | Bundle library declaration + CSS existence | 34 pre-existing |
+| PRICING-CASE-STUDY-COHERENCE-001 | Case study pricing vs controller structure | |
+| SCSS-COMPILE-FRESHNESS-001 | SCSS compiled CSS freshness vs partials | Git checkout issue |
+| SVG-CURRENTCOLOR-001 | SVG currentColor usage in img tags | |
+| TWIG-INCLUDE-ONLY-001 | Twig includes use only keyword | 144 pre-existing |
+
+## Pre-commit lint-staged (9 hooks)
+
+| Pattern | Validator(s) |
+|---------|-------------|
+| `**/*.php` | PHPStan Level 6 + Drupal CodeSniffer |
+| `**/*.scss` | validate-compiled-assets.php |
+| `docs/00_*.md` | verify-doc-integrity.sh (DOC-GUARD-001) |
+| `**/*.html.twig` | validate-twig-syntax.php + validate-twig-ortografia.php |
+| `**/*.js` (modules+theme) | validate-js-syntax.php |
+| `**/*.libraries.yml` | validate-library-attachments.php |
+| `**/*.services.yml` | phantom-args + optional-deps + circular-deps + logger-injection |
+| `**/*.routing.yml` | validate-all.sh --fast |

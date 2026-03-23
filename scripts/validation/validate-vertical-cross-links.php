@@ -20,10 +20,22 @@ if (!file_exists($controllerFile)) {
 
 $content = file_get_contents($controllerFile);
 
-// Extract all case_study URLs from the controller
+// Extract all case_study URLs from the controller.
+// Supports two patterns:
+//   'url' => '/path/here'              (hardcoded — legacy)
+//   'url' => $this->caseStudyUrl('route.name', '/fallback/path')
 $caseStudyUrls = [];
-if (preg_match_all("/'case_study'\s*=>\s*\[.*?'url'\s*=>\s*'([^']+)'/s", $content, $matches)) {
-    $caseStudyUrls = $matches[1];
+$caseStudyRoutes = [];
+if (preg_match_all("/'case_study'\s*=>\s*\[.*?'url'\s*=>\s*(?:'([^']+)'|\\\$this->caseStudyUrl\(\s*'([^']+)'\s*,\s*'([^']+)'\s*\))/s", $content, $matches)) {
+    foreach ($matches[1] as $i => $hardcoded) {
+        if ($hardcoded !== '') {
+            $caseStudyUrls[] = $hardcoded;
+        } elseif ($matches[3][$i] !== '') {
+            // caseStudyUrl() pattern: capture route name + fallback path
+            $caseStudyUrls[] = $matches[3][$i];
+            $caseStudyRoutes[] = $matches[2][$i];
+        }
+    }
 }
 
 if (empty($caseStudyUrls)) {

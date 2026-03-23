@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v74.0
 
-**Fecha:** 2026-03-21
-**Versión:** 146.0.0 (CASE-STUDY-ELEVATION 15/15 + SUCCESS-CASES-001 + CaseStudyLandingController + 6 validators + aprendizaje #213)
+**Fecha:** 2026-03-23
+**Versión:** 147.0.0 (Migración dedicado 10/10 + SEO multi-dominio + Safeguard 104 scripts + CLAUDE.md optimización + aprendizaje #214)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2237,7 +2237,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │              PRODUCCIÓN (IONOS Dedicated AE12-128)              │  │
 │   │  • Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 7.4             │  │
-│   │  • Supervisor (5 AI workers) + Tika (Docker)                    │  │
+│   │  • Supervisor (4 AI workers con sleep) + Tika (Docker)           │  │
 │   │  • 4 dominios SSL, SSH :2222, Let's Encrypt                     │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -2517,7 +2517,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │              AUTOMATED ARCHITECTURAL VALIDATION SYSTEM                    │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
-│   19 Scripts (scripts/validation/):                                     │
+│   104 Scripts (scripts/validation/) — 88 run + 16 warn:                │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │  validate-services-di.php       DI type mismatches YAML↔PHP    │  │
 │   │  validate-routing.php           Route→Controller existence     │  │
@@ -2542,15 +2542,18 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   │  validate-no-hardcoded-prices   EUR price hardcoding in Twig   │  │
 │   │  validate-twig-ortografia.php  Spanish tildes+ñ in {% trans %}│  │
 │   │  validate-all.sh                Orchestrator --fast / --full   │  │
+│   │  ... +82 más (pricing, copilot, homepage, SEO, demos, etc.)   │  │
+│   │  Lista completa: docs/validators-reference.md                  │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
-│   4 Integration Points:                                                 │
+│   5 Integration Points:                                                 │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
-│   │  Pre-commit hook    Conditional (staged *.services.yml,        │  │
-│   │                     *.routing.yml, Entity/*.php) → --fast <3s  │  │
+│   │  Pre-commit hook    Husky + lint-staged: PHP/SCSS/Twig/JS/     │  │
+│   │                     services.yml/routing.yml/MD → 9 validators │  │
 │   │  CI (ci.yml)        Step before PHPStan → --full               │  │
 │   │  Deploy (deploy.yml) Step pre-deploy → --full                  │  │
 │   │  Lando tooling      lando validate / lando validate-fast       │  │
+│   │  Runtime            hook_requirements() en 83/94 módulos (88%) │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 │   Auto-discovery: glob() for modules/services/routes/entities          │
@@ -3183,6 +3186,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-23 | **147.0.0** | **Migración Dedicado 10/10 + SEO Multi-Dominio + Safeguard 104 scripts:** IONOS AE12-128 NVMe (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2. SEO: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. 104 validators (88 run + 16 warn), 0 orphans. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md (SSOT lista completa). Regla de oro #151. Aprendizaje #214. |
 | 2026-03-21 | **143.0.0** | LANDING-ELEVATION-10/10 + LEAD-MAGNET-CRM-001 + VIDEO-HERO-001: 5 fases landing verticales (F0-F5), video hero 9/9 verticales, pipeline lead magnet → CRM auto, 79 scripts, 83 checks |
 | 2026-03-19 | **137.0.0** | **Demos Verticales Clase Mundial + Icon Cascade Fallback + Marketing Truth:** Sección Demo Dashboard PLG: 12 secciones (Banner, Wizard, Daily Actions, Magic Moment, Social Proof, Headline, Métricas, Features, AI Copilot Preview, Chart, Productos, Unlock Preview, CTA Final). AI Copilot Preview adaptativo 11 perfiles. Icon System Cascade Fallback: 3 niveles (SVG exacto → genérico categoría → placeholder invisible), NUNCA emoji. 53+ SVGs con hex inline. MARKETING-TRUTH-001: claims coherentes con Stripe trial_period_days=14. 4 reglas nuevas en Directrices v151.0.0. Aprendizaje #203. |
 | 2026-03-19 | **136.0.0** | **Fase B Quiz Completa — Wizard + Daily + Bridge + Drip + Linking:** CompletarQuizStep (__global__ weight 85, isComplete = QuizResult exists for uid). ExplorarQuizAction (__global__ weight 80, getContext visible = no quiz). MegaMenuBridgeService (SiteMenuItem mega_column → mega_menu_columns, fallback PHP). TenantOnboardingService::processRegistration paso 9: quiz_uuid → linkResultToUser(). ecosistema-jaraba-onboarding.js: URLSearchParams capture quiz_uuid+source. QuizFollowUpCron: cron 24h/72h/7d drip. hook_mail quiz_followup con subject contextual. Fix jaraba_page_builder duplicate preprocess_html. QUIZ-FUNNEL-001 ampliado 27 checks. Aprendizaje #198. |

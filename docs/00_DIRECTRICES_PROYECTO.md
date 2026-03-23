@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-23
-**Versión:** 161.0.0 (Migración dedicado 10/10 — backup 3 capas, email SMTP premium, OPcache prod, Supervisor sleep, deploy safety, 3 validators nuevos, 99 scripts/105 checks + aprendizaje #214)
+**Versión:** 162.0.0 (Safeguard 104 scripts (88 run + 16 warn), validators-reference.md SSOT, CLAUDE.md optimizado 34.4k, DOC-VERSION-DRIFT tabla raíz sync + aprendizaje #214)
 
 ---
 

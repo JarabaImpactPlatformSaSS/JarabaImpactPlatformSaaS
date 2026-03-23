@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-23
-**Versión:** 190.0.0 (CASE-STUDY-ELEVATION 15/15 + SUCCESS-CASES-001 + SEO-MULTIDOMAIN-001 + aprendizaje #213)
+**Versión:** 191.0.0 (Migración dedicado 10/10 + Safeguard 104 scripts + CLAUDE.md optimización + validators-reference.md + aprendizaje #214)
 
 > **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
 >
@@ -1538,11 +1538,12 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v88.0.0** — Reviews & Comments Clase Mundial | 2026-02-27 (v88.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v81.0.0** — Reviews & Comments Clase Mundial, Madurez 4.9/5.0 | 2026-02-27 (v81.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v113.0.0** | 2026-02-27 (v113.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v42.0.0** — Reviews & Comments Clase Mundial | 2026-02-27 (v42.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v161.0.0** — Migración dedicado 10/10 | 2026-03-23 (v161.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v147.0.0** — Safeguard 104 scripts, Madurez 5.0/5.0 | 2026-03-23 (v147.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v191.0.0** | 2026-03-23 (v191.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v112.0.0** — Implementation patterns 47 | 2026-03-21 (v112.0.0) |
 | [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones de customización por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
+| [validators-reference.md](./validators-reference.md) | 🛡️ SSOT lista completa 104 validators (88 run + 16 warn) | 2026-03-23 |
 
 ---
 
@@ -2555,6 +2556,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-23 | **191.0.0** | **Migración Dedicado 10/10 + Safeguard 104 scripts:** IONOS AE12-128 (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync, RPO <6h). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2 (SSL termination fix). SEO multi-dominio: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. Safeguard system: 104 validators (88 run + 16 warn), 0 orphans, VALIDATOR-COVERAGE-001 meta-safeguard. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md nuevo (SSOT lista completa 104 scripts). ARQUITECTURA v147. Regla de oro #151. Aprendizaje #214. |
 | 2026-03-23 | **189.0.0** | **Elevación Casos de Éxito 15/15:** CASE-STUDY-PATTERN-001 elevado a P0 (controller unificado, template parametrizado 15 parciales, VIDEO-HERO-001, MetaSitePricingService, Url::fromRoute). SUCCESS-CASES-001 nueva (SuccessCase entity SSOT, 40+ campos, tenant_id, 8 JSON). 3 validators nuevos. Plan implementación 37 especificaciones. DIRECTRICES v159. Regla de oro #149. Aprendizaje #212. |
 | 2026-03-21 | **186.0.0** | **Activación IA Embudo de Ventas CRM:** 7 reglas nuevas: GROUNDING-PROVIDER-001, CASCADE-SEARCH-001, ACTIVE-PROMOTION-001, COPILOT-LEAD-CAPTURE-001, COPILOT-FUNNEL-TRACKING-001, COPILOT-GROUNDING-COVERAGE-001, PROMOTION-COPILOT-SYNC-001. ContentGroundingService v2 con 10 GroundingProviders (CompilerPass + tagged services). PromotionConfig ConfigEntity + ActivePromotionService (cache 300s). Cascada 4 niveles búsqueda. CopilotLeadCaptureService + CopilotFunnelTrackingService. Prompt dinámico buildDynamicPublicSystemPrompt() con 10 verticales + promociones + precios. 3 validadores safeguard nuevos. 86 scripts (91 checks). DIRECTRICES v157 + ARQUITECTURA v145 + FLUJO v110. Regla de oro #147. Aprendizaje #210. |
 | 2026-03-19 | **178.0.0** | **Demos Verticales Clase Mundial + Icon Cascade + Marketing Truth:** 4 reglas nuevas en DIRECTRICES v151: ICON-INTEGRITY-002, ICON-CANVAS-INLINE-002, MARKETING-TRUTH-001, DEMO-VERTICAL-PATTERN-001. ARQUITECTURA v138: Demo Dashboard PLG 12 secciones + Icon System Cascade Fallback 3 niveles. Nuevos scripts validación: `scripts/validation/validate-icon-completeness.php` (ICON-COMPLETENESS-001: SVGs referenciados existen), `scripts/validation/validate-marketing-truth.php` (MARKETING-TRUTH-001: claims vs billing reality). FLUJO v103: verificación claims marketing. Aprendizajes #201-203. |
