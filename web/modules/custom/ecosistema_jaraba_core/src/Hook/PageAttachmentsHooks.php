@@ -238,6 +238,9 @@ class PageAttachmentsHooks
   protected function addLandingSeo(array &$attachments): void
   {
     $route = (string) $this->routeMatch->getRouteName();
+    // SEO-METASITE-001: URL absoluta para og:url en TODAS las landing pages.
+    $request = \Drupal::request();
+    $absoluteUrl = $request->getSchemeAndHttpHost() . $request->getRequestUri();
 
     // --- Homepage (frontpage) ---
     if (\Drupal::service('path.matcher')->isFrontPage()) {
@@ -256,11 +259,12 @@ class PageAttachmentsHooks
       ];
 
       // OG meta tags.
+      // SEO-METASITE-001: og:url DEBE ser absoluta.
       $ogTags = [
         'og:title' => 'Jaraba Impact Platform — Empleo, emprendimiento y digitalización con IA',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -410,7 +414,7 @@ class PageAttachmentsHooks
         'og:title' => 'ServiciosConecta — Digitaliza tu negocio de servicios',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/serviciosconecta',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -513,7 +517,7 @@ class PageAttachmentsHooks
         'og:title' => 'ComercioConecta — Digitaliza tu comercio local',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/comercioconecta',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -616,7 +620,7 @@ class PageAttachmentsHooks
         'og:title' => 'AgroConecta — Vende del campo a la mesa sin intermediarios',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/agroconecta',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -721,7 +725,7 @@ class PageAttachmentsHooks
         'og:title' => 'Emprendimiento — De idea a negocio rentable',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/emprendimiento',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -823,7 +827,7 @@ class PageAttachmentsHooks
         'og:title' => 'Empleabilidad — Tu carrera profesional con IA',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/empleabilidad',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
@@ -922,7 +926,7 @@ class PageAttachmentsHooks
         'og:title' => 'Talento — Encuentra el talento que necesitas con IA',
         'og:description' => $description,
         'og:type' => 'website',
-        'og:url' => '/talento',
+        'og:url' => $absoluteUrl,
       ];
 
       foreach ($ogTags as $property => $content) {
