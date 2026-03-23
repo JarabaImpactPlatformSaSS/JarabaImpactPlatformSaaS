@@ -11,14 +11,6 @@ jaraba_andalucia_ei.case_study.ped:
   requirements:
     _permission: 'access content'
 
-# Redirect 301 del slug antiguo (SEO).
-jaraba_andalucia_ei.case_study.diputacion_jaen:
-  path: '/andalucia-ei/caso-de-exito/diputacion-jaen'
-  defaults:
-    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiCaseStudyController::legacyRedirect'
-  requirements:
-    _permission: 'access content'
-
 # === COLECCIÓN DE PARTICIPANTES ===
 entity.programa_participante_ei.collection:
   path: '/admin/content/andalucia-ei'
