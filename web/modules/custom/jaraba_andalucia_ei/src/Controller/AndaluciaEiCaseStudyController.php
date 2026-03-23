@@ -40,7 +40,7 @@ class AndaluciaEiCaseStudyController extends ControllerBase {
         ['label' => $this->t('Provincias coordinadas'), 'before' => '8 hojas Excel', 'after' => '1 panel único', 'change' => '-87%'],
         ['label' => $this->t('Itinerarios IPAE'), 'before' => 'Manual', 'after' => 'Asistido por IA', 'change' => 'Nuevo'],
         ['label' => $this->t('Tiempo informes SAE'), 'before' => 'Semanas', 'after' => 'Tiempo real', 'change' => '-99%'],
-        ['label' => $this->t('Inserción laboral 1ª ed.'), 'before' => '21 personas', 'after' => '42% tasa', 'change' => 'Verificado'],
+        ['label' => $this->t('Inserción laboral 1ª ed.'), 'before' => '23 personas', 'after' => '46% tasa', 'change' => 'Verificado'],
       ],
       '#testimonial_hero' => [
         'quote' => $this->t('Construimos Andalucía +ei porque nosotros mismos sufrimos el problema. La primera edición la gestionamos con Excel — esa experiencia nos mostró exactamente qué necesitábamos.'),
