@@ -9,12 +9,12 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 104 |
-| run_check (CI blocker) | 88 |
+| Total scripts PHP | 105 |
+| run_check (CI blocker) | 89 |
 | warn_check (no blocker) | 16 |
 | Orphaned validators | 0 |
 
-## Run Checks — 88 (bloquean CI)
+## Run Checks — 89 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -103,6 +103,7 @@
 | TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables |
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
+| CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |
 | VALIDATOR-COVERAGE-001 | Meta-safeguard: orphaned validator detection |
 | VERTICAL-COVERAGE-001 | All 9 commercial verticals in discovery points |
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |

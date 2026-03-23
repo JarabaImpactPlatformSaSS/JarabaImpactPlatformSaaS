@@ -553,6 +553,10 @@ if [ "$MODE" = "full" ]; then
   warn_check "EMAIL-TEMPLATE-RENDER-001" "Email template Twig syntax verification" \
     php "$SCRIPT_DIR/validate-email-template-render.php"
 
+  # ── Content Seed Pipeline — metasite content integrity ──────
+  run_check "CONTENT-SEED-INTEGRITY-001" "Metasite content seed JSON integrity" \
+    php "$SCRIPT_DIR/validate-content-seed-integrity.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
