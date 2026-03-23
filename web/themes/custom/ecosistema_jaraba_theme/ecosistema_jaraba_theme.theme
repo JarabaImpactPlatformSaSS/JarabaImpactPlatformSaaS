@@ -1253,6 +1253,74 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#rows' => 6,
     '#attributes' => ['style' => 'font-family: monospace; font-size: 12px;'],
   ];
+
+  // =========================================================================
+  // TAB 17: SEO MULTI-DOMINIO
+  // =========================================================================
+  $form['seo_settings'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('search', t('SEO Multi-Dominio'), '#00A9A5'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -5,
+  ];
+
+  $form['seo_settings']['seo_active_languages'] = [
+    '#type' => 'textfield',
+    '#title' => t('Idiomas activos para hreflang'),
+    '#description' => t('Lista separada por comas de langcodes con contenido real. Solo estos se emiten en hreflang. Ej: es,en'),
+    '#default_value' => $config->get('seo_active_languages') ?: 'es',
+    '#placeholder' => 'es',
+  ];
+
+  // --- Meta tags por metasitio (homepage) ---
+  $form['seo_settings']['seo_metasite_section'] = [
+    '#type' => 'details',
+    '#title' => t('Meta tags por metasitio (homepage)'),
+    '#description' => t('Title y description diferenciados para cada dominio/metasitio. Evita contenido duplicado entre dominios. Si se dejan vacios, se usan los valores genericos de metatag module.'),
+    '#open' => TRUE,
+  ];
+
+  $metasite_variants = [
+    'generic' => t('SaaS Hub (plataformadeecosistemas.com)'),
+    'pde' => t('PED Corporativo (plataformadeecosistemas.es)'),
+    'jarabaimpact' => t('Franquicia (jarabaimpact.com)'),
+    'pepejaraba' => t('Marca Personal (pepejaraba.com)'),
+  ];
+  $metasite_defaults = [
+    'generic' => [
+      'title' => 'Impulsa tu ecosistema digital | Jaraba',
+      'description' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.',
+    ],
+    'pde' => [
+      'title' => 'Ecosistemas Digitales de Impacto | PED S.L.',
+      'description' => 'Plataforma de Ecosistemas Digitales — empleabilidad, emprendimiento, comercio y servicios profesionales con IA.',
+    ],
+    'jarabaimpact' => [
+      'title' => 'Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact',
+      'description' => 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.',
+    ],
+    'pepejaraba' => [
+      'title' => 'Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba',
+      'description' => 'Fundador de Jaraba Impact Platform. Emprendimiento social, innovación territorial y ecosistemas digitales de impacto.',
+    ],
+  ];
+
+  foreach ($metasite_variants as $variant => $label) {
+    $form['seo_settings']['seo_metasite_section']['seo_' . $variant . '_title'] = [
+      '#type' => 'textfield',
+      '#title' => t('Title — @label', ['@label' => $label]),
+      '#default_value' => $config->get('seo_' . $variant . '_title') ?: '',
+      '#placeholder' => $metasite_defaults[$variant]['title'],
+      '#maxlength' => 120,
+    ];
+    $form['seo_settings']['seo_metasite_section']['seo_' . $variant . '_description'] = [
+      '#type' => 'textarea',
+      '#title' => t('Description — @label', ['@label' => $label]),
+      '#default_value' => $config->get('seo_' . $variant . '_description') ?: '',
+      '#placeholder' => $metasite_defaults[$variant]['description'],
+      '#rows' => 2,
+    ];
+  }
 }
 
 /**
@@ -1371,26 +1439,18 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'page-front';
     $variables['attributes']['class'][] = 'landing-page';
 
-    // SEO-HOMEPAGE-TITLE-001: Sincronizar <title> con og:title.
-    // preprocess_page() inyecta og:title y meta description correctamente,
-    // pero head_title (que renderiza <title>) quedaba como fallback genérico.
-    // Resolvemos aquí porque head_title es variable de html.html.twig.
-    $site_name = \Drupal::config('system.site')->get('name') ?: 'Jaraba Impact Platform';
-    $homepage_title = '';
-    try {
-      if (\Drupal::hasService('jaraba_page_builder.homepage_data')) {
-        /** @var \Drupal\jaraba_page_builder\Service\HomepageDataService $homepage_service */
-        $homepage_service = \Drupal::service('jaraba_page_builder.homepage_data');
-        $seo_data = $homepage_service->getHomepageData()['seo'] ?? [];
-        $homepage_title = $seo_data['meta_title'] ?? '';
-      }
-    }
-    catch (\Throwable $e) {
-      // Servicio no disponible, usar fallback.
-    }
-    if (empty($homepage_title)) {
-      $homepage_title = t('Impulsa tu ecosistema digital | @site', ['@site' => $site_name]);
-    }
+    // SEO-METASITE-001: <title> diferenciado por metasitio.
+    // Usa Theme Settings > SEO para title configurables por dominio.
+    $theme_config = \Drupal::config('ecosistema_jaraba_theme.settings');
+    $homepage_variant = $variables['homepage_variant'] ?? 'generic';
+    $title_defaults = [
+      'generic' => 'Impulsa tu ecosistema digital | Jaraba',
+      'pde' => 'Ecosistemas Digitales de Impacto | PED S.L.',
+      'jarabaimpact' => 'Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact',
+      'pepejaraba' => 'Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba',
+    ];
+    $homepage_title = $theme_config->get('seo_' . $homepage_variant . '_title')
+      ?: ($title_defaults[$homepage_variant] ?? $title_defaults['generic']);
     $variables['head_title']['title'] = $homepage_title;
 
     // GEO-HOMEPAGE-001: Geo meta tags para SEO local (Bing, Yahoo, Yandex).
@@ -2664,14 +2724,33 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   $route_params_hl = $route_match_hl->getRawParameters()->all();
   $host_hl = \Drupal::request()->getSchemeAndHttpHost();
   $hl_links = [];
-  if ($route_name_hl) {
+
+  // SEO-HREFLANG-ACTIVE-001: Solo emitir hreflang para idiomas con contenido real.
+  // Configurable desde Theme Settings > SEO > seo_active_languages (default: 'es').
+  $seo_active_langs = array_map('trim', explode(',', theme_get_setting('seo_active_languages') ?? 'es'));
+
+  // SEO-HREFLANG-FRONT-001: Url::fromRoute('<front>') genera /es/node porque
+  // system.site.page.front = /node. Para homepage, construir URL limpia.
+  $is_front_hl = in_array($route_name_hl, [NULL, '<front>', 'view.frontpage.page_1'], TRUE)
+    || \Drupal::service('path.matcher')->isFrontPage();
+
+  if ($route_name_hl || $is_front_hl) {
     foreach ($language_manager->getLanguages() as $langcode => $language) {
+      if (!in_array($langcode, $seo_active_langs, TRUE)) {
+        continue;
+      }
       try {
-        $url = \Drupal\Core\Url::fromRoute($route_name_hl, $route_params_hl, [
-          'language' => $language,
-          'absolute' => TRUE,
-        ]);
-        $hl_links[$langcode] = $url->toString();
+        if ($is_front_hl) {
+          // Homepage: URL limpia sin /node.
+          $hl_links[$langcode] = $host_hl . '/' . $langcode;
+        }
+        else {
+          $url = \Drupal\Core\Url::fromRoute($route_name_hl, $route_params_hl, [
+            'language' => $language,
+            'absolute' => TRUE,
+          ]);
+          $hl_links[$langcode] = $url->toString();
+        }
       }
       catch (\Throwable $e) {
         // UPDATE-HOOK-CATCH-001: \Throwable no \Exception.
@@ -2900,6 +2979,11 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     $page_content = $route_match->getParameter('page_content');
   }
 
+  // SEO-HREFLANG-FRONT-001: Detectar homepage para evitar /node en URLs.
+  $is_front_page = in_array($route_name, [NULL, '<front>', 'view.frontpage.page_1'], TRUE)
+    || \Drupal::service('path.matcher')->isFrontPage();
+  $host_ls = \Drupal::request()->getSchemeAndHttpHost();
+
   foreach ($language_manager->getLanguages() as $langcode => $language) {
     try {
       if ($page_content && $page_content->hasTranslation($langcode)) {
@@ -2907,11 +2991,16 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         $alias = $translation->get('path_alias')->value ?? '';
         if (!empty($alias)) {
           // Build absolute URL with language prefix for hreflang.
-          $host = \Drupal::request()->getSchemeAndHttpHost();
           $prefix = ($langcode !== $defaultLangcode) ? '/' . $langcode : '';
-          $language_links[$langcode] = $host . $prefix . $alias;
+          $language_links[$langcode] = $host_ls . $prefix . $alias;
           continue;
         }
+      }
+
+      // SEO-HREFLANG-FRONT-001: Homepage limpia sin /node.
+      if ($is_front_page) {
+        $language_links[$langcode] = $host_ls . '/' . $langcode;
+        continue;
       }
 
       // Generic route-based URL generation for non-page_content routes.
@@ -2922,9 +3011,9 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       ]);
       $language_links[$langcode] = $url->toString();
     }
-    catch (\Exception $e) {
-      // Fallback to language prefix root if route can't be resolved.
-      $language_links[$langcode] = \Drupal::request()->getSchemeAndHttpHost() . '/' . $langcode;
+    catch (\Throwable $e) {
+      // UPDATE-HOOK-CATCH-001: \Throwable no \Exception.
+      $language_links[$langcode] = $host_ls . '/' . $langcode;
     }
   }
   $variables['available_languages'] = array_keys($language_links);
@@ -5219,5 +5308,82 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
       }
       break;
     }
+  }
+
+  // =========================================================================
+  // SEO-METASITE-001: Meta tags diferenciados por metasitio + canonical + og:url.
+  //
+  // Sobreescribe metatag module defaults en homepage para que cada dominio
+  // tenga title, description, canonical y og:url unicos.
+  // =========================================================================
+  $request = \Drupal::request();
+  $is_front = \Drupal::service('path.matcher')->isFrontPage()
+    || in_array($route, ['<front>', 'view.frontpage.page_1'], TRUE);
+
+  // Canonical y og:url absolutas en TODAS las paginas.
+  $canonical_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+  $canonical_url = strtok($canonical_url, '?');
+  $attachments['#attached']['html_head'][] = [
+    ['#tag' => 'link', '#attributes' => ['rel' => 'canonical', 'href' => $canonical_url]],
+    'seo_canonical',
+  ];
+  $attachments['#attached']['html_head'][] = [
+    ['#tag' => 'meta', '#attributes' => ['property' => 'og:url', 'content' => $canonical_url]],
+    'seo_og_url',
+  ];
+  $attachments['#attached']['html_head'][] = [
+    ['#tag' => 'meta', '#attributes' => ['property' => 'og:locale', 'content' => 'es_ES']],
+    'seo_og_locale',
+  ];
+
+  // Homepage: title y description diferenciados por metasitio.
+  if ($is_front) {
+    $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+    $variant = 'generic';
+
+    // Resolver variante desde UnifiedThemeResolverService.
+    if (\Drupal::hasService('ecosistema_jaraba_core.unified_theme_resolver')) {
+      try {
+        $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
+        $context = $resolver->resolve();
+        $groupId = (int) ($context['meta_site']['group_id'] ?? 0);
+        $variantMap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+        $variant = $variantMap[$groupId] ?? 'generic';
+      }
+      catch (\Throwable) {}
+    }
+
+    // Leer de Theme Settings, fallback a defaults.
+    $defaults = [
+      'generic' => ['Impulsa tu ecosistema digital | Jaraba', 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.'],
+      'pde' => ['Ecosistemas Digitales de Impacto | PED S.L.', 'Plataforma de Ecosistemas Digitales — empleabilidad, emprendimiento, comercio y servicios profesionales con IA.'],
+      'jarabaimpact' => ['Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact', 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.'],
+      'pepejaraba' => ['Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba', 'Fundador de Jaraba Impact Platform. Emprendimiento social, innovación territorial y ecosistemas digitales de impacto.'],
+    ];
+    $seo_title = $config->get('seo_' . $variant . '_title') ?: ($defaults[$variant][0] ?? $defaults['generic'][0]);
+    $seo_desc = $config->get('seo_' . $variant . '_description') ?: ($defaults[$variant][1] ?? $defaults['generic'][1]);
+
+    // Sobreescribir metatag module values via html_head con peso alto.
+    $attachments['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['name' => 'description', 'content' => $seo_desc]],
+      'seo_metasite_description',
+    ];
+    $attachments['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:title', 'content' => $seo_title]],
+      'seo_metasite_og_title',
+    ];
+    $attachments['#attached']['html_head'][] = [
+      ['#tag' => 'meta', '#attributes' => ['property' => 'og:description', 'content' => $seo_desc]],
+      'seo_metasite_og_description',
+    ];
+    // Title override: usar metatag_attachments para que <title> lo recoja.
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => ['name' => 'title', 'content' => $seo_title],
+        '#weight' => -100,
+      ],
+      'seo_metasite_title',
+    ];
   }
 }

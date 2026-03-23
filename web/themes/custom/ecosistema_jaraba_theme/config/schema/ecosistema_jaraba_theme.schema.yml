@@ -487,3 +487,31 @@ ecosistema_jaraba_theme.settings:
     plg_social_proof_testimonials:
       type: string
       label: 'Testimonios pricing (JSON)'
+    # ── SEO Multi-Dominio ──
+    seo_active_languages:
+      type: string
+      label: 'Idiomas activos para hreflang (comma-separated)'
+    seo_generic_title:
+      type: string
+      label: 'Title homepage SaaS hub'
+    seo_generic_description:
+      type: string
+      label: 'Description homepage SaaS hub'
+    seo_pde_title:
+      type: string
+      label: 'Title homepage PED'
+    seo_pde_description:
+      type: string
+      label: 'Description homepage PED'
+    seo_jarabaimpact_title:
+      type: string
+      label: 'Title homepage Jaraba Impact'
+    seo_jarabaimpact_description:
+      type: string
+      label: 'Description homepage Jaraba Impact'
+    seo_pepejaraba_title:
+      type: string
+      label: 'Title homepage Pepe Jaraba'
+    seo_pepejaraba_description:
+      type: string
+      label: 'Description homepage Pepe Jaraba'

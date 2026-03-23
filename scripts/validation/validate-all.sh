@@ -389,6 +389,9 @@ if [ "$MODE" = "full" ]; then
   run_check "CASE-STUDY-CONVERSION-001" "Case study conversion score 15/15" \
     php "$SCRIPT_DIR/validate-case-study-conversion-score.php"
 
+  run_check "SEO-MULTIDOMAIN-001" "SEO multi-domain integrity (10 checks)" \
+    php "$SCRIPT_DIR/validate-seo-multi-domain.php"
+
   run_check "SUCCESS-CASES-SSOT-001" "SuccessCase entity is SSOT for case studies" \
     php "$SCRIPT_DIR/validate-success-cases-ssot.php"
 

@@ -46,29 +46,47 @@ class SitemapController extends ControllerBase
 
         $lines = [
             'User-agent: *',
-            'Allow: /',
             '',
-            '# Admin routes',
+            '# Allow CSS/JS/images for Google rendering',
+            'Allow: /core/*.css$',
+            'Allow: /core/*.css?',
+            'Allow: /core/*.js$',
+            'Allow: /core/*.js?',
+            'Allow: /core/*.gif',
+            'Allow: /core/*.jpg',
+            'Allow: /core/*.jpeg',
+            'Allow: /core/*.png',
+            'Allow: /core/*.svg',
+            '',
+            '# Drupal core directories',
+            'Disallow: /core/',
+            'Disallow: /profiles/',
+            '',
+            '# Admin & auth routes',
             'Disallow: /admin/',
-            'Disallow: /user/',
+            'Disallow: /user/register',
+            'Disallow: /user/password',
+            'Disallow: /user/login',
+            'Disallow: /user/logout',
+            'Disallow: /node/add/',
             'Disallow: /node/',
             'Disallow: /batch',
             'Disallow: /search/',
+            'Disallow: /comment/reply/',
+            'Disallow: /filter/tips',
+            'Disallow: /media/oembed',
+            'Disallow: /*/media/oembed',
             '',
-            '# API endpoints',
+            '# API & internal',
             'Disallow: /api/',
+            'Disallow: /modules/',
+            'Disallow: /themes/',
             '',
             '# Page Builder editor',
             'Disallow: /page/*/editor',
             'Disallow: /page-builder/',
             '',
-            '# Drupal core',
-            'Disallow: /core/',
-            'Disallow: /modules/',
-            'Disallow: /themes/',
-            'Disallow: /profiles/',
-            '',
-            '# Sitemaps',
+            '# Sitemaps — dominio dinamico per-request',
             'Sitemap: ' . $baseUrl . '/sitemap.xml',
             '',
         ];
@@ -654,13 +672,36 @@ class SitemapController extends ControllerBase
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
-        // Páginas estáticas conocidas.
+        // ROUTE-LANGPREFIX-001: URLs con prefijo de idioma.
+        $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+        $langPrefix = '/' . $langcode;
+
+        // Paginas estaticas conocidas — todas las rutas publicas del SaaS.
         $staticPages = [
-            ['path' => '/', 'priority' => '1.0', 'changefreq' => 'daily'],
-            ['path' => '/about', 'priority' => '0.8', 'changefreq' => 'monthly'],
-            ['path' => '/contact', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['path' => '/privacy', 'priority' => '0.3', 'changefreq' => 'yearly'],
-            ['path' => '/terms', 'priority' => '0.3', 'changefreq' => 'yearly'],
+            // Homepage.
+            ['path' => $langPrefix, 'priority' => '1.0', 'changefreq' => 'daily'],
+            // Pricing.
+            ['path' => $langPrefix . '/planes', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            // Verticales — landings publicas.
+            ['path' => $langPrefix . '/empleabilidad.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/emprendimiento.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/comercioconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/agroconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/serviciosconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/jarabalex.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/formacion.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => $langPrefix . '/andaluciamasei.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            // Conversion.
+            ['path' => $langPrefix . '/test-vertical', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['path' => $langPrefix . '/demo', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            // Informativas.
+            ['path' => $langPrefix . '/about', 'priority' => '0.5', 'changefreq' => 'monthly'],
+            ['path' => $langPrefix . '/contact', 'priority' => '0.5', 'changefreq' => 'monthly'],
+            ['path' => $langPrefix . '/ayuda', 'priority' => '0.5', 'changefreq' => 'monthly'],
+            // Legal.
+            ['path' => $langPrefix . '/privacy', 'priority' => '0.3', 'changefreq' => 'yearly'],
+            ['path' => $langPrefix . '/terms', 'priority' => '0.3', 'changefreq' => 'yearly'],
+            ['path' => $langPrefix . '/cookies', 'priority' => '0.3', 'changefreq' => 'yearly'],
         ];
 
         foreach ($staticPages as $page) {
