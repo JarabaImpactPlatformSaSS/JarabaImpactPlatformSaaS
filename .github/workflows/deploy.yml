@@ -602,6 +602,21 @@ jobs:
             fi
           EOF
 
+      - name: Sync PHP OPcache config
+        continue-on-error: true
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            OPCACHE_SRC="config/deploy/php/10-opcache-prod.ini"
+            OPCACHE_DST="/etc/php/8.4/fpm/conf.d/10-opcache.ini"
+            if [ -f "$OPCACHE_SRC" ] && ! diff -q "$OPCACHE_SRC" "$OPCACHE_DST" > /dev/null 2>&1; then
+              sudo cp "$OPCACHE_SRC" "$OPCACHE_DST"
+              echo "✅ OPcache config updated — will take effect on FPM reload"
+            else
+              echo "✅ OPcache config is up-to-date"
+            fi
+          EOF
+
       - name: Restart AI workers
         continue-on-error: true
         run: |
@@ -614,6 +629,8 @@ jobs:
           EOF
 
       - name: Disable maintenance mode and verify site
+        if: always()
+        continue-on-error: true
         run: |
           ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             cd /var/www/jaraba
