@@ -1,3 +1,4 @@
+status: true
 id: agroconecta_producer_acquisition
 label: 'AgroConecta: Adquisicion Productor'
 vertical: agroconecta
@@ -24,4 +25,3 @@ steps:
     event: agro_product_published
 conversion_window_hours: 168
 is_active: true
-status: true

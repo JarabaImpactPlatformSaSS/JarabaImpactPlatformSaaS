@@ -1,3 +1,4 @@
+status: true
 id: agroconecta_producer_activation
 label: 'AgroConecta: Activacion Productor'
 vertical: agroconecta
@@ -24,4 +25,3 @@ steps:
     event: agro_order_completed
 conversion_window_hours: 336
 is_active: true
-status: true

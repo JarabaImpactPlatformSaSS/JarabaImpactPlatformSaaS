@@ -3,32 +3,32 @@ status: true
 dependencies: {  }
 id: comercioconecta_monetization
 label: 'ComercioConecta - Monetizacion'
-description: 'Embudo de monetizacion desde registro gratuito hasta pago completado.'
 vertical: comercioconecta
 steps:
   -
-    id: free_signup
     label: 'Registro Gratuito'
     event: user_register
+    id: free_signup
     conditions: 'vertical:comercioconecta,plan:free'
   -
-    id: feature_gate_hit
     label: 'Limite Alcanzado'
     event: feature_gate_denied
+    id: feature_gate_hit
     conditions: 'vertical:comercioconecta'
   -
-    id: pricing_page_view
     label: 'Vista Pagina Precios'
     event: page_view
+    id: pricing_page_view
     conditions: 'path:/upgrade,vertical:comercioconecta'
   -
-    id: plan_selected
     label: 'Plan Seleccionado'
     event: plan_selected
+    id: plan_selected
     conditions: 'vertical:comercioconecta'
   -
-    id: payment_completed
     label: 'Pago Completado'
     event: payment_completed
+    id: payment_completed
     conditions: 'vertical:comercioconecta'
+description: 'Embudo de monetizacion desde registro gratuito hasta pago completado.'
 weight: 3

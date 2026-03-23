@@ -21,7 +21,7 @@ limits:
   max_products: 10
   orders_per_month: 5
   copilot_uses_per_month: 10
-  storage_gb: 0.5
+  storage_gb: 0
   ai_queries: 20
   productores: 1
 description: 'Limites por defecto para el tier Free. Funcionalidades basicas para explorar la plataforma.'

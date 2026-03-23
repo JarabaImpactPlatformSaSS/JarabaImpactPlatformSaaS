@@ -3,32 +3,32 @@ status: true
 dependencies: {  }
 id: jarabalex_activation
 label: 'JarabaLex - Activacion Legal'
-description: 'Embudo de activacion: desde primera busqueda hasta uso regular con alertas y citas.'
 vertical: jarabalex
 steps:
   -
-    id: first_search
     label: 'Primera Busqueda'
     event: legal_search
+    id: first_search
     conditions: 'first_time:true'
   -
-    id: first_bookmark
     label: 'Primer Favorito'
     event: legal_bookmark
+    id: first_bookmark
     conditions: 'first_time:true'
   -
-    id: first_alert
     label: 'Primera Alerta'
     event: legal_alert_created
+    id: first_alert
     conditions: 'first_time:true'
   -
-    id: first_citation
     label: 'Primera Cita'
     event: legal_citation_inserted
+    id: first_citation
     conditions: 'first_time:true'
   -
-    id: weekly_active
     label: 'Uso Semanal Recurrente'
     event: legal_search
+    id: weekly_active
     conditions: 'weekly_count:>=3'
+description: 'Embudo de activacion: desde primera busqueda hasta uso regular con alertas y citas.'
 weight: 1

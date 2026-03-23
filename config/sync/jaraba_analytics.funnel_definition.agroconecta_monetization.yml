@@ -1,3 +1,4 @@
+status: true
 id: agroconecta_monetization
 label: 'AgroConecta: Monetizacion'
 vertical: agroconecta
@@ -16,4 +17,3 @@ steps:
     event: agro_upgrade_completed
 conversion_window_hours: 72
 is_active: true
-status: true

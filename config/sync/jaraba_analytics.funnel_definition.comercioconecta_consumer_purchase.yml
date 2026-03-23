@@ -3,32 +3,32 @@ status: true
 dependencies: {  }
 id: comercioconecta_consumer_purchase
 label: 'ComercioConecta - Compra Consumidor'
-description: 'Embudo de compra del consumidor desde visita hasta pedido completado.'
 vertical: comercioconecta
 steps:
   -
-    id: marketplace_visit
     label: 'Visita Marketplace'
     event: page_view
+    id: marketplace_visit
     conditions: 'path:/comercio-local'
   -
-    id: product_view
     label: 'Vista de Producto'
     event: page_view
+    id: product_view
     conditions: 'entity_type:product_retail'
   -
-    id: add_to_cart
     label: 'Añadir al Carrito'
     event: add_to_cart
+    id: add_to_cart
     conditions: 'entity_type:product_retail'
   -
-    id: checkout_started
     label: 'Checkout Iniciado'
     event: checkout_started
+    id: checkout_started
     conditions: 'vertical:comercioconecta'
   -
-    id: order_completed
     label: 'Pedido Completado'
     event: order_completed
+    id: order_completed
     conditions: 'vertical:comercioconecta'
+description: 'Embudo de compra del consumidor desde visita hasta pedido completado.'
 weight: 2

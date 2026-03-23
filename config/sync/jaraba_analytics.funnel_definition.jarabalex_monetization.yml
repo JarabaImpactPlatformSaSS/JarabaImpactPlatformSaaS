@@ -3,32 +3,32 @@ status: true
 dependencies: {  }
 id: jarabalex_monetization
 label: 'JarabaLex - Monetizacion'
-description: 'Embudo de monetizacion: desde hit de limite gratuito hasta upgrade y retencion.'
 vertical: jarabalex
 steps:
   -
-    id: limit_hit
     label: 'Limite Alcanzado'
     event: feature_limit_reached
+    id: limit_hit
     conditions: 'vertical:jarabalex'
   -
-    id: upgrade_modal_shown
     label: 'Modal Upgrade Mostrado'
     event: upgrade_modal_view
+    id: upgrade_modal_shown
     conditions: 'vertical:jarabalex'
   -
-    id: plan_comparison_view
     label: 'Comparativa de Planes'
     event: page_view
+    id: plan_comparison_view
     conditions: 'path:/pricing,vertical:jarabalex'
   -
-    id: plan_upgraded
     label: 'Plan Contratado'
     event: plan_upgrade
+    id: plan_upgraded
     conditions: 'vertical:jarabalex'
   -
-    id: second_month_retention
     label: 'Retencion Segundo Mes'
     event: subscription_renewed
+    id: second_month_retention
     conditions: 'vertical:jarabalex,month:2'
+description: 'Embudo de monetizacion: desde hit de limite gratuito hasta upgrade y retencion.'
 weight: 2
