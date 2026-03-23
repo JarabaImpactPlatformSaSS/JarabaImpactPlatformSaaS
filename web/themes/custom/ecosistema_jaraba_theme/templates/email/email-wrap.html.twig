@@ -100,9 +100,11 @@
           </tr>
 
           {# ═══ EMAIL BODY CONTENT ═══ #}
+          {# body is already rendered HTML from mailer policies — nl2br would inject
+             <br> between table/tr/td tags, destroying email layout in all clients. #}
           <tr>
             <td style="background-color: #FFFFFF; padding: 32px 40px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 15px; line-height: 1.7; color: #334155;"{{ attributes.addClass(classes) }}>
-              {{ body|nl2br }}
+              {{ body }}
             </td>
           </tr>
 

@@ -32,7 +32,7 @@ configuration:
             <td style="text-align: center; padding: 8px 0;">
               <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
                 <tr>
-                  <td style="background: linear-gradient(135deg, #FF8C42 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
+                  <td style="background-color: #FF8C42; background: linear-gradient(135deg, #FF8C42 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
                     <a href="[user:one-time-login-url]" target="_blank" style="display: inline-block; padding: 16px 48px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none; letter-spacing: 0.3px;">Activar mi cuenta &rarr;</a>
                   </td>
                 </tr>
