@@ -1,9 +1,10 @@
 # ==============================================
-# VERIFICACIÓN DE BACKUPS (IONOS)
+# VERIFICACIÓN DE BACKUPS (IONOS Dedicado)
 # ==============================================
 # Cron semanal que verifica vía SSH que existen
 # backups recientes y válidos en el servidor IONOS.
 #
+# SSH: jaraba@<DEPLOY_HOST> puerto 2222 (key ed25519)
 # Si no hay backup en las últimas 48h o el archivo
 # es sospechosamente pequeño, alerta vía Slack.
 # ==============================================
@@ -17,8 +18,8 @@ on:
   workflow_dispatch:
 
 env:
-  IONOS_HOST: 'access834313033.webspace-data.io'
-  IONOS_USER: 'u101456434'
+  DEPLOY_USER: 'jaraba'
+  DEPLOY_PORT: '2222'
   BACKUP_DIR_DAILY: '~/backups/daily'
   BACKUP_DIR_PRE_DEPLOY: '~/backups/pre_deploy'
   # Tamaño mínimo aceptable para un backup SQL (1KB)
@@ -40,18 +41,18 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
 
-      - name: Add IONOS to known hosts
+      - name: Add server to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
       - name: Check backup existence and validity
         id: check
         run: |
-          echo "🔍 Verificando backups en IONOS..."
+          echo "🔍 Verificando backups en servidor dedicado..."
 
           # Obtener listado de backups con tamaño y fecha
-          BACKUP_LIST=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+          BACKUP_LIST=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             if [ -d ~/backups/daily ] || [ -d ~/backups/pre_deploy ]; then
               # Listar backups ordenados por fecha (más reciente primero)
               # Detect both daily and pre-deploy backups in their subdirectories

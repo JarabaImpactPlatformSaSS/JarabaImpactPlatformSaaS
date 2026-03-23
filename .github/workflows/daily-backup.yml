@@ -1,9 +1,10 @@
 # ==============================================
-# BACKUP DIARIO AUTOMATIZADO (IONOS)
+# BACKUP DIARIO AUTOMATIZADO (IONOS Dedicado)
 # ==============================================
 # Cron diario a las 03:00 UTC (05:00 CET).
 # Independiente del pipeline de deploy.
 #
+# SSH: jaraba@<DEPLOY_HOST> puerto 2222 (key ed25519)
 # Flujo: SSH → Backup → Verificación → Rotación → Notificación
 #
 # Naming: db_daily_{YYYYMMDD_HHMMSS}.sql.gz
@@ -31,9 +32,9 @@ on:
 
 env:
   PHP_VERSION: '8.4'
-  IONOS_HOST: 'access834313033.webspace-data.io'
-  IONOS_USER: 'u101456434'
-  SITE_DIR: '~/JarabaImpactPlatformSaaS'
+  DEPLOY_USER: 'jaraba'
+  DEPLOY_PORT: '2222'
+  SITE_DIR: '/var/www/jaraba'
   BACKUP_DIR: '~/backups/daily'
   RETENTION_DAILY_DAYS: 30
   RETENTION_WEEKLY_DAYS: 84
@@ -52,34 +53,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
 
-      - name: Add IONOS to known hosts
+      - name: Add server to known hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Migrate legacy backups to subdirectories
+      - name: Ensure backup directories exist
         run: |
-          echo "🔄 Checking for legacy backups in ~/backups/ (flat)..."
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'MEOF'
+          echo "📁 Ensuring backup directories exist..."
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'MEOF'
             mkdir -p ~/backups/daily ~/backups/pre_deploy
-            MOVED=0
-            # Move daily backups from flat directory
-            for F in ~/backups/db_daily_*.sql.gz; do
-              [ -e "$F" ] || continue
-              mv "$F" ~/backups/daily/
-              MOVED=$((MOVED + 1))
-            done
-            # Move pre-deploy backups from flat directory
-            for F in ~/backups/db_pre_deploy_*.sql.gz; do
-              [ -e "$F" ] || continue
-              mv "$F" ~/backups/pre_deploy/
-              MOVED=$((MOVED + 1))
-            done
-            if [ "$MOVED" -gt 0 ]; then
-              echo "Migrated $MOVED backup(s) to subdirectories"
-            else
-              echo "No legacy backups to migrate"
-            fi
+            echo "Backup directories ready"
           MEOF
 
       - name: Create daily backup
@@ -87,14 +71,14 @@ jobs:
         run: |
           echo "💾 Creating daily backup..."
 
-          BACKUP_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            cd ~/JarabaImpactPlatformSaaS
+          BACKUP_RESULT=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
             mkdir -p ~/backups/daily
             BACKUP_FILE="db_daily_$(date +%Y%m%d_%H%M%S).sql.gz"
             BACKUP_PATH="$HOME/backups/daily/$BACKUP_FILE"
 
             # Try drush sql-dump first
-            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > "$BACKUP_PATH" 2>/dev/null
+            vendor/bin/drush sql-dump --gzip > "$BACKUP_PATH" 2>/dev/null
 
             if [ $? -ne 0 ] || [ ! -s "$BACKUP_PATH" ]; then
               echo "⚠️ Drush sql-dump failed. Trying mysqldump..."
@@ -156,7 +140,7 @@ jobs:
         run: |
           echo "🔍 Verifying backup integrity..."
 
-          VERIFY_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'VEOF'
+          VERIFY_RESULT=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'VEOF'
             BACKUP_FILE=$(ls -t ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | head -1)
 
             if [ -z "$BACKUP_FILE" ]; then
@@ -202,7 +186,7 @@ jobs:
         run: |
           echo "🔄 Rotating old backups..."
 
-          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'REOF'
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'REOF'
             NOW=$(date +%s)
             DELETED=0
             KEPT=0
