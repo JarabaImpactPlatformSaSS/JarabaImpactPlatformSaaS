@@ -1,12 +1,13 @@
 {#
 /**
  * @file andalucia-ei-case-study.html.twig
- * Caso de éxito: Diputación de Jaén — storytelling institucional.
+ * Caso de éxito: PED S.L. — dogfooding Andalucía +ei.
  *
  * VARIABLES:
- * - hero_image, ana_image, before_after_image, dashboard_image,
+ * - hero_image, protagonist_image, before_after_image, dashboard_image,
  *   mentoring_image, report_image: string (URL relativa a WebP)
  * - metrics: array of {label, before, after, change}
+ * - testimonial_hero: {quote, name, role, company}
  * - testimonial: {quote, name, role, company}
  * - timeline: array of {day, title, text}
  * - pricing_url, register_url: string
@@ -22,14 +23,14 @@
   <div class="cs-hero__container">
     <span class="cs-hero__eyebrow">{% trans %}Caso de éxito{% endtrans %}</span>
     <h1 id="cs-title" class="cs-hero__title">
-      {% trans %}45 emprendedores en un Excel. 8 meses para gestionar 180 con IA{% endtrans %}
+      {% trans %}De gestionar 50 itinerarios en Excel a un ecosistema digital con IA{% endtrans %}
     </h1>
     <p class="cs-hero__subtitle">
-      {% trans %}La historia de la Diputación de Jaén: cómo una agencia de desarrollo local pasó de gestionar emprendedores con hojas de cálculo a tener mentoría IA, tracking automático y los informes FSE+ generados con un clic{% endtrans %}
+      {% trans %}La historia de PED S.L.: cómo la empresa que construye el SaaS lo usa para gestionar su propio Programa Integrado de Inserción Laboral en Andalucía{% endtrans %}
     </p>
     <div class="cs-hero__ctas">
       <a href="{{ register_url }}" class="btn btn--primary btn--lg" data-track-cta="cs_ei_hero_demo" data-track-position="case_study_hero">
-        {% trans %}Solicitar demo para instituciones{% endtrans %}
+        {% trans %}Solicitar demo{% endtrans %}
       </a>
       <a href="#cs-story" class="btn btn--outline btn--lg cs-hero__scroll-cta">
         {% trans %}Leer la historia{% endtrans %} ↓
@@ -38,22 +39,22 @@
   </div>
 </section>
 
-{# === 2. ANA (contexto) === #}
+{# === 2. PROTAGONISTA (contexto) === #}
 <section id="cs-story" class="cs-section cs-context reveal-element reveal-fade-up">
   <div class="cs-section__container cs-section__container--split">
     <div class="cs-section__media">
-      <img src="{{ ana_image }}" alt="{% trans %}Ana Martínez, AEDL de la Diputación de Jaén{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      <img src="{{ protagonist_image }}" alt="{% trans %}Equipo técnico del programa Andalucía +ei{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
     </div>
     <div class="cs-section__content">
-      <span class="cs-section__eyebrow">{% trans %}La protagonista{% endtrans %}</span>
-      <h2 class="cs-section__title">{% trans %}Ana Martínez, Diputación de Jaén{% endtrans %}</h2>
+      <span class="cs-section__eyebrow">{% trans %}El protagonista{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Plataforma de Ecosistemas Digitales S.L.{% endtrans %}</h2>
       <div class="cs-badges">
-        <span class="cs-badge">{% trans %}48 años{% endtrans %}</span>
-        <span class="cs-badge">{% trans %}AEDL{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Málaga{% endtrans %}</span>
+        <span class="cs-badge">{% trans %}Inserción laboral{% endtrans %}</span>
         <span class="cs-badge">{% trans %}Programa +ei{% endtrans %}</span>
       </div>
-      <p>{% trans %}Ana coordina el programa de emprendimiento de la Diputación de Jaén. 45 emprendedores activos, seguimiento en un Excel compartido que nadie actualiza, informes para el FSE+ que tardan 3 semanas en elaborar y la sensación de que están perdiendo oportunidades por falta de herramientas.{% endtrans %}</p>
-      <p>{% trans %}El reto: pasar de la gestión manual a una plataforma que les permita escalar el programa sin multiplicar el equipo.{% endtrans %}</p>
+      <p>{% trans %}PED S.L. gestionó en 2023 un Programa Integrado de Inserción Laboral (PIIL) subvencionado por la Junta de Andalucía. 50 participantes en 8 provincias, 8 orientadores, itinerarios de autoempleo, formación, sesiones de orientación — todo coordinado con hojas Excel compartidas y email.{% endtrans %}</p>
+      <p>{% trans %}La experiencia les mostró exactamente qué necesitaban: así nació Andalucía +ei. En 2025 obtuvieron la concesión de la 2ª edición y la gestionan íntegramente desde su propio SaaS.{% endtrans %}</p>
     </div>
   </div>
 </section>
@@ -62,55 +63,55 @@
 <section class="cs-section cs-pain reveal-element reveal-fade-up">
   <div class="cs-section__container">
     <span class="cs-section__eyebrow">{% trans %}El problema{% endtrans %}</span>
-    <h2 class="cs-section__title cs-section__title--center">{% trans %}Gestionar a mano o dejar emprendedores atrás{% endtrans %}</h2>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}8 provincias, 8 hojas Excel, 0 visibilidad{% endtrans %}</h2>
     <img src="{{ before_after_image }}" alt="{% trans %}Comparativa antes y después{% endtrans %}" class="cs-pain__image" loading="lazy" width="800" height="800">
     <div class="cs-pain__cards">
       <div class="cs-pain__card">
-        <span class="cs-pain__value">45</span>
-        <span class="cs-pain__label">{% trans %}emprendedores en Excel{% endtrans %}</span>
+        <span class="cs-pain__value">50</span>
+        <span class="cs-pain__label">{% trans %}participantes en Excel{% endtrans %}</span>
       </div>
       <div class="cs-pain__card">
-        <span class="cs-pain__value">3</span>
-        <span class="cs-pain__label">{% trans %}semanas por informe FSE+{% endtrans %}</span>
+        <span class="cs-pain__value">8</span>
+        <span class="cs-pain__label">{% trans %}provincias sin coordinación{% endtrans %}</span>
       </div>
       <div class="cs-pain__card">
-        <span class="cs-pain__value">0</span>
-        <span class="cs-pain__label">{% trans %}métricas ODS medidas{% endtrans %}</span>
+        <span class="cs-pain__value">{{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
+        <span class="cs-pain__label">{% trans %}semanas por informe SAE{% endtrans %}</span>
       </div>
       <div class="cs-pain__card">
         <span class="cs-pain__value">{{ jaraba_icon('ui', 'alert-circle', { variant: 'duotone', size: '28px', color: 'white' }) }}</span>
-        <span class="cs-pain__label">{% trans %}sin mentoría escalable{% endtrans %}</span>
+        <span class="cs-pain__label">{% trans %}sin seguimiento individualizado{% endtrans %}</span>
       </div>
     </div>
   </div>
 </section>
 
-{# === 4. EL DESCUBRIMIENTO === #}
+{# === 4. EL MOMENTO DECISIVO === #}
 <section class="cs-section cs-discovery reveal-element reveal-fade-up">
   <div class="cs-section__container cs-section__container--split">
     <div class="cs-section__content">
       <span class="cs-section__eyebrow">{% trans %}El momento decisivo{% endtrans %}</span>
-      <h2 class="cs-section__title">{% trans %}Una plataforma con la marca de la Diputación{% endtrans %}</h2>
-      <p>{% trans %}Ana ve en un congreso de desarrollo local que otra diputación gestiona su programa de emprendimiento con una plataforma propia: su marca, su dominio, pero con IA integrada para mentorizar a los emprendedores 24/7. Pide una demo esa misma tarde.{% endtrans %}</p>
+      <h2 class="cs-section__title">{% trans %}Si no existe, lo construimos{% endtrans %}</h2>
+      <p>{% trans %}Tras 18 meses gestionando el PIIL con Excel, el equipo de PED S.L. tenía claro que no existía en el mercado una herramienta adaptada a la gestión de programas de inserción laboral con itinerarios individualizados, formación integrada y reporting automático para el SAE.{% endtrans %}</p>
       <blockquote class="cs-discovery__quote">
-        <p>&ldquo;{% trans %}Lo que me convenció fue ver que los emprendedores interactúan con nuestra marca, no con un tercero. Y que el copiloto IA detecta oportunidades de negocio que nosotros, con 45 expedientes encima, no teníamos tiempo de analizar.{% endtrans %}&rdquo;</p>
-        <footer>— Ana Martínez</footer>
+        <p>&ldquo;{{ testimonial_hero.quote }}&rdquo;</p>
+        <footer>— {{ testimonial_hero.name }}, {{ testimonial_hero.role }}</footer>
       </blockquote>
     </div>
     <div class="cs-section__media">
-      <img src="{{ mentoring_image }}" alt="{% trans %}Sesión de mentoría IA con emprendedor{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      <img src="{{ mentoring_image }}" alt="{% trans %}Diseño del ecosistema Andalucía +ei{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
     </div>
   </div>
 </section>
 
-{# === 5. LOS 8 MESES (timeline) === #}
+{# === 5. TIMELINE === #}
 <section class="cs-section cs-timeline reveal-element reveal-fade-up">
   <div class="cs-section__container">
-    <span class="cs-section__eyebrow">{% trans %}Los 8 meses{% endtrans %}</span>
+    <span class="cs-section__eyebrow">{% trans %}La evolución{% endtrans %}</span>
     <h2 class="cs-section__title cs-section__title--center">{% trans %}De Excel a plataforma de impacto{% endtrans %}</h2>
     <div class="cs-timeline__split">
       <div class="cs-timeline__media">
-        <img src="{{ dashboard_image }}" alt="{% trans %}Dashboard de impacto ODS{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+        <img src="{{ dashboard_image }}" alt="{% trans %}Dashboard de gestión del programa{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
       </div>
       <div class="cs-timeline__steps">
         {% for step in timeline %}
@@ -130,7 +131,7 @@
 {# === 6. LOS RESULTADOS === #}
 <section class="cs-section cs-results reveal-element reveal-fade-up">
   <div class="cs-section__container">
-    <span class="cs-section__eyebrow">{% trans %}8 meses después{% endtrans %}</span>
+    <span class="cs-section__eyebrow">{% trans %}1ª edición vs 2ª edición{% endtrans %}</span>
     <h2 class="cs-section__title cs-section__title--center">{% trans %}Los resultados hablan solos{% endtrans %}</h2>
     <div class="cs-results__grid">
       {% for m in metrics %}
@@ -138,8 +139,8 @@
           <span class="cs-results__change">{{ m.change }}</span>
           <span class="cs-results__label">{{ m.label }}</span>
           <div class="cs-results__compare">
-            <span class="cs-results__before">{% trans %}Antes:{% endtrans %} {{ m.before }}</span>
-            <span class="cs-results__after">{% trans %}Ahora:{% endtrans %} {{ m.after }}</span>
+            <span class="cs-results__before">{% trans %}1ª ed:{% endtrans %} {{ m.before }}</span>
+            <span class="cs-results__after">{% trans %}2ª ed:{% endtrans %} {{ m.after }}</span>
           </div>
         </div>
       {% endfor %}
@@ -147,20 +148,20 @@
   </div>
 </section>
 
-{# === 7. INFORMES AUTOMÁTICOS === #}
+{# === 7. LA VISIÓN === #}
 <section class="cs-section cs-chef reveal-element reveal-fade-up">
   <div class="cs-section__container cs-section__container--split">
     <div class="cs-section__media">
-      <img src="{{ report_image }}" alt="{% trans %}Informe FSE+ generado automáticamente{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
+      <img src="{{ report_image }}" alt="{% trans %}Panel de gestión del programa PIIL{% endtrans %}" class="cs-section__image" loading="lazy" width="600" height="600">
     </div>
     <div class="cs-section__content">
-      <span class="cs-section__eyebrow">{% trans %}El momento cumbre{% endtrans %}</span>
-      <h2 class="cs-section__title">{% trans %}Auditoría FSE+ superada sin observaciones{% endtrans %}</h2>
+      <span class="cs-section__eyebrow">{% trans %}La visión{% endtrans %}</span>
+      <h2 class="cs-section__title">{% trans %}Un SaaS nacido de la necesidad real{% endtrans %}</h2>
       <blockquote class="cs-discovery__quote">
-        <p>&ldquo;{% trans %}Cuando llegó la auditoría del FSE+, generamos el informe completo con un clic: participantes, fases, horas de mentoría, métricas de impacto y alineación ODS. El auditor dijo que era el dossier mejor documentado que había visto.{% endtrans %}&rdquo;</p>
-        <footer>— Ana Martínez</footer>
+        <p>&ldquo;{{ testimonial.quote }}&rdquo;</p>
+        <footer>— {{ testimonial.name }}</footer>
       </blockquote>
-      <p class="cs-chef__impact">{% trans %}180 participantes gestionados. 6 ODS medidos en tiempo real. Informe FSE+ en 5 segundos.{% endtrans %}</p>
+      <p class="cs-chef__impact">{% trans %}50 participantes en la 1ª edición. 45 en la 2ª. 21 inserciones laborales verificadas. 8 provincias unificadas en un solo panel.{% endtrans %}</p>
     </div>
   </div>
 </section>
@@ -170,12 +171,12 @@
   <div class="cs-section__container cs-section__container--narrow">
     <blockquote class="cs-testimonial__quote" itemscope itemtype="https://schema.org/Review">
       <p class="cs-testimonial__text" itemprop="reviewBody">
-        &ldquo;{{ testimonial.quote }}&rdquo;
+        &ldquo;{{ testimonial_hero.quote }}&rdquo;
       </p>
       <footer class="cs-testimonial__author">
         <div>
-          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial.name }}</cite>
-          <span class="cs-testimonial__role">{{ testimonial.role }}, {{ testimonial.company }}</span>
+          <cite class="cs-testimonial__name" itemprop="author">{{ testimonial_hero.name }}</cite>
+          <span class="cs-testimonial__role">{{ testimonial_hero.role }}, {{ testimonial_hero.company }}</span>
         </div>
         <div class="cs-testimonial__stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
           <meta itemprop="ratingValue" content="5">
@@ -187,16 +188,16 @@
   </div>
 </section>
 
-{# === 9. CTA INSTITUCIONAL (sin pricing — B2G) === #}
+{# === 9. CTA (sin pricing — B2G/B2B) === #}
 <section class="cs-section cs-pricing reveal-element reveal-fade-up">
   <div class="cs-section__container">
-    <h2 class="cs-section__title cs-section__title--center">{% trans %}Solución para instituciones{% endtrans %}</h2>
+    <h2 class="cs-section__title cs-section__title--center">{% trans %}Solución para entidades gestoras de programas de empleo{% endtrans %}</h2>
     <div class="cs-pricing__cards">
       <div class="cs-pricing__card cs-pricing__card--recommended" style="max-width: 480px; margin: 0 auto;">
         <span class="cs-pricing__badge">{% trans %}Programa Andalucía +ei{% endtrans %}</span>
         <h3>{% trans %}Enterprise{% endtrans %}</h3>
         <span class="cs-pricing__price" style="font-size: 1.5rem;">{% trans %}Precio a medida{% endtrans %}</span>
-        <p>{% trans %}Tu marca, tu dominio. Verticales a la carta. Mentoría IA. Dashboards ODS. Informes FSE+/FEDER automáticos. Soporte dedicado.{% endtrans %}</p>
+        <p>{% trans %}Tu marca, tu dominio. Gestión de participantes, itinerarios IPAE, formación, seguimiento de inserción, copilot IA y reporting automático para el SAE.{% endtrans %}</p>
         <a href="{{ register_url }}" class="btn btn--primary" data-track-cta="cs_ei_enterprise" data-track-position="case_study_pricing">{% trans %}Solicitar demo{% endtrans %}</a>
       </div>
     </div>
@@ -206,8 +207,8 @@
 {# === 10. CTA FINAL === #}
 <section class="cs-section cs-final-cta">
   <div class="cs-section__container cs-section__container--narrow">
-    <h2 class="cs-final-cta__title">{% trans %}¿Listo para impulsar el emprendimiento de tu territorio?{% endtrans %}</h2>
-    <p class="cs-final-cta__subtitle">{% trans %}Tu marca. Tu plataforma. Mentoría IA para todos tus emprendedores. Informes automáticos para fondos europeos.{% endtrans %}</p>
+    <h2 class="cs-final-cta__title">{% trans %}¿Gestionas programas de inserción laboral?{% endtrans %}</h2>
+    <p class="cs-final-cta__subtitle">{% trans %}Tu marca. Tu plataforma. Itinerarios individualizados con IA. Informes automáticos para justificación ante organismos públicos.{% endtrans %}</p>
     <a href="{{ register_url }}" class="btn btn--primary btn--xl" data-track-cta="cs_ei_final_cta" data-track-position="case_study_bottom">
       {% trans %}Solicitar demo{% endtrans %}
     </a>
@@ -224,10 +225,10 @@
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "45 emprendedores en un Excel. 8 meses para gestionar 180 con IA",
+  "headline": "De gestionar 50 itinerarios de inserción laboral en Excel a un ecosistema digital con IA",
   "author": { "@type": "Organization", "name": "Jaraba Impact Platform" },
-  "datePublished": "2026-03-20",
+  "datePublished": "2026-03-23",
   "publisher": { "@type": "Organization", "name": "PED S.L." },
-  "description": "La Diputacion de Jaen paso de gestionar 45 emprendedores en Excel a 180 con mentoria IA, tracking automatico de fases PIIL e informes FSE+ generados con un clic."
+  "description": "PED S.L. gestiono su primer Programa Integrado de Insercion Laboral con Excel en 8 provincias. La experiencia les llevo a construir Andalucia +ei, el SaaS que ahora usan para gestionar la 2a edicion."
 }
 </script>

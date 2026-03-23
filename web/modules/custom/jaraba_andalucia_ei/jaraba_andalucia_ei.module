@@ -321,16 +321,17 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'solicitud-confirmada',
     ],
-    // Caso de éxito: Diputación de Jaén
+    // Caso de éxito: PED S.L. (Programa Andalucía +ei).
     'andalucia_ei_case_study' => [
       'variables' => [
         'hero_image' => '',
-        'ana_image' => '',
+        'protagonist_image' => '',
         'before_after_image' => '',
         'dashboard_image' => '',
         'mentoring_image' => '',
         'report_image' => '',
         'metrics' => [],
+        'testimonial_hero' => [],
         'testimonial' => [],
         'timeline' => [],
         'pricing_url' => '',

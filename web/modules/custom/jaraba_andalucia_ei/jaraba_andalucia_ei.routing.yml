@@ -1,13 +1,21 @@
 # Rutas del módulo Andalucía +ei
 # CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
 
-# --- Case Study: Diputación de Jaén ---
+# --- Case Study: Plataforma de Ecosistemas Digitales S.L. ---
 
+jaraba_andalucia_ei.case_study.ped:
+  path: '/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiCaseStudyController::caseStudy'
+    _title: 'Caso de éxito: PED S.L. — Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
+# Redirect 301 del slug antiguo (SEO).
 jaraba_andalucia_ei.case_study.diputacion_jaen:
   path: '/andalucia-ei/caso-de-exito/diputacion-jaen'
   defaults:
-    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiCaseStudyController::caseStudy'
-    _title: 'Caso de éxito: Diputación de Jaén — Andalucía +ei'
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiCaseStudyController::legacyRedirect'
   requirements:
     _permission: 'access content'
 

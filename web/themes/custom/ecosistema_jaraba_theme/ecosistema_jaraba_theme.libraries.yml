@@ -336,7 +336,7 @@ comercioconecta-case-study:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations
 
-# Andalucía EI Case Study — /andalucia-ei/caso-de-exito/diputacion-jaen
+# Andalucía EI Case Study — /andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales
 andalucia-ei-case-study:
   version: 1.0.0
   css:

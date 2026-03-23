@@ -1638,9 +1638,9 @@ class VerticalLandingController extends ControllerBase
           ['value' => '6', 'suffix' => '', 'label' => $this->t('ODS alineados')],
         ],
         'case_study' => [
-          'title' => $this->t('La Diputación de Jaén gestiona 180 emprendedores con IA'),
-          'subtitle' => $this->t('Cómo la Diputación de Jaén digitalizó sus programas de emprendimiento rural con 7 verticales y copilot IA'),
-          'url' => $this->caseStudyUrl('jaraba_andalucia_ei.case_study.diputacion_jaen', '/andalucia-ei/caso-de-exito/diputacion-jaen'),
+          'title' => $this->t('PED S.L. gestiona su programa de inserción laboral con su propio SaaS'),
+          'subtitle' => $this->t('Cómo la empresa que construye Andalucía +ei lo usa para gestionar 50 itinerarios de inserción con IA'),
+          'url' => $this->caseStudyUrl('jaraba_andalucia_ei.case_study.ped', '/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],

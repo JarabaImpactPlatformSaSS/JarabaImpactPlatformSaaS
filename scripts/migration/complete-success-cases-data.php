@@ -163,10 +163,10 @@ $verticals_short = [
     'pain_title' => 'Comisiones de intermediarios', 'pain_desc' => '20% de cada servicio se iba en comisiones',
   ],
   'andalucia_ei' => [
-    'challenge_before' => 'La Diputación de Jaén gestionaba sus programas de empleo con Excel y email. 800 participantes, 12 orientadores, y ningún sistema que cruzara datos entre programas. Los informes al FSE tardaban semanas.',
-    'solution_during' => 'Andalucía +ei digitalizó la gestión completa: fichas de participantes, sesiones de orientación, acciones formativas, indicadores de impacto y generación automática de informes para el FSE.',
-    'result_after' => 'Los informes que antes tardaban 3 semanas se generan en 5 minutos. La tasa de inserción laboral subió un 23% gracias al seguimiento individualizado.',
-    'pain_title' => 'Gestión en Excel', 'pain_desc' => '800 participantes gestionados con hojas de cálculo',
+    'challenge_before' => 'PED S.L. gestionó su primer Programa Integrado de Inserción Laboral (PIIL) en 2023 con Excel y email. 50 participantes en 8 provincias andaluzas, 8 orientadores coordinados por hojas de cálculo compartidas, y los informes para el SAE se elaboraban a mano durante semanas.',
+    'solution_during' => 'Para la 2ª edición (2025), PED S.L. construyó Andalucía +ei sobre su propio SaaS: fichas de participantes, itinerarios IPAE personalizados, sesiones de orientación, acciones formativas, seguimiento de inserción y generación automática de informes.',
+    'result_after' => 'La coordinación que antes requería 8 hojas Excel por provincia ahora se gestiona desde un único panel. El seguimiento individualizado con copilot IA permite detectar oportunidades que el equipo no tenía tiempo de analizar.',
+    'pain_title' => 'Gestión en Excel', 'pain_desc' => '50 participantes en 8 provincias coordinados con hojas de cálculo',
   ],
   'formacion' => [
     'challenge_before' => 'María daba clases presenciales a 20 alumnos en Madrid. Su conocimiento de marketing digital valía oro, pero no podía escalar más allá de su capacidad física. Sin plataforma, sin sistema de pago, sin certificados.',
