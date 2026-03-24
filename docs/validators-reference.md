@@ -54,6 +54,9 @@
 | FUNNEL-COMPLETENESS-001 | Conversion CTAs have tracking attributes |
 | GROUNDING-PROVIDER-HEALTH-001 | Grounding provider health check |
 | HOMEPAGE-COMPLETENESS-001 | Homepage 10/10 conversion completeness |
+| METASITE-CONTENT-COMPLETENESS-001 | Metasite per-variant content completeness (4 variantes × 32 campos) |
+| METASITE-VARIANT-MAP-SSOT-001 | Variant map SSOT (no hardcoded duplicates in .theme) |
+| METASITE-DEAD-FIELDS-001 | Dead fields cleanup (old TAB 15 genérico) |
 | HOMEPAGE-VARIANT-COHERENCE-001 | Homepage variant differentiation |
 | HOMEPAGE-VIDEO-A11Y-001 | Video hero accessibility compliance |
 | HOOK-DUPLICATE-001 | Duplicate function declarations in .module files |
@@ -105,6 +108,7 @@
 | TRANSLATION-INTEG-001 | Translation integrity (cross-page dup, NULL titles, AI fences) |
 | TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables (warn, 80 pre-existing) |
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
+| THEME-SETTINGS-INTEGRITY-001 | Theme settings form-schema-consumer coherence (dead fields, PLG schema, CSS vars) |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |
 | HOMEPAGE-SMOKE-TEST-001 | Homepage differentiation per metasite (homepage_id, rendered_html, meta_title_suffix) |

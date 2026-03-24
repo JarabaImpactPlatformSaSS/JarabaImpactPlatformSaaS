@@ -1,8 +1,8 @@
 # Arquitectura de Theming SaaS: Estandar Maestro
 
 > **Tipo:** Documento de Arquitectura
-> **Version:** 3.0 (Unificacion Multi-Tenant + Sprint 13)
-> **Fecha original:** 2026-02-05 | **Actualizado:** 2026-03-11
+> **Version:** 3.1 (Correccion cascada + inventario actualizado)
+> **Fecha original:** 2026-02-05 | **Actualizado:** 2026-03-24
 > **Estado:** Vigente
 > **Alcance:** Patron "Federated Design Tokens" + Resolucion Multi-Tenant Unificada
 
@@ -109,7 +109,7 @@ $ej-color-corporate: #233D63;  // NO hacer esto
 | **TenantThemeConfig** | Visual SSOT: colores, tipografia, CTA, footer, botones, cards | Per-tenant |
 | **SiteConfig** | Structural SSOT: layout, nombre, logo, nav, legal | Per-domain |
 
-SiteConfig (Level 5) es FALLBACK — `applySiteConfigOverrides()` verifica `empty($overrides['field'])` antes de aplicar. NO es un override.
+SiteConfig (Level 5) tiene **comportamiento dual**: es FALLBACK para campos visuales (CTA) — `applySiteConfigOverrides()` verifica `empty($overrides['field'])` antes de aplicar — pero es OVERRIDE para campos estructurales (layout, footer type).
 
 ---
 
@@ -119,27 +119,67 @@ SiteConfig (Level 5) es FALLBACK — `applySiteConfigOverrides()` verifica `empt
 |------|--------|-----------|-----------|----------------|
 | 1 | **SCSS Tokens** | `_variables.scss` | Valores de compilacion, fallbacks | No (build time) |
 | 2 | **CSS Custom Properties** | `_injectable.scss` -> `:root` | Base de tokens globales | Por defecto |
-| 3 | **Component Tokens** | Parciales SCSS | Tokens con scope local | Por componente |
-| 4 | **Tenant Override** | `TenantThemeConfig.generateCssVariables()` | Inyeccion desde Drupal UI | Por tenant |
-| 5 | **Meta-Site Fallback** | `SiteConfig` entity | Fallback estructural por dominio | Por dominio |
+| 3 | **Theme Settings (Platform)** | `ecosistema_jaraba_theme.settings` | Defaults globales SaaS (CTA, layout, footer) | Admin global |
+| 4 | **Tenant Override** | `TenantThemeConfig.generateCssVariables()` | Inyeccion desde Drupal UI / Visual Customizer | Por tenant |
+| 5 | **Meta-Site Override/Fallback** | `SiteConfig` entity | Override estructural (layout) + Fallback visual (CTA) por dominio | Por dominio |
+
+> **IMPORTANTE:** La Capa 5 (SiteConfig) tiene comportamiento dual:
+> - **Override** para campos estructurales (`header_layout`, `footer_type`, `auth_visibility`): SiteConfig GANA sobre Capa 4.
+> - **Fallback** para campos visuales (`header_cta_text`, `header_cta_url`): SiteConfig solo aplica si Capa 4 NO definio el campo.
 
 ### 3.1 Flujo de Resolucion CSS
 
 ```
 CSS Cascade:
-:root (L2) -> .component (L3) -> TenantThemeConfig :root (L4) -> SiteConfig fallback (L5)
+:root (L2) -> Theme Settings (L3) -> TenantThemeConfig :root (L4) -> SiteConfig override/fallback (L5)
 ```
 
 ### 3.2 Flujo de Resolucion PHP
 
 ```
 UnifiedThemeResolverService:
-  1. Platform defaults (ecosistema_jaraba_theme.settings)
-  2. Vertical preset (IndustryPresetService)
-  3. Plan features (reservado)
-  4. TenantThemeConfig (per-tenant)
-  5. SiteConfig (per-domain fallback)
+  L3. Platform defaults (ecosistema_jaraba_theme.settings)  <- base global
+  --. Vertical preset (IndustryPresetService)               <- reservado
+  --. Plan features                                         <- reservado
+  L4. TenantThemeConfig (per-tenant)                        <- SSOT visual
+  L5. SiteConfig (per-domain: override estructural + fallback visual)
 ```
+
+### 3.3 Configuracion Per-Metasitio en Theme Settings (METASITE-CONTENT-001)
+
+Desde 2026-03-24, la Capa 3 incluye **4 tabs per-metasitio** en `/admin/appearance/settings/ecosistema_jaraba_theme`:
+
+| Tab | Variante | Dominio | group_id |
+|-----|----------|---------|----------|
+| Meta: SaaS Hub | `generic` | plataformadeecosistemas.com | — |
+| Meta: PED Corporativo | `pde` | plataformadeecosistemas.es | 7 |
+| Meta: Franquicia | `jarabaimpact` | jarabaimpact.com | 6 |
+| Meta: Marca Personal | `pepejaraba` | pepejaraba.com | 5 |
+
+Cada tab contiene 32 campos configurables agrupados en 6 secciones:
+- **Hero** (7): eyebrow, headline, subtitle, CTA primario (texto+URL), CTA secundario (texto+URL)
+- **Estadisticas** (12): 4 metricas × (valor, sufijo, etiqueta)
+- **CTA Final** (3): titular, subtitulo, texto boton
+- **Header CTA** (2): texto y URL del boton del encabezado
+- **Footer** (6): copyright + 5 redes sociales
+- **SEO** (2): title y description de la homepage
+
+**Total: 128 config keys** (32 × 4 variantes). Convention: `{variant}_{section}_{field}`.
+
+**Pipeline de inyeccion:**
+1. `hook_preprocess_page()` resuelve `homepage_variant` desde `MetaSiteResolverService::VARIANT_MAP`
+2. Lee campos `{variant}_*` de `ecosistema_jaraba_theme.settings` con fallback a `_ecosistema_jaraba_theme_get_metasite_defaults()`
+3. Inyecta `$variables['metasite_content']` (hero, stats, cta_final)
+4. Header CTA y footer: sobreescribe `$variables['theme_settings']` DESPUES de UnifiedThemeResolverService
+
+**SSOT:** `MetaSiteResolverService::VARIANT_MAP` es la unica fuente del mapa group_id → variante. NUNCA hardcodear en .theme.
+
+### 3.4 Propagacion de Cambios: CTA del Header
+
+Modificar el CTA en Theme Settings (L3) **NO se propaga** a meta-sitios que tengan
+`TenantThemeConfig` (L4) o `SiteConfig` (L5) con CTA propio. Sin embargo, los campos
+per-metasitio `{variant}_header_cta_text/url` en los tabs de metasitio SI tienen
+precedencia sobre la cascada L4/L5 (se aplican DESPUES de `UnifiedThemeResolverService`).
 
 ---
 
@@ -214,7 +254,7 @@ web/modules/custom/ecosistema_jaraba_core/scss/
   ... (36 parciales features)
 ```
 
-### 5.2 Tema (ecosistema_jaraba_theme) — 107 archivos SCSS
+### 5.2 Tema (ecosistema_jaraba_theme) — 123 archivos SCSS
 
 ```
 web/themes/custom/ecosistema_jaraba_theme/
@@ -225,23 +265,27 @@ web/themes/custom/ecosistema_jaraba_theme/
     _base.scss, _layout.scss, _typography.scss, _accessibility.scss
     _slide-panel.scss, _auth.scss, _content-hub.scss, ...
 
-    components/            <- 59 parciales UI
+    components/            <- 70 parciales UI
       _header.scss, _footer.scss, _hero.scss, _cards.scss,
       _buttons.scss, _forms.scss, _glass-utilities.scss,
       _landing-page.scss, _landing-sections.scss, _lead-magnet.scss,
-      _consent-banner.scss, _notification-panel.scss, _toasts.scss, ...
+      _consent-banner.scss, _notification-panel.scss, _toasts.scss,
+      _homepage-pain-points.scss, _homepage-pricing.scss,
+      _homepage-comparison.scss, _homepage-features.scss, ...
 
-    routes/                <- 16 route SCSS (compilacion independiente)
+    routes/                <- 19 route SCSS (compilacion independiente)
       coordinador-hub.scss, dashboard.scss, content-hub.scss,
       page-builder.scss, auth.scss, landing.scss, empleabilidad.scss,
       ai-features.scss, ai-compliance.scss, emprendimiento.scss,
       formacion.scss, legal-pages.scss, tenant-dashboard.scss,
-      tenant-settings.scss, autonomous-agents.scss, causal-analytics.scss
+      tenant-settings.scss, autonomous-agents.scss, causal-analytics.scss,
+      case-study-landing.scss, quiz.scss, ...
 
-    bundles/               <- 8 bundles (compilacion independiente)
+    bundles/               <- 9 bundles (compilacion independiente)
       ai-dashboard.scss, agent-dashboard.scss, auth.scss,
       content-hub.scss, employability-pages.scss,
-      jobseeker-dashboard.scss, page-builder-dashboard.scss, support.scss
+      jobseeker-dashboard.scss, page-builder-dashboard.scss,
+      support.scss, ...
 
     features/              <- 3 utilidades
       _back-to-top.scss, _dark-mode.scss, _promo-banner.scss
@@ -249,8 +293,8 @@ web/themes/custom/ecosistema_jaraba_theme/
   css/                     <- Output compilado
     ecosistema-jaraba-theme.css  <- main.scss output
     admin-settings.css
-    routes/*.css           <- 16 CSS de ruta
-    bundles/*.css          <- 8 CSS de bundle
+    routes/*.css           <- 19 CSS de ruta
+    bundles/*.css          <- 9 CSS de bundle
 
   js/dist/                 <- 28 JS minificados
   package.json             <- Build scripts (build:css + build:routes + build:bundles + build:js)
@@ -428,8 +472,9 @@ Variables SCSS que alimentan `color.scale/adjust/change` DEBEN ser hex estatico,
 ### 9.1 Entity (jaraba_theming)
 
 **Tipo:** Content Entity (`tenant_theme_config`)
-**Campos:** 47 totales
+**Campos:** 53 totales
 **Metodo clave:** `generateCssVariables()` — genera `:root { --ej-*: value; }` desde campos de la entity
+**Edicion principal:** Visual Customizer (slide-panel lateral 480px con preview en tiempo real, ruta `/my-settings/design`)
 
 ### 9.2 Campos por Grupo
 
@@ -447,10 +492,11 @@ Variables SCSS que alimentan `color.scale/adjust/change` DEBEN ser hex estatico,
 | **Avanzado (4)** | dark_mode_enabled, animations_enabled, back_to_top_enabled, custom_css |
 | **Sistema (3)** | is_active, created, changed |
 
-### 9.3 Theme Customizer Form
+### 9.3 Theme Customizer Form (Visual Customizer)
 
 **Form:** `TenantThemeCustomizerForm` (1.011 lineas)
-**Ruta:** Acceso via Tenant Settings Hub
+**Ruta:** `/my-settings/design` (acceso via Tenant Settings Hub)
+**UX:** Slide-panel lateral 480px con preview en tiempo real
 **10 Vertical Tabs, 70+ opciones:**
 
 1. Ajuste Predefinido por Sector (preset picker con lightbox y filtros)
@@ -470,20 +516,25 @@ Variables SCSS que alimentan `color.scale/adjust/change` DEBEN ser hex estatico,
 
 ### 10.1 Estadisticas Globales (Marzo 2026)
 
-| Metrica | Valor |
-|---------|-------|
-| **Total archivos SCSS** | **488** |
-| Tema (ecosistema_jaraba_theme) | 107 |
-| Core (ecosistema_jaraba_core) | 59 |
-| Modulos satelite | 322 |
-| Modulos con SCSS | 55 |
-| Modulos con package.json | 44 |
-| CSS Custom Properties | 290 |
-| Instancias color-mix() | 30+ |
+| Metrica | Valor | Anterior (v3.0) |
+|---------|-------|-----------------|
+| **Total archivos SCSS** | **505** | 488 |
+| Tema (ecosistema_jaraba_theme) | 123 | 107 |
+| Core (ecosistema_jaraba_core) | 59 | 59 |
+| Modulos satelite | 382 | 322 |
+| Modulos con SCSS | 57 | 55 |
+| Modulos con package.json | 44 | 44 |
+| CSS Custom Properties (_injectable.scss) | 52 unicas | — |
+| CSS Custom Properties (total runtime incl. ThemeTokenService) | 290+ | 290 |
+| Instancias color-mix() | 30+ | 30+ |
+
+> **Nota:** Las 52 properties en `_injectable.scss` son la base estatica. ThemeTokenService
+> genera properties adicionales en runtime desde TenantThemeConfig (colores, tipografia, etc.),
+> alcanzando 290+ en total cuando un tenant tiene personalizacion activa.
 
 ### 10.2 Cobertura package.json
 
-44 de 55 modulos con SCSS tienen package.json.
+44 de 57 modulos con SCSS tienen package.json.
 
 Modulos sin package.json (pendiente):
 - jaraba_agent_flows, jaraba_facturae, jaraba_legal, jaraba_privacy, jaraba_rag
@@ -539,6 +590,7 @@ Modulos sin package.json (pendiente):
 | **ICON-CONVENTION-001** | Iconos via `jaraba_icon('category', 'name', { variant, color, size })` |
 | **ICON-DUOTONE-001** | Variante default: duotone. Solo outline para contextos minimalistas |
 | **ICON-COLOR-001** | Colores SOLO de paleta: azul-corporativo, naranja-impulso, verde-innovacion, white, neutral |
+| **SCSS-COMPILE-TARGET-001** | SIEMPRE encontrar que entry point importa el parcial SCSS editado antes de compilar. `main.scss` NO incluye route/bundle components — compilar el entry point correcto |
 
 ---
 
@@ -549,6 +601,7 @@ Modulos sin package.json (pendiente):
 | 2026-02-05 | 2.0 | Creacion inicial con patron Federated Design Tokens |
 | 2026-02-05 | 2.1 | Consolidacion SCSS completada (8 modulos migrados) |
 | 2026-03-11 | 3.0 | Actualizacion mayor: UnifiedThemeResolverService, TenantThemeConfig (47 campos), ThemeTokenService, inventario actualizado (488 SCSS, 55 modulos), 16 route SCSS + 8 bundles, color-mix(), directrices nombradas, entorno Lando |
+| 2026-03-24 | 3.1 | Correcciones: (1) Capa 3 (Theme Settings) explicitada en jerarquia — antes sin capa asignada. (2) SiteConfig documentado como comportamiento dual: override estructural + fallback visual (no solo fallback). (3) Seccion 3.3 nueva: propagacion CTA header entre meta-sitios. (4) TenantThemeConfig actualizado a 53 campos. (5) Inventario SCSS actualizado: 505 total, 123 tema, 382 satelite, 57 modulos, 19 routes, 9 bundles, 70 components. (6) CSS Custom Properties: distincion entre 52 estaticas y 290+ runtime. (7) SCSS-COMPILE-TARGET-001 anadida a directrices. (8) Visual Customizer documentado |
 
 ---
 
