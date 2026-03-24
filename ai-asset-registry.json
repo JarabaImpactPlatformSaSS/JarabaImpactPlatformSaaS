@@ -1,0 +1,317 @@
+{
+    "_meta": {
+        "description": "AI-generated assets registry (NANO-BANANA-ASSET-AUDIT-001)",
+        "last_updated": "2026-03-24",
+        "total_assets": 44
+    },
+    "assets": [
+        {
+            "filename": "images/logo-anthropic.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-bizum.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-drupal.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-firma-digital.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-google.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-linkedin.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-qdrant.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-stripe.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/logo-whatsapp.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-24",
+            "purpose": "Trust strip logo (TRUST-STRIP-001)"
+        },
+        {
+            "filename": "images/quiz/agroconecta.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/andalucia_ei.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/comercioconecta.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/default.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/empleabilidad.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/emprendimiento.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/formacion.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/jaraba_content_hub.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/jarabalex.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "images/quiz/serviciosconecta.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-20",
+            "purpose": "Quiz vertical illustration"
+        },
+        {
+            "filename": "videos/hero-agroconecta.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-andalucia-ei-case-study.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-andalucia-ei.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-comercioconecta.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-contenthub.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-empleabilidad.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-emprendimiento.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-formacion.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-jarabalex.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "videos/hero-serviciosconecta.mp4",
+            "tool": "veo",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-21",
+            "purpose": "Landing hero video (VIDEO-HERO-001)"
+        },
+        {
+            "filename": "images/pickers/presets/agro_horticultura.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/agro_oliva.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/agro_vinicola.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/comercio_artesania.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/comercio_electronica.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/comercio_moda.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/empleabilidad_industrial.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/empleabilidad_tech.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/emprendimiento_social.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/emprendimiento_startup.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/servicios_belleza.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/servicios_consultor.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/servicios_legal.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/servicios_restaurante.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        },
+        {
+            "filename": "images/pickers/presets/servicios_salud.png",
+            "tool": "nano-banana",
+            "prompt": "(fill in original prompt)",
+            "date": "2026-03-19",
+            "purpose": "Theme preset picker preview"
+        }
+    ]
+}

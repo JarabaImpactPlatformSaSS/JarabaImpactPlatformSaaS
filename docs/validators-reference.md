@@ -55,6 +55,9 @@
 | GROUNDING-PROVIDER-HEALTH-001 | Grounding provider health check |
 | HOMEPAGE-COMPLETENESS-001 | Homepage 10/10 conversion completeness |
 | TRUST-STRIP-INTEGRITY-001 | Trust strip partner catalog, assets, Twig, MARKETING-TRUTH-001, CSS, JS |
+| IMAGE-WEIGHT-001 | Theme image size audit — logos max 100KB, others max 300-500KB |
+| DEPRECATED-TEMPLATE-USAGE-001 | No active {% include %} of @deprecated Twig templates |
+| NANO-BANANA-ASSET-AUDIT-001 | AI-generated asset traceability registry (warn_check) |
 | METASITE-CONTENT-COMPLETENESS-001 | Metasite per-variant content completeness (4 variantes × 32 campos) |
 | METASITE-VARIANT-MAP-SSOT-001 | Variant map SSOT (no hardcoded duplicates in .theme) |
 | METASITE-DEAD-FIELDS-001 | Dead fields cleanup (old TAB 15 genérico) |

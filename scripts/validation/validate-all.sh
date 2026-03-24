@@ -282,6 +282,12 @@ if [ "$MODE" = "full" ]; then
   warn_check "ICON-DYNAMIC-001" "Dynamic icon refs (wizard/daily actions) resolve to SVGs" \
     php "$SCRIPT_DIR/validate-dynamic-icon-refs.php"
 
+  warn_check "ICON-CONTEXTUAL-001" "No banned generic icons (screening/diagnostic) + diversity audit" \
+    php "$SCRIPT_DIR/validate-icon-generic-audit.php"
+
+  run_check "EMAIL-SINGLE-FLOW-001" "Email registration single-flow integrity (5 checks)" \
+    php "$SCRIPT_DIR/validate-email-single-flow.php"
+
   run_check "QUIZ-FUNNEL-001" "Quiz vertical funnel integrity" \
     php "$SCRIPT_DIR/validate-quiz-funnel.php"
 
@@ -502,6 +508,15 @@ if [ "$MODE" = "full" ]; then
 
   run_check "TRUST-STRIP-INTEGRITY-001" "Trust strip partner catalog, assets, variables" \
     php "$SCRIPT_DIR/validate-trust-strip-integrity.php"
+
+  run_check "IMAGE-WEIGHT-001" "Theme image size audit (logos max 100KB)" \
+    php "$SCRIPT_DIR/validate-image-weight.php"
+
+  run_check "DEPRECATED-TEMPLATE-USAGE-001" "No active usage of deprecated Twig templates" \
+    php "$SCRIPT_DIR/validate-deprecated-template-usage.php"
+
+  warn_check "NANO-BANANA-ASSET-AUDIT-001" "AI-generated asset traceability registry" \
+    php "$SCRIPT_DIR/validate-ai-asset-registry.php"
 
   run_check "THEME-SETTINGS-INTEGRITY-001" "Theme settings form-schema-consumer coherence" \
     php "$SCRIPT_DIR/validate-theme-settings-integrity.php"

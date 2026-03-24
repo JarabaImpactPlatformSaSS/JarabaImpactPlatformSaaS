@@ -1,113 +1,129 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @file
- * IMAGE-WEIGHT-001: Detects oversized images in theme directories.
+ * IMAGE-WEIGHT-001: Detects oversized images in the theme directory.
  *
- * Large images slow down page load and hurt Core Web Vitals (LCP).
- * This script flags images above thresholds and suggests WebP conversion.
+ * Thresholds by category:
+ *   - Logos (logo-*): max 100KB
+ *   - Case study/quiz/hero images: max 500KB
+ *   - Other images: max 300KB
  *
- * Thresholds:
- * - PNG: > 200KB → suggest WebP
- * - JPG: > 300KB → suggest optimization or WebP
- * - WebP: > 200KB → suggest further compression
- * - SVG: > 50KB → suggest SVGO optimization
+ * Logo violations are failures (served on every page).
+ * Other violations are warnings.
  *
- * EXIT CODES:
- *   0 = All images within limits
- *   1 = Oversized images found
+ * Usage: php scripts/validation/validate-image-weight.php
  */
 
+declare(strict_types=1);
+
 $root = dirname(__DIR__, 2);
-$violations = [];
-$totalSize = 0;
-$checked = 0;
+$imagesDir = "$root/web/themes/custom/ecosistema_jaraba_theme/images";
 
-$thresholds = [
-    'png' => 200 * 1024,
-    'jpg' => 300 * 1024,
-    'jpeg' => 300 * 1024,
-    'webp' => 200 * 1024,
-    'svg' => 50 * 1024,
-    'gif' => 500 * 1024,
-];
+$failures = [];
+$warnings = [];
 
-$imageDirs = [
-    $root . '/web/themes/custom/ecosistema_jaraba_theme/images',
-    $root . '/web/modules/custom/ecosistema_jaraba_core/images',
-];
+echo "=== IMAGE-WEIGHT-001: Theme Image Size Audit ===\n\n";
 
-foreach ($imageDirs as $dir) {
-    if (!is_dir($dir)) {
-        continue;
+if (!is_dir($imagesDir)) {
+  echo "❌ Images directory not found: $imagesDir\n";
+  exit(1);
+}
+
+$iterator = new RecursiveIteratorIterator(
+  new RecursiveDirectoryIterator($imagesDir, RecursiveDirectoryIterator::SKIP_DOTS)
+);
+
+$totalFiles = 0;
+$oversized = [];
+$totalSizeKB = 0;
+
+foreach ($iterator as $file) {
+  if (!$file->isFile()) {
+    continue;
+  }
+
+  $ext = strtolower($file->getExtension());
+  if (!in_array($ext, ['png', 'webp', 'jpg', 'jpeg'], TRUE)) {
+    continue;
+  }
+
+  $totalFiles++;
+  $sizeKB = (int) round($file->getSize() / 1024);
+  $totalSizeKB += $sizeKB;
+  $relativePath = str_replace("$imagesDir/", '', $file->getPathname());
+
+  // Determine threshold based on file pattern.
+  $threshold = 300;
+  $category = 'general';
+
+  if (str_starts_with($relativePath, 'logo-') || str_starts_with($relativePath, 'trust-logos/')) {
+    $threshold = 100;
+    $category = 'logo';
+  } elseif (str_contains($relativePath, 'case-study') || str_contains($relativePath, 'cs-')) {
+    $threshold = 500;
+    $category = 'case-study';
+  } elseif (str_contains($relativePath, 'quiz/') || str_contains($relativePath, 'pickers/')) {
+    $threshold = 500;
+    $category = 'quiz/picker';
+  } elseif (str_contains($relativePath, 'hero') || str_contains($relativePath, 'fundador')) {
+    $threshold = 500;
+    $category = 'hero';
+  }
+
+  if ($sizeKB > $threshold) {
+    $oversized[] = [
+      'path' => $relativePath,
+      'size' => $sizeKB,
+      'threshold' => $threshold,
+      'category' => $category,
+      'excess' => $sizeKB - $threshold,
+    ];
+  }
+}
+
+$savingsKB = array_sum(array_column($oversized, 'excess'));
+echo "Scanned: $totalFiles image files (" . round($totalSizeKB / 1024, 1) . " MB total)\n\n";
+
+if (empty($oversized)) {
+  echo "✅ All images within size thresholds.\n";
+} else {
+  echo "⚠️  " . count($oversized) . " oversized images (potential savings: ~" . round($savingsKB / 1024, 1) . " MB)\n\n";
+
+  foreach ($oversized as $img) {
+    $severity = $img['excess'] > 500 ? '🔴' : ($img['excess'] > 200 ? '🟡' : '🟢');
+    echo "  $severity {$img['size']}KB > {$img['threshold']}KB [{$img['category']}] {$img['path']}\n";
+  }
+
+  echo "\n💡 Optimize: optipng -o5 <file> OR cwebp -q 85 <file> -o <file>.webp\n";
+
+  $logoOversized = array_filter($oversized, fn($i) => $i['category'] === 'logo');
+  if (!empty($logoOversized)) {
+    foreach ($logoOversized as $img) {
+      $failures[] = "Logo {$img['path']} is {$img['size']}KB (max {$img['threshold']}KB)";
     }
-
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
-    );
-
-    foreach ($iterator as $file) {
-        $ext = strtolower($file->getExtension());
-        if (!isset($thresholds[$ext])) {
-            continue;
-        }
-
-        $checked++;
-        $size = $file->getSize();
-        $totalSize += $size;
-        $threshold = $thresholds[$ext];
-
-        if ($size > $threshold) {
-            $relPath = str_replace($root . '/', '', $file->getPathname());
-            $sizeKb = round($size / 1024);
-            $thresholdKb = round($threshold / 1024);
-            $violations[] = [
-                'file' => $relPath,
-                'size_kb' => $sizeKb,
-                'threshold_kb' => $thresholdKb,
-                'ext' => $ext,
-                'suggestion' => match ($ext) {
-                    'png' => 'Convert to WebP: cwebp -q 85 input.png -o output.webp',
-                    'jpg', 'jpeg' => 'Convert to WebP or compress: cwebp -q 80 input.jpg -o output.webp',
-                    'svg' => 'Optimize with SVGO: npx svgo input.svg',
-                    'webp' => 'Reduce quality: cwebp -q 70 input.webp -o output.webp',
-                    default => 'Optimize or resize',
-                },
-            ];
-        }
+  }
+  foreach ($oversized as $img) {
+    if ($img['category'] !== 'logo') {
+      $warnings[] = "{$img['path']} is {$img['size']}KB (max {$img['threshold']}KB)";
     }
+  }
 }
 
-$totalMb = round($totalSize / (1024 * 1024), 1);
+echo "\n=== RESULT ===\n";
 
-echo "IMAGE-WEIGHT-001: Image Size Optimization\n";
-echo str_repeat('=', 60) . "\n";
-echo "Checked: {$checked} images ({$totalMb} MB total)\n\n";
-
-if (empty($violations)) {
-    echo "✅ PASS — All {$checked} images within size limits.\n";
-    exit(0);
+if (!empty($failures)) {
+  echo "❌ IMAGE-WEIGHT-001: " . count($failures) . " logo images exceed threshold.\n";
+  foreach ($failures as $f) {
+    echo "  - $f\n";
+  }
+  exit(1);
 }
 
-echo "⚠️  WARNING — " . count($violations) . " oversized image(s):\n\n";
-
-// Sort by size descending.
-usort($violations, function ($a, $b) {
-    return $b['size_kb'] - $a['size_kb'];
-});
-
-$savingsKb = 0;
-foreach ($violations as $v) {
-    $excess = $v['size_kb'] - $v['threshold_kb'];
-    $savingsKb += $excess;
-    echo "  {$v['file']}\n";
-    echo "    {$v['size_kb']}KB (threshold: {$v['threshold_kb']}KB, excess: {$excess}KB)\n";
-    echo "    → {$v['suggestion']}\n\n";
+if (!empty($warnings)) {
+  echo "⚠️  IMAGE-WEIGHT-001: Passed with " . count($warnings) . " warnings (non-logo images).\n";
+  exit(0);
 }
 
-$savingsMb = round($savingsKb / 1024, 1);
-echo "Potential savings: ~{$savingsMb}MB (converting excess to optimized formats)\n";
-// Warning only — not blocking CI.
+echo "✅ IMAGE-WEIGHT-001: All images within thresholds.\n";
 exit(0);
