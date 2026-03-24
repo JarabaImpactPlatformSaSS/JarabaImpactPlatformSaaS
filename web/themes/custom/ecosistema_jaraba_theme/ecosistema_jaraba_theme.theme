@@ -704,17 +704,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#weight' => -50,
   ];
 
-  $form['products']['product_card_layout'] = [
-    '#type' => 'select',
-    '#title' => t('Diseño de Tarjeta Producto'),
-    '#options' => [
-      'classic' => t('Clásico'),
-      'hero' => t('Hero Inmersivo'),
-      'minimal' => t('Minimalista'),
-      'grid' => t('Grid Compacto'),
-    ],
-    '#default_value' => $config->get('product_card_layout') ?: 'classic',
-  ];
+  // product_card_layout eliminado (DEAD — sin consumidor, ComercioConecta usa propio sistema).
   $form['products']['color_product_price'] = $fn_color('color_product_price', t('Color Precio'), '#FF8C42');
   $form['products']['color_product_badge'] = $fn_color('color_product_badge', t('Badge Destacado'), '#10B981');
 
@@ -746,11 +736,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#default_value' => $config->get('dark_mode') ?: 'toggle',
   ];
 
-  $form['advanced']['enable_preloader'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Preloader Animado'),
-    '#default_value' => $config->get('enable_preloader'),
-  ];
+  // enable_preloader eliminado (DEAD — sin library de preloader implementada).
 
   // GAP-AUD-008: Command Bar (Cmd+K) toggle.
   $form['advanced']['command_bar_enabled'] = [
@@ -1276,23 +1262,8 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#maxlength' => 255,
   ];
 
-  $form['plg_texts']['plg_annual_discount_percent'] = [
-    '#type' => 'number',
-    '#title' => t('Descuento anual (%)'),
-    '#description' => t('Porcentaje de descuento para planes anuales. Se muestra en el badge del toggle mensual/anual y en textos marketing. ANNUAL-DISCOUNT-001.'),
-    '#default_value' => $config->get('plg_annual_discount_percent') ?: 20,
-    '#min' => 0,
-    '#max' => 50,
-    '#step' => 1,
-  ];
-
-  $form['plg_texts']['plg_annual_discount_message'] = [
-    '#type' => 'textfield',
-    '#title' => t('Mensaje descuento anual'),
-    '#description' => t('Texto marketing para el descuento anual. Ej: "Ahorra 2 meses con el plan anual".'),
-    '#default_value' => $config->get('plg_annual_discount_message') ?: 'Ahorra 2 meses con el plan anual',
-    '#maxlength' => 255,
-  ];
+  // plg_annual_discount_percent y plg_annual_discount_message eliminados
+  // (DEAD — PricingController calcula descuentos desde ANNUAL-DISCOUNT-001 en SaasPlanTier).
 
   $form['plg_texts']['plg_tax_disclaimer'] = [
     '#type' => 'textarea',
@@ -2606,6 +2577,8 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     // Footer
     'color_footer_bg' => '--ej-footer-bg',
     'color_footer_text' => '--ej-footer-text',
+    'color_footer_link' => '--ej-footer-link',
+    'color_footer_link_hover' => '--ej-footer-link-hover',
     // Sidebar
     'color_sidebar_bg' => '--ej-sidebar-bg',
     'color_sidebar_title' => '--ej-sidebar-title',
@@ -3352,6 +3325,23 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   // HOMEPAGE-ELEVATION-001 F5: Variante por metasitio.
   // pepejaraba=5 (marca persona embudo), jarabaimpact=6 (franquicia), pde=7 (corporativo).
   $variables['homepage_variant'] = 'generic';
+
+  // TRUST-STRIP-001: Technology + institutional partners for homepage.
+  // MARKETING-TRUTH-001: Only partners with real code integrations.
+  $variables['trust_strip'] = [
+    'tech' => [
+      ['name' => 'Stripe', 'svg_id' => 'stripe'],
+      ['name' => 'Google', 'svg_id' => 'google'],
+      ['name' => 'Anthropic', 'svg_id' => 'anthropic'],
+      ['name' => 'Drupal', 'svg_id' => 'drupal'],
+      ['name' => 'Qdrant', 'svg_id' => 'qdrant'],
+    ],
+    'institutional' => [
+      ['name' => 'Kit Digital', 'type' => 'image', 'src' => 'kit-digital-logo.svg'],
+      ['name' => 'NextGenerationEU', 'type' => 'image', 'src' => 'next-generation-eu.svg'],
+      ['name' => 'Gobierno de España', 'type' => 'image', 'src' => 'gobierno-espana.svg'],
+    ],
+  ];
 
   if (!empty($variables['meta_site'])) {
     $groupId = (int) ($variables['meta_site']['group_id'] ?? 0);
@@ -4600,6 +4590,12 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
  */
 function ecosistema_jaraba_theme_preprocess_breadcrumb(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+
+  // enable_breadcrumbs toggle: si está desactivado, vaciar breadcrumbs.
+  if ($config->get('enable_breadcrumbs') === FALSE || $config->get('enable_breadcrumbs') === 0) {
+    $variables['breadcrumb'] = [];
+    return;
+  }
 
   $variables['breadcrumb_style'] = $config->get('breadcrumb_style') ?: 'chevrons';
   $variables['breadcrumb_icons'] = $config->get('breadcrumb_icons') ?? TRUE;

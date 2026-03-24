@@ -252,9 +252,6 @@ ecosistema_jaraba_theme.settings:
       label: 'Color foco input'
 
     # ── Productos ──
-    product_card_layout:
-      type: string
-      label: 'Layout tarjeta producto'
     color_product_price:
       type: string
       label: 'Color precio producto'
@@ -269,9 +266,6 @@ ecosistema_jaraba_theme.settings:
     dark_mode:
       type: string
       label: 'Modo oscuro'
-    enable_preloader:
-      type: integer
-      label: 'Preloader animado'
     custom_css:
       type: string
       label: 'CSS personalizado'
@@ -773,12 +767,18 @@ ecosistema_jaraba_theme.settings:
       type: string
       label: 'SEO description — Pepe Jaraba'
     # ── PLG Pricing (PRICING-4TIER-001 / NO-HARDCODE-PRICE-001) ──
-    plg_annual_discount_percent:
-      type: integer
-      label: 'Descuento anual (%)'
-    plg_annual_discount_message:
+    plg_free_plan_note:
       type: string
-      label: 'Mensaje descuento anual'
+      label: 'PLG nota plan gratuito'
+    plg_cta_subtitle:
+      type: string
+      label: 'PLG subtítulo CTA'
+    plg_guarantee_text:
+      type: string
+      label: 'PLG texto garantía'
+    plg_register_subtitle:
+      type: string
+      label: 'PLG subtítulo registro'
     plg_tax_disclaimer:
       type: string
       label: 'Aviso fiscal (pricing)'
