@@ -783,6 +783,108 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDescription(t('JSON con tipos de barrera y niveles para adaptación del itinerario.'))
             ->setDisplayConfigurable('form', TRUE);
 
+        // === CAMPOS 2ª EDICIÓN (SPEC-2E-001) ===
+
+        $fields['ruta_programa'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Ruta del programa'))
+            ->setDescription(t('Ruta elegida por el participante durante Orientación Inicial.'))
+            ->setSetting('allowed_values', [
+                'autoempleo' => t('Ruta A — Autoempleo'),
+                'empleo' => t('Ruta B — Empleo por cuenta ajena'),
+                'hibrida' => t('Ruta Híbrida'),
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['nivel_digital'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Nivel digital'))
+            ->setDescription(t('Evaluado en OI-1.1. Determina intensidad de acompañamiento en Módulo 0.'))
+            ->setSetting('allowed_values', [
+                'autonomo' => t('A — Autónomo (usa smartphone y apps con soltura)'),
+                'apoyo' => t('B — Necesita apoyo (usa WhatsApp pero poco más)'),
+                'nivelacion' => t('C — Nivelación (dificultades significativas)'),
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['pack_preseleccionado'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Packs preseleccionados'))
+            ->setDescription(t('JSON array de 1-3 IDs de packs preseleccionados en Orientación Inicial.'))
+            ->setSetting('max_length', 255)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['pack_confirmado'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Pack confirmado'))
+            ->setDescription(t('Pack de servicios elegido definitivamente en Módulo 1.'))
+            ->setSetting('allowed_values', [
+                'contenido_digital' => t('Pack 1 — Contenido Digital (desde 150€/mes)'),
+                'asistente_virtual' => t('Pack 2 — Asistente Virtual (desde 150€/mes)'),
+                'presencia_online' => t('Pack 3 — Presencia Online (desde 150€/mes)'),
+                'tienda_digital' => t('Pack 4 — Tienda Digital (desde 300€/mes)'),
+                'community_manager' => t('Pack 5 — Community Manager (desde 150€/mes)'),
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['objetivos_smart'] = BaseFieldDefinition::create('text_long')
+            ->setLabel(t('Objetivos SMART'))
+            ->setDescription(t('JSON array de 3 objetivos {objetivo, indicador, plazo}. Definidos en OI-2.2.'))
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['perfil_riasec'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Perfil RIASEC'))
+            ->setDescription(t('JSON resultado del test de intereses vocacionales Holland (6 dimensiones).'))
+            ->setSetting('max_length', 255)
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['compromiso_firmado'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Compromiso de Participación Firmado'))
+            ->setDescription(t('Documento de compromiso firmado por el participante.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['compromiso_fecha'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Fecha Firma Compromiso'))
+            ->setSetting('datetime_type', 'datetime')
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['estado_programa_2e'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Estado 2ª Edición'))
+            ->setDescription(t('Estado granular del participante en la 2ª Edición del programa.'))
+            ->setSetting('allowed_values', [
+                'inscrito' => t('Inscrito (pendiente inicio OI)'),
+                'orientacion' => t('En Orientación Inicial'),
+                'formacion' => t('En Formación (Módulos 0-5)'),
+                'acompanamiento' => t('En Acompañamiento Inserción'),
+                'insertado' => t('Insertado (≥4 meses SS)'),
+                'baja' => t('Baja'),
+            ])
+            ->setDefaultValue('inscrito')
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['meses_ss_acumulados'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Meses SS acumulados'))
+            ->setDescription(t('Meses de alta en Seguridad Social acumulados. Objetivo ≥4 (3 si agrario).'))
+            ->setDefaultValue(0)
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['negocio_piloto_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Negocio piloto asignado'))
+            ->setDescription(t('FK al negocio prospectado asignado como cliente piloto (ENTITY-FK-001: integer para cross-entity).'))
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        $fields['pack_servicio_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Pack de servicio publicado'))
+            ->setDescription(t('FK al PackServicioEi publicado por el participante.'))
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // === CAMPOS DE SISTEMA ===
 
         $fields['created'] = BaseFieldDefinition::create('created')

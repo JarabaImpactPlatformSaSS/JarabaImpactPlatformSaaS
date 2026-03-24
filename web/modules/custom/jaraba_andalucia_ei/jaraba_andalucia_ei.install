@@ -38,6 +38,9 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
     'plan_formativo_ei',
     // Sprint 14:
     'material_didactico_ei',
+    // Role system entities:
+    'rol_programa_log',
+    'staff_profile_ei',
   ];
 
   $missingEntities = [];
@@ -95,7 +98,25 @@ function jaraba_andalucia_ei_requirements(string $phase): array {
       : t('@count/@total servicios operativos', ['@count' => count($criticalServices), '@total' => count($criticalServices)]),
   ];
 
-  // CHECK 3: Active participants count and phase distribution.
+  // CHECK 3: Program roles exist (GAP-ROLES-001).
+  $rolesNeeded = ['coordinador_ei', 'orientador_ei', 'formador_ei'];
+  $missingRoles = [];
+  foreach ($rolesNeeded as $roleId) {
+    if (!$entityTypeManager->getStorage('user_role')->load($roleId)) {
+      $missingRoles[] = $roleId;
+    }
+  }
+  $requirements['jaraba_andalucia_ei_roles'] = [
+    'title' => t('Andalucía +ei: Roles del programa'),
+    'severity' => $missingRoles ? REQUIREMENT_WARNING : REQUIREMENT_OK,
+    'value' => $missingRoles
+      ? t('Faltan roles: @roles. Ejecutar update.php o drush updb.', [
+        '@roles' => implode(', ', $missingRoles),
+      ])
+      : t('3/3 roles del programa configurados'),
+  ];
+
+  // CHECK 4: Active participants count and phase distribution.
   try {
     $storage = $entityTypeManager->getStorage('programa_participante_ei');
     $totalQuery = $storage->getQuery()->accessCheck(FALSE)->count();
@@ -1980,5 +2001,255 @@ function jaraba_andalucia_ei_update_10029(): string {
   }
   catch (\Throwable $e) {
     return 'Error installing ficha_tecnica_ei: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Create program roles: coordinador_ei, orientador_ei, formador_ei.
+ *
+ * GAP-ROLES-001: These roles were referenced in AccesoProgramaService but
+ * never created. This update creates them with pre-assigned permissions.
+ * Idempotent: skips roles that already exist.
+ *
+ * UPDATE-HOOK-CATCH-001: Uses \Throwable (NOT \Exception).
+ */
+function jaraba_andalucia_ei_update_10030(): string {
+  try {
+    $roleStorage = \Drupal::entityTypeManager()->getStorage('user_role');
+    $results = [];
+
+    $roles = [
+      'coordinador_ei' => [
+        'label' => 'Coordinador Andalucía +ei',
+        'weight' => 5,
+        'permissions' => [
+          'administer andalucia ei',
+          'access andalucia ei coordinador dashboard',
+          'manage andalucia ei solicitudes',
+          'manage andalucia ei fases',
+          'view programa participante ei',
+          'create programa participante ei',
+          'edit programa participante ei',
+          'view solicitud ei',
+          'edit solicitud ei',
+          'view expediente documento',
+          'create expediente documento',
+          'view andalucia ei actuaciones',
+          'create andalucia ei actuaciones',
+          'view indicador fse plus',
+          'create indicador fse plus',
+          'edit indicador fse plus',
+          'view insercion laboral',
+          'create insercion laboral',
+          'edit insercion laboral',
+          'view prospeccion empresarial',
+          'create prospeccion empresarial',
+          'edit prospeccion empresarial',
+          'export sto data',
+          'view andalucia ei justificacion economica',
+          'view andalucia ei riesgo abandono',
+          'use digital signature',
+          'view accion formativa ei',
+          'create accion formativa ei',
+          'edit accion formativa ei',
+          'view sesion programada ei',
+          'create sesion programada ei',
+          'edit sesion programada ei',
+          'view inscripcion sesion ei',
+          'create inscripcion sesion ei',
+          'view plan formativo ei',
+          'create plan formativo ei',
+          'edit plan formativo ei',
+          'view ficha tecnica ei',
+          'manage ficha tecnica ei',
+          'view andalucia ei esf indicators',
+          'assign andalucia ei roles',
+        ],
+      ],
+      'orientador_ei' => [
+        'label' => 'Orientador Andalucía +ei',
+        'weight' => 6,
+        'permissions' => [
+          'access andalucia ei orientador dashboard',
+          'view programa participante ei',
+          'edit programa participante ei',
+          'register andalucia ei actuacion',
+          'sign andalucia ei hoja servicio',
+          'view expediente documento',
+          'create expediente documento',
+          'edit expediente documento',
+          'view andalucia ei actuaciones',
+          'create andalucia ei actuaciones',
+          'edit own andalucia ei actuaciones',
+          'view sesion programada ei',
+          'create sesion programada ei',
+          'edit sesion programada ei',
+          'view inscripcion sesion ei',
+          'use digital signature',
+          'view insercion laboral',
+          'create insercion laboral',
+          'view plan formativo ei',
+          'view accion formativa ei',
+          'view andalucia ei riesgo abandono',
+        ],
+      ],
+      'formador_ei' => [
+        'label' => 'Formador Andalucía +ei',
+        'weight' => 7,
+        'permissions' => [
+          'access andalucia ei formador',
+          'access andalucia ei formador dashboard',
+          'view sesion programada ei',
+          'mark attendance sesion ei',
+          'view material didactico ei',
+          'create material didactico ei',
+          'edit material didactico ei',
+          'view accion formativa ei',
+          'view inscripcion sesion ei',
+          'view plan formativo ei',
+        ],
+      ],
+    ];
+
+    foreach ($roles as $roleId => $roleData) {
+      $existingRole = $roleStorage->load($roleId);
+      if ($existingRole) {
+        // Role exists — ensure all permissions are granted.
+        $existingPerms = $existingRole->getPermissions();
+        $added = 0;
+        foreach ($roleData['permissions'] as $perm) {
+          if (!in_array($perm, $existingPerms, TRUE)) {
+            $existingRole->grantPermission($perm);
+            $added++;
+          }
+        }
+        $existingRole->save();
+        $results[] = "$roleId: updated ($added new permissions)";
+      }
+      else {
+        // Create new role.
+        $role = $roleStorage->create([
+          'id' => $roleId,
+          'label' => $roleData['label'],
+          'weight' => $roleData['weight'],
+          'is_admin' => FALSE,
+        ]);
+        foreach ($roleData['permissions'] as $perm) {
+          $role->grantPermission($perm);
+        }
+        $role->save();
+        $results[] = "$roleId: created with " . count($roleData['permissions']) . " permissions";
+      }
+    }
+
+    return 'Program roles provisioned: ' . implode('; ', $results);
+  }
+  catch (\Throwable $e) {
+    return 'Error provisioning program roles: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install RolProgramaLog and StaffProfileEi entity types.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New entities MUST have hook_update_N().
+ * UPDATE-HOOK-CATCH-001: Uses \Throwable (NOT \Exception).
+ */
+function jaraba_andalucia_ei_update_10031(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $results = [];
+
+    $entityTypes = ['rol_programa_log', 'staff_profile_ei'];
+
+    foreach ($entityTypes as $entityTypeId) {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType) {
+          $updateManager->installEntityType($entityType);
+          $results[] = "$entityTypeId: installed";
+        }
+        else {
+          $results[] = "$entityTypeId: definition not found — module code may not be deployed";
+        }
+      }
+      else {
+        $results[] = "$entityTypeId: already installed";
+      }
+    }
+
+    return 'Entity types: ' . implode('; ', $results);
+  }
+  catch (\Throwable $e) {
+    return 'Error installing entity types: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Add 12 new fields to ProgramaParticipanteEi for 2nd Edition (SPEC-2E-001).
+ *
+ * Fields: ruta_programa, nivel_digital, pack_preseleccionado, pack_confirmado,
+ * objetivos_smart, perfil_riasec, compromiso_firmado, compromiso_fecha,
+ * estado_programa_2e, meses_ss_acumulados, negocio_piloto_id, pack_servicio_id.
+ *
+ * UPDATE-HOOK-FIELDABLE-001: Uses getFieldStorageDefinitions() (NOT getBaseFieldDefinitions()).
+ * UPDATE-HOOK-CATCH-001: Uses \Throwable.
+ */
+function jaraba_andalucia_ei_update_10032(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $entityTypeId = 'programa_participante_ei';
+
+    $entityType = $entityTypeManager->getDefinition($entityTypeId);
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions($entityTypeId);
+
+    $updateManager->updateFieldableEntityType($entityType, $fieldStorageDefinitions);
+
+    // Count new fields for reporting.
+    $newFields = [
+      'ruta_programa', 'nivel_digital', 'pack_preseleccionado', 'pack_confirmado',
+      'objetivos_smart', 'perfil_riasec', 'compromiso_firmado', 'compromiso_fecha',
+      'estado_programa_2e', 'meses_ss_acumulados', 'negocio_piloto_id', 'pack_servicio_id',
+    ];
+    $installed = 0;
+    foreach ($newFields as $fieldName) {
+      if (isset($fieldStorageDefinitions[$fieldName])) {
+        $installed++;
+      }
+    }
+
+    return "ProgramaParticipanteEi: $installed/12 new 2E fields installed.";
+  }
+  catch (\Throwable $e) {
+    return 'Error updating ProgramaParticipanteEi fields: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install AsistenciaDetalladaEi entity type (SPEC-2E-006).
+ *
+ * UPDATE-HOOK-REQUIRED-001: New entity MUST have hook_update_N().
+ * UPDATE-HOOK-CATCH-001: Uses \Throwable.
+ */
+function jaraba_andalucia_ei_update_10033(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if (!$updateManager->getEntityType('asistencia_detallada_ei')) {
+      $entityType = $entityTypeManager->getDefinition('asistencia_detallada_ei', FALSE);
+      if ($entityType) {
+        $updateManager->installEntityType($entityType);
+        return 'asistencia_detallada_ei: installed.';
+      }
+      return 'Warning: asistencia_detallada_ei definition not found.';
+    }
+    return 'asistencia_detallada_ei: already installed.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing asistencia_detallada_ei: ' . $e->getMessage();
   }
 }

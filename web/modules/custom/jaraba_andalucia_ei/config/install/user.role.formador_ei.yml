@@ -1,0 +1,18 @@
+langcode: es
+status: true
+dependencies: {}
+id: formador_ei
+label: 'Formador Andalucía +ei'
+weight: 7
+is_admin: false
+permissions:
+  - 'access andalucia ei formador'
+  - 'access andalucia ei formador dashboard'
+  - 'view sesion programada ei'
+  - 'mark attendance sesion ei'
+  - 'view material didactico ei'
+  - 'create material didactico ei'
+  - 'edit material didactico ei'
+  - 'view accion formativa ei'
+  - 'view inscripcion sesion ei'
+  - 'view plan formativo ei'

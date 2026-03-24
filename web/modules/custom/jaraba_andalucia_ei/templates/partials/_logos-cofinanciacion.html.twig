@@ -1,0 +1,53 @@
+{#
+/**
+ * @file
+ * Logos de cofinanciación FSE+ — Art. 50 Reg. UE 2021/1060.
+ *
+ * Parcial incluido en TODAS las páginas del Programa Andalucía +ei.
+ * Muestra los logos institucionales obligatorios y el texto legal de
+ * cofinanciación por el Fondo Social Europeo Plus.
+ *
+ * Variables:
+ *   Ninguna requerida (self-contained).
+ *
+ * ICON-EMOJI-001: NO emojis. Logos como imágenes/SVG.
+ * TWIG-INCLUDE-ONLY-001: Incluir con `only`.
+ * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
+ */
+#}
+
+<aside class="aei-cofinanciacion" aria-label="{% trans %}Información de cofinanciación{% endtrans %}">
+  <div class="aei-cofinanciacion__content">
+
+    <p class="aei-cofinanciacion__text">
+      {% trans %}Programa cofinanciado por el Fondo Social Europeo Plus (FSE+) de la Unión Europea y la Junta de Andalucía.{% endtrans %}
+    </p>
+
+    <div class="aei-cofinanciacion__logos">
+      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Unión Europea — Fondo Social Europeo Plus{% endtrans %}">
+        {{ jaraba_icon('compliance', 'shield', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+        <span class="aei-cofinanciacion__logo-text">{% trans %}Unión Europea{% endtrans %}</span>
+      </div>
+
+      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Junta de Andalucía{% endtrans %}">
+        {{ jaraba_icon('compliance', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
+        <span class="aei-cofinanciacion__logo-text">{% trans %}Junta de Andalucía{% endtrans %}</span>
+      </div>
+
+      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Servicio Andaluz de Empleo{% endtrans %}">
+        {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+        <span class="aei-cofinanciacion__logo-text">{% trans %}Servicio Andaluz de Empleo{% endtrans %}</span>
+      </div>
+
+      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}FSE+ Fondo Social Europeo Plus{% endtrans %}">
+        {{ jaraba_icon('achievement', 'award', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+        <span class="aei-cofinanciacion__logo-text">{% trans %}FSE+{% endtrans %}</span>
+      </div>
+    </div>
+
+    <p class="aei-cofinanciacion__legal">
+      {% trans %}Programa Integrales de Inserción Laboral (PIIL) — Convocatoria Voluntaria 2025. Resolución de concesión SC/ICV/0111/2025. Cofinanciación: 85% Unión Europea (FSE+), 15% Junta de Andalucía.{% endtrans %}
+    </p>
+
+  </div>
+</aside>

@@ -272,3 +272,28 @@ view ficha tecnica ei:
 manage ficha tecnica ei:
   title: 'Gestionar fichas técnicas PIIL'
   description: 'Permite crear, editar y eliminar fichas técnicas del programa.'
+
+# === GESTIÓN DE ROLES DEL PROGRAMA ===
+
+access andalucia ei formador dashboard:
+  title: 'Acceder al panel del formador Andalucía +ei'
+  description: 'Permite acceder al dashboard de formador del programa.'
+
+assign andalucia ei roles:
+  title: 'Asignar roles del programa Andalucía +ei'
+  description: 'Permite asignar y revocar roles de coordinador, orientador y formador a usuarios del tenant.'
+  restrict access: true
+
+# === MATERIALES DIDÁCTICOS ===
+
+view material didactico ei:
+  title: 'Ver materiales didácticos'
+  description: 'Permite ver los materiales didácticos del programa.'
+
+create material didactico ei:
+  title: 'Crear materiales didácticos'
+  description: 'Permite subir nuevos materiales didácticos.'
+
+edit material didactico ei:
+  title: 'Editar materiales didácticos'
+  description: 'Permite modificar materiales didácticos existentes.'

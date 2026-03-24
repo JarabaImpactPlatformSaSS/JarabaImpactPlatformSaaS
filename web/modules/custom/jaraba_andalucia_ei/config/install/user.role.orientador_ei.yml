@@ -1,0 +1,29 @@
+langcode: es
+status: true
+dependencies: {}
+id: orientador_ei
+label: 'Orientador Andalucía +ei'
+weight: 6
+is_admin: false
+permissions:
+  - 'access andalucia ei orientador dashboard'
+  - 'view programa participante ei'
+  - 'edit programa participante ei'
+  - 'register andalucia ei actuacion'
+  - 'sign andalucia ei hoja servicio'
+  - 'view expediente documento'
+  - 'create expediente documento'
+  - 'edit expediente documento'
+  - 'view andalucia ei actuaciones'
+  - 'create andalucia ei actuaciones'
+  - 'edit own andalucia ei actuaciones'
+  - 'view sesion programada ei'
+  - 'create sesion programada ei'
+  - 'edit sesion programada ei'
+  - 'view inscripcion sesion ei'
+  - 'use digital signature'
+  - 'view insercion laboral'
+  - 'create insercion laboral'
+  - 'view plan formativo ei'
+  - 'view accion formativa ei'
+  - 'view andalucia ei riesgo abandono'

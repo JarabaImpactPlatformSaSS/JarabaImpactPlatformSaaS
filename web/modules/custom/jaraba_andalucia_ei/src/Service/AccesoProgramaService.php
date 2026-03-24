@@ -20,17 +20,23 @@ class AccesoProgramaService {
 
   /**
    * Roles del programa.
+   *
+   * @deprecated Use RolProgramaServiceInterface::ROLES_ALL instead.
    */
   private const ROLES_PROGRAMA = ['participante', 'coordinador', 'orientador', 'formador', 'alumni', 'none'];
 
   /**
    * Constructs an AccesoProgramaService.
+   *
+   * @param \Drupal\jaraba_andalucia_ei\Service\RolProgramaServiceInterface|null $rolProgramaService
+   *   The unified role detection service (GAP-ROLES-001).
    */
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly AccountProxyInterface $currentUser,
     protected readonly ?object $tenantContext,
     protected readonly LoggerInterface $logger,
+    protected readonly ?RolProgramaServiceInterface $rolProgramaService = NULL,
   ) {}
 
   /**
@@ -70,8 +76,11 @@ class AccesoProgramaService {
    *   TRUE si puede acceder al dashboard de coordinador.
    */
   public function puedeAccederDashboardCoordinador(AccountInterface $account): bool {
-    return $account->hasPermission('administer andalucia ei')
-      || $account->hasPermission('view programa participante ei');
+    if ($this->rolProgramaService) {
+      return $this->rolProgramaService->tieneRol($account, RolProgramaServiceInterface::ROL_COORDINADOR);
+    }
+    // Legacy fallback.
+    return $account->hasPermission('administer andalucia ei');
   }
 
   /**
@@ -86,13 +95,13 @@ class AccesoProgramaService {
    *   TRUE si puede acceder al dashboard de orientador.
    */
   public function puedeAccederDashboardOrientador(AccountInterface $account): bool {
+    if ($this->rolProgramaService) {
+      return $this->rolProgramaService->tieneRol($account, RolProgramaServiceInterface::ROL_ORIENTADOR);
+    }
+    // Legacy fallback.
     try {
       $roles = $account->getRoles();
-      if (in_array('orientador_ei', $roles, TRUE)) {
-        return TRUE;
-      }
-
-      return $account->hasPermission('view programa participante ei');
+      return in_array('orientador_ei', $roles, TRUE);
     }
     catch (\Throwable $e) {
       $this->logger->error('Error verificando acceso orientador uid @uid: @msg', [
@@ -101,6 +110,22 @@ class AccesoProgramaService {
       ]);
       return FALSE;
     }
+  }
+
+  /**
+   * Determina si el usuario puede acceder al dashboard de formador.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   La cuenta de usuario a evaluar.
+   *
+   * @return bool
+   *   TRUE si puede acceder al dashboard de formador.
+   */
+  public function puedeAccederDashboardFormador(AccountInterface $account): bool {
+    if ($this->rolProgramaService) {
+      return $this->rolProgramaService->tieneRol($account, RolProgramaServiceInterface::ROL_FORMADOR);
+    }
+    return in_array('formador_ei', $account->getRoles(), TRUE);
   }
 
   /**
@@ -159,61 +184,31 @@ class AccesoProgramaService {
    *   Uno de: 'participante', 'coordinador', 'orientador', 'formador', 'alumni', 'none'.
    */
   public function getRolProgramaUsuario(AccountInterface $account): string {
+    if ($this->rolProgramaService) {
+      return $this->rolProgramaService->getRolProgramaUsuario($account);
+    }
+
+    // Legacy fallback for backward compatibility.
     try {
-      // Coordinador: permiso administrativo.
       if ($account->hasPermission('administer andalucia ei')) {
         return 'coordinador';
       }
-
-      // Orientador: rol especifico.
       $roles = $account->getRoles();
       if (in_array('orientador_ei', $roles, TRUE)) {
         return 'orientador';
       }
-
-      // Formador: rol especifico.
       if (in_array('formador_ei', $roles, TRUE)) {
         return 'formador';
       }
-
-      // Participante o alumni: buscar registro.
-      $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
-      $query = $storage->getQuery()
-        ->accessCheck(TRUE)
-        ->condition('uid', (int) $account->id())
-        ->range(0, 1);
-
-      // Filtrar por tenant si disponible.
-      if ($this->tenantContext && method_exists($this->tenantContext, 'getCurrentTenantId')) {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        if ($tenantId) {
-          $query->condition('tenant_id', $tenantId);
+      $participante = $this->getParticipanteActivo($account);
+      if ($participante) {
+        $fase = $participante->get('fase_actual')->value ?? 'acogida';
+        if ($fase === 'alumni') {
+          return 'alumni';
         }
+        return 'participante';
       }
-
-      $ids = $query->execute();
-      if (empty($ids)) {
-        return 'none';
-      }
-
-      $participante = $storage->load(reset($ids));
-      if (!$participante) {
-        return 'none';
-      }
-
-      $fase = $participante->get('fase_actual')->value ?? 'acogida';
-
-      // Alumni: fase completada o seguimiento finalizado.
-      if ($fase === 'alumni') {
-        return 'alumni';
-      }
-
-      // Baja: no tiene rol activo.
-      if ($fase === 'baja') {
-        return 'none';
-      }
-
-      return 'participante';
+      return 'none';
     }
     catch (\Throwable $e) {
       $this->logger->error('Error resolviendo rol programa uid @uid: @msg', [

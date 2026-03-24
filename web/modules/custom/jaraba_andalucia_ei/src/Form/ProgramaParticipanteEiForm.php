@@ -72,6 +72,18 @@ class ProgramaParticipanteEiForm extends PremiumEntityFormBase {
           'incentivo_recibido', 'fecha_incentivo',
         ],
       ],
+      'segunda_edicion' => [
+        'label' => $this->t('2ª Edición'),
+        'icon' => ['category' => 'ai', 'name' => 'sparkles'],
+        'description' => $this->t('Campos de la 2ª Edición: ruta, pack, competencia IA, packs de servicios.'),
+        'fields' => [
+          'ruta_programa', 'nivel_digital', 'pack_preseleccionado',
+          'pack_confirmado', 'objetivos_smart', 'perfil_riasec',
+          'compromiso_firmado', 'compromiso_fecha',
+          'estado_programa_2e', 'meses_ss_acumulados',
+          'negocio_piloto_id', 'pack_servicio_id',
+        ],
+      ],
       'integraciones' => [
         'label' => $this->t('Integraciones'),
         'icon' => ['category' => 'ui', 'name' => 'link'],

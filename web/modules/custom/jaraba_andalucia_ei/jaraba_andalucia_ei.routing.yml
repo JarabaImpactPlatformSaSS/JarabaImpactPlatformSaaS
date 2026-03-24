@@ -1310,3 +1310,140 @@ entity.ficha_tecnica_ei.settings:
     _title: 'Ficha Técnica PIIL settings'
   requirements:
     _permission: 'administer andalucia ei'
+
+# =====================================================
+# FORMADOR DASHBOARD (GAP-ROLES-003)
+# =====================================================
+
+jaraba_andalucia_ei.formador_dashboard:
+  path: '/andalucia-ei/formador'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FormadorDashboardController::dashboard'
+    _title: 'Panel del Formador'
+  requirements:
+    _permission: 'access andalucia ei formador dashboard'
+
+# =====================================================
+# ROLE ASSIGNMENT FROM COORDINATOR DASHBOARD (GAP-ROLES-005)
+# =====================================================
+
+jaraba_andalucia_ei.asignar_rol:
+  path: '/andalucia-ei/coordinador/asignar-rol'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AsignacionRolController::asignarRolForm'
+    _title: 'Asignar profesional al programa'
+  requirements:
+    _permission: 'assign andalucia ei roles'
+
+jaraba_andalucia_ei.revocar_rol:
+  path: '/andalucia-ei/coordinador/revocar-rol/{uid}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AsignacionRolController::revocarRolForm'
+    _title: 'Revocar rol de profesional'
+  requirements:
+    _permission: 'assign andalucia ei roles'
+    uid: '\d+'
+
+jaraba_andalucia_ei.equipo_programa:
+  path: '/andalucia-ei/coordinador/equipo'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\AsignacionRolController::equipoPrograma'
+    _title: 'Equipo del programa'
+  requirements:
+    _permission: 'assign andalucia ei roles'
+
+# =====================================================
+# AUDIT: Role assignment log + Staff profiles (admin)
+# =====================================================
+
+entity.rol_programa_log.collection:
+  path: '/admin/content/rol-programa-log'
+  defaults:
+    _entity_list: 'rol_programa_log'
+    _title: 'Historial de roles del programa'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.staff_profile_ei.collection:
+  path: '/admin/content/staff-profiles-ei'
+  defaults:
+    _entity_list: 'staff_profile_ei'
+    _title: 'Perfiles profesionales del programa'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.staff_profile_ei.canonical:
+  path: '/admin/content/staff-profile-ei/{staff_profile_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.staff_profile_ei.edit_form:
+  path: '/admin/content/staff-profile-ei/{staff_profile_ei}/edit'
+  defaults:
+    _entity_form: 'staff_profile_ei.default'
+    _title: 'Editar perfil profesional'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.staff_profile_ei.add_form:
+  path: '/admin/content/staff-profiles-ei/add'
+  defaults:
+    _entity_form: 'staff_profile_ei.default'
+    _title: 'Crear perfil profesional'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.staff_profile_ei.settings:
+  path: '/admin/structure/staff-profile-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\StaffProfileEiSettingsForm'
+    _title: 'Perfil Profesional settings'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# =====================================================
+# ASISTENCIA DETALLADA (SPEC-2E-006)
+# =====================================================
+
+entity.asistencia_detallada_ei.collection:
+  path: '/admin/content/asistencia-detallada-ei'
+  defaults:
+    _entity_list: 'asistencia_detallada_ei'
+    _title: 'Asistencia Detallada'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.asistencia_detallada_ei.canonical:
+  path: '/admin/content/asistencia-detallada-ei/{asistencia_detallada_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'mark attendance sesion ei'
+
+entity.asistencia_detallada_ei.add_form:
+  path: '/admin/content/asistencia-detallada-ei/add'
+  defaults:
+    _entity_form: 'asistencia_detallada_ei.default'
+    _title: 'Registrar asistencia'
+  requirements:
+    _permission: 'mark attendance sesion ei'
+
+entity.asistencia_detallada_ei.edit_form:
+  path: '/admin/content/asistencia-detallada-ei/{asistencia_detallada_ei}/edit'
+  defaults:
+    _entity_form: 'asistencia_detallada_ei.edit'
+    _title: 'Editar asistencia'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.asistencia_detallada_ei.settings:
+  path: '/admin/structure/asistencia-detallada-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\AsistenciaDetalladaEiSettingsForm'
+    _title: 'Asistencia Detallada settings'
+  requirements:
+    _permission: 'administer andalucia ei'

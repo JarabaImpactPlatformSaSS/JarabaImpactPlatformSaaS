@@ -1,0 +1,108 @@
+{#
+/**
+ * @file
+ * Formador dashboard for Andalucía +ei.
+ *
+ * Variables:
+ * - setup_wizard: Setup wizard render array.
+ * - daily_actions: Daily actions render array.
+ * - formador_data: Dashboard data from drupalSettings.
+ *
+ * ICON-CONVENTION-001: All icons via jaraba_icon() with duotone variant.
+ * CSS-VAR-ALL-COLORS-001: All colors via --ej-* tokens.
+ */
+#}
+
+<div class="formador-dashboard">
+
+  {# === HEADER === #}
+  <div class="formador-dashboard__header">
+    <div class="formador-dashboard__header-content">
+      <div class="formador-dashboard__header-icon">
+        {{ jaraba_icon('education', 'graduation-cap', { variant: 'duotone', color: 'naranja-impulso', size: '48px' }) }}
+      </div>
+      <div class="formador-dashboard__header-text">
+        <h1 class="formador-dashboard__title">{% trans %}Panel del Formador{% endtrans %}</h1>
+        <p class="formador-dashboard__subtitle">{% trans %}Gestión de sesiones, asistencia y materiales didácticos{% endtrans %}</p>
+      </div>
+    </div>
+  </div>
+
+  {# === SETUP WIZARD (ZEIGARNIK-PRELOAD-001) === #}
+  {% if setup_wizard is not empty %}
+    <div class="formador-dashboard__wizard">
+      {% include '@ecosistema_jaraba_core/partials/_setup-wizard.html.twig' with { steps: setup_wizard } only %}
+    </div>
+  {% endif %}
+
+  {# === DAILY ACTIONS === #}
+  {% if daily_actions is not empty %}
+    <div class="formador-dashboard__actions">
+      {% include '@ecosistema_jaraba_core/partials/_daily-actions.html.twig' with { actions: daily_actions } only %}
+    </div>
+  {% endif %}
+
+  {# === KPIs === #}
+  <div class="formador-dashboard__kpis" data-formador-kpis>
+    <div class="formador-dashboard__kpi-card">
+      <div class="formador-dashboard__kpi-icon">
+        {{ jaraba_icon('education', 'calendar-clock', { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
+      </div>
+      <div class="formador-dashboard__kpi-value" data-kpi="sesiones_hoy">0</div>
+      <div class="formador-dashboard__kpi-label">{% trans %}Sesiones hoy{% endtrans %}</div>
+    </div>
+
+    <div class="formador-dashboard__kpi-card">
+      <div class="formador-dashboard__kpi-icon">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+      </div>
+      <div class="formador-dashboard__kpi-value" data-kpi="asistencia_pendiente">0</div>
+      <div class="formador-dashboard__kpi-label">{% trans %}Asistencia pendiente{% endtrans %}</div>
+    </div>
+
+    <div class="formador-dashboard__kpi-card">
+      <div class="formador-dashboard__kpi-icon">
+        {{ jaraba_icon('analytics', 'chart-line', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+      </div>
+      <div class="formador-dashboard__kpi-value" data-kpi="horas_impartidas">0h</div>
+      <div class="formador-dashboard__kpi-label">{% trans %}Horas impartidas{% endtrans %}</div>
+    </div>
+
+    <div class="formador-dashboard__kpi-card">
+      <div class="formador-dashboard__kpi-icon">
+        {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+      </div>
+      <div class="formador-dashboard__kpi-value" data-kpi="asistencia_media">0%</div>
+      <div class="formador-dashboard__kpi-label">{% trans %}Asistencia media{% endtrans %}</div>
+    </div>
+  </div>
+
+  {# === SESIONES DE HOY === #}
+  <section class="formador-dashboard__sesiones">
+    <h2 class="formador-dashboard__section-title">
+      {{ jaraba_icon('education', 'calendar-clock', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+      {% trans %}Sesiones de hoy{% endtrans %}
+    </h2>
+    <div class="formador-dashboard__sesiones-list" data-formador-sesiones>
+      <div class="formador-dashboard__empty-state">
+        {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+        <p>{% trans %}No tienes sesiones programadas para hoy{% endtrans %}</p>
+      </div>
+    </div>
+  </section>
+
+  {# === MATERIALES DIDÁCTICOS === #}
+  <section class="formador-dashboard__materiales">
+    <h2 class="formador-dashboard__section-title">
+      {{ jaraba_icon('content', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      {% trans %}Materiales didácticos{% endtrans %}
+    </h2>
+    <div class="formador-dashboard__materiales-grid" data-formador-materiales>
+      <div class="formador-dashboard__empty-state">
+        {{ jaraba_icon('content', 'book-open', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+        <p>{% trans %}Aún no has subido materiales didácticos{% endtrans %}</p>
+      </div>
+    </div>
+  </section>
+
+</div>
