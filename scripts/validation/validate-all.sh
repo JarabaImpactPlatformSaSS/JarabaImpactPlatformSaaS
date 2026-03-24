@@ -285,8 +285,20 @@ if [ "$MODE" = "full" ]; then
   warn_check "ICON-CONTEXTUAL-001" "No banned generic icons (screening/diagnostic) + diversity audit" \
     php "$SCRIPT_DIR/validate-icon-generic-audit.php"
 
+  run_check "VERTICAL-CATALOG-SYNC-001" "MegaMenuBridge vertical catalog: 10 verticals, 4 categories, keys, URLs" \
+    php "$SCRIPT_DIR/validate-vertical-catalog-sync.php"
+
   run_check "EMAIL-SINGLE-FLOW-001" "Email registration single-flow integrity (5 checks)" \
     php "$SCRIPT_DIR/validate-email-single-flow.php"
+
+  run_check "EMAIL-TEMPLATE-RENDER-001" "MJML pipeline: templates valid, no escaped HTML, Markup::create()" \
+    php "$SCRIPT_DIR/validate-email-template-render.php"
+
+  warn_check "MJML-BINARY-AVAILABILITY-001" "MJML binary availability for proper email compilation" \
+    php "$SCRIPT_DIR/validate-mjml-binary.php"
+
+  run_check "AUTH-FLOW-E2E-001" "Auth flow integrity: register -> verify -> login (7 checks)" \
+    php "$SCRIPT_DIR/validate-auth-flow-integrity.php"
 
   run_check "QUIZ-FUNNEL-001" "Quiz vertical funnel integrity" \
     php "$SCRIPT_DIR/validate-quiz-funnel.php"
