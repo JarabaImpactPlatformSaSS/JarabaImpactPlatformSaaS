@@ -19,6 +19,8 @@
 | Rule ID | Descripcion |
 |---------|-------------|
 | ADDON-IMPLEMENTATION-001 | Addon module implementation audit |
+| ANDALUCIA-EI-ROLES-001 | Program role system integrity: roles exist, permissions, dashboards, wizard, daily actions (9 checks) |
+| ANDALUCIA-EI-2E-SPRINT-A-001 | 2ª Edición Sprint A: fields, entities, services, copilot prompts, logos FSE+ (9 checks) |
 | BACKUP-HEALTH-001 | Backup infrastructure completeness |
 | BIGPIPE-TIMING-001 | BigPipe + once() + drupalSettings timing risks |
 | BTN-CONTRAST-DARK-001 | Button contrast on dark backgrounds |

@@ -283,6 +283,38 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ReviewSeoController::VERTICAL_SCHEMA_TYPE_MAP mapea verticales a tipos validos
 - ReviewSchemaOrgService::resolveSchemaType() mapea entity types a tipos validos
 
+## ANDALUCIA +EI — 2ª EDICION (PIIL CV 2025)
+
+### Arquitectura de Roles
+- ROL-PROGRAMA-SSOT-001: RolProgramaService es la SSOT de deteccion de roles. Cascada: Drupal role > legacy permission > entity participante. NUNCA detectar orientador via mentor_profile (acoplamiento cross-modulo eliminado)
+- 4 roles: coordinador_ei, orientador_ei, formador_ei (Drupal roles en config/install) + participante (entity-driven). Cada rol tiene dashboard + wizard + daily actions
+- RolProgramaLog entity para auditoria FSE+ de asignaciones/revocaciones
+- StaffProfileEi entity para perfil profesional del equipo
+
+### 2ª Edicion — Entities (21 totales)
+- 5 entities nuevas: PackServicioEi (5 packs × 3 tiers), EntregableFormativoEi (29 entregables), EvaluacionCompetenciaIaEi (rubrica 4 niveles), NegocioProspectadoEi (CRM clientes piloto), AsistenciaDetalladaEi (presencial/online)
+- PACK-VERTEBRADOR-001: Los 5 Packs de servicios son el eje vertebrador de TODA la formacion. El participante elige pack en M1, y cada modulo construye piezas operativas del pack real
+- ENTREGABLE-SEED-001: Los 29 EntregableFormativoEi se crean automaticamente en hook_programa_participante_ei_insert(). Idempotente via PortfolioEntregablesService::seedEntregables()
+- ASISTENCIA-DUAL-001: AsistenciaDetalladaEi DEBE distinguir modalidad presencial/online_sincronica. AsistenciaComplianceService verifica maximo 20% online (10h de 50h) y alerta si asistencia <75%
+
+### Copiloto IA Adaptativo
+- COPILOT-PHASE-PROMPT-001: CopilotPhaseConfigService provee 6 system prompts diferenciados por fase del programa (orientacion → modulo_0 → modulo_1_3 → modulo_4 → modulo_5 → acompanamiento). Prompts en config YAML editable sin deploy
+- 69 prompts prediseñados por sesion (23 sesiones × 3) en jaraba_andalucia_ei.copilot_session_prompts
+- AndaluciaEiCopilotContextProvider integra CopilotPhaseConfigService para inyectar prompt segun estado_programa del participante
+
+### Cross-Vertical (7 bridges)
+- EiEmprendimientoBridgeService (Canvas, MVP, Projection, SROI)
+- EiMatchingBridgeService (empleo)
+- EiAlumniBridgeService (mentoria post-programa)
+- EiBadgeBridgeService (gamificacion)
+- EiContentHubBridgeService (M4: calendario editorial) — @?
+- EiComercioConectaBridgeService (Pack 4: tienda digital) — @?
+- EiJarabaLexBridgeService (M3: tramites legales) — @?
+
+### Validadores
+- validate-andalucia-ei-roles.php: 9 checks (roles, permisos, dashboards, wizard, daily actions)
+- validate-andalucia-ei-2e-sprint-a.php: 9 checks (campos, entities, services, prompts, logos)
+
 ## IA — STACK COMPLETO
 
 ### Arquitectura (11 Agentes Gen 2)
@@ -358,7 +390,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v149.0.0
 - INDICE: v194.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #219
+- Ultimo aprendizaje: #223
 - Ultima golden rule: #155
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
@@ -421,7 +453,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 108 scripts validacion (90 run + 18 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 111 scripts validacion (92 run + 19 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
