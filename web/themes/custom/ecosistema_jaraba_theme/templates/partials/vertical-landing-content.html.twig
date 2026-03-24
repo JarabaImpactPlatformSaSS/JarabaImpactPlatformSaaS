@@ -78,8 +78,17 @@
     vertical_key: key,
   } only %}
 
-  {# 5b. Partner Logos #}
-  {% include '@ecosistema_jaraba_theme/partials/_landing-partner-logos.html.twig' only %}
+  {# 5b. Trust Strip — Technology & Institutional Partners (TRUST-STRIP-001) #}
+  {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+    trust_title: data.tech_partners.title|default('Tecnología de confianza'|trans),
+    trust_subtitle: data.tech_partners.subtitle|default(''),
+    tech_partners: data.tech_partners.tech|default([]),
+    institutional_partners: data.tech_partners.institutional|default([]),
+    vertical_key: key,
+    theme_path: 'themes/custom/ecosistema_jaraba_theme',
+    show_badges: false,
+    marquee: true,
+  } only %}
 
   {# 6. Lead Magnet #}
   {% include '@ecosistema_jaraba_theme/partials/_landing-lead-magnet.html.twig' with {

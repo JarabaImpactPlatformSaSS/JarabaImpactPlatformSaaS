@@ -204,6 +204,7 @@ landing-sections:
     js/landing-sticky-cta.js: {}
     js/landing-counters.js: {}
     js/landing-hero-video.js: {}
+    js/trust-strip-marquee.js: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_core/icons

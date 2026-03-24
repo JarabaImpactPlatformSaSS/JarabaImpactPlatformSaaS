@@ -63,7 +63,7 @@ class VerticalLandingController extends ControllerBase
       'color' => 'agro',
       'hero' => [
         'headline' => $this->t('Vende tus productos del campo sin intermediarios'),
-        'subheadline' => $this->t('Tu tienda online de productor con trazabilidad QR, envío MRW/SEUR, Copilot IA, previsión de demanda, analytics avanzados y cobro seguro via Stripe Connect. Listo en 10 minutos.'),
+        'subheadline' => $this->t('Tu tienda online de productor con trazabilidad QR, logística integrada, Copilot IA, previsión de demanda, analytics avanzados y cobro seguro via Stripe Connect. Listo en 10 minutos.'),
         'icon' => ['category' => 'verticals', 'name' => 'leaf'],
         'video_url' => '/themes/custom/ecosistema_jaraba_theme/videos/hero-agroconecta.mp4',
         'cta' => [
@@ -87,17 +87,17 @@ class VerticalLandingController extends ControllerBase
       'steps' => [
         ['title' => $this->t('Sube tus productos'), 'description' => $this->t('Con una foto, la IA escribe la descripcion, sugiere precios y categoriza automaticamente')],
         ['title' => $this->t('Comparte tu tienda'), 'description' => $this->t('Un link, un QR de trazabilidad, redes sociales y WhatsApp Business')],
-        ['title' => $this->t('Cobra y envia'), 'description' => $this->t('Stripe procesa pagos, MRW/SEUR gestionan el envio con tracking en tiempo real')],
+        ['title' => $this->t('Cobra y envia'), 'description' => $this->t('Stripe procesa pagos, la logistica integrada gestiona el envio con tracking en tiempo real')],
       ],
       'features' => [
-        ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Producer Copilot (IA)'), 'description' => $this->t('Genera descripciones, sugiere precios competitivos, responde resenas y predice la demanda de tus productos.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Producer Copilot (IA)'), 'description' => $this->t('Genera descripciones, sugiere precios competitivos, responde resenas y predice la demanda de tus productos.')],
         ['icon' => ['category' => 'business', 'name' => 'qr-code'], 'title' => $this->t('QR de Trazabilidad'), 'description' => $this->t('Tus clientes escanean y ven el recorrido completo: del campo a su mesa, con prueba de integridad criptografica.')],
         ['icon' => ['category' => 'business', 'name' => 'store'], 'title' => $this->t('Marketplace Profesional'), 'description' => $this->t('Catalogo con busqueda avanzada, categorias, colecciones estacionales y filtros por certificacion.')],
-        ['icon' => ['category' => 'business', 'name' => 'package'], 'title' => $this->t('Envio MRW y SEUR'), 'description' => $this->t('Calculo automatico de tarifas por zona, generacion de etiquetas y tracking en tiempo real.')],
+        ['icon' => ['category' => 'business', 'name' => 'package'], 'title' => $this->t('Logística Integrada'), 'description' => $this->t('Calculo automatico de tarifas por zona, generacion de etiquetas y tracking en tiempo real con multiples carriers.')],
         ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Cobro Seguro via Stripe'), 'description' => $this->t('Split payments multi-vendedor via Stripe Connect. El dinero en tu cuenta en 48h.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Resenas Verificadas'), 'description' => $this->t('Sistema de valoracion 5 estrellas con moderacion, respuestas del productor y Schema.org.')],
         ['icon' => ['category' => 'business', 'name' => 'chart'], 'title' => $this->t('Analytics en Tiempo Real'), 'description' => $this->t('Dashboard con metricas diarias: ingresos, pedidos, productos mas vistos y conversion.')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Prevision de Demanda IA'), 'description' => $this->t('Predicciones ML de demanda por producto. Anticipa que cultivar, cuanto producir y cuando vender.')],
+        ['icon' => ['category' => 'analytics', 'name' => 'trend-up'], 'title' => $this->t('Prevision de Demanda IA'), 'description' => $this->t('Predicciones ML de demanda por producto. Anticipa que cultivar, cuanto producir y cuando vender.')],
         ['icon' => ['category' => 'business', 'name' => 'achievement'], 'title' => $this->t('Certificaciones Digitales'), 'description' => $this->t('Muestra sellos eco, DOP, comercio justo y certificados de calidad verificados.')],
         ['icon' => ['category' => 'ui', 'name' => 'phone'], 'title' => $this->t('Pedidos WhatsApp'), 'description' => $this->t('Notificaciones de pedidos via WhatsApp Business API y recuperacion automatica de carritos.')],
         ['icon' => ['category' => 'business', 'name' => 'tag'], 'title' => $this->t('Promociones y Cupones'), 'description' => $this->t('Descuentos porcentuales, fijos o 2x1. Cupones con limite de uso y validez temporal.')],
@@ -117,7 +117,7 @@ class VerticalLandingController extends ControllerBase
               ['text' => $this->t('Tienda online con catálogo completo'), 'included' => TRUE],
               ['text' => $this->t('Trazabilidad QR criptográfica'), 'included' => TRUE],
               ['text' => $this->t('Copilot IA para descripciones y precios'), 'included' => TRUE],
-              ['text' => $this->t('Envío MRW/SEUR integrado'), 'included' => TRUE],
+              ['text' => $this->t('Logística con tracking integrado'), 'included' => TRUE],
               ['text' => $this->t('Cobro seguro via Stripe Connect'), 'included' => TRUE],
               ['text' => $this->t('Previsión de demanda con IA'), 'included' => TRUE],
             ],
@@ -196,7 +196,7 @@ class VerticalLandingController extends ControllerBase
             'period' => $this->t('mes'),
             'features' => [
               $this->t('50 productos'),
-              $this->t('Envío MRW/SEUR'),
+              $this->t('Envío con tracking'),
               $this->t('QR trazabilidad'),
               $this->t('Analytics'),
             ],
@@ -228,7 +228,7 @@ class VerticalLandingController extends ControllerBase
           $this->t('5 productos gratis'),
           $this->t('Copilot IA para descripciones'),
           $this->t('Cobro via Stripe Connect'),
-          $this->t('Envio MRW/SEUR desde Starter'),
+          $this->t('Envio con tracking desde Starter'),
           $this->t('Analytics avanzados desde Profesional'),
           $this->t('Hub B2B y API desde Enterprise'),
         ],
@@ -238,7 +238,7 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Cuales son las comisiones?'), 'answer' => $this->t('Plan Free: 10% por transaccion. Starter: 8%. Profesional: 5%. Enterprise: 3%. Transparente, sin costes ocultos.')],
         ['question' => $this->t('¿Necesito conocimientos tecnicos?'), 'answer' => $this->t('No. Esta disenado para productores del campo. La IA te ayuda en cada paso: descripciones, precios, respuestas a resenas y predicciones de demanda.')],
         ['question' => $this->t('¿Como recibo los pagos?'), 'answer' => $this->t('Via Stripe Connect con split payments multi-vendedor. El dinero llega a tu cuenta bancaria en 48 horas, sin intermediarios.')],
-        ['question' => $this->t('¿Como funciona el envio?'), 'answer' => $this->t('Integracion directa con MRW y SEUR. Calculo automatico de tarifas por zona, generacion de etiquetas y tracking en tiempo real para ti y tu cliente.')],
+        ['question' => $this->t('¿Como funciona el envio?'), 'answer' => $this->t('Logistica integrada con multiples carriers nacionales. Calculo automatico de tarifas por zona, generacion de etiquetas y tracking en tiempo real para ti y tu cliente.')],
         ['question' => $this->t('¿Que es la trazabilidad QR?'), 'answer' => $this->t('Cada producto tiene un QR que el cliente escanea para ver todo el recorrido: cosecha, transporte y venta, con prueba de integridad criptografica.')],
         ['question' => $this->t('¿Como funcionan las resenas?'), 'answer' => $this->t('Los clientes valoran de 1 a 5 estrellas. Moderacion automatica, respuesta del productor y la IA te ayuda a redactar respuestas profesionales.')],
         ['question' => $this->t('¿Que hace el Copilot IA?'), 'answer' => $this->t('Genera descripciones de producto, sugiere precios competitivos, predice demanda estacional, analiza competencia y redacta respuestas a resenas.')],
@@ -247,6 +247,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Que es el Hub B2B Partners?'), 'answer' => $this->t('Portal para gestionar relaciones con distribuidores, empresas de logistica y organismos certificadores. Documentos compliance con audit trail.')],
         ['question' => $this->t('¿Puedo usar mi propio dominio?'), 'answer' => $this->t('Si, desde el plan Profesional tienes dominio personalizado. En Free y Starter usas un subdominio de la plataforma.')],
         ['question' => $this->t('¿Hay recuperacion de carritos abandonados?'), 'answer' => $this->t('Si. El sistema detecta carritos abandonados y envia automaticamente emails y SMS de recuperacion. Disponible desde Starter.')],
+      ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tu producción'),
+        'subtitle' => $this->t('Integraciones reales con las mejores plataformas del mercado'),
+        'tech' => $this->getPartnersForVertical('agroconecta'),
+        'institutional' => $this->getInstitutionalPartners(),
       ],
       'final_cta' => [
         'headline' => $this->t('¿Listo para vender sin intermediarios?'),
@@ -305,7 +311,7 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Pagos Stripe Connect (Split)'), 'description' => $this->t('Cobro automático multi-vendor: cada comerciante recibe su parte menos comisión. Reembolsos y payouts transparentes.')],
         ['icon' => ['category' => 'business', 'name' => 'sync'], 'title' => $this->t('Integración TPV Bidireccional'), 'description' => $this->t('Sincronización automática de stock, precios y pedidos con tu sistema de caja. Sin duplicados ni errores.')],
         ['icon' => ['category' => 'ui', 'name' => 'search'], 'title' => $this->t('SEO Local Automático'), 'description' => $this->t('Schema.org LocalBusiness, NAP consistente y posicionamiento en búsquedas de proximidad. Apareces en "tiendas cerca de mí".')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot IA para Comerciantes'), 'description' => $this->t('Genera descripciones de producto, sugiere precios competitivos, crea posts para redes sociales, responde reseñas y diseña emails promocionales.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copilot IA para Comerciantes'), 'description' => $this->t('Genera descripciones de producto, sugiere precios competitivos, crea posts para redes sociales, responde reseñas y diseña emails promocionales.')],
         ['icon' => ['category' => 'business', 'name' => 'chart'], 'title' => $this->t('Dashboard con Analytics'), 'description' => $this->t('KPIs de ventas, productos más vendidos, tendencias de demanda, tasa de conversión y predicción de stock con IA.')],
         ['icon' => ['category' => 'business', 'name' => 'truck'], 'title' => $this->t('Gestión de Envíos con Tracking'), 'description' => $this->t('Configura zonas de envío, tarifas por peso/distancia, múltiples carriers y tracking en tiempo real para tus clientes.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Reseñas y Reputación Verificada'), 'description' => $this->t('Sistema de valoraciones post-compra con moderación automática, votos de utilidad y Schema.org para Google.')],
@@ -455,6 +461,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Cuánto cuesta comparado con Shopify o PrestaShop?'), 'answer' => $this->t('Desde 0 €/mes (plan Free: 10 productos, 1 QR, 1 oferta flash, copilot IA con 20 consultas/mes). Frente a Shopify Basic (36 €/mes) o PrestaShop Cloud (30+ €/mes), accedes a marketplace + copilot IA + SEO local por una fracción.')],
         ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 10 productos, QR de escaparate, 1 oferta flash, SEO local automático y Copilot IA con 20 consultas/mes. Sin tarjeta de crédito.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tu comercio'),
+        'subtitle' => $this->t('Pagos, WhatsApp, IA y más — todo integrado'),
+        'tech' => $this->getPartnersForVertical('comercioconecta'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('Lleva tu comercio al siguiente nivel'),
         'cta' => [
@@ -510,7 +522,7 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'gift'], 'title' => $this->t('Paquetes y Bonos de Sesiones'), 'description' => $this->t('Ofrece bundles de sesiones con descuento. Fideliza clientes con bonos prepago.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Reseñas y Reputación Verificada'), 'description' => $this->t('Sistema de calificación post-servicio con moderación automática. Schema.org para Google.')],
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Cobro Automático via Stripe'), 'description' => $this->t('Pagos seguros con Stripe Connect. Comisión transparente del 10%. Tu dinero en 2-7 días.')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot IA para Profesionales'), 'description' => $this->t('Asistente inteligente que optimiza tu oferta, sugiere precios y analiza tendencias de demanda.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copilot IA para Profesionales'), 'description' => $this->t('Asistente inteligente que optimiza tu oferta, sugiere precios y analiza tendencias de demanda.')],
         ['icon' => ['category' => 'business', 'name' => 'chart'], 'title' => $this->t('Dashboard con Analítica'), 'description' => $this->t('KPIs en tiempo real: ingresos, tasa de reserva, satisfacción, no-shows y tendencias mensuales.')],
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Presupuestador con IA'), 'description' => $this->t('Genera presupuestos personalizados en segundos. La IA analiza el servicio y ajusta el precio a la complejidad.')],
         ['icon' => ['category' => 'business', 'name' => 'signature'], 'title' => $this->t('Firma Digital PAdES'), 'description' => $this->t('Contratos de servicio con firma digital avanzada via AutoFirma. Validez legal europea.')],
@@ -658,6 +670,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿La firma digital tiene validez legal?'), 'answer' => $this->t('Sí. Utilizamos firma PAdES (PDF Advanced Electronic Signatures) via AutoFirma con certificados FNMT. Validez legal en toda la Unión Europea según eIDAS.')],
         ['question' => $this->t('¿Cómo funciona el Buzón de Confianza?'), 'answer' => $this->t('Al confirmar una reserva, se abre automáticamente un canal cifrado end-to-end entre cliente y profesional. Los mensajes, archivos y documentos quedan vinculados a la reserva con trazabilidad completa.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tus servicios'),
+        'subtitle' => $this->t('Reservas, pagos, WhatsApp e IA — integrados de serie'),
+        'tech' => $this->getPartnersForVertical('serviciosconecta'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('Digitaliza tu negocio de servicios hoy mismo'),
         'cta' => [
@@ -708,7 +726,7 @@ class VerticalLandingController extends ControllerBase
       ],
       'features' => [
         // --- 6 features originales, mejoradas ---
-        ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Diagnóstico Express con IA'), 'description' => $this->t('3 preguntas, 3 minutos. La IA evalúa tu nivel LinkedIn (40%), CV ATS (35%) y estrategia (25%). Te asigna uno de 5 perfiles con plan de acción y PDF descargable.')],
+        ['icon' => ['category' => 'analytics', 'name' => 'gauge'], 'title' => $this->t('Diagnóstico Express con IA'), 'description' => $this->t('3 preguntas, 3 minutos. La IA evalúa tu nivel LinkedIn (40%), CV ATS (35%) y estrategia (25%). Te asigna uno de 5 perfiles con plan de acción y PDF descargable.')],
         ['icon' => ['category' => 'business', 'name' => 'path'], 'title' => $this->t('Rutas Formativas Curadas'), 'description' => $this->t('LMS con rutas formativas curadas por expertos. Contenido seleccionado de fuentes de calidad + módulos propios. Progreso con xAPI, certificaciones y gamificación.')],
         ['icon' => ['category' => 'business', 'name' => 'cv-optimized'], 'title' => $this->t('CV Builder con IA'), 'description' => $this->t('Responde preguntas sobre tu experiencia y la IA genera un CV profesional optimizado para ATS. 4 plantillas: Modern, Tech, Classic y Minimal. Descarga en PDF.')],
         ['icon' => ['category' => 'business', 'name' => 'target'], 'title' => $this->t('Matching Inteligente de Ofertas'), 'description' => $this->t('Algoritmo que calcula tu match score con cada oferta. Se activa automáticamente cuando haya +20 ofertas publicadas. Alertas configurables y favoritos.')],
@@ -716,7 +734,7 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'achievement'], 'title' => $this->t('Credenciales Verificables'), 'description' => $this->t('Certificados OpenBadge que empleadores verifican con un clic. Cada curso completado, cada habilidad validada — credenciales con validez real.')],
         // --- 9 features NUEVAS (código real existente) ---
         ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Health Score Profesional'), 'description' => $this->t('Puntuación 0-100 en 5 dimensiones: perfil, formación, aplicaciones, entrevistas y engagement. Ve tu empleabilidad en tiempo real y dónde mejorar.')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot IA con 6 Modos'), 'description' => $this->t('Asistente IA que detecta automáticamente lo que necesitas: coach de perfil, asesor laboral, preparación de entrevistas, guía formativa, optimizador de CV o ayuda general.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copilot IA con 6 Modos'), 'description' => $this->t('Asistente IA que detecta automáticamente lo que necesitas: coach de perfil, asesor laboral, preparación de entrevistas, guía formativa, optimizador de CV o ayuda general.')],
         ['icon' => ['category' => 'ui', 'name' => 'map'], 'title' => $this->t('Journey Personalizado'), 'description' => $this->t('3 itinerarios adaptados: Candidato (7 pasos de búsqueda a contratación), Empresa (6 pasos de publicación a contratación) y Orientador (gestión de casos). Nudges proactivos de la IA.')],
         ['icon' => ['category' => 'business', 'name' => 'search'], 'title' => $this->t('Portal de Empleo Completo'), 'description' => $this->t('Búsqueda avanzada de ofertas, aplicación con un clic, alertas personalizadas, favoritos y historial de aplicaciones. Todo integrado con tu perfil.')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Dashboard para Empresas'), 'description' => $this->t('Las empresas publican ofertas, reciben candidatos rankeados por IA, gestionan entrevistas con scorecard y acceden a analytics de contratación.')],
@@ -793,7 +811,7 @@ class VerticalLandingController extends ControllerBase
         'description' => $this->t('3 preguntas, 3 minutos, reporte PDF. Descubre tu perfil de empleabilidad, tus gaps y tu plan de acción personalizado.'),
         'url' => '/empleabilidad/diagnostico',
         'cta_text' => $this->t('Iniciar diagnóstico'),
-        'icon' => ['category' => 'ai', 'name' => 'screening'],
+        'icon' => ['category' => 'analytics', 'name' => 'gauge'],
       ],
       'pricing' => [
         'headline' => $this->t('Planes para tu búsqueda'),
@@ -871,6 +889,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Qué emails automatizados recibiré?'), 'answer' => $this->t('5 secuencias adaptadas a tu fase: bienvenida y onboarding, reactivación si llevas días sin actividad, preparación pre-entrevista, sugerencia de upgrade cuando alcanzas límites y seguimiento post-empleo.')],
         ['question' => $this->t('¿Qué incluye el plan gratuito?'), 'answer' => $this->t('1 diagnóstico con PDF, 1 CV con IA, 5 mensajes de copilot al día, 10 ofertas visibles al día, 3 aplicaciones diarias, 1 alerta activa, health score profesional, LMS gamificado y credenciales verificables. Sin tarjeta de crédito.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tu carrera'),
+        'subtitle' => $this->t('IA, LinkedIn y las mejores herramientas profesionales'),
+        'tech' => $this->getPartnersForVertical('empleabilidad'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('Tu nuevo trabajo te espera'),
         'cta' => [
@@ -931,7 +955,7 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Health Score Emprendedor'), 'description' => $this->t('Puntuación 0-100 en 5 dimensiones: canvas, hipótesis validadas, velocidad de experimentos, engagement con copilot y preparación financiera.')],
         ['icon' => ['category' => 'business', 'name' => 'certificate'], 'title' => $this->t('15 Insignias + 3 Diplomas Digitales'), 'description' => $this->t('Gana insignias por cada hito: primer canvas, MVP lanzado, primera venta, pitch preparado. 3 diplomas compuestos: Básico, Avanzado y Expert.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Niveles de Expertise con Beneficios'), 'description' => $this->t('5 niveles de explorador a master con XP acumulado. Cada nivel desbloquea beneficios: descuentos exclusivos, acceso a eventos y Mastermind prioritario.')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot IA Proactivo'), 'description' => $this->t('7 reglas de activación automática: detecta inactividad, canvas incompleto, hipótesis estancadas o financiación disponible y te nudgea con el modo IA adecuado.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copilot IA Proactivo'), 'description' => $this->t('7 reglas de activación automática: detecta inactividad, canvas incompleto, hipótesis estancadas o financiación disponible y te nudgea con el modo IA adecuado.')],
         ['icon' => ['category' => 'ui', 'name' => 'map'], 'title' => $this->t('Journey Personalizado por Avatar'), 'description' => $this->t('3 itinerarios adaptados: Emprendedor (5 fases, 10 pasos), Mentor y Gestor de Programa. Cada paso con intervención IA y tracking de progreso.')],
         ['icon' => ['category' => 'analytics', 'name' => 'experiments'], 'title' => $this->t('Motor de Experimentos A/B'), 'description' => $this->t('Framework completo para testear ideas: 4 ámbitos de experimento, 10 eventos de conversión rastreados y resultados con significancia estadística.')],
         ['icon' => ['category' => 'ui', 'name' => 'share-2'], 'title' => $this->t('Puentes a Formación, Comercio y Servicios'), 'description' => $this->t('Cuando tu startup crece, conexión inteligente con otros verticales: formación para tu equipo, comercio para vender, servicios para externalizar.')],
@@ -1084,6 +1108,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Cómo funciona el motor de experimentos?'), 'answer' => $this->t('Creas hipótesis sobre tu negocio, diseñas experimentos A/B con métricas claras y la plataforma rastrea 10 eventos de conversión para darte resultados con significancia estadística. 4 ámbitos: onboarding, UX del canvas, engagement copilot y funnel de upgrade.')],
         ['question' => $this->t('¿Qué incluye el plan gratuito?'), 'answer' => $this->t('Calculadora de madurez (1 uso), 1 Business Model Canvas, 3 hipótesis activas, 2 experimentos al mes, 5 sesiones diarias de copilot IA y acceso a la comunidad de emprendedores. Sin tarjeta de crédito.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tu emprendimiento'),
+        'subtitle' => $this->t('IA, pagos y herramientas de clase mundial'),
+        'tech' => $this->getPartnersForVertical('emprendimiento'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('Convierte tu idea en un negocio rentable'),
         'cta' => [
@@ -1122,7 +1152,7 @@ class VerticalLandingController extends ControllerBase
         'trust_badges' => [
           ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'label' => $this->t('RGPD')],
           ['icon' => ['category' => 'compliance', 'name' => 'signature'], 'label' => $this->t('eIDAS')],
-          ['icon' => ['category' => 'ai', 'name' => 'brain'], 'label' => $this->t('EU AI Act')],
+          ['icon' => ['category' => 'compliance', 'name' => 'shield-check'], 'label' => $this->t('EU AI Act')],
           ['icon' => ['category' => 'ui', 'name' => 'lock'], 'label' => $this->t('Cifrado E2E')],
         ],
       ],
@@ -1141,7 +1171,7 @@ class VerticalLandingController extends ControllerBase
         ['title' => $this->t('Presenta'), 'description' => $this->t('Presenta escritos en LexNET y genera documentos con plantillas jurídicas')],
       ],
       'features' => [
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Búsqueda Semántica'), 'description' => $this->t('Encuentra resoluciones por significado, no solo por palabras clave. Embeddings 3072D.')],
+        ['icon' => ['category' => 'actions', 'name' => 'search'], 'title' => $this->t('Búsqueda Semántica'), 'description' => $this->t('Encuentra resoluciones por significado, no solo por palabras clave. Embeddings 3072D.')],
         ['icon' => ['category' => 'legal', 'name' => 'search-legal'], 'title' => $this->t('8 Fuentes Oficiales'), 'description' => $this->t('CENDOJ, BOE, DGT, TEAC, EUR-Lex, CURIA, HUDOC y EDPB integrados.')],
         ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'title' => $this->t('Gestión Integral de Expedientes'), 'description' => $this->t('Expedientes con plazos, partes, documentos y comunicaciones. 5 expedientes gratis.')],
         ['icon' => ['category' => 'legal', 'name' => 'gavel'], 'title' => $this->t('Integración LexNET'), 'description' => $this->t('Presentación electrónica de escritos al CGPJ directamente desde tu expediente.')],
@@ -1218,7 +1248,7 @@ class VerticalLandingController extends ControllerBase
         'description' => $this->t('Descubre en 2 minutos las áreas de riesgo legal y el nivel de digitalización de tu despacho.'),
         'url' => '/jarabalex/diagnostico-legal',
         'cta_text' => $this->t('Hacer diagnóstico'),
-        'icon' => ['category' => 'ai', 'name' => 'screening'],
+        'icon' => ['category' => 'legal', 'name' => 'balance'],
       ],
       'pricing' => [
         'headline' => $this->t('Planes para profesionales jurídicos'),
@@ -1289,6 +1319,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Qué es el Diagnóstico Legal Gratuito?'), 'answer' => $this->t('Un cuestionario de 5 preguntas que la IA analiza para identificar tus áreas de riesgo legal y recomendarte fuentes y alertas personalizadas.')],
         ['question' => $this->t('¿Es seguro para documentos confidenciales?'), 'answer' => $this->t('Cifrado end-to-end, servidores europeos, cumple RGPD y secreto profesional. Control de acceso granular por expediente.')],
         ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 5 expedientes, 10 búsquedas/mes, 1 alerta y bóveda de 100 MB. Sin tarjeta de crédito.')],
+      ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología jurídica de confianza'),
+        'subtitle' => $this->t('Firma digital, IA y seguridad de nivel europeo'),
+        'tech' => $this->getPartnersForVertical('jarabalex'),
+        'institutional' => $this->getInstitutionalPartners(),
       ],
       'final_cta' => [
         'headline' => $this->t('Empieza a investigar con inteligencia'),
@@ -1382,7 +1418,7 @@ class VerticalLandingController extends ControllerBase
       'features' => [
         // --- 4 features originales mejoradas ---
         ['icon' => ['category' => 'ui', 'name' => 'search'], 'title' => $this->t('Búsqueda Avanzada de Talento'), 'description' => $this->t('Filtra por skills, experiencia, disponibilidad, ubicación, modalidad remota, rango salarial y nivel educativo. Búsqueda semántica via Qdrant para encontrar perfiles que los filtros básicos no detectan.')],
-        ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Asistente IA del Reclutador'), 'description' => $this->t('RecruiterAssistantAgent con 6 acciones: screening automático, ranking por score, optimización de ofertas (+45% candidaturas), generación de preguntas de entrevista, analytics del proceso y comunicaciones con candidatos.')],
+        ['icon' => ['category' => 'ai', 'name' => 'robot'], 'title' => $this->t('Asistente IA del Reclutador'), 'description' => $this->t('RecruiterAssistantAgent con 6 acciones: screening automático, ranking por score, optimización de ofertas (+45% candidaturas), generación de preguntas de entrevista, analytics del proceso y comunicaciones con candidatos.')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Dashboard Analytics Completo'), 'description' => $this->t('Métricas en tiempo real: ofertas activas, candidaturas pendientes, tasa de conversión (candidaturas/vistas), tiempo medio de contratación y desglose de rendimiento por oferta.')],
         ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Gestión Colaborativa en Equipo'), 'description' => $this->t('Invita compañeros para evaluar, comentar y votar candidatos. Todo queda en el historial de la candidatura con trazabilidad completa por usuario y fecha.')],
         // --- 8 features nuevas respaldadas por codigo real ---
@@ -1486,6 +1522,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Qué notificaciones reciben los candidatos?'), 'answer' => $this->t('Los candidatos reciben emails automáticos en cada cambio de estado del ATS: confirmación de candidatura, aviso de revisión, preselección, entrevista programada, oferta recibida y resultado final. También notificaciones Web Push para nuevas ofertas que coincidan con sus alertas.')],
         ['question' => $this->t('¿Es gratuito empezar a buscar talento?'), 'answer' => $this->t('Sí. El plan Free incluye 1 oferta activa, búsqueda básica de candidatos y notificaciones por email. Para matching IA, ATS completo y asistente del reclutador, los planes de pago empiezan en 29 EUR/mes.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología de confianza'),
+        'subtitle' => $this->t('IA y herramientas profesionales integradas'),
+        'tech' => $this->getPartnersForVertical('talento'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('¿Listo para encontrar talento con IA?'),
         'subheadline' => $this->t('Matching inteligente, ATS integrado y asistente IA del reclutador. Empieza gratis.'),
@@ -1584,7 +1626,7 @@ class VerticalLandingController extends ControllerBase
       'features' => [
         ['icon' => ['category' => 'ui', 'name' => 'building'], 'title' => $this->t('Tu marca, tu plataforma'), 'description' => $this->t('Identidad corporativa propia: logo, colores y dominio personalizado')],
         ['icon' => ['category' => 'business', 'name' => 'ecosystem'], 'title' => $this->t('Formación y empleo'), 'description' => $this->t('Conecta talento local con empresas de tu territorio')],
-        ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Copiloto IA incluido'), 'description' => $this->t('Asistencia inteligente para candidatos y emprendedores')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copiloto IA incluido'), 'description' => $this->t('Asistencia inteligente para candidatos y emprendedores')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Métricas de impacto'), 'description' => $this->t('Dashboards ODS y reportes para justificar subvenciones')],
       ],
       'comparison' => [
@@ -1661,6 +1703,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Genera informes para fondos europeos?'), 'answer' => $this->t('Sí. Los dashboards incluyen métricas de impacto alineadas con los ODS, y los informes están preparados para FSE+, FEDER y otros programas de financiación pública.')],
         ['question' => $this->t('¿Cómo se protegen los datos de los ciudadanos?'), 'answer' => $this->t('Cumplimos RGPD y LOPDGDD. Los datos se alojan en servidores europeos con cifrado end-to-end. Cada tenant tiene aislamiento completo de datos.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología de confianza'),
+        'subtitle' => $this->t('Infraestructura segura y respaldada institucionalmente'),
+        'tech' => $this->getPartnersForVertical('instituciones'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('¿Listo para impulsar tu territorio?'),
         'cta' => [
@@ -1711,7 +1759,7 @@ class VerticalLandingController extends ControllerBase
       ],
       'features' => [
         ['icon' => ['category' => 'business', 'name' => 'canvas'], 'title' => $this->t('Constructor de Cursos Drag & Drop'), 'description' => $this->t('Crea cursos con módulos, lecciones, vídeos, documentos y actividades. Interfaz visual intuitiva sin necesidad de conocimientos técnicos.')],
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot Pedagógico con IA'), 'description' => $this->t('Genera estructura de cursos, sugiere contenido, crea quizzes y evalúa la dificultad de tus materiales. 3 modos: diseñador, tutor y evaluador.')],
+        ['icon' => ['category' => 'ai', 'name' => 'copilot'], 'title' => $this->t('Copilot Pedagógico con IA'), 'description' => $this->t('Genera estructura de cursos, sugiere contenido, crea quizzes y evalúa la dificultad de tus materiales. 3 modos: diseñador, tutor y evaluador.')],
         ['icon' => ['category' => 'business', 'name' => 'path'], 'title' => $this->t('Rutas de Aprendizaje Adaptativas'), 'description' => $this->t('El motor adaptativo ajusta contenido, ritmo y dificultad al nivel de cada alumno. Prerequisitos inteligentes y recomendaciones personalizadas.')],
         ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Gamificación Completa'), 'description' => $this->t('Badges por logros, puntos XP, niveles de progresión, leaderboards por curso y globales. Los alumnos compiten y se motivan mientras aprenden.')],
         ['icon' => ['category' => 'business', 'name' => 'certificate'], 'title' => $this->t('Certificaciones OpenBadge'), 'description' => $this->t('Certificados verificables con un clic. Cada curso completado genera una credencial digital con validez real. Integrable en LinkedIn.')],
@@ -1863,6 +1911,12 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Se integra con otras plataformas?'), 'answer' => $this->t('Sí. Compatible con xAPI, SCORM y LTI para integración con otros LMS. Webhooks para conectar con tu CRM, email marketing o sistemas de gestión internos.')],
         ['question' => $this->t('¿Qué incluye el plan gratuito?'), 'answer' => $this->t('1 curso con hasta 10 alumnos, constructor drag & drop, copilot pedagógico (limitado), gamificación con badges, 5 certificados automáticos al mes, portal del alumno y analytics básicas. Sin tarjeta de crédito.')],
       ],
+      'tech_partners' => [
+        'title' => $this->t('Tecnología que impulsa tu academia'),
+        'subtitle' => $this->t('IA pedagógica, pagos y certificación de clase mundial'),
+        'tech' => $this->getPartnersForVertical('formacion'),
+        'institutional' => $this->getInstitutionalPartners(),
+      ],
       'final_cta' => [
         'headline' => $this->t('Tu academia online, lista en minutos'),
         'cta' => [
@@ -1874,6 +1928,78 @@ class VerticalLandingController extends ControllerBase
   }
 
   // =========================================================================
+  // TRUST STRIP — Per-vertical partner definitions (TRUST-STRIP-001)
+  // =========================================================================
+
+  /**
+   * Canonical catalog of technology partners with real integrations.
+   *
+   * MARKETING-TRUTH-001: Only partners with actual code integrations.
+   *
+   * @return array<string, array{name: string, type: string, src: string}>
+   */
+  private function getTechPartnersCatalog(): array {
+    return [
+      'stripe' => ['name' => 'Stripe', 'type' => 'image', 'src' => 'logo-stripe.png'],
+      'google' => ['name' => 'Google', 'type' => 'image', 'src' => 'logo-google.png'],
+      'anthropic' => ['name' => 'Anthropic', 'type' => 'image', 'src' => 'logo-anthropic.png'],
+      'drupal' => ['name' => 'Drupal', 'type' => 'image', 'src' => 'logo-drupal.png'],
+      'qdrant' => ['name' => 'Qdrant', 'type' => 'image', 'src' => 'logo-qdrant.png'],
+      'linkedin' => ['name' => 'LinkedIn', 'type' => 'image', 'src' => 'logo-linkedin.png'],
+      'whatsapp' => ['name' => 'WhatsApp Business', 'type' => 'image', 'src' => 'logo-whatsapp.png'],
+      'bizum' => ['name' => 'Bizum', 'type' => 'image', 'src' => 'logo-bizum.png'],
+      'firma_digital' => ['name' => 'Firma Digital', 'type' => 'image', 'src' => 'logo-firma-digital.png'],
+    ];
+  }
+
+  /**
+   * Returns technology partners relevant to a specific vertical.
+   *
+   * @param string $vertical
+   *   The vertical key.
+   *
+   * @return array<int, array{name: string, type: string, src: string}>
+   *   Array of partner definitions for Twig.
+   */
+  private function getPartnersForVertical(string $vertical): array {
+    $catalog = $this->getTechPartnersCatalog();
+    $base = ['stripe', 'google', 'anthropic', 'drupal', 'qdrant'];
+
+    $extras = match ($vertical) {
+      'empleabilidad' => ['linkedin'],
+      'comercioconecta' => ['whatsapp', 'bizum'],
+      'agroconecta' => ['whatsapp', 'bizum'],
+      'jarabalex' => ['firma_digital'],
+      'serviciosconecta' => ['whatsapp'],
+      'demo' => ['linkedin', 'whatsapp', 'bizum', 'firma_digital'],
+      default => [],
+    };
+
+    $keys = array_merge($base, $extras);
+    $partners = [];
+    foreach ($keys as $key) {
+      if (isset($catalog[$key])) {
+        $partners[] = $catalog[$key];
+      }
+    }
+    return $partners;
+  }
+
+  /**
+   * Returns institutional partners (all verticals).
+   *
+   * @return array<int, array{name: string, type: string, src: string}>
+   *   Array of institutional partner definitions.
+   */
+  private function getInstitutionalPartners(): array {
+    return [
+      ['name' => 'Kit Digital', 'type' => 'image', 'src' => 'kit-digital-logo.svg'],
+      ['name' => 'NextGenerationEU', 'type' => 'image', 'src' => 'next-generation-eu.svg'],
+      ['name' => 'Gobierno de España', 'type' => 'image', 'src' => 'gobierno-espana.svg'],
+    ];
+  }
+
+  // =========================================================================
   // HELPERS
   // =========================================================================
 
@@ -1881,8 +2007,8 @@ class VerticalLandingController extends ControllerBase
    * Construye la estructura de render para landing pages verticales.
    *
    * @param array $data
-   *   Datos con estructura de 9 secciones (hero, pain_points, steps,
-   *   features, social_proof, lead_magnet, pricing, faq, final_cta).
+   *   Datos con estructura de 10 secciones (hero, pain_points, steps,
+   *   features, social_proof, lead_magnet, pricing, faq, tech_partners, final_cta).
    *
    * @return array
    *   Render array con template vertical_landing_content.
@@ -1900,6 +2026,12 @@ class VerticalLandingController extends ControllerBase
       }
     }
 
+    // Authenticated users: remove "Ya tengo cuenta" CTA (nonsensical when
+    // already logged in) and adjust primary CTA to dashboard if applicable.
+    if ($this->currentUser()->isAuthenticated()) {
+      unset($data['hero']['cta_secondary']);
+    }
+
     return [
       '#theme' => 'vertical_landing_content',
       '#vertical_data' => $data,
@@ -1912,6 +2044,7 @@ class VerticalLandingController extends ControllerBase
       ],
       '#cache' => [
         'tags' => ['config:saas_plan_tier_list', 'config:saas_plan_features_list'],
+        'contexts' => ['user.roles:authenticated'],
         'max-age' => 3600,
       ],
     ];

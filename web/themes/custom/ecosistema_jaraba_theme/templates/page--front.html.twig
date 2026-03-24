@@ -149,7 +149,14 @@
     } only %}
 
     {# 10. TRUST BAR + PARTNERS #}
-    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+      trust_title: 'Tecnología de confianza'|trans,
+      tech_partners: trust_strip.tech|default([]),
+      institutional_partners: trust_strip.institutional|default([]),
+      theme_path: 'themes/custom/ecosistema_jaraba_theme',
+      show_badges: true,
+      marquee: true,
+    } only %}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
       theme_path: directory,
       partners_variant: 'full',
@@ -295,7 +302,14 @@
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
 
     {# 10. TRUST BAR + PARTNERS #}
-    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+      trust_title: 'Tecnología de confianza'|trans,
+      tech_partners: trust_strip.tech|default([]),
+      institutional_partners: trust_strip.institutional|default([]),
+      theme_path: 'themes/custom/ecosistema_jaraba_theme',
+      show_badges: true,
+      marquee: true,
+    } only %}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
       theme_path: directory,
       partners_variant: 'full',
@@ -420,7 +434,14 @@
     {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
 
     {# 8. TRUST BAR + PARTNERS — Credibilidad post-social-proof #}
-    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+      trust_title: 'Tecnología de confianza'|trans,
+      tech_partners: trust_strip.tech|default([]),
+      institutional_partners: trust_strip.institutional|default([]),
+      theme_path: 'themes/custom/ecosistema_jaraba_theme',
+      show_badges: true,
+      marquee: true,
+    } only %}
     {% include '@ecosistema_jaraba_theme/partials/_partners-institucional.html.twig' with {
       theme_path: directory,
       partners_variant: 'full',
@@ -465,7 +486,14 @@
     } only %}
 
     {# TRUST BAR - Logos tecnologías + badges #}
-    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+      trust_title: 'Tecnología de confianza'|trans,
+      tech_partners: trust_strip.tech|default([]),
+      institutional_partners: trust_strip.institutional|default([]),
+      theme_path: 'themes/custom/ecosistema_jaraba_theme',
+      show_badges: true,
+      marquee: true,
+    } only %}
 
     {# PAIN POINTS — Empatia con el visitante (HOMEPAGE-ELEVATION-001 F0) #}
     {% include '@ecosistema_jaraba_theme/partials/_homepage-pain-points.html.twig' with {

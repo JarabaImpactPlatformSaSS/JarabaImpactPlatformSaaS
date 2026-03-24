@@ -1,0 +1,131 @@
+{#
+/**
+ * @file _trust-strip.html.twig
+ * Trust strip clase mundial — logos wordmark de tecnologia + partners institucionales.
+ *
+ * Reemplaza _landing-partner-logos.html.twig y _trust-bar.html.twig.
+ * Dos tiers: tecnologia (marquee mobile) + institucional (grid estatico).
+ * Todos los logos son imagenes (PNG/SVG) con CSS grayscale filter.
+ *
+ * VARIABLES (todas via {% include ... only %}):
+ *   - trust_title: string (default: 'Tecnologia de confianza')
+ *   - trust_subtitle: string|null — subtitulo contextual por vertical
+ *   - tech_partners: array of {name, type: 'image', src}
+ *   - institutional_partners: array of {name, type: 'image', src}
+ *   - vertical_key: string — para CSS modifier
+ *   - theme_path: string — ruta relativa del tema
+ *   - show_badges: bool — mostrar badges RGPD/UE (solo homepage)
+ *   - marquee: bool — scroll infinito en mobile (default true)
+ *
+ * DIRECTRICES:
+ *   - TWIG-INCLUDE-ONLY-001: todas las variables con |default()
+ *   - CSS-VAR-ALL-COLORS-001: colores via --ej-*
+ *   - MARKETING-TRUTH-001: solo partners con integracion real
+ *   - ICON-CANVAS-INLINE-002: imagenes no soportan currentColor — grayscale via CSS filter
+ *   - i18n: {% trans %} para textos UI
+ *   - a11y: aria-label, role="list", prefers-reduced-motion
+ */
+#}
+{% set partners = tech_partners|default([]) %}
+{% set institutional = institutional_partners|default([]) %}
+{% set title = trust_title|default('Tecnología de confianza'|trans) %}
+{% set subtitle = trust_subtitle|default('') %}
+{% set vkey = vertical_key|default('generic') %}
+{% set tpath = theme_path|default('themes/custom/ecosistema_jaraba_theme') %}
+{% set has_marquee = marquee|default(true) %}
+{% set badges = show_badges|default(false) %}
+
+{% if partners|length > 0 or institutional|length > 0 %}
+<section class="trust-strip trust-strip--{{ vkey }} reveal-element reveal-fade-up"
+         aria-labelledby="trust-strip-heading">
+  <div class="trust-strip__container">
+
+    {# Heading #}
+    <p id="trust-strip-heading" class="trust-strip__title">{{ title }}</p>
+    {% if subtitle %}
+      <p class="trust-strip__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {# Tier 1: Technology Partners — marquee on mobile #}
+    {% if partners|length > 0 %}
+    <div class="trust-strip__track {{ has_marquee ? 'trust-strip__track--marquee' : '' }}"
+         {% if has_marquee %}data-trust-marquee{% endif %}
+         role="list"
+         aria-label="{% trans %}Tecnologías integradas{% endtrans %}">
+      <div class="trust-strip__slide">
+        {% for partner in partners %}
+          <div class="trust-strip__logo" role="listitem" aria-label="{{ partner.name }}">
+            <img src="/{{ tpath }}/images/{{ partner.src }}"
+                 alt="{{ partner.name }}"
+                 height="40"
+                 loading="lazy"
+                 decoding="async">
+          </div>
+        {% endfor %}
+      </div>
+      {# Duplicate slide for seamless marquee loop (partners-carousel pattern) #}
+      {% if has_marquee %}
+      <div class="trust-strip__slide" aria-hidden="true">
+        {% for partner in partners %}
+          <div class="trust-strip__logo">
+            <img src="/{{ tpath }}/images/{{ partner.src }}"
+                 alt=""
+                 height="40"
+                 loading="lazy"
+                 decoding="async">
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {# Tier 2: Institutional Partners — static grid #}
+    {% if institutional|length > 0 %}
+    <div class="trust-strip__institutional">
+      <span class="trust-strip__tier-label">
+        {% trans %}Financiado y respaldado por{% endtrans %}
+      </span>
+      <div class="trust-strip__institutional-logos" role="list"
+           aria-label="{% trans %}Partners institucionales{% endtrans %}">
+        {% for partner in institutional %}
+          <div class="trust-strip__institutional-logo" role="listitem"
+               aria-label="{{ partner.name }}">
+            <img src="/{{ tpath }}/images/{{ partner.src }}"
+                 alt="{{ partner.name }}"
+                 height="32"
+                 loading="lazy"
+                 decoding="async">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Optional trust badges (homepage context) #}
+    {% if badges %}
+    <div class="trust-strip__badges">
+      <span class="trust-strip__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3Zm-1 15-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8Z" fill="currentColor"/>
+        </svg>
+        {% trans %}RGPD{% endtrans %}
+      </span>
+      <span class="trust-strip__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8Zm-2-6l-2-2-1.4 1.4L10 16.8l7.4-7.4L16 8l-6 6Z" fill="currentColor"/>
+        </svg>
+        {% trans %}Datos en la UE{% endtrans %}
+      </span>
+      <span class="trust-strip__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+        </svg>
+        {% trans %}IA de clase mundial{% endtrans %}
+      </span>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endif %}

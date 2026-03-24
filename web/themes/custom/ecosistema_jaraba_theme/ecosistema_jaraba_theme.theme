@@ -3330,11 +3330,11 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   // MARKETING-TRUTH-001: Only partners with real code integrations.
   $variables['trust_strip'] = [
     'tech' => [
-      ['name' => 'Stripe', 'svg_id' => 'stripe'],
-      ['name' => 'Google', 'svg_id' => 'google'],
-      ['name' => 'Anthropic', 'svg_id' => 'anthropic'],
-      ['name' => 'Drupal', 'svg_id' => 'drupal'],
-      ['name' => 'Qdrant', 'svg_id' => 'qdrant'],
+      ['name' => 'Stripe', 'type' => 'image', 'src' => 'logo-stripe.png'],
+      ['name' => 'Google', 'type' => 'image', 'src' => 'logo-google.png'],
+      ['name' => 'Anthropic', 'type' => 'image', 'src' => 'logo-anthropic.png'],
+      ['name' => 'Drupal', 'type' => 'image', 'src' => 'logo-drupal.png'],
+      ['name' => 'Qdrant', 'type' => 'image', 'src' => 'logo-qdrant.png'],
     ],
     'institutional' => [
       ['name' => 'Kit Digital', 'type' => 'image', 'src' => 'kit-digital-logo.svg'],
