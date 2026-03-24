@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Pipeline visual Kanban de prospección de negocios (6 fases).
+ *
+ * Variables:
+ *   - pipeline: Array agrupado por estado_embudo con negocios en cada fase.
+ *   - stats: { total, por_fase: { identificado: N, contactado: N, ... } }
+ *
+ * ICON-CONVENTION-001: jaraba_icon() duotone.
+ * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
+ * TWIG-INCLUDE-ONLY-001: Incluir con `only`.
+ */
+#}
+
+{% set fases = {
+  'identificado': { 'label': 'Identificado', 'color': 'neutral', 'icon_name': 'search' },
+  'contactado': { 'label': 'Contactado', 'color': 'azul-corporativo', 'icon_name': 'message-circle' },
+  'interesado': { 'label': 'Interesado', 'color': 'naranja-impulso', 'icon_name': 'alert-circle' },
+  'propuesta': { 'label': 'Propuesta', 'color': 'naranja-impulso', 'icon_name': 'file' },
+  'acuerdo': { 'label': 'Acuerdo', 'color': 'verde-innovacion', 'icon_name': 'check-circle' },
+  'conversion': { 'label': 'Conversión', 'color': 'verde-innovacion', 'icon_name': 'award' }
+} %}
+
+<div class="aei-pipeline" data-pipeline>
+
+  <div class="aei-pipeline__header">
+    <h2 class="aei-pipeline__title">
+      {{ jaraba_icon('business', 'target', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+      {% trans %}Pipeline de Prospección{% endtrans %}
+    </h2>
+    {% if stats is defined %}
+      <span class="aei-pipeline__total">{{ stats.total|default(0) }} {% trans %}negocios{% endtrans %}</span>
+    {% endif %}
+  </div>
+
+  <div class="aei-pipeline__board">
+    {% for fase_key, fase_config in fases %}
+      <div class="aei-pipeline__column" data-pipeline-fase="{{ fase_key }}">
+        <div class="aei-pipeline__column-header">
+          {{ jaraba_icon('ui', fase_config.icon_name, { variant: 'duotone', color: fase_config.color, size: '18px' }) }}
+          <span class="aei-pipeline__column-label">{% trans %}{{ fase_config.label }}{% endtrans %}</span>
+          <span class="aei-pipeline__column-count">
+            {{ stats.por_fase[fase_key]|default(0) }}
+          </span>
+        </div>
+
+        <div class="aei-pipeline__cards" data-pipeline-drop="{{ fase_key }}">
+          {% if pipeline[fase_key] is defined %}
+            {% for negocio in pipeline[fase_key] %}
+              <div class="aei-pipeline__card aei-pipeline__card--{{ negocio.clasificacion_urgencia|default('verde') }}"
+                   draggable="true"
+                   data-pipeline-card="{{ negocio.id }}"
+                   data-pipeline-fase-actual="{{ fase_key }}">
+                <div class="aei-pipeline__card-name">{{ negocio.nombre_negocio }}</div>
+                <div class="aei-pipeline__card-meta">
+                  <span class="aei-pipeline__card-sector">{{ negocio.sector }}</span>
+                  {% if negocio.participante_nombre is not empty %}
+                    <span class="aei-pipeline__card-asignado">
+                      {{ jaraba_icon('users', 'user', { variant: 'outline', size: '12px' }) }}
+                      {{ negocio.participante_nombre }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>

@@ -191,6 +191,8 @@ class ParticipantePortalController extends ControllerBase {
       '#hitos_emprendimiento' => $hitosEmprendimiento,
       '#mis_sesiones' => $misSesiones,
       '#vertical_access' => $verticalAccess,
+      '#portfolio' => $this->portfolioService !== null ? $this->portfolioService->getPortfolio((int) $participante->id()) : [],
+      '#progreso' => $this->portfolioService !== null ? $this->portfolioService->getProgreso((int) $participante->id()) : [],
       '#attached' => [
         'library' => $libraries,
       ],

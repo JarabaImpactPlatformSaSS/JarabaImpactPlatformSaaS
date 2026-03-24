@@ -216,4 +216,12 @@
     </div>
   {% endif %}
 
+  {# === PORTFOLIO DE ENTREGABLES FORMATIVOS === #}
+  {% if portfolio is defined and progreso is defined %}
+    {% include '@jaraba_andalucia_ei/partials/_portfolio-entregables.html.twig' with { portfolio: portfolio, progreso: progreso } only %}
+  {% endif %}
+
+  {# Logos cofinanciación FSE+ (Art. 50 Reg. UE 2021/1060) #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
 </div>

@@ -105,4 +105,12 @@
     </div>
   </section>
 
+  {# === ENTREGABLES PENDIENTES DE VALIDACIÓN === #}
+  {% if entregables_pendientes is defined %}
+    {% include '@jaraba_andalucia_ei/partials/_formador-entregables-pendientes.html.twig' with { entregables_pendientes: entregables_pendientes } only %}
+  {% endif %}
+
+  {# Logos cofinanciación FSE+ (Art. 50 Reg. UE 2021/1060) #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
 </div>
