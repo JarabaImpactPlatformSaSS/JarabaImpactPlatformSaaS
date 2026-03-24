@@ -244,7 +244,7 @@ class AvatarNavigationService {
       ],
       'recruiter' => [
         ['id' => 'dashboard', 'label' => 'Panel', 'route' => 'jaraba_job_board.employer_dashboard', 'icon_category' => 'analytics', 'icon_name' => 'gauge'],
-        ['id' => 'my_jobs', 'label' => 'Mis ofertas', 'route' => 'jaraba_job_board.employer_jobs', 'icon_category' => 'business', 'icon_name' => 'diagnostic'],
+        ['id' => 'my_jobs', 'label' => 'Mis ofertas', 'route' => 'jaraba_job_board.employer_jobs', 'icon_category' => 'business', 'icon_name' => 'briefcase'],
         ['id' => 'candidates', 'label' => 'Candidatos', 'route' => 'jaraba_job_board.employer_applications', 'icon_category' => 'ui', 'icon_name' => 'users'],
         ['id' => 'company', 'label' => 'Mi empresa', 'route' => 'jaraba_job_board.my_company', 'icon_category' => 'business', 'icon_name' => 'company'],
       ],

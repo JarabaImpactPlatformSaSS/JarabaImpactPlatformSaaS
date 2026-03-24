@@ -14,7 +14,7 @@
   {# --- Header Section --- #}
   <div class="cv-builder__header">
     <div class="cv-builder__header-content">
-      {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+      {{ jaraba_icon('business', 'cv-optimized', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
       <div class="cv-builder__header-text">
         <h1>{{ 'CV Builder'|t }}</h1>
         <p>{{ 'Create your professional CV and download it as a PDF ready to send to any job offer.'|t }}</p>
@@ -106,7 +106,7 @@
   {% else %}
     {# --- Empty State --- #}
     <div class="cv-builder__empty">
-      {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+      {{ jaraba_icon('business', 'cv-optimized', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
       <p>{{ 'Complete your professional profile to automatically generate your CV with ATS-optimized templates.'|t }}</p>
       <a href="{{ path('jaraba_candidate.my_profile.personal') }}" class="btn btn-primary"
          data-slide-panel="profile-section"

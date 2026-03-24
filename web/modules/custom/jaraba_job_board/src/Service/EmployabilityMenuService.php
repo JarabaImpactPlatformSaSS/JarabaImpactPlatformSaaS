@@ -151,7 +151,7 @@ class EmployabilityMenuService
                 'title' => $this->t('Mis ofertas'),
                 'url' => Url::fromRoute('jaraba_job_board.employer_jobs')->toString(),
                 'icon_category' => 'business',
-                'icon_name' => 'diagnostic',
+                'icon_name' => 'briefcase',
                 'weight' => 1,
             ],
             [

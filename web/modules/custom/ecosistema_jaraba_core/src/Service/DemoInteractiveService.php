@@ -1604,7 +1604,7 @@ class DemoInteractiveService
                 'id' => 'legal',
                 'title' => (string) $this->t('Consulta Legal'),
                 'description' => (string) $this->t('Obtén orientación sobre cuestiones legales para emprendedores y empresas.'),
-                'icon' => 'screening',
+                'icon' => 'balance',
                 'prompt' => (string) $this->t('¿Cuáles son los requisitos legales para crear una cooperativa en España?'),
             ],
             [

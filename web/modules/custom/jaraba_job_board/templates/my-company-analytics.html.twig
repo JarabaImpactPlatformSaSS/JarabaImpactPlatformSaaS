@@ -86,7 +86,7 @@
   </div>
   {% else %}
   <div class="analytics-empty">
-    <div class="empty-icon">{{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</div>
+    <div class="empty-icon">{{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}</div>
     <p class="empty-message">{{ 'No tienes ofertas de empleo todavía.'|t }}</p>
     <a href="/employer/jobs/add" class="btn btn--primary">
       {{ 'Publicar Primera Oferta'|t }}
@@ -97,7 +97,7 @@
   {# Quick Actions #}
   <div class="analytics-actions">
     <a href="/employer/jobs" class="action-btn">
-      <span class="action-icon">{{ jaraba_icon('business', 'diagnostic', { size: '20px' }) }}</span>
+      <span class="action-icon">{{ jaraba_icon('business', 'briefcase', { size: '20px' }) }}</span>
       <span>{{ 'Gestionar Ofertas'|t }}</span>
     </a>
     <a href="/employer/applications" class="action-btn">

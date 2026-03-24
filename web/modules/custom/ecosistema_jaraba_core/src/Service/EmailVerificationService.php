@@ -155,13 +155,15 @@ class EmailVerificationService {
         ['absolute' => TRUE]
       )->toString();
 
+      $displayName = $account->getDisplayName();
       $variables = [
-        'user_name' => $account->getDisplayName(),
+        'user_name' => $displayName,
+        'user_name_greeting' => ((string) $displayName !== '') ? ', ' . $displayName : '',
         'user_email' => $email,
         'verification_url' => $verificationUrl,
       ];
 
-      $subject = (string) $this->t('Verifica tu email — Jaraba');
+      $subject = (string) $this->t('Activa tu cuenta — Jaraba');
 
       // Try compiled MJML template via jaraba_email (optional DI service).
       if ($this->templateLoader !== NULL) {
@@ -193,7 +195,7 @@ class EmailVerificationService {
         'es',
         [
           'subject' => $subject,
-          'body' => (string) $this->t('Hola @name, por favor verifica tu email visitando: @url', [
+          'body' => (string) $this->t("Hola @name,\n\nGracias por registrarte en Jaraba. Activa tu cuenta y establece tu contraseña visitando:\n\n@url\n\nEste enlace expira en 24 horas.\n\nSi no creaste una cuenta, ignora este mensaje.", [
             '@name' => $account->getDisplayName(),
             '@url' => $verificationUrl,
           ]),

@@ -148,8 +148,8 @@ class RecruiterDashboardBlock extends BlockBase implements ContainerFactoryPlugi
             [
                 'label' => t('Crear oferta'),
                 'url' => '/admin/content/jobs/add',
-                'icon_category' => 'business',
-                'icon_name' => 'diagnostic',
+                'icon_category' => 'actions',
+                'icon_name' => 'plus-circle',
                 'color' => 'primary',
             ],
             [
@@ -163,7 +163,7 @@ class RecruiterDashboardBlock extends BlockBase implements ContainerFactoryPlugi
                 'label' => t('Mis ofertas'),
                 'url' => '/admin/content/jobs',
                 'icon_category' => 'business',
-                'icon_name' => 'diagnostic',
+                'icon_name' => 'briefcase',
                 'color' => 'info',
             ],
             [

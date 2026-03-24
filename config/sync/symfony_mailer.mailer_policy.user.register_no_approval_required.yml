@@ -6,6 +6,8 @@ dependencies:
     - user
 id: user.register_no_approval_required
 configuration:
+  email_skip_sending:
+    message: 'Replaced by single activation email from EmailVerificationService (AUTH_001)'
   email_subject:
     value: 'Paso 2: Alta de cuenta en [site:name]'
   email_body:

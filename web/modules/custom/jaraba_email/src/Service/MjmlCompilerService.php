@@ -88,7 +88,10 @@ class MjmlCompilerService
             $html = file_get_contents($tempOutput);
             @unlink($tempInput);
             @unlink($tempOutput);
-            return $html !== false ? $html : $this->fallbackConvert($mjml);
+            if ($html !== false) {
+                return $this->extractBodyContent($html);
+            }
+            return $this->fallbackConvert($mjml);
         }
 
         // Clean up temp files on failure.
@@ -148,24 +151,39 @@ class MjmlCompilerService
                 $body
             );
 
-            return <<<HTML
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-      </head>
-      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-        <div style="max-width: 600px; margin: 0 auto;">
-          {$html}
-        </div>
-      </body>
-      </html>
-      HTML;
+            // Remove remaining MJML tags not covered by replacements
+            // (mj-preview, mj-attributes, mj-style, etc.).
+            $html = preg_replace('/<\/?mj-[a-z-]+[^>]*>/i', '', $html ?? '');
+
+            // Return only body content — email-wrap.html.twig provides the
+            // outer HTML document structure (branded header, footer, etc.).
+            return trim($html);
         }
 
         // Retornar original si no se puede parsear.
         return $mjml;
+    }
+
+    /**
+     * Extracts inner body content from a full HTML document.
+     *
+     * MJML binary produces a complete HTML document (DOCTYPE, html, head, body).
+     * Since email-wrap.html.twig already provides the outer document structure,
+     * we only need the inner content of the <body> tag.
+     *
+     * @param string $html
+     *   Full HTML document from MJML binary compilation.
+     *
+     * @return string
+     *   Inner body content without the HTML document wrapper.
+     */
+    protected function extractBodyContent(string $html): string
+    {
+        if (preg_match('/<body[^>]*>(.*)<\/body>/si', $html, $matches)) {
+            return trim($matches[1]);
+        }
+
+        return $html;
     }
 
     /**

@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Render\Markup;
+
 /**
  * Implements hook_theme().
  */
@@ -38,7 +40,10 @@ function jaraba_email_mail(string $key, array &$message, array $params): void {
     case 'campaign':
     case 'sequence':
       $message['subject'] = $params['subject'];
-      $message['body'][] = $params['body'];
+      // Body is compiled HTML from MjmlCompilerService. Mark as Markup so
+      // LegacyMailerHelper::formatBody() uses #markup (renders as-is) instead
+      // of #type:processed_text (which HTML-escapes the content).
+      $message['body'][] = Markup::create($params['body']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
       if (!empty($params['from'])) {
         $message['from'] = $params['from'];
@@ -58,7 +63,7 @@ function jaraba_email_mail(string $key, array &$message, array $params): void {
 
     case 'double_optin':
       $message['subject'] = $params['subject'];
-      $message['body'][] = $params['body'];
+      $message['body'][] = Markup::create($params['body']);
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
       break;
   }

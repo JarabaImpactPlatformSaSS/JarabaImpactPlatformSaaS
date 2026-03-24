@@ -247,8 +247,9 @@ class TemplateLoaderService {
   protected const SAMPLE_DATA = [
     'AUTH_001' => [
       'user_name' => 'María García',
+      'user_name_greeting' => ', María García',
       'user_email' => 'maria@ejemplo.com',
-      'verification_url' => 'https://jaraba.es/verify?token=abc123',
+      'verification_url' => 'https://jaraba.es/verificar-email/abc123def456',
     ],
     'AUTH_002' => [
       'user_name' => 'María García',

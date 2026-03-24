@@ -3297,19 +3297,19 @@ function _ecosistema_jaraba_core_get_avatar_email_config(string $avatarType): ar
     ],
   ];
 
+  // Default/pending: beneficios genéricos de la plataforma.
+  // Las verticales individuales ya se muestran en la sección de catálogo
+  // (SSOT desde MegaMenuBridgeService::getVerticalCatalog()).
   return $configs[$avatarType] ?? [
     'label' => 'Usuario/a',
     'subject_suffix' => 'Tu ecosistema de impacto te espera',
     'cta_text' => 'Explorar la Plataforma →',
-    'cta_url' => '/empleabilidad',
+    'cta_url' => '/test-vertical',
     'accent_color' => '#00A9A5',
     'benefits' => [
-      ['icon' => '✨', 'title' => 'Empleabilidad', 'desc' => 'CV inteligente, matching de empleo y cursos para tu carrera profesional.'],
-      ['icon' => '🚀', 'title' => 'Emprendimiento', 'desc' => 'Diagnóstico empresarial, planes de acción y red de mentores expertos.'],
-      ['icon' => '🌱', 'title' => 'AgroConecta', 'desc' => 'Precios de mercado, alertas climáticas y venta directa para el campo.'],
-      ['icon' => '🏪', 'title' => 'ComercioConecta', 'desc' => 'Digitaliza tu tienda local. Catálogo online, gestión de pedidos y pagos integrados.'],
-      ['icon' => '🔧', 'title' => 'ServiciosConecta', 'desc' => 'Gestiona citas y clientes. Agenda online, facturación y fidelización para profesionales.'],
-      ['icon' => '⚖️', 'title' => 'JarabaLex', 'desc' => 'Para abogados, gestores y asesores. Gestión de expedientes, plazos y copiloto jurídico IA.'],
+      ['icon' => '🤖', 'title' => 'Copiloto IA en cada vertical', 'desc' => 'Un asistente inteligente que te guía paso a paso en tu camino profesional.'],
+      ['icon' => '📊', 'title' => 'Panel personalizado', 'desc' => 'Tu centro de control con métricas, progreso y acciones diarias recomendadas.'],
+      ['icon' => '🎯', 'title' => 'Test de orientación gratuito', 'desc' => 'Descubre qué vertical se adapta mejor a tu perfil en 2 minutos.'],
     ],
   ];
 }
@@ -3342,26 +3342,18 @@ function _ecosistema_jaraba_core_build_welcome_email_html(
   $displayName = \Drupal\Component\Utility\Html::escape($displayName);
   $email = \Drupal\Component\Utility\Html::escape($email);
   $accentColor = $config['accent_color'];
-  $benefitsHtml = '';
 
+  // ── Section 1: Avatar-specific benefits ──
+  $benefitsHtml = '';
   foreach ($config['benefits'] as $benefit) {
     $benefitsHtml .= <<<BENEFIT
     <tr>
-      <td style="padding: 0 0 16px 0;">
+      <td style="padding: 0 0 12px 0;">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; border-radius: 12px; border-left: 4px solid {$accentColor};">
           <tr>
-            <td style="padding: 20px 24px;">
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                <tr>
-                  <td width="48" style="vertical-align: top; padding-right: 16px;">
-                    <div style="font-size: 28px; line-height: 1; width: 44px; height: 44px; background-color: #FFFFFF; border-radius: 10px; text-align: center; padding-top: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">{$benefit['icon']}</div>
-                  </td>
-                  <td style="vertical-align: top;">
-                    <p style="margin: 0 0 4px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #1A1A2E; line-height: 1.3;">{$benefit['title']}</p>
-                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; line-height: 1.5;">{$benefit['desc']}</p>
-                  </td>
-                </tr>
-              </table>
+            <td style="padding: 16px 20px;">
+              <p style="margin: 0 0 4px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 600; color: #1A1A2E; line-height: 1.3;">{$benefit['title']}</p>
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B; line-height: 1.5;">{$benefit['desc']}</p>
             </td>
           </tr>
         </table>
@@ -3379,21 +3371,29 @@ BENEFIT;
   $greeting = $t->translate('¡Bienvenido/a, @name!', ['@name' => $displayName]);
   $accountReady = $t->translate('Tu cuenta como <strong style="color: @color;">@label</strong> está lista. Esto es lo que puedes hacer ahora:', ['@color' => $accentColor, '@label' => $config['label']]);
 
+  // ── Section 2: Full vertical catalog from MegaMenuBridgeService (SSOT) ──
+  $catalogHtml = '';
+  if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
+    $catalog = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge')->getVerticalCatalog();
+    $baseUrl = \Drupal::request()->getSchemeAndHttpHost();
+    $catalogHtml = _ecosistema_jaraba_core_build_catalog_section_html($catalog, $baseUrl);
+  }
+
   // Body content only — header, footer and wrapper are provided by email-wrap.html.twig.
   return <<<HTML
 <!-- Greeting -->
 <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">{$greeting}</h1>
-<p style="margin: 0 0 32px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+<p style="margin: 0 0 24px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
   {$accountReady}
 </p>
 
-<!-- Benefits -->
+<!-- Avatar-specific benefits -->
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
   {$benefitsHtml}
 </table>
 
 <!-- CTA Button -->
-<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding-top: 16px;">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding: 8px 0 0 0;">
   <tr>
     <td style="text-align: center; padding: 8px 0;">
       <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
@@ -3405,6 +3405,93 @@ BENEFIT;
       </table>
     </td>
   </tr>
+</table>
+
+{$catalogHtml}
+HTML;
+}
+
+/**
+ * Builds the "Explore the ecosystem" catalog section for the welcome email.
+ *
+ * Renders all 10 verticals organized by 4 categories, matching the Mega Menu.
+ * Uses MegaMenuBridgeService::getVerticalCatalog() as SSOT.
+ *
+ * @param array $catalog
+ *   Vertical catalog from MegaMenuBridgeService::getVerticalCatalog().
+ * @param string $baseUrl
+ *   Absolute base URL for building links (e.g., https://plataformadeecosistemas.com).
+ *
+ * @return string
+ *   HTML for the catalog section.
+ */
+function _ecosistema_jaraba_core_build_catalog_section_html(array $catalog, string $baseUrl): string {
+  $t = \Drupal::translation();
+  $sectionTitle = $t->translate('Explora todo el ecosistema');
+  $sectionSubtitle = $t->translate('Descubre la solución que mejor se adapta a ti');
+  $exploreLabel = $t->translate('Explorar');
+
+  $columnsHtml = '';
+  foreach ($catalog as $column) {
+    $columnTitle = \Drupal\Component\Utility\Html::escape($column['title']);
+    $itemsHtml = '';
+
+    foreach ($column['items'] as $item) {
+      $title = \Drupal\Component\Utility\Html::escape($item['title']);
+      $subtitle = \Drupal\Component\Utility\Html::escape($item['subtitle']);
+      $colorHex = \Drupal\ecosistema_jaraba_core\Service\MegaMenuBridgeService::resolveColorHex($item['color']);
+      $url = $baseUrl . $item['url'];
+
+      $itemsHtml .= <<<ITEM
+      <tr>
+        <td style="padding: 0 0 8px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid {$colorHex};">
+            <tr>
+              <td style="padding: 14px 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                  <tr>
+                    <td style="vertical-align: middle;">
+                      <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 15px; font-weight: 700; color: {$colorHex};">{$title}</p>
+                      <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #64748B; line-height: 1.4;">{$subtitle}</p>
+                    </td>
+                    <td width="80" style="text-align: right; vertical-align: middle;">
+                      <a href="{$url}" style="font-family: 'Outfit', Arial, sans-serif; font-size: 12px; font-weight: 600; color: {$colorHex}; text-decoration: none;">{$exploreLabel} &rarr;</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+ITEM;
+    }
+
+    $columnsHtml .= <<<COLUMN
+    <tr>
+      <td style="padding: 20px 0 4px 0;">
+        <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.2px;">{$columnTitle}</p>
+      </td>
+    </tr>
+    {$itemsHtml}
+COLUMN;
+  }
+
+  return <<<HTML
+
+<!-- Divider -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 28px;">
+  <tr>
+    <td style="border-top: 1px solid #E2E8F0; padding-top: 28px;">
+      <h2 style="margin: 0 0 4px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #1A1A2E; text-align: center;">{$sectionTitle}</h2>
+      <p style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; text-align: center;">{$sectionSubtitle}</p>
+    </td>
+  </tr>
+</table>
+
+<!-- Vertical catalog (4 categories, 10 verticals — SSOT from MegaMenuBridgeService) -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+  {$columnsHtml}
 </table>
 HTML;
 }

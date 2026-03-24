@@ -3,58 +3,59 @@
     <mj-attributes>
       <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#333333" line-height="1.6" />
-      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="12px" inner-padding="16px 48px" font-weight="600" />
       <mj-section padding="0px" />
     </mj-attributes>
-    <mj-style>
-      .footer-link { color: #666666 !important; text-decoration: underline; }
-    </mj-style>
   </mj-head>
   <mj-body background-color="#f8f9fa" width="600px">
-    <mj-preview>Verifica tu email para activar tu cuenta en {{ site_name }}</mj-preview>
-    <!-- Header -->
-    <mj-section background-color="#1565C0" padding="20px 0">
-      <mj-column>
-        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
-          {{ site_name }}
-        </mj-text>
-      </mj-column>
-    </mj-section>
+    <mj-preview>Activa tu cuenta en {{ site_name }} &mdash; un solo clic</mj-preview>
 
-    <!-- Contenido -->
-    <mj-section background-color="#ffffff" padding="32px 24px">
+    <!-- Contenido principal -->
+    <mj-section padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#1565C0" padding-bottom="8px">
-          Verifica tu direcci&oacute;n de email
+        <mj-text font-size="24px" font-weight="bold" color="#1A1A2E" padding-bottom="8px">
+          &iexcl;Hola{{ user_name_greeting }}!
         </mj-text>
         <mj-text>
-          <p>Hola,</p>
-          <p>Gracias por registrarte en {{ site_name }}. Para completar tu registro y activar tu cuenta, por favor verifica tu direcci&oacute;n de correo electr&oacute;nico <strong>{{ user_email }}</strong>.</p>
-        </mj-text>
-        <mj-button href="{{ verification_url }}" align="center" padding="24px 0">
-          Verificar email
-        </mj-button>
-        <mj-text font-size="13px" color="#666666">
-          <p>Si no creaste una cuenta en {{ site_name }}, puedes ignorar este mensaje.</p>
-          <p>Si el bot&oacute;n no funciona, copia y pega el siguiente enlace en tu navegador:</p>
-          <p style="word-break: break-all;">{{ verification_url }}</p>
+          <p>Gracias por registrarte en <strong style="color: #00A9A5;">{{ site_name }}</strong>. Solo falta un paso: haz clic en el bot&oacute;n para verificar tu email y activar tu cuenta.</p>
         </mj-text>
       </mj-column>
     </mj-section>
 
-    <!-- Footer -->
-    <mj-section padding="24px">
+    <!-- Info card -->
+    <mj-section padding="0 24px">
       <mj-column>
-        <mj-divider border-color="#E0E0E0" border-width="1px" />
-        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
-          &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
+        <mj-text>
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; border-radius: 12px; border-left: 4px solid #00A9A5;">
+            <tr>
+              <td style="padding: 20px 24px;">
+                <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #1A1A2E;">Verificar email y establecer contrase&ntilde;a</p>
+                <p style="margin: 0; font-size: 14px; color: #64748B; line-height: 1.5;">Al hacer clic, verificar&aacute;s tu email <strong>{{ user_email }}</strong> y podr&aacute;s crear tu contrase&ntilde;a en el siguiente paso.</p>
+              </td>
+            </tr>
+          </table>
         </mj-text>
-        <mj-text align="center" font-size="12px" color="#666666">
-          <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
-          <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+      </mj-column>
+    </mj-section>
+
+    <!-- CTA Button -->
+    <mj-section padding="24px 24px">
+      <mj-column>
+        <mj-button href="{{ verification_url }}" align="center">
+          Activar mi cuenta &rarr;
+        </mj-button>
+        <mj-text font-size="13px" color="#94A3B8" align="center" padding-top="16px">
+          <p>&iquest;No funciona el bot&oacute;n? Copia y pega este enlace:</p>
+          <p style="word-break: break-all;"><a href="{{ verification_url }}" style="color: #FF8C42;">{{ verification_url }}</a></p>
         </mj-text>
-        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
-          Has recibido este correo porque te registraste en {{ site_name }}.
+      </mj-column>
+    </mj-section>
+
+    <!-- Security note -->
+    <mj-section padding="0 24px 24px 24px">
+      <mj-column>
+        <mj-text font-size="13px" color="#64748B" align="center">
+          <p>Si no creaste una cuenta en {{ site_name }}, puedes ignorar este mensaje. Este enlace expira en 24 horas.</p>
         </mj-text>
         <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
           Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a

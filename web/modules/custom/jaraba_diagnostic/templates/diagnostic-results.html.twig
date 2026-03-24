@@ -279,7 +279,7 @@
   {# Recomendaciones principales #}
   {% if recommendations %}
   <div class="results-section">
-    <h3>{{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }} {% trans %}Recomendaciones personalizadas{% endtrans %}</h3>
+    <h3>{{ jaraba_icon('ai', 'lightbulb', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }} {% trans %}Recomendaciones personalizadas{% endtrans %}</h3>
     <div class="recommendations-list">
       {% for rec in recommendations %}
         <div class="recommendation-card priority-{{ rec.level }}">

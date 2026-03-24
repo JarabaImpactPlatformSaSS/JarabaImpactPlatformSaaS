@@ -90,19 +90,24 @@
 
   </nav>
 
-  {# CTA Actions #}
+  {# CTA Actions — context-aware for auth state #}
   <div class="hero-landing__actions">
+    {% if logged_in %}
+      <a href="{{ path('entity.user.canonical', { user: user.id }) }}" class="btn-primary">
+        {{ jaraba_icon('ui', 'dashboard', { color: 'corporate', size: '20px' }) }}
+        <span>{% trans %}Ir a mi panel{% endtrans %}</span>
+      </a>
+    {% else %}
+      <a href="{{ path('user.register') }}" class="btn-primary">
+        {{ jaraba_icon('actions', 'rocket', { color: 'corporate', size: '20px' }) }}
+        <span>{% trans %}Empezar gratis{% endtrans %}</span>
+      </a>
 
-    <a href="{{ path('user.register') }}" class="btn-primary">
-      {{ jaraba_icon('actions', 'rocket', { color: 'corporate', size: '20px' }) }}
-      <span>{% trans %}Empezar gratis{% endtrans %}</span>
-    </a>
-
-    <a href="{{ path('user.login') }}" class="btn-secondary">
-      <span>{% trans %}Ya tengo cuenta{% endtrans %}</span>
-      {{ jaraba_icon('ui', 'arrow-right', { color: 'white', size: '20px' }) }}
-    </a>
-
+      <a href="{{ path('user.login') }}" class="btn-secondary">
+        <span>{% trans %}Ya tengo cuenta{% endtrans %}</span>
+        {{ jaraba_icon('ui', 'arrow-right', { color: 'white', size: '20px' }) }}
+      </a>
+    {% endif %}
   </div>
 
   {# Scroll Indicator #}

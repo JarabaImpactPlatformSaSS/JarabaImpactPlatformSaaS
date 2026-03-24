@@ -134,7 +134,7 @@ class EmployabilityAgentFabBlock extends BlockBase implements ContainerFactoryPl
                 'greeting' => $this->t('¡Hola@suffix! Soy tu Coach de Carrera. ¿En qué puedo ayudarte hoy?', ['@suffix' => $greeting_suffix]),
                 'actions' => [
                     ['id' => 'analyze_profile', 'label' => $this->t('Analizar mi perfil'), 'icon_category' => 'analytics', 'icon_name' => 'gauge'],
-                    ['id' => 'improve_cv', 'label' => $this->t('Mejorar mi CV'), 'icon_category' => 'business', 'icon_name' => 'diagnostic'],
+                    ['id' => 'improve_cv', 'label' => $this->t('Mejorar mi CV'), 'icon_category' => 'business', 'icon_name' => 'cv-optimized'],
                     ['id' => 'interview_prep', 'label' => $this->t('Preparar entrevista'), 'icon_category' => 'ui', 'icon_name' => 'users'],
                     ['id' => 'suggest_courses', 'label' => $this->t('Recomendar formación'), 'icon_category' => 'ui', 'icon_name' => 'book'],
                     ['id' => 'motivation', 'label' => $this->t('Motivación'), 'icon_category' => 'verticals', 'icon_name' => 'rocket'],

@@ -9,18 +9,17 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Psr\Log\LoggerInterface;
 
 /**
- * Fase B: Puente entre SiteMenuItem entities y el mega menú del header.
+ * Puente entre SiteMenuItem entities y el catálogo de verticales.
  *
- * Lee los SiteMenuItem de tipo 'mega_column' y 'heading' de un menú
- * configurado y genera el array mega_menu_columns que consume
- * _header-classic.html.twig.
+ * Fuente única de verdad (SSOT) para la estructura de verticales del SaaS.
+ * Consumidores:
+ * - Mega menú del header (_header-classic.html.twig)
+ * - Email de bienvenida (user_welcome en hook_mail)
+ * - Quiz de recomendación de vertical
  *
  * Prioridad de datos:
- * 1. Si hay SiteMenuItems configurados → usa datos dinámicos de DB.
- * 2. Si no → fallback a datos hardcodeados en preprocess (array PHP estático).
- *
- * Esto permite editar el mega menú desde /admin/structure/site-menu-items
- * sin tocar código.
+ * 1. SiteMenuItems configurados en DB → datos dinámicos editables desde admin.
+ * 2. Fallback → getVerticalCatalog() (array PHP canónico).
  */
 class MegaMenuBridgeService {
 
@@ -31,27 +30,187 @@ class MegaMenuBridgeService {
    */
   private const MEGA_MENU_NAME = 'mega_menu_soluciones';
 
+  /**
+   * Map de nombres de color de marca a hex para contextos inline (emails).
+   *
+   * @var array<string, string>
+   */
+  public const COLOR_MAP = [
+    'verde-innovacion' => '#00A9A5',
+    'naranja-impulso' => '#FF8C42',
+    'azul-corporativo' => '#233D63',
+  ];
+
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
   ) {}
 
   /**
-   * Obtener las columnas del mega menú desde SiteMenuItem entities.
+   * Obtener las columnas del mega menú.
    *
-   * @return array|null
-   *   Array de columnas para el mega menú, o NULL si no hay menú configurado
-   *   (en cuyo caso se usa el fallback hardcodeado).
+   * Intenta cargar desde SiteMenuItem entities (DB). Si no hay menú
+   * configurado, devuelve el catálogo canónico de fallback.
+   *
+   * URLs devueltas son rutas relativas SIN prefijo de idioma (ej: /empleabilidad).
+   * El consumidor es responsable de añadir el prefijo si lo necesita.
+   *
+   * @return array
+   *   Array de columnas para el mega menú. Nunca vacío.
    */
-  public function getMegaMenuColumns(): ?array {
+  public function getMegaMenuColumns(): array {
+    $dbColumns = $this->loadFromDatabase();
+    return $dbColumns ?? $this->getVerticalCatalog();
+  }
+
+  /**
+   * Catálogo canónico de verticales del SaaS.
+   *
+   * SSOT para las 10 verticales organizadas en 4 categorías.
+   * Cualquier cambio aquí se refleja automáticamente en:
+   * - Mega menú del header (via getMegaMenuColumns())
+   * - Email de bienvenida (via getVerticalCatalog())
+   * - Cualquier otro consumidor futuro
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de columnas para el mega menú. Cada columna tiene:
+   *   title (string), has_promo (bool), items (array de verticales).
+   */
+  public function getVerticalCatalog(): array {
+    return [
+      [
+        'title' => (string) $this->t('Para Personas'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Empleabilidad'),
+            'subtitle' => (string) $this->t('Impulsa tu carrera con IA'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'empleabilidad',
+            'color' => 'verde-innovacion',
+            'url' => '/empleabilidad',
+          ],
+          [
+            'title' => (string) $this->t('Formación'),
+            'subtitle' => (string) $this->t('Cursos y certificaciones'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'formacion',
+            'color' => 'verde-innovacion',
+            'url' => '/formacion',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Para Empresas'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Emprendimiento'),
+            'subtitle' => (string) $this->t('De la idea al negocio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'emprendimiento',
+            'color' => 'naranja-impulso',
+            'url' => '/emprendimiento',
+          ],
+          [
+            'title' => (string) $this->t('ComercioConecta'),
+            'subtitle' => (string) $this->t('Digitaliza tu comercio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'comercioconecta',
+            'color' => 'naranja-impulso',
+            'url' => '/comercioconecta',
+          ],
+          [
+            'title' => (string) $this->t('AgroConecta'),
+            'subtitle' => (string) $this->t('Marketplace agroalimentario'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'agroconecta',
+            'color' => 'naranja-impulso',
+            'url' => '/agroconecta',
+          ],
+          [
+            'title' => (string) $this->t('ServiciosConecta'),
+            'subtitle' => (string) $this->t('Gestión de servicios'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'serviciosconecta',
+            'color' => 'naranja-impulso',
+            'url' => '/serviciosconecta',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Para Profesionales'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('JarabaLex'),
+            'subtitle' => (string) $this->t('Inteligencia legal con IA'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'jarabalex',
+            'color' => 'azul-corporativo',
+            'url' => '/jarabalex',
+          ],
+          [
+            'title' => (string) $this->t('Content Hub'),
+            'subtitle' => (string) $this->t('Crea y publica contenido'),
+            'icon_cat' => 'content',
+            'icon_name' => 'edit',
+            'color' => 'azul-corporativo',
+            'url' => '/content-hub',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Para Instituciones'),
+        'has_promo' => TRUE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Desarrollo Local'),
+            'subtitle' => (string) $this->t('Digitaliza tu territorio'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'desarrollo-local',
+            'color' => 'verde-innovacion',
+            'url' => '/instituciones',
+          ],
+          [
+            'title' => (string) $this->t('Andalucía +ei'),
+            'subtitle' => (string) $this->t('Empleo e innovación regional'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'andalucia-ei',
+            'color' => 'verde-innovacion',
+            'url' => '/andalucia-ei',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Resuelve un nombre de color de marca a su valor hex.
+   *
+   * @param string $colorName
+   *   Nombre de marca (ej: 'verde-innovacion').
+   *
+   * @return string
+   *   Valor hex (ej: '#00A9A5'). Fallback: azul-corporativo.
+   */
+  public static function resolveColorHex(string $colorName): string {
+    return self::COLOR_MAP[$colorName] ?? self::COLOR_MAP['azul-corporativo'];
+  }
+
+  /**
+   * Carga columnas del mega menú desde SiteMenuItem entities en DB.
+   *
+   * @return array<int, array<string, mixed>>|null
+   *   Array de columnas si hay menú configurado, NULL si no.
+   */
+  protected function loadFromDatabase(): ?array {
     try {
       if (!$this->entityTypeManager->hasDefinition('site_menu_item')) {
         return NULL;
       }
 
       $storage = $this->entityTypeManager->getStorage('site_menu_item');
-
-      // Buscar el menú por machine name.
       $menuStorage = $this->entityTypeManager->getStorage('site_menu');
       $menus = $menuStorage->loadByProperties([
         'machine_name' => self::MEGA_MENU_NAME,
@@ -64,7 +223,6 @@ class MegaMenuBridgeService {
       $menu = reset($menus);
       $menuId = $menu->id();
 
-      // Cargar items de primer nivel (headings = columnas).
       $items = $storage->loadByProperties([
         'menu_id' => $menuId,
         'parent_id' => NULL,
@@ -75,10 +233,7 @@ class MegaMenuBridgeService {
         return NULL;
       }
 
-      // Ordenar por peso.
-      uasort($items, function ($a, $b) {
-        return ($a->get('weight')->value ?? 0) <=> ($b->get('weight')->value ?? 0);
-      });
+      uasort($items, fn($a, $b) => ($a->get('weight')->value ?? 0) <=> ($b->get('weight')->value ?? 0));
 
       $columns = [];
       foreach ($items as $item) {
@@ -88,22 +243,18 @@ class MegaMenuBridgeService {
           'has_promo' => FALSE,
         ];
 
-        // Cargar hijos (los links dentro de cada columna).
         $children = $storage->loadByProperties([
           'menu_id' => $menuId,
           'parent_id' => $item->id(),
           'status' => TRUE,
         ]);
 
-        uasort($children, function ($a, $b) {
-          return ($a->get('weight')->value ?? 0) <=> ($b->get('weight')->value ?? 0);
-        });
+        uasort($children, fn($a, $b) => ($a->get('weight')->value ?? 0) <=> ($b->get('weight')->value ?? 0));
 
         foreach ($children as $child) {
           $itemType = $child->get('item_type')->value ?? 'link';
 
           if ($itemType === 'divider') {
-            // Divider = promo flag para la columna.
             $column['has_promo'] = TRUE;
             continue;
           }
