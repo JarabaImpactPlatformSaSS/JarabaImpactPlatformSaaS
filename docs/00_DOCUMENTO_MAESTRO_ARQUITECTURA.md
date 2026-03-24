@@ -3105,7 +3105,7 @@ Patron de elevacion en 3 niveles aplicado sistematicamente a landing pages verti
 ```
 page--front.html.twig
 ├── {% include '_hero.html.twig' %}          ← fallback data en template
-├── {% include '_trust-bar.html.twig' %}
+├── {% include '_trust-strip.html.twig' %}  ← TRUST-STRIP-001 (reemplaza _trust-bar)
 ├── {% include '_vertical-selector.html.twig' %}
 ├── {% include '_features.html.twig' %}      ← {% set default_features = [...] %}
 ├── {% include '_stats.html.twig' %}         ← METRICS-HONESTY: solo verificables

@@ -54,6 +54,7 @@
 | FUNNEL-COMPLETENESS-001 | Conversion CTAs have tracking attributes |
 | GROUNDING-PROVIDER-HEALTH-001 | Grounding provider health check |
 | HOMEPAGE-COMPLETENESS-001 | Homepage 10/10 conversion completeness |
+| TRUST-STRIP-INTEGRITY-001 | Trust strip partner catalog, assets, Twig, MARKETING-TRUTH-001, CSS, JS |
 | METASITE-CONTENT-COMPLETENESS-001 | Metasite per-variant content completeness (4 variantes × 32 campos) |
 | METASITE-VARIANT-MAP-SSOT-001 | Variant map SSOT (no hardcoded duplicates in .theme) |
 | METASITE-DEAD-FIELDS-001 | Dead fields cleanup (old TAB 15 genérico) |

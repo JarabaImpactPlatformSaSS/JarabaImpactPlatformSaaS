@@ -500,6 +500,9 @@ if [ "$MODE" = "full" ]; then
   run_check "HOMEPAGE-VIDEO-A11Y-001" "Video hero accessibility compliance" \
     php "$SCRIPT_DIR/validate-homepage-video-a11y.php"
 
+  run_check "TRUST-STRIP-INTEGRITY-001" "Trust strip partner catalog, assets, variables" \
+    php "$SCRIPT_DIR/validate-trust-strip-integrity.php"
+
   run_check "THEME-SETTINGS-INTEGRITY-001" "Theme settings form-schema-consumer coherence" \
     php "$SCRIPT_DIR/validate-theme-settings-integrity.php"
 

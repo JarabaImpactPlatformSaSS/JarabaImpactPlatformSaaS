@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-23
-**Versión:** 193.0.0 (MEGAMENU-INJECT-001 + caso éxito PED S.L. + Desarrollo Local + 106 scripts + aprendizaje #216)
+**Última actualización:** 2026-03-24
+**Versión:** 194.0.0 (TRUST-STRIP-001 + logos wordmark Nano Banana + per-vertical partners + aprendizaje #217)
 
 > **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
 >
@@ -2558,6 +2558,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-24 | **194.0.0** | **Trust Strip Clase Mundial (TRUST-STRIP-001):** Parcial unificado `_trust-strip.html.twig` reemplaza `_landing-partner-logos` + `_trust-bar` (deprecados). 9 logos wordmark PNG (Nano Banana): Stripe, Google, Anthropic, Drupal, Qdrant, LinkedIn, WhatsApp, Bizum, Firma Digital. Partners per-vertical via `getPartnersForVertical()` (base 5 + extras: LinkedIn en empleabilidad, WhatsApp/Bizum en comercio/agro, Firma Digital en jarabalex). MARKETING-TRUTH-001: MRW/SEUR eliminados de 7 textos landing (sin integracion real). SCSS premium (marquee mobile, grayscale hover, 2 tiers). Homepage 4 variantes actualizadas. Validator TRUST-STRIP-INTEGRITY-001. Regla de oro #154. Aprendizaje #217. |
 | 2026-03-23 | **191.0.0** | **Migración Dedicado 10/10 + Safeguard 104 scripts:** IONOS AE12-128 (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync, RPO <6h). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2 (SSL termination fix). SEO multi-dominio: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. Safeguard system: 104 validators (88 run + 16 warn), 0 orphans, VALIDATOR-COVERAGE-001 meta-safeguard. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md nuevo (SSOT lista completa 104 scripts). ARQUITECTURA v147. Regla de oro #151. Aprendizaje #214. |
 | 2026-03-23 | **189.0.0** | **Elevación Casos de Éxito 15/15:** CASE-STUDY-PATTERN-001 elevado a P0 (controller unificado, template parametrizado 15 parciales, VIDEO-HERO-001, MetaSitePricingService, Url::fromRoute). SUCCESS-CASES-001 nueva (SuccessCase entity SSOT, 40+ campos, tenant_id, 8 JSON). 3 validators nuevos. Plan implementación 37 especificaciones. DIRECTRICES v159. Regla de oro #149. Aprendizaje #212. |
 | 2026-03-21 | **186.0.0** | **Activación IA Embudo de Ventas CRM:** 7 reglas nuevas: GROUNDING-PROVIDER-001, CASCADE-SEARCH-001, ACTIVE-PROMOTION-001, COPILOT-LEAD-CAPTURE-001, COPILOT-FUNNEL-TRACKING-001, COPILOT-GROUNDING-COVERAGE-001, PROMOTION-COPILOT-SYNC-001. ContentGroundingService v2 con 10 GroundingProviders (CompilerPass + tagged services). PromotionConfig ConfigEntity + ActivePromotionService (cache 300s). Cascada 4 niveles búsqueda. CopilotLeadCaptureService + CopilotFunnelTrackingService. Prompt dinámico buildDynamicPublicSystemPrompt() con 10 verticales + promociones + precios. 3 validadores safeguard nuevos. 86 scripts (91 checks). DIRECTRICES v157 + ARQUITECTURA v145 + FLUJO v110. Regla de oro #147. Aprendizaje #210. |

@@ -154,6 +154,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
 - LANDING-CONVERSION-SCORE-001: 15 criterios para landing 10/10 clase mundial (hero+urgency, trust badges, pain points, steps, features, comparison, social proof, lead magnet, pricing tiers, FAQ, final CTA, sticky CTA, reveal animations, tracking, mobile-first)
 - HOMEPAGE-ELEVATION-001: 4 variantes homepage via `homepage_variant` en preprocess (pepejaraba=5, jarabaimpact=6, pde=7, generic). Parciales: _homepage-pain-points, _homepage-pricing-preview, _homepage-comparison, _homepage-features
+- TRUST-STRIP-001: Parcial unificado `_trust-strip.html.twig` reemplaza `_landing-partner-logos` y `_trust-bar` (deprecados). 2 tiers: tech partners (marquee mobile) + institucional (grid). Per-vertical via `VerticalLandingController::getPartnersForVertical()`. Catalogo 9 partners: Stripe, Google, Anthropic, Drupal, Qdrant, LinkedIn, WhatsApp, Bizum, Firma Digital. Homepage: `trust_strip` inyectado en preprocess. MARKETING-TRUTH-001: MRW/SEUR eliminados (sin integracion real)
 
 ### Quiz de Recomendacion de Vertical
 - Ruta: `/test-vertical` (publica). Entity: `QuizResult`. Service: `VerticalQuizService` (scoring + IA + CRM lead)
@@ -355,10 +356,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ### Versiones Actuales
 - DIRECTRICES: v164.0.0
 - ARQUITECTURA: v149.0.0
-- INDICE: v193.0.0
+- INDICE: v194.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #216
-- Ultima golden rule: #153
+- Ultimo aprendizaje: #217
+- Ultima golden rule: #154
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
