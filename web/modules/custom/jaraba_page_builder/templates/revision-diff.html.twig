@@ -93,7 +93,7 @@
     {% if has_changes %}
       {% for field_name, change in diff %}
         <div class="revision-diff__field revision-diff__field--{{ change.type }}">
-          <h3 class="revision-diff__field-name">
+          <h2 class="revision-diff__field-name">
             {% if change.type == 'added' %}
               {{ jaraba_icon('actions', 'plus-circle', { color: 'success', size: '18px' }) }}
             {% elseif change.type == 'removed' %}
@@ -102,7 +102,7 @@
               {{ jaraba_icon('actions', 'edit', { color: 'impulse', size: '18px' }) }}
             {% endif %}
             {{ change.label|default(field_name) }}
-          </h3>
+          </h2>
           
           {% if change.type == 'sections' %}
             {# Cambios en secciones JSON #}
@@ -166,7 +166,7 @@
       <div class="revision-diff__no-changes">
         <div class="empty-state">
           {{ jaraba_icon('ui', 'check', { color: 'success', variant: 'duotone', size: '48px' }) }}
-          <h3>{% trans %}Sin diferencias{% endtrans %}</h3>
+          <h2>{% trans %}Sin diferencias{% endtrans %}</h2>
           <p>{% trans %}Estas dos revisiones son idénticas.{% endtrans %}</p>
         </div>
       </div>

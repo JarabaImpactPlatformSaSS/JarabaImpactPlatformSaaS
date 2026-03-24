@@ -57,8 +57,11 @@ foreach ($iterator as $file) {
         $trimmed = trim($line);
 
         // Detectar inicio de loop.
+        // FIX: No incrementar $loopDepth manualmente — la llave '{' de la
+        // misma linea se cuenta en el tracking de braces. Sin este fix,
+        // se producía double-counting y loops "no cerraban" (off-by-one).
         if (preg_match('/\b(foreach|for|while)\s*\(/', $trimmed)) {
-            if ($loopDepth === 0) {
+            if (!$inLoop) {
                 $loopStartLine = $i + 1;
                 // Verificar si hay loadMultiple en las 10 líneas anteriores.
                 $hasLoadMultipleBefore = false;
@@ -70,7 +73,6 @@ foreach ($iterator as $file) {
                     }
                 }
             }
-            $loopDepth++;
             $inLoop = true;
         }
 

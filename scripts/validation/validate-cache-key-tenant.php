@@ -76,6 +76,15 @@ foreach ($iterator as $file) {
             continue;
         }
 
+        // Excluir Entity field setters: $entity->set(), $profile->set(), $node->set(), etc.
+        // Entity::set('field_name', value) es un setter de campos, no de cache.
+        // $varBefore termina justo antes de "->set(" que es el match, por lo que
+        // verificamos que la variable al final de $varBefore sea un nombre de entity.
+        $varBefore = substr($content, max(0, $offset - 50), 50);
+        if (preg_match('/\$(entity|profile|node|term|user|media|paragraph|account|group|tenant|ticket|config_entity|record|existing|item|block|field_item)\s*$/', $varBefore)) {
+            continue;
+        }
+
         // Verificar si la key incluye tenant scope.
         $hasTenant = false;
         foreach ($tenantPatterns as $pattern) {

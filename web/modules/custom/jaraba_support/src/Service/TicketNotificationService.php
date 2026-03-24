@@ -79,7 +79,7 @@ final class TicketNotificationService {
         '@id' => $ticket->id(),
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Failed to send ticket created notifications for ticket @id: @msg', [
         '@id' => $ticket->id() ?? 'new',
         '@msg' => $e->getMessage(),
@@ -147,7 +147,7 @@ final class TicketNotificationService {
         '@uid' => $recipientUid,
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Failed to send new message notification for ticket @id: @msg', [
         '@id' => $ticket->id() ?? 'new',
         '@msg' => $e->getMessage(),
@@ -201,7 +201,7 @@ final class TicketNotificationService {
         '@min' => $minutesRemaining,
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Failed to send SLA warning notification for ticket @id: @msg', [
         '@id' => $ticket->id() ?? 'new',
         '@msg' => $e->getMessage(),
@@ -231,7 +231,7 @@ final class TicketNotificationService {
         }
       }
 
-      // Escalate to all support managers.
+      // Escalate to all support managers (batch load to avoid N+1).
       $managerIds = \Drupal::entityTypeManager()
         ->getStorage('user')
         ->getQuery()
@@ -240,9 +240,13 @@ final class TicketNotificationService {
         ->condition('roles', 'support_manager')
         ->execute();
 
-      foreach ($managerIds as $managerUid) {
-        $manager = \Drupal\user\Entity\User::load($managerUid);
-        if ($manager && $manager->getEmail()) {
+      /** @var \Drupal\user\UserInterface[] $managers */
+      $managers = $managerIds !== []
+        ? \Drupal\user\Entity\User::loadMultiple($managerIds)
+        : [];
+
+      foreach ($managers as $managerUid => $manager) {
+        if ($manager->getEmail() !== NULL && $manager->getEmail() !== '') {
           $this->mailManager->mail('jaraba_support', 'sla_breached', $manager->getEmail(), 'es', [
             'ticket' => $ticket,
             'is_escalation' => TRUE,
@@ -278,7 +282,7 @@ final class TicketNotificationService {
         '@count' => count($managerIds),
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Failed to send SLA breached notifications for ticket @id: @msg', [
         '@id' => $ticket->id() ?? 'new',
         '@msg' => $e->getMessage(),
@@ -325,7 +329,7 @@ final class TicketNotificationService {
         '@id' => $ticket->id(),
       ]);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Failed to send ticket resolved notifications for ticket @id: @msg', [
         '@id' => $ticket->id() ?? 'new',
         '@msg' => $e->getMessage(),

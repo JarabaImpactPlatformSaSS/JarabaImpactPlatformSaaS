@@ -6,6 +6,7 @@ namespace Drupal\jaraba_copilot_v2\Service;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de detección inteligente de modo del Copiloto.
@@ -37,11 +38,17 @@ class ModeDetectorService
     protected ?CacheBackendInterface $triggersCache;
 
     /**
+     * Tenant context for cache key scoping (CACHE-KEY-TENANT-001).
+     */
+    protected ?TenantContextService $tenantContext;
+
+    /**
      * Constructor.
      */
-    public function __construct(?Connection $database = NULL, ?CacheBackendInterface $triggersCache = NULL) {
+    public function __construct(?Connection $database = NULL, ?CacheBackendInterface $triggersCache = NULL, ?TenantContextService $tenantContext = NULL) {
         $this->database = $database;
         $this->triggersCache = $triggersCache;
+        $this->tenantContext = $tenantContext;
     }
 
     /**
@@ -404,9 +411,13 @@ class ModeDetectorService
      *   Triggers agrupados por modo: ['mode' => [['word' => ..., 'weight' => ...], ...]].
      */
     public function loadTriggersFromDb(): array {
+        // CACHE-KEY-TENANT-001: Scope cache key by tenant to prevent cross-tenant leakage.
+        $tenantId = $this->tenantContext !== NULL ? ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+        $cacheKey = 'mode_triggers_tenant:' . $tenantId;
+
         // Intentar cache primero.
         if ($this->triggersCache) {
-            $cached = $this->triggersCache->get('mode_triggers_all');
+            $cached = $this->triggersCache->get($cacheKey);
             if ($cached) {
                 return $cached->data;
             }
@@ -433,9 +444,9 @@ class ModeDetectorService
                             ];
                         }
 
-                        // Guardar en cache con TTL de 1 hora.
+                        // Guardar en cache con TTL de 1 hora (scoped by tenant).
                         if ($this->triggersCache) {
-                            $this->triggersCache->set('mode_triggers_all', $triggers, time() + 3600);
+                            $this->triggersCache->set($cacheKey, $triggers, time() + 3600);
                         }
                         return $triggers;
                     }

@@ -118,6 +118,7 @@ services:
     arguments:
       - '@database'
       - '@cache.copilot_triggers'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   # v3: Test Cards - Testing Business Ideas (Osterwalder)
   jaraba_copilot_v2.test_card_generator:

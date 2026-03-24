@@ -117,8 +117,9 @@ class CopilotCacheService
         $key = $this->generateCacheKey($message, $mode, $context);
         $cached = $this->cache->get($key);
 
+        $tenantId = $context['tenant_id'] ?? '0';
         if ($cached && isset($cached->data)) {
-            $this->trackCacheHit();
+            $this->trackCacheHit($tenantId);
             $this->logger->debug('Copilot cache HIT (exact): @key', ['@key' => $key]);
 
             $response = $cached->data;
@@ -141,7 +142,7 @@ class CopilotCacheService
                 $semanticResult = $semanticCache->get($message, $semanticMode, (string) $tenantId);
 
                 if ($semanticResult !== NULL) {
-                    $this->trackCacheHit();
+                    $this->trackCacheHit($tenantId);
                     $this->logger->debug('Copilot cache HIT (semantic): @msg', ['@msg' => mb_substr($message, 0, 80)]);
 
                     $semanticResult['from_cache'] = TRUE;
@@ -155,7 +156,7 @@ class CopilotCacheService
             }
         }
 
-        $this->trackCacheMiss();
+        $this->trackCacheMiss($tenantId);
         return NULL;
     }
 
@@ -253,16 +254,19 @@ class CopilotCacheService
     }
 
     /**
-     * Gets cache statistics.
+     * Gets cache statistics (CACHE-KEY-TENANT-001: per-tenant).
+     *
+     * @param string|int $tenantId
+     *   The tenant ID. Defaults to '0' (global/anonymous).
      *
      * @return array
      *   Stats with hits, misses, hit_rate.
      */
-    public function getStats(): array
+    public function getStats(string|int $tenantId = '0'): array
     {
         $state = \Drupal::state();
-        $hits = $state->get('copilot_cache_hits', 0);
-        $misses = $state->get('copilot_cache_misses', 0);
+        $hits = $state->get('copilot_cache_hits:tenant:' . $tenantId, 0);
+        $misses = $state->get('copilot_cache_misses:tenant:' . $tenantId, 0);
         $total = $hits + $misses;
 
         return [
@@ -271,26 +275,36 @@ class CopilotCacheService
             'total' => $total,
             'hit_rate' => $total > 0 ? round(($hits / $total) * 100, 2) : 0,
             'estimated_savings' => $this->estimateSavings($hits),
+            'tenant_id' => $tenantId,
         ];
     }
 
     /**
-     * Tracks cache hit.
+     * Tracks cache hit (CACHE-KEY-TENANT-001: scoped by tenant).
+     *
+     * @param string|int $tenantId
+     *   The tenant ID for scoped tracking.
      */
-    protected function trackCacheHit(): void
+    protected function trackCacheHit(string|int $tenantId = '0'): void
     {
         $state = \Drupal::state();
-        $state->set('copilot_cache_hits', $state->get('copilot_cache_hits', 0) + 1);
-        $state->set('ai_cost_cache_hits', $state->get('ai_cost_cache_hits', 0) + 1);
+        $key = 'copilot_cache_hits:tenant:' . $tenantId;
+        $state->set($key, $state->get($key, 0) + 1);
+        $costKey = 'ai_cost_cache_hits:tenant:' . $tenantId;
+        $state->set($costKey, $state->get($costKey, 0) + 1);
     }
 
     /**
-     * Tracks cache miss.
+     * Tracks cache miss (CACHE-KEY-TENANT-001: scoped by tenant).
+     *
+     * @param string|int $tenantId
+     *   The tenant ID for scoped tracking.
      */
-    protected function trackCacheMiss(): void
+    protected function trackCacheMiss(string|int $tenantId = '0'): void
     {
         $state = \Drupal::state();
-        $state->set('copilot_cache_misses', $state->get('copilot_cache_misses', 0) + 1);
+        $key = 'copilot_cache_misses:tenant:' . $tenantId;
+        $state->set($key, $state->get($key, 0) + 1);
     }
 
     /**
@@ -310,13 +324,16 @@ class CopilotCacheService
     }
 
     /**
-     * Resets cache stats (for testing/daily reset).
+     * Resets cache stats for a tenant (CACHE-KEY-TENANT-001).
+     *
+     * @param string|int $tenantId
+     *   The tenant ID. Defaults to '0'.
      */
-    public function resetStats(): void
+    public function resetStats(string|int $tenantId = '0'): void
     {
         $state = \Drupal::state();
-        $state->delete('copilot_cache_hits');
-        $state->delete('copilot_cache_misses');
+        $state->delete('copilot_cache_hits:tenant:' . $tenantId);
+        $state->delete('copilot_cache_misses:tenant:' . $tenantId);
     }
 
 }

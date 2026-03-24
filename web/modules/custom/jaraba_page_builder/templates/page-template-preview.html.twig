@@ -249,7 +249,7 @@
     {# Métricas de Uso #}
     {% if usage_count is defined or avg_engagement is defined %}
       <div class="template-preview-premium__metrics">
-        <h3>{% trans %}Rendimiento{% endtrans %}</h3>
+        <h2>{% trans %}Rendimiento{% endtrans %}</h2>
         <div class="template-preview-premium__metrics-grid">
           {% if usage_count is defined %}
             <div class="template-preview-premium__metric">
@@ -269,7 +269,7 @@
 
     {# Características #}
     <div class="template-preview-premium__features">
-      <h3>{% trans %}Características{% endtrans %}</h3>
+      <h2>{% trans %}Características{% endtrans %}</h2>
       <ul class="template-preview-premium__feature-list">
         <li class="template-preview-premium__feature">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -300,7 +300,7 @@
     {# Campos Personalizables #}
     {% if preview_data is not empty %}
       <div class="template-preview-premium__fields">
-        <h3>{% trans %}Campos Editables{% endtrans %}</h3>
+        <h2>{% trans %}Campos Editables{% endtrans %}</h2>
         <ul class="template-preview-premium__field-list">
           {% for key, value in preview_data %}
             <li class="template-preview-premium__field">

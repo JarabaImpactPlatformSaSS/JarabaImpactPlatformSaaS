@@ -95,13 +95,17 @@ final class TicketRoutingService {
         // (a) Skills match: +50 if agent's support skills contain the ticket category.
         if ($ticketCategory !== '' && $agent->hasField('field_support_skills')) {
           $skillValues = $agent->get('field_support_skills')->getValue();
+          // Batch load all referenced taxonomy terms to avoid N+1 queries.
+          $termIds = array_filter(array_column($skillValues, 'target_id'));
+          /** @var \Drupal\taxonomy\TermInterface[] $terms */
+          $terms = $termIds !== []
+            ? $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple($termIds)
+            : [];
+
           foreach ($skillValues as $item) {
-            // Support both taxonomy term references (target_id with label)
-            // and plain string values.
             $skillName = '';
-            if (!empty($item['target_id'])) {
-              $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($item['target_id']);
-              $skillName = $term ? mb_strtolower($term->label()) : '';
+            if (!empty($item['target_id']) && isset($terms[$item['target_id']])) {
+              $skillName = mb_strtolower($terms[$item['target_id']]->label());
             }
             elseif (!empty($item['value'])) {
               $skillName = mb_strtolower((string) $item['value']);
