@@ -1033,93 +1033,204 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   ];
 
   // =========================================================================
-  // TAB 15: META-SITIO (Homepage + Métricas)
+  // TABS 15-18: METASITIOS PER-DOMINIO (METASITE-CONTENT-001)
+  // Un tab por cada dominio conocido del ecosistema Jaraba.
+  // Patrón: {variant}_{field} — idéntico a TAB SEO per-metasite.
   // =========================================================================
-  $form['metasite'] = [
-    '#type' => 'details',
-    '#title' => _ecosistema_jaraba_theme_tab_title('home', t('Meta-Sitio'), '#FF8C42'),
-    '#group' => 'jaraba_tabs',
-    '#weight' => -15,
+  $metasite_defaults = _ecosistema_jaraba_theme_get_metasite_defaults();
+  $metasite_icons = [
+    'generic' => 'globe',
+    'pde' => 'building',
+    'jarabaimpact' => 'users',
+    'pepejaraba' => 'user',
   ];
+  $metasite_weight = -18;
+  foreach (\Drupal\jaraba_site_builder\Service\MetaSiteResolverService::KNOWN_VARIANTS as $variant) {
+    $vLabel = \Drupal\jaraba_site_builder\Service\MetaSiteResolverService::VARIANT_LABELS[$variant] ?? $variant;
+    $d = $metasite_defaults[$variant] ?? $metasite_defaults['generic'];
+    $icon = $metasite_icons[$variant] ?? 'globe';
 
-  // --- Hero Homepage ---
-  $form['metasite']['hero_content'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Hero del Homepage'),
-    '#description' => t('Textos del hero principal. Dejar vacío para usar los valores por defecto.'),
-  ];
-  $form['metasite']['hero_content']['hero_eyebrow'] = [
-    '#type' => 'textfield',
-    '#title' => t('Eyebrow'),
-    '#default_value' => $config->get('hero_eyebrow') ?: '',
-    '#placeholder' => t('La plataforma que transforma profesionales en emprendedores de impacto'),
-    '#description' => t('Texto encima del headline principal.'),
-  ];
-  $form['metasite']['hero_content']['hero_headline'] = [
-    '#type' => 'textfield',
-    '#title' => t('Headline (H1)'),
-    '#default_value' => $config->get('hero_headline') ?: '',
-    '#placeholder' => t('Empleo, emprendimiento y digitalización — impulsados por IA'),
-    '#maxlength' => 120,
-  ];
-  $form['metasite']['hero_content']['hero_subtitle'] = [
-    '#type' => 'textarea',
-    '#title' => t('Subtítulo'),
-    '#default_value' => $config->get('hero_subtitle') ?: '',
-    '#rows' => 2,
-    '#placeholder' => t('Empleabilidad · Emprendimiento · AgroConecta · ComercioConecta...'),
-  ];
-  $form['metasite']['hero_content']['hero_cta_primary_text'] = [
-    '#type' => 'textfield',
-    '#title' => t('CTA Primario Texto'),
-    '#default_value' => $config->get('hero_cta_primary_text') ?: '',
-    '#placeholder' => t('Empezar gratis'),
-  ];
-  $form['metasite']['hero_content']['hero_cta_secondary_text'] = [
-    '#type' => 'textfield',
-    '#title' => t('CTA Secundario Texto'),
-    '#default_value' => $config->get('hero_cta_secondary_text') ?: '',
-    '#placeholder' => t('Conoce el método'),
-  ];
-  $form['metasite']['hero_content']['hero_cta_secondary_url'] = [
-    '#type' => 'textfield',
-    '#title' => t('CTA Secundario URL'),
-    '#default_value' => $config->get('hero_cta_secondary_url') ?: '/metodo',
-    '#description' => t('Ruta interna del botón secundario del hero.'),
-  ];
+    $form["metasite_{$variant}"] = [
+      '#type' => 'details',
+      '#title' => _ecosistema_jaraba_theme_tab_title($icon, t('Meta: @label', ['@label' => $vLabel]), '#FF8C42'),
+      '#group' => 'jaraba_tabs',
+      '#weight' => $metasite_weight++,
+    ];
 
-  // --- Métricas de Social Proof ---
-  $form['metasite']['metrics'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Métricas de Impacto (Social Proof)'),
-    '#description' => t('Métricas que se muestran en la sección de estadísticas. Dejar vacío para usar los datos verificables por defecto.'),
-  ];
-  for ($i = 1; $i <= 4; $i++) {
-    $form['metasite']['metrics']["metric_{$i}"] = [
+    // --- Hero ---
+    $form["metasite_{$variant}"]["hero_{$variant}"] = [
       '#type' => 'fieldset',
-      '#title' => t('Métrica @num', ['@num' => $i]),
-      '#attributes' => ['class' => ['container-inline']],
+      '#title' => t('Hero del Homepage'),
+      '#description' => t('Textos del hero de @label. Dejar vacío para usar los valores por defecto.', ['@label' => $vLabel]),
     ];
-    $form['metasite']['metrics']["metric_{$i}"]["stat_value_{$i}"] = [
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_eyebrow"] = [
       '#type' => 'textfield',
-      '#title' => t('Valor'),
-      '#default_value' => $config->get("stat_value_{$i}") ?: '',
-      '#size' => 10,
-      '#placeholder' => t('7'),
+      '#title' => t('Eyebrow'),
+      '#default_value' => $config->get("{$variant}_hero_eyebrow") ?: '',
+      '#placeholder' => $d['hero_eyebrow'],
+      '#maxlength' => 200,
     ];
-    $form['metasite']['metrics']["metric_{$i}"]["stat_suffix_{$i}"] = [
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_headline"] = [
       '#type' => 'textfield',
-      '#title' => t('Sufijo'),
-      '#default_value' => $config->get("stat_suffix_{$i}") ?: '',
-      '#size' => 5,
-      '#placeholder' => '+',
+      '#title' => t('Headline (H1)'),
+      '#default_value' => $config->get("{$variant}_hero_headline") ?: '',
+      '#placeholder' => $d['hero_headline'],
+      '#maxlength' => 120,
     ];
-    $form['metasite']['metrics']["metric_{$i}"]["stat_label_{$i}"] = [
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_subtitle"] = [
+      '#type' => 'textarea',
+      '#title' => t('Subtítulo'),
+      '#default_value' => $config->get("{$variant}_hero_subtitle") ?: '',
+      '#placeholder' => $d['hero_subtitle'],
+      '#rows' => 3,
+    ];
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_cta_primary_text"] = [
       '#type' => 'textfield',
-      '#title' => t('Etiqueta'),
-      '#default_value' => $config->get("stat_label_{$i}") ?: '',
-      '#size' => 30,
-      '#placeholder' => t('Verticales activas'),
+      '#title' => t('CTA Primario — Texto'),
+      '#default_value' => $config->get("{$variant}_hero_cta_primary_text") ?: '',
+      '#placeholder' => $d['hero_cta_primary_text'],
+    ];
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_cta_primary_url"] = [
+      '#type' => 'textfield',
+      '#title' => t('CTA Primario — URL'),
+      '#default_value' => $config->get("{$variant}_hero_cta_primary_url") ?: '',
+      '#placeholder' => $d['hero_cta_primary_url'],
+    ];
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_cta_secondary_text"] = [
+      '#type' => 'textfield',
+      '#title' => t('CTA Secundario — Texto'),
+      '#default_value' => $config->get("{$variant}_hero_cta_secondary_text") ?: '',
+      '#placeholder' => $d['hero_cta_secondary_text'],
+    ];
+    $form["metasite_{$variant}"]["hero_{$variant}"]["{$variant}_hero_cta_secondary_url"] = [
+      '#type' => 'textfield',
+      '#title' => t('CTA Secundario — URL'),
+      '#default_value' => $config->get("{$variant}_hero_cta_secondary_url") ?: '',
+      '#placeholder' => $d['hero_cta_secondary_url'],
+    ];
+
+    // --- Estadísticas / Social Proof ---
+    $form["metasite_{$variant}"]["stats_{$variant}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('Métricas de Impacto (Social Proof)'),
+      '#description' => t('4 métricas numéricas con sufijo y etiqueta. Dejar vacío para usar los valores por defecto.'),
+    ];
+    for ($i = 1; $i <= 4; $i++) {
+      $form["metasite_{$variant}"]["stats_{$variant}"]["metric_{$variant}_{$i}"] = [
+        '#type' => 'fieldset',
+        '#title' => t('Métrica @num', ['@num' => $i]),
+        '#attributes' => ['class' => ['container-inline']],
+      ];
+      $form["metasite_{$variant}"]["stats_{$variant}"]["metric_{$variant}_{$i}"]["{$variant}_stat_value_{$i}"] = [
+        '#type' => 'textfield',
+        '#title' => t('Valor'),
+        '#default_value' => $config->get("{$variant}_stat_value_{$i}") ?: '',
+        '#size' => 10,
+        '#placeholder' => $d["stat_value_{$i}"] ?? '',
+      ];
+      $form["metasite_{$variant}"]["stats_{$variant}"]["metric_{$variant}_{$i}"]["{$variant}_stat_suffix_{$i}"] = [
+        '#type' => 'textfield',
+        '#title' => t('Sufijo'),
+        '#default_value' => $config->get("{$variant}_stat_suffix_{$i}") ?: '',
+        '#size' => 5,
+        '#placeholder' => $d["stat_suffix_{$i}"] ?? '',
+      ];
+      $form["metasite_{$variant}"]["stats_{$variant}"]["metric_{$variant}_{$i}"]["{$variant}_stat_label_{$i}"] = [
+        '#type' => 'textfield',
+        '#title' => t('Etiqueta'),
+        '#default_value' => $config->get("{$variant}_stat_label_{$i}") ?: '',
+        '#size' => 30,
+        '#placeholder' => $d["stat_label_{$i}"] ?? '',
+      ];
+    }
+
+    // --- CTA Final ---
+    $form["metasite_{$variant}"]["cta_{$variant}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('CTA Final'),
+      '#description' => t('Bloque de llamada a la acción al final de la página.'),
+    ];
+    $form["metasite_{$variant}"]["cta_{$variant}"]["{$variant}_cta_headline"] = [
+      '#type' => 'textfield',
+      '#title' => t('Titular'),
+      '#default_value' => $config->get("{$variant}_cta_headline") ?: '',
+      '#placeholder' => $d['cta_headline'],
+      '#maxlength' => 120,
+    ];
+    $form["metasite_{$variant}"]["cta_{$variant}"]["{$variant}_cta_subtitle"] = [
+      '#type' => 'textarea',
+      '#title' => t('Subtítulo'),
+      '#default_value' => $config->get("{$variant}_cta_subtitle") ?: '',
+      '#placeholder' => $d['cta_subtitle'],
+      '#rows' => 2,
+    ];
+    $form["metasite_{$variant}"]["cta_{$variant}"]["{$variant}_cta_primary_text"] = [
+      '#type' => 'textfield',
+      '#title' => t('Texto del botón principal'),
+      '#default_value' => $config->get("{$variant}_cta_primary_text") ?: '',
+      '#placeholder' => $d['cta_primary_text'],
+    ];
+
+    // --- Header ---
+    $form["metasite_{$variant}"]["header_{$variant}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('Header CTA'),
+      '#description' => t('Texto y URL del botón CTA del encabezado para este dominio. Si se deja vacío, se usa la configuración global o la del TenantThemeConfig.'),
+    ];
+    $form["metasite_{$variant}"]["header_{$variant}"]["{$variant}_header_cta_text"] = [
+      '#type' => 'textfield',
+      '#title' => t('Texto del CTA'),
+      '#default_value' => $config->get("{$variant}_header_cta_text") ?: '',
+      '#placeholder' => $d['header_cta_text'] ?? 'Empezar gratis',
+    ];
+    $form["metasite_{$variant}"]["header_{$variant}"]["{$variant}_header_cta_url"] = [
+      '#type' => 'textfield',
+      '#title' => t('URL del CTA'),
+      '#default_value' => $config->get("{$variant}_header_cta_url") ?: '',
+      '#placeholder' => $d['header_cta_url'] ?? '/user/register',
+    ];
+
+    // --- Footer ---
+    $form["metasite_{$variant}"]["footer_{$variant}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('Footer'),
+      '#description' => t('Copyright y redes sociales para este dominio. Si se deja vacío, se usa la configuración global.'),
+    ];
+    $form["metasite_{$variant}"]["footer_{$variant}"]["{$variant}_footer_copyright"] = [
+      '#type' => 'textfield',
+      '#title' => t('Copyright'),
+      '#default_value' => $config->get("{$variant}_footer_copyright") ?: '',
+      '#placeholder' => $d['footer_copyright'] ?? '© [year] Jaraba Impact Platform.',
+      '#description' => t('Usa [year] para insertar el año actual automáticamente.'),
+    ];
+    foreach (['facebook', 'twitter', 'linkedin', 'instagram', 'youtube'] as $network) {
+      $form["metasite_{$variant}"]["footer_{$variant}"]["{$variant}_social_{$network}"] = [
+        '#type' => 'url',
+        '#title' => ucfirst($network),
+        '#default_value' => $config->get("{$variant}_social_{$network}") ?: '',
+        '#placeholder' => "https://{$network}.com/...",
+      ];
+    }
+
+    // --- SEO (migrado desde TAB 17) ---
+    $form["metasite_{$variant}"]["seo_{$variant}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('SEO Homepage'),
+      '#description' => t('Title y meta description para la homepage de este dominio.'),
+    ];
+    $form["metasite_{$variant}"]["seo_{$variant}"]["{$variant}_seo_title"] = [
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#default_value' => $config->get("{$variant}_seo_title") ?: $config->get("seo_{$variant}_title") ?: '',
+      '#placeholder' => $d['seo_title'],
+      '#maxlength' => 120,
+    ];
+    $form["metasite_{$variant}"]["seo_{$variant}"]["{$variant}_seo_description"] = [
+      '#type' => 'textarea',
+      '#title' => t('Description'),
+      '#default_value' => $config->get("{$variant}_seo_description") ?: $config->get("seo_{$variant}_description") ?: '',
+      '#placeholder' => $d['seo_description'],
+      '#rows' => 2,
     ];
   }
 
@@ -1272,55 +1383,14 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#placeholder' => 'es',
   ];
 
-  // --- Meta tags por metasitio (homepage) ---
-  $form['seo_settings']['seo_metasite_section'] = [
-    '#type' => 'details',
-    '#title' => t('Meta tags por metasitio (homepage)'),
-    '#description' => t('Title y description diferenciados para cada dominio/metasitio. Evita contenido duplicado entre dominios. Si se dejan vacios, se usan los valores genericos de metatag module.'),
-    '#open' => TRUE,
+  // METASITE-CONTENT-001: Meta tags per-metasite MIGRADOS a tabs individuales.
+  // Los campos seo_{variant}_title/description se mantienen en schema para
+  // backward-compat (lectura dual en preprocess_html y page_attachments_alter)
+  // pero el formulario ya no los muestra aquí — se editan en Meta: {variante}.
+  $form['seo_settings']['seo_metasite_note'] = [
+    '#type' => 'markup',
+    '#markup' => '<p><em>' . t('Los meta tags por metasitio (title, description) se han trasladado a las pestañas individuales "Meta: ..." para centralizar toda la configuración de cada dominio en un solo lugar.') . '</em></p>',
   ];
-
-  $metasite_variants = [
-    'generic' => t('SaaS Hub (plataformadeecosistemas.com)'),
-    'pde' => t('PED Corporativo (plataformadeecosistemas.es)'),
-    'jarabaimpact' => t('Franquicia (jarabaimpact.com)'),
-    'pepejaraba' => t('Marca Personal (pepejaraba.com)'),
-  ];
-  $metasite_defaults = [
-    'generic' => [
-      'title' => 'Impulsa tu ecosistema digital | Jaraba',
-      'description' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.',
-    ],
-    'pde' => [
-      'title' => 'Ecosistemas Digitales de Impacto | PED S.L.',
-      'description' => 'Plataforma de Ecosistemas Digitales — empleabilidad, emprendimiento, comercio y servicios profesionales con IA.',
-    ],
-    'jarabaimpact' => [
-      'title' => 'Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact',
-      'description' => 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.',
-    ],
-    'pepejaraba' => [
-      'title' => 'Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba',
-      'description' => 'Fundador de Jaraba Impact Platform. Emprendimiento social, innovación territorial y ecosistemas digitales de impacto.',
-    ],
-  ];
-
-  foreach ($metasite_variants as $variant => $label) {
-    $form['seo_settings']['seo_metasite_section']['seo_' . $variant . '_title'] = [
-      '#type' => 'textfield',
-      '#title' => t('Title — @label', ['@label' => $label]),
-      '#default_value' => $config->get('seo_' . $variant . '_title') ?: '',
-      '#placeholder' => $metasite_defaults[$variant]['title'],
-      '#maxlength' => 120,
-    ];
-    $form['seo_settings']['seo_metasite_section']['seo_' . $variant . '_description'] = [
-      '#type' => 'textarea',
-      '#title' => t('Description — @label', ['@label' => $label]),
-      '#default_value' => $config->get('seo_' . $variant . '_description') ?: '',
-      '#placeholder' => $metasite_defaults[$variant]['description'],
-      '#rows' => 2,
-    ];
-  }
 }
 
 /**
@@ -1343,6 +1413,105 @@ function _ecosistema_jaraba_theme_normalize_quiz_alternatives($result): array {
   }
   // Si es array indexado de mapas, devolver tal cual.
   return array_values($raw);
+}
+
+/**
+ * Defaults de contenido por metasitio (METASITE-CONTENT-001).
+ *
+ * Fuente SSOT de los textos por defecto para hero, estadísticas, CTA final
+ * y SEO de cada variante de metasitio. Se usan como:
+ * - Placeholders en el formulario de theme settings.
+ * - Fallbacks en hook_preprocess_page() cuando el campo está vacío.
+ *
+ * Extraídos del contenido previamente hardcodeado en page--front.html.twig.
+ */
+function _ecosistema_jaraba_theme_get_metasite_defaults(): array {
+  return [
+    'pepejaraba' => [
+      'hero_eyebrow' => '+30 años de experiencia · +100M EUR en fondos europeos gestionados · +50.000 personas formadas',
+      'hero_headline' => 'Jose Jaraba — La experiencia detrás de la plataforma que transforma profesionales, empresas e instituciones',
+      'hero_subtitle' => 'Emprendedor serial, experto en fondos europeos y fundador de Plataforma de Ecosistemas Digitales.',
+      'hero_cta_primary_text' => 'Empezar gratis',
+      'hero_cta_primary_url' => '/user/register',
+      'hero_cta_secondary_text' => 'Conoce el método',
+      'hero_cta_secondary_url' => '/metodo',
+      'stat_value_1' => '30', 'stat_suffix_1' => '+', 'stat_label_1' => 'años de experiencia',
+      'stat_value_2' => '100', 'stat_suffix_2' => 'M+', 'stat_label_2' => 'EUR gestionados en fondos europeos',
+      'stat_value_3' => '50', 'stat_suffix_3' => '.000+', 'stat_label_3' => 'personas formadas y orientadas',
+      'stat_value_4' => '10', 'stat_suffix_4' => '', 'stat_label_4' => 'verticales construidos',
+      'cta_headline' => 'Hablemos. Tu primer paso hacia la transformación.',
+      'cta_subtitle' => '30+ años de experiencia en empleo, emprendimiento y fondos europeos. Una conversación puede cambiarlo todo.',
+      'cta_primary_text' => 'Agendar llamada con Pepe',
+      'header_cta_text' => 'Hablar con Pepe',
+      'header_cta_url' => '/contacto',
+      'footer_copyright' => '© [year] Pepe Jaraba. Todos los derechos reservados.',
+      'seo_title' => 'Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba',
+      'seo_description' => 'Fundador de Jaraba Impact Platform. Emprendimiento social, innovación territorial y ecosistemas digitales de impacto.',
+    ],
+    'jarabaimpact' => [
+      'hero_eyebrow' => 'Franquicia digital con 10 verticales · 11 agentes IA · modelo validado con +30 años de experiencia',
+      'hero_headline' => 'Escala tu negocio digital con la franquicia que ya funciona',
+      'hero_subtitle' => 'Red de consultores certificados, franquicias territoriales con royalties y un marketplace de expertos. Tu marca, nuestra tecnología.',
+      'hero_cta_primary_text' => 'Solicitar información',
+      'hero_cta_primary_url' => '/contacto',
+      'hero_cta_secondary_text' => 'Ver modelo de negocio',
+      'hero_cta_secondary_url' => '/metodo',
+      'stat_value_1' => '10', 'stat_suffix_1' => '', 'stat_label_1' => 'verticales listos para operar',
+      'stat_value_2' => '11', 'stat_suffix_2' => '', 'stat_label_2' => 'agentes IA incluidos',
+      'stat_value_3' => '30', 'stat_suffix_3' => '+', 'stat_label_3' => 'años de metodología validada',
+      'stat_value_4' => '3', 'stat_suffix_4' => '', 'stat_label_4' => 'niveles de certificación',
+      'cta_headline' => 'Tu franquicia digital. Tu territorio. Nuestra tecnología.',
+      'cta_subtitle' => 'Modelo validado con 30+ años de experiencia, 10 verticales y 11 agentes IA. Solicita información sin compromiso.',
+      'cta_primary_text' => 'Solicitar info franquicia',
+      'header_cta_text' => 'Solicitar información',
+      'header_cta_url' => '/contacto',
+      'footer_copyright' => '© [year] Jaraba Impact. Todos los derechos reservados.',
+      'seo_title' => 'Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact',
+      'seo_description' => 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.',
+    ],
+    'pde' => [
+      'hero_eyebrow' => 'La plataforma que transforma profesionales en emprendedores de impacto',
+      'hero_headline' => 'Empleo, emprendimiento y digitalización — impulsados por IA',
+      'hero_subtitle' => 'Empleabilidad · Emprendimiento · AgroConecta · ComercioConecta · ServiciosConecta · JarabaLex · Formación · Andalucía E+I',
+      'hero_cta_primary_text' => 'Empezar gratis',
+      'hero_cta_primary_url' => '/user/register',
+      'hero_cta_secondary_text' => 'Conoce el método',
+      'hero_cta_secondary_url' => '/metodo',
+      'stat_value_1' => '10', 'stat_suffix_1' => '', 'stat_label_1' => 'verticales especializados',
+      'stat_value_2' => '11', 'stat_suffix_2' => '', 'stat_label_2' => 'agentes IA integrados',
+      'stat_value_3' => '30', 'stat_suffix_3' => '+', 'stat_label_3' => 'años de metodología',
+      'stat_value_4' => '100', 'stat_suffix_4' => '%', 'stat_label_4' => 'infraestructura propia',
+      'cta_headline' => 'Tu ecosistema digital. Tu impacto.',
+      'cta_subtitle' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.',
+      'cta_primary_text' => 'Empezar gratis',
+      'header_cta_text' => 'Empezar gratis',
+      'header_cta_url' => '/user/register',
+      'footer_copyright' => '© [year] PED S.L. — Plataforma de Ecosistemas Digitales. Todos los derechos reservados.',
+      'seo_title' => 'Ecosistemas Digitales de Impacto | PED S.L.',
+      'seo_description' => 'Plataforma de Ecosistemas Digitales — empleabilidad, emprendimiento, comercio y servicios profesionales con IA.',
+    ],
+    'generic' => [
+      'hero_eyebrow' => 'La plataforma que transforma profesionales en emprendedores de impacto',
+      'hero_headline' => 'Empleo, emprendimiento y digitalización — impulsados por IA',
+      'hero_subtitle' => 'Empleabilidad · Emprendimiento · AgroConecta · ComercioConecta · ServiciosConecta · JarabaLex · Formación · Andalucía E+I',
+      'hero_cta_primary_text' => 'Empezar gratis',
+      'hero_cta_primary_url' => '/user/register',
+      'hero_cta_secondary_text' => 'Conoce el método',
+      'hero_cta_secondary_url' => '/metodo',
+      'stat_value_1' => '7', 'stat_suffix_1' => '+', 'stat_label_1' => 'verticales activas',
+      'stat_value_2' => '11', 'stat_suffix_2' => '', 'stat_label_2' => 'agentes IA',
+      'stat_value_3' => '1', 'stat_suffix_3' => '', 'stat_label_3' => 'plataforma SaaS',
+      'stat_value_4' => '100', 'stat_suffix_4' => '%', 'stat_label_4' => 'infraestructura propia',
+      'cta_headline' => 'Tu ecosistema digital empieza aquí.',
+      'cta_subtitle' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy. Empieza gratis.',
+      'cta_primary_text' => 'Empezar gratis',
+      'header_cta_text' => 'Empezar gratis',
+      'header_cta_url' => '/user/register',
+      'footer_copyright' => '© [year] Jaraba Impact Platform. Todos los derechos reservados.',
+      'seo_title' => 'Impulsa tu ecosistema digital | Jaraba',
+      'seo_description' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.',
+    ],
+  ];
 }
 
 function _ecosistema_jaraba_theme_get_base_settings($config) {
@@ -1469,7 +1638,7 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
         $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
         $ctx = $resolver->resolve();
         $gid = (int) ($ctx['meta_site']['group_id'] ?? 0);
-        $vmap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+        $vmap = \Drupal\jaraba_site_builder\Service\MetaSiteResolverService::VARIANT_MAP;
         $homepage_variant = $vmap[$gid] ?? 'generic';
       }
       catch (\Throwable) {}
@@ -1480,7 +1649,9 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'jarabaimpact' => 'Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact',
       'pepejaraba' => 'Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba',
     ];
-    $homepage_title = $theme_config->get('seo_' . $homepage_variant . '_title')
+    // METASITE-CONTENT-001: Leer nuevo naming con fallback al antiguo.
+    $homepage_title = $theme_config->get($homepage_variant . '_seo_title')
+      ?: $theme_config->get('seo_' . $homepage_variant . '_title')
       ?: ($title_defaults[$homepage_variant] ?? $title_defaults['generic']);
     $variables['head_title']['title'] = $homepage_title;
 
@@ -3071,114 +3242,26 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     // templates que pasan mega_menu_columns explícitamente) COMO en
     // theme_settings._mega_menu_columns (para que viaje automáticamente
     // con theme_settings y no dependa de cada page template).
+    // SSOT: Catálogo de verticales desde MegaMenuBridgeService.
+    // El servicio intenta DB (SiteMenuItem entities) primero, fallback a
+    // getVerticalCatalog(). URLs se devuelven sin prefijo de idioma.
     $lp = $variables['language_prefix'] ?? '';
-    $dynamicColumns = NULL;
     if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
-      $dynamicColumns = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge')->getMegaMenuColumns();
+      $columns = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge')->getMegaMenuColumns();
     }
-    $variables['mega_menu_columns'] = $dynamicColumns ?? [
-      [
-        'title' => t('Para Personas'),
-        'items' => [
-          [
-            'title' => t('Empleabilidad'),
-            'subtitle' => t('Impulsa tu carrera con IA'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'empleabilidad',
-            'color' => 'verde-innovacion',
-            'url' => $lp . '/empleabilidad',
-          ],
-          [
-            'title' => t('Formación'),
-            'subtitle' => t('Cursos y certificaciones'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'formacion',
-            'color' => 'verde-innovacion',
-            'url' => $lp . '/formacion',
-          ],
-        ],
-      ],
-      [
-        'title' => t('Para Empresas'),
-        'items' => [
-          [
-            'title' => t('Emprendimiento'),
-            'subtitle' => t('De la idea al negocio'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'emprendimiento',
-            'color' => 'naranja-impulso',
-            'url' => $lp . '/emprendimiento',
-          ],
-          [
-            'title' => t('ComercioConecta'),
-            'subtitle' => t('Digitaliza tu comercio'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'comercioconecta',
-            'color' => 'naranja-impulso',
-            'url' => $lp . '/comercioconecta',
-          ],
-          [
-            'title' => t('AgroConecta'),
-            'subtitle' => t('Marketplace agroalimentario'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'agroconecta',
-            'color' => 'naranja-impulso',
-            'url' => $lp . '/agroconecta',
-          ],
-          [
-            'title' => t('ServiciosConecta'),
-            'subtitle' => t('Gestión de servicios'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'serviciosconecta',
-            'color' => 'naranja-impulso',
-            'url' => $lp . '/serviciosconecta',
-          ],
-        ],
-      ],
-      [
-        'title' => t('Para Profesionales'),
-        'items' => [
-          [
-            'title' => t('JarabaLex'),
-            'subtitle' => t('Inteligencia legal con IA'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'jarabalex',
-            'color' => 'azul-corporativo',
-            'url' => $lp . '/jarabalex',
-          ],
-          [
-            'title' => t('Content Hub'),
-            'subtitle' => t('Crea y publica contenido'),
-            'icon_cat' => 'content',
-            'icon_name' => 'edit',
-            'color' => 'azul-corporativo',
-            'url' => $lp . '/content-hub',
-          ],
-        ],
-      ],
-      [
-        'title' => t('Para Instituciones'),
-        'has_promo' => TRUE,
-        'items' => [
-          [
-            'title' => t('Desarrollo Local'),
-            'subtitle' => t('Digitaliza tu territorio'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'desarrollo-local',
-            'color' => 'verde-innovacion',
-            'url' => $lp . '/instituciones',
-          ],
-          [
-            'title' => t('Andalucía +ei'),
-            'subtitle' => t('Empleo e innovación regional'),
-            'icon_cat' => 'verticals',
-            'icon_name' => 'andalucia-ei',
-            'color' => 'verde-innovacion',
-            'url' => $lp . '/andalucia-ei',
-          ],
-        ],
-      ],
-    ];
+    else {
+      $columns = [];
+    }
+    // Añadir prefijo de idioma a URLs relativas.
+    foreach ($columns as &$_col) {
+      foreach ($_col['items'] as &$_item) {
+        if (isset($_item['url']) && !str_starts_with($_item['url'], 'http')) {
+          $_item['url'] = $lp . $_item['url'];
+        }
+      }
+    }
+    unset($_col, $_item);
+    $variables['mega_menu_columns'] = $columns;
 
     // MEGAMENU-INJECT-001: Duplicar en theme_settings para que viaje con
     // {% include ... with { theme_settings: theme_settings } only %} sin
@@ -3273,7 +3356,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   if (!empty($variables['meta_site'])) {
     $groupId = (int) ($variables['meta_site']['group_id'] ?? 0);
     $variables['is_ped'] = $groupId === 7;
-    $variantMap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+    $variantMap = \Drupal\jaraba_site_builder\Service\MetaSiteResolverService::VARIANT_MAP;
     $variables['homepage_variant'] = $variantMap[$groupId] ?? 'generic';
 
     // Detectar si estamos en la homepage del meta-sitio.
@@ -3391,6 +3474,86 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       catch (\Throwable) {
         $variables['ped_urls'][$key] = $path;
       }
+    }
+  }
+
+  // =========================================================================
+  // METASITE-CONTENT-001: Contenido per-metasitio desde theme settings.
+  //
+  // Inyecta $variables['metasite_content'] con hero, stats, cta_final
+  // resueltos desde theme settings per-variant. Los templates consumen
+  // esta variable en vez de contenido hardcodeado inline.
+  //
+  // Prioridad: theme settings > defaults hardcodeados (en helper).
+  // Para variante generic/pde: HomepageDataService (entity) > metasite_content.
+  // =========================================================================
+  $msVariant = $variables['homepage_variant'];
+  $msConfig = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $msDefaults = _ecosistema_jaraba_theme_get_metasite_defaults();
+  $msD = $msDefaults[$msVariant] ?? $msDefaults['generic'];
+  $msPedUrls = $variables['ped_urls'] ?? [];
+
+  $variables['metasite_content'] = [
+    'hero' => [
+      'eyebrow' => $msConfig->get("{$msVariant}_hero_eyebrow") ?: $msD['hero_eyebrow'],
+      'title' => $msConfig->get("{$msVariant}_hero_headline") ?: $msD['hero_headline'],
+      'subtitle' => $msConfig->get("{$msVariant}_hero_subtitle") ?: $msD['hero_subtitle'],
+      'cta_primary' => [
+        'text' => $msConfig->get("{$msVariant}_hero_cta_primary_text") ?: $msD['hero_cta_primary_text'],
+        'url' => $msConfig->get("{$msVariant}_hero_cta_primary_url") ?: ($msPedUrls['register'] ?? '/user/register'),
+      ],
+      'cta_secondary' => [
+        'text' => $msConfig->get("{$msVariant}_hero_cta_secondary_text") ?: $msD['hero_cta_secondary_text'],
+        'url' => $msConfig->get("{$msVariant}_hero_cta_secondary_url") ?: ($msPedUrls['metodo'] ?? '/metodo'),
+      ],
+    ],
+    'stats' => [],
+    'cta_final' => [
+      'headline' => $msConfig->get("{$msVariant}_cta_headline") ?: $msD['cta_headline'],
+      'subtitle' => $msConfig->get("{$msVariant}_cta_subtitle") ?: $msD['cta_subtitle'],
+      'primary_text' => $msConfig->get("{$msVariant}_cta_primary_text") ?: $msD['cta_primary_text'],
+    ],
+  ];
+  for ($msI = 1; $msI <= 4; $msI++) {
+    $msVal = $msConfig->get("{$msVariant}_stat_value_{$msI}") ?: ($msD["stat_value_{$msI}"] ?? '');
+    if ($msVal !== '') {
+      $variables['metasite_content']['stats'][] = [
+        'value' => $msVal,
+        'suffix' => $msConfig->get("{$msVariant}_stat_suffix_{$msI}") ?: ($msD["stat_suffix_{$msI}"] ?? ''),
+        'label' => $msConfig->get("{$msVariant}_stat_label_{$msI}") ?: ($msD["stat_label_{$msI}"] ?? ''),
+      ];
+    }
+  }
+
+  // =========================================================================
+  // METASITE-CONTENT-001: Header/Footer per-metasitio.
+  //
+  // Sobreescribe theme_settings con valores per-variant si el admin los
+  // configuró. Se aplica DESPUÉS de UnifiedThemeResolverService (L4/L5)
+  // para que el admin tenga la última palabra desde theme settings.
+  // Solo pisa si el campo no está vacío (vacío = usar cascada L4/L5).
+  // =========================================================================
+  $msHeaderCta = $msConfig->get("{$msVariant}_header_cta_text");
+  if ($msHeaderCta !== NULL && $msHeaderCta !== '') {
+    $variables['theme_settings']['enable_header_cta'] = TRUE;
+    $variables['theme_settings']['header_cta_text'] = $msHeaderCta;
+    $msHeaderUrl = $msConfig->get("{$msVariant}_header_cta_url");
+    if ($msHeaderUrl !== NULL && $msHeaderUrl !== '') {
+      $variables['theme_settings']['header_cta_url'] = $msHeaderUrl;
+    }
+  }
+  $msFooterCopyright = $msConfig->get("{$msVariant}_footer_copyright");
+  if ($msFooterCopyright !== NULL && $msFooterCopyright !== '') {
+    $variables['theme_settings']['footer_copyright'] = str_replace(
+      ['[year]', '{year}'],
+      date('Y'),
+      $msFooterCopyright
+    );
+  }
+  foreach (['facebook', 'twitter', 'linkedin', 'instagram', 'youtube'] as $msNetwork) {
+    $msNetVal = $msConfig->get("{$msVariant}_social_{$msNetwork}");
+    if ($msNetVal !== NULL && $msNetVal !== '') {
+      $variables['theme_settings']['footer_social_' . $msNetwork] = $msNetVal;
     }
   }
 
@@ -5412,7 +5575,7 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
         $resolver = \Drupal::service('ecosistema_jaraba_core.unified_theme_resolver');
         $context = $resolver->resolve();
         $groupId = (int) ($context['meta_site']['group_id'] ?? 0);
-        $variantMap = [5 => 'pepejaraba', 6 => 'jarabaimpact', 7 => 'pde'];
+        $variantMap = \Drupal\jaraba_site_builder\Service\MetaSiteResolverService::VARIANT_MAP;
         $variant = $variantMap[$groupId] ?? 'generic';
       }
       catch (\Throwable) {}
@@ -5425,8 +5588,13 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
       'jarabaimpact' => ['Franquicia Método Jaraba — Ecosistemas de Impacto | Jaraba Impact', 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.'],
       'pepejaraba' => ['Jose Jaraba — Emprendedor Social e Innovador | Pepe Jaraba', 'Fundador de Jaraba Impact Platform. Emprendimiento social, innovación territorial y ecosistemas digitales de impacto.'],
     ];
-    $seo_title = $config->get('seo_' . $variant . '_title') ?: ($defaults[$variant][0] ?? $defaults['generic'][0]);
-    $seo_desc = $config->get('seo_' . $variant . '_description') ?: ($defaults[$variant][1] ?? $defaults['generic'][1]);
+    // METASITE-CONTENT-001: Leer nuevo naming con fallback al antiguo.
+    $seo_title = $config->get($variant . '_seo_title')
+      ?: $config->get('seo_' . $variant . '_title')
+      ?: ($defaults[$variant][0] ?? $defaults['generic'][0]);
+    $seo_desc = $config->get($variant . '_seo_description')
+      ?: $config->get('seo_' . $variant . '_description')
+      ?: ($defaults[$variant][1] ?? $defaults['generic'][1]);
 
     // Sobreescribir metatag module values via html_head con peso alto.
     $attachments['#attached']['html_head'][] = [

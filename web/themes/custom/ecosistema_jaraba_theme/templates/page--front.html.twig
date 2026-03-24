@@ -68,15 +68,11 @@
     {# 30+ anos de experiencia como senal de confianza              #}
     {# ============================================================ #}
 
-    {# 1. HERO PEPEJARABA — Autoridad + experiencia #}
+    {# 1. HERO PEPEJARABA — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
       theme_settings: theme_settings,
       logged_in: logged_in,
-      hero: {
-        eyebrow: '+30 anos de experiencia · +100M EUR en fondos europeos gestionados · +50.000 personas formadas'|t,
-        title: 'Jose Jaraba — La experiencia detras de la plataforma que transforma profesionales, empresas e instituciones'|t,
-        subtitle: 'Emprendedor serial, experto en fondos europeos y fundador de Plataforma de Ecosistemas Digitales. He construido la herramienta que me hubiera gustado tener hace 30 anos.'|t,
-      },
+      hero: metasite_content.hero|default({}),
       ped_urls: ped_urls|default({}),
       meta_site: meta_site,
     } only %}
@@ -115,14 +111,9 @@
       ],
     } only %}
 
-    {# 3. STATS — Resultados verificables de Pepe #}
+    {# 3. STATS — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
-      stats: [
-        { value: 30, suffix: '+', label: 'anos de experiencia'|t },
-        { value: 100, suffix: 'M+', label: 'EUR gestionados en fondos europeos'|t },
-        { value: 50, suffix: '.000+', label: 'personas formadas y orientadas'|t },
-        { value: 10, suffix: '', label: 'verticales construidos'|t }
-      ],
+      stats: metasite_content.stats|default([]),
       is_ped: true,
     } only %}
 
@@ -176,13 +167,13 @@
     {# 12. FAQ #}
     {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
 
-    {# 13. CTA FINAL — Contactar con Pepe (variant-specific) #}
+    {# 13. CTA FINAL — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
       logged_in: logged_in,
       ped_urls: ped_urls|default({}),
-      cta_headline: 'Hablemos. Tu primer paso hacia la transformacion.'|t,
-      cta_subtitle: '30+ anos de experiencia en empleo, emprendimiento y fondos europeos. Una conversacion puede cambiarlo todo.'|t,
-      cta_primary_text: 'Agendar llamada con Pepe'|t,
+      cta_headline: metasite_content.cta_final.headline|default(''),
+      cta_subtitle: metasite_content.cta_final.subtitle|default(''),
+      cta_primary_text: metasite_content.cta_final.primary_text|default(''),
       cta_primary_url: ped_urls.contacto|default('/contacto'),
       cta_secondary_text: 'Ver la metodologia'|t,
       cta_secondary_url: ped_urls.metodo|default('/metodo'),
@@ -194,17 +185,11 @@
     {# Vender el modelo replicable a partners                       #}
     {# ============================================================ #}
 
-    {# 1. HERO JARABAIMPACT — Escalar con franquicia digital #}
+    {# 1. HERO JARABAIMPACT — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_hero.html.twig' with {
       theme_settings: theme_settings,
       logged_in: logged_in,
-      hero: {
-        eyebrow: 'Franquicia digital con 10 verticales · 11 agentes IA · modelo validado con +30 anos de experiencia'|t,
-        title: 'Escala tu negocio digital con la franquicia que ya funciona'|t,
-        subtitle: 'Red de consultores certificados, franquicias territoriales con royalties y un marketplace de expertos. Tu marca, nuestra tecnologia.'|t,
-        cta_primary: { text: 'Solicitar informacion'|t, url: ped_urls.contacto|default('/contacto') },
-        cta_secondary: { text: 'Ver modelo de negocio'|t },
-      },
+      hero: metasite_content.hero|default({}),
       ped_urls: ped_urls|default({}),
       meta_site: meta_site,
     } only %}
@@ -243,14 +228,9 @@
       ],
     } only %}
 
-    {# 3. STATS — Modelo de negocio en numeros #}
+    {# 3. STATS — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
-      stats: [
-        { value: 10, suffix: '', label: 'verticales listos para operar'|t },
-        { value: 11, suffix: '', label: 'agentes IA incluidos'|t },
-        { value: 30, suffix: '+', label: 'anos de metodologia validada'|t },
-        { value: 3, suffix: '', label: 'niveles de certificacion'|t }
-      ],
+      stats: metasite_content.stats|default([]),
       is_ped: false,
     } only %}
 
@@ -333,13 +313,13 @@
     {# 12. FAQ #}
     {% include '@ecosistema_jaraba_theme/partials/_faq-homepage.html.twig' %}
 
-    {# 13. CTA FINAL — Franquicia (variant-specific) #}
+    {# 13. CTA FINAL — Desde theme settings (METASITE-CONTENT-001) #}
     {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
       logged_in: logged_in,
       ped_urls: ped_urls|default({}),
-      cta_headline: 'Tu franquicia digital. Tu territorio. Nuestra tecnologia.'|t,
-      cta_subtitle: 'Modelo validado con 30+ anos de experiencia, 10 verticales y 11 agentes IA. Solicita informacion sin compromiso.'|t,
-      cta_primary_text: 'Solicitar info franquicia'|t,
+      cta_headline: metasite_content.cta_final.headline|default(''),
+      cta_subtitle: metasite_content.cta_final.subtitle|default(''),
+      cta_primary_text: metasite_content.cta_final.primary_text|default(''),
       cta_primary_url: ped_urls.contacto|default('/contacto'),
       cta_secondary_text: 'Descargar dossier'|t,
       cta_secondary_url: ped_urls.contacto|default('/contacto'),

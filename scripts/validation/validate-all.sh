@@ -500,6 +500,15 @@ if [ "$MODE" = "full" ]; then
   run_check "HOMEPAGE-VIDEO-A11Y-001" "Video hero accessibility compliance" \
     php "$SCRIPT_DIR/validate-homepage-video-a11y.php"
 
+  run_check "METASITE-CONTENT-COMPLETENESS-001" "Metasite per-variant content completeness" \
+    php "$SCRIPT_DIR/validate-metasite-content-completeness.php"
+
+  run_check "METASITE-VARIANT-MAP-SSOT-001" "Variant map SSOT (no hardcoded duplicates)" \
+    php "$SCRIPT_DIR/validate-metasite-variant-map-ssot.php"
+
+  run_check "METASITE-DEAD-FIELDS-001" "Dead fields cleanup (old TAB 15)" \
+    php "$SCRIPT_DIR/validate-metasite-dead-fields.php"
+
   run_check "SAFEGUARD-AEI-CAMPAIGN-001" "Andalucia +ei reclutamiento landing readiness" \
     php "$SCRIPT_DIR/validate-aei-reclutamiento-campaign.php"
 

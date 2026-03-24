@@ -29,6 +29,34 @@ use Symfony\Component\HttpFoundation\Request;
 class MetaSiteResolverService {
 
   /**
+   * Mapa canónico group_id → variante de metasitio.
+   *
+   * SSOT — METASITE-VARIANT-MAP-SSOT-001: Este es el ÚNICO lugar donde se
+   * define la correspondencia group_id → variant. NUNCA duplicar en .theme
+   * ni en otros servicios.
+   */
+  public const VARIANT_MAP = [
+    5 => 'pepejaraba',
+    6 => 'jarabaimpact',
+    7 => 'pde',
+  ];
+
+  /**
+   * Variantes conocidas incluyendo el genérico (sin group_id).
+   */
+  public const KNOWN_VARIANTS = ['generic', 'pde', 'jarabaimpact', 'pepejaraba'];
+
+  /**
+   * Etiquetas humanas por variante (para formularios admin).
+   */
+  public const VARIANT_LABELS = [
+    'generic' => 'SaaS Hub (plataformadeecosistemas.com)',
+    'pde' => 'PED Corporativo (plataformadeecosistemas.es)',
+    'jarabaimpact' => 'Franquicia (jarabaimpact.com)',
+    'pepejaraba' => 'Marca Personal (pepejaraba.com)',
+  ];
+
+  /**
    * Cache estática por request para evitar queries repetidas.
    *
    * @var array

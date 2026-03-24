@@ -22,7 +22,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "access" = "Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "list_builder" = "Drupal\jaraba_theming\Entity\TenantThemeConfigListBuilder",
  *     "form" = {
  *       "default" = "Drupal\jaraba_theming\Form\TenantThemeConfigForm",
  *       "add" = "Drupal\jaraba_theming\Form\TenantThemeConfigForm",

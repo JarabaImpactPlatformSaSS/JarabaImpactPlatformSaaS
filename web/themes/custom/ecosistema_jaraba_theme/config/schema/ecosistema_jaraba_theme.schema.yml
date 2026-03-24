@@ -377,63 +377,401 @@ ecosistema_jaraba_theme.settings:
       type: string
       label: 'Contenido página de contacto'
 
-    # ── Hero Content ──
-    hero_eyebrow:
-      type: string
-      label: 'Eyebrow del hero'
-    hero_headline:
-      type: string
-      label: 'Titular del hero'
-    hero_subtitle:
-      type: string
-      label: 'Subtítulo del hero'
-    hero_cta_primary_text:
-      type: string
-      label: 'Texto CTA primario hero'
-    hero_cta_secondary_text:
-      type: string
-      label: 'Texto CTA secundario hero'
-    hero_cta_secondary_url:
-      type: string
-      label: 'URL CTA secundario hero'
+    # ── Metasite Content per-variant (METASITE-CONTENT-001) ──
+    # 4 variantes × 24 campos = 96 config keys
+    # Variantes: generic, pde, jarabaimpact, pepejaraba
 
-    # ── Stats Section ──
-    stat_value_1:
+    # -- generic (SaaS Hub) --
+    generic_hero_eyebrow:
       type: string
-      label: 'Valor estadística 1'
-    stat_suffix_1:
+      label: 'Eyebrow hero — SaaS Hub'
+    generic_hero_headline:
       type: string
-      label: 'Sufijo estadística 1'
-    stat_label_1:
+      label: 'Headline hero — SaaS Hub'
+    generic_hero_subtitle:
       type: string
-      label: 'Etiqueta estadística 1'
-    stat_value_2:
+      label: 'Subtítulo hero — SaaS Hub'
+    generic_hero_cta_primary_text:
       type: string
-      label: 'Valor estadística 2'
-    stat_suffix_2:
+      label: 'CTA primario texto — SaaS Hub'
+    generic_hero_cta_primary_url:
       type: string
-      label: 'Sufijo estadística 2'
-    stat_label_2:
+      label: 'CTA primario URL — SaaS Hub'
+    generic_hero_cta_secondary_text:
       type: string
-      label: 'Etiqueta estadística 2'
-    stat_value_3:
+      label: 'CTA secundario texto — SaaS Hub'
+    generic_hero_cta_secondary_url:
       type: string
-      label: 'Valor estadística 3'
-    stat_suffix_3:
+      label: 'CTA secundario URL — SaaS Hub'
+    generic_stat_value_1:
       type: string
-      label: 'Sufijo estadística 3'
-    stat_label_3:
+      label: 'Stat 1 valor — SaaS Hub'
+    generic_stat_suffix_1:
       type: string
-      label: 'Etiqueta estadística 3'
-    stat_value_4:
+      label: 'Stat 1 sufijo — SaaS Hub'
+    generic_stat_label_1:
       type: string
-      label: 'Valor estadística 4'
-    stat_suffix_4:
+      label: 'Stat 1 etiqueta — SaaS Hub'
+    generic_stat_value_2:
       type: string
-      label: 'Sufijo estadística 4'
-    stat_label_4:
+      label: 'Stat 2 valor — SaaS Hub'
+    generic_stat_suffix_2:
       type: string
-      label: 'Etiqueta estadística 4'
+      label: 'Stat 2 sufijo — SaaS Hub'
+    generic_stat_label_2:
+      type: string
+      label: 'Stat 2 etiqueta — SaaS Hub'
+    generic_stat_value_3:
+      type: string
+      label: 'Stat 3 valor — SaaS Hub'
+    generic_stat_suffix_3:
+      type: string
+      label: 'Stat 3 sufijo — SaaS Hub'
+    generic_stat_label_3:
+      type: string
+      label: 'Stat 3 etiqueta — SaaS Hub'
+    generic_stat_value_4:
+      type: string
+      label: 'Stat 4 valor — SaaS Hub'
+    generic_stat_suffix_4:
+      type: string
+      label: 'Stat 4 sufijo — SaaS Hub'
+    generic_stat_label_4:
+      type: string
+      label: 'Stat 4 etiqueta — SaaS Hub'
+    generic_cta_headline:
+      type: string
+      label: 'CTA final titular — SaaS Hub'
+    generic_cta_subtitle:
+      type: string
+      label: 'CTA final subtítulo — SaaS Hub'
+    generic_cta_primary_text:
+      type: string
+      label: 'CTA final botón — SaaS Hub'
+    generic_header_cta_text:
+      type: string
+      label: 'Header CTA texto — SaaS Hub'
+    generic_header_cta_url:
+      type: string
+      label: 'Header CTA URL — SaaS Hub'
+    generic_footer_copyright:
+      type: string
+      label: 'Footer copyright — SaaS Hub'
+    generic_social_facebook:
+      type: string
+      label: 'Facebook URL — SaaS Hub'
+    generic_social_twitter:
+      type: string
+      label: 'Twitter URL — SaaS Hub'
+    generic_social_linkedin:
+      type: string
+      label: 'LinkedIn URL — SaaS Hub'
+    generic_social_instagram:
+      type: string
+      label: 'Instagram URL — SaaS Hub'
+    generic_social_youtube:
+      type: string
+      label: 'YouTube URL — SaaS Hub'
+    generic_seo_title:
+      type: string
+      label: 'SEO title — SaaS Hub'
+    generic_seo_description:
+      type: string
+      label: 'SEO description — SaaS Hub'
+
+    # -- pde (PED Corporativo) --
+    pde_hero_eyebrow:
+      type: string
+      label: 'Eyebrow hero — PED'
+    pde_hero_headline:
+      type: string
+      label: 'Headline hero — PED'
+    pde_hero_subtitle:
+      type: string
+      label: 'Subtítulo hero — PED'
+    pde_hero_cta_primary_text:
+      type: string
+      label: 'CTA primario texto — PED'
+    pde_hero_cta_primary_url:
+      type: string
+      label: 'CTA primario URL — PED'
+    pde_hero_cta_secondary_text:
+      type: string
+      label: 'CTA secundario texto — PED'
+    pde_hero_cta_secondary_url:
+      type: string
+      label: 'CTA secundario URL — PED'
+    pde_stat_value_1:
+      type: string
+      label: 'Stat 1 valor — PED'
+    pde_stat_suffix_1:
+      type: string
+      label: 'Stat 1 sufijo — PED'
+    pde_stat_label_1:
+      type: string
+      label: 'Stat 1 etiqueta — PED'
+    pde_stat_value_2:
+      type: string
+      label: 'Stat 2 valor — PED'
+    pde_stat_suffix_2:
+      type: string
+      label: 'Stat 2 sufijo — PED'
+    pde_stat_label_2:
+      type: string
+      label: 'Stat 2 etiqueta — PED'
+    pde_stat_value_3:
+      type: string
+      label: 'Stat 3 valor — PED'
+    pde_stat_suffix_3:
+      type: string
+      label: 'Stat 3 sufijo — PED'
+    pde_stat_label_3:
+      type: string
+      label: 'Stat 3 etiqueta — PED'
+    pde_stat_value_4:
+      type: string
+      label: 'Stat 4 valor — PED'
+    pde_stat_suffix_4:
+      type: string
+      label: 'Stat 4 sufijo — PED'
+    pde_stat_label_4:
+      type: string
+      label: 'Stat 4 etiqueta — PED'
+    pde_cta_headline:
+      type: string
+      label: 'CTA final titular — PED'
+    pde_cta_subtitle:
+      type: string
+      label: 'CTA final subtítulo — PED'
+    pde_cta_primary_text:
+      type: string
+      label: 'CTA final botón — PED'
+    pde_header_cta_text:
+      type: string
+      label: 'Header CTA texto — PED'
+    pde_header_cta_url:
+      type: string
+      label: 'Header CTA URL — PED'
+    pde_footer_copyright:
+      type: string
+      label: 'Footer copyright — PED'
+    pde_social_facebook:
+      type: string
+      label: 'Facebook URL — PED'
+    pde_social_twitter:
+      type: string
+      label: 'Twitter URL — PED'
+    pde_social_linkedin:
+      type: string
+      label: 'LinkedIn URL — PED'
+    pde_social_instagram:
+      type: string
+      label: 'Instagram URL — PED'
+    pde_social_youtube:
+      type: string
+      label: 'YouTube URL — PED'
+    pde_seo_title:
+      type: string
+      label: 'SEO title — PED'
+    pde_seo_description:
+      type: string
+      label: 'SEO description — PED'
+
+    # -- jarabaimpact (Franquicia) --
+    jarabaimpact_hero_eyebrow:
+      type: string
+      label: 'Eyebrow hero — Jaraba Impact'
+    jarabaimpact_hero_headline:
+      type: string
+      label: 'Headline hero — Jaraba Impact'
+    jarabaimpact_hero_subtitle:
+      type: string
+      label: 'Subtítulo hero — Jaraba Impact'
+    jarabaimpact_hero_cta_primary_text:
+      type: string
+      label: 'CTA primario texto — Jaraba Impact'
+    jarabaimpact_hero_cta_primary_url:
+      type: string
+      label: 'CTA primario URL — Jaraba Impact'
+    jarabaimpact_hero_cta_secondary_text:
+      type: string
+      label: 'CTA secundario texto — Jaraba Impact'
+    jarabaimpact_hero_cta_secondary_url:
+      type: string
+      label: 'CTA secundario URL — Jaraba Impact'
+    jarabaimpact_stat_value_1:
+      type: string
+      label: 'Stat 1 valor — Jaraba Impact'
+    jarabaimpact_stat_suffix_1:
+      type: string
+      label: 'Stat 1 sufijo — Jaraba Impact'
+    jarabaimpact_stat_label_1:
+      type: string
+      label: 'Stat 1 etiqueta — Jaraba Impact'
+    jarabaimpact_stat_value_2:
+      type: string
+      label: 'Stat 2 valor — Jaraba Impact'
+    jarabaimpact_stat_suffix_2:
+      type: string
+      label: 'Stat 2 sufijo — Jaraba Impact'
+    jarabaimpact_stat_label_2:
+      type: string
+      label: 'Stat 2 etiqueta — Jaraba Impact'
+    jarabaimpact_stat_value_3:
+      type: string
+      label: 'Stat 3 valor — Jaraba Impact'
+    jarabaimpact_stat_suffix_3:
+      type: string
+      label: 'Stat 3 sufijo — Jaraba Impact'
+    jarabaimpact_stat_label_3:
+      type: string
+      label: 'Stat 3 etiqueta — Jaraba Impact'
+    jarabaimpact_stat_value_4:
+      type: string
+      label: 'Stat 4 valor — Jaraba Impact'
+    jarabaimpact_stat_suffix_4:
+      type: string
+      label: 'Stat 4 sufijo — Jaraba Impact'
+    jarabaimpact_stat_label_4:
+      type: string
+      label: 'Stat 4 etiqueta — Jaraba Impact'
+    jarabaimpact_cta_headline:
+      type: string
+      label: 'CTA final titular — Jaraba Impact'
+    jarabaimpact_cta_subtitle:
+      type: string
+      label: 'CTA final subtítulo — Jaraba Impact'
+    jarabaimpact_cta_primary_text:
+      type: string
+      label: 'CTA final botón — Jaraba Impact'
+    jarabaimpact_header_cta_text:
+      type: string
+      label: 'Header CTA texto — Jaraba Impact'
+    jarabaimpact_header_cta_url:
+      type: string
+      label: 'Header CTA URL — Jaraba Impact'
+    jarabaimpact_footer_copyright:
+      type: string
+      label: 'Footer copyright — Jaraba Impact'
+    jarabaimpact_social_facebook:
+      type: string
+      label: 'Facebook URL — Jaraba Impact'
+    jarabaimpact_social_twitter:
+      type: string
+      label: 'Twitter URL — Jaraba Impact'
+    jarabaimpact_social_linkedin:
+      type: string
+      label: 'LinkedIn URL — Jaraba Impact'
+    jarabaimpact_social_instagram:
+      type: string
+      label: 'Instagram URL — Jaraba Impact'
+    jarabaimpact_social_youtube:
+      type: string
+      label: 'YouTube URL — Jaraba Impact'
+    jarabaimpact_seo_title:
+      type: string
+      label: 'SEO title — Jaraba Impact'
+    jarabaimpact_seo_description:
+      type: string
+      label: 'SEO description — Jaraba Impact'
+
+    # -- pepejaraba (Marca Personal) --
+    pepejaraba_hero_eyebrow:
+      type: string
+      label: 'Eyebrow hero — Pepe Jaraba'
+    pepejaraba_hero_headline:
+      type: string
+      label: 'Headline hero — Pepe Jaraba'
+    pepejaraba_hero_subtitle:
+      type: string
+      label: 'Subtítulo hero — Pepe Jaraba'
+    pepejaraba_hero_cta_primary_text:
+      type: string
+      label: 'CTA primario texto — Pepe Jaraba'
+    pepejaraba_hero_cta_primary_url:
+      type: string
+      label: 'CTA primario URL — Pepe Jaraba'
+    pepejaraba_hero_cta_secondary_text:
+      type: string
+      label: 'CTA secundario texto — Pepe Jaraba'
+    pepejaraba_hero_cta_secondary_url:
+      type: string
+      label: 'CTA secundario URL — Pepe Jaraba'
+    pepejaraba_stat_value_1:
+      type: string
+      label: 'Stat 1 valor — Pepe Jaraba'
+    pepejaraba_stat_suffix_1:
+      type: string
+      label: 'Stat 1 sufijo — Pepe Jaraba'
+    pepejaraba_stat_label_1:
+      type: string
+      label: 'Stat 1 etiqueta — Pepe Jaraba'
+    pepejaraba_stat_value_2:
+      type: string
+      label: 'Stat 2 valor — Pepe Jaraba'
+    pepejaraba_stat_suffix_2:
+      type: string
+      label: 'Stat 2 sufijo — Pepe Jaraba'
+    pepejaraba_stat_label_2:
+      type: string
+      label: 'Stat 2 etiqueta — Pepe Jaraba'
+    pepejaraba_stat_value_3:
+      type: string
+      label: 'Stat 3 valor — Pepe Jaraba'
+    pepejaraba_stat_suffix_3:
+      type: string
+      label: 'Stat 3 sufijo — Pepe Jaraba'
+    pepejaraba_stat_label_3:
+      type: string
+      label: 'Stat 3 etiqueta — Pepe Jaraba'
+    pepejaraba_stat_value_4:
+      type: string
+      label: 'Stat 4 valor — Pepe Jaraba'
+    pepejaraba_stat_suffix_4:
+      type: string
+      label: 'Stat 4 sufijo — Pepe Jaraba'
+    pepejaraba_stat_label_4:
+      type: string
+      label: 'Stat 4 etiqueta — Pepe Jaraba'
+    pepejaraba_cta_headline:
+      type: string
+      label: 'CTA final titular — Pepe Jaraba'
+    pepejaraba_cta_subtitle:
+      type: string
+      label: 'CTA final subtítulo — Pepe Jaraba'
+    pepejaraba_cta_primary_text:
+      type: string
+      label: 'CTA final botón — Pepe Jaraba'
+    pepejaraba_header_cta_text:
+      type: string
+      label: 'Header CTA texto — Pepe Jaraba'
+    pepejaraba_header_cta_url:
+      type: string
+      label: 'Header CTA URL — Pepe Jaraba'
+    pepejaraba_footer_copyright:
+      type: string
+      label: 'Footer copyright — Pepe Jaraba'
+    pepejaraba_social_facebook:
+      type: string
+      label: 'Facebook URL — Pepe Jaraba'
+    pepejaraba_social_twitter:
+      type: string
+      label: 'Twitter URL — Pepe Jaraba'
+    pepejaraba_social_linkedin:
+      type: string
+      label: 'LinkedIn URL — Pepe Jaraba'
+    pepejaraba_social_instagram:
+      type: string
+      label: 'Instagram URL — Pepe Jaraba'
+    pepejaraba_social_youtube:
+      type: string
+      label: 'YouTube URL — Pepe Jaraba'
+    pepejaraba_seo_title:
+      type: string
+      label: 'SEO title — Pepe Jaraba'
+    pepejaraba_seo_description:
+      type: string
+      label: 'SEO description — Pepe Jaraba'
     # ── PLG Pricing (PRICING-4TIER-001 / NO-HARDCODE-PRICE-001) ──
     plg_annual_discount_percent:
       type: integer

@@ -1636,6 +1636,23 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.setup_wizard_step }
 
+  # METASITE-CONTENT-001: Setup wizard step para contenido de metasitios.
+  ecosistema_jaraba_core.setup_wizard.configurar_metasite_content:
+    class: Drupal\ecosistema_jaraba_core\SetupWizard\ConfigurarMetaSiteContentStep
+    arguments:
+      - '@config.factory'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  # METASITE-CONTENT-001: Daily action para revisar contenido de metasitios.
+  ecosistema_jaraba_core.daily_actions.revisar_contenido_metasites:
+    class: Drupal\ecosistema_jaraba_core\DailyActions\RevisarContenidoMetaSitesAction
+    arguments:
+      - '@config.factory'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
   # GroundingProvider: Inyecta promociones activas en copilot (prioridad 100)
   ecosistema_jaraba_core.grounding_provider.promotion:
     class: Drupal\ecosistema_jaraba_core\Grounding\PromotionGroundingProvider
