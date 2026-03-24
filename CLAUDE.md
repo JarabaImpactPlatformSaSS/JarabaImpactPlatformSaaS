@@ -354,12 +354,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v164.0.0
+- DIRECTRICES: v165.0.0
 - ARQUITECTURA: v149.0.0
 - INDICE: v194.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #217
-- Ultima golden rule: #154
+- Ultimo aprendizaje: #219
+- Ultima golden rule: #155
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
