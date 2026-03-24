@@ -13,17 +13,17 @@
 
 # --- ORIENTACIÓN INDIVIDUAL ---
 
-OI-1.1:
+OI-1_1:
   - "Ayúdame a redactar mi perfil profesional destacando mis experiencias más relevantes"
   - "Evalúa mi nivel de competencias digitales según estas respuestas"
   - "Sugiere 3 objetivos profesionales realistas basados en mi perfil"
 
-OI-1.2:
+OI-1_2:
   - "Analiza mis respuestas de las fichas y ayúdame a identificar patrones"
   - "¿Qué competencias transferibles detectas en mi historia laboral?"
   - "Compara mis intereses RIASEC con los 5 packs disponibles"
 
-OI-2.2:
+OI-2_2:
   - "Ayúdame a formular 3 objetivos SMART para mi ruta en el pack {pack_confirmado}"
   - "¿Qué pack se ajusta mejor a mi perfil RIASEC y experiencia?"
   - "Diseña una ruta personalizada de 18 meses considerando mis barreras"
