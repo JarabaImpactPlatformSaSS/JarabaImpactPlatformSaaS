@@ -2633,3 +2633,56 @@ function jaraba_andalucia_ei_page_attachments_alter(array &$attachments): void {
     'fases' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::FASES_PROGRAMA,
   ];
 }
+
+// =============================================================================
+// SPRINT B — 2ª EDICIÓN: PREPROCESS HOOKS
+// =============================================================================
+
+/**
+ * Prepares variables for pack_servicio_ei templates.
+ *
+ * ENTITY-PREPROCESS-001: Required for every ContentEntity with view mode.
+ */
+function template_preprocess_pack_servicio_ei(array &$variables): void {
+  $entity = $variables['elements']['#pack_servicio_ei'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\PackServicioEi $entity */
+  $variables['pack_servicio_ei'] = $entity;
+  // LABEL-NULLSAFE-001: label() puede devolver NULL.
+  $variables['label'] = $entity->label() ?? t('Pack #@id', ['@id' => $entity->id()]);
+}
+
+/**
+ * Prepares variables for entregable_formativo_ei templates.
+ *
+ * ENTITY-PREPROCESS-001: Required for every ContentEntity with view mode.
+ */
+function template_preprocess_entregable_formativo_ei(array &$variables): void {
+  $entity = $variables['elements']['#entregable_formativo_ei'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\EntregableFormativoEi $entity */
+  $variables['entregable_formativo_ei'] = $entity;
+  $variables['label'] = $entity->label() ?? t('Entregable #@id', ['@id' => $entity->id()]);
+}
+
+/**
+ * Prepares variables for negocio_prospectado_ei templates.
+ *
+ * ENTITY-PREPROCESS-001: Required for every ContentEntity with view mode.
+ */
+function template_preprocess_negocio_prospectado_ei(array &$variables): void {
+  $entity = $variables['elements']['#negocio_prospectado_ei'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\NegocioProspectadoEi $entity */
+  $variables['negocio_prospectado_ei'] = $entity;
+  $variables['label'] = $entity->label() ?? t('Negocio #@id', ['@id' => $entity->id()]);
+}
