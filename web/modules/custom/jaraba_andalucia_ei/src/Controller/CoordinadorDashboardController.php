@@ -21,6 +21,7 @@ use Drupal\jaraba_andalucia_ei\Service\JustificacionEconomicaService;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Drupal\jaraba_andalucia_ei\Service\ProspeccionService;
 use Drupal\jaraba_andalucia_ei\Service\PuntosImpactoEiService;
+use Drupal\jaraba_andalucia_ei\Service\RegistroHorasEquipoService;
 use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
 use Drupal\jaraba_andalucia_ei\Service\SesionProgramadaService;
 use Drupal\jaraba_andalucia_ei\Service\VoboSaeWorkflowService;
@@ -59,6 +60,7 @@ class CoordinadorDashboardController extends ControllerBase {
     protected ?StoBidireccionalService $stoBidireccional = NULL,
     protected ?SetupWizardRegistry $wizardRegistry = NULL,
     protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
+    protected ?RegistroHorasEquipoService $registroHorasEquipo = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -102,6 +104,7 @@ class CoordinadorDashboardController extends ControllerBase {
         ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
       $container->has('ecosistema_jaraba_core.daily_actions_registry')
         ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
+      $container->get('jaraba_andalucia_ei.registro_horas_equipo'),
     );
   }
 

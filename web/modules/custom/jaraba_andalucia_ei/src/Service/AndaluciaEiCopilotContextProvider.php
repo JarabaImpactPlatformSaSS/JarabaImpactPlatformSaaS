@@ -39,6 +39,8 @@ class AndaluciaEiCopilotContextProvider {
     protected ExpedienteService $expedienteService,
     protected LoggerInterface $logger,
     protected ?TenantContextService $tenantContext = NULL,
+    protected ?CopilotPhaseConfigService $phaseConfig = NULL,
+    protected ?CopilotHistorialService $copilotHistorial = NULL,
   ) {}
 
   /**

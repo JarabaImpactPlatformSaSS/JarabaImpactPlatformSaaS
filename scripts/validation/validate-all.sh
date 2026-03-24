@@ -560,6 +560,12 @@ if [ "$MODE" = "full" ]; then
   run_check "COPILOT-PROMPT-DRIFT-001" "Copilot prompt drift detection" \
     php "$SCRIPT_DIR/validate-copilot-prompt-drift.php"
 
+  run_check "ANDALUCIA-EI-2E-SPRINT-A-001" "Andalucía +ei 2ª Edición Sprint A integrity" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-sprint-a.php"
+
+  run_check "ANDALUCIA-EI-ROLES-001" "Andalucía +ei role system integrity" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-roles.php"
+
   # Infrastructure health (production-only, skips gracefully in CI).
   warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \
     php "$SCRIPT_DIR/validate-infra-health.php"

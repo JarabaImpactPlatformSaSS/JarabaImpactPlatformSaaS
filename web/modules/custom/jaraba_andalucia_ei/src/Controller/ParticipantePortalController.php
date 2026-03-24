@@ -9,8 +9,12 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface;
 use Drupal\jaraba_andalucia_ei\Service\AccesoProgramaService;
+use Drupal\jaraba_andalucia_ei\Service\EiComercioConectaBridgeService;
+use Drupal\jaraba_andalucia_ei\Service\EiContentHubBridgeService;
 use Drupal\jaraba_andalucia_ei\Service\EiEmprendimientoBridgeService;
+use Drupal\jaraba_andalucia_ei\Service\EiJarabaLexBridgeService;
 use Drupal\jaraba_andalucia_ei\Service\ExpedienteService;
+use Drupal\jaraba_andalucia_ei\Service\PortfolioEntregablesService;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Drupal\jaraba_andalucia_ei\Service\InformeProgresoPdfService;
 use Drupal\jaraba_andalucia_ei\Service\InscripcionSesionService;
@@ -49,6 +53,10 @@ class ParticipantePortalController extends ControllerBase {
     protected ?EiEmprendimientoBridgeService $emprendimientoBridge = NULL,
     protected ?InscripcionSesionService $inscripcionSesionService = NULL,
     protected ?ProgramaVerticalAccessInterface $verticalAccessService = NULL,
+    protected ?PortfolioEntregablesService $portfolioService = NULL,
+    protected ?EiContentHubBridgeService $contentHubBridge = NULL,
+    protected ?EiComercioConectaBridgeService $comercioConectaBridge = NULL,
+    protected ?EiJarabaLexBridgeService $jarabaLexBridge = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -93,6 +101,18 @@ class ParticipantePortalController extends ControllerBase {
         : NULL,
       $container->has('jaraba_andalucia_ei.programa_vertical_access')
         ? $container->get('jaraba_andalucia_ei.programa_vertical_access')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.portfolio_entregables')
+        ? $container->get('jaraba_andalucia_ei.portfolio_entregables')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.ei_content_hub_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_content_hub_bridge')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.ei_comercio_conecta_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_comercio_conecta_bridge')
+        : NULL,
+      $container->has('jaraba_andalucia_ei.ei_jarabalex_bridge')
+        ? $container->get('jaraba_andalucia_ei.ei_jarabalex_bridge')
         : NULL,
     );
   }

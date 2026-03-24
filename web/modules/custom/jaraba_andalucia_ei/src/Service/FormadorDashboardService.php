@@ -21,6 +21,7 @@ class FormadorDashboardService {
     protected readonly AccountProxyInterface $currentUser,
     protected readonly ?object $tenantContext,
     protected readonly LoggerInterface $logger,
+    protected readonly ?AsistenciaComplianceService $asistenciaCompliance = NULL,
   ) {}
 
   /**

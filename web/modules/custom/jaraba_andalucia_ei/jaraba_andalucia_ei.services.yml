@@ -78,6 +78,7 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@?jaraba_andalucia_ei.copilot_phase_config'
+      - '@?jaraba_andalucia_ei.copilot_historial'
 
   jaraba_andalucia_ei.adaptive_difficulty:
     class: Drupal\jaraba_andalucia_ei\Service\AdaptiveDifficultyEngine
