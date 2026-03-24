@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * Página pública del catálogo de servicios de un participante.
+ *
+ * Variables:
+ *   - pack: Entity PackServicioEi con datos del pack publicado.
+ *   - participante_nombre: Nombre del profesional.
+ *   - pack_data: Array con datos procesados del pack.
+ *
+ * ZERO-REGION-001: Página frontend limpia.
+ * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
+ * ICON-CONVENTION-001: jaraba_icon() duotone.
+ */
+#}
+
+<div class="aei-catalogo-publico">
+
+  {# === HEADER PROFESIONAL === #}
+  <header class="aei-catalogo-publico__header">
+    <div class="aei-catalogo-publico__header-content">
+      {{ jaraba_icon('users', 'user', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}
+      <div>
+        <h1 class="aei-catalogo-publico__nombre">{{ participante_nombre|default('Profesional') }}</h1>
+        <p class="aei-catalogo-publico__subtitle">{% trans %}Servicios digitales profesionales{% endtrans %}</p>
+      </div>
+    </div>
+  </header>
+
+  {# === FICHA DEL PACK === #}
+  <section class="aei-catalogo-publico__pack">
+    <div class="aei-catalogo-publico__pack-header">
+      <h2 class="aei-catalogo-publico__pack-titulo">{{ pack_data.titulo|default('') }}</h2>
+      <span class="aei-catalogo-publico__pack-tipo">
+        {{ jaraba_icon('commerce', 'store', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+        {{ pack_data.tipo_label|default('') }}
+      </span>
+    </div>
+
+    {% if pack_data.descripcion is not empty %}
+      <div class="aei-catalogo-publico__descripcion">
+        {{ pack_data.descripcion }}
+      </div>
+    {% endif %}
+
+    {# === PRECIO === #}
+    <div class="aei-catalogo-publico__precio">
+      <span class="aei-catalogo-publico__precio-valor">{{ pack_data.precio_mensual|default('0') }}€</span>
+      <span class="aei-catalogo-publico__precio-periodo">/{% trans %}mes{% endtrans %}</span>
+      {% if pack_data.precio_setup is not empty %}
+        <span class="aei-catalogo-publico__precio-setup">
+          + {{ pack_data.precio_setup }}€ {% trans %}alta inicial{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {# === MODALIDAD === #}
+    <div class="aei-catalogo-publico__modalidad">
+      <span class="aei-badge aei-badge--info">{{ pack_data.modalidad_label|default('') }}</span>
+    </div>
+
+    {# === ENTREGABLES MENSUALES === #}
+    {% if pack_data.entregables is not empty %}
+      <div class="aei-catalogo-publico__entregables">
+        <h3>{% trans %}Qué incluye cada mes{% endtrans %}</h3>
+        <ul>
+          {% for entregable in pack_data.entregables %}
+            <li>
+              {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+              {{ entregable }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {# === CTA CONTRATAR === #}
+    <div class="aei-catalogo-publico__cta">
+      <a href="#contacto" class="btn btn--xl btn--primary" data-track-cta="contratar-pack" data-track-position="catalogo-publico">
+        {{ jaraba_icon('commerce', 'store', { variant: 'duotone', color: 'white', size: '20px' }) }}
+        {% trans %}Contratar este servicio{% endtrans %}
+      </a>
+      <p class="aei-catalogo-publico__garantia">
+        {% trans %}Sin permanencia. Cancela cuando quieras. Facturación mensual.{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  {# === FORMULARIO CONTACTO === #}
+  <section id="contacto" class="aei-catalogo-publico__contacto">
+    <h2>{% trans %}¿Interesado? Escríbeme{% endtrans %}</h2>
+    <p>{% trans %}Rellena tus datos y te contactaré en menos de 24 horas para explicarte cómo puedo ayudar a tu negocio.{% endtrans %}</p>
+  </section>
+
+  {# === LOGOS COFINANCIACIÓN FSE+ === #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+</div>

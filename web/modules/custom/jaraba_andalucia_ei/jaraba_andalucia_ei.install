@@ -2253,3 +2253,65 @@ function jaraba_andalucia_ei_update_10033(): string {
     return 'Error installing asistencia_detallada_ei: ' . $e->getMessage();
   }
 }
+
+/**
+ * Install Sprint B entities: PackServicioEi, EntregableFormativoEi, EvaluacionCompetenciaIaEi.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New entities MUST have hook_update_N().
+ * UPDATE-HOOK-CATCH-001: Uses \Throwable.
+ */
+function jaraba_andalucia_ei_update_10034(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $results = [];
+
+    $entityTypes = ['pack_servicio_ei', 'entregable_formativo_ei', 'evaluacion_competencia_ia_ei'];
+
+    foreach ($entityTypes as $entityTypeId) {
+      if (!$updateManager->getEntityType($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
+        if ($entityType !== null) {
+          $updateManager->installEntityType($entityType);
+          $results[] = "$entityTypeId: installed";
+        }
+        else {
+          $results[] = "$entityTypeId: definition not found";
+        }
+      }
+      else {
+        $results[] = "$entityTypeId: already installed";
+      }
+    }
+
+    return 'Sprint B entities: ' . implode('; ', $results);
+  }
+  catch (\Throwable $e) {
+    return 'Error installing Sprint B entities: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install Sprint C entity: NegocioProspectadoEi (CRM clientes piloto).
+ *
+ * UPDATE-HOOK-REQUIRED-001, UPDATE-HOOK-CATCH-001.
+ */
+function jaraba_andalucia_ei_update_10035(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if (!$updateManager->getEntityType('negocio_prospectado_ei')) {
+      $entityType = $entityTypeManager->getDefinition('negocio_prospectado_ei', FALSE);
+      if ($entityType !== NULL) {
+        $updateManager->installEntityType($entityType);
+        return 'negocio_prospectado_ei: installed.';
+      }
+      return 'Warning: negocio_prospectado_ei definition not found.';
+    }
+    return 'negocio_prospectado_ei: already installed.';
+  }
+  catch (\Throwable $e) {
+    return 'Error installing negocio_prospectado_ei: ' . $e->getMessage();
+  }
+}

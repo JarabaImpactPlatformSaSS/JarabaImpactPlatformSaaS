@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * Entregables pendientes de validación por el formador.
+ *
+ * Variables:
+ *   - entregables_pendientes: Array de entregables con estado='completado'.
+ *
+ * TWIG-INCLUDE-ONLY-001: Incluir con `only`.
+ */
+#}
+
+<div class="aei-pendientes-validacion">
+  <h3 class="aei-pendientes-validacion__title">
+    {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+    {% trans %}Entregables pendientes de validación{% endtrans %}
+    {% if entregables_pendientes is not empty %}
+      <span class="aei-badge aei-badge--warning">{{ entregables_pendientes|length }}</span>
+    {% endif %}
+  </h3>
+
+  {% if entregables_pendientes is not empty %}
+    <div class="aei-pendientes-validacion__list">
+      {% for entregable in entregables_pendientes %}
+        <div class="aei-pendientes-validacion__item">
+          <div class="aei-pendientes-validacion__info">
+            <span class="aei-pendientes-validacion__numero">#{{ entregable.numero }}</span>
+            <span class="aei-pendientes-validacion__titulo">{{ entregable.titulo }}</span>
+            <span class="aei-pendientes-validacion__participante">{{ entregable.participante_nombre }}</span>
+          </div>
+          <button class="btn btn--sm btn--primary"
+                  data-slide-panel-url="{{ entregable.validar_url }}"
+                  data-slide-panel-size="medium">
+            {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'white', size: '14px' }) }}
+            {% trans %}Validar{% endtrans %}
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="aei-pendientes-validacion__empty">
+      {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'neutral', size: '32px' }) }}
+      <p>{% trans %}No hay entregables pendientes de validación{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

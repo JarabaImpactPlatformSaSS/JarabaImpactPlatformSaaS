@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Portfolio de entregables formativos del participante.
+ *
+ * Variables:
+ *   - portfolio: Array de entregables agrupados por módulo.
+ *   - progreso: { total, completados, validados, porcentaje }
+ *
+ * ICON-CONVENTION-001: jaraba_icon() duotone.
+ * TWIG-INCLUDE-ONLY-001: Incluir con `only`.
+ * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
+ */
+#}
+
+<div class="aei-portfolio">
+
+  {# === BARRA DE PROGRESO GLOBAL === #}
+  <div class="aei-portfolio__progress">
+    <div class="aei-portfolio__progress-bar">
+      <div class="aei-portfolio__progress-fill" style="width: {{ progreso.porcentaje|default(0) }}%"></div>
+    </div>
+    <div class="aei-portfolio__progress-stats">
+      <span class="aei-portfolio__stat">
+        {{ jaraba_icon('education', 'clipboard', { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+        {% trans %}{{ progreso.completados|default(0) }}/{{ progreso.total|default(29) }} completados{% endtrans %}
+      </span>
+      <span class="aei-portfolio__stat aei-portfolio__stat--validated">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+        {% trans %}{{ progreso.validados|default(0) }} validados{% endtrans %}
+      </span>
+    </div>
+  </div>
+
+  {# === MÓDULOS COMO ACORDEÓN === #}
+  {% set modulos = {
+    'orientacion': 'Orientación Inicial',
+    'modulo_0': 'Módulo 0 — Fundamentos IA',
+    'modulo_1': 'Módulo 1 — Propuesta de Valor',
+    'modulo_2': 'Módulo 2 — Finanzas',
+    'modulo_3': 'Módulo 3 — Trámites',
+    'modulo_4': 'Módulo 4 — Marketing Digital',
+    'modulo_5': 'Módulo 5 — Integración'
+  } %}
+
+  {% for modulo_key, modulo_label in modulos %}
+    {% if portfolio[modulo_key] is defined and portfolio[modulo_key] is not empty %}
+      <details class="aei-portfolio__modulo" {% if loop.first %}open{% endif %}>
+        <summary class="aei-portfolio__modulo-header">
+          {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+          <span class="aei-portfolio__modulo-title">{% trans %}{{ modulo_label }}{% endtrans %}</span>
+          <span class="aei-portfolio__modulo-count">{{ portfolio[modulo_key]|length }}</span>
+        </summary>
+        <div class="aei-portfolio__entregables">
+          {% for entregable in portfolio[modulo_key] %}
+            <div class="aei-portfolio__entregable aei-portfolio__entregable--{{ entregable.estado|default('pendiente') }}">
+              <div class="aei-portfolio__entregable-numero">#{{ entregable.numero }}</div>
+              <div class="aei-portfolio__entregable-info">
+                <h4 class="aei-portfolio__entregable-titulo">{{ entregable.titulo }}</h4>
+                <span class="aei-portfolio__entregable-sesion">{{ entregable.sesion_origen }}</span>
+              </div>
+              <div class="aei-portfolio__entregable-estado">
+                {% if entregable.estado == 'validado' %}
+                  <span class="aei-badge aei-badge--success">
+                    {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '14px' }) }}
+                    {% trans %}Validado{% endtrans %}
+                  </span>
+                {% elseif entregable.estado == 'completado' %}
+                  <span class="aei-badge aei-badge--info">
+                    {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'azul-corporativo', size: '14px' }) }}
+                    {% trans %}Completado{% endtrans %}
+                  </span>
+                {% elseif entregable.estado == 'en_progreso' %}
+                  <span class="aei-badge aei-badge--warning">
+                    {{ jaraba_icon('status', 'loading', { variant: 'duotone', color: 'naranja-impulso', size: '14px' }) }}
+                    {% trans %}En progreso{% endtrans %}
+                  </span>
+                {% else %}
+                  <span class="aei-badge aei-badge--neutral">
+                    {{ jaraba_icon('status', 'alert-circle', { variant: 'outline', color: 'neutral', size: '14px' }) }}
+                    {% trans %}Pendiente{% endtrans %}
+                  </span>
+                {% endif %}
+              </div>
+              {% if entregable.generado_con_ia %}
+                <span class="aei-portfolio__ia-badge" title="{% trans %}Generado con asistencia IA{% endtrans %}">
+                  {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'secondary', size: '14px' }) }}
+                </span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </details>
+    {% endif %}
+  {% endfor %}
+
+</div>

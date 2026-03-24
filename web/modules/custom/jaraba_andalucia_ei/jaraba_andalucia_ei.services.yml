@@ -575,6 +575,52 @@ services:
       - '@config.factory'
       - '@logger.channel.jaraba_andalucia_ei'
 
+  # =========================================================================
+  # Sprint B — 2ª Edición: Packs, Portfolio, Catálogo (SPEC-2E-002/003/008/009)
+  # =========================================================================
+
+  # SPEC-2E-008: Portfolio de 29 entregables formativos.
+  jaraba_andalucia_ei.portfolio_entregables:
+    class: Drupal\jaraba_andalucia_ei\Service\PortfolioEntregablesService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # SPEC-2E-009: Catálogo público de packs de servicios.
+  jaraba_andalucia_ei.catalogo_packs:
+    class: Drupal\jaraba_andalucia_ei\Service\CatalogoPacksService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # =========================================================================
+  # Sprint C — 3 Bridges cross-vertical (SPEC-2E-012)
+  # =========================================================================
+
+  # Bridge: Content Hub para Módulo 4 y Pack 1/5.
+  jaraba_andalucia_ei.ei_content_hub_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiContentHubBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_content_hub.content_service'
+
+  # Bridge: ComercioConecta para Pack 4 (Tienda Digital).
+  jaraba_andalucia_ei.ei_comercio_conecta_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiComercioConectaBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_comercioconecta.catalogo'
+
+  # Bridge: JarabaLex para Módulo 3 (Trámites legales).
+  jaraba_andalucia_ei.ei_jarabalex_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\EiJarabaLexBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_jarabalex.legal_service'
+
   # Daily Action: Plazos normativos vencidos (coordinador).
   jaraba_andalucia_ei.daily_action.plazos_vencidos:
     class: Drupal\jaraba_andalucia_ei\DailyActions\PlazosVencidosAction

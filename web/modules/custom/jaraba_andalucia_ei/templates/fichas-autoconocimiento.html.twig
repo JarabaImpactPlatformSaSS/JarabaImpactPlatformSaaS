@@ -1,0 +1,130 @@
+{#
+/**
+ * @file
+ * Wizard multi-step de 8 fichas de autoconocimiento (Orientación Inicial).
+ *
+ * Variables:
+ *   - fichas: Array de 8 fichas con titulo, descripcion, icono, tipo_campo.
+ *   - current_step: Paso actual (1-8).
+ *
+ * SPEC-2E-014: 8 fichas autoconocimiento OI.
+ * ICON-CONVENTION-001: jaraba_icon() duotone.
+ * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
+ */
+#}
+
+<div class="aei-fichas-wizard" data-fichas-wizard>
+
+  {# === PROGRESS BAR === #}
+  <div class="aei-fichas-wizard__progress">
+    {% for num, ficha in fichas %}
+      <div class="aei-fichas-wizard__step {% if num == current_step|default(1) %}is-active{% elseif num < current_step|default(1) %}is-completed{% endif %}"
+           data-step="{{ num }}">
+        <span class="aei-fichas-wizard__step-num">{{ num }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# === FICHAS (una por paso) === #}
+  {% for num, ficha in fichas %}
+    <div class="aei-fichas-wizard__ficha {% if num == current_step|default(1) %}is-visible{% endif %}"
+         data-ficha="{{ num }}">
+
+      <div class="aei-fichas-wizard__ficha-header">
+        {{ jaraba_icon(ficha.icono_categoria, ficha.icono_nombre, { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
+        <div>
+          <h2 class="aei-fichas-wizard__ficha-titulo">
+            {% trans %}Ficha {{ num }}:{% endtrans %} {{ ficha.titulo }}
+          </h2>
+          <p class="aei-fichas-wizard__ficha-desc">{{ ficha.descripcion }}</p>
+        </div>
+      </div>
+
+      <div class="aei-fichas-wizard__ficha-body">
+        {# El contenido del formulario se renderiza según tipo_campo via JS #}
+        <div class="aei-fichas-wizard__campo" data-tipo="{{ ficha.tipo_campo }}">
+          {% if ficha.tipo_campo == 'textarea' %}
+            <textarea class="aei-fichas-wizard__textarea"
+                      rows="6"
+                      placeholder="{% trans %}Escribe aquí tu respuesta...{% endtrans %}"
+                      data-field="ficha_{{ num }}"></textarea>
+
+          {% elseif ficha.tipo_campo == 'nivel_digital' %}
+            <div class="aei-fichas-wizard__opciones">
+              <label class="aei-fichas-wizard__opcion">
+                <input type="radio" name="nivel_digital" value="autonomo">
+                <span>
+                  {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+                  {% trans %}Nivel A — Autónomo: uso smartphone y apps con soltura{% endtrans %}
+                </span>
+              </label>
+              <label class="aei-fichas-wizard__opcion">
+                <input type="radio" name="nivel_digital" value="apoyo">
+                <span>
+                  {{ jaraba_icon('status', 'alert-circle', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+                  {% trans %}Nivel B — Apoyo: uso WhatsApp pero poco más{% endtrans %}
+                </span>
+              </label>
+              <label class="aei-fichas-wizard__opcion">
+                <input type="radio" name="nivel_digital" value="nivelacion">
+                <span>
+                  {{ jaraba_icon('status', 'alert-circle', { variant: 'duotone', color: 'danger', size: '20px' }) }}
+                  {% trans %}Nivel C — Nivelación: tengo dificultades significativas{% endtrans %}
+                </span>
+              </label>
+            </div>
+
+          {% elseif ficha.tipo_campo == 'pack_selector' %}
+            <div class="aei-fichas-wizard__packs">
+              {% set packs = {
+                'contenido_digital': 'Contenido Digital — Gestiona redes sociales de negocios (desde 150€/mes)',
+                'asistente_virtual': 'Asistente Virtual — Facturación, emails y organización (desde 150€/mes)',
+                'presencia_online': 'Presencia Online — Web y Google My Business (desde 150€/mes)',
+                'tienda_digital': 'Tienda Digital — Catálogo con pagos online (desde 300€/mes)',
+                'community_manager': 'Community Manager — Comunidad y engagement (desde 150€/mes)'
+              } %}
+              {% for pack_id, pack_label in packs %}
+                <label class="aei-fichas-wizard__pack-option">
+                  <input type="checkbox" name="pack_preseleccionado[]" value="{{ pack_id }}">
+                  <span>{{ pack_label }}</span>
+                </label>
+              {% endfor %}
+              <p class="aei-fichas-wizard__hint">{% trans %}Selecciona 1 a 3 packs que te interesen. Podrás cambiar tu elección más adelante.{% endtrans %}</p>
+            </div>
+
+          {% else %}
+            {# Generic structured/checklist — rendered via JS #}
+            <textarea class="aei-fichas-wizard__textarea"
+                      rows="6"
+                      placeholder="{% trans %}Escribe aquí tu respuesta...{% endtrans %}"
+                      data-field="ficha_{{ num }}"></textarea>
+          {% endif %}
+        </div>
+      </div>
+
+      {# === NAVIGATION === #}
+      <div class="aei-fichas-wizard__nav">
+        {% if num > 1 %}
+          <button class="btn btn--outline" data-fichas-prev="{{ num - 1 }}">
+            {% trans %}Anterior{% endtrans %}
+          </button>
+        {% else %}
+          <div></div>
+        {% endif %}
+
+        {% if num < 8 %}
+          <button class="btn btn--primary" data-fichas-next="{{ num + 1 }}">
+            {% trans %}Siguiente{% endtrans %}
+          </button>
+        {% else %}
+          <button class="btn btn--xl btn--primary" data-fichas-submit>
+            {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'white', size: '20px' }) }}
+            {% trans %}Guardar y continuar{% endtrans %}
+          </button>
+        {% endif %}
+      </div>
+
+    </div>
+  {% endfor %}
+
+</div>

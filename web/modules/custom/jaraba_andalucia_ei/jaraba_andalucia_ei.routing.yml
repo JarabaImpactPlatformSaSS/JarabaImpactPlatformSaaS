@@ -1447,3 +1447,157 @@ entity.asistencia_detallada_ei.settings:
     _title: 'Asistencia Detallada settings'
   requirements:
     _permission: 'administer andalucia ei'
+
+# =====================================================
+# SPRINT B: PACKS, ENTREGABLES, EVALUACION
+# =====================================================
+
+entity.pack_servicio_ei.collection:
+  path: '/admin/content/pack-servicios-ei'
+  defaults:
+    _entity_list: 'pack_servicio_ei'
+    _title: 'Packs de Servicio'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.pack_servicio_ei.canonical:
+  path: '/admin/content/pack-servicio-ei/{pack_servicio_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.pack_servicio_ei.add_form:
+  path: '/admin/content/pack-servicios-ei/add'
+  defaults:
+    _entity_form: 'pack_servicio_ei.default'
+    _title: 'Crear Pack de Servicio'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.pack_servicio_ei.edit_form:
+  path: '/admin/content/pack-servicio-ei/{pack_servicio_ei}/edit'
+  defaults:
+    _entity_form: 'pack_servicio_ei.edit'
+    _title: 'Editar Pack de Servicio'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.pack_servicio_ei.settings:
+  path: '/admin/structure/pack-servicio-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\PackServicioEiSettingsForm'
+    _title: 'Pack de Servicio settings'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.entregable_formativo_ei.collection:
+  path: '/admin/content/entregables-formativos-ei'
+  defaults:
+    _entity_list: 'entregable_formativo_ei'
+    _title: 'Entregables Formativos'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.entregable_formativo_ei.canonical:
+  path: '/admin/content/entregable-formativo-ei/{entregable_formativo_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.entregable_formativo_ei.edit_form:
+  path: '/admin/content/entregable-formativo-ei/{entregable_formativo_ei}/edit'
+  defaults:
+    _entity_form: 'entregable_formativo_ei.edit'
+    _title: 'Editar Entregable'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.entregable_formativo_ei.settings:
+  path: '/admin/structure/entregable-formativo-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\EntregableFormativoEiSettingsForm'
+    _title: 'Entregable Formativo settings'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.evaluacion_competencia_ia_ei.collection:
+  path: '/admin/content/evaluaciones-competencia-ia-ei'
+  defaults:
+    _entity_list: 'evaluacion_competencia_ia_ei'
+    _title: 'Evaluaciones de Competencia IA'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.evaluacion_competencia_ia_ei.settings:
+  path: '/admin/structure/evaluacion-competencia-ia-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\EvaluacionCompetenciaIaEiSettingsForm'
+    _title: 'Evaluación Competencia IA settings'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# Catálogo público (sin auth)
+jaraba_andalucia_ei.catalogo_publico:
+  path: '/catalogo/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\CatalogoPublicoController::ver'
+    _title_callback: '\Drupal\jaraba_andalucia_ei\Controller\CatalogoPublicoController::title'
+  requirements:
+    _access: 'TRUE'
+
+# Fichas autoconocimiento OI
+jaraba_andalucia_ei.fichas_autoconocimiento:
+  path: '/andalucia-ei/fichas-autoconocimiento'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\FichasAutoconocimientoController::wizard'
+    _title: 'Fichas de Autoconocimiento'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+# =====================================================
+# SPRINT C: NEGOCIO PROSPECTADO (CRM CLIENTES PILOTO)
+# =====================================================
+
+entity.negocio_prospectado_ei.collection:
+  path: '/admin/content/negocios-prospectados-ei'
+  defaults:
+    _entity_list: 'negocio_prospectado_ei'
+    _title: 'Negocios Prospectados'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+entity.negocio_prospectado_ei.canonical:
+  path: '/admin/content/negocio-prospectado-ei/{negocio_prospectado_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+entity.negocio_prospectado_ei.add_form:
+  path: '/admin/content/negocios-prospectados-ei/add'
+  defaults:
+    _entity_form: 'negocio_prospectado_ei.default'
+    _title: 'Registrar Negocio Prospectado'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+entity.negocio_prospectado_ei.edit_form:
+  path: '/admin/content/negocio-prospectado-ei/{negocio_prospectado_ei}/edit'
+  defaults:
+    _entity_form: 'negocio_prospectado_ei.edit'
+    _title: 'Editar Negocio Prospectado'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+entity.negocio_prospectado_ei.settings:
+  path: '/admin/structure/negocio-prospectado-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\NegocioProspectadoEiSettingsForm'
+    _title: 'Negocio Prospectado settings'
+  requirements:
+    _permission: 'administer andalucia ei'

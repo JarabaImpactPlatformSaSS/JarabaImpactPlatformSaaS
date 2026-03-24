@@ -1,0 +1,141 @@
+# Prompts sugeridos por sesión del copiloto IA para Andalucía +ei.
+# 3 prompts contextualizados al contenido de cada sesión y pack del participante.
+# Variables disponibles: {pack_confirmado}, {sector}, {nombre}, {provincia}
+#
+# Estructura del programa PIIL:
+#   OI = Orientación Individual (3 sesiones)
+#   M0 = Módulo 0: Alfabetización Digital (3 sesiones)
+#   M1 = Módulo 1: Marca Personal y Presencia Online (3 sesiones)
+#   M2 = Módulo 2: Modelo de Negocio (4 sesiones)
+#   M3 = Módulo 3: Trámites Administrativos (3 sesiones)
+#   M4 = Módulo 4: Marketing y Comunicación Digital (4 sesiones)
+#   M5 = Módulo 5: Proyecto Piloto (3 sesiones)
+
+# --- ORIENTACIÓN INDIVIDUAL ---
+
+OI-1.1:
+  - "Ayúdame a redactar mi perfil profesional destacando mis experiencias más relevantes"
+  - "Evalúa mi nivel de competencias digitales según estas respuestas"
+  - "Sugiere 3 objetivos profesionales realistas basados en mi perfil"
+
+OI-1.2:
+  - "Analiza mis respuestas de las fichas y ayúdame a identificar patrones"
+  - "¿Qué competencias transferibles detectas en mi historia laboral?"
+  - "Compara mis intereses RIASEC con los 5 packs disponibles"
+
+OI-2.2:
+  - "Ayúdame a formular 3 objetivos SMART para mi ruta en el pack {pack_confirmado}"
+  - "¿Qué pack se ajusta mejor a mi perfil RIASEC y experiencia?"
+  - "Diseña una ruta personalizada de 18 meses considerando mis barreras"
+
+# --- MÓDULO 0: ALFABETIZACIÓN DIGITAL ---
+
+M0-1:
+  - "Explícame paso a paso cómo organizar mis archivos en Google Drive para mi actividad profesional"
+  - "¿Qué herramientas digitales gratuitas necesito dominar para el pack {pack_confirmado}?"
+  - "Crea una lista de verificación de competencias digitales básicas que debo completar"
+
+M0-2:
+  - "Ayúdame a configurar mi correo profesional y firma electrónica"
+  - "Enséñame a usar hojas de cálculo para llevar un registro sencillo de ingresos y gastos"
+  - "¿Cómo puedo proteger mis contraseñas y datos personales como profesional digital?"
+
+M0-3:
+  - "Guíame para crear mi primera presentación profesional con Google Slides o Canva"
+  - "¿Qué aplicaciones de productividad me recomiendas para organizar mi día a día como {pack_confirmado}?"
+  - "Simula una videollamada profesional con un cliente y dame feedback sobre cómo mejorar"
+
+# --- MÓDULO 1: MARCA PERSONAL Y PRESENCIA ONLINE ---
+
+M1-1:
+  - "Ayúdame a definir mi propuesta de valor única como profesional de {pack_confirmado} en {provincia}"
+  - "Analiza 3 perfiles de LinkedIn de profesionales de {pack_confirmado} exitosos y extrae patrones"
+  - "Redacta mi biografía profesional en 3 versiones: corta (50 palabras), media (150) y larga (300)"
+
+M1-2:
+  - "Revisa mi perfil de LinkedIn y sugiere 5 mejoras concretas para atraer clientes en {sector}"
+  - "¿Qué redes sociales son imprescindibles para un profesional de {pack_confirmado} en Andalucía?"
+  - "Diseña mi identidad visual básica: colores, tipografías y estilo de comunicación para mi marca"
+
+M1-3:
+  - "Evalúa mi presencia online actual y dame un plan de acción de 30 días para mejorarla"
+  - "Crea un portfolio digital básico con mis primeros 3 trabajos de práctica"
+  - "Genera una estrategia de contenido semanal para posicionarme como {pack_confirmado} en {provincia}"
+
+# --- MÓDULO 2: MODELO DE NEGOCIO ---
+
+M2-1:
+  - "Ayúdame a completar mi Business Model Canvas para {pack_confirmado} en el sector {sector}"
+  - "¿Cuáles son los 3 segmentos de clientes más rentables para un profesional de {pack_confirmado} en {provincia}?"
+  - "Identifica mis competidores directos e indirectos en {provincia} y analiza sus precios"
+
+M2-2:
+  - "Calcula mis costes fijos y variables como autónomo de {pack_confirmado}"
+  - "Ayúdame a fijar mis tarifas: ¿cuánto debería cobrar por hora y por proyecto en {provincia}?"
+  - "Diseña 3 paquetes de servicios con precios escalonados para mi actividad como {pack_confirmado}"
+
+M2-3:
+  - "Valida mi modelo de negocio: ¿es viable llegar a 1.000 EUR/mes como {pack_confirmado} en 6 meses?"
+  - "Crea una proyección financiera a 12 meses con escenarios pesimista, realista y optimista"
+  - "¿Qué métricas clave debo monitorizar cada semana para saber si mi negocio va bien?"
+
+M2-4:
+  - "Redacta mi propuesta comercial tipo para enviar a potenciales clientes de {sector}"
+  - "Diseña mi proceso de venta completo: desde el primer contacto hasta el cobro"
+  - "Ayúdame a preparar mi elevator pitch de 60 segundos para presentar mi servicio de {pack_confirmado}"
+
+# --- MÓDULO 3: TRÁMITES ADMINISTRATIVOS ---
+
+M3-1:
+  - "Explícame paso a paso cómo darme de alta como autónomo en Andalucía con la tarifa plana"
+  - "¿Qué epígrafes del IAE corresponden a mi actividad como {pack_confirmado}?"
+  - "Resume las bonificaciones de cuota de autónomos disponibles para mi perfil en {provincia}"
+
+M3-2:
+  - "Genera un calendario con mis obligaciones fiscales trimestrales como autónomo"
+  - "Explícame qué es el modelo 303 y cómo rellenarlo con un ejemplo real de mis servicios"
+  - "¿Qué gastos puedo deducirme como profesional de {pack_confirmado} que trabaja desde casa?"
+
+M3-3:
+  - "Busca ayudas y subvenciones activas para nuevos autónomos en {provincia}"
+  - "Ayúdame a preparar la documentación necesaria para solicitar la ayuda de inicio de actividad"
+  - "¿Qué diferencia hay entre factura simplificada y factura completa? Genera un ejemplo de cada una"
+
+# --- MÓDULO 4: MARKETING Y COMUNICACIÓN DIGITAL ---
+
+M4-1:
+  - "Crea un calendario editorial mensual con 12 publicaciones para mi actividad de {pack_confirmado}"
+  - "Redacta 5 publicaciones para Instagram que muestren mi trabajo como {pack_confirmado} en {provincia}"
+  - "¿Cuáles son las mejores horas para publicar en redes sociales si mi audiencia está en Andalucía?"
+
+M4-2:
+  - "Escribe 3 textos para mi página web: inicio, servicios y sobre mí, optimizados para SEO local en {provincia}"
+  - "Genera 10 ideas de contenido que demuestren mi experiencia como {pack_confirmado} sin revelar secretos"
+  - "Crea una secuencia de 3 emails para convertir consultas en clientes para mi servicio de {pack_confirmado}"
+
+M4-3:
+  - "Diseña una campaña de lanzamiento para anunciar mis servicios de {pack_confirmado} en {provincia}"
+  - "¿Cómo puedo conseguir mis primeras 5 reseñas de Google como profesional de {pack_confirmado}?"
+  - "Analiza el rendimiento de mis publicaciones y sugiere ajustes para mejorar el alcance"
+
+M4-4:
+  - "Crea una estrategia de marketing de contenidos para los próximos 3 meses enfocada en {sector}"
+  - "Redacta una newsletter mensual para fidelizar a mis clientes actuales"
+  - "¿Cómo puedo usar Google Business Profile para atraer clientes locales en {provincia}?"
+
+# --- MÓDULO 5: PROYECTO PILOTO ---
+
+M5-1:
+  - "Ayúdame a redactar un presupuesto profesional para mi primer encargo real como {pack_confirmado}"
+  - "Genera un contrato de prestación de servicios sencillo para mi proyecto piloto"
+  - "¿Qué debo incluir en el briefing inicial con mi primer cliente para evitar malentendidos?"
+
+M5-2:
+  - "Revisa mi entregable del proyecto piloto y sugiere mejoras antes de enviarlo al cliente"
+  - "Crea un email de seguimiento profesional para enviar después de entregar mi trabajo"
+  - "¿Cómo gestiono una situación donde el cliente pide cambios fuera del alcance acordado?"
+
+M5-3:
+  - "Genera mi primera factura con todos los datos fiscales correctos para mi actividad en {provincia}"
+  - "Crea un informe de cierre del proyecto piloto que pueda usar como caso de éxito en mi portfolio"
+  - "Diseña mi plan de acción para los próximos 90 días después de completar el programa"
