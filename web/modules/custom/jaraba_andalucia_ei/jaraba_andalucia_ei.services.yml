@@ -77,6 +77,7 @@ services:
       - '@jaraba_andalucia_ei.expediente'
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?ecosistema_jaraba_core.tenant_context'
+      - '@?jaraba_andalucia_ei.copilot_phase_config'
 
   jaraba_andalucia_ei.adaptive_difficulty:
     class: Drupal\jaraba_andalucia_ei\Service\AdaptiveDifficultyEngine
@@ -621,6 +622,23 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?jaraba_jarabalex.legal_service'
 
+  # =========================================================================
+  # Sprint D: Registro horas equipo + Portfolio público + Historial copilot.
+  # =========================================================================
+
+  jaraba_andalucia_ei.registro_horas_equipo:
+    class: Drupal\jaraba_andalucia_ei\Service\RegistroHorasEquipoService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.copilot_historial:
+    class: Drupal\jaraba_andalucia_ei\Service\CopilotHistorialService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
   # Daily Action: Plazos normativos vencidos (coordinador).
   jaraba_andalucia_ei.daily_action.plazos_vencidos:
     class: Drupal\jaraba_andalucia_ei\DailyActions\PlazosVencidosAction
@@ -640,6 +658,7 @@ services:
       - '@current_user'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.asistencia_compliance'
 
   # =========================================================================
   # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Formador)

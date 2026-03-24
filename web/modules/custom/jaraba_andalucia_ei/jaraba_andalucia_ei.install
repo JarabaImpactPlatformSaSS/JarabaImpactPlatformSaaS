@@ -2315,3 +2315,23 @@ function jaraba_andalucia_ei_update_10035(): string {
     return 'Error installing negocio_prospectado_ei: ' . $e->getMessage();
   }
 }
+
+/**
+ * Add enlace_videoconferencia field to SesionProgramadaEi.
+ *
+ * UPDATE-HOOK-REQUIRED-001, UPDATE-HOOK-CATCH-001, UPDATE-HOOK-FIELDABLE-001.
+ */
+function jaraba_andalucia_ei_update_10036(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $entityType = $entityTypeManager->getDefinition('sesion_programada_ei');
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('sesion_programada_ei');
+    $updateManager->updateFieldableEntityType($entityType, $fieldStorageDefinitions);
+    return 'SesionProgramadaEi: enlace_videoconferencia field added.';
+  }
+  catch (\Throwable $e) {
+    return 'Error updating SesionProgramadaEi: ' . $e->getMessage();
+  }
+}

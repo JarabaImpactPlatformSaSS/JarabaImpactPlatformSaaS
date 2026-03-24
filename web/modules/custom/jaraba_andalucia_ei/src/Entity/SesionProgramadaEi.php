@@ -542,6 +542,17 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
 
     // === TIMESTAMPS ===
 
+    // === VIDEOCONFERENCIA ===
+
+    $fields['enlace_videoconferencia'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Enlace videoconferencia'))
+      ->setDescription(t('URL de la sala de videoconferencia para sesiones online sincrónicas.'))
+      ->setSetting('max_length', 2048)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // === TIMESTAMPS ===
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creación'))
       ->setDisplayConfigurable('view', TRUE);

@@ -1601,3 +1601,13 @@ entity.negocio_prospectado_ei.settings:
     _title: 'Negocio Prospectado settings'
   requirements:
     _permission: 'administer andalucia ei'
+
+# Portfolio público (sin auth)
+jaraba_andalucia_ei.portfolio_publico:
+  path: '/portfolio/{participante_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\PortfolioPublicoController::ver'
+    _title_callback: '\Drupal\jaraba_andalucia_ei\Controller\PortfolioPublicoController::title'
+  requirements:
+    _access: 'TRUE'
+    participante_id: '\d+'
