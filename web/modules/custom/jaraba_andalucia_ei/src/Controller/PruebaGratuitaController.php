@@ -87,7 +87,7 @@ class PruebaGratuitaController extends ControllerBase {
   public function landing(): array {
     return [
       '#theme' => 'prueba_gratuita_landing',
-      '#form_action' => Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita.submit')->toString(),
+      '#form_action' => Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita_submit')->toString(),
       '#attached' => [
         'library' => [
           'jaraba_andalucia_ei/prueba-gratuita',
@@ -230,7 +230,7 @@ class PruebaGratuitaController extends ControllerBase {
    *   Respuesta de redirección 302.
    */
   protected function buildRedirect(array $query = []): RedirectResponse {
-    $url = Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita.landing', [], [
+    $url = Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita', [], [
       'query' => $query,
     ])->toString();
 

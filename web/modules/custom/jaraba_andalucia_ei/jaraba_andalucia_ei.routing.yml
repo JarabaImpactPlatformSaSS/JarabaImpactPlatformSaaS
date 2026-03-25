@@ -1337,7 +1337,7 @@ jaraba_andalucia_ei.hub.sesion_programada.edit:
 
 # Slide-panel: Negocio Prospectado (crear/editar)
 jaraba_andalucia_ei.slide_panel.negocio_form:
-  path: '/andalucia-ei/prospeccion/{id}/form'
+  path: '/andalucia-ei/prospeccion/form/{id}'
   defaults:
     _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handleNegocioForm'
     _title: 'Registrar Negocio Prospectado'
@@ -1347,7 +1347,7 @@ jaraba_andalucia_ei.slide_panel.negocio_form:
 
 # Slide-panel: Pack de Servicio (crear/editar)
 jaraba_andalucia_ei.slide_panel.pack_form:
-  path: '/andalucia-ei/pack/{id}/form'
+  path: '/andalucia-ei/pack/form/{id}'
   defaults:
     _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handlePackForm'
     _title: 'Gestionar Pack de Servicio'
@@ -1357,7 +1357,7 @@ jaraba_andalucia_ei.slide_panel.pack_form:
 
 # Slide-panel: Validar Entregable
 jaraba_andalucia_ei.slide_panel.entregable_validar:
-  path: '/andalucia-ei/entregable/{id}/validar'
+  path: '/andalucia-ei/entregable/validar/{id}'
   defaults:
     _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handleEntregableValidacion'
     _title: 'Validar Entregable'

@@ -31,14 +31,14 @@
   {# === SETUP WIZARD (ZEIGARNIK-PRELOAD-001) === #}
   {% if setup_wizard is not empty %}
     <div class="formador-dashboard__wizard">
-      {% include '@ecosistema_jaraba_core/partials/_setup-wizard.html.twig' with { steps: setup_wizard } only %}
+      {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with { steps: setup_wizard } only %}
     </div>
   {% endif %}
 
   {# === DAILY ACTIONS === #}
   {% if daily_actions is not empty %}
     <div class="formador-dashboard__actions">
-      {% include '@ecosistema_jaraba_core/partials/_daily-actions.html.twig' with { actions: daily_actions } only %}
+      {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with { actions: daily_actions } only %}
     </div>
   {% endif %}
 
