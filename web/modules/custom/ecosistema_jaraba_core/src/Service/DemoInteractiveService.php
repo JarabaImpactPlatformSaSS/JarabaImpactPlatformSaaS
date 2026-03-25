@@ -2264,17 +2264,10 @@ class DemoInteractiveService
                         'vertical' => $agg['vertical'],
                         'profile_id' => $agg['profile_id'],
                     ])
-                    ->expressions([
-                        'sessions_started' => 'sessions_started + :sessions',
-                        'conversions' => 'conversions + :conversions',
-                        'funnel_dashboard_view' => 'funnel_dashboard_view + :fdv',
-                        'funnel_value_action' => 'funnel_value_action + :fva',
-                    ], [
-                        ':sessions' => $agg['sessions_started'],
-                        ':conversions' => $agg['conversions'],
-                        ':fdv' => $agg['funnel_dashboard_view'],
-                        ':fva' => $agg['funnel_value_action'],
-                    ])
+                    ->expression('sessions_started', 'sessions_started + :sessions', [':sessions' => $agg['sessions_started']])
+                    ->expression('conversions', 'conversions + :conversions', [':conversions' => $agg['conversions']])
+                    ->expression('funnel_dashboard_view', 'funnel_dashboard_view + :fdv', [':fdv' => $agg['funnel_dashboard_view']])
+                    ->expression('funnel_value_action', 'funnel_value_action + :fva', [':fva' => $agg['funnel_value_action']])
                     ->fields([
                         'date' => $agg['date'],
                         'vertical' => $agg['vertical'],

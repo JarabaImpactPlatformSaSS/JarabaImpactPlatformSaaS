@@ -33,7 +33,7 @@ x-galera-common: &galera-common
     - jaraba-ha
 
 x-redis-common: &redis-common
-  image: redis:7-alpine
+  image: redis:8-alpine
   restart: unless-stopped
   networks:
     - jaraba-ha
@@ -257,7 +257,7 @@ services:
   # Redis Sentinels (3 instances for quorum)
   # ---------------------------------------------------------------------------
   sentinel1:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: sentinel1
     hostname: sentinel1.jaraba.io
     ports:
@@ -278,7 +278,7 @@ services:
     restart: unless-stopped
 
   sentinel2:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: sentinel2
     hostname: sentinel2.jaraba.io
     ports:
@@ -299,7 +299,7 @@ services:
     restart: unless-stopped
 
   sentinel3:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: sentinel3
     hostname: sentinel3.jaraba.io
     ports:

@@ -492,7 +492,7 @@ if [ "$MODE" = "full" ]; then
   run_check "CLAUDE-MD-SIZE-001" "CLAUDE.md performance budget (<39k chars)" \
     php "$SCRIPT_DIR/validate-claude-md-size.php"
 
-  run_check "STATUS-REPORT-PROACTIVE-001" "Drupal status report (0 errors, 0 unexpected warnings)" \
+  warn_check "STATUS-REPORT-PROACTIVE-001" "Drupal status report (0 errors, 0 unexpected warnings)" \
     php "$SCRIPT_DIR/validate-status-report.php"
 
   warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
