@@ -681,6 +681,17 @@ if [ "$MODE" = "full" ]; then
   run_check "DAILY-ACTION-ROUTES-001" "DailyAction/SetupWizard routes exist in routing.yml" \
     php "$SCRIPT_DIR/validate-daily-action-routes.php"
 
+  # ── Safeguard System Fase 10 — Preventive gap detection ──────
+
+  warn_check "FRONTEND-CHROME-001" "Frontend routes have page template coverage in theme" \
+    php "$SCRIPT_DIR/validate-frontend-chrome.php"
+
+  warn_check "DRUPAL-SETTINGS-CONSUMERS-001" "drupalSettings injected have JS consumers" \
+    php "$SCRIPT_DIR/validate-drupal-settings-consumers.php"
+
+  warn_check "API-ENDPOINT-JS-PARITY-001" "JS fetch/API calls match existing routing.yml routes" \
+    php "$SCRIPT_DIR/validate-api-endpoint-js-parity.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -724,6 +735,9 @@ else
   skip_check "DASHBOARD-WIRING-001" "Dashboard wiring"
   skip_check "FIELD-NAME-PARITY-001" "Field name parity"
   skip_check "DAILY-ACTION-ROUTES-001" "Daily action routes"
+  skip_check "FRONTEND-CHROME-001" "Frontend chrome coverage"
+  skip_check "DRUPAL-SETTINGS-CONSUMERS-001" "drupalSettings consumers"
+  skip_check "API-ENDPOINT-JS-PARITY-001" "API endpoint JS parity"
 fi
 
 fi  # End of non-checklist mode guard.
