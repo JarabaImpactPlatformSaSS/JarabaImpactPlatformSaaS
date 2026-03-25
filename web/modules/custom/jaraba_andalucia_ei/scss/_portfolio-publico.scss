@@ -1,0 +1,180 @@
+// Portfolio público del participante.
+// PORTFOLIO-PUBLICO-001: Ruta /portfolio/{participante_id} sin auth.
+// CSS-VAR-ALL-COLORS-001: All colors via --ej-* tokens.
+
+.portfolio-publico {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 20px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-azul-corporativo, #233D63);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--ej-neutral, #6B7280);
+    margin: 4px 0 0;
+  }
+
+  // Progress bar
+  &__progress {
+    margin-bottom: 24px;
+  }
+
+  &__progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--ej-background, #F3F4F6);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ej-verde-innovacion, #00A9A5), var(--ej-naranja-impulso, #FF8C42));
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  &__progress-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: var(--ej-neutral, #6B7280);
+  }
+
+  // Modules accordion
+  &__module {
+    margin-bottom: 12px;
+    border: 1px solid var(--ej-border, #E5E7EB);
+    border-radius: 10px;
+    overflow: hidden;
+
+    &[open] summary {
+      border-bottom: 1px solid var(--ej-border, #E5E7EB);
+    }
+  }
+
+  &__module-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ej-azul-corporativo, #233D63);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '▾';
+      margin-left: auto;
+      transition: transform 0.2s;
+    }
+  }
+
+  &__module[open] &__module-title::after {
+    transform: rotate(180deg);
+  }
+
+  &__module-count {
+    font-size: 0.75rem;
+    color: var(--ej-neutral, #6B7280);
+    font-weight: 400;
+  }
+
+  &__module-body {
+    padding: 8px 16px 16px;
+  }
+
+  // Entregable row
+  &__entregable {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ej-border, #E5E7EB);
+    min-height: 44px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__entregable-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ej-naranja-impulso, #FF8C42);
+    min-width: 32px;
+  }
+
+  &__entregable-titulo {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &__entregable-sesion {
+    font-size: 0.75rem;
+    color: var(--ej-neutral, #6B7280);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  // State badges
+  &__badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+
+    &--neutral {
+      background: var(--ej-background, #F3F4F6);
+      color: var(--ej-neutral, #6B7280);
+    }
+
+    &--impulso {
+      background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 15%, transparent);
+      color: var(--ej-naranja-impulso, #FF8C42);
+    }
+
+    &--innovacion {
+      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 15%, transparent);
+      color: var(--ej-verde-innovacion, #00A9A5);
+    }
+
+    &--corporativo {
+      background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 15%, transparent);
+      color: var(--ej-azul-corporativo, #233D63);
+    }
+  }
+
+  // Empty state
+  &__empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--ej-neutral, #6B7280);
+
+    p {
+      margin-top: 12px;
+      font-size: 0.9375rem;
+    }
+  }
+}

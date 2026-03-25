@@ -1,0 +1,213 @@
+// Pipeline Kanban de prospección de negocios piloto.
+// SPEC-2E-010: 6 columnas drag-and-drop.
+// CSS-VAR-ALL-COLORS-001: All colors via --ej-* tokens.
+
+.prospeccion-pipeline {
+  padding: 24px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  &__header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-azul-corporativo, #233D63);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--ej-neutral, #6B7280);
+    margin: 4px 0 0;
+  }
+
+  &__landing-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--ej-azul-corporativo, #233D63);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--ej-azul-corporativo, #233D63);
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+    }
+  }
+
+  // KPIs
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  &__kpi {
+    background: var(--ej-white, #fff);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 10%, transparent);
+  }
+
+  &__kpi-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &__kpi-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ej-neutral, #6B7280);
+    margin-top: 4px;
+  }
+
+  // Kanban Board
+  &__board {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__column {
+    background: color-mix(in srgb, var(--column-color, var(--ej-neutral, #6B7280)) 6%, transparent);
+    border-radius: 12px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__column-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 2px solid var(--column-color, var(--ej-neutral, #6B7280));
+  }
+
+  &__column-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-azul-corporativo, #233D63);
+    flex: 1;
+  }
+
+  &__column-count {
+    background: var(--column-color, var(--ej-neutral, #6B7280));
+    color: var(--ej-white, #fff);
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__column-body {
+    padding: 8px;
+    flex: 1;
+    min-height: 120px;
+
+    &.drag-over {
+      background: color-mix(in srgb, var(--column-color, var(--ej-neutral, #6B7280)) 12%, transparent);
+    }
+  }
+
+  // Cards
+  &__card {
+    background: var(--ej-white, #fff);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.15s;
+    touch-action: none;
+    min-height: 44px;
+
+    &:active {
+      cursor: grabbing;
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 20%, transparent);
+      transform: rotate(2deg);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+    }
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  &__card-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ej-azul-corporativo, #233D63);
+    line-height: 1.3;
+  }
+
+  &__urgency {
+    font-size: 0.625rem;
+
+    &--rojo { color: var(--ej-error, #DC2626); }
+    &--amarillo { color: var(--ej-warning, #F59E0B); }
+  }
+
+  &__card-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.6875rem;
+    color: var(--ej-neutral, #6B7280);
+    margin-bottom: 6px;
+  }
+
+  &__card-assignee {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6875rem;
+    color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 24px 8px;
+    color: var(--ej-neutral, #6B7280);
+    font-size: 0.75rem;
+  }
+}
