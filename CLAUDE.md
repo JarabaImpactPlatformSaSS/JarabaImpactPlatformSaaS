@@ -1,16 +1,16 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-23 | Version: 1.9.0
+# Ultima actualizacion: 2026-03-25 | Version: 1.10.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
 - Nombre: Jaraba Impact Platform (Ecosistema Jaraba)
 - Filosofia: "Sin Humo" — codigo limpio, practico, sin complejidad innecesaria
-- Stack: Drupal 11 + PHP 8.4 + MariaDB 10.11 + Redis 7.4 + Qdrant
+- Stack: Drupal 11 + PHP 8.4 + MariaDB 10.11 + Redis 8.0 + Qdrant
 - Multi-tenancy: Group Module (soft isolation) + TenantBridgeService
 - Pagos: Stripe Connect (destination charges)
 - IA: Claude API + Gemini API con strict grounding, 11 agentes Gen 2
 - Servidor: IONOS Dedicated (AMD EPYC 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04). IP: 82.223.204.169, SSH: 2222
-- Stack nativo: Nginx + PHP-FPM 8.4 + MariaDB 10.11 + Redis 7.4 + Supervisor (4 AI workers) + Tika
+- Stack nativo: Nginx + PHP-FPM 8.4 + MariaDB 10.11 + Redis 8.0 + Supervisor (4 AI workers) + Tika
 - Email: SMTP IONOS (smtp.ionos.es:587), From: contacto@plataformadeecosistemas.com
 - Dev local: Lando (.lando.yml), NO docker-compose.yml
 - URL dev: https://jaraba-saas.lndo.site/
@@ -227,6 +227,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ACCESS-RETURN-TYPE-001: checkAccess() DEBE declarar `: AccessResultInterface` (NO `: AccessResult`). parent::checkAccess() devuelve AccessResultInterface; return type mas restrictivo causa PHPStan error. 68 handlers migrados
 - STRIPE_WEBHOOK_SECRET: Variable obligatoria en settings.secrets.php para verificacion HMAC de webhooks Stripe (AUDIT-SEC-001). Sin ella, checkout.session.completed e invoice.payment_failed no se verifican
 - CSRF-LOGIN-FIX-001 v2: IONOS termina SSL; Apache/PHP recibe HTTP. Fix: `$_SERVER['HTTPS']='on'` desde X-Forwarded-Proto ANTES del bootstrap Drupal. Aplicado por `patch-settings-csrf.php` (ejecutar en cada deploy). Sin esto, SessionConfiguration.php override cookie_secure → session perdida → CSRF falla
+- REDIS-ACL-001: Redis 8.0 usa ACL file (`users.acl`) en lugar de `rename-command` + `requirepass`. 3 usuarios: default (Drupal, ~jaraba_* keys, -@dangerous -@admin), admin (mantenimiento, +@all), monitor (read-only, futuro). Variables: REDIS_PASSWORD, REDIS_ADMIN_PASSWORD, REDIS_MONITOR_PASSWORD. Validacion: `php scripts/validation/validate-redis-config.php`
 
 ### Rutas y URLs
 - ROUTE-LANGPREFIX-001: URLs SIEMPRE via Url::fromRoute(). El sitio usa /es/ prefix. Paths hardcoded causan 404
@@ -254,6 +255,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Orden importación: PageContent → SitePageTree → SiteMenu/MenuItem → SiteConfig UPDATE
 - UUID como ancla de idempotencia (IDs difieren entre entornos, UUIDs son estables)
 - CONTENT-SEED-INTEGRITY-001: Validador en validate-all.sh (run_check)
+
+### Custom Translations Pipeline (I18N-CUSTOM-PIPELINE-001)
+- Traducciones custom de interfaz (locales_target.customized=1) son DATOS, NO config. `drush cim` NO las propaga
+- Export: `bash scripts/translations-export.sh` → `translations/es-custom.po` (34.5K strings) + `translations/pt-br-custom.po`
+- Import: `bash scripts/translations-import.sh` (idempotente, --dry-run, --override=customized)
+- Deploy: paso automático en deploy.yml post config:import
+- Validador: I18N-DRIFT-001 detecta drift BD vs .po > 5% (warn_check)
+- Flujo: traducir en UI Drupal → exportar → git commit → deploy propaga automáticamente
 
 ### CLI Context
 - DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
@@ -314,6 +323,13 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ### Validadores
 - validate-andalucia-ei-roles.php: 9 checks (roles, permisos, dashboards, wizard, daily actions)
 - validate-andalucia-ei-2e-sprint-a.php: 9 checks (campos, entities, services, prompts, logos)
+- validate-andalucia-ei-2e-sprint-cd.php: 8 checks (pipeline, calculadora, controllers, templates, field names, routes)
+
+### Sprint C+D (2026-03-25) — Prospección + Calculadora + Portfolio
+- PROSPECCION-PIPELINE-001: ProspeccionPipelineService agrupa NegocioProspectadoEi por 6 fases embudo. Kanban visual con drag-drop. CaptacionLeadsAction apunta a pipeline NO a leads_guia
+- LANDING-CAPTACION-001: PruebaGratuitaController en ruta pública /andalucia-ei/prueba-gratuita. Formulario → NegocioProspectadoEi (honeypot, urgencia RGPD). Protocolo respuesta <2h (doc m)
+- CALCULADORA-PE-001: CalculadoraPuntoEquilibrioService. Gastos fijos 144€/mes. Precios pack/tier. 4 escenarios. Inyectado via drupalSettings
+- PORTFOLIO-PUBLICO-001: Ruta pública /portfolio/{participante_id}. 29 entregables por módulo. Logos FSE+
 
 ## IA — STACK COMPLETO
 
@@ -386,12 +402,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v165.0.0
-- ARQUITECTURA: v149.0.0
-- INDICE: v194.0.0
+- DIRECTRICES: v166.0.0
+- ARQUITECTURA: v150.0.0
+- INDICE: v195.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #223
-- Ultima golden rule: #155
+- Ultimo aprendizaje: #224
+- Ultima golden rule: #157
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -448,12 +464,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 113 validators individuales en `scripts/validation/` (93 run + 20 warn). Lista completa: `docs/validators-reference.md`
+- 145 validators individuales en `scripts/validation/` (115 run_check + 33 warn_check = 148 checks registrados). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 111 scripts validacion (92 run + 19 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 145 scripts validacion (115 run + 33 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia

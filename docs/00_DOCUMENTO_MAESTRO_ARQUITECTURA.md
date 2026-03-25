@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 149.0.0 (MEGAMENU-INJECT-001 canal secundario theme_settings, isDefault() guard MetaSiteResolverService, caso éxito PED S.L., 135 scripts + aprendizaje #219)
+**Versión:** 150.0.0 (Redis 8.0 ACL — REDIS-ACL-001, io-threads 4, sentinel dedicado, 140 scripts + aprendizaje #220)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -280,7 +280,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 │   BASE DE DATOS                                                         │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
-│   │  MariaDB 10.11    │  Redis 7.x        │  Qdrant 1.16           │  │
+│   │  MariaDB 10.11    │  Redis 8.x        │  Qdrant 1.16           │  │
 │   │  Relacional       │  Cache/Queue      │  Vector DB             │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
@@ -1003,6 +1003,36 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   Entities modificadas: ProgramaParticipanteEi, InsercionLaboral,     │
 │   SesionProgramadaEi, AccionFormativaEi, ActuacionSto                 │
 │   432 tests OK                                                         │
+│                                                                         │
+│   PARTE VI — 2ª Edición Sprint C+D (2026-03-25):                       │
+│   Sprint C+D: Prospección, Calculadora, Portfolio Público               │
+│                                                                         │
+│   Servicios nuevos:                                                     │
+│   ├── ProspeccionPipelineService: Agrupa NegocioProspectadoEi por      │
+│   │   6 fases embudo (identificado→contactado→interesado→propuesta→   │
+│   │   acuerdo→conversion). Estadísticas por fase. Drag-drop JS vanilla│
+│   ├── CalculadoraPuntoEquilibrioService: Punto equilibrio por          │
+│   │   pack/tier. Gastos fijos base 144€/mes. Precios pack desde       │
+│   │   constantes. 4 escenarios (1-5 clientes). Via drupalSettings     │
+│   ├── ProspeccionPipelineController: Render array Kanban               │
+│   │   #theme=prospeccion_pipeline. Ruta /andalucia-ei/coordinador/    │
+│   │   prospeccion-pipeline                                             │
+│   ├── PruebaGratuitaController: Landing pública /andalucia-ei/        │
+│   │   prueba-gratuita. Formulario → NegocioProspectadoEi (honeypot,  │
+│   │   urgencia, RGPD)                                                  │
+│   └── PortfolioPublicoController: Ruta pública /portfolio/            │
+│       {participante_id}. 29 entregables agrupados por módulo           │
+│                                                                         │
+│   Bugs P0 corregidos:                                                  │
+│   ├── FormadorDashboardController: L1→L4 completo (PIPELINE-E2E-001) │
+│   ├── PortfolioEntregablesService: campos numero_entregable→numero,  │
+│   │   sesion_id→sesion_origen                                         │
+│   └── CaptacionLeadsAction: redirigida leads_guia→prospeccion_pipeline│
+│                                                                         │
+│   6 template_preprocess sin duplicados: asistencia_detallada_ei,       │
+│   evaluacion_competencia_ia_ei, pack_servicio_ei,                      │
+│   entregable_formativo_ei, negocio_prospectado_ei,                     │
+│   sesion_programada_ei (con enlace_videoconferencia)                   │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -2240,7 +2270,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │                           ▼ deploy                                      │
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │              PRODUCCIÓN (IONOS Dedicated AE12-128)              │  │
-│   │  • Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 7.4             │  │
+│   │  • Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 8.0 (ACL)       │  │
 │   │  • Supervisor (4 AI workers con sleep) + Tika (Docker)           │  │
 │   │  • 4 dominios SSL, SSH :2222, Let's Encrypt                     │  │
 │   └─────────────────────────────────────────────────────────────────┘  │

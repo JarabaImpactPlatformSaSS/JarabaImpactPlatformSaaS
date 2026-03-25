@@ -563,8 +563,38 @@ if [ "$MODE" = "full" ]; then
   run_check "ANDALUCIA-EI-2E-SPRINT-A-001" "Andalucía +ei 2ª Edición Sprint A integrity" \
     php "$SCRIPT_DIR/validate-andalucia-ei-2e-sprint-a.php"
 
+  run_check "ANDALUCIA-EI-2E-SPRINT-CD-001" "Andalucía +ei 2ª Edición Sprint C+D integrity" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-sprint-cd.php"
+
   run_check "ANDALUCIA-EI-ROLES-001" "Andalucía +ei role system integrity" \
     php "$SCRIPT_DIR/validate-andalucia-ei-roles.php"
+
+  run_check "ANDALUCIA-EI-2E-BRIDGES-001" "Andalucía +ei 2E cross-vertical bridges" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-bridges.php"
+
+  run_check "ANDALUCIA-EI-2E-COPILOT-001" "Andalucía +ei 2E copilot phase prompts" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-copilot-phases.php"
+
+  run_check "ANDALUCIA-EI-2E-ENTREGABLES-001" "Andalucía +ei 2E entregables formativos" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-entregables.php"
+
+  run_check "ANDALUCIA-EI-2E-PACKS-001" "Andalucía +ei 2E packs de servicios integrity" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-2e-packs.php"
+
+  run_check "MERGE-API-AUDIT-001" "Database API phantom methods (expressions, addFields, etc.)" \
+    php "$SCRIPT_DIR/validate-db-api-phantom-methods.php"
+
+  run_check "REDIS-ACL-001" "Redis 8.0 config (14 checks: ACL, sentinel, io-threads, security)" \
+    php "$SCRIPT_DIR/validate-redis-config.php"
+
+  warn_check "DB-EXPORT-FRESHNESS-001" "Local DB dump freshness (< 7 days)" \
+    php "$SCRIPT_DIR/validate-db-export-freshness.php"
+
+  warn_check "CONFIG-SCHEMA-COVERAGE-001" "Config schema completeness (open mappings)" \
+    php "$SCRIPT_DIR/validate-config-schema-coverage.php"
+
+  warn_check "I18N-DRIFT-001" "Custom translation drift .po vs DB (< 5%)" \
+    php "$SCRIPT_DIR/validate-translation-drift.php"
 
   # Infrastructure health (production-only, skips gracefully in CI).
   warn_check "INFRA-HEALTH-001" "Infrastructure health (production only)" \

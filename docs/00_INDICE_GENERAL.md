@@ -4,7 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-24
-**Versión:** 194.0.0 (TRUST-STRIP-001 + logos wordmark Nano Banana + per-vertical partners + aprendizaje #219)
+**Versión:** 195.0.0 (REDIS-ACL-001 — Redis 8.0 ACL + io-threads + sentinel dedicado + 140 scripts + aprendizaje #220)
+
+> **📋 REDIS-ACL-001 — v166 DIRECTRICES + v150 ARQUITECTURA + v195 INDICE** (2026-03-25)
+>
+> Aprendizaje #220: REDIS-ACL-001 — Redis 7.4 usaba `rename-command` (deprecated desde 7.0) para deshabilitar FLUSHDB/FLUSHALL/DEBUG + `requirepass` para autenticación. Upgrade a Redis 8.0 con sistema ACL completo: 4 usuarios en `users.acl` (default Drupal con key-pattern `~jaraba_*` y `-@dangerous -@admin`, admin `+@all` para mantenimiento, sentinel con permisos mínimos para failover `+CONFIG|REWRITE +SLAVEOF +REPLICAOF +SUBSCRIBE`, monitor read-only desactivado). El reviewer detectó 3 bugs críticos pre-deploy: (1) Sentinel no podía hacer failover porque usuario default tenía `-@admin` y Sentinel necesita `CONFIG` → creado usuario sentinel dedicado con `sentinel auth-user` en sentinel.conf, (2) `masterauth ${REDIS_PASSWORD}` literal en redis.conf (Redis no expande env vars) → sustitución explícita con `sed` en script de deploy y docker-compose, (3) PhpRedis necesita `AUTH <user> <pass>` (dos argumentos) con ACL → añadido soporte `REDIS_USER` en settings.php. I/O threading: 4 threads en producción EPYC 12c (+80-112% throughput), 2 en dev para paridad. Lazy freeing completo. Active defragmentation habilitado. Validador: `validate-redis-config.php` 14 checks integrado en validate-all.sh. Script migración: `scripts/upgrade-redis-8.sh` (8 pasos, backup RDB+AOF, rollback, 8 post-checks). Regla de oro #156: `rename-command` es un parche de seguridad superficial — las ACLs de Redis 8 son defensa en profundidad real: key-pattern restriction + command categories + usuarios dedicados por función.
 
 > **📋 HOMEPAGE-ELEVATION-001 — v158 DIRECTRICES + v145 ARQUITECTURA + v188 INDICE + v111 FLUJO** (2026-03-21)
 >
@@ -354,7 +358,7 @@
 > - **Contexto:** Implementacion de la capa de APIs REST para meta-sitios (formulario de contacto + analytics), integracion con CRM y email premium MJML, testing A/B server-side via hook_preprocess_page (complementa el A/B frontend con cookies), y preparacion del deploy a IONOS con checklist reproducible.
 > - **HAL-01 (Sprint 5 — Formulario Contacto + Analytics Infra):** Formulario de contacto funcional en 3 meta-sitios. Infraestructura A/B testing. Tracker deduplication verificado. Blog content. Funnel analytics base.
 > - **HAL-02 (Sprint 6 — REST Endpoints + Email MJML):** `ContactApiController` POST /api/v1/public/contact con validacion (name, email, message required), Flood API rate limit 5/min, DB persistencia en `contact_submissions`, CRM lead creation via `jaraba_crm.lead_service->createFromContact()` (opcional con hasService()), notificacion MJML via `hook_mail()` key `contact_notification` (NOTIF_001). `AnalyticsEventController` POST /api/v1/analytics/event con validacion JSON, tabla `analytics_events` auto-create via `hook_schema()`, indices UTM (source, medium, campaign), meta-site context (tenant_id, page_url, user_agent). `hook_mail()` dispatch: `contact_notification` + `onboarding_*` secuencias.
-> - **HAL-03 (Sprint 7 — A/B Backend + Deploy):** `hook_preprocess_page()` en `ecosistema_jaraba_core.module` inyecta `$variables['ab_variants']` desde config `ecosistema_jaraba_core.ab_tests` (Layer 4 runtime injection). 4 tests activos: `homepage_hero_cta` (50/50), `pricing_layout` (50/50), `social_proof_position` (50/50), `lead_magnet_cta` (50/50). Templates `_hero.html.twig` y `_lead-magnet.html.twig` actualizados con `{{ ab_variants.test_id.label|default(fallback) }}`. Impression tracking para analytics. Deploy checklist IONOS: `docs/operaciones/deploy_checklist_ionos.md` con 7 secciones (pre-deploy, stack PHP 8.4/MariaDB 10.11/Redis 7, DNS 3 dominios, SSL Let's Encrypt, post-deploy drush, verificacion, rollback).
+> - **HAL-03 (Sprint 7 — A/B Backend + Deploy):** `hook_preprocess_page()` en `ecosistema_jaraba_core.module` inyecta `$variables['ab_variants']` desde config `ecosistema_jaraba_core.ab_tests` (Layer 4 runtime injection). 4 tests activos: `homepage_hero_cta` (50/50), `pricing_layout` (50/50), `social_proof_position` (50/50), `lead_magnet_cta` (50/50). Templates `_hero.html.twig` y `_lead-magnet.html.twig` actualizados con `{{ ab_variants.test_id.label|default(fallback) }}`. Impression tracking para analytics. Deploy checklist IONOS: `docs/operaciones/deploy_checklist_ionos.md` con 7 secciones (pre-deploy, stack PHP 8.4/MariaDB 10.11/Redis 8, DNS 3 dominios, SSL Let's Encrypt, post-deploy drush, verificacion, rollback).
 > - **HAL-04 (CRM + Email Integration):** `jaraba_crm` modulo con lead auto-creation desde formulario contacto. `jaraba_email` con sistema de plantillas premium MJML (28+ horizontales CAN-SPAM compliant, font Outfit, paleta brand #1565C0, mj-preview + postal Juncaril). Tipos de email: contact_notification, onboarding_welcome, onboarding_quickstart, transactional_*.
 > - **3 reglas nuevas:** REST-PUBLIC-API-001 (P0), AB-BACKEND-PREPROCESS-001 (P1), DEPLOY-CHECKLIST-001 (P1). 3 reglas de oro: #58, #59, #60. Aprendizaje #137.
 > - **Cross-refs:** Directrices v85.0.0, Arquitectura v79.0.0, Indice v110.0.0, Flujo v39.0.0.
@@ -2471,6 +2475,26 @@
 
 ---
 
+
+## 9c. Documentación Andalucía +ei 2ª Edición
+
+📁 **Ubicación:** `docs/andaluciamasei/`
+
+39 ficheros fuente del programa PIIL CV 2025, convertidos de .docx/.pptx/.html a .md.
+
+| Grupo | Contenido | Ficheros |
+|-------|-----------|----------|
+| **Estratégicos (a, h, i)** | Informe estratégico, estrategia prospección clientes piloto, specs plataforma | 3 |
+| **Diseño formativo (b-f)** | Diseño formativo v1+v2, catálogo servicios, integración catálogo, guía didáctica formador | 5 |
+| **Operativos (g, j, k-m)** | Sesión informativa (pptx), propuesta negocios piloto (pptx), plan activación Semana Santa, briefing creativo, manual operativo final | 5 |
+| **Sesiones aula (n×23)** | Presentaciones OI-1.1 a M5-3 (23 sesiones, material didáctico) | 23 |
+| **Campaña (n×3)** | Landing negocio piloto, carrusel 5 packs, pub1 Semana Santa | 3 |
+
+### docs/implementacion/20260324b — Plan Implementación Andalucía +ei 2ª Edición
+
+Plan maestro 10/10 clase mundial. 15 SPECs (2E-001 a 2E-015). 4 Sprints (A-D). 12 criterios aceptación. Score 5.1→10.0.
+
+---
 
 ## 9b. Documentacion de Usuario
 

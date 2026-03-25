@@ -3,15 +3,15 @@
 > Fuente de verdad: `scripts/validation/validate-all.sh`
 > Orchestrator: `bash scripts/validation/validate-all.sh [--full|--fast|--checklist web/modules/custom/{modulo}]`
 > Meta-safeguard: VALIDATOR-COVERAGE-001 detecta orphaned validators
-> Ultima actualizacion: 2026-03-23
+> Ultima actualizacion: 2026-03-25
 
 ## Estadisticas
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 113 |
-| run_check (CI blocker) | 93 |
-| warn_check (no blocker) | 20 |
+| Total scripts PHP | 144 |
+| run_check (CI blocker) | 114 |
+| warn_check (no blocker) | 33 |
 | Orphaned validators | 0 |
 
 ## Run Checks — 90 (bloquean CI)
@@ -21,6 +21,11 @@
 | ADDON-IMPLEMENTATION-001 | Addon module implementation audit |
 | ANDALUCIA-EI-ROLES-001 | Program role system integrity: roles exist, permissions, dashboards, wizard, daily actions (9 checks) |
 | ANDALUCIA-EI-2E-SPRINT-A-001 | 2ª Edición Sprint A: fields, entities, services, copilot prompts, logos FSE+ (9 checks) |
+| ANDALUCIA-EI-2E-SPRINT-CD-001 | 2ª Edición Sprint C+D: pipeline Kanban, calculadora PE, controllers, templates, field names, routes (8 checks) |
+| ANDALUCIA-EI-2E-BRIDGES-001 | 2ª Edición cross-vertical bridges: 7 bridges wired + services exist |
+| ANDALUCIA-EI-2E-COPILOT-001 | 2ª Edición copilot phase prompts: 6 phases × system prompts |
+| ANDALUCIA-EI-2E-ENTREGABLES-001 | 2ª Edición entregables formativos: 29 entregables × seed integrity |
+| ANDALUCIA-EI-2E-PACKS-001 | 2ª Edición packs de servicios integrity |
 | BACKUP-HEALTH-001 | Backup infrastructure completeness |
 | BIGPIPE-TIMING-001 | BigPipe + once() + drupalSettings timing risks |
 | BTN-CONTRAST-DARK-001 | Button contrast on dark backgrounds |
@@ -124,11 +129,14 @@
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 
-## Warn Checks — 20 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 31 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
 | CONFIG-DB-SYNC-001 | Config YAML vs DB sync state | Requiere DB |
+| CONFIG-SCHEMA-COVERAGE-001 | Config schema completeness — open mappings | 141 baseline |
+| DB-EXPORT-FRESHNESS-001 | Local DB dump freshness (< 7 days, >= 1MB) | Previene pérdida lando destroy |
+| I18N-DRIFT-001 | Custom translation drift .po vs DB (< 5%) | Detecta traducciones no exportadas |
 | CONTENT-DRIFT-DETECTION-001 | Content seed JSON vs DB drift detection | Post-lanzamiento |
 | CSP-DOMAIN-COMPLETENESS-001 | CSP external domain cross-reference | |
 | DEMO-COVERAGE-001 | Demo vertical coverage (13/13 profiles) | |
@@ -139,6 +147,8 @@
 | ICON-DYNAMIC-001 | Dynamic icon refs resolve to SVGs | |
 | IMAGE-WEIGHT-001 | Oversized images in theme | 62 pre-existing |
 | INFRA-HEALTH-001 | Infrastructure health | Production only |
+| MERGE-API-AUDIT-001 | Database API phantom methods (expressions, addFields, onDuplicate) | |
+| REDIS-ACL-001 | Redis 8.0 config: ACL, sentinel, io-threads, security (14 checks) | |
 | LANDING-SECTIONS-RENDERED-001 | Landing section completeness | Requires Lando |
 | LIBRARY-ATTACHMENT-001 | Bundle library declaration + CSS existence | 34 pre-existing |
 | PRICING-CASE-STUDY-COHERENCE-001 | Case study pricing vs controller structure | |
