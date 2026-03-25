@@ -50,6 +50,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - CONTAINER-DEPS-002: NUNCA crear dependencias circulares en services.yml. Si A necesita B y B necesita A, una direccion DEBE ser `@?` o lazy-load via `\Drupal::service()`. Validacion: `php scripts/validation/validate-circular-deps.php`
 - LOGGER-INJECT-001: Si services.yml inyecta `@logger.channel.X`, el constructor PHP DEBE aceptar `LoggerInterface $logger` directamente (NO llamar `->get('channel')`). `->get()` solo es valido con `@logger.factory`. Validacion: `php scripts/validation/validate-logger-injection.php`
 - PHANTOM-ARG-001: args en services.yml DEBEN coincidir exactamente con params del constructor PHP. Deteccion bidireccional: args de MAS (phantom) Y de MENOS (missing). Missing es mas peligroso ($container->has() devuelve TRUE pero get() lanza TypeError transitivo). Validacion: `php scripts/validation/validate-phantom-args.php` + 12 tests regresion en tests/test-phantom-args-parser.php
+- OPTIONAL-PARAM-ORDER-001: Parametros opcionales (`= NULL`, `= []`, etc.) NUNCA antes de requeridos en constructors. PHP 8.4 deprecation. Aplica especialmente a servicios `@?` que DEBEN ir al final del constructor. Validacion: `php scripts/validation/validate-optional-param-order.php`
 - STRIPE-ENV-UNIFY-001: Secrets de Stripe via `getenv()` en settings.secrets.php. NUNCA en config/sync/. Multiples config namespaces (core.stripe, foc.settings, legal_billing.settings) via un solo fichero
 
 ### PHP
@@ -88,6 +89,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DATETIME-ARITHMETIC-001: datetime = VARCHAR 'Y-m-d\TH:i:s', created/changed = INT Unix. Usar UNIX_TIMESTAMP(REPLACE(field,'T',' ')) para convertir
 - UPDATE-FIELD-DEF-001: updateFieldStorageDefinition() EXIGE setName($field_name) y setTargetEntityTypeId($entity_type_id) en el BaseFieldDefinition. baseFieldDefinitions() NO los establece — estan en la key del array, no dentro del objeto
 - UPDATE-HOOK-CATCH-001: try-catch en hook_update_N() DEBE usar \Throwable (NO \Exception). PHP 8.4 TypeError extiende \Error, no \Exception. catch(\Exception) deja pasar TypeErrors y mata updatedb
+- UPDATE-HOOK-CATCH-RETHROW-001: catch en hook_update_N() DEBE hacer `throw new \RuntimeException(msg, 0, $e)`. NUNCA `return $errorMsg` — Drupal trata return string como exito y registra schema completado
 - UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity (Content O Config), o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager::installEntityType(). INCLUYE ConfigEntities — Drupal trackea sus entity type definitions. Sin el hook, CI pasa pero produccion diverge con "entity type needs to be installed"
 - UPDATE-HOOK-FIELDABLE-001: Al usar `updateFieldableEntityType()`, DEBE usarse `getFieldStorageDefinitions()` (NO `getBaseFieldDefinitions()`). `getBaseFieldDefinitions()` incluye campos computed (ej: metatag del modulo metatag) que NO tienen storage. Incluirlos crea orphan entries en key-value store `entity.definitions.installed` que generan errores permanentes en /admin/reports/status
 - TRANSLATABLE-FIELDS-INSTALL-001: Cuando un hook_update_N() hace una entidad `translatable = TRUE`, DEBE instalar los 6 campos de content_translation: source, outdated, uid, status, created, changed. `updateFieldableEntityType()` solo actualiza el entity type — los campos del modulo content_translation se proveen via hook y requieren `installFieldStorageDefinition()` individual
@@ -147,23 +149,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ICON-INTEGRITY-002: renderIcon() cascade fallback: SVG exacto → genérico categoría → placeholder invisible. NUNCA emoji chincheta. Logger warning en dev. Validación: `php scripts/validation/validate-icon-completeness.php`
 - ICON-CANVAS-INLINE-002: SVGs via `<img>` NO soportan currentColor (se interpreta como negro). Categoría `ai/` DEBE usar hex inline (#233D63, #FF8C42, #00A9A5)
 - MARKETING-TRUTH-001: Claims marketing en templates DEBEN coincidir con billing real. 14 días trial Stripe, NO "gratis para siempre". Validación: `php scripts/validation/validate-marketing-truth.php`
-- CASE-STUDY-PATTERN-001: Landing caso de éxito 15/15. Controller unificado `CaseStudyLandingController`, template `case-study-landing.html.twig` + 15 parciales `_cs-*.html.twig`. Datos desde SuccessCase entity (SUCCESS-CASES-001). preprocess_page DEBE excluir `.case_study.` routes. 9/9 verticales
-- SUCCESS-CASES-001: Todo caso de éxito DEBE provenir de SuccessCase entity. NUNCA hardcodear en controllers/templates. API: `/api/success-cases`
-- DEMO-VERTICAL-PATTERN-001: Patrón replicable demos verticales: 9 componentes parametrizados por profileId, 11/11 perfiles
-- LEAD-MAGNET-CRM-001: PublicSubscribeController auto-crea CRM Contact (source=lead_magnet) + Opportunity (stage=mql) para sources lead_magnet_*. Servicios CRM opcionales via $container->has(). Patrón idéntico a VerticalQuizService::createCrmLead()
-- VIDEO-HERO-001: Video hero autoplaying 9/9 verticales con IntersectionObserver pause/play + prefers-reduced-motion + navigator.connection.saveData. JS: landing-hero-video.js. Vídeos en themes/custom/ecosistema_jaraba_theme/videos/hero-*.mp4
-- LANDING-CONVERSION-SCORE-001: 15 criterios para landing 10/10 clase mundial (hero+urgency, trust badges, pain points, steps, features, comparison, social proof, lead magnet, pricing tiers, FAQ, final CTA, sticky CTA, reveal animations, tracking, mobile-first)
-- HOMEPAGE-ELEVATION-001: 4 variantes homepage via `homepage_variant` en preprocess (pepejaraba=5, jarabaimpact=6, pde=7, generic). Parciales: _homepage-pain-points, _homepage-pricing-preview, _homepage-comparison, _homepage-features
-- TRUST-STRIP-001: Parcial unificado `_trust-strip.html.twig` reemplaza `_landing-partner-logos` y `_trust-bar` (deprecados). 2 tiers: tech partners (marquee mobile) + institucional (grid). Per-vertical via `VerticalLandingController::getPartnersForVertical()`. Catalogo 9 partners: Stripe, Google, Anthropic, Drupal, Qdrant, LinkedIn, WhatsApp, Bizum, Firma Digital. Homepage: `trust_strip` inyectado en preprocess. MARKETING-TRUTH-001: MRW/SEUR eliminados (sin integracion real)
+- SUCCESS-CASES-001: Todo caso de éxito DEBE provenir de SuccessCase entity. NUNCA hardcodear en controllers/templates
+- CASE-STUDY-PATTERN-001: preprocess_page DEBE excluir `.case_study.` routes. Datos desde SuccessCase entity
+- LANDING-CONVERSION-SCORE-001: 15 criterios clase mundial. Detalles en memory/frontend-patterns.md
 
-### Quiz de Recomendacion de Vertical
-- Ruta: `/test-vertical` (publica). Entity: `QuizResult`. Service: `VerticalQuizService` (scoring + IA + CRM lead)
-- QUIZ-FUNNEL-001: Validacion integridad funnel quiz (18 checks)
+### Quiz y Funnel
 - CTA-DESTINATION-001: CTAs DEBEN apuntar a rutas existentes
 - FUNNEL-COMPLETENESS-001: Todo CTA de conversion DEBE tener data-track-cta + data-track-position
 - VERTICAL-COVERAGE-001: 9 verticales comerciales DEBEN estar en mega menu, quiz y cross-pollination
-- MegaMenuBridgeService: SiteMenuItem → mega_menu_columns (DB priority, PHP fallback)
-- QUIZ-FOLLOWUP-DRIP-001: hook_cron drip 3 fases (24h, 72h, 7d) para leads no convertidos
 
 ### Precios y Valores Configurables (NO-HARDCODE-PRICE-001)
 - NUNCA hardcodear precios EUR en templates Twig. SIEMPRE desde MetaSitePricingService
@@ -204,9 +197,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - _skeleton.html.twig, _empty-state.html.twig, _review-card.html.twig, _article-card.html.twig
 - ANTES de crear contenido nuevo: verificar si existe parcial reutilizable
 - Footer content (links, copyright, social) configurado desde Theme Settings UI, NO hardcoded
-- ZEIGARNIK-PRELOAD-001: 2 auto-complete global steps (__global__) inyectados en TODOS los wizards (weight -20, -10). Wizards arrancan 25-33% completados. Efecto Zeigarnik: +12-28% tasa de finalizacion
-- _setup-wizard.html.twig (203 lineas): Progress circle SVG, stepper, auto-collapse, jaraba_icon()
-- _daily-actions.html.twig (88 lineas): Grid layout, badges, color variants, slide-panel support
+- _setup-wizard.html.twig: Progress circle SVG, stepper, auto-collapse
+- _daily-actions.html.twig: Grid layout, badges, color variants, slide-panel support
 
 ### Modales y Slide-Panel
 - TODA accion crear/editar/ver en frontend DEBE abrirse en slide-panel (no navegar fuera)
@@ -224,8 +216,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - API-WHITELIST-001: Endpoints con campos dinamicos DEBEN definir ALLOWED_FIELDS y filtrar input
 - CSRF-API-001: API routes via fetch() usan _csrf_request_header_token: 'TRUE' (NO _csrf_token)
 - ACCESS-STRICT-001: Comparaciones ownership con (int)..===(int), NUNCA ==
-- ACCESS-RETURN-TYPE-001: checkAccess() DEBE declarar `: AccessResultInterface` (NO `: AccessResult`). parent::checkAccess() devuelve AccessResultInterface; return type mas restrictivo causa PHPStan error. 68 handlers migrados
-- STRIPE_WEBHOOK_SECRET: Variable obligatoria en settings.secrets.php para verificacion HMAC de webhooks Stripe (AUDIT-SEC-001). Sin ella, checkout.session.completed e invoice.payment_failed no se verifican
+- STRIPE_WEBHOOK_SECRET: Variable obligatoria en settings.secrets.php para verificacion HMAC de webhooks Stripe (AUDIT-SEC-001)
 - CSRF-LOGIN-FIX-001 v2: IONOS termina SSL; Apache/PHP recibe HTTP. Fix: `$_SERVER['HTTPS']='on'` desde X-Forwarded-Proto ANTES del bootstrap Drupal. Aplicado por `patch-settings-csrf.php` (ejecutar en cada deploy). Sin esto, SessionConfiguration.php override cookie_secure → session perdida → CSRF falla
 - REDIS-ACL-001: Redis 8.0 usa ACL file (`users.acl`) en lugar de `rename-command` + `requirepass`. 3 usuarios: default (Drupal, ~jaraba_* keys, -@dangerous -@admin), admin (mantenimiento, +@all), monitor (read-only, futuro). Variables: REDIS_PASSWORD, REDIS_ADMIN_PASSWORD, REDIS_MONITOR_PASSWORD. Validacion: `php scripts/validation/validate-redis-config.php`
 
@@ -246,23 +237,13 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - SUPERVISOR-SLEEP-001: Workers Supervisor DEBEN tener sleep 30-60s entre ejecuciones. Sin sleep, hot-loop de bootstrap Drupal quema CPU 350%+. Script wrapper: `/opt/jaraba/scripts/queue-worker.sh`
 
 ### Content Seeding Pipeline (CONTENT-SEED-PIPELINE-001)
-- 3 capas datos SaaS: L1 Config (drush cim), L2 Content plataforma (homepages, legal, nav), L3 Content tenant (usuario)
-- L2 NO se sincroniza con drush cex/cim. Requiere pipeline dedicado: scripts/content-seed/
-- Export: `drush php:script scripts/content-seed/export-metasite-content.php` (Entity API → JSON UUID-anchored)
-- Import: `drush php:script scripts/content-seed/import-metasite-content.php` (--dry-run disponible, idempotente)
-- Validate: `drush php:script scripts/content-seed/validate-content-sync.php` (45 checks, 15 × 3 metasitios)
-- JSONs versionados en git: scripts/content-seed/data/metasite-{slug}.json
-- Orden importación: PageContent → SitePageTree → SiteMenu/MenuItem → SiteConfig UPDATE
-- UUID como ancla de idempotencia (IDs difieren entre entornos, UUIDs son estables)
-- CONTENT-SEED-INTEGRITY-001: Validador en validate-all.sh (run_check)
+- 3 capas datos SaaS: L1 Config (drush cim), L2 Content plataforma, L3 Content tenant
+- L2 NO se sincroniza con drush cex/cim. Pipeline: scripts/content-seed/ (UUID-anchored, idempotente)
+- CONTENT-SEED-INTEGRITY-001: Validador en validate-all.sh. Comandos en memory/ia-services-reference.md
 
 ### Custom Translations Pipeline (I18N-CUSTOM-PIPELINE-001)
-- Traducciones custom de interfaz (locales_target.customized=1) son DATOS, NO config. `drush cim` NO las propaga
-- Export: `bash scripts/translations-export.sh` → `translations/es-custom.po` (34.5K strings) + `translations/pt-br-custom.po`
-- Import: `bash scripts/translations-import.sh` (idempotente, --dry-run, --override=customized)
-- Deploy: paso automático en deploy.yml post config:import
-- Validador: I18N-DRIFT-001 detecta drift BD vs .po > 5% (warn_check)
-- Flujo: traducir en UI Drupal → exportar → git commit → deploy propaga automáticamente
+- Traducciones custom (locales_target.customized=1) son DATOS, NO config. `drush cim` NO las propaga
+- I18N-DRIFT-001: detecta drift BD vs .po > 5%. Comandos en memory/ia-services-reference.md
 
 ### CLI Context
 - DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
@@ -286,11 +267,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Nginx: try_files $uri /index.php?$query_string para /robots.txt
 
 ### Schema.org Review Snippets
-- Google SOLO acepta 17 tipos como parent de AggregateRating: Product, Course, LocalBusiness, Event, Book, Recipe, SoftwareApplication, HowTo, Organization, Movie, Game, etc.
-- EducationalOccupationalProgram y Service (schema.org/Service) NO estan en la lista
-- ProfessionalService SI es valido (subtipo de LocalBusiness)
-- ReviewSeoController::VERTICAL_SCHEMA_TYPE_MAP mapea verticales a tipos validos
-- ReviewSchemaOrgService::resolveSchemaType() mapea entity types a tipos validos
+- Google SOLO acepta 17 tipos como parent de AggregateRating. ProfessionalService SI (subtipo LocalBusiness). Detalles en memory/frontend-patterns.md
 
 ## ANDALUCIA +EI — 2ª EDICION (PIIL CV 2025)
 
@@ -300,36 +277,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - RolProgramaLog entity para auditoria FSE+ de asignaciones/revocaciones
 - StaffProfileEi entity para perfil profesional del equipo
 
-### 2ª Edicion — Entities (21 totales)
-- 5 entities nuevas: PackServicioEi (5 packs × 3 tiers), EntregableFormativoEi (29 entregables), EvaluacionCompetenciaIaEi (rubrica 4 niveles), NegocioProspectadoEi (CRM clientes piloto), AsistenciaDetalladaEi (presencial/online)
-- PACK-VERTEBRADOR-001: Los 5 Packs de servicios son el eje vertebrador de TODA la formacion. El participante elige pack en M1, y cada modulo construye piezas operativas del pack real
-- ENTREGABLE-SEED-001: Los 29 EntregableFormativoEi se crean automaticamente en hook_programa_participante_ei_insert(). Idempotente via PortfolioEntregablesService::seedEntregables()
-- ASISTENCIA-DUAL-001: AsistenciaDetalladaEi DEBE distinguir modalidad presencial/online_sincronica. AsistenciaComplianceService verifica maximo 20% online (10h de 50h) y alerta si asistencia <75%
-
-### Copiloto IA Adaptativo
-- COPILOT-PHASE-PROMPT-001: CopilotPhaseConfigService provee 6 system prompts diferenciados por fase del programa (orientacion → modulo_0 → modulo_1_3 → modulo_4 → modulo_5 → acompanamiento). Prompts en config YAML editable sin deploy
-- 69 prompts prediseñados por sesion (23 sesiones × 3) en jaraba_andalucia_ei.copilot_session_prompts
-- AndaluciaEiCopilotContextProvider integra CopilotPhaseConfigService para inyectar prompt segun estado_programa del participante
-
-### Cross-Vertical (7 bridges)
-- EiEmprendimientoBridgeService (Canvas, MVP, Projection, SROI)
-- EiMatchingBridgeService (empleo)
-- EiAlumniBridgeService (mentoria post-programa)
-- EiBadgeBridgeService (gamificacion)
-- EiContentHubBridgeService (M4: calendario editorial) — @?
-- EiComercioConectaBridgeService (Pack 4: tienda digital) — @?
-- EiJarabaLexBridgeService (M3: tramites legales) — @?
-
-### Validadores
-- validate-andalucia-ei-roles.php: 9 checks (roles, permisos, dashboards, wizard, daily actions)
-- validate-andalucia-ei-2e-sprint-a.php: 9 checks (campos, entities, services, prompts, logos)
-- validate-andalucia-ei-2e-sprint-cd.php: 8 checks (pipeline, calculadora, controllers, templates, field names, routes)
-
-### Sprint C+D (2026-03-25) — Prospección + Calculadora + Portfolio
-- PROSPECCION-PIPELINE-001: ProspeccionPipelineService agrupa NegocioProspectadoEi por 6 fases embudo. Kanban visual con drag-drop. CaptacionLeadsAction apunta a pipeline NO a leads_guia
-- LANDING-CAPTACION-001: PruebaGratuitaController en ruta pública /andalucia-ei/prueba-gratuita. Formulario → NegocioProspectadoEi (honeypot, urgencia RGPD). Protocolo respuesta <2h (doc m)
-- CALCULADORA-PE-001: CalculadoraPuntoEquilibrioService. Gastos fijos 144€/mes. Precios pack/tier. 4 escenarios. Inyectado via drupalSettings
-- PORTFOLIO-PUBLICO-001: Ruta pública /portfolio/{participante_id}. 29 entregables por módulo. Logos FSE+
+### Reglas Clave 2ª Edicion
+- PACK-VERTEBRADOR-001: Los 5 Packs de servicios son el eje vertebrador de TODA la formacion
+- ENTREGABLE-SEED-001: 29 EntregableFormativoEi se crean en hook_insert. Idempotente via PortfolioEntregablesService::seedEntregables()
+- ASISTENCIA-DUAL-001: AsistenciaDetalladaEi DEBE distinguir presencial/online_sincronica. Maximo 20% online
+- COPILOT-PHASE-PROMPT-001: 6 system prompts por fase del programa. Config YAML editable sin deploy
+- Cross-vertical bridges: 7 bridges (4 @? opcionales). Detalles en memory/andalucia-ei-2e.md
 
 ## IA — STACK COMPLETO
 
@@ -351,18 +304,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COPILOT-LEAD-CAPTURE-001: CopilotLeadCaptureService detecta intencion de compra (regex, NO LLM) y crea CRM Contact+Opportunity. Patron LEAD-MAGNET-CRM-001. Dependencias CRM opcionales (@?)
 - COPILOT-FUNNEL-TRACKING-001: CopilotFunnelTrackingService loguea eventos embudo en tabla copilot_funnel_event. 8 tipos evento. Alto volumen (tabla directa, no entity)
 
-### LCIS (Legal Coherence Intelligence System)
-- LCIS-AUDIT-001: Audit trail obligatorio EU AI Act Art. 12. LCIS-GRAPH-001: Normative graph con derogaciones
-- 9 capas: KB → IntentClassifier → NormativeGraph → PromptRule → Response → Validator → Verifier → Disclaimer → Feedback
-
-### Servicios Clave IA
-- ModelRouterService, ProviderFallbackService (circuit breaker), ContextWindowManager
-- StreamingOrchestratorService (SSE via PHP Generator), ReActLoopService, ToolRegistry (tagged)
-- SemanticCacheService (Qdrant), FairUsePolicyService, AutoDiagnosticService (self-healing)
-- ActivePromotionService: PromotionConfig ConfigEntity, cache tag promotion_config_list
-- ContentGroundingService v2: 10 GroundingProviders (CompilerPass + tagged)
-- CopilotLeadCaptureService: intent detection (regex) + CRM leads (LEAD-MAGNET-CRM-001)
-- CopilotFunnelTrackingService: tabla copilot_funnel_event, 8 tipos evento
+- LCIS-AUDIT-001: Audit trail obligatorio EU AI Act Art. 12. Detalles en memory/ia-services-reference.md
 
 ## GRAPESJS / PAGE BUILDER
 
@@ -395,6 +337,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ## DOCUMENTACION — REGLAS CRITICAS
 
 ### DOC-GUARD-001
+- CLAUDE-MD-SIZE-001: CLAUDE.md DEBE mantenerse < 39,000 chars. Solo reglas MUST/NEVER/ALWAYS. Estado de implementacion → memory files. Validacion: `php scripts/validation/validate-claude-md-size.php` + pre-commit lint-staged
+- STATUS-REPORT-PROACTIVE-001: 3 capas monitoring proactivo — validator (CI), cron (6h, AlertingService), GitHub Actions (diario, auto-issue)
 - NUNCA sobreescribir master docs (00_*.md) con Write. SIEMPRE Edit incremental
 - Pre-commit hook: max 10% perdida de lineas + umbrales absolutos:
   DIRECTRICES >= 2000 | ARQUITECTURA >= 2400 | INDICE >= 2000 | FLUJO >= 700
@@ -464,7 +408,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 145 validators individuales en `scripts/validation/` (115 run_check + 33 warn_check = 148 checks registrados). Lista completa: `docs/validators-reference.md`
+- 146 validators individuales en `scripts/validation/` (116 run_check + 33 warn_check = 149 checks registrados). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa

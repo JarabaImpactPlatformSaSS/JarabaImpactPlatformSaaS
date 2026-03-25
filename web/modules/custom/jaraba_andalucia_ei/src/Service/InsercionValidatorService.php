@@ -219,4 +219,72 @@ class InsercionValidatorService {
     }
   }
 
+  /**
+   * Checks if participant is eligible for the €528 incentive.
+   *
+   * Pautas §5.1.C: El incentivo se paga a la persona atendida
+   * (10h orientación + 50h formación completada con éxito ≥75%).
+   *
+   * @param int $participanteId
+   *   The participant entity ID.
+   *
+   * @return array{eligible: bool, reason: string, importe_bruto: float, irpf: float, importe_neto: float}
+   *   Eligibility result with desglose fiscal.
+   */
+  public function checkElegibilidadIncentivo(int $participanteId): array {
+    $result = [
+      'eligible' => FALSE,
+      'reason' => '',
+      'importe_bruto' => self::INCENTIVO_BASE,
+      'irpf' => self::INCENTIVO_IRPF,
+      'importe_neto' => self::INCENTIVO_NETO,
+    ];
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
+      /** @var \Drupal\Core\Entity\ContentEntityInterface|null $participante */
+      $participante = $storage->load($participanteId);
+      if ($participante === NULL) {
+        $result['reason'] = (string) $this->t('Participante no encontrado.');
+        return $result;
+      }
+
+      // Check es_persona_atendida flag.
+      if ($participante->hasField('es_persona_atendida')
+        && !$participante->get('es_persona_atendida')->isEmpty()
+        && (bool) $participante->get('es_persona_atendida')->value) {
+        $result['eligible'] = TRUE;
+        $result['reason'] = (string) $this->t('Persona atendida: cumple requisitos de orientación (10h) y formación (50h, ≥75% asistencia).');
+        return $result;
+      }
+
+      // Check asistencia percentage.
+      $asistencia = 0.0;
+      if ($participante->hasField('asistencia_porcentaje') && !$participante->get('asistencia_porcentaje')->isEmpty()) {
+        $asistencia = (float) $participante->get('asistencia_porcentaje')->value;
+      }
+
+      if ($asistencia < 75.0) {
+        $result['reason'] = (string) $this->t('Asistencia insuficiente (@pct% < 75%). Debe completar la formación con éxito.', [
+          '@pct' => number_format($asistencia, 1),
+        ]);
+        return $result;
+      }
+
+      $result['eligible'] = TRUE;
+      $result['reason'] = (string) $this->t('Cumple requisitos de asistencia (@pct%).', [
+        '@pct' => number_format($asistencia, 1),
+      ]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error checking incentive eligibility for @id: @msg', [
+        '@id' => $participanteId,
+        '@msg' => $e->getMessage(),
+      ]);
+      $result['reason'] = (string) $this->t('Error al verificar elegibilidad.');
+    }
+
+    return $result;
+  }
+
 }

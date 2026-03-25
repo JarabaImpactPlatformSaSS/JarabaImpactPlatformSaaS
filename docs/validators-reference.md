@@ -86,6 +86,7 @@
 | MODULE-ORPHAN-001 | Module consistency (orphan/ghost detection) |
 | NO-HARDCODE-PRICE-001 | No hardcoded EUR prices in templates |
 | OPTIONAL-CROSSMODULE-001 | Cross-module hard dependency detection |
+| OPTIONAL-PARAM-ORDER-001 | Optional constructor params before required (PHP 8.4) |
 | ORTOGRAFIA-TRANS-001 | Ortografia en textos traducibles Twig |
 | PB-ONBOARDING-001 | Page Builder onboarding integrity (wizard+daily+L1-L4) |
 | PHANTOM-ARG-001 | Phantom args in services.yml vs constructor params |
