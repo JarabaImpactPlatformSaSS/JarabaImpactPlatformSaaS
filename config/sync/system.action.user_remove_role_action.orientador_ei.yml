@@ -1,0 +1,14 @@
+uuid: 766367c7-5b31-474e-95d6-7e26d1f4e808
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.orientador_ei
+  module:
+    - user
+id: user_remove_role_action.orientador_ei
+label: 'Quita el rol Orientador Andalucía +ei al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: orientador_ei

@@ -1,0 +1,14 @@
+uuid: a15880b0-6e48-495b-a53b-0d745577a7b7
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.formador_ei
+  module:
+    - user
+id: user_add_role_action.formador_ei
+label: 'Agrega el rol Formador Andalucía +ei al(los) usuario(s) seleccionado(s).'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: formador_ei

@@ -1,0 +1,61 @@
+# =============================================================================
+# Jaraba Impact Platform - Redis 8.0 ACL Configuration
+# N3 Enterprise Class - Doc 197 - High Availability Infrastructure
+# =============================================================================
+# Replaces legacy rename-command directives with Redis 8 ACL system.
+# Ref: REDIS-ACL-001
+#
+# Users:
+#   default   — Drupal/PHP-FPM connections (cache, queue, lock, flood)
+#   admin     — Maintenance operations (CONFIG, FLUSHDB, DEBUG, migrations)
+#   sentinel  — Redis Sentinel failover operations (CONFIG, SUBSCRIBE, REPLICAOF)
+#   monitor   — Read-only for Grafana/Prometheus exporters (future, disabled)
+#
+# Passwords are injected via environment variables at container startup.
+# The sed command in docker-compose.yml replaces ${REDIS_*_PASSWORD} vars
+# before Redis loads this file.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# DEFAULT USER — Drupal application
+# ---------------------------------------------------------------------------
+# Permissions:
+#   - All standard commands (+@all)
+#   - EXCEPT dangerous commands (-@dangerous: FLUSHDB, FLUSHALL, DEBUG, KEYS,
+#     SHUTDOWN, MONITOR, SLAVEOF, REPLICAOF, RESTORE, SORT, MIGRATE, etc.)
+#   - EXCEPT admin commands (-@admin: CONFIG, SLOWLOG, ACL, LATENCY, etc.)
+#   - Key pattern: jaraba_* (matches cache_prefix 'jaraba_' in settings.php)
+#   - Channel pattern: all (Drupal redis module uses no pub/sub, but safe)
+# ---------------------------------------------------------------------------
+user default on >${REDIS_PASSWORD} ~jaraba_* &* +@all -@dangerous -@admin
+
+# ---------------------------------------------------------------------------
+# ADMIN USER — Maintenance and DevOps
+# ---------------------------------------------------------------------------
+# Full access to all commands and all keys. Used for:
+#   - redis-cli administration
+#   - CONFIG GET/SET operations
+#   - FLUSHDB during deployments (cache clear)
+#   - DEBUG and SLOWLOG for troubleshooting
+#   - ACL management
+# ---------------------------------------------------------------------------
+user admin on >${REDIS_ADMIN_PASSWORD} ~* &* +@all
+
+# ---------------------------------------------------------------------------
+# SENTINEL USER — Redis Sentinel failover operations
+# ---------------------------------------------------------------------------
+# Sentinel needs specific commands to monitor master health, trigger failover,
+# and reconfigure replicas. These commands span @admin and @dangerous categories,
+# so Sentinel cannot use the restricted default user.
+# Ref: https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/
+# ---------------------------------------------------------------------------
+user sentinel on >${REDIS_SENTINEL_PASSWORD} ~* &* +PING +INFO +SUBSCRIBE +PUBLISH +CONFIG|REWRITE +CONFIG|SET +CONFIG|GET +CLIENT|SETNAME +CLIENT|KILL +CLIENT|GETNAME +MULTI +EXEC +SLAVEOF +REPLICAOF +AUTH +COMMAND +WAIT +SELECT +CLUSTER|INFO
+
+# ---------------------------------------------------------------------------
+# MONITOR USER — Observability (read-only)
+# ---------------------------------------------------------------------------
+# For Prometheus redis_exporter, Grafana dashboards, UptimeRobot checks.
+# Can read INFO, PING, DBSIZE, CLIENT LIST but cannot modify any data.
+# Disabled by default — enable when monitoring stack is deployed.
+# ---------------------------------------------------------------------------
+user monitor off >${REDIS_MONITOR_PASSWORD} ~* &* +INFO +PING +DBSIZE +CLIENT|LIST +SLOWLOG|GET +LATENCY|LATEST +COMMAND|COUNT

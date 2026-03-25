@@ -1,0 +1,53 @@
+uuid: 34d72728-8d3d-4227-bed5-fc096cf97ed9
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+    - jaraba_andalucia_ei
+id: coordinador_ei
+label: 'Coordinador Andalucía +ei'
+weight: 5
+is_admin: false
+permissions:
+  - 'access andalucia ei coordinador dashboard'
+  - 'administer andalucia ei'
+  - 'assign andalucia ei roles'
+  - 'create accion formativa ei'
+  - 'create andalucia ei actuaciones'
+  - 'create expediente documento'
+  - 'create indicador fse plus'
+  - 'create inscripcion sesion ei'
+  - 'create insercion laboral'
+  - 'create plan formativo ei'
+  - 'create programa participante ei'
+  - 'create prospeccion empresarial'
+  - 'create sesion programada ei'
+  - 'edit accion formativa ei'
+  - 'edit indicador fse plus'
+  - 'edit insercion laboral'
+  - 'edit plan formativo ei'
+  - 'edit programa participante ei'
+  - 'edit prospeccion empresarial'
+  - 'edit sesion programada ei'
+  - 'edit solicitud ei'
+  - 'export sto data'
+  - 'manage andalucia ei fases'
+  - 'manage andalucia ei solicitudes'
+  - 'manage ficha tecnica ei'
+  - 'use digital signature'
+  - 'view accion formativa ei'
+  - 'view andalucia ei actuaciones'
+  - 'view andalucia ei esf indicators'
+  - 'view andalucia ei justificacion economica'
+  - 'view andalucia ei riesgo abandono'
+  - 'view expediente documento'
+  - 'view ficha tecnica ei'
+  - 'view indicador fse plus'
+  - 'view inscripcion sesion ei'
+  - 'view insercion laboral'
+  - 'view plan formativo ei'
+  - 'view programa participante ei'
+  - 'view prospeccion empresarial'
+  - 'view sesion programada ei'
+  - 'view solicitud ei'

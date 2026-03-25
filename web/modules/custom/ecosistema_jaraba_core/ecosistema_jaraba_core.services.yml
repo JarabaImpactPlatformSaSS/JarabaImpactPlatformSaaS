@@ -749,6 +749,7 @@ services:
     arguments:
       - '@state'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@module_handler'
       - '@?ecosistema_jaraba_core.alerting'
 
   # ===========================================

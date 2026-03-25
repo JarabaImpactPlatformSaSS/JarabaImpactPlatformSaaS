@@ -1,0 +1,14 @@
+uuid: 73c6cdf5-13cf-4ca5-bb4b-657fa14d1b3a
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.coordinador_ei
+  module:
+    - user
+id: user_add_role_action.coordinador_ei
+label: 'Agrega el rol Coordinador Andalucía +ei al(los) usuario(s) seleccionado(s).'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: coordinador_ei

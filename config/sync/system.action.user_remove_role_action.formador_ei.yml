@@ -1,0 +1,14 @@
+uuid: d174278b-ed0b-4077-8b46-b4faf021d636
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.formador_ei
+  module:
+    - user
+id: user_remove_role_action.formador_ei
+label: 'Quita el rol Formador Andalucía +ei al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: formador_ei

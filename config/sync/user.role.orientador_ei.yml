@@ -1,0 +1,33 @@
+uuid: 97c028df-f3a7-4407-b0d0-22fa31e6a7ca
+langcode: es
+status: true
+dependencies:
+  module:
+    - ecosistema_jaraba_core
+    - jaraba_andalucia_ei
+id: orientador_ei
+label: 'Orientador Andalucía +ei'
+weight: 6
+is_admin: false
+permissions:
+  - 'access andalucia ei orientador dashboard'
+  - 'create andalucia ei actuaciones'
+  - 'create expediente documento'
+  - 'create insercion laboral'
+  - 'create sesion programada ei'
+  - 'edit expediente documento'
+  - 'edit own andalucia ei actuaciones'
+  - 'edit programa participante ei'
+  - 'edit sesion programada ei'
+  - 'register andalucia ei actuacion'
+  - 'sign andalucia ei hoja servicio'
+  - 'use digital signature'
+  - 'view accion formativa ei'
+  - 'view andalucia ei actuaciones'
+  - 'view andalucia ei riesgo abandono'
+  - 'view expediente documento'
+  - 'view inscripcion sesion ei'
+  - 'view insercion laboral'
+  - 'view plan formativo ei'
+  - 'view programa participante ei'
+  - 'view sesion programada ei'

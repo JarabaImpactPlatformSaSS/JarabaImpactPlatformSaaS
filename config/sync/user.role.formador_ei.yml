@@ -1,0 +1,21 @@
+uuid: eb9ec5c8-0cc1-478c-9aba-16cd904b5235
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_andalucia_ei
+id: formador_ei
+label: 'Formador Andalucía +ei'
+weight: 7
+is_admin: false
+permissions:
+  - 'access andalucia ei formador'
+  - 'access andalucia ei formador dashboard'
+  - 'create material didactico ei'
+  - 'edit material didactico ei'
+  - 'mark attendance sesion ei'
+  - 'view accion formativa ei'
+  - 'view inscripcion sesion ei'
+  - 'view material didactico ei'
+  - 'view plan formativo ei'
+  - 'view sesion programada ei'

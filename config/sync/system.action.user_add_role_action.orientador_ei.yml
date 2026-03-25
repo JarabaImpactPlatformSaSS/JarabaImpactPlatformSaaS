@@ -1,0 +1,14 @@
+uuid: ed562aca-e002-4869-936c-c3114686281c
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.orientador_ei
+  module:
+    - user
+id: user_add_role_action.orientador_ei
+label: 'Agrega el rol Orientador Andalucía +ei al(los) usuario(s) seleccionado(s).'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: orientador_ei

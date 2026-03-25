@@ -1,0 +1,14 @@
+uuid: 36498831-b39f-415f-9430-eea9c417a2ba
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.coordinador_ei
+  module:
+    - user
+id: user_remove_role_action.coordinador_ei
+label: 'Quita el rol Coordinador Andalucía +ei al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: coordinador_ei
