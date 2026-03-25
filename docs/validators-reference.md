@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 144 |
-| run_check (CI blocker) | 114 |
-| warn_check (no blocker) | 33 |
+| Total scripts PHP | 157 |
+| run_check (CI blocker) | 119 |
+| warn_check (no blocker) | 41 |
 | Orphaned validators | 0 |
 
 ## Run Checks — 90 (bloquean CI)
@@ -90,6 +90,7 @@
 | ORTOGRAFIA-TRANS-001 | Ortografia en textos traducibles Twig |
 | PB-ONBOARDING-001 | Page Builder onboarding integrity (wizard+daily+L1-L4) |
 | PHANTOM-ARG-001 | Phantom args in services.yml vs constructor params |
+| PHP-DECLARE-ORDER-001 | declare(strict_types) before use statements (PHPCBF safety) |
 | PLG-COVERAGE-001 | PLG trigger coverage for Page Builder |
 | PREPROCESS-ISOLATION-001 | Preprocess hooks exclude .case_study. routes |
 | PRESAVE-RESILIENCE-001 | Presave hook resilience detection |
@@ -130,7 +131,7 @@
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 
-## Warn Checks — 31 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 41 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
@@ -145,6 +146,8 @@
 | HOOK-REQUIREMENTS-COVERAGE-001 | Module hook_requirements() coverage | Target 95% |
 | HOOK-REQUIREMENTS-GAP-001 | Modules with hook_requirements gap | 11 modules |
 | ICON-COMPLETENESS-001 | Icon SVG completeness cascade | |
+| PHPCS-BASELINE-DECAY-001 | PHPCS baseline size within limits (warn >8.5k, fail >9.5k) | |
+| UPDATE-HOOK-CATCH-RETHROW-001 | hook_update catch blocks re-throw (not return) | 60 pre-existing |
 | ICON-DYNAMIC-001 | Dynamic icon refs resolve to SVGs | |
 | IMAGE-WEIGHT-001 | Oversized images in theme | 62 pre-existing |
 | INFRA-HEALTH-001 | Infrastructure health | Production only |

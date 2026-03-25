@@ -495,6 +495,15 @@ if [ "$MODE" = "full" ]; then
   warn_check "STATUS-REPORT-PROACTIVE-001" "Drupal status report (0 errors, 0 unexpected warnings)" \
     php "$SCRIPT_DIR/validate-status-report.php"
 
+  run_check "PHP-DECLARE-ORDER-001" "declare(strict_types) before use statements" \
+    php "$SCRIPT_DIR/validate-php-declare-order.php"
+
+  warn_check "PHPCS-BASELINE-DECAY-001" "PHPCS baseline size within limits" \
+    php "$SCRIPT_DIR/validate-phpcs-baseline-decay.php"
+
+  warn_check "UPDATE-HOOK-CATCH-RETHROW-001" "hook_update catch blocks re-throw (60 pre-existing)" \
+    php "$SCRIPT_DIR/validate-update-hook-rethrow.php"
+
   warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
     php "$SCRIPT_DIR/validate-csp-completeness.php"
 
