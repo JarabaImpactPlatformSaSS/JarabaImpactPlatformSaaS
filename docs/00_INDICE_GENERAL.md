@@ -1542,10 +1542,10 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v161.0.0** — Migración dedicado 10/10 | 2026-03-23 (v161.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v147.0.0** — Safeguard 104 scripts, Madurez 5.0/5.0 | 2026-03-23 (v147.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v191.0.0** | 2026-03-23 (v191.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v112.0.0** — Implementation patterns 47 | 2026-03-21 (v112.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v166.0.0** — Redis ACL + Andalucía 2E + Status Report Proactivo | 2026-03-25 (v166.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v150.0.0** — Safeguard 148 scripts, Madurez 5.0/5.0 | 2026-03-25 (v150.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v195.0.0** | 2026-03-25 (v195.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v115.0.0** — Implementation patterns 49 | 2026-03-25 (v115.0.0) |
 | [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones de customización por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
 | [validators-reference.md](./validators-reference.md) | 🛡️ SSOT lista completa 104 validators (88 run + 16 warn) | 2026-03-23 |
 
