@@ -4,6 +4,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Endpoint público de health check para CI/CD y monitoring externo.
@@ -258,6 +259,98 @@ class HealthCheckController extends ControllerBase
         }
 
         return ['status' => 'ok'];
+    }
+
+    /**
+     * STATUS-REPORT-PROACTIVE-001 Layer 3: Status report API endpoint.
+     *
+     * Token-protected: requires X-Admin-Token header matching
+     * JARABA_ADMIN_TOKEN environment variable.
+     *
+     * Returns full Drupal status report as JSON for remote AI agents.
+     */
+    public function statusReport(Request $request): JsonResponse {
+        // Token authentication (SECRET-MGMT-001: token from env, not config).
+        $expectedToken = getenv('JARABA_ADMIN_TOKEN');
+        $providedToken = $request->headers->get('X-Admin-Token', '');
+
+        if (!$expectedToken || !hash_equals($expectedToken, $providedToken)) {
+            return new JsonResponse([
+                'error' => 'Unauthorized',
+                'message' => 'Valid X-Admin-Token header required.',
+            ], 403);
+        }
+
+        // Baseline of expected warnings (same as validate-status-report.php).
+        $baseline = [
+            'ecosistema_jaraba_base_domain',
+            'experimental_modules',
+            'update_contrib',
+            'update_core',
+        ];
+
+        // Invoke hook_requirements for runtime phase.
+        $moduleHandler = \Drupal::moduleHandler();
+        foreach (array_keys($moduleHandler->getModuleList()) as $module) {
+            $moduleHandler->loadInclude($module, 'install');
+        }
+
+        $requirements = [];
+        try {
+            $requirements = $moduleHandler->invokeAll('requirements', ['runtime']);
+        }
+        catch (\Throwable $e) {
+            return new JsonResponse([
+                'error' => 'Requirements invocation failed',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        // Classify results.
+        $errors = [];
+        $unexpectedWarnings = [];
+        $baselineWarnings = [];
+        $okCount = 0;
+
+        foreach ($requirements as $key => $item) {
+            $severity = $item['severity'] ?? REQUIREMENT_OK;
+
+            if ($severity === REQUIREMENT_ERROR) {
+                $errors[] = [
+                    'key' => $key,
+                    'title' => (string) ($item['title'] ?? $key),
+                    'value' => trim((string) ($item['value'] ?? '')),
+                    'description' => trim((string) ($item['description'] ?? '')),
+                ];
+            }
+            elseif ($severity === REQUIREMENT_WARNING) {
+                if (in_array($key, $baseline, TRUE)) {
+                    $baselineWarnings[] = (string) ($item['title'] ?? $key);
+                }
+                else {
+                    $unexpectedWarnings[] = [
+                        'key' => $key,
+                        'title' => (string) ($item['title'] ?? $key),
+                        'value' => trim((string) ($item['value'] ?? '')),
+                    ];
+                }
+            }
+            else {
+                $okCount++;
+            }
+        }
+
+        $status = $errors !== [] ? 'errors' : ($unexpectedWarnings !== [] ? 'warnings' : 'clean');
+
+        return new JsonResponse([
+            'timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+            'status' => $status,
+            'total_checks' => count($requirements),
+            'ok_count' => $okCount,
+            'errors' => $errors,
+            'unexpected_warnings' => $unexpectedWarnings,
+            'baseline_warnings' => $baselineWarnings,
+        ], $errors !== [] ? 503 : 200);
     }
 
 }

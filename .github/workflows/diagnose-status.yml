@@ -1,0 +1,248 @@
+# ==============================================
+# DIAGNOSTICO PROACTIVO — STATUS REPORT (IONOS Dedicado)
+# ==============================================
+# STATUS-REPORT-PROACTIVE-001 — Capa 3: IA diagnostica.
+#
+# Cron diario a las 06:00 UTC (08:00 CET) — antes del horario laboral.
+# SSH al servidor, ejecuta diagnostico, abre GitHub Issue si hay problemas.
+#
+# Flujo: SSH → drush core:requirements → Analisis → Issue/Email
+# ==============================================
+
+name: Jaraba SaaS - Status Report Diagnostic
+
+on:
+  schedule:
+    # Diario a las 06:00 UTC (08:00 CET)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_issue:
+        description: 'Force GitHub Issue creation even if no problems'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  DEPLOY_USER: 'jaraba'
+  DEPLOY_PORT: '2222'
+  SITE_DIR: '/var/www/jaraba'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  diagnose:
+    name: Drupal Status Report Diagnostic
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      # ───────────────────────────────────────────────────────────────
+      # 1. Execute Drupal status report on production server
+      # ───────────────────────────────────────────────────────────────
+      - name: Run Drupal status report check
+        id: status_report
+        run: |
+          REPORT=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'REMOTE_EOF'
+            cd /var/www/jaraba
+
+            # Get requirements as JSON.
+            REQUIREMENTS=$(drush core:requirements --format=json 2>/dev/null)
+
+            # Extract errors and unexpected warnings via Python.
+            python3 << 'PYEOF'
+          import json, sys
+
+          baseline = [
+              'ecosistema_jaraba_base_domain',
+              'experimental_modules',
+              'update_contrib',
+              'update_core',
+          ]
+
+          try:
+              data = json.loads('''REQUIREMENTS_PLACEHOLDER'''.replace("REQUIREMENTS_PLACEHOLDER", ""))
+          except:
+              # Fallback: read from drush directly.
+              import subprocess
+              result = subprocess.run(
+                  ['drush', 'core:requirements', '--format=json'],
+                  capture_output=True, text=True, cwd='/var/www/jaraba'
+              )
+              data = json.loads(result.stdout)
+
+          errors = []
+          warnings = []
+          ok_count = 0
+
+          for key, item in data.items():
+              sev = item.get('severity', 'OK')
+              if sev == 'Error':
+                  errors.append({
+                      'key': key,
+                      'title': item.get('title', key),
+                      'value': item.get('value', '').strip(),
+                      'desc': item.get('description', '').strip()[:300]
+                  })
+              elif sev == 'Warning' and key not in baseline:
+                  warnings.append({
+                      'key': key,
+                      'title': item.get('title', key),
+                      'value': item.get('value', '').strip()
+                  })
+              else:
+                  ok_count += 1
+
+          report = {
+              'total': len(data),
+              'ok': ok_count,
+              'errors': errors,
+              'warnings': warnings,
+              'error_count': len(errors),
+              'warning_count': len(warnings),
+          }
+          print(json.dumps(report))
+          PYEOF
+          REMOTE_EOF
+          )
+
+          # If SSH failed, REPORT will be empty.
+          if [ -z "$REPORT" ]; then
+            echo "status=ssh_failed" >> $GITHUB_OUTPUT
+            echo "error_count=0" >> $GITHUB_OUTPUT
+            echo "warning_count=0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Parse counts.
+          ERROR_COUNT=$(echo "$REPORT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('error_count',0))" 2>/dev/null || echo "0")
+          WARNING_COUNT=$(echo "$REPORT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('warning_count',0))" 2>/dev/null || echo "0")
+
+          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
+          echo "report<<REPORT_DELIM" >> $GITHUB_OUTPUT
+          echo "$REPORT" >> $GITHUB_OUTPUT
+          echo "REPORT_DELIM" >> $GITHUB_OUTPUT
+
+          if [ "$ERROR_COUNT" -gt 0 ]; then
+            echo "status=errors" >> $GITHUB_OUTPUT
+          elif [ "$WARNING_COUNT" -gt 0 ]; then
+            echo "status=warnings" >> $GITHUB_OUTPUT
+          else
+            echo "status=clean" >> $GITHUB_OUTPUT
+          fi
+
+      # ───────────────────────────────────────────────────────────────
+      # 2. Check pending database updates
+      # ───────────────────────────────────────────────────────────────
+      - name: Check pending updates
+        id: pending_updates
+        run: |
+          PENDING=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "cd /var/www/jaraba && drush updatedb:status --format=json 2>/dev/null" || echo "[]")
+
+          COUNT=$(echo "$PENDING" | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)" 2>/dev/null || echo "0")
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      # ───────────────────────────────────────────────────────────────
+      # 3. Create GitHub Issue if problems found
+      # ───────────────────────────────────────────────────────────────
+      - name: Create GitHub Issue for errors
+        if: steps.status_report.outputs.status == 'errors' || (inputs.force_issue == 'true')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = JSON.parse(`${{ steps.status_report.outputs.report }}`);
+            const pendingUpdates = ${{ steps.pending_updates.outputs.count }};
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            let body = `## Drupal Status Report Diagnostic\n`;
+            body += `**Timestamp:** ${now} UTC\n`;
+            body += `**Total checks:** ${report.total}\n`;
+            body += `**Errors:** ${report.error_count}\n`;
+            body += `**Unexpected Warnings:** ${report.warning_count}\n`;
+            body += `**Pending DB Updates:** ${pendingUpdates}\n\n`;
+
+            if (report.errors.length > 0) {
+              body += `### Errors\n`;
+              for (const e of report.errors) {
+                body += `- **[${e.key}] ${e.title}:** ${e.value}\n`;
+                if (e.desc) body += `  > ${e.desc.substring(0, 200)}\n`;
+              }
+              body += `\n`;
+            }
+
+            if (report.warnings.length > 0) {
+              body += `### Unexpected Warnings\n`;
+              for (const w of report.warnings) {
+                body += `- **[${w.key}] ${w.title}:** ${w.value}\n`;
+              }
+              body += `\n`;
+            }
+
+            body += `### Next Steps\n`;
+            body += `1. Check \`/admin/reports/status\` on production\n`;
+            body += `2. Review CLAUDE.md for related rules\n`;
+            body += `3. Run \`php scripts/validation/validate-status-report.php --env=prod\`\n\n`;
+            body += `---\n*Generated by STATUS-REPORT-PROACTIVE-001 Layer 3*`;
+
+            const severity = report.error_count > 0 ? 'error' : 'warning';
+            const labels = ['automated', `status-report-${severity}`];
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Status Report] ${report.error_count} error(s), ${report.warning_count} warning(s) — ${now.slice(0, 10)}`,
+              body: body,
+              labels: labels,
+            });
+
+      # ───────────────────────────────────────────────────────────────
+      # 4. Email notification on errors
+      # ───────────────────────────────────────────────────────────────
+      - name: Send email alert on errors
+        if: steps.status_report.outputs.status == 'errors'
+        continue-on-error: true
+        run: |
+          ERROR_COUNT=${{ steps.status_report.outputs.error_count }}
+          WARNING_COUNT=${{ steps.status_report.outputs.warning_count }}
+
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "cd /var/www/jaraba && php scripts/ci-notify-email.php \
+              '[Diagnostic] Status Report: ${ERROR_COUNT} error(s), ${WARNING_COUNT} warning(s)' \
+              '<h2>Status Report Diagnostic</h2><p><b>Errors:</b> ${ERROR_COUNT}</p><p><b>Unexpected Warnings:</b> ${WARNING_COUNT}</p><p>Check <a href=\"https://plataformadeecosistemas.com/es/admin/reports/status\">/admin/reports/status</a> for details.</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Diagnostic Logs</a></p>'"
+
+      # ───────────────────────────────────────────────────────────────
+      # 5. Summary annotation
+      # ───────────────────────────────────────────────────────────────
+      - name: Diagnostic summary
+        run: |
+          STATUS="${{ steps.status_report.outputs.status }}"
+          ERRORS="${{ steps.status_report.outputs.error_count }}"
+          WARNINGS="${{ steps.status_report.outputs.warning_count }}"
+          PENDING="${{ steps.pending_updates.outputs.count }}"
+
+          echo "### Status Report Diagnostic" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | $STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Errors | $ERRORS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unexpected Warnings | $WARNINGS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pending DB Updates | $PENDING |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$STATUS" = "clean" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All clear. No action required." >> $GITHUB_STEP_SUMMARY
+          fi

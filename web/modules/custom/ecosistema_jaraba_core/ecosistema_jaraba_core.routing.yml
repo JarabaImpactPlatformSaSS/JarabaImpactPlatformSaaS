@@ -1420,6 +1420,18 @@ ecosistema_jaraba_core.health.check:
   options:
     no_cache: TRUE
 
+# STATUS-REPORT-PROACTIVE-001 — Layer 3: API endpoint for remote AI agents.
+# Token-protected: requires X-Admin-Token header matching JARABA_ADMIN_TOKEN env var.
+ecosistema_jaraba_core.admin.status_report:
+  path: '/api/v1/admin/status-report'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\HealthCheckController::statusReport'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+  options:
+    no_cache: TRUE
+
 # ---------------------------------------------------------------------------
 # USAGE DASHBOARD - SELF-SERVICE (G111 / f111)
 # ---------------------------------------------------------------------------
