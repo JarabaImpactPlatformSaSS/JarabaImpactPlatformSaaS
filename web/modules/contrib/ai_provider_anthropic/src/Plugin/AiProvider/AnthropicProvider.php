@@ -114,8 +114,9 @@ class AnthropicProvider extends OpenAiBasedProviderClientBase {
    * {@inheritdoc}
    */
   public function getModelSettings(string $model_id, array $generalConfig = []): array {
-    // If it 4.1 or higher of anything, we hide top_p.
-    if (preg_match('/claude-(opus|sonnet)-4(\.[1-9]|-[1-9])/i', $model_id)) {
+    // If it's Claude 4.x or higher, we hide top_p as Anthropic API doesn't
+    // allow both temperature and top_p to be specified together.
+    if (preg_match('/^claude(?:-[a-z]+)*-(4(\.\d+)?|[5-9](\.\d+)?)(?:[.-]|$)/i', $model_id)) {
       unset($generalConfig['top_p']);
     }
     return $generalConfig;

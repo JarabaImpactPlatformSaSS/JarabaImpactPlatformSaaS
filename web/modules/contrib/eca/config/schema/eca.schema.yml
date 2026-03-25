@@ -80,6 +80,11 @@ eca.eca.*:
             label: 'Successors'
             sequence:
               type: eca.wrapper.successor
+          applied_templates:
+            type: sequence
+            label: 'Applied templates'
+            sequence:
+              type: string
     conditions:
       type: sequence
       label: 'Conditions'
@@ -110,6 +115,9 @@ eca.eca.*:
         type: mapping
         label: 'Gateway'
         mapping:
+          label:
+            type: string
+            label: 'Label'
           type:
             type: integer
             label: 'Type'

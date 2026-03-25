@@ -94,6 +94,26 @@ class DefaultPaymentAdminTest extends PaymentAdminTestBase {
     $this->drupalGet($this->paymentUri);
     $this->assertSession()->pageTextContains('$10.00');
     $this->assertSession()->pageTextContains($this->paymentGateway->label());
+    $this->assertSession()->pageTextContains('Order balance $10.00');
+
+    // Test that order balance is updated when new items is added/removed.
+    /** @var \Drupal\commerce_order\Entity\OrderItem $new_item */
+    $new_item = $this->createEntity('commerce_order_item', [
+      'type' => 'test',
+      'quantity' => 1,
+      'unit_price' => new Price('15', 'USD'),
+    ]);
+    $new_item->save();
+    $this->order->addItem($new_item);
+    $this->order->save();
+    $this->drupalGet($this->paymentUri);
+    $this->assertSession()->pageTextContains('Order balance $25.00');
+
+    // Remove item and check the balance again.
+    $this->order->removeItem($new_item);
+    $this->order->save();
+    $this->drupalGet($this->paymentUri);
+    $this->assertSession()->pageTextContains('Order balance $10.00');
 
     // Confirm that the payment is visible even if the gateway was deleted.
     $this->paymentGateway->delete();

@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\eca\Attribute\Token;
 
 /**
  * Current user as data provider for the Token environment.
@@ -45,6 +46,12 @@ class CurrentUserDataProvider implements DataProviderInterface {
   /**
    * {@inheritdoc}
    */
+  #[Token(
+    name: 'user',
+    description: 'The current user.',
+    type: 'user',
+    aliases: ['current_user'],
+  )]
   public function getData(string $key): ?EntityInterface {
     if ($key === 'user' || $key === 'current_user') {
       return $this->userStorage->load($this->currentUser->id());

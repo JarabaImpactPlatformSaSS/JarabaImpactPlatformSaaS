@@ -910,13 +910,8 @@ class OrderItemsWidget extends WidgetBase implements ContainerFactoryPluginInter
       // Generates options of purchased entity types for the order.
       $type_options = [];
       foreach ($purchasable_entity_types as $purchasable_entity_type) {
-        try {
-          $definition = $this->entityTypeManager->getDefinition($purchasable_entity_type);
-          $type_options[$purchasable_entity_type] = $definition->getLabel();
-        }
-        catch (PluginNotFoundException) {
-          continue;
-        }
+        $definition = $this->entityTypeManager->getDefinition($purchasable_entity_type);
+        $type_options[$purchasable_entity_type] = $definition->getLabel();
       }
       $type_selector = [
         '#type' => 'select',
@@ -1227,7 +1222,15 @@ class OrderItemsWidget extends WidgetBase implements ContainerFactoryPluginInter
 
     /** @var \Drupal\commerce_order\Entity\OrderItemTypeInterface $order_item_type */
     foreach ($order_item_type_storage->loadMultiple($order_item_types) as $order_item_type) {
-      $purchasable_entity_types[] = $order_item_type->getPurchasableEntityTypeId();
+      $purchasable_entity_type = $order_item_type->getPurchasableEntityTypeId();
+      // Make sure that the purchasable entity type is existing in the system.
+      try {
+        $this->entityTypeManager->getDefinition($purchasable_entity_type);
+      }
+      catch (PluginNotFoundException) {
+        continue;
+      }
+      $purchasable_entity_types[] = $purchasable_entity_type;
     }
     $purchasable_entity_types = array_unique($purchasable_entity_types);
 

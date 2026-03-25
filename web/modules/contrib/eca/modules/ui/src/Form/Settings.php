@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,13 +30,20 @@ class Settings extends ConfigFormBase {
   protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
+   * The Drupal state.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected StateInterface $state;
+
+  /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): Settings {
-    /** @var \Drupal\eca_ui\Form\Settings $instance */
+  public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
     $instance->defaultDocumentationDomain = $container->getParameter('eca.default_documentation_domain');
     $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->state = $container->get('state');
     return $instance;
   }
 
@@ -58,6 +66,36 @@ class Settings extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $config = $this->config('eca.settings');
+    $form['debug_mode'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Debug mode'),
+      '#default_value' => $this->state->get('_eca_internal_debug_mode', FALSE) ?? FALSE,
+      '#weight' => -35,
+    ];
+    $form['debug_data_depth'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Debug data depth'),
+      '#default_value' => $this->state->get('_eca_internal_debug_data_depth', 5) ?? 5,
+      '#min' => 2,
+      '#weight' => -30,
+      '#states' => [
+        'visible' => [
+          ':input[name="debug_mode"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['debug_data_cases'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Debug data cases'),
+      '#default_value' => $this->state->get('_eca_internal_debug_data_cases', 10) ?? 10,
+      '#min' => 1,
+      '#weight' => -31,
+      '#states' => [
+        'visible' => [
+          ':input[name="debug_mode"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
     $form['log_level'] = [
       '#type' => 'select',
       '#title' => $this->t('Log level'),
@@ -200,6 +238,11 @@ class Settings extends ConfigFormBase {
     }
     $config->set('dependency_calculation', $dependency_calculations);
     $config->save();
+
+    $this->state->set('_eca_internal_debug_mode', $form_state->getValue('debug_mode'));
+    $this->state->set('_eca_internal_debug_data_depth', $form_state->getValue('debug_data_depth'));
+    $this->state->set('_eca_internal_debug_data_cases', $form_state->getValue('debug_data_cases'));
+
     parent::submitForm($form, $form_state);
   }
 

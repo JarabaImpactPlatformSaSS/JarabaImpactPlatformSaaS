@@ -16,6 +16,8 @@ use Drupal\eca\Entity\Objects\EcaEvent;
 use Drupal\eca\Entity\Objects\EcaGateway;
 use Drupal\eca\Entity\Objects\EcaObject;
 use Drupal\eca\Plugin\PluginUsageInterface;
+use Drupal\eca\ProcessDebugger;
+use Drupal\modeler_api\Api;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -174,7 +176,7 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
     // As ::trustData() states that dependencies are not calculated on save,
     // calculation is skipped when flagged as trusted.
     // @see Drupal\Core\Config\Entity\ConfigEntityInterface::trustData
-    if (static::$isTesting || $this->trustedData) {
+    if (static::$isTesting || $this->hasTrustedData()) {
       return $this;
     }
     parent::calculateDependencies();
@@ -246,8 +248,9 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
   /**
    * {@inheritdoc}
    */
-  public function addGateway(string $id, int $type, array $successors): bool {
+  public function addGateway(string $id, int $type, array $successors, string $label = 'Gateway'): bool {
     $this->gateways[$id] = [
+      'label' => $label,
       'type' => $type,
       'successors' => $successors,
     ];
@@ -257,13 +260,16 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
   /**
    * {@inheritdoc}
    */
-  public function addEvent(string $id, string $plugin_id, string $label, array $fields, array $successors): bool {
+  public function addEvent(string $id, string $plugin_id, string $label, array $fields, array $successors, ?array $appliedTemplates = NULL): bool {
     $this->events[$id] = [
       'plugin' => $plugin_id,
       'label' => $label,
       'configuration' => $fields,
       'successors' => $successors,
     ];
+    if ($appliedTemplates !== NULL) {
+      $this->events[$id]['applied_templates'] = $appliedTemplates;
+    }
     return TRUE;
   }
 
@@ -382,8 +388,60 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
   }
 
   /**
+   * Returns a list of all elements belonging to an event in the ECA model.
+   *
+   * @param string $eventId
+   *   The ID of the event for which the elements are requested.
+   *
+   * @return array
+   *   A key-value list of all elements belonging to an event in the ECA model,
+   *   where the element IDs are the keys and the element types are the values.
+   */
+  public function getAllEventElements(string $eventId): array {
+    $elements = [
+      $eventId => 'event',
+    ];
+    $this->addSuccessors($elements, $this->events[$eventId]['successors'] ?? []);
+    return $elements;
+  }
+
+  /**
+   * Adds all successors to the element list recursively.
+   *
+   * @param array $elements
+   *   The list of elements to which successors are added.
+   * @param array $successors
+   *   The list of successors to add.
+   */
+  private function addSuccessors(array &$elements, array $successors): void {
+    foreach ($successors as $successor) {
+      if (!isset($elements[$successor['id']])) {
+        if (isset($this->actions[$successor['id']])) {
+          $type = 'action';
+        }
+        elseif (isset($this->gateways[$successor['id']])) {
+          $type = 'gateway';
+        }
+        else {
+          // This is an error and shouldn't ever happen.
+          continue;
+        }
+        $elements[$successor['id']] = $type;
+        $this->addSuccessors($elements, $this->{$type . 's'}[$successor['id']]['successors'] ?? []);
+      }
+      if ($successor['condition'] && !isset($successors[$successor['condition']])) {
+        if (isset($this->conditions[$successor['condition']])) {
+          $elements[$successor['condition']] = 'condition';
+        }
+      }
+    }
+  }
+
+  /**
    * Provides a list of valid successors to any ECA item in a given context.
    *
+   * @param \Drupal\eca\ProcessDebugger $debugger
+   *   The current process debugger.
    * @param \Drupal\eca\Entity\Objects\EcaObject $eca_object
    *   The ECA item, for which the successors are requested.
    * @param \Symfony\Contracts\EventDispatcher\Event $event
@@ -396,7 +454,7 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
    * @return \Drupal\eca\Entity\Objects\EcaObject[]
    *   The list of valid successors.
    */
-  public function getSuccessors(EcaObject $eca_object, Event $event, array $context): array {
+  public function getSuccessors(ProcessDebugger $debugger, EcaObject $eca_object, Event $event, array $context): array {
     $successors = [];
     foreach ($eca_object->getSuccessors() as $successor) {
       $context['%successorid'] = $successor['id'];
@@ -405,7 +463,11 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
         $this->logger()->debug('Check action successor %successorlabel (%successorid) from ECA %ecalabel (%ecaid) for event %event.', $context);
         if ($successorObject = $this->getEcaObject('action', $action['plugin'], $successor['id'], $action['label'] ?? 'noname', $action['configuration'] ?? [], $action['successors'] ?? [], $eca_object->getEvent())) {
           if ($this->conditionServices()->assertCondition($event, $successor['condition'], $this->conditions[$successor['condition']] ?? NULL, $context)) {
+            $debugger->addSuccessor($eca_object->getId(), $successorObject->getId(), $successor['condition'], Api::COMPONENT_TYPE_ELEMENT);
             $successors[] = $successorObject;
+          }
+          else {
+            $debugger->ignoreSuccessor($eca_object->getId(), $successorObject->getId(), $successor['condition'], Api::COMPONENT_TYPE_ELEMENT);
           }
         }
         else {
@@ -418,7 +480,11 @@ class Eca extends ConfigEntityBase implements EntityWithPluginCollectionInterfac
         $successorObject = new EcaGateway($this, $successor['id'], $gateway['label'] ?? 'noname', $eca_object->getEvent(), $gateway['type']);
         $successorObject->setSuccessors($gateway['successors']);
         if ($this->conditionServices()->assertCondition($event, $successor['condition'], $this->conditions[$successor['condition']] ?? NULL, $context)) {
+          $debugger->addSuccessor($eca_object->getId(), $successorObject->getId(), $successor['condition'], Api::COMPONENT_TYPE_GATEWAY);
           $successors[] = $successorObject;
+        }
+        else {
+          $debugger->ignoreSuccessor($eca_object->getId(), $successorObject->getId(), $successor['condition'], Api::COMPONENT_TYPE_GATEWAY);
         }
       }
       else {

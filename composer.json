@@ -25,9 +25,9 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "composer/installers": "^2.0",
-        "cweagans/composer-patches": "^1.7",
+        "cweagans/composer-patches": "^2.0",
         "defuse/php-encryption": "^2.4",
-        "dompdf/dompdf": "^2.0",
+        "dompdf/dompdf": "^3.0",
         "drupal/admin_toolbar": "^3.4",
         "drupal/ai": "^1.2",
         "drupal/ai_provider_anthropic": "^1.2",
@@ -89,12 +89,13 @@
         "drupal/devel": "^5.2",
         "drupal/devel_entity_updates": "^5.0",
         "drupal/restui": "^1.21",
-        "mglaman/phpstan-drupal": "^1.2",
+        "mglaman/phpstan-drupal": "^2.0",
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpstan/phpstan-deprecation-rules": "^1.1",
-        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^11.0",
-        "spaze/phpstan-disallowed-calls": "^3.5"
+        "spaze/phpstan-disallowed-calls": "^4.0"
     },
     "conflict": {
         "drupal/drupal": "*"

@@ -201,10 +201,11 @@ class CartProvider implements CartProviderInterface {
       $cart_ids = $this->cartSession->getCartIds();
     }
 
-    $this->cartData[$uid] = [];
     if (!$cart_ids) {
-      return [];
+      $this->cartData[$uid] = [];
+      return $this->cartData[$uid];
     }
+    $cart_data = [];
     // Getting the cart data and validating the cart IDs received from the
     // session requires loading the entities. This is a performance hit, but
     // it's assumed that these entities would be loaded at one point anyway.
@@ -223,7 +224,7 @@ class CartProvider implements CartProviderInterface {
         continue;
       }
 
-      $this->cartData[$uid][$cart->id()] = [
+      $cart_data[$cart->id()] = [
         'type' => $cart->bundle(),
         'store_id' => $cart->getStoreId(),
       ];
@@ -235,6 +236,7 @@ class CartProvider implements CartProviderInterface {
       }
     }
 
+    $this->cartData[$uid] = $cart_data;
     return $this->cartData[$uid];
   }
 

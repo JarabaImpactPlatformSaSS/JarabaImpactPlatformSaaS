@@ -4,6 +4,7 @@ namespace Drupal\eca;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\eca\Entity\Eca;
 use Drupal\eca\Entity\Objects\EcaEvent;
@@ -13,6 +14,8 @@ use Drupal\eca\Event\BeforeInitialExecutionEvent;
 use Drupal\eca\Plugin\CleanupInterface;
 use Drupal\eca\Plugin\ObjectWithPluginInterface;
 use Drupal\eca\PluginManager\Event as PluginManagerEvent;
+use Drupal\eca\Token\Browser;
+use Drupal\modeler_api\TemplateTokenResolver;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -85,6 +88,44 @@ class Processor {
   protected StateInterface $state;
 
   /**
+   * The token browser.
+   *
+   * @var \Drupal\eca\Token\Browser
+   */
+  protected Browser $tokenBrowser;
+
+  /**
+   * The list of applied events during the current request.
+   *
+   * @var \Drupal\eca\ProcessDebugger[]
+   */
+  protected static array $appliedEvents = [];
+
+  /**
+   * The template token resolver.
+   *
+   * @var \Drupal\modeler_api\TemplateTokenResolver
+   */
+  protected TemplateTokenResolver $templateTokenResolver;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected AccountProxyInterface $currentUser;
+
+  /**
+   * Returns the list of applied events during the current request.
+   *
+   * @return \Drupal\eca\ProcessDebugger[]
+   *   The list of applied events.
+   */
+  public static function getAppliedEvents(): array {
+    return self::$appliedEvents;
+  }
+
+  /**
    * Get the service instance of this class.
    *
    * @return \Drupal\eca\Processor
@@ -107,16 +148,26 @@ class Processor {
    *   The manager for ECA event plugins.
    * @param \Drupal\Core\State\StateInterface $state
    *   The Drupal state.
+   * @param \Drupal\eca\Token\Browser $tokenBrowser
+   *   The token browser.
+   * @param \Drupal\modeler_api\TemplateTokenResolver $templateTokenResolver
+   *   The template token resolver.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
    * @param int $recursion_threshold
    *   A parameterized threshold of the maximum allowed level of recursion.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerChannelInterface $logger, EventDispatcherInterface $event_dispatcher, PluginManagerEvent $event_plugin_manager, StateInterface $state, int $recursion_threshold) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerChannelInterface $logger, EventDispatcherInterface $event_dispatcher, PluginManagerEvent $event_plugin_manager, StateInterface $state, Browser $tokenBrowser, TemplateTokenResolver $templateTokenResolver, AccountProxyInterface $currentUser, int $recursion_threshold) {
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
     $this->eventDispatcher = $event_dispatcher;
     $this->eventPluginManager = $event_plugin_manager;
     $this->recursionThreshold = $recursion_threshold;
     $this->state = $state;
+    $this->tokenBrowser = $tokenBrowser;
+    $this->templateTokenResolver = $templateTokenResolver;
+    $this->currentUser = $currentUser;
+    ProcessDebugger::$debug = $this->state->get('_eca_internal_debug_mode', FALSE) ?? FALSE;
   }
 
   /**
@@ -162,11 +213,14 @@ class Processor {
       $context['%ecaid'] = $eca_id;
       unset($context['%eventid'], $context['%eventlabel']);
       foreach ($wildcards as $eca_event_id => $wildcard) {
+        $debugger = new ProcessDebugger($this->tokenBrowser, $eca_id, $eca_event_id);
+        self::$appliedEvents[] = $debugger;
         $context['%eventid'] = $eca_event_id;
         unset($context['%ecalabel'], $context['%eventlabel']);
 
         /** @var \Symfony\Contracts\EventDispatcher\Event $event */
         if (!$this->wildcardApplies($event, $event_name, $wildcard, $context)) {
+          $debugger->doesNotApply();
           $this->logger->debug('Appliance check for event %event defined by ECA ID %ecaid resulted to not apply, successors will not be executed.', $context);
           continue;
         }
@@ -178,18 +232,39 @@ class Processor {
         if (!$eca) {
           // If an ECA model got deleted, we may end up here and then ignore
           // this model as it not longer exists.
+          $debugger->doesNotExist();
           continue;
         }
+        $debugger->setEcaLabel($eca->label());
         $context['%ecalabel'] = $eca->label();
 
         if (!($ecaEvent = $eca->getEcaEvent($eca_event_id))) {
+          $debugger->doesNotExist();
           $this->logger->error('Event object %eventid does not exist in configuration of ECA ID %ecaid.', $context);
           continue;
         }
+        $debugger->setEventLabel($ecaEvent->getLabel());
         $context['%eventlabel'] = $ecaEvent->getLabel();
 
+        if ($this->currentUser->hasPermission('modeler api edit eca')) {
+          $appliedTemplates = $eca->get('events')[$eca_event_id]['applied_templates'] ?? [];
+          foreach ($appliedTemplates as $applied_template) {
+            [$eventId, $ecaId, $target, $config] = json_decode($applied_template, TRUE);
+            if (isset($config[$eventId])) {
+              $hiddenConfig = $config[$eventId];
+              unset($config[$eventId]);
+            }
+            else {
+              $hiddenConfig = [];
+            }
+            $hiddenConfig['newModelId'] = $ecaId;
+            $this->templateTokenResolver->addAppliedTemplate('eca', $eventId, $target, $hiddenConfig, $config ?? []);
+          }
+        }
+
         /** @var \Symfony\Contracts\EventDispatcher\Event $event */
-        if (!$ecaEvent->execute(NULL, $event, $context)) {
+        if (!$ecaEvent->execute($debugger, NULL, $event, $context)) {
+          $debugger->doesNotExecute();
           $this->logger->debug('Event object execution returned false, successors will not be executed.', $context);
           continue;
         }
@@ -201,6 +276,7 @@ class Processor {
         // Take a look for a repetitive execution order. If we find one,
         // we see it as the beginning of infinite recursion and stop.
         if (!$is_root_execution && $this->recursionThresholdSurpassed($eca, $ecaEvent)) {
+          $debugger->recursionDetected();
           if (!$this->recursionErrorLogged) {
             $this->logger->error('Recursion within configured ECA events detected. Please adjust your ECA configuration so that it avoids infinite loops. Affected event: %eventlabel (%eventid) from ECA %ecalabel (%ecaid).', $context);
             $this->recursionErrorLogged = TRUE;
@@ -217,9 +293,10 @@ class Processor {
         $this->eventDispatcher->dispatch($before_event, EcaEvents::BEFORE_INITIAL_EXECUTION);
 
         // Now that we have any required context, we may execute the logic.
+        $debugger->started($event_name);
         $this->logger->info('Start %eventlabel (%eventid) from ECA %ecalabel (%ecaid) for event %event.', $context);
         try {
-          $this->executeSuccessors($eca, $ecaEvent, $event, $context);
+          $this->executeSuccessors($debugger, $eca, $ecaEvent, $event, $context);
         }
         catch (\Exception $ex) {
           throw $ex;
@@ -241,6 +318,7 @@ class Processor {
             $this->executionHistory = [];
           }
 
+          $debugger->storeHistoryByEvent();
           $this->logger->debug('Finished applying process for event %event defined by ECA ID %ecaid.', $context);
         }
       }
@@ -275,6 +353,8 @@ class Processor {
   /**
    * Executes the successors.
    *
+   * @param \Drupal\eca\ProcessDebugger $debugger
+   *   The current process debugger.
    * @param \Drupal\eca\Entity\Eca $eca
    *   The ECA config entity.
    * @param \Drupal\eca\Entity\Objects\EcaObject $eca_object
@@ -284,10 +364,10 @@ class Processor {
    * @param array $context
    *   List of key value pairs, used to generate meaningful log messages.
    */
-  protected function executeSuccessors(Eca $eca, EcaObject $eca_object, Event $event, array $context): void {
+  protected function executeSuccessors(ProcessDebugger $debugger, Eca $eca, EcaObject $eca_object, Event $event, array $context): void {
     $executedSuccessorIds = [];
     try {
-      foreach ($eca->getSuccessors($eca_object, $event, $context) as $successor) {
+      foreach ($eca->getSuccessors($debugger, $eca_object, $event, $context) as $successor) {
         $context['%actionlabel'] = $successor->getLabel();
         $context['%actionid'] = $successor->getId();
         if (in_array($successor->getId(), $executedSuccessorIds, TRUE)) {
@@ -295,9 +375,9 @@ class Processor {
           continue;
         }
         $this->logger->info('Execute %actionlabel (%actionid) from ECA %ecalabel (%ecaid) for event %event.', $context);
-        if ($successor->execute($eca_object, $event, $context)) {
+        if ($successor->execute($debugger, $eca_object, $event, $context)) {
           $executedSuccessorIds[] = $successor->getId();
-          $this->executeSuccessors($eca, $successor, $event, $context);
+          $this->executeSuccessors($debugger, $eca, $successor, $event, $context);
         }
       }
     }

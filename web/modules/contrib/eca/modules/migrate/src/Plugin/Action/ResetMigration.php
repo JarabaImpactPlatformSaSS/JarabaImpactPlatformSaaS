@@ -23,7 +23,7 @@ class ResetMigration extends MigrationActionBase {
   /**
    * {@inheritdoc}
    */
-  public function execute(): void {
+  public function execute(?object $object = NULL): void {
     $this->migration->setStatus(MigrationInterface::STATUS_IDLE);
     $this->migrationResult = MigrationInterface::RESULT_COMPLETED;
   }

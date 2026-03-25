@@ -307,13 +307,12 @@ class CvBuilderService
             $pdfHtml = $this->wrapForPdf($html);
 
             // Crear instancia Dompdf con configuracion segura.
-            $options = new \Dompdf\Options();
-            $options->set('isRemoteEnabled', FALSE);
-            $options->set('isHtml5ParserEnabled', TRUE);
-            $options->set('defaultFont', 'Helvetica');
-            $options->set('dpi', 150);
-
-            $dompdf = new \Dompdf\Dompdf($options);
+            $dompdf = new \Dompdf\Dompdf([
+                'isRemoteEnabled' => FALSE,
+                'isHtml5ParserEnabled' => TRUE,
+                'defaultFont' => 'Helvetica',
+                'dpi' => 150,
+            ]);
             $dompdf->loadHtml($pdfHtml);
 
             // Configurar A4 portrait.

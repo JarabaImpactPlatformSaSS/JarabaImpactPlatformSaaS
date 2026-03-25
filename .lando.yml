@@ -62,7 +62,7 @@ services:
   # CLI: lando redis-cli
   # ─────────────────────────────────────────────────────
   redis:
-    type: redis:7
+    type: redis:8
     portforward: 6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

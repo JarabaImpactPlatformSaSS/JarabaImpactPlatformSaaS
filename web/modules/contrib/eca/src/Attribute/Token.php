@@ -17,6 +17,8 @@ class Token {
    *   The token name.
    * @param string $description
    *   A one line description.
+   * @param string $type
+   *   The (optional) token type.
    * @param string[] $classes
    *   The list of event classes that provide that token. Leave empty if all
    *   derivations of the same base plugin are supporting that token.
@@ -28,6 +30,7 @@ class Token {
   public function __construct(
     public string $name,
     public string $description,
+    public string $type = '',
     public array $classes = [],
     public array $properties = [],
     public array $aliases = [],

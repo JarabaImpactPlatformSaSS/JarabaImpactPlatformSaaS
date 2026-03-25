@@ -31,6 +31,7 @@ class FormExecutionChainTest extends KernelTestBase {
     'field',
     'eca',
     'eca_form',
+    'modeler_api',
   ];
 
   /**

@@ -4,11 +4,11 @@ namespace Drupal\eca\Plugin\ECA\Event;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\eca\Attribute\Token;
-use Drupal\eca\EcaEvents;
 use Drupal\eca\Entity\Objects\EcaEvent;
 use Drupal\eca\Plugin\DataType\DataTransferObject;
 use Drupal\eca\Plugin\ECA\EcaPluginBase;
 use Drupal\eca\Plugin\ECA\PluginFormTrait;
+use Drupal\eca\Token\Browser;
 use Drupal\eca\Token\TokenInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -57,6 +57,13 @@ abstract class EventBase extends EcaPluginBase implements EventInterface {
   protected TokenInterface $token;
 
   /**
+   * ECA token browser.
+   *
+   * @var \Drupal\eca\Token\Browser
+   */
+  protected Browser $tokenBrowser;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
@@ -64,6 +71,7 @@ abstract class EventBase extends EcaPluginBase implements EventInterface {
     $instance->setConfiguration($configuration);
     $instance->eventDispatcher = $container->get('event_dispatcher');
     $instance->token = $container->get('eca.service.token');
+    $instance->tokenBrowser = $container->get('eca.token_browser');
     return $instance;
   }
 
@@ -134,7 +142,7 @@ abstract class EventBase extends EcaPluginBase implements EventInterface {
    */
   public function getTokens(): array {
     if ($this->tokens === NULL) {
-      $this->getSupportedTokens();
+      $this->tokens = $this->tokenBrowser->getSupportedTokens($this::class, $this->eventClass());
     }
     return $this->tokens;
   }
@@ -158,98 +166,6 @@ abstract class EventBase extends EcaPluginBase implements EventInterface {
    */
   public function setConfiguration(array $configuration): void {
     $this->configuration = $configuration + $this->defaultConfiguration();
-  }
-
-  /**
-   * Helper function to get token info.
-   */
-  private function getSupportedTokens(): void {
-    $sources = $this->eventDispatcher->getListeners(EcaEvents::BEFORE_INITIAL_EXECUTION);
-    array_unshift($sources, [$this::class, 'buildEventData']);
-    array_unshift($sources, [$this::class, 'getData']);
-    foreach ($this->token->getDataProviders() as $dataProvider) {
-      array_unshift($sources, [$dataProvider::class, 'buildEventData']);
-      array_unshift($sources, [$dataProvider::class, 'getData']);
-    }
-
-    $eventClass = $this->eventClass();
-    $tokens = [];
-    foreach ($sources as $source) {
-      [$class, $methodName] = $source;
-      try {
-        $reflection = new \ReflectionMethod($class, $methodName);
-      }
-      catch (\ReflectionException) {
-        continue;
-      }
-      do {
-        foreach ($reflection->getAttributes() as $attribute) {
-          if ($attribute->getName() === 'Drupal\eca\Attribute\Token') {
-            /** @var \Drupal\eca\Attribute\Token $token */
-            $token = $attribute->newInstance();
-            if ($this->getSupportedProperties($eventClass, $token)) {
-              $tokens[] = $token;
-            }
-          }
-        }
-        try {
-          $reflection = $reflection->getPrototype();
-        }
-        catch (\ReflectionException) {
-          $reflection = NULL;
-        }
-      } while ($reflection !== NULL);
-    }
-    $this->tokens = $tokens;
-  }
-
-  /**
-   * Recursive helper function to get token property info.
-   *
-   * @param string $eventClass
-   *   The event class.
-   * @param \Drupal\eca\Attribute\Token $token
-   *   The token.
-   *
-   * @return bool
-   *   TRUE, if the token has any attributes, FALSE otherwise.
-   */
-  private function getSupportedProperties(string $eventClass, Token $token): bool {
-    if ($this->isClassSupported($eventClass, $token->classes)) {
-      $properties = [];
-      foreach ($token->properties as $property) {
-        if ($this->getSupportedProperties($eventClass, $property)) {
-          $properties[] = $property;
-        }
-      }
-      $token->properties = $properties;
-      return TRUE;
-    }
-    return FALSE;
-  }
-
-  /**
-   * Determines if the event class is covered by the list of classes.
-   *
-   * @param string $eventClass
-   *   The event class.
-   * @param array $classes
-   *   The list of classes.
-   *
-   * @return bool
-   *   TRUE, if either the list of classes if empty, or if the event class is
-   *   an instance of one of the given classes; FALSE otherwise.
-   */
-  private function isClassSupported(string $eventClass, array $classes): bool {
-    if (empty($classes)) {
-      return TRUE;
-    }
-    foreach ($classes as $class) {
-      if (is_a($eventClass, $class, TRUE)) {
-        return TRUE;
-      }
-    }
-    return FALSE;
   }
 
   /**

@@ -133,6 +133,7 @@ class EcaExecutionSwitchAccountSubscriber extends EcaExecutionSubscriberBase {
   #[Token(
     name: 'session_user',
     description: 'The user account that dispatched the event, regardless if ECA is processing models under a different account. This is only available if ECA is configured to always run under a specific account.',
+    type: 'user',
   )]
   public function onBeforeInitialExecution(BeforeInitialExecutionEvent $before_event): void {
     if (self::$modelUser) {

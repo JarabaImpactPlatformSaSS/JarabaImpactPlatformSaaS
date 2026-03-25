@@ -43,6 +43,7 @@ class EcaExecutionFormSubscriber extends EcaExecutionSubscriberBase {
   #[Token(
     name: 'entity',
     description: 'The entity of the event.',
+    type: 'entity',
     classes: [EntityFormInterface::class],
   )]
   #[Token(

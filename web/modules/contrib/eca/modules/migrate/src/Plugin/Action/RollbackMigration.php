@@ -25,7 +25,7 @@ class RollbackMigration extends MigrationActionBase {
   /**
    * {@inheritdoc}
    */
-  public function execute(): void {
+  public function execute(?object $object = NULL): void {
     $this->migrationResult = $this->migrationRollback($this->migration);
   }
 

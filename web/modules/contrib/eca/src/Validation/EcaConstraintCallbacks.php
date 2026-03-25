@@ -71,4 +71,23 @@ class EcaConstraintCallbacks {
     return array_keys(\Drupal::service('eca.service.content_entity_types')->getTypesAndBundles(FALSE, FALSE));
   }
 
+  /**
+   * Returns all valid data types for tool arguments.
+   *
+   * This includes primitive typed data types (string, integer, boolean, etc.)
+   * as well as entity data types (entity:node, entity:node:article, etc.).
+   *
+   * @return string[]
+   *   Associative array of data type ID => human-readable label.
+   */
+  public static function getAllValidDataTypes(): array {
+    $definitions = \Drupal::typedDataManager()->getDefinitions();
+    $options = [];
+    foreach ($definitions as $id => $definition) {
+      $options[$id] = (string) ($definition['label'] ?? $id);
+    }
+    asort($options);
+    return $options;
+  }
+
 }

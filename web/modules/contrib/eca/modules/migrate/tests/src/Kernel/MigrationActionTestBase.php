@@ -22,6 +22,7 @@ class MigrationActionTestBase extends KernelTestBase {
     'eca',
     'eca_migrate',
     'eca_migrate_test',
+    'modeler_api',
   ];
 
   /**

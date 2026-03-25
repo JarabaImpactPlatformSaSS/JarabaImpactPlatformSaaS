@@ -20,10 +20,11 @@ class CrossRefTest extends Base {
    */
   protected static $modules = [
     'node',
-    'token',
+    'path_alias',
     'eca_base',
     'eca_content',
     'eca_test_model_cross_ref',
+    'modeler_api',
   ];
 
   /**
@@ -103,8 +104,9 @@ class CrossRefTest extends Base {
     $this->assertStatusMessages([
       "Node $title1 got updated",
       "Node $title2 got updated",
-      "The title of the referenced node is $title1.",
-      "The title of the referenced node is $title2.",
+      // Removed the test for the real title as that would be the sole reason
+      // for the test-dependency on the token module.
+      "The title of the referenced node is .",
     ]);
     $this->assertNoMessages();
     $this->assertNoError();

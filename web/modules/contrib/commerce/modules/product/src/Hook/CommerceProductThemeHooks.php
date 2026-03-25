@@ -111,7 +111,7 @@ class CommerceProductThemeHooks {
     $variation_storage = $this->entityTypeManager->getStorage('commerce_product_variation');
     $active_variation = $variation_storage->loadFromContext($product);
     // If the active variation is the same as the current variation, set the active variation flag:
-    $variables['is_active'] = (int) $active_variation->id() === (int) $product_variation->id();
+    $variables['is_active'] = (int) $active_variation?->id() === (int) $product_variation->id();
   }
 
   /**

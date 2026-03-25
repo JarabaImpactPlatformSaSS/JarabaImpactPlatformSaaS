@@ -81,6 +81,7 @@ class BillingInformationFormatter extends EntityReferenceRevisionsEntityFormatte
   public function viewElements(FieldItemListInterface $items, $langcode) {
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = $items->getEntity();
+    $content = [];
 
     $url = Url::fromRoute('commerce_order.entity_form.form_mode', [
       'commerce_order' => $items->getEntity()->id(),
@@ -124,20 +125,22 @@ class BillingInformationFormatter extends EntityReferenceRevisionsEntityFormatte
       ];
     }
 
-    return [
-      [
-        '#type' => 'component',
-        '#component' => 'commerce:commerce-admin-card',
-        '#props' => [
-          'id' => 'billing-information-admin-card',
-          'title' => $this->t('Billing information'),
-          'badge' => $badge ?? '',
-        ],
-        '#slots' => [
-          'card_content' => $content ?? '',
-        ],
+    $element = [
+      '#type' => 'component',
+      '#component' => 'commerce:commerce-admin-card',
+      '#props' => [
+        'id' => 'billing-information-admin-card',
+        'title' => $this->t('Billing information'),
+        'badge' => $badge ?? '',
       ],
     ];
+
+    // Add card content when it is possible.
+    if (!empty($content)) {
+      $element['#slots']['card_content'] = $content;
+    }
+
+    return [$element];
   }
 
   /**

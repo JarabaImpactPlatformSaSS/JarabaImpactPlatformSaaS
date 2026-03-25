@@ -15,13 +15,18 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
+use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\Token as BaseToken;
 use Drupal\modeler_api\Form\Settings;
 use Drupal\modeler_api\Plugin\ModelerApiModelOwner\ModelOwnerInterface;
 use Drupal\modeler_api\Plugin\ModelerApiModeler\ModelerInterface;
+use Drupal\modeler_api\Plugin\ContextPluginManager;
+use Drupal\modeler_api\Plugin\DependencyPluginManager;
 use Drupal\modeler_api\Plugin\ModelerPluginManager;
 use Drupal\modeler_api\Plugin\ModelOwnerPluginManager;
+use Drupal\modeler_api\Plugin\TemplateTokenPluginManager;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Route;
 
@@ -30,7 +35,6 @@ use Symfony\Component\Routing\Route;
  */
 class Api {
 
-  use EntityOriginalTrait;
   use StringTranslationTrait;
 
   /**
@@ -50,15 +54,15 @@ class Api {
     return \Drupal::service('modeler_api.service');
   }
 
-  public const COMPONENT_TYPE_START = 1;
-  public const COMPONENT_TYPE_SUBPROCESS = 2;
-  public const COMPONENT_TYPE_SWIMLANE = 3;
-  public const COMPONENT_TYPE_ELEMENT = 4;
-  public const COMPONENT_TYPE_LINK = 5;
-  public const COMPONENT_TYPE_GATEWAY = 6;
-  public const COMPONENT_TYPE_ANNOTATION = 7;
+  public const int COMPONENT_TYPE_START = 1;
+  public const int COMPONENT_TYPE_SUBPROCESS = 2;
+  public const int COMPONENT_TYPE_SWIMLANE = 3;
+  public const int COMPONENT_TYPE_ELEMENT = 4;
+  public const int COMPONENT_TYPE_LINK = 5;
+  public const int COMPONENT_TYPE_GATEWAY = 6;
+  public const int COMPONENT_TYPE_ANNOTATION = 7;
 
-  public const AVAILABLE_COMPONENT_TYPES = [
+  public const array AVAILABLE_COMPONENT_TYPES = [
     self::COMPONENT_TYPE_START,
     self::COMPONENT_TYPE_SUBPROCESS,
     self::COMPONENT_TYPE_SWIMLANE,
@@ -69,17 +73,39 @@ class Api {
   ];
 
   /**
+   * Maps component type constants to their YAML key names.
+   */
+  public const array COMPONENT_TYPE_NAMES = [
+    self::COMPONENT_TYPE_START => 'start',
+    self::COMPONENT_TYPE_SUBPROCESS => 'subprocess',
+    self::COMPONENT_TYPE_SWIMLANE => 'swimlane',
+    self::COMPONENT_TYPE_ELEMENT => 'element',
+    self::COMPONENT_TYPE_LINK => 'link',
+    self::COMPONENT_TYPE_GATEWAY => 'gateway',
+    self::COMPONENT_TYPE_ANNOTATION => 'annotation',
+  ];
+
+  /**
    * Constructs the modeler API plugin manager.
    */
   public function __construct(
+    protected AccountProxy $currentUser,
     protected ModelOwnerPluginManager $modelOwnerPluginManager,
     protected ModelerPluginManager $modelerPluginManager,
     protected ConfigFactoryInterface $configFactory,
     protected ManagedStorage $configStorage,
     protected FileSystemInterface $fileSystem,
     protected MenuLinkManagerInterface $menuLinkManager,
+    protected ContextPluginManager $contextPluginManager,
+    protected DependencyPluginManager $dependencyPluginManager,
+    protected TemplateTokenPluginManager $templateTokenPluginManager,
+    protected ContextListBuilder $contextListBuilder,
+    protected DependencyListBuilder $dependencyListBuilder,
+    protected TemplateTokenListBuilder $templateTokenListBuilder,
     protected \Closure $entityTypeManagerFactory,
     protected \Closure $routeProviderFactory,
+    protected \Closure $tokenFactory,
+    protected ?\Closure $tokenTreeBuilderFactory = NULL,
   ) {}
 
   /**
@@ -100,6 +126,26 @@ class Api {
    */
   protected function getRouteProvider(): RouteProviderInterface {
     return ($this->routeProviderFactory)();
+  }
+
+  /**
+   * Get the token service.
+   *
+   * @return \Drupal\Core\Utility\Token
+   *   The token service.
+   */
+  protected function getTokenService(): BaseToken {
+    return ($this->tokenFactory)();
+  }
+
+  /**
+   * Get the token tree builder.
+   *
+   * @return mixed|null
+   *   The token tree builder if available.
+   */
+  protected function getTokenTreeBuilder(): mixed {
+    return is_callable($this->tokenTreeBuilderFactory) ? ($this->tokenTreeBuilderFactory)() : NULL;
   }
 
   /**
@@ -272,14 +318,36 @@ class Api {
       $build = $modeler->edit($owner, $model->id() ?? 'placeholder', $data, $model->isNew(), $readOnly);
     }
     // Add settings.
-    $settings = [];
+    $settings = [
+      'metadata' => [
+        'version' => $owner->getVersion($model),
+        'label' => $owner->getLabel($model),
+        'documentation' => $owner->getDocumentation($model),
+        'storage' => $owner->getStorage($model),
+        'executable' => $owner->getStatus($model),
+        'template' => $owner->getTemplate($model),
+        'tags' => $owner->getTags($model),
+        'changelog' => $owner->getChangelog($model),
+      ],
+      'component_labels' => $owner->componentLabels(),
+      'component_labels_plural' => $owner->componentLabelsPlural(),
+      'permissions' => ModelerApiPermissions::userPermissionsForModeler($this->currentUser, $owner->getPluginId()),
+      'favorite_components' => $owner->favoriteOwnerComponents(),
+      'global_tokens' => $this->prepareGlobalTokens(),
+      'template_tokens' => $this->prepareTemplateTokens($owner),
+      'contexts' => $this->contextListBuilder->getList($owner->getPluginId()),
+      'dependencies' => $this->dependencyListBuilder->getList($owner->getPluginId()),
+      'readOnly' => $readOnly,
+      'isNew' => $model->isNew(),
+    ];
+    $modelType = $owner->configEntityTypeId();
     if ($owner->configEntityBasePath() !== NULL) {
       $settings += [
-        'save_url' => Url::fromRoute('entity.' . $owner->configEntityTypeId() . '.save', [
+        'save_url' => Url::fromRoute('entity.' . $modelType . '.save', [
           'modeler_id' => $modeler->getPluginId(),
         ])->toString(),
         'token_url' => Url::fromRoute('system.csrftoken')->toString(),
-        'collection_url' => Url::fromRoute('entity.' . $owner->configEntityTypeId() . '.collection')->toString(),
+        'collection_url' => Url::fromRoute('entity.' . $modelType . '.collection')->toString(),
       ];
     }
     else {
@@ -288,9 +356,27 @@ class Api {
       ];
     }
     $settings['mode'] = 'edit';
-    $settings['config_url'] = Url::fromRoute('entity.' . $owner->configEntityTypeId() . '.config', [
+    $settings['config_url'] = Url::fromRoute('entity.' . $modelType . '.config', [
       'modeler_id' => $modeler->getPluginId(),
     ])->toString();
+    if ($owner->supportsReplayData()) {
+      $settings['replay_url'] = Url::fromRoute('entity.' . $modelType . '.replay', [
+        'modeler_id' => $modeler->getPluginId(),
+      ])->toString();
+    }
+    if ($owner->supportsTesting()) {
+      $settings['test_url'] = Url::fromRoute('entity.' . $modelType . '.test', [
+        'modeler_id' => $modeler->getPluginId(),
+      ])->toString();
+    }
+    if (!$model->isNew() && $owner->isExportable($model)) {
+      $settings['export_url'] = Url::fromRoute('entity.' . $modelType . '.export', [
+        $modelType => $model->id(),
+      ])->toString();
+      $settings['export_recipe_url'] = Url::fromRoute('entity.' . $modelType . '.export_recipe', [
+        $modelType => $model->id(),
+      ])->toString();
+    }
     $build['#attached']['drupalSettings']['modeler_api'] = $settings;
     $build['#title'] = $this->t(':type Model: :label', [':type' => $owner->label(), ':label' => $model->label()]);
     $build['config_form'] = [
@@ -355,7 +441,7 @@ class Api {
     }
 
     if ($model !== NULL) {
-      $this->setOriginal($model, clone $model);
+      $model->setOriginal(clone $model);
       $owner->resetComponents($model);
     }
     else {
@@ -368,7 +454,7 @@ class Api {
         /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface|null $model */
         $model = $storage->load($modelId);
         if ($model) {
-          $this->setOriginal($model, clone $model);
+          $model->setOriginal(clone $model);
           $owner->resetComponents($model);
         }
         else {
@@ -379,6 +465,9 @@ class Api {
     }
     if ($owner->supportsStatus()) {
       $owner->setStatus($model, $modeler->getStatus());
+    }
+    if ($owner->supportsTemplate()) {
+      $owner->setTemplate($model, $modeler->getTemplate());
     }
     $owner
       ->setModelerId($model, $modeler_id)
@@ -539,6 +628,80 @@ class Api {
   }
 
   /**
+   * Gets all available contexts.
+   *
+   * @return \Drupal\modeler_api\Context[]
+   *   The list of all contexts, keyed by context ID.
+   */
+  public function getContexts(): array {
+    return $this->contextPluginManager->getAllContexts();
+  }
+
+  /**
+   * Gets a single context by its ID.
+   *
+   * @param string $id
+   *   The context ID.
+   *
+   * @return \Drupal\modeler_api\Context|null
+   *   The context, or NULL if not found.
+   */
+  public function getContext(string $id): ?Context {
+    return $this->contextPluginManager->getContext($id);
+  }
+
+  /**
+   * Gets all contexts for a given model owner.
+   *
+   * @param \Drupal\modeler_api\Plugin\ModelerApiModelOwner\ModelOwnerInterface|string $owner
+   *   The model owner plugin instance or its ID.
+   *
+   * @return \Drupal\modeler_api\Context[]
+   *   The list of contexts for the given model owner, keyed by context ID.
+   */
+  public function getContextsByModelOwner(ModelOwnerInterface|string $owner): array {
+    $ownerId = is_string($owner) ? $owner : $owner->getPluginId();
+    return $this->contextPluginManager->getContextsByModelOwner($ownerId);
+  }
+
+  /**
+   * Gets all dependency definitions.
+   *
+   * @return \Drupal\modeler_api\Dependency[]
+   *   The list of all dependency definitions, keyed by dependency ID.
+   */
+  public function getDependencies(): array {
+    return $this->dependencyPluginManager->getAllDependencies();
+  }
+
+  /**
+   * Gets a single dependency definition by its ID.
+   *
+   * @param string $id
+   *   The dependency ID.
+   *
+   * @return \Drupal\modeler_api\Dependency|null
+   *   The dependency, or NULL if not found.
+   */
+  public function getDependency(string $id): ?Dependency {
+    return $this->dependencyPluginManager->getDependency($id);
+  }
+
+  /**
+   * Gets all dependency definitions for a given model owner.
+   *
+   * @param \Drupal\modeler_api\Plugin\ModelerApiModelOwner\ModelOwnerInterface|string $owner
+   *   The model owner plugin instance or its ID.
+   *
+   * @return \Drupal\modeler_api\Dependency[]
+   *   The list of dependencies for the given model owner, keyed by ID.
+   */
+  public function getDependenciesByModelOwner(ModelOwnerInterface|string $owner): array {
+    $ownerId = is_string($owner) ? $owner : $owner->getPluginId();
+    return $this->dependencyPluginManager->getDependenciesByModelOwner($ownerId);
+  }
+
+  /**
    * Gets error messages that got collected through data preparation.
    *
    * @return string[]
@@ -609,6 +772,76 @@ class Api {
       }
     }
     return Url::fromRoute($name, [$type => $id]);
+  }
+
+  /**
+   * Prepares the global tokens for the modeler.
+   *
+   * @return array
+   *   The global tokens.
+   */
+  protected function prepareGlobalTokens(): array {
+    $treeBuilder = $this->getTokenTreeBuilder();
+    if ($treeBuilder === NULL) {
+      return [];
+    }
+    // If the token tree builder is available, the token service will be the
+    // one from contrib module. But we don't declare the dependency.
+    $tokenService = $this->getTokenService();
+
+    $tokens = [];
+    $tokenInfo = $tokenService->getInfo();
+    // @phpstan-ignore-next-line
+    foreach ($tokenService->getGlobalTokenTypes() as $type) {
+      $tree = $treeBuilder->buildTree($type);
+      $tokens[$type] = [
+        'name' => $tokenInfo['types'][$type]['name'],
+        'children' => [],
+      ];
+      foreach ($tree as $token => $def) {
+        $tokens[$type]['children'][$token] = $this->prepareTokenDefinition($def, $tokenService);
+      }
+    }
+    return $tokens;
+  }
+
+  /**
+   * Prepares the template tokens for the modeler.
+   *
+   * @param \Drupal\modeler_api\Plugin\ModelerApiModelOwner\ModelOwnerInterface $owner
+   *   The model owner.
+   *
+   * @return array
+   *   The template tokens.
+   */
+  protected function prepareTemplateTokens(ModelOwnerInterface $owner): array {
+    if (!$owner->supportsTemplate()) {
+      return [];
+    }
+    return $this->templateTokenListBuilder->getList($owner->getPluginId());
+  }
+
+  /**
+   * Recursively prepare token definitions by resolving its value and children.
+   *
+   * @param array $def
+   *   The token definitions.
+   * @param \Drupal\Core\Utility\Token $tokenService
+   *   The token service.
+   *
+   * @return array
+   *   The token definitions.
+   */
+  private function prepareTokenDefinition(array $def, BaseToken $tokenService): array {
+    if (empty($def['children'])) {
+      $def['value'] = $tokenService->replace($def['raw token'] ?? '', [], ['clear' => TRUE]);
+    }
+    else {
+      foreach ($def['children'] as $childToken => $childDef) {
+        $def['children'][$childToken] = $this->prepareTokenDefinition($childDef, $tokenService);
+      }
+    }
+    return $def;
   }
 
 }

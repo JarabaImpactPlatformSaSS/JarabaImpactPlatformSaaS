@@ -30,6 +30,7 @@ class ProductLayoutBuilderIntegrationTest extends ProductWebDriverTestBase {
     'off_canvas_test',
     'views',
     'views_ui',
+    'commerce_product_test',
   ];
 
   /**
@@ -362,6 +363,42 @@ class ProductLayoutBuilderIntegrationTest extends ProductWebDriverTestBase {
 
     $this->enableLayoutsForBundle('default');
     $this->configureDefaultLayout();
+  }
+
+  /**
+   * Tests that an extra field can be added to the layout.
+   */
+  public function testExtraFieldInLayoutBuilder() {
+    $variation = $this->createEntity('commerce_product_variation', [
+      'type' => 'default',
+      'sku' => 'variation',
+      'price' => [
+        'number' => 10,
+        'currency_code' => 'USD',
+      ],
+    ]);
+
+    $product = $this->createEntity('commerce_product', [
+      'type' => 'default',
+      'title' => $this->randomMachineName(),
+      'stores' => $this->stores,
+      'body' => ['value' => 'Testing product variation extra field injection!'],
+      'variations' => [$variation],
+    ]);
+
+    $this->enableLayoutsForBundle('default');
+    $this->addBlockToLayout('Variations', function () {
+      $this->getSession()->getPage()->selectFieldOption('Label', '- Hidden -');
+      $this->getSession()->getPage()->selectFieldOption('Formatter', 'Rendered entity');
+      $this->assertSession()->assertWaitOnAjaxRequest();
+    });
+    $save_layout = $this->getSession()->getPage()->findButton('Save layout');
+    $save_layout->focus();
+    $save_layout->click();
+
+    // Confirm that extra field shown correctly.
+    $this->drupalGet($product->toUrl());
+    $this->assertSession()->pageTextContains('Extra field content');
   }
 
   /**

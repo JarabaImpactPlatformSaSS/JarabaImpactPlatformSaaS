@@ -5,6 +5,7 @@ namespace Drupal\eca\Entity\Objects;
 use Drupal\eca\Entity\Eca;
 use Drupal\eca\Plugin\ECA\Event\EventInterface;
 use Drupal\eca\Plugin\ObjectWithPluginInterface;
+use Drupal\eca\ProcessDebugger;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -49,8 +50,8 @@ class EcaEvent extends EcaObject implements ObjectWithPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function execute(?EcaObject $predecessor, Event $event, array $context): bool {
-    if (!parent::execute($predecessor, $event, $context)) {
+  public function execute(ProcessDebugger $debugger, ?EcaObject $predecessor, Event $event, array $context): bool {
+    if (!parent::execute($debugger, $predecessor, $event, $context)) {
       return FALSE;
     }
     $this->plugin->setEvent($event);

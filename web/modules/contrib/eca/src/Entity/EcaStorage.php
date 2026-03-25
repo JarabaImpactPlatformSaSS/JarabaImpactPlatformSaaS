@@ -8,8 +8,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\ai\Service\FunctionCalling\FunctionCallPluginManager;
-use Drupal\field_widget_actions\PluginManager\FieldWidgetActionManager;
 use Random\RandomException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -56,20 +54,6 @@ class EcaStorage extends ConfigEntityStorage {
   protected LockBackendInterface $lock;
 
   /**
-   * The field widget action plugin manager.
-   *
-   * @var \Drupal\field_widget_actions\PluginManager\FieldWidgetActionManager|null
-   */
-  protected FieldWidgetActionManager|null $fieldWidgetActionPluginManager;
-
-  /**
-   * The AI Function Call plugin manager.
-   *
-   * @var \Drupal\ai\Service\FunctionCalling\FunctionCallPluginManager|null
-   */
-  protected FunctionCallPluginManager|null $aiFunctionCallPluginManager;
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type): EcaStorage {
@@ -82,8 +66,6 @@ class EcaStorage extends ConfigEntityStorage {
     $instance->eventSubscriber = $container->get('eca.dynamic_subscriber');
     $instance->lock = $container->get('lock');
     $instance->state = $container->get('state');
-    $instance->fieldWidgetActionPluginManager = $container->get('plugin.manager.field_widget_actions', ContainerInterface::NULL_ON_INVALID_REFERENCE);
-    $instance->aiFunctionCallPluginManager = $container->get('plugin.manager.ai.function_calls', ContainerInterface::NULL_ON_INVALID_REFERENCE);
     return $instance;
   }
 
@@ -111,12 +93,8 @@ class EcaStorage extends ConfigEntityStorage {
       $this->eventDispatcher->removeSubscriber($this->eventSubscriber);
       $this->eventDispatcher->addSubscriber($this->eventSubscriber);
     }
-    if (isset($subscribedEvents['eca_base.field_widget']) && $this->fieldWidgetActionPluginManager !== NULL) {
-      $this->fieldWidgetActionPluginManager->clearCachedDefinitions();
-    }
-    if (isset($subscribedEvents['eca_base.tool']) && $this->aiFunctionCallPluginManager !== NULL) {
-      $this->aiFunctionCallPluginManager->clearCachedDefinitions();
-    }
+
+    $this->doRebuildTemplates();
 
     $this->lock->release($lock_name);
   }
@@ -197,6 +175,26 @@ class EcaStorage extends ConfigEntityStorage {
 
     $this->logger->debug('Rebuilt subscribed events of ECA configuration.');
     return $subscribed;
+  }
+
+  /**
+   * Rebuilds the list of templates.
+   */
+  protected function doRebuildTemplates(): void {
+    $templates = [];
+    /**
+     * @var \Drupal\eca\Entity\Eca $eca
+     */
+    foreach ($this->loadByProperties(['status' => TRUE, 'template' => TRUE]) as $eca) {
+      foreach ($eca->getUsedEvents() as $eca_event_id => $ecaEvent) {
+        $eca_id = $eca->id();
+        $plugin = $ecaEvent->getPlugin();
+        $name = $plugin->eventName();
+        $wildcard = $plugin->generateWildcard($eca_id, $ecaEvent);
+        $templates[$name][$eca_id][$eca_event_id] = $wildcard;
+      }
+    }
+    $this->state->set('eca.templates', $templates);
   }
 
   /**

@@ -5,7 +5,7 @@ package: Testing
 dependencies:
   - commerce:commerce_tax
 
-# Information added by Drupal.org packaging script on 2026-02-27
-version: '3.3.3'
+# Information added by Drupal.org packaging script on 2026-03-25
+version: '3.3.4'
 project: 'commerce'
-datestamp: 1772193544
+datestamp: 1774453533

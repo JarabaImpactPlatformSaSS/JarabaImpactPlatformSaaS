@@ -4,13 +4,18 @@ namespace Drupal\eca_ui\Plugin\ModelerApiModelOwner;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Random;
 use Drupal\Core\Action\ActionInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\TempStore\TempStoreException;
 use Drupal\eca\Entity\Eca as EcaModel;
+use Drupal\eca\Plugin\ECA\Condition\ConditionInterface;
+use Drupal\eca\Plugin\ECA\Event\EventInterface;
+use Drupal\eca\Plugin\FavoritePlugins;
 use Drupal\eca\Service\Actions;
 use Drupal\eca\Service\Conditions;
 use Drupal\eca\Service\Events;
@@ -76,6 +81,37 @@ class Eca extends ModelOwnerBase {
    * @var string|null
    */
   protected ?string $documentationDomain;
+
+  /**
+   * The list of applied templates to events before saving the model.
+   *
+   * @var array
+   */
+  protected array $appliedTemplates;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function componentLabels(): array {
+    return [
+      'start' => (string) $this->t('Event'),
+      'element' => (string) $this->t('Action'),
+      'link' => (string) $this->t('Condition'),
+      'gateway' => (string) $this->t('Gateway'),
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function componentLabelsPlural(): array {
+    return [
+      'start' => (string) $this->t('Events'),
+      'element' => (string) $this->t('Actions'),
+      'link' => (string) $this->t('Conditions'),
+      'gateway' => (string) $this->t('Gateways'),
+    ];
+  }
 
   /**
    * {@inheritdoc}
@@ -220,6 +256,13 @@ class Eca extends ModelOwnerBase {
   /**
    * {@inheritdoc}
    */
+  public function favoriteOwnerComponents(): array {
+    return FavoritePlugins::$favoritePlugins;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function ownerComponentId(int $type): string {
     return self::SUPPORTED_COMPONENT_TYPES[$type] ?? 'unsupported';
   }
@@ -264,6 +307,18 @@ class Eca extends ModelOwnerBase {
       ];
     }
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginSchemaKey(PluginInspectionInterface $plugin): string {
+    $plugin_id = $plugin->getPluginId();
+    return match (TRUE) {
+      $plugin instanceof EventInterface => 'eca.event.plugin.' . $plugin_id,
+      $plugin instanceof ConditionInterface => 'eca.condition.plugin.' . $plugin_id,
+      default => 'action.configuration.' . $plugin_id,
+    };
   }
 
   /**
@@ -377,6 +432,12 @@ class Eca extends ModelOwnerBase {
    */
   public function resetComponents(ConfigEntityInterface $model): ModelOwnerInterface {
     assert($model instanceof EcaModel);
+    $this->appliedTemplates = [];
+    foreach ($model->get('events') as $id => $event) {
+      if (isset($event['applied_templates'])) {
+        $this->appliedTemplates[$id] = $event['applied_templates'];
+      }
+    }
     $model->resetComponents();
     return $this;
   }
@@ -401,10 +462,10 @@ class Eca extends ModelOwnerBase {
       $label = $id;
     }
     return match ($component->getType()) {
-      Api::COMPONENT_TYPE_START => $model->addEvent($id, $pluginId, $label, $configuration, $successors),
+      Api::COMPONENT_TYPE_START => $model->addEvent($id, $pluginId, $label, $configuration, $successors, $this->appliedTemplates[$id] ?? NULL),
       Api::COMPONENT_TYPE_LINK => $model->addCondition($id, $pluginId, $label, $configuration),
       Api::COMPONENT_TYPE_ELEMENT => $model->addAction($id, $pluginId, $label, $configuration, $successors),
-      Api::COMPONENT_TYPE_GATEWAY => $model->addGateway($id, 0, $successors),
+      Api::COMPONENT_TYPE_GATEWAY => $model->addGateway($id, 0, $successors, $label),
       default => FALSE,
     };
   }
@@ -435,6 +496,139 @@ class Eca extends ModelOwnerBase {
   public function usedComponentsInfo(ConfigEntityInterface $model): array {
     assert($model instanceof EcaModel);
     return $model->getEventInfos();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function applyTemplate(string $templateId, string $componentId, string $target, array $hiddenConfig = [], array $config = []): void {
+    $eventId = $componentId;
+    $ecaId = $hiddenConfig['newModelId'];
+    unset($hiddenConfig['newModelId']);
+    $eca = EcaModel::load($templateId);
+    $elements = [];
+    $ts = $this->time->getRequestTime();
+    foreach ($eca->getAllEventElements($eventId) as $id => $type) {
+      $element = $eca->get($type . 's')[$id];
+      $elementConfig = $element['configuration'] ?? NULL;
+      if ($type === 'event') {
+        $element['applied_templates'][] = json_encode([$eventId, $ecaId, $target, $config + [$id => $hiddenConfig]]);
+        $config[$id] = $hiddenConfig;
+      }
+      else {
+        $id .= '_' . $ts;
+      }
+      if (is_array($elementConfig)) {
+        if (isset($config[$id])) {
+          $elementConfig = array_merge($elementConfig, $config[$id]);
+        }
+        else {
+          foreach ($elementConfig as $configKey => $configValue) {
+            if (!is_scalar($configValue)) {
+              continue;
+            }
+            if (($pos = strpos($configValue, '[eca-template:select:')) !== FALSE) {
+              if (($offset = strpos($configValue, ']', $pos)) !== FALSE) {
+                $token = substr($configValue, $pos, $offset - $pos + 1);
+                $configValue = str_replace($token, $target, $configValue);
+              }
+            }
+            foreach ($config as $key => $value) {
+              $configValue = str_replace('[' . $key . ']', is_array($value) ? implode(',', $value) : $value, $configValue);
+            }
+            $elementConfig[$configKey] = $configValue;
+          }
+        }
+        $element['configuration'] = $elementConfig;
+      }
+      foreach ($element['successors'] ?? [] as $key => $successor) {
+        $element['successors'][$key]['id'] .= '_' . $ts;
+        if ($element['successors'][$key]['condition'] !== '') {
+          $element['successors'][$key]['condition'] .= '_' . $ts;
+        }
+      }
+      $elements[$type . 's'][$id] = $element;
+    }
+    $newEca = EcaModel::load($ecaId);
+    if (!$newEca) {
+      $newEca = EcaModel::create([
+        'id' => $ecaId,
+        'weight' => 0,
+        'template' => FALSE,
+      ]);
+      $newEca->setThirdPartySetting('modeler_api', 'label', ucfirst(str_replace('_', ' ', $ecaId)));
+    }
+    foreach ($elements as $type => $elementsByType) {
+      $elementsByType = NestedArray::mergeDeep($newEca->get($type) ?? [], $elementsByType);
+      $newEca->set($type, $elementsByType);
+    }
+    $newEca->setThirdPartySetting('modeler_api', 'storage', Settings::STORAGE_OPTION_NONE);
+    $newEca->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsReplayData(): bool {
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReplayData(string $hash): array {
+    return $this->getContainer()->get('eca.token_browser')->getHistoryByHash($hash);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReplayDataByComponent(string $modelId, string $componentId): array {
+    return $this->getContainer()->get('eca.token_browser')->getHistoryByEvent(implode('::', [$modelId, $componentId]));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsTesting(): bool {
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function startTestJob(string $modelId, string $componentId): string|TranslatableMarkup {
+    try {
+      return $this->getContainer()->get('eca.token_browser')->initTesting(implode('::', [$modelId, $componentId]));
+    }
+    catch (TempStoreException) {
+      return $this->t('Error starting test job.');
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function pollTestJob(string $jobId): array|null|TranslatableMarkup {
+    try {
+      return $this->getContainer()->get('eca.token_browser')->pollTesting($jobId);
+    }
+    catch (TempStoreException) {
+      return $this->t('Error polling test job.');
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function cancelTestJob(string $jobId): null|TranslatableMarkup {
+    try {
+      $this->getContainer()->get('eca.token_browser')->cancelTesting($jobId);
+      return NULL;
+    }
+    catch (TempStoreException) {
+      return $this->t('Error cancelling test job.');
+    }
   }
 
 }

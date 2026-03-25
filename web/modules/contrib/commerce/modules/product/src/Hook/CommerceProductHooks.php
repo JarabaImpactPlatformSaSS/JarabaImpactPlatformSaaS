@@ -213,7 +213,7 @@ class CommerceProductHooks {
     if ($this->moduleHandler->moduleExists('layout_builder')) {
       $base_plugin_id = 'field_block' . PluginBase::DERIVATIVE_SEPARATOR . 'commerce_product_variation' . PluginBase::DERIVATIVE_SEPARATOR;
       foreach ($info as $block_plugin_id => $block_definition) {
-        if (str_contains($block_plugin_id, $base_plugin_id)) {
+        if (str_starts_with($block_plugin_id, $base_plugin_id)) {
           $info[$block_plugin_id]['class'] = VariationFieldBlock::class;
         }
       }

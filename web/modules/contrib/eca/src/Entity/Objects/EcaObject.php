@@ -18,6 +18,7 @@ use Drupal\eca\Event\FormEventInterface;
 use Drupal\eca\Plugin\Action\ActionInterface;
 use Drupal\eca\Plugin\ECA\Condition\ConditionInterface;
 use Drupal\eca\Plugin\ObjectWithPluginInterface;
+use Drupal\eca\ProcessDebugger;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -195,6 +196,8 @@ abstract class EcaObject {
    *
    * This should be overwritten by items with more specific instructions.
    *
+   * @param \Drupal\eca\ProcessDebugger $debugger
+   *   The current process debugger.
    * @param \Drupal\eca\Entity\Objects\EcaObject|null $predecessor
    *   The item proceeding this one. May be null when this object the root item.
    * @param \Symfony\Contracts\EventDispatcher\Event $event
@@ -205,7 +208,7 @@ abstract class EcaObject {
    * @return bool
    *   TRUE, if the item was executed, FALSE otherwise.
    */
-  public function execute(?EcaObject $predecessor, Event $event, array $context): bool {
+  public function execute(ProcessDebugger $debugger, ?EcaObject $predecessor, Event $event, array $context): bool {
     $this->predecessor = $predecessor;
     return TRUE;
   }

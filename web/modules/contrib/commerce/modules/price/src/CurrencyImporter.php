@@ -89,7 +89,7 @@ class CurrencyImporter implements CurrencyImporterInterface {
     ];
     /** @var \Drupal\commerce_price\Entity\CurrencyInterface $entity */
     $entity = $this->storage->create($values);
-    $entity->trustData()->save();
+    $entity->save();
     if ($this->languageManager->isMultilingual()) {
       // Import translations for any additional languages the site has.
       $languages = $this->languageManager->getLanguages(LanguageInterface::STATE_CONFIGURABLE);

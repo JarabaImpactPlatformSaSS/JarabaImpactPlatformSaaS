@@ -3,6 +3,8 @@
 namespace Drupal\eca\Entity\Objects;
 
 use Drupal\eca\Entity\Eca;
+use Drupal\eca\ProcessDebugger;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Provides an ECA item of type gateway for internal processing.
@@ -33,6 +35,17 @@ class EcaGateway extends EcaObject {
   public function __construct(Eca $eca, string $id, string $label, EcaEvent $event, int $type) {
     parent::__construct($eca, $id, $label, $event);
     $this->type = $type;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function execute(ProcessDebugger $debugger, ?EcaObject $predecessor, Event $event, array $context): bool {
+    if (!parent::execute($debugger, $predecessor, $event, $context)) {
+      return FALSE;
+    }
+    $debugger->execute($this->getId(), NULL);
+    return TRUE;
   }
 
 }

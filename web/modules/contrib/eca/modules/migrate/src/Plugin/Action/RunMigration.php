@@ -26,7 +26,7 @@ class RunMigration extends MigrationActionBase {
   /**
    * {@inheritdoc}
    */
-  public function execute(): void {
+  public function execute(?object $object = NULL): void {
     if (!empty($this->configuration['update'])) {
       $this->getMigrationIdMap($this->migration)->prepareUpdate();
     }

@@ -459,6 +459,7 @@ class FormEvent extends EventBase {
   #[Token(
     name: 'entity',
     description: 'The form entity.',
+    type: 'entity',
     classes: [
       InlineEntityFormBuild::class,
     ],
@@ -473,6 +474,7 @@ class FormEvent extends EventBase {
   #[Token(
     name: 'parent',
     description: 'The parent entity, if one exists.',
+    type: 'entity',
     classes: [
       InlineEntityFormBuild::class,
     ],

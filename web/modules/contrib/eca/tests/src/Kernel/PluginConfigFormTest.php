@@ -45,6 +45,7 @@ class PluginConfigFormTest extends KernelTestBase {
     'eca_user',
     'eca_views',
     'eca_workflow',
+    'modeler_api',
   ];
 
   /**

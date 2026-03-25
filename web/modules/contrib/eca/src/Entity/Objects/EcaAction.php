@@ -15,6 +15,7 @@ use Drupal\eca\Event\AfterActionExecutionEvent;
 use Drupal\eca\Event\BeforeActionExecutionEvent;
 use Drupal\eca\Plugin\Action\ActionInterface;
 use Drupal\eca\Plugin\ObjectWithPluginInterface;
+use Drupal\eca\ProcessDebugger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -59,8 +60,8 @@ class EcaAction extends EcaObject implements ObjectWithPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function execute(?EcaObject $predecessor, Event $event, array $context): bool {
-    if (!parent::execute($predecessor, $event, $context)) {
+  public function execute(ProcessDebugger $debugger, ?EcaObject $predecessor, Event $event, array $context): bool {
+    if (!parent::execute($debugger, $predecessor, $event, $context)) {
       return FALSE;
     }
 
@@ -103,10 +104,12 @@ class EcaAction extends EcaObject implements ObjectWithPluginInterface {
         $access_result = $this->plugin->access($object, NULL, TRUE);
         $access_granted = $access_result->isAllowed();
         if ($access_granted) {
+          $debugger->execute($this->getId(), $object);
           // @phpstan-ignore-next-line
           $this->plugin->execute($object);
         }
         else {
+          $debugger->accessDenied($this->getId());
           $context['%reason'] = $access_result instanceof AccessResultReasonInterface ?
             $access_result->getReason() :
             'unknown';
@@ -114,6 +117,7 @@ class EcaAction extends EcaObject implements ObjectWithPluginInterface {
         }
       }
       catch (\Exception $ex) {
+        $debugger->exception($this->getId(), $object, $ex);
         // @todo Remove in https://www.drupal.org/project/drupal/issues/2367555.
         if ($ex instanceof EnforcedResponseException) {
           throw $ex;
