@@ -89,6 +89,40 @@ class CoordinadorFormController extends ControllerBase {
   }
 
   /**
+   * Form for NegocioProspectadoEi via slide-panel (add/edit).
+   *
+   * @return \Symfony\Component\HttpFoundation\Response|array<string, mixed>
+   *   Response for slide-panel or render array for full page.
+   */
+  public function handleNegocioForm(Request $request, string $id = 'add'): Response|array {
+    $entityId = ($id !== 'add') ? $id : NULL;
+    $operation = ($id !== 'add') ? 'edit' : 'add';
+    return $this->handleEntityForm($request, 'negocio_prospectado_ei', $entityId, $operation);
+  }
+
+  /**
+   * Form for PackServicioEi via slide-panel (add/edit).
+   *
+   * @return \Symfony\Component\HttpFoundation\Response|array<string, mixed>
+   *   Response for slide-panel or render array for full page.
+   */
+  public function handlePackForm(Request $request, string $id = 'add'): Response|array {
+    $entityId = ($id !== 'add') ? $id : NULL;
+    $operation = ($id !== 'add') ? 'edit' : 'add';
+    return $this->handleEntityForm($request, 'pack_servicio_ei', $entityId, $operation);
+  }
+
+  /**
+   * Form for EntregableFormativoEi validation via slide-panel (edit only).
+   *
+   * @return \Symfony\Component\HttpFoundation\Response|array<string, mixed>
+   *   Response for slide-panel or render array for full page.
+   */
+  public function handleEntregableValidacion(Request $request, string $id): Response|array {
+    return $this->handleEntityForm($request, 'entregable_formativo_ei', $id, 'edit');
+  }
+
+  /**
    * Handles entity form rendering for both slide-panel and full-page.
    *
    * SLIDE-PANEL-RENDER-001: renderPlain() for AJAX, render array for full page.

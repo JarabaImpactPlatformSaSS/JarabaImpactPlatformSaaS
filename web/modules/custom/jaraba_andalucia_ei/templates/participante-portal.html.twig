@@ -216,6 +216,15 @@
     </div>
   {% endif %}
 
+  {# === CALCULADORA PUNTO DE EQUILIBRIO (Sprint E3) === #}
+  <section class="participante-portal__calculadora">
+    <h2 class="participante-portal__section-title">
+      {{ jaraba_icon('analytics', 'chart-line', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+      {% trans %}Calculadora de Viabilidad{% endtrans %}
+    </h2>
+    <div data-calculadora-pe></div>
+  </section>
+
   {# === PORTFOLIO DE ENTREGABLES FORMATIVOS === #}
   {% if portfolio is defined and progreso is defined %}
     {% include '@jaraba_andalucia_ei/partials/_portfolio-entregables.html.twig' with { portfolio: portfolio, progreso: progreso } only %}

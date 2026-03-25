@@ -175,6 +175,24 @@ prueba-gratuita:
   dependencies:
     - core/drupal
 
+calculadora-pe:
+  version: 1.x
+  js:
+    js/calculadora-pe.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+copilot-session-chips:
+  version: 1.x
+  js:
+    js/copilot-session-chips.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 recurrence-form:
   version: 1.x
   css:

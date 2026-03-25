@@ -38,6 +38,22 @@ class AsistenciaComplianceService {
   private const UMBRAL_SUSPENSO = 75.0;
 
   /**
+   * ATT-07: Pautas §5.1.B.1 — No formación presencial fines de semana ni festivos.
+   *
+   * @var string[]
+   */
+  public const FESTIVOS_2026 = [
+    '2026-01-01', '2026-01-06', '2026-02-28', '2026-04-02', '2026-04-03',
+    '2026-05-01', '2026-08-15', '2026-10-12', '2026-11-02', '2026-12-07',
+    '2026-12-08', '2026-12-25',
+  ];
+
+  /**
+   * ATT-11: Pautas §5.1.B.1 — Coste máximo formación presencial.
+   */
+  public const COSTE_MAX_HORA_ALUMNO = 11.0;
+
+  /**
    * Constructs an AsistenciaComplianceService.
    */
   public function __construct(
@@ -230,6 +246,53 @@ class AsistenciaComplianceService {
     }
 
     return $alertas;
+  }
+
+  /**
+   * Validates session date is NOT on weekend or holiday for presencial.
+   *
+   * ATT-07: Pautas §5.1.B.1 — No presencial fines de semana/festivos.
+   * ATT-08: Pautas §5.1.B.2 — No online fuera horario laboral.
+   *
+   * @param string $fecha
+   *   Date string in Y-m-d or Y-m-d\TH:i:s format.
+   * @param string $modalidad
+   *   'presencial' or 'online_sincronica'.
+   *
+   * @return array<string>
+   *   Array of violation messages (empty = valid).
+   */
+  public function validateHorarioNormativo(string $fecha, string $modalidad): array {
+    $violations = [];
+    try {
+      $date = new \DateTime($fecha);
+      $dayOfWeek = (int) $date->format('N');
+      $dateOnly = $date->format('Y-m-d');
+
+      // Weekend check (both modalities).
+      if ($dayOfWeek >= 6) {
+        $violations[] = (string) t('No se permite formación @modalidad en fines de semana (Pautas §5.1.B).', [
+          '@modalidad' => $modalidad,
+        ]);
+      }
+
+      // Holiday check (both modalities).
+      if (in_array($dateOnly, self::FESTIVOS_2026, TRUE)) {
+        $violations[] = (string) t('No se permite formación en días festivos (Pautas §5.1.B).');
+      }
+
+      // Online: also check afternoon/evening (after 15:00).
+      if ($modalidad === 'online_sincronica') {
+        $hour = (int) $date->format('H');
+        if ($hour >= 15) {
+          $violations[] = (string) t('La formación online sincrónica no se permite en horario de tardes (Pautas §5.1.B.2).');
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error validating horario: @msg', ['@msg' => $e->getMessage()]);
+    }
+    return $violations;
   }
 
   /**

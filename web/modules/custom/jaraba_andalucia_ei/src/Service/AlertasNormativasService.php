@@ -353,6 +353,63 @@ class AlertasNormativasService {
   }
 
   /**
+   * Checks technical person ratio (1:60 projects per province).
+   *
+   * PER-01: Pautas §3.4 — Ratio 1 técnico / 60 proyectos por provincia.
+   *
+   * @param int $tenantId
+   *   Tenant group ID.
+   *
+   * @return array<string, mixed>|null
+   *   Alert array if ratio exceeded, NULL if OK.
+   */
+  public function checkRatioTecnico(int $tenantId): ?array {
+    try {
+      // Count technical staff.
+      if (!$this->entityTypeManager->hasDefinition('staff_profile_ei')) {
+        return NULL;
+      }
+      $staffCount = $this->entityTypeManager->getStorage('staff_profile_ei')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('tenant_id', $tenantId)
+        ->count()
+        ->execute();
+
+      if ($staffCount === 0) {
+        return [
+          'tipo' => 'ratio_tecnico',
+          'severidad' => 'error',
+          'mensaje' => (string) t('No hay personal técnico registrado. Se requiere al menos 1 técnico (Pautas §3.4).'),
+        ];
+      }
+
+      // Count participants.
+      $participantCount = $this->entityTypeManager->getStorage('programa_participante_ei')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('tenant_id', $tenantId)
+        ->count()
+        ->execute();
+
+      $ratio = $participantCount / $staffCount;
+      if ($ratio > 60) {
+        return [
+          'tipo' => 'ratio_tecnico',
+          'severidad' => 'warning',
+          'mensaje' => (string) t('Ratio técnico/participantes (@ratio:1) excede el máximo normativo de 60:1 (Pautas §3.4).', [
+            '@ratio' => round($ratio),
+          ]),
+        ];
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error checking ratio tecnico: @msg', ['@msg' => $e->getMessage()]);
+    }
+    return NULL;
+  }
+
+  /**
    * Obtiene un resumen de alertas agrupadas por nivel.
    *
    * @return array<string, int>

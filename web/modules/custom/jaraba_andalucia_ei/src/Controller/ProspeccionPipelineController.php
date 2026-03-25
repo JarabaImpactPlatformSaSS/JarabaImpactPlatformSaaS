@@ -11,6 +11,8 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_andalucia_ei\Service\ProspeccionPipelineService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Controller para la vista Kanban del pipeline de prospección.
@@ -110,6 +112,45 @@ class ProspeccionPipelineController extends ControllerBase {
         ],
       ],
     ];
+  }
+
+  /**
+   * PATCH: Mueve un negocio prospectado a una nueva fase del embudo.
+   *
+   * API-WHITELIST-001: Valida nueva fase contra lista cerrada.
+   * CSRF-API-001: Protegido via _csrf_request_header_token en routing.yml.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con JSON body { estado_embudo: string }.
+   * @param string $negocio_prospectado_ei
+   *   El ID del NegocioProspectadoEi (string del path, cast a int).
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   JSON con status o error.
+   */
+  public function moverFase(Request $request, string $negocio_prospectado_ei): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $nuevaFase = $data['estado_embudo'] ?? '';
+
+    // API-WHITELIST-001: Validar contra fases conocidas.
+    $fasesValidas = ['identificado', 'contactado', 'interesado', 'propuesta', 'acuerdo', 'conversion'];
+    if (!in_array($nuevaFase, $fasesValidas, TRUE)) {
+      return new JsonResponse(['error' => 'Fase no válida'], 400);
+    }
+
+    $id = (int) $negocio_prospectado_ei;
+    if ($id <= 0) {
+      return new JsonResponse(['error' => 'ID no válido'], 400);
+    }
+
+    if ($this->pipelineService !== NULL) {
+      $ok = $this->pipelineService->moverEstado($id, $nuevaFase);
+      if ($ok) {
+        return new JsonResponse(['status' => 'ok', 'nueva_fase' => $nuevaFase]);
+      }
+    }
+
+    return new JsonResponse(['error' => 'No se pudo actualizar'], 500);
   }
 
 }

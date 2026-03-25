@@ -226,6 +226,29 @@ class JustificacionEconomicaService {
   }
 
   /**
+   * Validates that training cost doesn't exceed 11 EUR/student/hour.
+   *
+   * ATT-11: Pautas §5.1.B.1 — Coste máximo formación presencial.
+   *
+   * @param float $costeTotalFormacion
+   *   Total training cost in EUR.
+   * @param int $numAlumnos
+   *   Number of students.
+   * @param float $horasFormacion
+   *   Total training hours.
+   *
+   * @return bool
+   *   TRUE if within limits, FALSE if exceeds.
+   */
+  public function validateCosteMaximoFormacion(float $costeTotalFormacion, int $numAlumnos, float $horasFormacion): bool {
+    if ($numAlumnos <= 0 || $horasFormacion <= 0) {
+      return TRUE;
+    }
+    $costeHoraAlumno = $costeTotalFormacion / ($numAlumnos * $horasFormacion);
+    return $costeHoraAlumno <= 11.0;
+  }
+
+  /**
    * Carga una entidad participante por ID.
    *
    * @param int $id

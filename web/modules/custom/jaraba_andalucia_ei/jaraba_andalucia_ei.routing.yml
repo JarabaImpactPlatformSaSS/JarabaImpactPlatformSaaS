@@ -252,6 +252,16 @@ jaraba_andalucia_ei.prospeccion_pipeline:
   requirements:
     _permission: 'register andalucia ei actuacion'
 
+# API PATCH: Mover negocio de fase en Kanban (drag-and-drop).
+jaraba_andalucia_ei.api.prospeccion_mover_fase:
+  path: '/api/v1/andalucia-ei/prospeccion/{negocio_prospectado_ei}/fase'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\ProspeccionPipelineController::moverFase'
+  methods: [PATCH]
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+    _csrf_request_header_token: 'TRUE'
+
 # === LANDING PÚBLICA: CAPTACIÓN NEGOCIOS PILOTO ===
 jaraba_andalucia_ei.prueba_gratuita:
   path: '/andalucia-ei/prueba-gratuita'
@@ -1323,6 +1333,36 @@ jaraba_andalucia_ei.hub.sesion_programada.edit:
     _title: 'Editar Sesión Programada'
   requirements:
     _permission: 'edit sesion programada ei'
+    id: '\d+'
+
+# Slide-panel: Negocio Prospectado (crear/editar)
+jaraba_andalucia_ei.slide_panel.negocio_form:
+  path: '/andalucia-ei/prospeccion/{id}/form'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handleNegocioForm'
+    _title: 'Registrar Negocio Prospectado'
+    id: 'add'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+# Slide-panel: Pack de Servicio (crear/editar)
+jaraba_andalucia_ei.slide_panel.pack_form:
+  path: '/andalucia-ei/pack/{id}/form'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handlePackForm'
+    _title: 'Gestionar Pack de Servicio'
+    id: 'add'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+# Slide-panel: Validar Entregable
+jaraba_andalucia_ei.slide_panel.entregable_validar:
+  path: '/andalucia-ei/entregable/{id}/validar'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\CoordinadorFormController::handleEntregableValidacion'
+    _title: 'Validar Entregable'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
     id: '\d+'
 
 # =====================================================

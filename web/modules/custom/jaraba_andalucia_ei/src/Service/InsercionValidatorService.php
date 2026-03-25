@@ -39,6 +39,16 @@ class InsercionValidatorService {
   public const INCENTIVO_IRPF = 10.56;
   public const INCENTIVO_NETO = 517.44;
 
+  /**
+   * INS-04: BBRR §5.a.4.b — Mínimo media jornada para inserción parcial.
+   */
+  public const JORNADA_PARCIAL_MINIMA = 0.5;
+
+  /**
+   * INS-05: BBRR §5.a.4.c — NIF de la entidad beneficiaria (PED S.L.).
+   */
+  public const NIF_ENTIDAD_BENEFICIARIA = 'B93750271';
+
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
@@ -145,6 +155,47 @@ class InsercionValidatorService {
       'irpf_importe' => self::INCENTIVO_IRPF,
       'total_percibir' => self::INCENTIVO_NETO,
     ];
+  }
+
+  /**
+   * Computes proportional months for part-time employment.
+   *
+   * INS-04: BBRR §5.a.4.b — Tiempo parcial: mínimo media jornada,
+   * cómputo proporcional.
+   *
+   * @param int $mesesAlta
+   *   Months registered in Social Security.
+   * @param float $jornadaPorcentaje
+   *   Employment percentage (0.5 = half-time, 1.0 = full-time).
+   *
+   * @return float
+   *   Proportional months. Returns 0 if below minimum threshold.
+   */
+  public function computoProporcionalJornada(int $mesesAlta, float $jornadaPorcentaje): float {
+    if ($jornadaPorcentaje < self::JORNADA_PARCIAL_MINIMA) {
+      return 0.0;
+    }
+    return $mesesAlta * $jornadaPorcentaje;
+  }
+
+  /**
+   * Validates that insertion is NOT in beneficiary entity or linked companies.
+   *
+   * INS-05: BBRR §5.a.4.c — No inserción en entidad beneficiaria,
+   * grupo empresa o vinculadas.
+   *
+   * @param string $nifEmpresa
+   *   NIF/CIF of the hiring company.
+   *
+   * @return bool
+   *   TRUE if valid (NOT self-hire), FALSE if auto-contratación detected.
+   */
+  public function validateNoAutocontratacion(string $nifEmpresa): bool {
+    $nifNormalized = strtoupper(trim($nifEmpresa));
+    if ($nifNormalized === self::NIF_ENTIDAD_BENEFICIARIA) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
   /**
