@@ -242,12 +242,12 @@ class InsercionValidatorService {
 
     try {
       $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
-      /** @var \Drupal\Core\Entity\ContentEntityInterface|null $participante */
-      $participante = $storage->load($participanteId);
-      if ($participante === NULL) {
+      $entity = $storage->load($participanteId);
+      if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
         $result['reason'] = (string) $this->t('Participante no encontrado.');
         return $result;
       }
+      $participante = $entity;
 
       // Check es_persona_atendida flag.
       if ($participante->hasField('es_persona_atendida')
