@@ -284,6 +284,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COPILOT-PHASE-PROMPT-001: 6 system prompts por fase del programa. Config YAML editable sin deploy
 - Cross-vertical bridges: 7 bridges (4 @? opcionales). Detalles en memory/andalucia-ei-2e.md
 
+### Sprint C+D (2026-03-25)
+- PROSPECCION-PIPELINE-001: ProspeccionPipelineService agrupa NegocioProspectadoEi por 6 fases embudo. Kanban drag-drop con API PATCH. CaptacionLeadsAction → prospeccion_pipeline
+- LANDING-CAPTACION-001: PruebaGratuitaController ruta publica /andalucia-ei/prueba-gratuita. Formulario HTML → NegocioProspectadoEi (honeypot, urgencia, RGPD)
+- CALCULADORA-PE-001: CalculadoraPuntoEquilibrioService. Gastos fijos 144€/mes, precios pack/tier, 4 escenarios. JS calculadora-pe.js consume drupalSettings
+- PORTFOLIO-PUBLICO-001: PortfolioPublicoController ruta /portfolio/{participante_id}. 29 entregables por modulo + progreso
+- Compliance P1: 8 validaciones (max 25/grupo, no fines semana, 11€/h, jornada parcial, auto-contratacion, ratio 1:60)
+- Validador: validate-andalucia-ei-2e-sprint-cd.php (8 checks)
+
 ## IA — STACK COMPLETO
 
 ### Arquitectura (11 Agentes Gen 2)
@@ -408,12 +416,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 146 validators individuales en `scripts/validation/` (116 run_check + 33 warn_check = 149 checks registrados). Lista completa: `docs/validators-reference.md`
+- 151 validators individuales en `scripts/validation/` (107 run_check + 36 warn_check = 143 calls, 154 unique IDs). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 145 scripts validacion (115 run + 33 warn), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 151 scripts validacion (107 run + 36 warn = 154 unique checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6, tests, security, 26 arch checks), (4) Runtime hook_requirements (88% modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
