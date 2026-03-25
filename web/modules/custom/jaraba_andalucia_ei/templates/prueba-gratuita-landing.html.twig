@@ -1,0 +1,308 @@
+{# Landing publica captacion negocios piloto. Variables: form_action (URL submit). #}
+
+<div class="prueba-gratuita">
+
+  {# === HERO === #}
+  <section class="prueba-gratuita__hero" id="top">
+    <div class="prueba-gratuita__badges">
+      {% trans %}Cofinanciado por la Unión Europea · Junta de Andalucía · Servicio Andaluz de Empleo{% endtrans %}
+    </div>
+    <h1 class="prueba-gratuita__title">
+      {% trans %}Mejore la presencia digital de su negocio.{% endtrans %}
+      <span class="prueba-gratuita__title-accent">{% trans %}Gratis.{% endtrans %}</span>
+    </h1>
+    <p class="prueba-gratuita__subtitle">
+      {% trans %}Reciba un servicio profesional de 2-4 semanas sin coste ni compromiso, en el marco de un programa público de la Junta de Andalucía cofinanciado por la Unión Europea.{% endtrans %}
+    </p>
+    <a href="#formulario" class="prueba-gratuita__cta-hero"
+       data-track-cta="hero_cta"
+       data-track-position="hero">
+      {% trans %}Solicitar prueba gratuita{% endtrans %} →
+    </a>
+    <div class="prueba-gratuita__trust-row">
+      <div class="prueba-gratuita__trust-item">
+        <span class="prueba-gratuita__trust-value">46%</span>
+        <span class="prueba-gratuita__trust-label">{% trans %}inserción laboral 1ª Ed.{% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__trust-item">
+        <span class="prueba-gratuita__trust-value">0€</span>
+        <span class="prueba-gratuita__trust-label">{% trans %}coste para su negocio{% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__trust-item">
+        <span class="prueba-gratuita__trust-value">0</span>
+        <span class="prueba-gratuita__trust-label">{% trans %}compromiso{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# === SERVICIOS (5 PACKS) === #}
+  <section class="prueba-gratuita__services">
+    <div class="prueba-gratuita__container">
+      <h2>{% trans %}¿Qué recibe su negocio?{% endtrans %}</h2>
+      <p class="prueba-gratuita__lead">
+        {% trans %}Un profesional formado en inteligencia artificial le prestará uno de estos servicios durante 2-4 semanas, completamente gratis:{% endtrans %}
+      </p>
+      <div class="prueba-gratuita__cards">
+        <div class="prueba-gratuita__card prueba-gratuita__card--redes">
+          <div class="prueba-gratuita__card-icon">
+            {{ jaraba_icon('social', 'instagram', { variant: 'duotone', color: 'white', size: '40px' }) }}
+          </div>
+          <h3>{% trans %}Gestión de Redes Sociales{% endtrans %}</h3>
+          <p>{% trans %}Posts profesionales en Instagram y Facebook para su negocio{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__card prueba-gratuita__card--web">
+          <div class="prueba-gratuita__card-icon">
+            {{ jaraba_icon('content', 'globe', { variant: 'duotone', color: 'white', size: '40px' }) }}
+          </div>
+          <h3>{% trans %}Creación de Web{% endtrans %}</h3>
+          <p>{% trans %}Página web profesional de 3-5 páginas con SEO local{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__card prueba-gratuita__card--resenas">
+          <div class="prueba-gratuita__card-icon">
+            {{ jaraba_icon('status', 'star', { variant: 'duotone', color: 'white', size: '40px' }) }}
+          </div>
+          <h3>{% trans %}Gestión de Reseñas{% endtrans %}</h3>
+          <p>{% trans %}Respuesta profesional a todas sus reseñas de Google{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__card prueba-gratuita__card--admin">
+          <div class="prueba-gratuita__card-icon">
+            {{ jaraba_icon('content', 'document', { variant: 'duotone', color: 'white', size: '40px' }) }}
+          </div>
+          <h3>{% trans %}Asistencia Administrativa{% endtrans %}</h3>
+          <p>{% trans %}Facturación, emails, agenda y organización documental{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__card prueba-gratuita__card--tienda">
+          <div class="prueba-gratuita__card-icon">
+            {{ jaraba_icon('commerce', 'cart', { variant: 'duotone', color: 'white', size: '40px' }) }}
+          </div>
+          <h3>{% trans %}Tienda Online{% endtrans %}</h3>
+          <p>{% trans %}Catálogo digital con fotos profesionales y pagos integrados{% endtrans %}</p>
+        </div>
+      </div>
+      <p class="prueba-gratuita__bottom-text">
+        {% trans %}Usted elige el que más necesite. Nosotros lo ejecutamos.{% endtrans %}
+      </p>
+    </div>
+  </section>
+
+  {# === CÓMO FUNCIONA (3 PASOS) === #}
+  <section class="prueba-gratuita__how">
+    <div class="prueba-gratuita__container">
+      <h2>{% trans %}¿Cómo funciona?{% endtrans %}</h2>
+      <div class="prueba-gratuita__steps">
+        <div class="prueba-gratuita__step">
+          <div class="prueba-gratuita__step-num">1</div>
+          <h3>{% trans %}Rellene el formulario{% endtrans %}</h3>
+          <p>{% trans %}2 minutos. Nos cuenta qué necesita su negocio.{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__step">
+          <div class="prueba-gratuita__step-num">2</div>
+          <h3>{% trans %}Propuesta personalizada{% endtrans %}</h3>
+          <p>{% trans %}Le preparamos ejemplos reales de lo que haríamos por SU negocio.{% endtrans %}</p>
+        </div>
+        <div class="prueba-gratuita__step">
+          <div class="prueba-gratuita__step-num">3</div>
+          <h3>{% trans %}Prueba gratuita{% endtrans %}</h3>
+          <p>{% trans %}Un profesional empieza a trabajar para usted. 2-4 semanas. Sin coste.{% endtrans %}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# === GARANTÍAS === #}
+  <section class="prueba-gratuita__guarantees">
+    <div class="prueba-gratuita__container prueba-gratuita__guarantees-grid">
+      <div class="prueba-gratuita__guarantee">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <span>{% trans %}Sin permanencia{% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__guarantee">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <span>{% trans %}Sin coste oculto{% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__guarantee">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <span>{% trans %}Supervisado por expertos{% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__guarantee">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <span>{% trans %}Datos protegidos (RGPD){% endtrans %}</span>
+      </div>
+      <div class="prueba-gratuita__guarantee">
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        <span>{% trans %}+30 años de experiencia{% endtrans %}</span>
+      </div>
+    </div>
+  </section>
+
+  {# === FORMULARIO === #}
+  <section class="prueba-gratuita__form-section" id="formulario">
+    <div class="prueba-gratuita__container">
+      <h2>{% trans %}Solicite su prueba gratuita{% endtrans %}</h2>
+      <p class="prueba-gratuita__form-lead">
+        {% trans %}Rellene este formulario y en 3 días laborables le enviaremos una propuesta personalizada para su negocio.{% endtrans %}
+      </p>
+
+      <form action="{{ form_action }}" method="POST" class="prueba-gratuita__form"
+            data-track-cta="form_submit"
+            data-track-position="form">
+
+        {# Honeypot anti-spam #}
+        <div style="display:none" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="prueba-gratuita__field">
+          <label for="nombre_negocio">{% trans %}Nombre del negocio{% endtrans %} <span class="prueba-gratuita__required" aria-label="{% trans %}obligatorio{% endtrans %}">*</span></label>
+          <input type="text" id="nombre_negocio" name="nombre_negocio" required
+                 placeholder="{% trans %}Ej: Bar La Esquina, Clínica Dental Reyes...{% endtrans %}">
+        </div>
+
+        <div class="prueba-gratuita__field-row">
+          <div class="prueba-gratuita__field">
+            <label for="persona_contacto">{% trans %}Persona de contacto{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="text" id="persona_contacto" name="persona_contacto" required
+                   placeholder="{% trans %}Nombre y apellidos{% endtrans %}">
+          </div>
+          <div class="prueba-gratuita__field">
+            <label for="telefono">{% trans %}Teléfono{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="tel" id="telefono" name="telefono" required placeholder="600 000 000">
+            <span class="prueba-gratuita__hint">{% trans %}Preferiblemente móvil (para WhatsApp){% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="prueba-gratuita__field">
+          <label for="email">{% trans %}Email{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="correo@ejemplo.com">
+        </div>
+
+        <div class="prueba-gratuita__field-row">
+          <div class="prueba-gratuita__field">
+            <label for="provincia">{% trans %}Provincia{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <select id="provincia" name="provincia" required>
+              <option value="">{% trans %}Elija una opción{% endtrans %}</option>
+              <option value="sevilla">{% trans %}Sevilla{% endtrans %}</option>
+              <option value="malaga">{% trans %}Málaga{% endtrans %}</option>
+            </select>
+          </div>
+          <div class="prueba-gratuita__field">
+            <label for="municipio">{% trans %}Municipio{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="text" id="municipio" name="municipio" required
+                   placeholder="{% trans %}Ej: Dos Hermanas, Torremolinos...{% endtrans %}">
+          </div>
+        </div>
+
+        <div class="prueba-gratuita__field-row">
+          <div class="prueba-gratuita__field">
+            <label for="sector">{% trans %}Sector del negocio{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <select id="sector" name="sector" required>
+              <option value="">{% trans %}Elija una opción{% endtrans %}</option>
+              <option value="hosteleria">{% trans %}Hostelería (restaurante, bar, café, hotel){% endtrans %}</option>
+              <option value="comercio">{% trans %}Comercio (tienda, moda, regalos){% endtrans %}</option>
+              <option value="profesional">{% trans %}Servicios profesionales (abogado, asesoría, clínica){% endtrans %}</option>
+              <option value="salud">{% trans %}Salud y bienestar (fisio, dental, estética, gym){% endtrans %}</option>
+              <option value="educacion">{% trans %}Educación (academia, centro formación){% endtrans %}</option>
+              <option value="agro">{% trans %}Producción agroalimentaria (aceite, vino, queso){% endtrans %}</option>
+              <option value="turismo">{% trans %}Turismo (rural, actividades, guías){% endtrans %}</option>
+              <option value="servicios">{% trans %}Servicios técnicos (fontanería, electricidad, taller){% endtrans %}</option>
+            </select>
+          </div>
+          <div class="prueba-gratuita__field">
+            <label for="empleados">{% trans %}Número de empleados{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <select id="empleados" name="empleados" required>
+              <option value="">{% trans %}Elija una opción{% endtrans %}</option>
+              <option value="1">{% trans %}1 (solo yo){% endtrans %}</option>
+              <option value="2-5">2 - 5</option>
+              <option value="6-15">6 - 15</option>
+              <option value="15+">{% trans %}Más de 15{% endtrans %}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="prueba-gratuita__field-row">
+          <div class="prueba-gratuita__field">
+            <label for="web">{% trans %}Web del negocio{% endtrans %}</label>
+            <input type="url" id="web" name="web" placeholder="https://www.sunegocio.com">
+            <span class="prueba-gratuita__hint">{% trans %}Déjelo vacío si no tiene web (es muy normal){% endtrans %}</span>
+          </div>
+          <div class="prueba-gratuita__field">
+            <label for="rrss">{% trans %}Perfil en redes sociales{% endtrans %}</label>
+            <input type="url" id="rrss" name="rrss" placeholder="https://instagram.com/sunegocio">
+            <span class="prueba-gratuita__hint">{% trans %}Instagram, Facebook o cualquier otra{% endtrans %}</span>
+          </div>
+        </div>
+
+        <div class="prueba-gratuita__field">
+          <label>{% trans %}¿Qué servicio le interesa más?{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+          <div class="prueba-gratuita__checkbox-group">
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="redes">
+              <span>{% trans %}Redes sociales{% endtrans %}</span>
+            </label>
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="web">
+              <span>{% trans %}Web profesional{% endtrans %}</span>
+            </label>
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="resenas">
+              <span>{% trans %}Gestión reseñas{% endtrans %}</span>
+            </label>
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="admin">
+              <span>{% trans %}Asistencia administrativa{% endtrans %}</span>
+            </label>
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="tienda">
+              <span>{% trans %}Tienda online{% endtrans %}</span>
+            </label>
+            <label class="prueba-gratuita__checkbox-label">
+              <input type="checkbox" name="servicio[]" value="nosabe">
+              <span>{% trans %}No lo tengo claro{% endtrans %}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="prueba-gratuita__field">
+          <label for="problema">{% trans %}¿Cuál es su mayor problema digital ahora mismo?{% endtrans %}</label>
+          <textarea id="problema" name="problema"
+                    placeholder="{% trans %}Ej: No tengo tiempo para publicar en redes, tengo reseñas sin responder, mi web es muy antigua...{% endtrans %}"></textarea>
+          <span class="prueba-gratuita__hint">{% trans %}Opcional, pero nos ayuda mucho a preparar una propuesta personalizada.{% endtrans %}</span>
+        </div>
+
+        <div class="prueba-gratuita__field">
+          <label for="fuente">{% trans %}¿Cómo conoció esta oferta?{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+          <select id="fuente" name="fuente" required>
+            <option value="">{% trans %}Elija una opción{% endtrans %}</option>
+            <option value="rrss">{% trans %}Redes sociales (Instagram, Facebook){% endtrans %}</option>
+            <option value="visita">{% trans %}Me visitaron en el negocio{% endtrans %}</option>
+            <option value="llamada">{% trans %}Me llamaron por teléfono{% endtrans %}</option>
+            <option value="camara">{% trans %}Cámara de Comercio{% endtrans %}</option>
+            <option value="asociacion">{% trans %}Asociación de comerciantes{% endtrans %}</option>
+            <option value="recomendacion">{% trans %}Me lo recomendó alguien{% endtrans %}</option>
+            <option value="google">{% trans %}Buscando en Google{% endtrans %}</option>
+          </select>
+        </div>
+
+        <div class="prueba-gratuita__consent">
+          <input type="checkbox" name="privacidad" required id="privacy">
+          <label for="privacy">
+            {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos para la gestión de esta solicitud.{% endtrans %}
+          </label>
+        </div>
+
+        <button type="submit" class="prueba-gratuita__submit"
+                data-track-cta="form_submit_button"
+                data-track-position="form_bottom">
+          {% trans %}Solicitar prueba gratuita{% endtrans %} →
+        </button>
+        <p class="prueba-gratuita__submit-note">
+          {% trans %}Le contactaremos en un máximo de 3 días laborables con una propuesta personalizada.{% endtrans %}
+        </p>
+      </form>
+    </div>
+  </section>
+
+  {# === FOOTER INSTITUCIONAL === #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+</div>

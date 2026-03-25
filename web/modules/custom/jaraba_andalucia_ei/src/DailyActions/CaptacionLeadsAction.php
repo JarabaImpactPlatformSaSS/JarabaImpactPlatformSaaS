@@ -30,7 +30,7 @@ class CaptacionLeadsAction implements DailyActionInterface {
   }
 
   public function getDescription(): TranslatableMarkup {
-    return $this->t('Gestionar leads y prospección empresarial');
+    return $this->t('Pipeline de prospección de negocios piloto');
   }
 
   public function getIcon(): array {
@@ -42,7 +42,7 @@ class CaptacionLeadsAction implements DailyActionInterface {
   }
 
   public function getRoute(): string {
-    return 'jaraba_andalucia_ei.leads_guia';
+    return 'jaraba_andalucia_ei.prospeccion_pipeline';
   }
 
   public function getRouteParameters(): array {

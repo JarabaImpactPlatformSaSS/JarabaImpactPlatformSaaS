@@ -81,11 +81,11 @@ class PortfolioEntregablesService {
       /** @var \Drupal\Core\Entity\ContentEntityInterface[] $existingEntities */
       $existingEntities = count($existingIds) > 0 ? $storage->loadMultiple($existingIds) : [];
 
-      // Build set of existing numero_entregable values.
+      // Build set of existing numero values.
       $existingNumbers = [];
       foreach ($existingEntities as $entity) {
-        if ($entity->hasField('numero_entregable') && !$entity->get('numero_entregable')->isEmpty()) {
-          $existingNumbers[(int) $entity->get('numero_entregable')->value] = TRUE;
+        if ($entity->hasField('numero') && !$entity->get('numero')->isEmpty()) {
+          $existingNumbers[(int) $entity->get('numero')->value] = TRUE;
         }
       }
 
@@ -97,9 +97,9 @@ class PortfolioEntregablesService {
         /** @var \Drupal\Core\Entity\ContentEntityInterface $entregable */
         $entregable = $storage->create([
           'participante_id' => $participanteId,
-          'numero_entregable' => $numero,
+          'numero' => $numero,
           'titulo' => $data['titulo'],
-          'sesion_id' => $data['sesion'],
+          'sesion_origen' => $data['sesion'],
           'modulo' => $data['modulo'],
           'estado' => 'pendiente',
           'tenant_id' => $tenantId,
@@ -135,7 +135,7 @@ class PortfolioEntregablesService {
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
         ->condition('participante_id', $participanteId)
-        ->sort('numero_entregable', 'ASC')
+        ->sort('numero', 'ASC')
         ->execute();
 
       if (count($ids) === 0) {
@@ -151,8 +151,8 @@ class PortfolioEntregablesService {
           ? (string) $entity->get('modulo')->value
           : 'sin_modulo';
 
-        $numero = $entity->hasField('numero_entregable') && !$entity->get('numero_entregable')->isEmpty()
-          ? (int) $entity->get('numero_entregable')->value
+        $numero = $entity->hasField('numero') && !$entity->get('numero')->isEmpty()
+          ? (int) $entity->get('numero')->value
           : (int) $entity->id();
 
         $grouped[$modulo][$numero] = [
@@ -161,8 +161,8 @@ class PortfolioEntregablesService {
           'titulo' => $entity->hasField('titulo') && !$entity->get('titulo')->isEmpty()
             ? (string) $entity->get('titulo')->value
             : '',
-          'sesion' => $entity->hasField('sesion_id') && !$entity->get('sesion_id')->isEmpty()
-            ? (string) $entity->get('sesion_id')->value
+          'sesion' => $entity->hasField('sesion_origen') && !$entity->get('sesion_origen')->isEmpty()
+            ? (string) $entity->get('sesion_origen')->value
             : '',
           'estado' => $entity->hasField('estado') && !$entity->get('estado')->isEmpty()
             ? (string) $entity->get('estado')->value
@@ -379,8 +379,8 @@ class PortfolioEntregablesService {
           'participante_id' => $entity->hasField('participante_id') && !$entity->get('participante_id')->isEmpty()
             ? (int) $entity->get('participante_id')->target_id
             : 0,
-          'sesion' => $entity->hasField('sesion_id') && !$entity->get('sesion_id')->isEmpty()
-            ? (string) $entity->get('sesion_id')->value
+          'sesion' => $entity->hasField('sesion_origen') && !$entity->get('sesion_origen')->isEmpty()
+            ? (string) $entity->get('sesion_origen')->value
             : '',
           'modulo' => $entity->hasField('modulo') && !$entity->get('modulo')->isEmpty()
             ? (string) $entity->get('modulo')->value

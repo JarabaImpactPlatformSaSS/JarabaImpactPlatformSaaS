@@ -155,6 +155,26 @@ coordinador-calendar:
     - core/drupalSettings
     - core/once
 
+prospeccion-pipeline:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+  js:
+    js/prospeccion-pipeline.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+prueba-gratuita:
+  version: 1.x
+  css:
+    theme:
+      css/andalucia-ei.css: {}
+  dependencies:
+    - core/drupal
+
 recurrence-form:
   version: 1.x
   css:

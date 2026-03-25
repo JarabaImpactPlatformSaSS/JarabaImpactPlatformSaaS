@@ -1,0 +1,128 @@
+{#
+/**
+ * @file
+ * Pipeline Kanban de prospección de negocios piloto.
+ *
+ * Variables:
+ * - pipeline: Array keyed by estado_embudo, each containing business data.
+ * - stats: Statistics array (total, per_phase counts, conversion_rate).
+ * - landing_url: URL pública de la landing de captación.
+ *
+ * SPEC-2E-010: 6 columnas drag-and-drop.
+ * ICON-CONVENTION-001: All icons via jaraba_icon() duotone.
+ * CSS-VAR-ALL-COLORS-001: All colors via --ej-* tokens.
+ */
+#}
+
+{% set fases = {
+  'identificado': { label: 'Identificado'|t, color: 'neutral', icon_cat: 'analytics', icon_name: 'search' },
+  'contactado': { label: 'Contactado'|t, color: 'azul-corporativo', icon_cat: 'communication', icon_name: 'phone' },
+  'interesado': { label: 'Interesado'|t, color: 'naranja-impulso', icon_cat: 'status', icon_name: 'star' },
+  'propuesta': { label: 'Propuesta'|t, color: 'naranja-impulso', icon_cat: 'content', icon_name: 'document' },
+  'acuerdo': { label: 'Acuerdo'|t, color: 'verde-innovacion', icon_cat: 'actions', icon_name: 'check-circle' },
+  'conversion': { label: 'Conversión'|t, color: 'verde-innovacion', icon_cat: 'analytics', icon_name: 'chart-line' },
+} %}
+
+<div class="prospeccion-pipeline">
+
+  {# === HEADER === #}
+  <div class="prospeccion-pipeline__header">
+    <div class="prospeccion-pipeline__header-content">
+      <div class="prospeccion-pipeline__header-icon">
+        {{ jaraba_icon('analytics', 'funnel', { variant: 'duotone', color: 'naranja-impulso', size: '48px' }) }}
+      </div>
+      <div class="prospeccion-pipeline__header-text">
+        <h1 class="prospeccion-pipeline__title">{% trans %}Pipeline de Prospección{% endtrans %}</h1>
+        <p class="prospeccion-pipeline__subtitle">{% trans %}Captación de negocios piloto para participantes{% endtrans %}</p>
+      </div>
+    </div>
+    {% if landing_url %}
+      <a href="{{ landing_url }}" class="prospeccion-pipeline__landing-link" target="_blank">
+        {{ jaraba_icon('actions', 'external-link', { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+        {% trans %}Ver landing pública{% endtrans %}
+      </a>
+    {% endif %}
+  </div>
+
+  {# === KPIs === #}
+  {% if stats %}
+    <div class="prospeccion-pipeline__kpis">
+      <div class="prospeccion-pipeline__kpi">
+        <span class="prospeccion-pipeline__kpi-value">{{ stats.total|default(0) }}</span>
+        <span class="prospeccion-pipeline__kpi-label">{% trans %}Total negocios{% endtrans %}</span>
+      </div>
+      <div class="prospeccion-pipeline__kpi">
+        <span class="prospeccion-pipeline__kpi-value">{{ stats.per_phase.acuerdo|default(0) }}</span>
+        <span class="prospeccion-pipeline__kpi-label">{% trans %}Acuerdos{% endtrans %}</span>
+      </div>
+      <div class="prospeccion-pipeline__kpi">
+        <span class="prospeccion-pipeline__kpi-value">{{ stats.per_phase.conversion|default(0) }}</span>
+        <span class="prospeccion-pipeline__kpi-label">{% trans %}Conversiones{% endtrans %}</span>
+      </div>
+      <div class="prospeccion-pipeline__kpi">
+        <span class="prospeccion-pipeline__kpi-value">{{ stats.conversion_rate|default(0)|number_format(0) }}%</span>
+        <span class="prospeccion-pipeline__kpi-label">{% trans %}Tasa conversión{% endtrans %}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {# === KANBAN BOARD === #}
+  <div class="prospeccion-pipeline__board" data-pipeline-board>
+    {% for fase_key, fase_data in fases %}
+      <div class="prospeccion-pipeline__column"
+           data-pipeline-phase="{{ fase_key }}"
+           style="--column-color: var(--ej-{{ fase_data.color }});">
+
+        <div class="prospeccion-pipeline__column-header">
+          {{ jaraba_icon(fase_data.icon_cat, fase_data.icon_name, { variant: 'duotone', color: fase_data.color, size: '20px' }) }}
+          <span class="prospeccion-pipeline__column-title">{{ fase_data.label }}</span>
+          <span class="prospeccion-pipeline__column-count">{{ pipeline[fase_key]|default([])|length }}</span>
+        </div>
+
+        <div class="prospeccion-pipeline__column-body" data-pipeline-dropzone="{{ fase_key }}">
+          {% if pipeline[fase_key] is defined and pipeline[fase_key] %}
+            {% for negocio in pipeline[fase_key] %}
+              <div class="prospeccion-pipeline__card"
+                   draggable="true"
+                   data-pipeline-card
+                   data-negocio-id="{{ negocio.id }}"
+                   data-current-phase="{{ fase_key }}">
+
+                <div class="prospeccion-pipeline__card-header">
+                  <strong class="prospeccion-pipeline__card-name">{{ negocio.nombre_negocio }}</strong>
+                  {% if negocio.clasificacion_urgencia == 'rojo' %}
+                    <span class="prospeccion-pipeline__urgency prospeccion-pipeline__urgency--rojo" title="{% trans %}Urgencia alta{% endtrans %}">●</span>
+                  {% elseif negocio.clasificacion_urgencia == 'amarillo' %}
+                    <span class="prospeccion-pipeline__urgency prospeccion-pipeline__urgency--amarillo" title="{% trans %}Urgencia media{% endtrans %}">●</span>
+                  {% endif %}
+                </div>
+
+                <div class="prospeccion-pipeline__card-meta">
+                  <span class="prospeccion-pipeline__card-sector">{{ negocio.sector }}</span>
+                  {% if negocio.provincia %}
+                    <span class="prospeccion-pipeline__card-provincia">{{ negocio.provincia }}</span>
+                  {% endif %}
+                </div>
+
+                {% if negocio.participante_asignado %}
+                  <div class="prospeccion-pipeline__card-assignee">
+                    {{ jaraba_icon('business', 'user', { variant: 'duotone', color: 'azul-corporativo', size: '14px' }) }}
+                    <span>{{ negocio.participante_asignado }}</span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="prospeccion-pipeline__empty">
+              <p>{% trans %}Sin negocios{% endtrans %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Logos cofinanciación FSE+ (Art. 50 Reg. UE 2021/1060) #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+</div>

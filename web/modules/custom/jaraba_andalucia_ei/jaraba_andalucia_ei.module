@@ -374,6 +374,26 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'portfolio-publico',
     ],
+    // ENTITY-PREPROCESS-001: AsistenciaDetalladaEi view mode support.
+    'asistencia_detallada_ei' => [
+      'render element' => 'elements',
+    ],
+    // SPEC-2E-010: Pipeline de prospección Kanban.
+    'prospeccion_pipeline' => [
+      'variables' => [
+        'pipeline' => [],
+        'stats' => [],
+        'landing_url' => '',
+      ],
+      'template' => 'prospeccion-pipeline',
+    ],
+    // Landing pública captación negocios piloto.
+    'prueba_gratuita_landing' => [
+      'variables' => [
+        'form_action' => '',
+      ],
+      'template' => 'prueba-gratuita-landing',
+    ],
   ];
 }
 
@@ -2429,6 +2449,18 @@ function jaraba_andalucia_ei_preprocess_sesion_programada_ei(array &$variables):
     return;
   }
   $variables['sesion_programada_ei'] = $entity;
+
+  // Expose videoconference link for online sessions.
+  $variables['enlace_videoconferencia'] = '';
+  if ($entity->hasField('enlace_videoconferencia') && !$entity->get('enlace_videoconferencia')->isEmpty()) {
+    $variables['enlace_videoconferencia'] = (string) $entity->get('enlace_videoconferencia')->value;
+  }
+
+  // Expose modalidad for conditional display.
+  $variables['modalidad'] = '';
+  if ($entity->hasField('modalidad') && !$entity->get('modalidad')->isEmpty()) {
+    $variables['modalidad'] = (string) $entity->get('modalidad')->value;
+  }
 }
 
 /**
@@ -2468,6 +2500,32 @@ function jaraba_andalucia_ei_preprocess_material_didactico_ei(array &$variables)
     return;
   }
   $variables['material_didactico_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for asistencia_detallada_ei.
+ *
+ * ENTITY-PREPROCESS-001: Every ContentEntity with view mode MUST have preprocess.
+ */
+function template_preprocess_asistencia_detallada_ei(array &$variables): void {
+  $entity = $variables['elements']['#asistencia_detallada_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['asistencia_detallada_ei'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for evaluacion_competencia_ia_ei.
+ *
+ * ENTITY-PREPROCESS-001.
+ */
+function template_preprocess_evaluacion_competencia_ia_ei(array &$variables): void {
+  $entity = $variables['elements']['#evaluacion_competencia_ia_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['evaluacion_competencia_ia_ei'] = $entity;
 }
 
 /**
@@ -2656,6 +2714,53 @@ function _jaraba_andalucia_ei_auto_asignar_carril_dime(\Drupal\Core\Entity\Entit
  */
 function jaraba_andalucia_ei_page_attachments_alter(array &$attachments): void {
   $route = \Drupal::routeMatch()->getRouteName();
+
+  // Library attachments for andalucia_ei routes.
+  $routeLibraryMap = [
+    'jaraba_andalucia_ei.formador_dashboard' => 'jaraba_andalucia_ei/dashboard',
+    'jaraba_andalucia_ei.programa_mentores' => 'jaraba_andalucia_ei/programa-mentores',
+    'jaraba_andalucia_ei.programa_formacion' => 'jaraba_andalucia_ei/programa-formacion',
+    'jaraba_andalucia_ei.prospeccion_pipeline' => 'jaraba_andalucia_ei/prospeccion-pipeline',
+    'jaraba_andalucia_ei.prueba_gratuita' => 'jaraba_andalucia_ei/prueba-gratuita',
+  ];
+
+  if (isset($routeLibraryMap[$route])) {
+    $attachments['#attached']['library'][] = $routeLibraryMap[$route];
+  }
+
+  // SPEC-2E-SPRINT-D: Inject calculadora data for participant portal.
+  if ($route === 'jaraba_andalucia_ei.participante_portal') {
+    if (\Drupal::hasService('jaraba_andalucia_ei.calculadora_punto_equilibrio')) {
+      try {
+        /** @var \Drupal\jaraba_andalucia_ei\Service\CalculadoraPuntoEquilibrioService $calc */
+        $calc = \Drupal::service('jaraba_andalucia_ei.calculadora_punto_equilibrio');
+        $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['calculadora'] = [
+          'packPricing' => $calc->getPackPricing(),
+          'gastosFijos' => $calc->getGastosFijosBase(),
+        ];
+      }
+      catch (\Throwable) {
+        // Graceful degradation.
+      }
+    }
+  }
+
+  // SPEC-2E-015: Inject session prompts as suggested chips for copilot.
+  if (str_starts_with($route ?? '', 'jaraba_andalucia_ei.')) {
+    try {
+      $config = \Drupal::config('jaraba_andalucia_ei.copilot_session_prompts');
+      $promptsData = $config->getRawData();
+      if (!empty($promptsData)) {
+        // Remove _core key if present.
+        unset($promptsData['_core']);
+        $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi']['sessionPrompts'] = $promptsData;
+      }
+    }
+    catch (\Throwable) {
+      // Config may not exist yet.
+    }
+  }
+
   if ($route !== 'entity.sesion_programada_ei.collection') {
     return;
   }

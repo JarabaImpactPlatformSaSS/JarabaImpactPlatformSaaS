@@ -84,10 +84,32 @@
       {% trans %}Sesiones de hoy{% endtrans %}
     </h2>
     <div class="formador-dashboard__sesiones-list" data-formador-sesiones>
-      <div class="formador-dashboard__empty-state">
-        {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
-        <p>{% trans %}No tienes sesiones programadas para hoy{% endtrans %}</p>
-      </div>
+      {% if formador_data.sesiones_hoy_detalle is defined and formador_data.sesiones_hoy_detalle is not empty %}
+        {% for sesion in formador_data.sesiones_hoy_detalle %}
+          <div class="formador-dashboard__sesion-card">
+            <div class="formador-dashboard__sesion-info">
+              <strong>{{ sesion.titulo }}</strong>
+              {% if sesion.modalidad %}
+                <span class="formador-dashboard__sesion-badge formador-dashboard__sesion-badge--{{ sesion.modalidad }}">
+                  {{ sesion.modalidad == 'online_sincronica' ? 'Online'|t : 'Presencial'|t }}
+                </span>
+              {% endif %}
+            </div>
+            {% if sesion.enlace_videoconferencia %}
+              <a href="{{ sesion.enlace_videoconferencia }}" target="_blank" rel="noopener"
+                 class="formador-dashboard__sesion-link">
+                {{ jaraba_icon('communication', 'video', { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
+                {% trans %}Unirse a la sala{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="formador-dashboard__empty-state">
+          {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+          <p>{% trans %}No tienes sesiones programadas para hoy{% endtrans %}</p>
+        </div>
+      {% endif %}
     </div>
   </section>
 

@@ -1,0 +1,87 @@
+{# Portfolio publico del participante. Variables: entregables (grouped by modulo), progreso, participante_nombre. #}
+
+{% set modulo_labels = {
+  'orientacion': 'Orientación Inicial'|t,
+  'modulo_0': 'Módulo 0 — Fundamentos IA'|t,
+  'modulo_1': 'Módulo 1 — Propuesta de Valor'|t,
+  'modulo_2': 'Módulo 2 — Finanzas'|t,
+  'modulo_3': 'Módulo 3 — Trámites'|t,
+  'modulo_4': 'Módulo 4 — Marketing Digital'|t,
+  'modulo_5': 'Módulo 5 — Integración'|t,
+} %}
+
+{% set estado_badges = {
+  'pendiente': { label: 'Pendiente'|t, class: 'neutral' },
+  'en_progreso': { label: 'En progreso'|t, class: 'impulso' },
+  'completado': { label: 'Completado'|t, class: 'innovacion' },
+  'validado': { label: 'Validado'|t, class: 'corporativo' },
+} %}
+
+<div class="portfolio-publico">
+
+  <div class="portfolio-publico__header">
+    <div class="portfolio-publico__header-icon">
+      {{ jaraba_icon('content', 'book-open', { variant: 'duotone', color: 'azul-corporativo', size: '48px' }) }}
+    </div>
+    <div class="portfolio-publico__header-text">
+      <h1 class="portfolio-publico__title">
+        {% if participante_nombre %}
+          {% trans %}Portfolio de {{ participante_nombre }}{% endtrans %}
+        {% else %}
+          {% trans %}Portfolio del Participante{% endtrans %}
+        {% endif %}
+      </h1>
+      <p class="portfolio-publico__subtitle">
+        {% trans %}Programa Andalucía +ei — 2ª Edición{% endtrans %}
+      </p>
+    </div>
+  </div>
+
+  {% if progreso %}
+    <div class="portfolio-publico__progress">
+      <div class="portfolio-publico__progress-bar">
+        <div class="portfolio-publico__progress-fill" style="width: {{ progreso.porcentaje|default(0) }}%"></div>
+      </div>
+      <div class="portfolio-publico__progress-stats">
+        <span>{{ progreso.completados|default(0) }}/{{ progreso.total|default(29) }} {% trans %}completados{% endtrans %}</span>
+        <span>{{ progreso.validados|default(0) }} {% trans %}validados por formador{% endtrans %}</span>
+        <span>{{ progreso.porcentaje|default(0)|number_format(0) }}%</span>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if entregables %}
+    <div class="portfolio-publico__modules">
+      {% for modulo_key, modulo_entregables in entregables %}
+        <details class="portfolio-publico__module" open>
+          <summary class="portfolio-publico__module-title">
+            {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+            {{ modulo_labels[modulo_key]|default(modulo_key) }}
+            <span class="portfolio-publico__module-count">({{ modulo_entregables|length }})</span>
+          </summary>
+          <div class="portfolio-publico__module-body">
+            {% for entregable in modulo_entregables %}
+              <div class="portfolio-publico__entregable">
+                <span class="portfolio-publico__entregable-num">#{{ entregable.numero }}</span>
+                <span class="portfolio-publico__entregable-titulo">{{ entregable.titulo }}</span>
+                <span class="portfolio-publico__entregable-sesion">{{ entregable.sesion }}</span>
+                {% set badge = estado_badges[entregable.estado]|default(estado_badges.pendiente) %}
+                <span class="portfolio-publico__badge portfolio-publico__badge--{{ badge.class }}">
+                  {{ badge.label }}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="portfolio-publico__empty">
+      {{ jaraba_icon('status', 'info', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+      <p>{% trans %}Este portfolio aún no tiene entregables registrados.{% endtrans %}</p>
+    </div>
+  {% endif %}
+
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+</div>

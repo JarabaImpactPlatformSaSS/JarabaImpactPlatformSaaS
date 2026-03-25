@@ -851,10 +851,10 @@ class CoordinadorDashboardController extends ControllerBase {
       [
         'id' => 'leads',
         'label' => $this->t('Captación de leads'),
-        'description' => $this->t('Gestionar leads y prospección empresarial'),
+        'description' => $this->t('Pipeline de prospección de negocios piloto'),
         'icon' => ['category' => 'analytics', 'name' => 'funnel', 'variant' => 'duotone'],
         'color' => 'naranja-impulso',
-        'route' => 'jaraba_andalucia_ei.leads_guia',
+        'route' => 'jaraba_andalucia_ei.prospeccion_pipeline',
         'route_params' => [],
         'use_slide_panel' => FALSE,
         'badge' => NULL,

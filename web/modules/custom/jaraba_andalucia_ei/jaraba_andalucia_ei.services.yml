@@ -595,6 +595,19 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_andalucia_ei'
 
+  # SPEC-2E-010: Pipeline de prospección Kanban.
+  jaraba_andalucia_ei.prospeccion_pipeline:
+    class: Drupal\jaraba_andalucia_ei\Service\ProspeccionPipelineService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  # Sprint D: Calculadora punto de equilibrio por pack.
+  jaraba_andalucia_ei.calculadora_punto_equilibrio:
+    class: Drupal\jaraba_andalucia_ei\Service\CalculadoraPuntoEquilibrioService
+    arguments:
+      - '@logger.channel.jaraba_andalucia_ei'
+
   # =========================================================================
   # Sprint C — 3 Bridges cross-vertical (SPEC-2E-012)
   # =========================================================================

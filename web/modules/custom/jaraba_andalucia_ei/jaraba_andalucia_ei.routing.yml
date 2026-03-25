@@ -243,6 +243,32 @@ jaraba_andalucia_ei.leads_guia:
   requirements:
     _permission: 'administer andalucia ei'
 
+# === COORDINADOR: PIPELINE PROSPECCIÓN NEGOCIOS PILOTO ===
+jaraba_andalucia_ei.prospeccion_pipeline:
+  path: '/andalucia-ei/coordinador/prospeccion-pipeline'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ProspeccionPipelineController::pipeline'
+    _title: 'Pipeline de Prospección — Negocios Piloto'
+  requirements:
+    _permission: 'register andalucia ei actuacion'
+
+# === LANDING PÚBLICA: CAPTACIÓN NEGOCIOS PILOTO ===
+jaraba_andalucia_ei.prueba_gratuita:
+  path: '/andalucia-ei/prueba-gratuita'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\PruebaGratuitaController::landing'
+    _title: 'Prueba Gratuita para su Negocio'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_andalucia_ei.prueba_gratuita_submit:
+  path: '/andalucia-ei/prueba-gratuita/enviar'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\PruebaGratuitaController::submit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
 # === PROGRAMA: MENTORES CONTEXTUALIZADOS ===
 jaraba_andalucia_ei.programa_mentores:
   path: '/andalucia-ei/programa/mentores'
