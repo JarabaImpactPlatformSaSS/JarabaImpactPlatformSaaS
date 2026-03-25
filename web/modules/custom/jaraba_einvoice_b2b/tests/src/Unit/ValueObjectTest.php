@@ -281,9 +281,12 @@ class ValueObjectTest extends UnitTestCase {
    */
   public function testMorosityReportMixedSeverities(): void {
     $overdue = [
-      OverdueResult::overdue(1, 15, '2026-01-01', 'INV-001'),  // warning
-      OverdueResult::overdue(2, 45, '2025-12-01', 'INV-002'),  // urgent
-      OverdueResult::overdue(3, 90, '2025-10-01', 'INV-003'),  // critical
+    // Warning.
+      OverdueResult::overdue(1, 15, '2026-01-01', 'INV-001'),
+    // Urgent.
+      OverdueResult::overdue(2, 45, '2025-12-01', 'INV-002'),
+    // Critical.
+      OverdueResult::overdue(3, 90, '2025-10-01', 'INV-003'),
     ];
 
     $report = MorosityReport::fromData(1, $overdue, 20);

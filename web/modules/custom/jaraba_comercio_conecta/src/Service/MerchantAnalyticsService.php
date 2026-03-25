@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class MerchantAnalyticsService {
 
   protected LoggerInterface $logger;
@@ -21,6 +24,9 @@ class MerchantAnalyticsService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.merchant_analytics');
   }
 
+  /**
+   *
+   */
   public function getMerchantKpis(int $merchantId, string $period = '30d'): array {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -74,6 +80,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantRevenueChart(int $merchantId, string $period = '30d'): array {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -110,6 +119,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantTopProducts(int $merchantId, int $limit = 10): array {
     try {
       $query = $this->database->select('order_item_retail', 'oi');
@@ -148,6 +160,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantPeakHours(int $merchantId): array {
     try {
       $query = $this->database->select('suborder_retail', 'so');
@@ -185,6 +200,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantCustomerInsights(int $merchantId): array {
     try {
       $query = $this->database->select('suborder_retail', 'so');
@@ -234,6 +252,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   protected function getPeriodStartTimestamp(string $period): int {
     $days = match ($period) {
       '7d' => 7,
@@ -247,6 +268,9 @@ class MerchantAnalyticsService {
     return \Drupal::time()->getRequestTime() - ($days * 86400);
   }
 
+  /**
+   *
+   */
   protected function getTopProductForMerchant(int $merchantId, int $startTimestamp): ?array {
     try {
       $query = $this->database->select('order_item_retail', 'oi');
@@ -278,6 +302,9 @@ class MerchantAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   protected function getMerchantAverageRating(int $merchantId): float {
     try {
       $storage = $this->entityTypeManager->getStorage('product_review');

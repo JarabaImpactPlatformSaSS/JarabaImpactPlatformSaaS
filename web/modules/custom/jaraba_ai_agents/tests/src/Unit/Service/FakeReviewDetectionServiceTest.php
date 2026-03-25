@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ai_agents\Unit\Service;
 
+use Drupal\user\UserInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_ai_agents\Service\FakeReviewDetectionService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -38,7 +38,8 @@ class FakeReviewDetectionServiceTest extends UnitTestCase {
     $this->service = new FakeReviewDetectionService(
       $this->entityTypeManager,
       $this->logger,
-      NULL, // No AI model router.
+    // No AI model router.
+      NULL,
     );
   }
 
@@ -108,7 +109,8 @@ class FakeReviewDetectionServiceTest extends UnitTestCase {
       'comercio_review',
       'Great product, very good quality and recommended.',
       5,
-      3600, // 1 hour old account.
+    // 1 hour old account.
+      3600,
       TRUE,
     );
 
@@ -153,7 +155,7 @@ class FakeReviewDetectionServiceTest extends UnitTestCase {
     // Fresh entity type manager mock per call.
     $etm = $this->createMock(EntityTypeManagerInterface::class);
 
-    $userEntity = $this->createMock(\Drupal\user\UserInterface::class);
+    $userEntity = $this->createMock(UserInterface::class);
     $userEntity->method('getCreatedTime')->willReturn(time() - $accountAge);
     $userEntity->method('isActive')->willReturn($isActive);
 
@@ -202,9 +204,13 @@ class FakeReviewDetectionServiceTest extends UnitTestCase {
         $this->empty = ($v === '');
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->empty;
       }
+
     };
 
     $ratingField = new class ($rating) {
@@ -214,25 +220,37 @@ class FakeReviewDetectionServiceTest extends UnitTestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return FALSE;
       }
+
     };
 
     $uidField = new class () {
       public int $target_id = 42;
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return FALSE;
       }
+
     };
 
     $emptyField = new class () {
       public $value = NULL;
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return TRUE;
       }
+
     };
 
     $entity->method('get')->willReturnCallback(function ($field) use ($bodyField, $ratingField, $uidField, $emptyField) {

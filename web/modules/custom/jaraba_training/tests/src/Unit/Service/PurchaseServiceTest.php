@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_training\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -354,7 +355,7 @@ class PurchaseServiceTest extends TestCase {
     );
 
     // Mock de query para certification_program.
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
     $query->method('accessCheck')->willReturnSelf();
     $query->method('execute')->willReturn([5 => 5]);

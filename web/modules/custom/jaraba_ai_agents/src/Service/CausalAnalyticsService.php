@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -133,8 +135,8 @@ class CausalAnalyticsService {
 
     // Execute via AI provider.
     try {
-      $input = new \Drupal\ai\OperationType\Chat\ChatInput([
-        new \Drupal\ai\OperationType\Chat\ChatMessage('user', $prompt),
+      $input = new ChatInput([
+        new ChatMessage('user', $prompt),
       ]);
 
       $provider = $this->aiProvider->createInstance($modelConfig['provider_id']);

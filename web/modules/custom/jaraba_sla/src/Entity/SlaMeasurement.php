@@ -59,7 +59,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 1: MULTI-TENANT + AGREEMENT REFERENCE
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant that owns this measurement.'))
@@ -77,7 +76,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 2: PERIOD
     // =========================================================================
-
     $fields['period_start'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Period Start'))
       ->setDescription(new TranslatableMarkup('Start of the measurement period.'))
@@ -95,7 +93,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 3: METRICS
     // =========================================================================
-
     $fields['total_minutes'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Total Minutes'))
       ->setDescription(new TranslatableMarkup('Total minutes in the measurement period.'))
@@ -128,7 +125,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 4: CREDITS
     // =========================================================================
-
     $fields['credit_amount'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Credit Amount'))
       ->setDescription(new TranslatableMarkup('Credit percentage awarded for this period.'))
@@ -140,7 +136,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 5: DETAILS
     // =========================================================================
-
     $fields['incidents'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Incidents'))
       ->setDescription(new TranslatableMarkup('JSON array of incident references for this period.'))
@@ -157,7 +152,6 @@ class SlaMeasurement extends ContentEntityBase {
     // =========================================================================
     // BLOCK 6: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Created'));
 

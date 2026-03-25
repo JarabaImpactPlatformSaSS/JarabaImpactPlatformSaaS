@@ -110,7 +110,7 @@ class LegalQueryController extends ControllerBase {
   /**
    * Endpoint API: Procesa una consulta legal mediante RAG pipeline.
    *
-   * POST /api/v1/legal/query
+   * POST /api/v1/legal/query.
    *
    * Recibe una pregunta en lenguaje natural, busca normas relevantes
    * en el vector store (Qdrant), genera una respuesta con citas

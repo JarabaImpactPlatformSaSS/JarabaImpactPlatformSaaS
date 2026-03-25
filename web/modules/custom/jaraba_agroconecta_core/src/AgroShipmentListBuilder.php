@@ -13,6 +13,7 @@ use Drupal\Core\Url;
  * ListBuilder para la entidad AgroShipment.
  *
  * Implementa patrón de MODALES para todas las operaciones CRUD.
+ *
  * @see DIRECTRIZ-UX-MODAL
  */
 class AgroShipmentListBuilder extends EntityListBuilder {
@@ -36,7 +37,7 @@ class AgroShipmentListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface $entity */
     $row['id'] = $entity->id();
-    
+
     // Enlace principal en modal (canonical)
     $url = $entity->toUrl('canonical');
     $this->setModalAttributes($url, '800');
@@ -44,7 +45,7 @@ class AgroShipmentListBuilder extends EntityListBuilder {
 
     $row['carrier'] = $entity->getCarrierId();
     $row['tracking'] = $entity->getTrackingNumber() ?: $this->t('N/A');
-    
+
     $state_labels = [
       'pending' => $this->t('Pendiente'),
       'label_created' => $this->t('Etiqueta'),
@@ -56,10 +57,10 @@ class AgroShipmentListBuilder extends EntityListBuilder {
       'exception' => $this->t('Incidencia'),
       'cancelled' => $this->t('Cancelado'),
     ];
-    
+
     $row['state'] = $state_labels[$entity->getState()] ?? $entity->getState();
     $row['created'] = \Drupal::service('date.formatter')->format($entity->getCreatedTime(), 'short');
-    
+
     return $row + parent::buildRow($entity);
   }
 
@@ -69,7 +70,7 @@ class AgroShipmentListBuilder extends EntityListBuilder {
   public function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
 
-    // Forzar modales en todas las operaciones
+    // Forzar modales en todas las operaciones.
     foreach ($operations as $key => $operation) {
       if (isset($operation['url']) && $operation['url'] instanceof Url) {
         $this->setModalAttributes($operation['url']);

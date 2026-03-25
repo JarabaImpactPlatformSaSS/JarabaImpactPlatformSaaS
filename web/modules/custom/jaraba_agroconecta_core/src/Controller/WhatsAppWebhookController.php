@@ -22,169 +22,165 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Referencia: Doc 68 — Sales Agent v1, Fase 5.
  */
-class WhatsAppWebhookController extends ControllerBase implements ContainerInjectionInterface
-{
+class WhatsAppWebhookController extends ControllerBase implements ContainerInjectionInterface {
 
-    public function __construct(
-        protected WhatsAppApiService $whatsappService,
-        protected LoggerInterface $logger,
-        protected ?WhatsAppOrderService $orderService = NULL,
-    ) {
+  public function __construct(
+    protected WhatsAppApiService $whatsappService,
+    protected LoggerInterface $logger,
+    protected ?WhatsAppOrderService $orderService = NULL,
+  ) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $orderService = NULL;
+    if ($container->has('jaraba_agroconecta_core.whatsapp_order')) {
+      $orderService = $container->get('jaraba_agroconecta_core.whatsapp_order');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        $orderService = NULL;
-        if ($container->has('jaraba_agroconecta_core.whatsapp_order')) {
-            $orderService = $container->get('jaraba_agroconecta_core.whatsapp_order');
-        }
+    return new static(
+          $container->get('jaraba_agroconecta_core.whatsapp'),
+          $container->get('logger.channel.default'),
+          $orderService,
+      );
+  }
 
-        return new static(
-            $container->get('jaraba_agroconecta_core.whatsapp'),
-            $container->get('logger.channel.default'),
-            $orderService,
-        );
+  /**
+   * Webhook endpoint para WhatsApp Business API.
+   *
+   * Maneja peticiones GET (verificación del challenge de Meta) y
+   * POST (mensajes entrantes desde WhatsApp).
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP entrante.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   Respuesta HTTP.
+   */
+  public function webhook(Request $request): Response {
+    // GET = Verificación del webhook (challenge de Meta).
+    if ($request->isMethod('GET')) {
+      return $this->verifyWebhook($request);
     }
 
-    /**
-     * Webhook endpoint para WhatsApp Business API.
-     *
-     * Maneja peticiones GET (verificación del challenge de Meta) y
-     * POST (mensajes entrantes desde WhatsApp).
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP entrante.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     *   Respuesta HTTP.
-     */
-    public function webhook(Request $request): Response
-    {
-        // GET = Verificación del webhook (challenge de Meta).
-        if ($request->isMethod('GET')) {
-            return $this->verifyWebhook($request);
-        }
+    // POST = Mensaje entrante.
+    // AUDIT-SEC-001: Validar firma HMAC antes de procesar.
+    $rawPayload = $request->getContent();
+    $signatureHeader = $request->headers->get('X-Hub-Signature-256', '');
+    if (!$this->verifyHmacSignature($rawPayload, $signatureHeader)) {
+      $this->logger->warning('WhatsApp webhook: firma HMAC inválida.');
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 403);
+    }
 
-        // POST = Mensaje entrante.
-        // AUDIT-SEC-001: Validar firma HMAC antes de procesar.
-        $rawPayload = $request->getContent();
-        $signatureHeader = $request->headers->get('X-Hub-Signature-256', '');
-        if (!$this->verifyHmacSignature($rawPayload, $signatureHeader)) {
-            $this->logger->warning('WhatsApp webhook: firma HMAC inválida.');
-            return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 403);
-        }
+    $payload = json_decode($rawPayload, TRUE);
+    if (empty($payload)) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
+    }
 
-        $payload = json_decode($rawPayload, TRUE);
-        if (empty($payload)) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
-        }
+    try {
+      $result = $this->whatsappService->handleIncomingMessage($payload);
+
+      // WhatsApp Commerce: procesar intención de compra y pedidos estructurados.
+      if ($this->orderService !== NULL && isset($payload['entry'][0]['changes'][0]['value']['messages'][0])) {
+        $msg = $payload['entry'][0]['changes'][0]['value']['messages'][0];
+        $senderPhone = $msg['from'] ?? '';
+        $msgType = $msg['type'] ?? 'text';
 
         try {
-            $result = $this->whatsappService->handleIncomingMessage($payload);
-
-            // WhatsApp Commerce: procesar intención de compra y pedidos estructurados.
-            if ($this->orderService !== NULL && isset($payload['entry'][0]['changes'][0]['value']['messages'][0])) {
-                $msg = $payload['entry'][0]['changes'][0]['value']['messages'][0];
-                $senderPhone = $msg['from'] ?? '';
-                $msgType = $msg['type'] ?? 'text';
-
-                try {
-                    if ($msgType === 'order' && isset($msg['order']['product_items'])) {
-                        // Pedido estructurado desde catálogo nativo WhatsApp.
-                        $productItems = [];
-                        foreach ($msg['order']['product_items'] as $item) {
-                            $productItems[] = [
-                                'retailer_id' => $item['product_retailer_id'] ?? '',
-                                'quantity' => (int) ($item['quantity'] ?? 1),
-                                'item_price' => (float) ($item['item_price'] ?? 0),
-                                'currency' => $item['currency'] ?? 'EUR',
-                            ];
-                        }
-                        $this->orderService->processStructuredOrder($senderPhone, $productItems, 0);
-                    }
-                    elseif ($msgType === 'text') {
-                        // Mensaje de texto libre: detectar intención de compra.
-                        $messageText = $msg['text']['body'] ?? '';
-                        if ($senderPhone !== '' && $messageText !== '') {
-                            $this->orderService->processIncomingMessage($senderPhone, $messageText, 0);
-                        }
-                    }
-                }
-                catch (\Throwable $orderError) {
-                    $this->logger->warning('WhatsApp order processing warning: @msg', ['@msg' => $orderError->getMessage()]);
-                }
+          if ($msgType === 'order' && isset($msg['order']['product_items'])) {
+            // Pedido estructurado desde catálogo nativo WhatsApp.
+            $productItems = [];
+            foreach ($msg['order']['product_items'] as $item) {
+              $productItems[] = [
+                'retailer_id' => $item['product_retailer_id'] ?? '',
+                'quantity' => (int) ($item['quantity'] ?? 1),
+                'item_price' => (float) ($item['item_price'] ?? 0),
+                'currency' => $item['currency'] ?? 'EUR',
+              ];
             }
+            $this->orderService->processStructuredOrder($senderPhone, $productItems, 0);
+          }
+          elseif ($msgType === 'text') {
+            // Mensaje de texto libre: detectar intención de compra.
+            $messageText = $msg['text']['body'] ?? '';
+            if ($senderPhone !== '' && $messageText !== '') {
+              $this->orderService->processIncomingMessage($senderPhone, $messageText, 0);
+            }
+          }
+        }
+        catch (\Throwable $orderError) {
+          $this->logger->warning('WhatsApp order processing warning: @msg', ['@msg' => $orderError->getMessage()]);
+        }
+      }
 
-            return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
-        }
-        catch (\Throwable $e) {
-            $this->logger->error('WhatsApp webhook error: @error', ['@error' => $e->getMessage()]);
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
-        }
+      return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('WhatsApp webhook error: @error', ['@error' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
+    }
+  }
+
+  /**
+   * Verifica el webhook con el challenge de Meta.
+   *
+   * Meta envía una petición GET con hub.mode, hub.verify_token y
+   * hub.challenge. Se valida el token y se responde con el challenge.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP de verificación.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   Challenge en texto plano si la verificación es exitosa,
+   *   o error 403 si falla.
+   */
+  protected function verifyWebhook(Request $request): Response {
+    $mode = $request->query->get('hub_mode', '');
+    $token = $request->query->get('hub_verify_token', '');
+    $challenge = $request->query->get('hub_challenge', '');
+
+    $configToken = $this->config('jaraba_agroconecta_core.settings')->get('whatsapp_verify_token') ?? '';
+
+    if ($mode === 'subscribe' && $token === $configToken) {
+      $this->logger->info('WhatsApp webhook verificado correctamente.');
+      return new Response($challenge, 200, ['Content-Type' => 'text/plain']);
     }
 
-    /**
-     * Verifica el webhook con el challenge de Meta.
-     *
-     * Meta envía una petición GET con hub.mode, hub.verify_token y
-     * hub.challenge. Se valida el token y se responde con el challenge.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP de verificación.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     *   Challenge en texto plano si la verificación es exitosa,
-     *   o error 403 si falla.
-     */
-    protected function verifyWebhook(Request $request): Response
-    {
-        $mode = $request->query->get('hub_mode', '');
-        $token = $request->query->get('hub_verify_token', '');
-        $challenge = $request->query->get('hub_challenge', '');
+    $this->logger->warning('WhatsApp webhook verificación fallida.');
+    return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Verification failed']], 403);
+  }
 
-        $configToken = $this->config('jaraba_agroconecta_core.settings')->get('whatsapp_verify_token') ?? '';
-
-        if ($mode === 'subscribe' && $token === $configToken) {
-            $this->logger->info('WhatsApp webhook verificado correctamente.');
-            return new Response($challenge, 200, ['Content-Type' => 'text/plain']);
-        }
-
-        $this->logger->warning('WhatsApp webhook verificación fallida.');
-        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Verification failed']], 403);
+  /**
+   * Verifica la firma HMAC-SHA256 del payload de Meta.
+   *
+   * AUDIT-SEC-001: Toda petición POST debe validar X-Hub-Signature-256
+   * contra el app_secret configurado. Usa hash_equals() para prevenir
+   * timing attacks.
+   *
+   * @param string $payload
+   *   Cuerpo raw de la petición.
+   * @param string $signatureHeader
+   *   Valor del header X-Hub-Signature-256 (formato: "sha256=XXXX").
+   *
+   * @return bool
+   *   TRUE si la firma es válida.
+   */
+  protected function verifyHmacSignature(string $payload, string $signatureHeader): bool {
+    $appSecret = $this->config('jaraba_agroconecta_core.settings')->get('whatsapp_app_secret');
+    if (empty($appSecret) || empty($signatureHeader)) {
+      return FALSE;
     }
 
-    /**
-     * Verifica la firma HMAC-SHA256 del payload de Meta.
-     *
-     * AUDIT-SEC-001: Toda petición POST debe validar X-Hub-Signature-256
-     * contra el app_secret configurado. Usa hash_equals() para prevenir
-     * timing attacks.
-     *
-     * @param string $payload
-     *   Cuerpo raw de la petición.
-     * @param string $signatureHeader
-     *   Valor del header X-Hub-Signature-256 (formato: "sha256=XXXX").
-     *
-     * @return bool
-     *   TRUE si la firma es válida.
-     */
-    protected function verifyHmacSignature(string $payload, string $signatureHeader): bool {
-        $appSecret = $this->config('jaraba_agroconecta_core.settings')->get('whatsapp_app_secret');
-        if (empty($appSecret) || empty($signatureHeader)) {
-            return FALSE;
-        }
-
-        $parts = explode('=', $signatureHeader, 2);
-        if (count($parts) !== 2 || $parts[0] !== 'sha256') {
-            return FALSE;
-        }
-
-        $expected = hash_hmac('sha256', $payload, $appSecret);
-        return hash_equals($expected, $parts[1]);
+    $parts = explode('=', $signatureHeader, 2);
+    if (count($parts) !== 2 || $parts[0] !== 'sha256') {
+      return FALSE;
     }
+
+    $expected = hash_hmac('sha256', $payload, $appSecret);
+    return hash_equals($expected, $parts[1]);
+  }
 
 }

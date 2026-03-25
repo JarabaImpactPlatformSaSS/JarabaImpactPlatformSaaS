@@ -127,7 +127,7 @@ function jaraba_job_board_theme(): array {
  * Procesa las queues de notificaciones:
  * - application_notification_mail: Emails de cambio de estado
  * - job_alert_notification: Alertas de empleo
- * - job_alert_digest: Digest diario/semanal
+ * - job_alert_digest: Digest diario/semanal.
  */
 function jaraba_job_board_cron(): void {
   $config = \Drupal::config('jaraba_job_board.settings');
@@ -276,7 +276,7 @@ function jaraba_job_board_mail(string $key, array &$message, array $params): voi
       break;
   }
 
-  // Footer común
+  // Footer común.
   $message['body'][] = '';
   $message['body'][] = '---';
   $message['body'][] = t('Jaraba Impact Platform - Empleabilidad Digital');
@@ -312,7 +312,7 @@ function jaraba_job_board_page_bottom(array &$page_bottom): void {
   $route_match = \Drupal::routeMatch();
   $route_name = $route_match->getRouteName();
 
-  // Check if we're on an employability vertical route
+  // Check if we're on an employability vertical route.
   $employability_routes = [
     'jaraba_job_board.',
     'jaraba_candidate.',
@@ -331,7 +331,7 @@ function jaraba_job_board_page_bottom(array &$page_bottom): void {
     return;
   }
 
-  // Get the FAB block
+  // Get the FAB block.
   /** @var \Drupal\jaraba_job_board\Service\EmployabilityMenuService $menu_service */
   $menu_service = \Drupal::service('jaraba_job_board.employability_menu');
   $role = $menu_service->detectUserRole();
@@ -340,7 +340,7 @@ function jaraba_job_board_page_bottom(array &$page_bottom): void {
     return;
   }
 
-  // Get agent config
+  // Get agent config.
   $agent_configs = [
     'candidate' => [
       'id' => 'career_coach',
@@ -407,7 +407,7 @@ function jaraba_job_board_page_bottom(array &$page_bottom): void {
  *
  * Automatizaciones:
  * - ECA-APP-002: Cambio de estado de candidaturas
- * - Job Alerts: Notificar cuando se publica una oferta
+ * - Job Alerts: Notificar cuando se publica una oferta.
  */
 function jaraba_job_board_entity_update(EntityInterface $entity): void {
   $entityType = $entity->getEntityTypeId();
@@ -429,7 +429,7 @@ function jaraba_job_board_entity_update(EntityInterface $entity): void {
  * Maneja cambios en candidaturas.
  */
 function _jaraba_job_board_handle_application_update(EntityInterface $entity): void {
-  // Detectar cambio de estado
+  // Detectar cambio de estado.
   if (!$entity->hasField('status')) {
     return;
   }
@@ -441,7 +441,7 @@ function _jaraba_job_board_handle_application_update(EntityInterface $entity): v
     $oldStatus = $entity->original->get('status')->value ?? '';
   }
 
-  // Solo actuar si cambió el estado
+  // Solo actuar si cambió el estado.
   if ($newStatus === $oldStatus || empty($newStatus)) {
     return;
   }
@@ -463,7 +463,7 @@ function _jaraba_job_board_handle_application_update(EntityInterface $entity): v
  * Maneja cambios en ofertas de empleo (triggers de alertas).
  */
 function _jaraba_job_board_handle_job_update(EntityInterface $entity): void {
-  // Detectar si cambió a estado publicado
+  // Detectar si cambió a estado publicado.
   if (!$entity->hasField('status')) {
     return;
   }
@@ -506,7 +506,7 @@ function _jaraba_job_board_process_job_alerts(EntityInterface $job): void {
  *
  * Automatizaciones al crear candidatura (ECA-APP-001):
  * - Notificar al empleador
- * - Créditos por aplicar
+ * - Créditos por aplicar.
  */
 function jaraba_job_board_entity_insert(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'job_application') {
@@ -518,13 +518,13 @@ function jaraba_job_board_entity_insert(EntityInterface $entity): void {
     return;
   }
 
-  // Otorgar créditos por aplicar
+  // Otorgar créditos por aplicar.
   _jaraba_job_board_award_credits($candidateId, 'apply_job', [
     'application_id' => $entity->id(),
     'job_id' => $entity->get('job_id')->target_id ?? NULL,
   ]);
 
-  // Notificar nueva aplicación
+  // Notificar nueva aplicación.
   _jaraba_job_board_notify_new_application($entity);
 
   // Sincronizar con CRM (Plan Elevación Empleabilidad v1 — Fase 7).
@@ -615,7 +615,7 @@ function _jaraba_job_board_award_status_credits(EntityInterface $application, st
  * Helper: Registrar feedback para ML.
  */
 function _jaraba_job_board_record_ml_feedback(EntityInterface $application, string $status): void {
-  // Solo hired y rejected son outcomes finales
+  // Solo hired y rejected son outcomes finales.
   if (!in_array($status, ['hired', 'rejected'])) {
     return;
   }
@@ -627,7 +627,7 @@ function _jaraba_job_board_record_ml_feedback(EntityInterface $application, stri
 
     $recommendationService = \Drupal::service('jaraba_matching.recommendation_service');
     $outcome = $status === 'hired' ? 'hired' : 'rejected_employer';
-    
+
     $recommendationService->recordMatchFeedback((int) $application->id(), $outcome, [
       'recorded_at' => date('Y-m-d H:i:s'),
     ]);
@@ -691,7 +691,7 @@ function _jaraba_job_board_process_notification_queue(string $queueName, int $li
     try {
       $data = $item->data;
 
-      // Enviar email
+      // Enviar email.
       $mailManager = \Drupal::service('plugin.manager.mail');
       $mailManager->mail(
         'jaraba_job_board',
@@ -737,11 +737,11 @@ function _jaraba_job_board_process_alert_queue(int $limit): void {
       $matches = $data['matches'] ?? [];
 
       if ($userId && !empty($matches)) {
-        // Enviar notificación push si está disponible
+        // Enviar notificación push si está disponible.
         if (\Drupal::hasService('jaraba_job_board.web_push')) {
           $pushService = \Drupal::service('jaraba_job_board.web_push');
           $jobCount = count($matches);
-          
+
           $pushService->sendToUser($userId, [
             'title' => "🎯 $jobCount nueva(s) oferta(s)",
             'body' => 'Ofertas que coinciden con tus alertas',
@@ -753,7 +753,7 @@ function _jaraba_job_board_process_alert_queue(int $limit): void {
           ]);
         }
 
-        // Crear notificación in-app
+        // Crear notificación in-app.
         _jaraba_job_board_create_inapp_notification($userId, $matches);
       }
 
@@ -781,18 +781,19 @@ function _jaraba_job_board_process_digest(): void {
     return;
   }
 
-  // Verificar si ya se ejecutó hoy
+  // Verificar si ya se ejecutó hoy.
   $lastRun = \Drupal::state()->get('jaraba_job_board.last_digest_run', 0);
   $today = strtotime('today');
-  
+
   if ($lastRun >= $today) {
-    return; // Ya se ejecutó hoy
+    // Ya se ejecutó hoy.
+    return;
   }
 
-  // Marcar como ejecutado
+  // Marcar como ejecutado.
   \Drupal::state()->set('jaraba_job_board.last_digest_run', time());
 
-  // Obtener usuarios con alertas tipo 'daily'
+  // Obtener usuarios con alertas tipo 'daily'.
   $database = \Drupal::database();
   if (!$database->schema()->tableExists('job_alert')) {
     return;
@@ -807,7 +808,7 @@ function _jaraba_job_board_process_digest(): void {
     ->fetchCol();
 
   foreach ($alerts as $userId) {
-    // Queue digest email
+    // Queue digest email.
     $queue = \Drupal::queue('job_alert_digest');
     $queue->createItem([
       'user_id' => $userId,
@@ -826,7 +827,7 @@ function _jaraba_job_board_process_digest(): void {
  * Crea notificación in-app.
  */
 function _jaraba_job_board_create_inapp_notification(int $userId, array $matches): void {
-  // Guardar en tabla de notificaciones si existe
+  // Guardar en tabla de notificaciones si existe.
   $database = \Drupal::database();
   if (!$database->schema()->tableExists('user_notification')) {
     return;
@@ -913,7 +914,8 @@ function jaraba_job_board_preprocess_job_posting_detail(array &$variables): void
   // Fecha de expiración.
   if (!empty($job['expires'])) {
     $jobData['valid_through'] = date('Y-m-d\TH:i:sP', $job['expires']);
-  } else {
+  }
+  else {
     $jobData['valid_through'] = date('Y-m-d\TH:i:sP', strtotime('+30 days'));
   }
 
@@ -971,7 +973,7 @@ function jaraba_job_board_preprocess_job_posting_detail(array &$variables): void
     if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
       $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
       $jsonLd = $schemaService->generateJobPostingSchema($jobData, $tenant);
-      
+
       if (!empty($jsonLd)) {
         $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
       }
@@ -1180,10 +1182,6 @@ function _jaraba_job_board_ensure_crm_contact(int $userId): ?int {
     return NULL;
   }
 }
-
-
-
-
 
 /**
  * Prepares variables for employer_profile templates.

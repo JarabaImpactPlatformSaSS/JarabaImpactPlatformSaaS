@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_integrations\Service;
 
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
@@ -90,7 +91,7 @@ class OauthServerService {
    */
   public function generateAuthorizationCode(OauthClient $client, int $user_id, array $scopes): string {
     $code = bin2hex(random_bytes(32));
-    $hash_salt = \Drupal\Core\Site\Settings::getHashSalt();
+    $hash_salt = Settings::getHashSalt();
 
     // Almacenar en state con TTL de 10 minutos.
     $state_key = 'jaraba_oauth_code:' . $code;
@@ -99,7 +100,8 @@ class OauthServerService {
       'user_id' => $user_id,
       'scopes' => $scopes,
       'created' => time(),
-      'expires' => time() + 600, // 10 minutos.
+    // 10 minutos.
+      'expires' => time() + 600,
       'signature' => hash_hmac('sha256', $code . $client->getClientId() . $user_id, $hash_salt),
     ];
 
@@ -165,7 +167,7 @@ class OauthServerService {
     // Generar tokens.
     $config = \Drupal::config('jaraba_integrations.settings');
     $token_lifetime = $config->get('oauth_token_lifetime') ?? 3600;
-    $hash_salt = \Drupal\Core\Site\Settings::getHashSalt();
+    $hash_salt = Settings::getHashSalt();
 
     $access_token = bin2hex(random_bytes(32));
     $refresh_token = bin2hex(random_bytes(32));

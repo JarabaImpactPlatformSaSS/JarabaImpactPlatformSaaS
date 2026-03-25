@@ -16,6 +16,9 @@ class ModuleRouteAccessTest extends BrowserTestBase {
   protected static $modules = ['jaraba_billing'];
   protected $defaultTheme = 'stark';
 
+  /**
+   *
+   */
   public function testModuleEnabled(): void {
     $this->assertTrue(\Drupal::moduleHandler()->moduleExists('jaraba_billing'));
   }

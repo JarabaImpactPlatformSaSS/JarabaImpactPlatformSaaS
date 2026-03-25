@@ -34,7 +34,6 @@ class IntentToLayoutService {
     $riskLevel = $churnRisk['risk_score'];
 
     // 2. Lógica de Decisión Líquida.
-    
     // CASO A: CRISIS (Riesgo alto de abandono).
     // La UI debe simplificarse, ocultar distracciones y enfocar en ayuda.
     if ($riskLevel > 70) {
@@ -42,7 +41,8 @@ class IntentToLayoutService {
         'mode' => 'crisis',
         'css_class' => 'theme--mode-focus',
         'layout_priority' => 'support_first',
-        'fab_action' => 'contact_csm', // Contactar Customer Success.
+      // Contactar Customer Success.
+        'fab_action' => 'contact_csm',
         'hidden_regions' => ['marketing_banner', 'upsell_suggestions'],
       ];
     }

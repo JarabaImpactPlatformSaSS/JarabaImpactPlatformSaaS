@@ -47,7 +47,7 @@ class BrandVoiceTrainerApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/ai/brand-voice/feedback
+   * POST /api/v1/ai/brand-voice/feedback.
    */
   public function recordFeedback(Request $request): JsonResponse {
     $tenantId = $this->getTenantId();
@@ -70,7 +70,7 @@ class BrandVoiceTrainerApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/ai/brand-voice/alignment
+   * POST /api/v1/ai/brand-voice/alignment.
    */
   public function checkAlignment(Request $request): JsonResponse {
     $tenantId = $this->getTenantId();
@@ -90,7 +90,7 @@ class BrandVoiceTrainerApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/ai/brand-voice/training-stats
+   * GET /api/v1/ai/brand-voice/training-stats.
    */
   public function getTrainingStats(): JsonResponse {
     $tenantId = $this->getTenantId();
@@ -103,7 +103,7 @@ class BrandVoiceTrainerApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/ai/brand-voice/refine
+   * POST /api/v1/ai/brand-voice/refine.
    */
   public function refineBrandVoice(): JsonResponse {
     $tenantId = $this->getTenantId();

@@ -22,18 +22,30 @@ class WebScrapingTool extends BaseTool {
     parent::__construct($logger);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'web_scraping';
   }
 
+  /**
+   *
+   */
   public function getLabel(): string {
     return 'Web Scraping';
   }
 
+  /**
+   *
+   */
   public function getDescription(): string {
     return 'Extracts structured data from web pages using headless browser. URL must be in the vertical allowlist.';
   }
 
+  /**
+   *
+   */
   public function getParameters(): array {
     return [
       'url' => [
@@ -54,6 +66,9 @@ class WebScrapingTool extends BaseTool {
     ];
   }
 
+  /**
+   *
+   */
   public function execute(array $params, array $context = []): array {
     $url = $params['url'] ?? '';
     if (empty($url)) {

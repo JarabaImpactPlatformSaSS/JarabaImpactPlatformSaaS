@@ -508,42 +508,71 @@ class FaseTransitionManagerTest extends UnitTestCase {
         $this->fieldValues = $fields;
       }
 
+      /**
+       *
+       */
       public function getFaseActual(): string {
         return $this->faseActual;
       }
 
+      /**
+       *
+       */
       public function setFaseActual(string $fase): void {
         // No-op para test.
       }
 
+      /**
+       *
+       */
       public function isAcuerdoParticipacionFirmado(): bool {
         return $this->options['isAcuerdoParticipacionFirmado'] ?? FALSE;
       }
 
+      /**
+       *
+       */
       public function isDaciFirmado(): bool {
         return $this->options['isDaciFirmado'] ?? FALSE;
       }
 
+      /**
+       *
+       */
       public function canTransitToInsercion(): bool {
         return $this->options['canTransitToInsercion'] ?? FALSE;
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         $this->setValues[$fieldName] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function id(): int {
         return 1;
       }
@@ -555,13 +584,20 @@ class FaseTransitionManagerTest extends UnitTestCase {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ['programa_participante_ei:1'];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
 
     return $participante;
@@ -575,26 +611,42 @@ class FaseTransitionManagerTest extends UnitTestCase {
    */
   protected function createFieldOnlyParticipanteMock(array $fields): object {
     return new class($fields) {
+
       public function __construct(private readonly array $fieldValues) {}
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ['programa_participante_ei:1'];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

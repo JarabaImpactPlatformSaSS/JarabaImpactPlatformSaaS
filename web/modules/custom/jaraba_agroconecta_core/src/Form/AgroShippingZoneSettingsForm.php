@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class AgroShippingZoneSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'agro_shipping_zone_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Zona de Envío Agro.') . '</p>',
@@ -23,6 +29,9 @@ final class AgroShippingZoneSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

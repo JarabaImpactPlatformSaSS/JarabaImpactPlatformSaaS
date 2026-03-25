@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class NotificationTemplateListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['name'] = $this->t('Nombre');
     $header['channel'] = $this->t('Canal');
@@ -16,6 +22,9 @@ class NotificationTemplateListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $channel_labels = [
       'email' => $this->t('Email'),

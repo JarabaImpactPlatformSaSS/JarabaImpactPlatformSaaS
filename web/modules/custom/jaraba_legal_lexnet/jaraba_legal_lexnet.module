@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_lexnet.module — Integracion LexNET JarabaLex.
+ * Jaraba_legal_lexnet.module — Integracion LexNET JarabaLex.
  *
  * Estructura: Hooks de modulo para comunicaciones judiciales LexNET.
  * Logica: hook_theme, hook_preprocess_html, hook_preprocess_page, hook_cron.
@@ -89,6 +89,7 @@ function jaraba_legal_lexnet_preprocess_page(array &$variables): void {
  *
  * Polling automatico de notificaciones LexNET segun intervalo configurado.
  */
+
 /**
  * Implements hook_page_attachments_alter().
  *

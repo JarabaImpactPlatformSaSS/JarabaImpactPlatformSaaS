@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_verifactu\Service;
 
+use setasign\Fpdi\Tcpdf\Fpdi;
 use Drupal\Core\File\FileSystemInterface;
 use Psr\Log\LoggerInterface;
-use TCPDF;
 
 /**
  * Service for injecting VeriFactu compliance elements into invoice PDFs.
@@ -14,7 +14,7 @@ use TCPDF;
  * Adds the following elements per Orden HAC/1177/2024:
  * - QR code for AEAT verification (bottom-right corner)
  * - VERI*FACTU label (below QR)
- * - Abbreviated SHA-256 hash of the record
+ * - Abbreviated SHA-256 hash of the record.
  *
  * Follows the BrandedPdfService pattern using TCPDF.
  *
@@ -122,7 +122,7 @@ class VeriFactuPdfService {
    */
   public function generateCompliancePage(array $recordData): ?string {
     try {
-      $pdf = new TCPDF('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE);
+      $pdf = new \TCPDF('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE);
       $pdf->SetCreator('Jaraba VeriFactu');
       $pdf->SetAuthor('Ecosistema Jaraba');
       $pdf->SetTitle('VeriFactu - ' . ($recordData['numero_factura'] ?? ''));
@@ -216,7 +216,7 @@ class VeriFactuPdfService {
    * @param float $pageHeight
    *   Page height in mm.
    */
-  protected function addVerifactuElements(TCPDF $pdf, array $recordData, float $pageWidth, float $pageHeight): void {
+  protected function addVerifactuElements(\TCPDF $pdf, array $recordData, float $pageWidth, float $pageHeight): void {
     $qrX = $pageWidth - self::MARGIN_RIGHT_MM - self::QR_SIZE_MM;
     $qrY = $pageHeight - self::MARGIN_BOTTOM_MM - self::QR_SIZE_MM - 12;
     $aeatRgb = $this->hexToRgb(self::AEAT_BLUE);
@@ -262,7 +262,7 @@ class VeriFactuPdfService {
    * @param float $size
    *   QR size in mm.
    */
-  protected function renderQrToPdf(TCPDF $pdf, string $qrImage, float $x, float $y, float $size): void {
+  protected function renderQrToPdf(\TCPDF $pdf, string $qrImage, float $x, float $y, float $size): void {
     // Strip data URI prefix if present.
     $base64 = $qrImage;
     if (str_contains($base64, ',')) {
@@ -281,7 +281,7 @@ class VeriFactuPdfService {
   /**
    * Adds a detail row to the compliance page.
    */
-  protected function addDetailRow(TCPDF $pdf, string $label, string $value): void {
+  protected function addDetailRow(\TCPDF $pdf, string $label, string $value): void {
     $pdf->SetFont('helvetica', 'B', 10);
     $pdf->SetTextColor(80, 80, 80);
     $pdf->Cell(50, 7, $label, 0, 0);
@@ -296,8 +296,8 @@ class VeriFactuPdfService {
    * @return \setasign\Fpdi\Tcpdf\Fpdi
    *   FPDI-TCPDF instance ready for page import.
    */
-  protected function createPdfInstance(): \setasign\Fpdi\Tcpdf\Fpdi {
-    $pdf = new \setasign\Fpdi\Tcpdf\Fpdi('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE);
+  protected function createPdfInstance(): Fpdi {
+    $pdf = new Fpdi('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE);
     $pdf->setPrintHeader(FALSE);
     $pdf->setPrintFooter(FALSE);
     return $pdf;
@@ -316,7 +316,7 @@ class VeriFactuPdfService {
    * @return string|null
    *   URI of the generated file, or NULL on failure.
    */
-  protected function savePdf(TCPDF $pdf, string $directory, string $filename): ?string {
+  protected function savePdf(\TCPDF $pdf, string $directory, string $filename): ?string {
     $this->fileSystem->prepareDirectory(
       $directory,
       FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS,

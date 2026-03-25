@@ -7,7 +7,6 @@ namespace Drupal\jaraba_einvoice_b2b\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailManagerInterface;
-use Drupal\jaraba_einvoice_b2b\Exception\EInvoiceDeliveryException;
 use Drupal\jaraba_einvoice_b2b\Service\SPFEClient\SPFEClientInterface;
 use Drupal\jaraba_einvoice_b2b\ValueObject\DeliveryResult;
 use Psr\Log\LoggerInterface;

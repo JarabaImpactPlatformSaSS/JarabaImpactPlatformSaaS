@@ -75,7 +75,8 @@ class FeatureFlagService {
   public function getAll(): array {
     try {
       return $this->entityTypeManager->getStorage('feature_flag')->loadMultiple();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return [];
     }
   }
@@ -106,7 +107,8 @@ class FeatureFlagService {
     try {
       $flag = $this->entityTypeManager->getStorage('feature_flag')->load($flagId);
       return $flag instanceof FeatureFlag ? $flag : NULL;
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return NULL;
     }
   }
@@ -185,7 +187,8 @@ class FeatureFlagService {
     try {
       $tenant = $this->tenantContext->getCurrentTenant();
       return $tenant ? (int) $tenant->id() : NULL;
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return NULL;
     }
   }
@@ -199,7 +202,8 @@ class FeatureFlagService {
       if ($tenant && $tenant->hasField('plan')) {
         return $tenant->get('plan')->value ?? 'starter';
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Fallback.
     }
     return 'starter';

@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class OauthClientForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'client' => [
@@ -29,10 +32,16 @@ class OauthClientForm extends PremiumEntityFormBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'ui', 'name' => 'lock'];
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
     $entity = $this->getEntity();
@@ -47,6 +56,9 @@ class OauthClientForm extends PremiumEntityFormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Entity\FacturaeFaceLog;
+use Drupal\jaraba_facturae\Entity\FacturaeTenantConfig;
+use Drupal\jaraba_facturae\Entity\FacturaeDocument;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +27,7 @@ class FacturaeEntitySchemaTest extends KernelTestBase {
    */
   public function testFacturaeDocumentEntityExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Entity\FacturaeDocument::class),
+      class_exists(FacturaeDocument::class),
       'FacturaeDocument entity class should exist.'
     );
   }
@@ -34,7 +37,7 @@ class FacturaeEntitySchemaTest extends KernelTestBase {
    */
   public function testFacturaeTenantConfigEntityExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Entity\FacturaeTenantConfig::class),
+      class_exists(FacturaeTenantConfig::class),
       'FacturaeTenantConfig entity class should exist.'
     );
   }
@@ -44,7 +47,7 @@ class FacturaeEntitySchemaTest extends KernelTestBase {
    */
   public function testFacturaeFaceLogEntityExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Entity\FacturaeFaceLog::class),
+      class_exists(FacturaeFaceLog::class),
       'FacturaeFaceLog entity class should exist.'
     );
   }

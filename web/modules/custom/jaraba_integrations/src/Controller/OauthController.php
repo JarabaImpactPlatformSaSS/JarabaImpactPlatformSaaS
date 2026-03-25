@@ -19,7 +19,7 @@ use Drupal\jaraba_integrations\Service\OauthServerService;
  * 2. Usuario ve pantalla de consentimiento y acepta.
  * 3. Redirige a redirect_uri con ?code=ABC
  * 4. App intercambia code en POST /oauth/token
- * 5. Recibe access_token + refresh_token
+ * 5. Recibe access_token + refresh_token.
  *
  * SEGURIDAD:
  * - Validación de client_id + redirect_uri en authorize.
@@ -44,7 +44,7 @@ class OauthController extends ControllerBase {
   /**
    * Pantalla de autorización OAuth2.
    *
-   * GET /oauth/authorize?client_id=X&redirect_uri=Y&response_type=code&scope=read
+   * GET /oauth/authorize?client_id=X&redirect_uri=Y&response_type=code&scope=read.
    */
   public function authorize(Request $request): array|RedirectResponse {
     $client_id = $request->query->get('client_id', '');
@@ -124,7 +124,7 @@ class OauthController extends ControllerBase {
    * Intercambio de authorization code por tokens.
    *
    * POST /oauth/token
-   * Body: grant_type=authorization_code&code=X&client_id=Y&client_secret=Z
+   * Body: grant_type=authorization_code&code=X&client_id=Y&client_secret=Z.
    */
   public function token(Request $request): JsonResponse {
     $grant_type = $request->request->get('grant_type', '');
@@ -165,14 +165,14 @@ class OauthController extends ControllerBase {
       ], 400);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $tokens, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $tokens, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
    * Callback OAuth para conectores externos.
    *
-   * GET /oauth/callback?code=X&state=Y
+   * GET /oauth/callback?code=X&state=Y.
    */
   public function callback(Request $request): RedirectResponse {
     $code = $request->query->get('code', '');

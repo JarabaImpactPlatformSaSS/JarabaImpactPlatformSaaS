@@ -79,219 +79,212 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.email_template.settings",
  * )
  */
-class EmailTemplate extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
-{
+class EmailTemplate extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define los campos base para la entidad EmailTemplate.
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   *
+   * Define los campos base para la entidad EmailTemplate.
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        // Nombre de la plantilla.
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre de la Plantilla'))
-            ->setRequired(TRUE)
-            ->setSettings(['max_length' => 255])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ]);
+    // Nombre de la plantilla.
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre de la Plantilla'))
+      ->setRequired(TRUE)
+      ->setSettings(['max_length' => 255])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
 
-        // Categoría de la plantilla.
-        $fields['category'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Categoría'))
-            ->setSettings([
-                'allowed_values' => [
-                    'onboarding' => 'Onboarding',
-                    'nurture' => 'Nutrición',
-                    'transactional' => 'Transaccional',
-                    'newsletter' => 'Newsletter',
-                    'promotional' => 'Promocional',
-                    'reengagement' => 'Reactivación',
-                ],
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 1,
-            ]);
+    // Categoría de la plantilla.
+    $fields['category'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Categoría'))
+      ->setSettings([
+        'allowed_values' => [
+          'onboarding' => 'Onboarding',
+          'nurture' => 'Nutrición',
+          'transactional' => 'Transaccional',
+          'newsletter' => 'Newsletter',
+          'promotional' => 'Promocional',
+          'reengagement' => 'Reactivación',
+        ],
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 1,
+      ]);
 
-        // Vertical de negocio para la plantilla.
-        $fields['vertical'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Vertical'))
-            ->setDefaultValue('all')
-            ->setSettings([
-                'allowed_values' => [
-                    'all' => 'Todas las Verticales',
-                    'empleabilidad' => 'Empleabilidad',
-                    'emprendimiento' => 'Emprendimiento',
-                    'agroconecta' => 'AgroConecta',
-                    'comercioconecta' => 'ComercioConecta',
-                    'serviciosconecta' => 'ServiciosConecta',
-                ],
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 2,
-            ]);
+    // Vertical de negocio para la plantilla.
+    $fields['vertical'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Vertical'))
+      ->setDefaultValue('all')
+      ->setSettings([
+        'allowed_values' => [
+          'all' => 'Todas las Verticales',
+          'empleabilidad' => 'Empleabilidad',
+          'emprendimiento' => 'Emprendimiento',
+          'agroconecta' => 'AgroConecta',
+          'comercioconecta' => 'ComercioConecta',
+          'serviciosconecta' => 'ServiciosConecta',
+        ],
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 2,
+      ]);
 
-        // Asunto por defecto del email.
-        $fields['subject_line'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Asunto por Defecto'))
-            ->setRequired(TRUE)
-            ->setSettings(['max_length' => 255])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 3,
-            ]);
+    // Asunto por defecto del email.
+    $fields['subject_line'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Asunto por Defecto'))
+      ->setRequired(TRUE)
+      ->setSettings(['max_length' => 255])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 3,
+      ]);
 
-        // Texto de vista previa (preheader).
-        $fields['preview_text'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Texto de Vista Previa'))
-            ->setSettings(['max_length' => 255])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 4,
-            ]);
+    // Texto de vista previa (preheader).
+    $fields['preview_text'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Texto de Vista Previa'))
+      ->setSettings(['max_length' => 255])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 4,
+      ]);
 
-        // Contenido MJML de la plantilla.
-        $fields['mjml_content'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Contenido MJML'))
-            ->setDescription(t('Código MJML de la plantilla.'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 5,
-                'settings' => ['rows' => 20],
-            ]);
+    // Contenido MJML de la plantilla.
+    $fields['mjml_content'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Contenido MJML'))
+      ->setDescription(t('Código MJML de la plantilla.'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 5,
+        'settings' => ['rows' => 20],
+      ]);
 
-        // HTML compilado automáticamente desde MJML.
-        $fields['html_compiled'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('HTML Compilado'))
-            ->setDescription(t('HTML auto-generado desde MJML.'));
+    // HTML compilado automáticamente desde MJML.
+    $fields['html_compiled'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('HTML Compilado'))
+      ->setDescription(t('HTML auto-generado desde MJML.'));
 
-        // Versión de texto plano.
-        $fields['text_version'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Versión Texto Plano'))
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 6,
-                'settings' => ['rows' => 10],
-            ]);
+    // Versión de texto plano.
+    $fields['text_version'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Versión Texto Plano'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 6,
+        'settings' => ['rows' => 10],
+      ]);
 
-        // Variables disponibles en formato JSON.
-        $fields['variables'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Variables'))
-            ->setDescription(t('Array JSON de variables disponibles.'));
+    // Variables disponibles en formato JSON.
+    $fields['variables'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Variables'))
+      ->setDescription(t('Array JSON de variables disponibles.'));
 
-        // URL de la miniatura de previsualización.
-        $fields['thumbnail_url'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('URL de Miniatura'))
-            ->setSettings(['max_length' => 500]);
+    // URL de la miniatura de previsualización.
+    $fields['thumbnail_url'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('URL de Miniatura'))
+      ->setSettings(['max_length' => 500]);
 
-        // Si es una plantilla de sistema (no editable por usuarios).
-        $fields['is_system'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Plantilla de Sistema'))
-            ->setDefaultValue(FALSE);
+    // Si es una plantilla de sistema (no editable por usuarios).
+    $fields['is_system'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Plantilla de Sistema'))
+      ->setDefaultValue(FALSE);
 
-        // Estado activo/inactivo.
-        $fields['is_active'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Activa'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 7,
-            ]);
+    // Estado activo/inactivo.
+    $fields['is_active'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Activa'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 7,
+      ]);
 
-        // Versión de la plantilla (para versionado).
-        $fields['version'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Versión'))
-            ->setDefaultValue(1);
+    // Versión de la plantilla (para versionado).
+    $fields['version'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Versión'))
+      ->setDefaultValue(1);
 
-        // Referencia al tenant (NULL = plantilla global).
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('NULL = plantilla global.'))
-            ->setSetting('target_type', 'group');
+    // Referencia al tenant (NULL = plantilla global).
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('NULL = plantilla global.'))
+      ->setSetting('target_type', 'group');
 
-        // Timestamps automáticos.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creada'));
+    // Timestamps automáticos.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creada'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificada'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificada'));
 
-        return $fields;
+    return $fields;
+  }
+
+  /**
+   * Obtiene el nombre de la plantilla.
+   *
+   * @return string
+   *   El nombre de la plantilla.
+   */
+  public function getName(): string {
+    return $this->get('name')->value ?? '';
+  }
+
+  /**
+   * Obtiene el contenido MJML.
+   *
+   * @return string
+   *   El código MJML de la plantilla.
+   */
+  public function getMjmlContent(): string {
+    return $this->get('mjml_content')->value ?? '';
+  }
+
+  /**
+   * Obtiene el HTML compilado.
+   *
+   * @return string
+   *   El HTML generado desde MJML.
+   */
+  public function getHtmlCompiled(): string {
+    return $this->get('html_compiled')->value ?? '';
+  }
+
+  /**
+   * Establece el HTML compilado.
+   *
+   * @param string $html
+   *   El HTML compilado a almacenar.
+   *
+   * @return static
+   *   La instancia actual para encadenamiento.
+   */
+  public function setHtmlCompiled(string $html): static {
+    $this->set('html_compiled', $html);
+    return $this;
+  }
+
+  /**
+   * Obtiene las variables disponibles.
+   *
+   * @return array
+   *   Array de variables de la plantilla.
+   */
+  public function getVariables(): array {
+    $json = $this->get('variables')->value;
+    if (empty($json)) {
+      return [];
     }
-
-    /**
-     * Obtiene el nombre de la plantilla.
-     *
-     * @return string
-     *   El nombre de la plantilla.
-     */
-    public function getName(): string
-    {
-        return $this->get('name')->value ?? '';
-    }
-
-    /**
-     * Obtiene el contenido MJML.
-     *
-     * @return string
-     *   El código MJML de la plantilla.
-     */
-    public function getMjmlContent(): string
-    {
-        return $this->get('mjml_content')->value ?? '';
-    }
-
-    /**
-     * Obtiene el HTML compilado.
-     *
-     * @return string
-     *   El HTML generado desde MJML.
-     */
-    public function getHtmlCompiled(): string
-    {
-        return $this->get('html_compiled')->value ?? '';
-    }
-
-    /**
-     * Establece el HTML compilado.
-     *
-     * @param string $html
-     *   El HTML compilado a almacenar.
-     *
-     * @return static
-     *   La instancia actual para encadenamiento.
-     */
-    public function setHtmlCompiled(string $html): static
-    {
-        $this->set('html_compiled', $html);
-        return $this;
-    }
-
-    /**
-     * Obtiene las variables disponibles.
-     *
-     * @return array
-     *   Array de variables de la plantilla.
-     */
-    public function getVariables(): array
-    {
-        $json = $this->get('variables')->value;
-        if (empty($json)) {
-            return [];
-        }
-        return json_decode($json, TRUE) ?? [];
-    }
+    return json_decode($json, TRUE) ?? [];
+  }
 
 }

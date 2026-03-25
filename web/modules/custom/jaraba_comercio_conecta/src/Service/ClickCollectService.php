@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ClickCollectService {
 
   protected LoggerInterface $logger;
@@ -19,6 +22,9 @@ class ClickCollectService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.click_collect');
   }
 
+  /**
+   *
+   */
   public function getPickupLocations(int $merchantId): array {
     try {
       $storage = $this->entityTypeManager->getStorage('merchant_profile');
@@ -49,6 +55,9 @@ class ClickCollectService {
     }
   }
 
+  /**
+   *
+   */
   public function createPickupReservation(int $orderId, int $merchantId, string $pickupTime): bool {
     try {
       $order_storage = $this->entityTypeManager->getStorage('order_retail');
@@ -76,6 +85,9 @@ class ClickCollectService {
     }
   }
 
+  /**
+   *
+   */
   public function confirmPickup(int $orderId): bool {
     try {
       $order_storage = $this->entityTypeManager->getStorage('order_retail');
@@ -100,6 +112,9 @@ class ClickCollectService {
     }
   }
 
+  /**
+   *
+   */
   public function getAvailableSlots(int $merchantId, string $date): array {
     try {
       $slots = [];

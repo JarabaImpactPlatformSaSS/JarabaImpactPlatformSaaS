@@ -117,7 +117,8 @@ class ReviewAbTestService {
         ];
       }
     }
-    catch (\Exception) {}
+    catch (\Exception) {
+    }
 
     // Fall back to defaults.
     return self::DEFAULT_EXPERIMENTS[$experimentId] ?? NULL;

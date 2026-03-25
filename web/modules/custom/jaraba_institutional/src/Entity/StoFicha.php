@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_institutional\Entity;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -108,8 +109,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- tenant_id: referencia al grupo (AUDIT-CONS-005) ---
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tenant'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('El grupo (tenant) al que pertenece esta ficha.'))
+      ->setLabel(new TranslatableMarkup('Tenant'))
+      ->setDescription(new TranslatableMarkup('El grupo (tenant) al que pertenece esta ficha.'))
       ->setSetting('target_type', 'group')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -121,8 +122,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- participant_id: referencia al participante ---
     $fields['participant_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Participante'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Participante de programa asociado a esta ficha.'))
+      ->setLabel(new TranslatableMarkup('Participante'))
+      ->setDescription(new TranslatableMarkup('Participante de programa asociado a esta ficha.'))
       ->setSetting('target_type', 'program_participant')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -134,8 +135,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- ficha_number ---
     $fields['ficha_number'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Numero de ficha'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Auto: STO-YYYY-NNNN'))
+      ->setLabel(new TranslatableMarkup('Numero de ficha'))
+      ->setDescription(new TranslatableMarkup('Auto: STO-YYYY-NNNN'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 32)
       ->setDisplayOptions('form', [
@@ -147,8 +148,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- ficha_type ---
     $fields['ficha_type'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tipo de ficha'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Clasificacion de la ficha dentro del itinerario.'))
+      ->setLabel(new TranslatableMarkup('Tipo de ficha'))
+      ->setDescription(new TranslatableMarkup('Clasificacion de la ficha dentro del itinerario.'))
       ->setRequired(TRUE)
       ->setDefaultValue('initial')
       ->setSetting('allowed_values', [
@@ -165,8 +166,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- diagnostico_empleabilidad ---
     $fields['diagnostico_empleabilidad'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Diagnostico de empleabilidad'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Diagnostico de empleabilidad'))
+      ->setLabel(new TranslatableMarkup('Diagnostico de empleabilidad'))
+      ->setDescription(new TranslatableMarkup('Diagnostico de empleabilidad'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -177,8 +178,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- itinerario_insercion ---
     $fields['itinerario_insercion'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Itinerario de insercion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Itinerario personalizado de insercion'))
+      ->setLabel(new TranslatableMarkup('Itinerario de insercion'))
+      ->setDescription(new TranslatableMarkup('Itinerario personalizado de insercion'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -189,8 +190,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- acciones_orientacion ---
     $fields['acciones_orientacion'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Acciones de orientacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Acciones de orientacion realizadas'))
+      ->setLabel(new TranslatableMarkup('Acciones de orientacion'))
+      ->setDescription(new TranslatableMarkup('Acciones de orientacion realizadas'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -201,8 +202,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- resultados ---
     $fields['resultados'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Resultados'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Resultados: insercion, formacion, certificaciones'))
+      ->setLabel(new TranslatableMarkup('Resultados'))
+      ->setDescription(new TranslatableMarkup('Resultados: insercion, formacion, certificaciones'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -213,8 +214,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- ai_generated ---
     $fields['ai_generated'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Generado por IA'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Indica si la ficha fue generada por inteligencia artificial.'))
+      ->setLabel(new TranslatableMarkup('Generado por IA'))
+      ->setDescription(new TranslatableMarkup('Indica si la ficha fue generada por inteligencia artificial.'))
       ->setDefaultValue(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',
@@ -225,8 +226,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- ai_model_used ---
     $fields['ai_model_used'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Modelo IA utilizado'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Identificador del modelo de IA utilizado para generar la ficha.'))
+      ->setLabel(new TranslatableMarkup('Modelo IA utilizado'))
+      ->setDescription(new TranslatableMarkup('Identificador del modelo de IA utilizado para generar la ficha.'))
       ->setRequired(FALSE)
       ->setSetting('max_length', 50)
       ->setDisplayOptions('form', [
@@ -238,8 +239,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- pdf_file_id ---
     $fields['pdf_file_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Archivo PDF'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Archivo PDF generado de la ficha tecnica.'))
+      ->setLabel(new TranslatableMarkup('Archivo PDF'))
+      ->setDescription(new TranslatableMarkup('Archivo PDF generado de la ficha tecnica.'))
       ->setSetting('target_type', 'file')
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
@@ -251,8 +252,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- signature_status ---
     $fields['signature_status'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado de firma'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado de la firma digital de la ficha.'))
+      ->setLabel(new TranslatableMarkup('Estado de firma'))
+      ->setDescription(new TranslatableMarkup('Estado de la firma digital de la ficha.'))
       ->setRequired(FALSE)
       ->setDefaultValue('pending')
       ->setSetting('allowed_values', [
@@ -269,8 +270,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- signed_at ---
     $fields['signed_at'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de firma'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora en que se firmo la ficha.'))
+      ->setLabel(new TranslatableMarkup('Fecha de firma'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora en que se firmo la ficha.'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'datetime_default',
@@ -281,8 +282,8 @@ class StoFicha extends ContentEntityBase {
 
     // --- created (NO changed — append-only ENTITY-APPEND-001) ---
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de creacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de creacion del registro.'))
+      ->setLabel(new TranslatableMarkup('Fecha de creacion'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora de creacion del registro.'))
       ->setDisplayConfigurable('view', TRUE);
 
     return $fields;

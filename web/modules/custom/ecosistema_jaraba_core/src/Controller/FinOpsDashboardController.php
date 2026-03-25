@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * - Costes de IA (tokens, llamadas, ahorro por optimización)
  * - Proyecciones mensuales de coste
  * - Alertas de sobregasto
- * - Recomendaciones de optimización
+ * - Recomendaciones de optimización.
  *
  * FUENTES DE DATOS:
  * - Storage: Calculado desde archivos y nodos reales
@@ -28,1356 +28,1351 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * - CPU: Estimado desde actividad
  * - AI: Trackeado via AICostOptimizationService
  */
-class FinOpsDashboardController extends ControllerBase
-{
+class FinOpsDashboardController extends ControllerBase {
 
-    /**
-     * Servicio de tracking FinOps.
-     */
-    protected ?FinOpsTrackingService $finopsTracking = NULL;
+  /**
+   * Servicio de tracking FinOps.
+   */
+  protected ?FinOpsTrackingService $finopsTracking = NULL;
 
-    /**
-     * Servicio de optimización de costes IA.
-     */
-    protected ?AICostOptimizationService $aiCostService = NULL;
+  /**
+   * Servicio de optimización de costes IA.
+   */
+  protected ?AICostOptimizationService $aiCostService = NULL;
 
-    /**
-     * The state service.
-     *
-     * @var \Drupal\Core\State\StateInterface
-     */
-    protected StateInterface $state;
+  /**
+   * The state service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected StateInterface $state;
 
-    /**
-     * The database connection.
-     *
-     * @var \Drupal\Core\Database\Connection
-     */
-    protected Connection $database;
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected Connection $database;
 
-    /**
-     * The config factory.
-     *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface
-     */
-    protected ConfigFactoryInterface $configFactoryService;
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactoryService;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        $instance = parent::create($container);
-        $instance->state = $container->get('state');
-        $instance->database = $container->get('database');
-        $instance->configFactoryService = $container->get('config.factory');
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->state = $container->get('state');
+    $instance->database = $container->get('database');
+    $instance->configFactoryService = $container->get('config.factory');
 
+    try {
+      $instance->finopsTracking = $container->get('ecosistema_jaraba_core.finops_tracking');
+    }
+    catch (\Exception $e) {
+      // Service may not be available yet.
+    }
+
+    try {
+      $instance->aiCostService = $container->get('ecosistema_jaraba_core.ai_cost_optimization');
+    }
+    catch (\Exception $e) {
+      // AI Cost service may not be available yet.
+    }
+
+    return $instance;
+  }
+
+  /**
+   * Renders the FinOps dashboard page.
+   *
+   * @return array
+   *   A render array for the FinOps dashboard.
+   */
+  public function dashboard() {
+    $finops_data = $this->getFinOpsData();
+
+    // Preparar datos históricos de costes IA para Chart.js.
+    $aiCostHistory = $this->getAiCostHistory();
+
+    // Marcar que hay historial disponible para el template.
+    if (!empty($aiCostHistory['daily'])) {
+      $finops_data['ai_costs']['history'] = TRUE;
+    }
+
+    return [
+      '#theme' => 'finops_dashboard',
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/finops-dashboard',
+          'core/drupal.dialog.ajax',
+        ],
+        'drupalSettings' => [
+          'finops' => [
+            'ai_cost_history' => $aiCostHistory,
+          ],
+        ],
+      ],
+      '#tenants' => $finops_data['tenants'],
+      '#totals' => $finops_data['totals'],
+      '#projections' => $finops_data['projections'],
+      '#alerts' => $finops_data['alerts'],
+      '#recommendations' => $finops_data['recommendations'],
+      '#help_info' => $this->getHelpInfo(),
+      '#data_sources' => $finops_data['data_sources'],
+      '#revenue' => $finops_data['revenue'],
+      '#net_results' => $finops_data['net_results'],
+      '#feature_costs' => $finops_data['feature_costs'],
+      '#unit_economics' => $finops_data['unit_economics'],
+      '#vertical_profitability' => $finops_data['vertical_profitability'],
+      '#ai_costs' => $finops_data['ai_costs'],
+      '#last_updated' => date('Y-m-d H:i:s'),
+      '#cache' => [
+          // Cache for 5 minutes.
+        'max-age' => 300,
+      ],
+    ];
+  }
+
+  /**
+   * API endpoint for FinOps data.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   JSON response with FinOps metrics.
+   */
+  public function finopsApi() {
+    $finops_data = $this->getFinOpsData();
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $finops_data, 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * Gets FinOps data including costs and usage metrics.
+   *
+   * @return array
+   *   Array with tenants, totals, projections, and alerts.
+   */
+  protected function getFinOpsData(): array {
+    $tenants = $this->getTenantUsage();
+    $totals = $this->calculateTotals($tenants);
+    $projections = $this->calculateProjections($totals);
+    $alerts = $this->checkCostAlerts($tenants, $projections);
+    $recommendations = $this->getOptimizationRecommendations($tenants);
+    $data_sources = $this->getDataSourceInfo($tenants);
+
+    // Datos de ingresos y resultados netos.
+    $revenue = $this->getRevenueData($tenants);
+    $net_results = $this->calculateNetResults($totals, $revenue);
+
+    // Datos de costes por Feature.
+    $feature_costs = $this->getFeatureCostsData();
+
+    // BI Avanzadas: Unit Economics y Rentabilidad por Vertical.
+    $unit_economics = $this->getUnitEconomics($tenants);
+    $vertical_profitability = $this->getVerticalProfitability($tenants);
+
+    // ═══ COSTES DE IA ═══
+    $ai_costs = $this->getAiCostMetrics();
+
+    return [
+      'tenants' => $tenants,
+      'totals' => $totals,
+      'projections' => $projections,
+      'alerts' => $alerts,
+      'recommendations' => $recommendations,
+      'data_sources' => $data_sources,
+      'revenue' => $revenue,
+      'net_results' => $net_results,
+      'feature_costs' => $feature_costs,
+      'unit_economics' => $unit_economics,
+      'vertical_profitability' => $vertical_profitability,
+      'ai_costs' => $ai_costs,
+      'timestamp' => time(),
+    ];
+  }
+
+  /**
+   * Get resource usage per tenant.
+   *
+   * IMPORTANTE: Solo devuelve tenants REALES de la base de datos.
+   * No usa datos ficticios - si no hay tenants, devuelve array vacío.
+   */
+  protected function getTenantUsage(): array {
+    $tenants = [];
+
+    try {
+      $tenant_storage = $this->entityTypeManager()->getStorage('tenant');
+      $tenant_entities = $tenant_storage->loadMultiple();
+
+      foreach ($tenant_entities as $tenant) {
+        $tenant_id = $tenant->id();
+        $tenant_name = $tenant->label();
+
+        // Calculate storage usage (content nodes, files, etc.)
+        $storage_mb = $this->calculateTenantStorage($tenant_id);
+
+        // Calculate API requests (from logs or state)
+        $api_requests = $this->getTenantApiRequests($tenant_id);
+
+        // Calculate estimated CPU time.
+        $cpu_hours = $this->estimateCpuUsage($api_requests, $storage_mb);
+
+        // Get plan tier for pricing (robusto - no falla si campo no existe)
+        $tier = 'basic';
+        $plan_entity = NULL;
+        $plan_mrr = 0;
         try {
-            $instance->finopsTracking = $container->get('ecosistema_jaraba_core.finops_tracking');
-        } catch (\Exception $e) {
-            // Service may not be available yet
-        }
-
-        try {
-            $instance->aiCostService = $container->get('ecosistema_jaraba_core.ai_cost_optimization');
-        } catch (\Exception $e) {
-            // AI Cost service may not be available yet
-        }
-
-        return $instance;
-    }
-
-    /**
-     * Renders the FinOps dashboard page.
-     *
-     * @return array
-     *   A render array for the FinOps dashboard.
-     */
-    public function dashboard()
-    {
-        $finops_data = $this->getFinOpsData();
-
-        // Preparar datos históricos de costes IA para Chart.js
-        $aiCostHistory = $this->getAiCostHistory();
-
-        // Marcar que hay historial disponible para el template
-        if (!empty($aiCostHistory['daily'])) {
-            $finops_data['ai_costs']['history'] = TRUE;
-        }
-
-        return [
-            '#theme' => 'finops_dashboard',
-            '#attached' => [
-                'library' => [
-                    'ecosistema_jaraba_core/finops-dashboard',
-                    'core/drupal.dialog.ajax',
-                ],
-                'drupalSettings' => [
-                    'finops' => [
-                        'ai_cost_history' => $aiCostHistory,
-                    ],
-                ],
-            ],
-            '#tenants' => $finops_data['tenants'],
-            '#totals' => $finops_data['totals'],
-            '#projections' => $finops_data['projections'],
-            '#alerts' => $finops_data['alerts'],
-            '#recommendations' => $finops_data['recommendations'],
-            '#help_info' => $this->getHelpInfo(),
-            '#data_sources' => $finops_data['data_sources'],
-            '#revenue' => $finops_data['revenue'],
-            '#net_results' => $finops_data['net_results'],
-            '#feature_costs' => $finops_data['feature_costs'],
-            '#unit_economics' => $finops_data['unit_economics'],
-            '#vertical_profitability' => $finops_data['vertical_profitability'],
-            '#ai_costs' => $finops_data['ai_costs'],
-            '#last_updated' => date('Y-m-d H:i:s'),
-            '#cache' => [
-                'max-age' => 300, // Cache for 5 minutes
-            ],
-        ];
-    }
-
-    /**
-     * API endpoint for FinOps data.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   JSON response with FinOps metrics.
-     */
-    public function finopsApi()
-    {
-        $finops_data = $this->getFinOpsData();
-        return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $finops_data, 'meta' => ['timestamp' => time()]]);
-    }
-
-    /**
-     * Gets FinOps data including costs and usage metrics.
-     *
-     * @return array
-     *   Array with tenants, totals, projections, and alerts.
-     */
-    protected function getFinOpsData(): array
-    {
-        $tenants = $this->getTenantUsage();
-        $totals = $this->calculateTotals($tenants);
-        $projections = $this->calculateProjections($totals);
-        $alerts = $this->checkCostAlerts($tenants, $projections);
-        $recommendations = $this->getOptimizationRecommendations($tenants);
-        $data_sources = $this->getDataSourceInfo($tenants);
-
-        // Datos de ingresos y resultados netos
-        $revenue = $this->getRevenueData($tenants);
-        $net_results = $this->calculateNetResults($totals, $revenue);
-
-        // Datos de costes por Feature
-        $feature_costs = $this->getFeatureCostsData();
-
-        // BI Avanzadas: Unit Economics y Rentabilidad por Vertical
-        $unit_economics = $this->getUnitEconomics($tenants);
-        $vertical_profitability = $this->getVerticalProfitability($tenants);
-
-        // ═══ COSTES DE IA ═══
-        $ai_costs = $this->getAiCostMetrics();
-
-        return [
-            'tenants' => $tenants,
-            'totals' => $totals,
-            'projections' => $projections,
-            'alerts' => $alerts,
-            'recommendations' => $recommendations,
-            'data_sources' => $data_sources,
-            'revenue' => $revenue,
-            'net_results' => $net_results,
-            'feature_costs' => $feature_costs,
-            'unit_economics' => $unit_economics,
-            'vertical_profitability' => $vertical_profitability,
-            'ai_costs' => $ai_costs,
-            'timestamp' => time(),
-        ];
-    }
-
-    /**
-     * Get resource usage per tenant.
-     * 
-     * IMPORTANTE: Solo devuelve tenants REALES de la base de datos.
-     * No usa datos ficticios - si no hay tenants, devuelve array vacío.
-     */
-    protected function getTenantUsage(): array
-    {
-        $tenants = [];
-
-        try {
-            $tenant_storage = $this->entityTypeManager()->getStorage('tenant');
-            $tenant_entities = $tenant_storage->loadMultiple();
-
-            foreach ($tenant_entities as $tenant) {
-                $tenant_id = $tenant->id();
-                $tenant_name = $tenant->label();
-
-                // Calculate storage usage (content nodes, files, etc.)
-                $storage_mb = $this->calculateTenantStorage($tenant_id);
-
-                // Calculate API requests (from logs or state)
-                $api_requests = $this->getTenantApiRequests($tenant_id);
-
-                // Calculate estimated CPU time
-                $cpu_hours = $this->estimateCpuUsage($api_requests, $storage_mb);
-
-                // Get plan tier for pricing (robusto - no falla si campo no existe)
-                $tier = 'basic';
-                $plan_entity = null;
-                $plan_mrr = 0;
-                try {
-                    // Usar getSubscriptionPlan() que es el método correcto del Tenant
-                    if (method_exists($tenant, 'getSubscriptionPlan')) {
-                        $plan_entity = $tenant->getSubscriptionPlan();
-                        if ($plan_entity) {
-                            $tier = $plan_entity->id() ?: 'basic';
-                            // Obtener el precio mensual del plan SaaS
-                            if (method_exists($plan_entity, 'getPriceMonthly')) {
-                                $plan_mrr = $plan_entity->getPriceMonthly();
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // Plan no disponible, usar basic
-                }
-
-                // Calculate feature costs from tenant's vertical
-                $feature_cost = 0;
-                $feature_count = 0;
-                $feature_details = [];
-                $vertical_id = 'default';
-                $vertical_name = 'Sin Vertical';
-                try {
-                    $vertical = $tenant->getVertical();
-                    if ($vertical) {
-                        $vertical_id = $vertical->id();
-                        $vertical_name = $vertical->label();
-                        $enabled_features = $vertical->getEnabledFeatures();
-                        $feature_storage = $this->entityTypeManager()->getStorage('feature');
-
-                        // AUDIT-PERF-N04: Batch load en lugar de N+1 queries.
-                        $features = $feature_storage->loadMultiple($enabled_features);
-                        foreach ($features as $feature) {
-                            if ($feature->status()) {
-                                $base_cost = $feature->getBaseCostMonthly();
-                                if ($base_cost > 0) {
-                                    $feature_cost += $base_cost;
-                                    $feature_count++;
-                                    $feature_details[] = [
-                                        'id' => $feature->id(),
-                                        'label' => $feature->label(),
-                                        'cost' => $base_cost,
-                                    ];
-                                }
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // Features no disponibles
-                }
-
-                // Calculate costs from config (NOT hardcoded)
-                $config = $this->getFinOpsConfig();
-                $storage_cost = $storage_mb * $config['price_storage_mb'];
-                $api_cost = $api_requests * $config['price_api_request'];
-                $cpu_cost = $cpu_hours * $config['price_cpu_hour'];
-                $total_cost = $storage_cost + $api_cost + $cpu_cost + $feature_cost;
-
-                $tenants[] = [
-                    'id' => $tenant_id,
-                    'name' => $tenant_name,
-                    'tier' => $tier,
-                    'storage_mb' => round($storage_mb, 2),
-                    'api_requests' => $api_requests,
-                    'cpu_hours' => round($cpu_hours, 2),
-                    'feature_count' => $feature_count,
-                    'costs' => [
-                        'storage' => round($storage_cost, 2),
-                        'api' => round($api_cost, 2),
-                        'cpu' => round($cpu_cost, 2),
-                        'features' => round($feature_cost, 2),
-                        'total' => round($total_cost, 2),
-                    ],
-                    'feature_details' => $feature_details,
-                    'status' => $this->getTenantCostStatus($total_cost, $tier),
-                    // ═══ NUEVOS CAMPOS PARA UNIT ECONOMICS ═══
-                    'plan_cost' => [
-                        'monthly' => round($plan_mrr, 2),
-                        'yearly' => ($plan_entity && method_exists($plan_entity, 'getPriceYearly')) ? round($plan_entity->getPriceYearly(), 2) : 0,
-                    ],
-                    'vertical_id' => $vertical_id,
-                    'vertical_name' => $vertical_name,
-                ];
+          // Usar getSubscriptionPlan() que es el método correcto del Tenant.
+          if (method_exists($tenant, 'getSubscriptionPlan')) {
+            $plan_entity = $tenant->getSubscriptionPlan();
+            if ($plan_entity) {
+              $tier = $plan_entity->id() ?: 'basic';
+              // Obtener el precio mensual del plan SaaS.
+              if (method_exists($plan_entity, 'getPriceMonthly')) {
+                $plan_mrr = $plan_entity->getPriceMonthly();
+              }
             }
-        } catch (\Exception $e) {
-            // Log error pero NO devolver datos ficticios
-            $this->getLogger('ecosistema_jaraba_core')->warning(
-                'FinOps: Error loading tenants: @error',
-                ['@error' => $e->getMessage()]
+          }
+        }
+        catch (\Exception $e) {
+          // Plan no disponible, usar basic.
+        }
+
+        // Calculate feature costs from tenant's vertical.
+        $feature_cost = 0;
+        $feature_count = 0;
+        $feature_details = [];
+        $vertical_id = 'default';
+        $vertical_name = 'Sin Vertical';
+        try {
+          $vertical = $tenant->getVertical();
+          if ($vertical) {
+            $vertical_id = $vertical->id();
+            $vertical_name = $vertical->label();
+            $enabled_features = $vertical->getEnabledFeatures();
+            $feature_storage = $this->entityTypeManager()->getStorage('feature');
+
+            // AUDIT-PERF-N04: Batch load en lugar de N+1 queries.
+            $features = $feature_storage->loadMultiple($enabled_features);
+            foreach ($features as $feature) {
+              if ($feature->status()) {
+                $base_cost = $feature->getBaseCostMonthly();
+                if ($base_cost > 0) {
+                  $feature_cost += $base_cost;
+                  $feature_count++;
+                  $feature_details[] = [
+                    'id' => $feature->id(),
+                    'label' => $feature->label(),
+                    'cost' => $base_cost,
+                  ];
+                }
+              }
+            }
+          }
+        }
+        catch (\Exception $e) {
+          // Features no disponibles.
+        }
+
+        // Calculate costs from config (NOT hardcoded)
+        $config = $this->getFinOpsConfig();
+        $storage_cost = $storage_mb * $config['price_storage_mb'];
+        $api_cost = $api_requests * $config['price_api_request'];
+        $cpu_cost = $cpu_hours * $config['price_cpu_hour'];
+        $total_cost = $storage_cost + $api_cost + $cpu_cost + $feature_cost;
+
+        $tenants[] = [
+          'id' => $tenant_id,
+          'name' => $tenant_name,
+          'tier' => $tier,
+          'storage_mb' => round($storage_mb, 2),
+          'api_requests' => $api_requests,
+          'cpu_hours' => round($cpu_hours, 2),
+          'feature_count' => $feature_count,
+          'costs' => [
+            'storage' => round($storage_cost, 2),
+            'api' => round($api_cost, 2),
+            'cpu' => round($cpu_cost, 2),
+            'features' => round($feature_cost, 2),
+            'total' => round($total_cost, 2),
+          ],
+          'feature_details' => $feature_details,
+          'status' => $this->getTenantCostStatus($total_cost, $tier),
+              // ═══ NUEVOS CAMPOS PARA UNIT ECONOMICS ═══
+          'plan_cost' => [
+            'monthly' => round($plan_mrr, 2),
+            'yearly' => ($plan_entity && method_exists($plan_entity, 'getPriceYearly')) ? round($plan_entity->getPriceYearly(), 2) : 0,
+          ],
+          'vertical_id' => $vertical_id,
+          'vertical_name' => $vertical_name,
+        ];
+      }
+    }
+    catch (\Exception $e) {
+      // Log error pero NO devolver datos ficticios.
+      $this->getLogger('ecosistema_jaraba_core')->warning(
+            'FinOps: Error loading tenants: @error',
+            ['@error' => $e->getMessage()]
             );
-            // Devolver array vacío - el template mostrará mensaje apropiado
-            return [];
-        }
-
-        // Sort by total cost descending
-        usort($tenants, fn($a, $b) => $b['costs']['total'] <=> $a['costs']['total']);
-
-        return $tenants;
+      // Devolver array vacío - el template mostrará mensaje apropiado.
+      return [];
     }
 
-    /**
-     * Calculate storage usage for a tenant.
-     * 
-     * FUENTE: Datos reales si FinOpsTrackingService disponible,
-     * estimación basada en nodos si no.
-     */
-    protected function calculateTenantStorage(string $tenant_id): float
-    {
-        // Intentar usar servicio de tracking real
-        if ($this->finopsTracking) {
-            $storage = $this->finopsTracking->getStorageUsage($tenant_id);
-            if ($storage > 0) {
-                return $storage;
-            }
-        }
+    // Sort by total cost descending.
+    usort($tenants, fn($a, $b) => $b['costs']['total'] <=> $a['costs']['total']);
 
-        // Fallback: Estimar basado en content count
-        try {
-            $node_count = $this->entityTypeManager()->getStorage('node')->getQuery()
-                ->accessCheck(FALSE)
-                ->count()
-                ->execute();
+    return $tenants;
+  }
 
-            // Estimar 0.5MB por nodo (promedio)
-            // NOTA: Esta es una estimación, no datos reales por tenant
-            return max(10, $node_count * 0.5 / 3); // Dividir entre tenants estimados
-        } catch (\Exception $e) {
-            return 50.0; // Valor por defecto
-        }
+  /**
+   * Calculate storage usage for a tenant.
+   *
+   * FUENTE: Datos reales si FinOpsTrackingService disponible,
+   * estimación basada en nodos si no.
+   */
+  protected function calculateTenantStorage(string $tenant_id): float {
+    // Intentar usar servicio de tracking real.
+    if ($this->finopsTracking) {
+      $storage = $this->finopsTracking->getStorageUsage($tenant_id);
+      if ($storage > 0) {
+        return $storage;
+      }
     }
 
-    /**
-     * Get API request count for a tenant.
-     * 
-     * FUENTE: Datos reales de tabla finops_usage_log si disponible,
-     * estimación desde State API si no.
-     */
-    protected function getTenantApiRequests(string $tenant_id): int
-    {
-        // Intentar usar servicio de tracking real
-        if ($this->finopsTracking) {
-            // Obtener requests del último mes
-            $since = strtotime('-30 days');
-            $requests = $this->finopsTracking->getApiRequestCount($tenant_id, $since);
-            if ($requests > 0) {
-                return $requests;
-            }
-        }
+    // Fallback: Estimar basado en content count.
+    try {
+      $node_count = $this->entityTypeManager()->getStorage('node')->getQuery()
+        ->accessCheck(FALSE)
+        ->count()
+        ->execute();
 
-        // Fallback: State API (puede ser real si hay datos previos)
-        $state = $this->state;
-        $key = "finops_api_count_{$tenant_id}";
-        $requests = $state->get($key, 0);
+      // Estimar 0.5MB por nodo (promedio)
+      // NOTA: Esta es una estimación, no datos reales por tenant.
+      // Dividir entre tenants estimados.
+      return max(10, $node_count * 0.5 / 3);
+    }
+    catch (\Exception $e) {
+      // Valor por defecto.
+      return 50.0;
+    }
+  }
 
-        // Si no hay datos, estimar basado en tenant existente
-        if ($requests === 0) {
-            // NOTA: Esto es estimación, se irá reemplazando con datos reales
-            $requests = 500; // Base inicial
-        }
-
+  /**
+   * Get API request count for a tenant.
+   *
+   * FUENTE: Datos reales de tabla finops_usage_log si disponible,
+   * estimación desde State API si no.
+   */
+  protected function getTenantApiRequests(string $tenant_id): int {
+    // Intentar usar servicio de tracking real.
+    if ($this->finopsTracking) {
+      // Obtener requests del último mes.
+      $since = strtotime('-30 days');
+      $requests = $this->finopsTracking->getApiRequestCount($tenant_id, $since);
+      if ($requests > 0) {
         return $requests;
+      }
     }
 
-    /**
-     * Estimate CPU usage based on activity.
-     */
-    protected function estimateCpuUsage(int $api_requests, float $storage_mb): float
-    {
-        // Estimate: 0.001 CPU hours per request + 0.0001 per MB storage
-        return ($api_requests * 0.001) + ($storage_mb * 0.0001);
+    // Fallback: State API (puede ser real si hay datos previos)
+    $state = $this->state;
+    $key = "finops_api_count_{$tenant_id}";
+    $requests = $state->get($key, 0);
+
+    // Si no hay datos, estimar basado en tenant existente.
+    if ($requests === 0) {
+      // NOTA: Esto es estimación, se irá reemplazando con datos reales.
+      // Base inicial.
+      $requests = 500;
     }
 
-    /**
-     * Get cost status (normal, warning, critical).
-     */
-    protected function getTenantCostStatus(float $cost, string $tier): string
-    {
-        // Leer thresholds desde config (NOT hardcoded)
-        $config = $this->getFinOpsConfig();
+    return $requests;
+  }
 
-        $thresholds = [
-            'basic' => [
-                'warning' => $config['tier_limits']['basic']['warning'],
-                'critical' => $config['tier_limits']['basic']['critical'],
-            ],
-            'professional' => [
-                'warning' => $config['tier_limits']['professional']['warning'],
-                'critical' => $config['tier_limits']['professional']['critical'],
-            ],
-            'enterprise' => [
-                'warning' => $config['tier_limits']['enterprise']['warning'],
-                'critical' => $config['tier_limits']['enterprise']['critical'],
-            ],
+  /**
+   * Estimate CPU usage based on activity.
+   */
+  protected function estimateCpuUsage(int $api_requests, float $storage_mb): float {
+    // Estimate: 0.001 CPU hours per request + 0.0001 per MB storage.
+    return ($api_requests * 0.001) + ($storage_mb * 0.0001);
+  }
+
+  /**
+   * Get cost status (normal, warning, critical).
+   */
+  protected function getTenantCostStatus(float $cost, string $tier): string {
+    // Leer thresholds desde config (NOT hardcoded)
+    $config = $this->getFinOpsConfig();
+
+    $thresholds = [
+      'basic' => [
+        'warning' => $config['tier_limits']['basic']['warning'],
+        'critical' => $config['tier_limits']['basic']['critical'],
+      ],
+      'professional' => [
+        'warning' => $config['tier_limits']['professional']['warning'],
+        'critical' => $config['tier_limits']['professional']['critical'],
+      ],
+      'enterprise' => [
+        'warning' => $config['tier_limits']['enterprise']['warning'],
+        'critical' => $config['tier_limits']['enterprise']['critical'],
+      ],
+    ];
+
+    $limits = $thresholds[$tier] ?? $thresholds['basic'];
+
+    if ($cost >= $limits['critical']) {
+      return 'critical';
+    }
+    elseif ($cost >= $limits['warning']) {
+      return 'warning';
+    }
+    return 'normal';
+  }
+
+  /**
+   * Calculate totals across all tenants.
+   */
+  protected function calculateTotals(array $tenants): array {
+    $totals = [
+      'storage_mb' => 0,
+      'api_requests' => 0,
+      'cpu_hours' => 0,
+      'cost_storage' => 0,
+      'cost_api' => 0,
+      'cost_cpu' => 0,
+      'cost_ai' => 0,
+      'ai_tokens' => 0,
+      'ai_calls' => 0,
+      'cost_total' => 0,
+      'tenant_count' => count($tenants),
+    ];
+
+    foreach ($tenants as $tenant) {
+      $totals['storage_mb'] += $tenant['storage_mb'];
+      $totals['api_requests'] += $tenant['api_requests'];
+      $totals['cpu_hours'] += $tenant['cpu_hours'];
+      $totals['cost_storage'] += $tenant['costs']['storage'];
+      $totals['cost_api'] += $tenant['costs']['api'];
+      $totals['cost_cpu'] += $tenant['costs']['cpu'];
+      $totals['cost_total'] += $tenant['costs']['total'];
+    }
+
+    // Añadir costes de IA desde State API.
+    $aiCosts = $this->getAiCostMetrics();
+    if (!empty($aiCosts['enabled']) && isset($aiCosts['summary'])) {
+      $totals['cost_ai'] = $aiCosts['summary']['total_cost'] ?? 0;
+      $totals['ai_tokens'] = $aiCosts['summary']['total_tokens'] ?? 0;
+      $totals['ai_calls'] = $aiCosts['summary']['total_calls'] ?? 0;
+      $totals['cost_total'] += $totals['cost_ai'];
+    }
+
+    // Round all values.
+    foreach ($totals as $key => $value) {
+      if ($key !== 'tenant_count') {
+        $totals[$key] = round($value, 2);
+      }
+    }
+
+    return $totals;
+  }
+
+  /**
+   * Calculate cost projections.
+   */
+  protected function calculateProjections(array $totals): array {
+    $config = $this->getFinOpsConfig();
+    $daily_cost = $totals['cost_total'];
+    $days_in_month = date('t');
+    $current_day = date('j');
+    $monthly_budget = $config['monthly_budget'];
+
+    $monthly_projected = round(($daily_cost / max($current_day, 1)) * $days_in_month, 2);
+
+    return [
+      'daily_average' => round($daily_cost / max($current_day, 1), 2),
+      'monthly_projected' => $monthly_projected,
+      'monthly_budget' => $monthly_budget,
+      'budget_usage_percent' => round(($monthly_projected / $monthly_budget) * 100, 1),
+      'trend' => $this->calculateCostTrend(),
+    ];
+  }
+
+  /**
+   * Calculate cost trend (up, down, stable).
+   */
+  protected function calculateCostTrend(): string {
+    $state = $this->state;
+    $previous = $state->get('finops_previous_daily_cost', 0);
+    $current = $state->get('finops_current_daily_cost', 0);
+
+    if ($previous === 0) {
+      return 'stable';
+    }
+
+    $change = (($current - $previous) / $previous) * 100;
+
+    if ($change > 10) {
+      return 'up';
+    }
+    elseif ($change < -10) {
+      return 'down';
+    }
+    return 'stable';
+  }
+
+  /**
+   * Check for cost alerts.
+   */
+  protected function checkCostAlerts(array $tenants, array $projections): array {
+    $config = $this->getFinOpsConfig();
+    $alerts = [];
+
+    // Budget alert - usar thresholds desde config.
+    if ($projections['budget_usage_percent'] > $config['critical_threshold']) {
+      $alerts[] = [
+        'type' => 'critical',
+        'title' => $this->t('Budget Alert'),
+        'message' => $this->t('Projected costs at @percent% of monthly budget.', [
+          '@percent' => $projections['budget_usage_percent'],
+        ]),
+      ];
+    }
+    elseif ($projections['budget_usage_percent'] > $config['warning_threshold']) {
+      $alerts[] = [
+        'type' => 'warning',
+        'title' => $this->t('Budget Warning'),
+        'message' => $this->t('Approaching @percent% of monthly budget.', [
+          '@percent' => $projections['budget_usage_percent'],
+        ]),
+      ];
+    }
+
+    // High-cost tenant alerts.
+    foreach ($tenants as $tenant) {
+      if ($tenant['status'] === 'critical') {
+        $alerts[] = [
+          'type' => 'critical',
+          'title' => $this->t('High Cost Tenant'),
+          'message' => $this->t('@tenant is exceeding cost thresholds (€@cost).', [
+            '@tenant' => $tenant['name'],
+            '@cost' => $tenant['costs']['total'],
+          ]),
         ];
+      }
 
-        $limits = $thresholds[$tier] ?? $thresholds['basic'];
+      // ═══════════════════════════════════════════════════════════════
+      // ALERTAS DE MARGEN (P&L)
+      // Notifica cuando el coste operativo de un tenant se acerca o
+      // supera su MRR (ingreso recurrente mensual).
+      // ═══════════════════════════════════════════════════════════════
+      $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+      $total_cost = $tenant['costs']['total'] ?? 0;
 
-        if ($cost >= $limits['critical']) {
-            return 'critical';
-        } elseif ($cost >= $limits['warning']) {
-            return 'warning';
+      if ($mrr > 0) {
+        $cost_percentage = ($total_cost / $mrr) * 100;
+
+        // Margen crítico: coste >= 100% del MRR (pérdida)
+        if ($cost_percentage >= 100) {
+          $alerts[] = [
+            'type' => 'critical',
+            'title' => $this->t('⚠️ Margin Alert: @tenant', ['@tenant' => $tenant['name']]),
+            'message' => $this->t('Operating cost (€@cost) EXCEEDS MRR (€@mrr). This tenant is generating LOSSES.', [
+              '@cost' => number_format($total_cost, 2),
+              '@mrr' => number_format($mrr, 2),
+            ]),
+          ];
         }
-        return 'normal';
+        // Margen warning: coste >= 80% del MRR (riesgo)
+        elseif ($cost_percentage >= 80) {
+          $alerts[] = [
+            'type' => 'warning',
+            'title' => $this->t('Margin Warning: @tenant', ['@tenant' => $tenant['name']]),
+            'message' => $this->t('Operating cost (€@cost) is at @percent% of MRR (€@mrr).', [
+              '@cost' => number_format($total_cost, 2),
+              '@mrr' => number_format($mrr, 2),
+              '@percent' => round($cost_percentage),
+            ]),
+          ];
+        }
+      }
     }
 
-    /**
-     * Calculate totals across all tenants.
-     */
-    protected function calculateTotals(array $tenants): array
-    {
-        $totals = [
-            'storage_mb' => 0,
-            'api_requests' => 0,
-            'cpu_hours' => 0,
-            'cost_storage' => 0,
-            'cost_api' => 0,
-            'cost_cpu' => 0,
-            'cost_ai' => 0,
-            'ai_tokens' => 0,
-            'ai_calls' => 0,
-            'cost_total' => 0,
-            'tenant_count' => count($tenants),
+    // Trend alert.
+    if ($projections['trend'] === 'up') {
+      $alerts[] = [
+        'type' => 'warning',
+        'title' => $this->t('Cost Trend'),
+        'message' => $this->t('Costs are trending upward. Review usage patterns.'),
+      ];
+    }
+
+    return $alerts;
+  }
+
+  /**
+   * Get optimization recommendations.
+   */
+  protected function getOptimizationRecommendations(array $tenants): array {
+    $recommendations = [];
+
+    foreach ($tenants as $tenant) {
+      // High storage usage.
+      if ($tenant['storage_mb'] > 200) {
+        $recommendations[] = [
+          'tenant' => $tenant['name'],
+          'type' => 'storage',
+          'title' => $this->t('Optimize Storage'),
+          'message' => $this->t('Consider archiving old content for @tenant.', [
+            '@tenant' => $tenant['name'],
+          ]),
+          'potential_savings' => round($tenant['costs']['storage'] * 0.3, 2),
         ];
+      }
 
-        foreach ($tenants as $tenant) {
-            $totals['storage_mb'] += $tenant['storage_mb'];
-            $totals['api_requests'] += $tenant['api_requests'];
-            $totals['cpu_hours'] += $tenant['cpu_hours'];
-            $totals['cost_storage'] += $tenant['costs']['storage'];
-            $totals['cost_api'] += $tenant['costs']['api'];
-            $totals['cost_cpu'] += $tenant['costs']['cpu'];
-            $totals['cost_total'] += $tenant['costs']['total'];
-        }
-
-        // Añadir costes de IA desde State API
-        $aiCosts = $this->getAiCostMetrics();
-        if (!empty($aiCosts['enabled']) && isset($aiCosts['summary'])) {
-            $totals['cost_ai'] = $aiCosts['summary']['total_cost'] ?? 0;
-            $totals['ai_tokens'] = $aiCosts['summary']['total_tokens'] ?? 0;
-            $totals['ai_calls'] = $aiCosts['summary']['total_calls'] ?? 0;
-            $totals['cost_total'] += $totals['cost_ai'];
-        }
-
-        // Round all values
-        foreach ($totals as $key => $value) {
-            if ($key !== 'tenant_count') {
-                $totals[$key] = round($value, 2);
-            }
-        }
-
-        return $totals;
-    }
-
-    /**
-     * Calculate cost projections.
-     */
-    protected function calculateProjections(array $totals): array
-    {
-        $config = $this->getFinOpsConfig();
-        $daily_cost = $totals['cost_total'];
-        $days_in_month = date('t');
-        $current_day = date('j');
-        $monthly_budget = $config['monthly_budget'];
-
-        $monthly_projected = round(($daily_cost / max($current_day, 1)) * $days_in_month, 2);
-
-        return [
-            'daily_average' => round($daily_cost / max($current_day, 1), 2),
-            'monthly_projected' => $monthly_projected,
-            'monthly_budget' => $monthly_budget,
-            'budget_usage_percent' => round(($monthly_projected / $monthly_budget) * 100, 1),
-            'trend' => $this->calculateCostTrend(),
+      // High API usage.
+      if ($tenant['api_requests'] > 5000) {
+        $recommendations[] = [
+          'tenant' => $tenant['name'],
+          'type' => 'api',
+          'title' => $this->t('Implement Caching'),
+          'message' => $this->t('Add caching layer for @tenant API calls.', [
+            '@tenant' => $tenant['name'],
+          ]),
+          'potential_savings' => round($tenant['costs']['api'] * 0.5, 2),
         ];
+      }
     }
 
-    /**
-     * Calculate cost trend (up, down, stable).
-     */
-    protected function calculateCostTrend(): string
-    {
-        $state = $this->state;
-        $previous = $state->get('finops_previous_daily_cost', 0);
-        $current = $state->get('finops_current_daily_cost', 0);
+    // Calculate total potential savings.
+    $total_savings = array_sum(array_column($recommendations, 'potential_savings'));
 
-        if ($previous === 0) {
-            return 'stable';
-        }
-
-        $change = (($current - $previous) / $previous) * 100;
-
-        if ($change > 10) {
-            return 'up';
-        } elseif ($change < -10) {
-            return 'down';
-        }
-        return 'stable';
+    if (!empty($recommendations)) {
+      array_unshift($recommendations, [
+        'type' => 'summary',
+        'title' => $this->t('Total Potential Savings'),
+        'message' => $this->t('€@savings/month if all recommendations applied.', [
+          '@savings' => round($total_savings, 2),
+        ]),
+        'potential_savings' => $total_savings,
+      ]);
     }
 
-    /**
-     * Check for cost alerts.
-     */
-    protected function checkCostAlerts(array $tenants, array $projections): array
-    {
-        $config = $this->getFinOpsConfig();
-        $alerts = [];
+    return $recommendations;
+  }
 
-        // Budget alert - usar thresholds desde config
-        if ($projections['budget_usage_percent'] > $config['critical_threshold']) {
-            $alerts[] = [
-                'type' => 'critical',
-                'title' => $this->t('Budget Alert'),
-                'message' => $this->t('Projected costs at @percent% of monthly budget.', [
-                    '@percent' => $projections['budget_usage_percent'],
-                ]),
-            ];
-        } elseif ($projections['budget_usage_percent'] > $config['warning_threshold']) {
-            $alerts[] = [
-                'type' => 'warning',
-                'title' => $this->t('Budget Warning'),
-                'message' => $this->t('Approaching @percent% of monthly budget.', [
-                    '@percent' => $projections['budget_usage_percent'],
-                ]),
-            ];
+  /**
+   * Obtiene datos de ingresos por suscripciones.
+   *
+   * Calcula MRR (Monthly Recurring Revenue) y ARR (Annual Recurring Revenue)
+   * basándose en los planes activos de cada tenant.
+   *
+   * @param array $tenants
+   *   Lista de tenants con sus datos.
+   *
+   * @return array
+   *   Datos de ingresos: MRR, ARR, por tier, proyección.
+   */
+  protected function getRevenueData(array $tenants): array {
+    $mrr = 0;
+    $revenue_by_tier = [
+      'basic' => ['count' => 0, 'monthly' => 0],
+      'professional' => ['count' => 0, 'monthly' => 0],
+      'enterprise' => ['count' => 0, 'monthly' => 0],
+    ];
+
+    try {
+      // AUDIT-PERF-N04: Reusar datos ya calculados en $tenants
+      // en lugar de loadMultiple() duplicado.
+      foreach ($tenants as $tenantData) {
+        $monthly_price = $tenantData['plan_cost']['monthly'] ?? 0;
+        $tier = $tenantData['tier'] ?? 'basic';
+
+        if ($monthly_price > 0) {
+          $mrr += $monthly_price;
+
+          if (isset($revenue_by_tier[$tier])) {
+            $revenue_by_tier[$tier]['count']++;
+            $revenue_by_tier[$tier]['monthly'] += $monthly_price;
+          }
         }
-
-        // High-cost tenant alerts
-        foreach ($tenants as $tenant) {
-            if ($tenant['status'] === 'critical') {
-                $alerts[] = [
-                    'type' => 'critical',
-                    'title' => $this->t('High Cost Tenant'),
-                    'message' => $this->t('@tenant is exceeding cost thresholds (€@cost).', [
-                        '@tenant' => $tenant['name'],
-                        '@cost' => $tenant['costs']['total'],
-                    ]),
-                ];
-            }
-
-            // ═══════════════════════════════════════════════════════════════
-            // ALERTAS DE MARGEN (P&L)
-            // Notifica cuando el coste operativo de un tenant se acerca o
-            // supera su MRR (ingreso recurrente mensual).
-            // ═══════════════════════════════════════════════════════════════
-            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
-            $total_cost = $tenant['costs']['total'] ?? 0;
-
-            if ($mrr > 0) {
-                $cost_percentage = ($total_cost / $mrr) * 100;
-
-                // Margen crítico: coste >= 100% del MRR (pérdida)
-                if ($cost_percentage >= 100) {
-                    $alerts[] = [
-                        'type' => 'critical',
-                        'title' => $this->t('⚠️ Margin Alert: @tenant', ['@tenant' => $tenant['name']]),
-                        'message' => $this->t('Operating cost (€@cost) EXCEEDS MRR (€@mrr). This tenant is generating LOSSES.', [
-                            '@cost' => number_format($total_cost, 2),
-                            '@mrr' => number_format($mrr, 2),
-                        ]),
-                    ];
-                }
-                // Margen warning: coste >= 80% del MRR (riesgo)
-                elseif ($cost_percentage >= 80) {
-                    $alerts[] = [
-                        'type' => 'warning',
-                        'title' => $this->t('Margin Warning: @tenant', ['@tenant' => $tenant['name']]),
-                        'message' => $this->t('Operating cost (€@cost) is at @percent% of MRR (€@mrr).', [
-                            '@cost' => number_format($total_cost, 2),
-                            '@mrr' => number_format($mrr, 2),
-                            '@percent' => round($cost_percentage),
-                        ]),
-                    ];
-                }
-            }
-        }
-
-        // Trend alert
-        if ($projections['trend'] === 'up') {
-            $alerts[] = [
-                'type' => 'warning',
-                'title' => $this->t('Cost Trend'),
-                'message' => $this->t('Costs are trending upward. Review usage patterns.'),
-            ];
-        }
-
-        return $alerts;
+      }
     }
-
-    /**
-     * Get optimization recommendations.
-     */
-    protected function getOptimizationRecommendations(array $tenants): array
-    {
-        $recommendations = [];
-
-        foreach ($tenants as $tenant) {
-            // High storage usage
-            if ($tenant['storage_mb'] > 200) {
-                $recommendations[] = [
-                    'tenant' => $tenant['name'],
-                    'type' => 'storage',
-                    'title' => $this->t('Optimize Storage'),
-                    'message' => $this->t('Consider archiving old content for @tenant.', [
-                        '@tenant' => $tenant['name'],
-                    ]),
-                    'potential_savings' => round($tenant['costs']['storage'] * 0.3, 2),
-                ];
-            }
-
-            // High API usage
-            if ($tenant['api_requests'] > 5000) {
-                $recommendations[] = [
-                    'tenant' => $tenant['name'],
-                    'type' => 'api',
-                    'title' => $this->t('Implement Caching'),
-                    'message' => $this->t('Add caching layer for @tenant API calls.', [
-                        '@tenant' => $tenant['name'],
-                    ]),
-                    'potential_savings' => round($tenant['costs']['api'] * 0.5, 2),
-                ];
-            }
-        }
-
-        // Calculate total potential savings
-        $total_savings = array_sum(array_column($recommendations, 'potential_savings'));
-
-        if (!empty($recommendations)) {
-            array_unshift($recommendations, [
-                'type' => 'summary',
-                'title' => $this->t('Total Potential Savings'),
-                'message' => $this->t('€@savings/month if all recommendations applied.', [
-                    '@savings' => round($total_savings, 2),
-                ]),
-                'potential_savings' => $total_savings,
-            ]);
-        }
-
-        return $recommendations;
-    }
-
-    /**
-     * Obtiene datos de ingresos por suscripciones.
-     *
-     * Calcula MRR (Monthly Recurring Revenue) y ARR (Annual Recurring Revenue)
-     * basándose en los planes activos de cada tenant.
-     *
-     * @param array $tenants
-     *   Lista de tenants con sus datos.
-     *
-     * @return array
-     *   Datos de ingresos: MRR, ARR, por tier, proyección.
-     */
-    protected function getRevenueData(array $tenants): array
-    {
-        $mrr = 0;
-        $revenue_by_tier = [
-            'basic' => ['count' => 0, 'monthly' => 0],
-            'professional' => ['count' => 0, 'monthly' => 0],
-            'enterprise' => ['count' => 0, 'monthly' => 0],
-        ];
-
-        try {
-            // AUDIT-PERF-N04: Reusar datos ya calculados en $tenants
-            // en lugar de loadMultiple() duplicado.
-            foreach ($tenants as $tenantData) {
-                $monthly_price = $tenantData['plan_cost']['monthly'] ?? 0;
-                $tier = $tenantData['tier'] ?? 'basic';
-
-                if ($monthly_price > 0) {
-                    $mrr += $monthly_price;
-
-                    if (isset($revenue_by_tier[$tier])) {
-                        $revenue_by_tier[$tier]['count']++;
-                        $revenue_by_tier[$tier]['monthly'] += $monthly_price;
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            $this->getLogger('ecosistema_jaraba_core')->warning(
-                'FinOps: Error calculating revenue: @error',
-                ['@error' => $e->getMessage()]
+    catch (\Exception $e) {
+      $this->getLogger('ecosistema_jaraba_core')->warning(
+            'FinOps: Error calculating revenue: @error',
+            ['@error' => $e->getMessage()]
             );
-        }
-
-        $arr = $mrr * 12;
-        $days_in_month = (int) date('t');
-        $current_day = (int) date('j');
-        $monthly_projected = $current_day > 0 ? ($mrr / $current_day) * $days_in_month : $mrr;
-
-        return [
-            'mrr' => round($mrr, 2),
-            'arr' => round($arr, 2),
-            'monthly_projected' => round($monthly_projected, 2),
-            'by_tier' => $revenue_by_tier,
-            'active_subscriptions' => array_sum(array_column($revenue_by_tier, 'count')),
-        ];
     }
 
-    /**
-     * Calcula resultados netos (P&L).
-     *
-     * @param array $totals
-     *   Totales de costes.
-     * @param array $revenue
-     *   Datos de ingresos.
-     *
-     * @return array
-     *   Resultados netos: actual, proyectado, margen.
-     */
-    protected function calculateNetResults(array $totals, array $revenue): array
-    {
-        $current_revenue = $revenue['mrr'];
-        $current_costs = $totals['cost_total'];
-        $net_current = $current_revenue - $current_costs;
+    $arr = $mrr * 12;
+    $days_in_month = (int) date('t');
+    $current_day = (int) date('j');
+    $monthly_projected = $current_day > 0 ? ($mrr / $current_day) * $days_in_month : $mrr;
 
-        $projected_revenue = $revenue['monthly_projected'];
-        $projected_costs = $totals['cost_total']; // Asumir costes similares
-        $net_projected = $projected_revenue - $projected_costs;
+    return [
+      'mrr' => round($mrr, 2),
+      'arr' => round($arr, 2),
+      'monthly_projected' => round($monthly_projected, 2),
+      'by_tier' => $revenue_by_tier,
+      'active_subscriptions' => array_sum(array_column($revenue_by_tier, 'count')),
+    ];
+  }
 
-        // Margen de beneficio
-        $margin_current = $current_revenue > 0
+  /**
+   * Calcula resultados netos (P&L).
+   *
+   * @param array $totals
+   *   Totales de costes.
+   * @param array $revenue
+   *   Datos de ingresos.
+   *
+   * @return array
+   *   Resultados netos: actual, proyectado, margen.
+   */
+  protected function calculateNetResults(array $totals, array $revenue): array {
+    $current_revenue = $revenue['mrr'];
+    $current_costs = $totals['cost_total'];
+    $net_current = $current_revenue - $current_costs;
+
+    $projected_revenue = $revenue['monthly_projected'];
+    // Asumir costes similares.
+    $projected_costs = $totals['cost_total'];
+    $net_projected = $projected_revenue - $projected_costs;
+
+    // Margen de beneficio.
+    $margin_current = $current_revenue > 0
             ? round(($net_current / $current_revenue) * 100, 1)
             : 0;
-        $margin_projected = $projected_revenue > 0
+    $margin_projected = $projected_revenue > 0
             ? round(($net_projected / $projected_revenue) * 100, 1)
             : 0;
 
-        return [
-            'revenue_current' => round($current_revenue, 2),
-            'costs_current' => round($current_costs, 2),
-            'net_current' => round($net_current, 2),
-            'margin_current' => $margin_current,
-            'revenue_projected' => round($projected_revenue, 2),
-            'costs_projected' => round($projected_costs, 2),
-            'net_projected' => round($net_projected, 2),
-            'margin_projected' => $margin_projected,
-            'status' => $net_current >= 0 ? 'profitable' : 'loss',
-        ];
+    return [
+      'revenue_current' => round($current_revenue, 2),
+      'costs_current' => round($current_costs, 2),
+      'net_current' => round($net_current, 2),
+      'margin_current' => $margin_current,
+      'revenue_projected' => round($projected_revenue, 2),
+      'costs_projected' => round($projected_costs, 2),
+      'net_projected' => round($net_projected, 2),
+      'margin_projected' => $margin_projected,
+      'status' => $net_current >= 0 ? 'profitable' : 'loss',
+    ];
+  }
+
+  /**
+   * Obtiene información de ayuda para el dashboard.
+   *
+   * @return array
+   *   Array con información de ayuda traducible.
+   */
+  protected function getHelpInfo(): array {
+    $config = $this->getFinOpsConfig();
+
+    return [
+      'title' => $this->t('About FinOps Dashboard'),
+      'description' => $this->t('This dashboard shows cost metrics and resource usage per tenant.'),
+      'metrics' => [
+              [
+                'name' => $this->t('Storage (MB)'),
+                'source' => $this->t('File system + content estimation'),
+                'realtime' => FALSE,
+              ],
+              [
+                'name' => $this->t('API Requests'),
+                'source' => $this->t('Tracked automatically via RequestTrackingSubscriber'),
+                'realtime' => TRUE,
+              ],
+              [
+                'name' => $this->t('CPU Hours'),
+                'source' => $this->t('Estimated from API and storage activity'),
+                'realtime' => FALSE,
+              ],
+              [
+                'name' => $this->t('Costs'),
+                'source' => $this->t('Calculated from usage × unit prices'),
+                'realtime' => FALSE,
+              ],
+      ],
+      'pricing' => [
+        'storage' => $this->t('€@price per MB', ['@price' => $config['price_storage_mb']]),
+        'api' => $this->t('€@price per request', ['@price' => $config['price_api_request']]),
+        'cpu' => $this->t('€@price per CPU hour', ['@price' => $config['price_cpu_hour']]),
+      ],
+      'note' => $this->t('Data is collected automatically. API requests are tracked in real-time. Storage is recalculated periodically. Run "drush updb" to create the tracking table.'),
+      'settings_url' => '/admin/config/finops',
+    ];
+  }
+
+  /**
+   * Obtiene información sobre las fuentes de datos.
+   *
+   * @param array $tenants
+   *   Lista de tenants.
+   *
+   * @return array
+   *   Información sobre qué datos son reales vs estimados.
+   */
+  protected function getDataSourceInfo(array $tenants): array {
+    $has_real_data = FALSE;
+    $has_tracking_table = FALSE;
+
+    // Verificar si existe la tabla de tracking.
+    try {
+      $has_tracking_table = $this->database->schema()->tableExists('finops_usage_log');
+    }
+    catch (\Exception $e) {
+      // Ignore.
     }
 
-    /**
-     * Obtiene información de ayuda para el dashboard.
-     *
-     * @return array
-     *   Array con información de ayuda traducible.
-     */
-    protected function getHelpInfo(): array
-    {
-        $config = $this->getFinOpsConfig();
-
-        return [
-            'title' => $this->t('About FinOps Dashboard'),
-            'description' => $this->t('This dashboard shows cost metrics and resource usage per tenant.'),
-            'metrics' => [
-                [
-                    'name' => $this->t('Storage (MB)'),
-                    'source' => $this->t('File system + content estimation'),
-                    'realtime' => FALSE,
-                ],
-                [
-                    'name' => $this->t('API Requests'),
-                    'source' => $this->t('Tracked automatically via RequestTrackingSubscriber'),
-                    'realtime' => TRUE,
-                ],
-                [
-                    'name' => $this->t('CPU Hours'),
-                    'source' => $this->t('Estimated from API and storage activity'),
-                    'realtime' => FALSE,
-                ],
-                [
-                    'name' => $this->t('Costs'),
-                    'source' => $this->t('Calculated from usage × unit prices'),
-                    'realtime' => FALSE,
-                ],
-            ],
-            'pricing' => [
-                'storage' => $this->t('€@price per MB', ['@price' => $config['price_storage_mb']]),
-                'api' => $this->t('€@price per request', ['@price' => $config['price_api_request']]),
-                'cpu' => $this->t('€@price per CPU hour', ['@price' => $config['price_cpu_hour']]),
-            ],
-            'note' => $this->t('Data is collected automatically. API requests are tracked in real-time. Storage is recalculated periodically. Run "drush updb" to create the tracking table.'),
-            'settings_url' => '/admin/config/finops',
-        ];
+    // Verificar si hay datos reales en la tabla.
+    if ($has_tracking_table) {
+      try {
+        $count = $this->database->select('finops_usage_log', 'f')
+          ->countQuery()
+          ->execute()
+          ->fetchField();
+        $has_real_data = $count > 0;
+      }
+      catch (\Exception $e) {
+        // Ignore.
+      }
     }
 
-    /**
-     * Obtiene información sobre las fuentes de datos.
-     *
-     * @param array $tenants
-     *   Lista de tenants.
-     *
-     * @return array
-     *   Información sobre qué datos son reales vs estimados.
-     */
-    protected function getDataSourceInfo(array $tenants): array
-    {
-        $has_real_data = FALSE;
-        $has_tracking_table = FALSE;
+    return [
+      'tracking_enabled' => $has_tracking_table,
+      'has_real_data' => $has_real_data,
+      'sources' => [
+        'storage' => [
+          'type' => $this->t('Estimated'),
+          'description' => $this->t('Based on file count and content nodes'),
+        ],
+        'api_requests' => [
+          'type' => $has_real_data ? $this->t('Real') : $this->t('Estimated'),
+          'description' => $has_real_data
+            ? $this->t('Tracked from actual HTTP requests')
+            : $this->t('Will become real once tracking starts'),
+        ],
+        'cpu_hours' => [
+          'type' => $this->t('Estimated'),
+          'description' => $this->t('Calculated from activity patterns'),
+        ],
+        'costs' => [
+          'type' => $this->t('Calculated'),
+          'description' => $this->t('Usage × unit price (configurable)'),
+        ],
+      ],
+      'setup_required' => !$has_tracking_table,
+      'setup_command' => 'lando drush updb -y && lando drush cr',
+    ];
+  }
 
-        // Verificar si existe la tabla de tracking
-        try {
-            $has_tracking_table = $this->database->schema()->tableExists('finops_usage_log');
-        } catch (\Exception $e) {
-            // Ignore
+  /**
+   * Obtiene la configuración de FinOps desde Config API.
+   *
+   * Lee los precios unitarios y umbrales desde la configuración,
+   * con valores por defecto si no están configurados.
+   *
+   * @return array
+   *   Array con todos los valores de configuración.
+   */
+  protected function getFinOpsConfig(): array {
+    static $config_cache = NULL;
+
+    if ($config_cache !== NULL) {
+      return $config_cache;
+    }
+
+    $config = $this->configFactoryService->get('ecosistema_jaraba_core.finops');
+
+    $config_cache = [
+          // Precios unitarios.
+      'price_storage_mb' => (float) ($config->get('price_storage_mb') ?: 0.02),
+      'price_api_request' => (float) ($config->get('price_api_request') ?: 0.001),
+      'price_cpu_hour' => (float) ($config->get('price_cpu_hour') ?: 0.10),
+
+          // Presupuesto.
+      'monthly_budget' => (float) ($config->get('monthly_budget') ?: 5000),
+      'warning_threshold' => (int) ($config->get('warning_threshold') ?: 75),
+      'critical_threshold' => (int) ($config->get('critical_threshold') ?: 90),
+
+          // Límites por tier.
+      'tier_limits' => [
+        'basic' => [
+          'warning' => (float) ($config->get('tier_limits.basic.warning') ?: 50),
+          'critical' => (float) ($config->get('tier_limits.basic.critical') ?: 100),
+        ],
+        'professional' => [
+          'warning' => (float) ($config->get('tier_limits.professional.warning') ?: 200),
+          'critical' => (float) ($config->get('tier_limits.professional.critical') ?: 500),
+        ],
+        'enterprise' => [
+          'warning' => (float) ($config->get('tier_limits.enterprise.warning') ?: 1000),
+          'critical' => (float) ($config->get('tier_limits.enterprise.critical') ?: 2500),
+        ],
+      ],
+    ];
+
+    return $config_cache;
+  }
+
+  /**
+   * Obtiene datos de costes por Feature.
+   *
+   * Calcula los costes asociados a cada Feature habilitada,
+   * basándose en los campos FinOps configurados en la entidad Feature.
+   *
+   * @return array
+   *   Datos de features: por categoría, totales, detalles.
+   */
+  protected function getFeatureCostsData(): array {
+    $features = [];
+    $by_category = [
+      'compute' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Compute')],
+      'storage' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Storage')],
+      'ai' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('AI')],
+      'api' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('API')],
+      'bandwidth' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Bandwidth')],
+    ];
+    $total_base_cost = 0;
+    $total_unit_cost_potential = 0;
+
+    try {
+      $feature_storage = $this->entityTypeManager()->getStorage('feature');
+      $feature_entities = $feature_storage->loadMultiple();
+
+      foreach ($feature_entities as $feature) {
+        if (!$feature->status()) {
+          // Solo features habilitadas.
+          continue;
         }
 
-        // Verificar si hay datos reales en la tabla
-        if ($has_tracking_table) {
-            try {
-                $count = $this->database->select('finops_usage_log', 'f')
-                    ->countQuery()
-                    ->execute()
-                    ->fetchField();
-                $has_real_data = $count > 0;
-            } catch (\Exception $e) {
-                // Ignore
-            }
+        $base_cost = $feature->getBaseCostMonthly();
+        $unit_cost = $feature->getUnitCost();
+        $category = $feature->getCostCategory();
+        $usage_metric = $feature->getUsageMetric();
+
+        // Saltar features sin costes configurados.
+        if ($base_cost <= 0 && $unit_cost <= 0) {
+          continue;
         }
 
-        return [
-            'tracking_enabled' => $has_tracking_table,
-            'has_real_data' => $has_real_data,
-            'sources' => [
-                'storage' => [
-                    'type' => $this->t('Estimated'),
-                    'description' => $this->t('Based on file count and content nodes'),
-                ],
-                'api_requests' => [
-                    'type' => $has_real_data ? $this->t('Real') : $this->t('Estimated'),
-                    'description' => $has_real_data
-                        ? $this->t('Tracked from actual HTTP requests')
-                        : $this->t('Will become real once tracking starts'),
-                ],
-                'cpu_hours' => [
-                    'type' => $this->t('Estimated'),
-                    'description' => $this->t('Calculated from activity patterns'),
-                ],
-                'costs' => [
-                    'type' => $this->t('Calculated'),
-                    'description' => $this->t('Usage × unit price (configurable)'),
-                ],
-            ],
-            'setup_required' => !$has_tracking_table,
-            'setup_command' => 'lando drush updb -y && lando drush cr',
+        $features[] = [
+          'id' => $feature->id(),
+          'label' => $feature->label(),
+          'description' => $feature->getDescription(),
+          'category' => $category,
+          'base_cost_monthly' => round($base_cost, 2),
+          'unit_cost' => round($unit_cost, 4),
+          'usage_metric' => $usage_metric,
+          'icon' => $feature->getIcon(),
         ];
-    }
 
-    /**
-     * Obtiene la configuración de FinOps desde Config API.
-     *
-     * Lee los precios unitarios y umbrales desde la configuración,
-     * con valores por defecto si no están configurados.
-     *
-     * @return array
-     *   Array con todos los valores de configuración.
-     */
-    protected function getFinOpsConfig(): array
-    {
-        static $config_cache = NULL;
+        $total_base_cost += $base_cost;
+        // Estimado: 1000 unidades.
+        $total_unit_cost_potential += $unit_cost * 1000;
 
-        if ($config_cache !== NULL) {
-            return $config_cache;
+        // Agrupar por categoría.
+        if (isset($by_category[$category])) {
+          $by_category[$category]['count']++;
+          $by_category[$category]['base_cost'] += $base_cost;
         }
-
-        $config = $this->configFactoryService->get('ecosistema_jaraba_core.finops');
-
-        $config_cache = [
-            // Precios unitarios
-            'price_storage_mb' => (float) ($config->get('price_storage_mb') ?: 0.02),
-            'price_api_request' => (float) ($config->get('price_api_request') ?: 0.001),
-            'price_cpu_hour' => (float) ($config->get('price_cpu_hour') ?: 0.10),
-
-            // Presupuesto
-            'monthly_budget' => (float) ($config->get('monthly_budget') ?: 5000),
-            'warning_threshold' => (int) ($config->get('warning_threshold') ?: 75),
-            'critical_threshold' => (int) ($config->get('critical_threshold') ?: 90),
-
-            // Límites por tier
-            'tier_limits' => [
-                'basic' => [
-                    'warning' => (float) ($config->get('tier_limits.basic.warning') ?: 50),
-                    'critical' => (float) ($config->get('tier_limits.basic.critical') ?: 100),
-                ],
-                'professional' => [
-                    'warning' => (float) ($config->get('tier_limits.professional.warning') ?: 200),
-                    'critical' => (float) ($config->get('tier_limits.professional.critical') ?: 500),
-                ],
-                'enterprise' => [
-                    'warning' => (float) ($config->get('tier_limits.enterprise.warning') ?: 1000),
-                    'critical' => (float) ($config->get('tier_limits.enterprise.critical') ?: 2500),
-                ],
-            ],
-        ];
-
-        return $config_cache;
+      }
     }
-
-    /**
-     * Obtiene datos de costes por Feature.
-     *
-     * Calcula los costes asociados a cada Feature habilitada,
-     * basándose en los campos FinOps configurados en la entidad Feature.
-     *
-     * @return array
-     *   Datos de features: por categoría, totales, detalles.
-     */
-    protected function getFeatureCostsData(): array
-    {
-        $features = [];
-        $by_category = [
-            'compute' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Compute')],
-            'storage' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Storage')],
-            'ai' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('AI')],
-            'api' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('API')],
-            'bandwidth' => ['count' => 0, 'base_cost' => 0, 'label' => $this->t('Bandwidth')],
-        ];
-        $total_base_cost = 0;
-        $total_unit_cost_potential = 0;
-
-        try {
-            $feature_storage = $this->entityTypeManager()->getStorage('feature');
-            $feature_entities = $feature_storage->loadMultiple();
-
-            foreach ($feature_entities as $feature) {
-                if (!$feature->status()) {
-                    continue; // Solo features habilitadas
-                }
-
-                $base_cost = $feature->getBaseCostMonthly();
-                $unit_cost = $feature->getUnitCost();
-                $category = $feature->getCostCategory();
-                $usage_metric = $feature->getUsageMetric();
-
-                // Saltar features sin costes configurados
-                if ($base_cost <= 0 && $unit_cost <= 0) {
-                    continue;
-                }
-
-                $features[] = [
-                    'id' => $feature->id(),
-                    'label' => $feature->label(),
-                    'description' => $feature->getDescription(),
-                    'category' => $category,
-                    'base_cost_monthly' => round($base_cost, 2),
-                    'unit_cost' => round($unit_cost, 4),
-                    'usage_metric' => $usage_metric,
-                    'icon' => $feature->getIcon(),
-                ];
-
-                $total_base_cost += $base_cost;
-                $total_unit_cost_potential += $unit_cost * 1000; // Estimado: 1000 unidades
-
-                // Agrupar por categoría
-                if (isset($by_category[$category])) {
-                    $by_category[$category]['count']++;
-                    $by_category[$category]['base_cost'] += $base_cost;
-                }
-            }
-        } catch (\Exception $e) {
-            $this->getLogger('ecosistema_jaraba_core')->warning(
-                'FinOps: Error loading features: @error',
-                ['@error' => $e->getMessage()]
+    catch (\Exception $e) {
+      $this->getLogger('ecosistema_jaraba_core')->warning(
+            'FinOps: Error loading features: @error',
+            ['@error' => $e->getMessage()]
             );
-        }
-
-        // Ordenar features por coste base
-        usort($features, fn($a, $b) => $b['base_cost_monthly'] <=> $a['base_cost_monthly']);
-
-        return [
-            'features' => $features,
-            'by_category' => $by_category,
-            'totals' => [
-                'count' => count($features),
-                'base_cost_monthly' => round($total_base_cost, 2),
-                'unit_cost_potential' => round($total_unit_cost_potential, 2),
-            ],
-            'has_costs' => count($features) > 0,
-        ];
     }
 
-    /**
-     * Calcula Unit Economics (LTV, CAC, Ratio) por tenant.
-     *
-     * MÉTRICAS IMPLEMENTADAS:
-     * - LTV (Lifetime Value): ARPU × Gross Margin % × (1 / Churn Rate estimado)
-     * - CAC (Customer Acquisition Cost): Configurado por vertical o €200 por defecto
-     * - LTV:CAC Ratio: Target >= 3:1 para salud financiera
-     * - Payback: Meses para recuperar CAC
-     *
-     * @param array $tenants
-     *   Array de datos de tenants.
-     *
-     * @return array
-     *   Array con unit economics por tenant.
-     */
-    protected function getUnitEconomics(array $tenants): array
-    {
-        $economics = [];
-        $config = $this->getFinOpsConfig();
+    // Ordenar features por coste base.
+    usort($features, fn($a, $b) => $b['base_cost_monthly'] <=> $a['base_cost_monthly']);
 
-        // CAC por defecto (configurable desde UI)
-        $default_cac = $config['default_cac'] ?? 200;
-        // Churn rate estimado (5% mensual = 12 meses retention promedio)
-        $churn_rate = $config['churn_rate'] ?? 0.05;
-        // Margen bruto SaaS estándar
-        $gross_margin = $config['gross_margin'] ?? 0.75;
+    return [
+      'features' => $features,
+      'by_category' => $by_category,
+      'totals' => [
+        'count' => count($features),
+        'base_cost_monthly' => round($total_base_cost, 2),
+        'unit_cost_potential' => round($total_unit_cost_potential, 2),
+      ],
+      'has_costs' => count($features) > 0,
+    ];
+  }
 
-        foreach ($tenants as $tenant) {
-            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
-            $total_cost = $tenant['costs']['total'] ?? 0;
+  /**
+   * Calcula Unit Economics (LTV, CAC, Ratio) por tenant.
+   *
+   * MÉTRICAS IMPLEMENTADAS:
+   * - LTV (Lifetime Value): ARPU × Gross Margin % × (1 / Churn Rate estimado)
+   * - CAC (Customer Acquisition Cost): Configurado por vertical o €200 por defecto
+   * - LTV:CAC Ratio: Target >= 3:1 para salud financiera
+   * - Payback: Meses para recuperar CAC.
+   *
+   * @param array $tenants
+   *   Array de datos de tenants.
+   *
+   * @return array
+   *   Array con unit economics por tenant.
+   */
+  protected function getUnitEconomics(array $tenants): array {
+    $economics = [];
+    $config = $this->getFinOpsConfig();
 
-            // DEBUG: Log para diagnosticar
-            $this->getLogger('ecosistema_jaraba_core')->debug(
-                'UnitEconomics: Tenant @name - received MRR: @mrr, plan_cost: @pc',
-                [
-                    '@name' => $tenant['name'] ?? 'Unknown',
-                    '@mrr' => $mrr,
-                    '@pc' => json_encode($tenant['plan_cost'] ?? 'NO plan_cost key'),
-                ]
-            );
+    // CAC por defecto (configurable desde UI)
+    $default_cac = $config['default_cac'] ?? 200;
+    // Churn rate estimado (5% mensual = 12 meses retention promedio)
+    $churn_rate = $config['churn_rate'] ?? 0.05;
+    // Margen bruto SaaS estándar.
+    $gross_margin = $config['gross_margin'] ?? 0.75;
 
-            if ($mrr <= 0) {
-                continue;
-            }
+    foreach ($tenants as $tenant) {
+      $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+      $total_cost = $tenant['costs']['total'] ?? 0;
 
-            // ARPU = MRR (en este contexto, un tenant = un usuario)
-            $arpu = $mrr;
-
-            // Margen operativo real
-            $real_margin = ($mrr - $total_cost) / $mrr;
-
-            // LTV = (ARPU × Gross Margin) / Churn Rate
-            $ltv = $churn_rate > 0 ? ($arpu * $gross_margin) / $churn_rate : 0;
-
-            // CAC (puede venir de la vertical o ser el default)
-            $cac = $default_cac;
-
-            // LTV:CAC Ratio
-            $ltv_cac_ratio = $cac > 0 ? round($ltv / $cac, 1) : 0;
-
-            // Payback = CAC / (ARPU × Gross Margin)
-            $monthly_contribution = $arpu * $gross_margin;
-            $payback_months = $monthly_contribution > 0 ? round($cac / $monthly_contribution, 1) : 999;
-
-            // Status del tenant basado en LTV:CAC
-            $status = 'healthy';
-            if ($ltv_cac_ratio < 3) {
-                $status = 'at_risk';
-            }
-            if ($ltv_cac_ratio >= 5) {
-                $status = 'vip';
-            }
-            if ($real_margin < 0) {
-                $status = 'loss';
-            }
-
-            $economics[] = [
-                'tenant_id' => $tenant['id'],
-                'tenant_name' => $tenant['name'],
-                'mrr' => round($mrr, 2),
-                'operating_cost' => round($total_cost, 2),
-                'margin_percent' => round($real_margin * 100, 1),
-                'ltv' => round($ltv, 2),
-                'cac' => round($cac, 2),
-                'ltv_cac_ratio' => $ltv_cac_ratio,
-                'payback_months' => $payback_months,
-                'status' => $status,
-            ];
-        }
-
-        // Ordenar por LTV:CAC ratio descendente
-        usort($economics, fn($a, $b) => $b['ltv_cac_ratio'] <=> $a['ltv_cac_ratio']);
-
-        // DEBUG: Log resultado final
-        $this->getLogger('ecosistema_jaraba_core')->debug(
-            'UnitEconomics: Returning @count tenants. First: @first',
+      // DEBUG: Log para diagnosticar.
+      $this->getLogger('ecosistema_jaraba_core')->debug(
+            'UnitEconomics: Tenant @name - received MRR: @mrr, plan_cost: @pc',
             [
-                '@count' => count($economics),
-                '@first' => !empty($economics) ? ($economics[0]['tenant_name'] ?? 'N/A') : 'EMPTY',
+              '@name' => $tenant['name'] ?? 'Unknown',
+              '@mrr' => $mrr,
+              '@pc' => json_encode($tenant['plan_cost'] ?? 'NO plan_cost key'),
             ]
         );
 
-        return [
-            'tenants' => $economics,
-            'summary' => $this->calculateEconomicsSummary($economics),
-        ];
+      if ($mrr <= 0) {
+        continue;
+      }
+
+      // ARPU = MRR (en este contexto, un tenant = un usuario)
+      $arpu = $mrr;
+
+      // Margen operativo real.
+      $real_margin = ($mrr - $total_cost) / $mrr;
+
+      // LTV = (ARPU × Gross Margin) / Churn Rate.
+      $ltv = $churn_rate > 0 ? ($arpu * $gross_margin) / $churn_rate : 0;
+
+      // CAC (puede venir de la vertical o ser el default)
+      $cac = $default_cac;
+
+      // LTV:CAC Ratio.
+      $ltv_cac_ratio = $cac > 0 ? round($ltv / $cac, 1) : 0;
+
+      // Payback = CAC / (ARPU × Gross Margin)
+      $monthly_contribution = $arpu * $gross_margin;
+      $payback_months = $monthly_contribution > 0 ? round($cac / $monthly_contribution, 1) : 999;
+
+      // Status del tenant basado en LTV:CAC.
+      $status = 'healthy';
+      if ($ltv_cac_ratio < 3) {
+        $status = 'at_risk';
+      }
+      if ($ltv_cac_ratio >= 5) {
+        $status = 'vip';
+      }
+      if ($real_margin < 0) {
+        $status = 'loss';
+      }
+
+      $economics[] = [
+        'tenant_id' => $tenant['id'],
+        'tenant_name' => $tenant['name'],
+        'mrr' => round($mrr, 2),
+        'operating_cost' => round($total_cost, 2),
+        'margin_percent' => round($real_margin * 100, 1),
+        'ltv' => round($ltv, 2),
+        'cac' => round($cac, 2),
+        'ltv_cac_ratio' => $ltv_cac_ratio,
+        'payback_months' => $payback_months,
+        'status' => $status,
+      ];
     }
 
-    /**
-     * Calcula resumen de Unit Economics.
-     */
-    protected function calculateEconomicsSummary(array $economics): array
-    {
-        if (empty($economics)) {
-            return [
-                'avg_ltv_cac_ratio' => 0,
-                'avg_payback_months' => 0,
-                'vip_count' => 0,
-                'healthy_count' => 0,
-                'at_risk_count' => 0,
-                'loss_count' => 0,
-            ];
-        }
+    // Ordenar por LTV:CAC ratio descendente.
+    usort($economics, fn($a, $b) => $b['ltv_cac_ratio'] <=> $a['ltv_cac_ratio']);
 
-        $total_ratio = array_sum(array_column($economics, 'ltv_cac_ratio'));
-        $total_payback = array_sum(array_column($economics, 'payback_months'));
-        $count = count($economics);
+    // DEBUG: Log resultado final.
+    $this->getLogger('ecosistema_jaraba_core')->debug(
+          'UnitEconomics: Returning @count tenants. First: @first',
+          [
+            '@count' => count($economics),
+            '@first' => !empty($economics) ? ($economics[0]['tenant_name'] ?? 'N/A') : 'EMPTY',
+          ]
+      );
 
-        return [
-            'avg_ltv_cac_ratio' => round($total_ratio / $count, 1),
-            'avg_payback_months' => round($total_payback / $count, 1),
-            'vip_count' => count(array_filter($economics, fn($e) => $e['status'] === 'vip')),
-            'healthy_count' => count(array_filter($economics, fn($e) => $e['status'] === 'healthy')),
-            'at_risk_count' => count(array_filter($economics, fn($e) => $e['status'] === 'at_risk')),
-            'loss_count' => count(array_filter($economics, fn($e) => $e['status'] === 'loss')),
-        ];
+    return [
+      'tenants' => $economics,
+      'summary' => $this->calculateEconomicsSummary($economics),
+    ];
+  }
+
+  /**
+   * Calcula resumen de Unit Economics.
+   */
+  protected function calculateEconomicsSummary(array $economics): array {
+    if (empty($economics)) {
+      return [
+        'avg_ltv_cac_ratio' => 0,
+        'avg_payback_months' => 0,
+        'vip_count' => 0,
+        'healthy_count' => 0,
+        'at_risk_count' => 0,
+        'loss_count' => 0,
+      ];
     }
 
-    /**
-     * Calcula rentabilidad por Vertical.
-     *
-     * @param array $tenants
-     *   Array de datos de tenants.
-     *
-     * @return array
-     *   Array con P&L por vertical.
-     */
-    protected function getVerticalProfitability(array $tenants): array
-    {
-        $verticals = [];
+    $total_ratio = array_sum(array_column($economics, 'ltv_cac_ratio'));
+    $total_payback = array_sum(array_column($economics, 'payback_months'));
+    $count = count($economics);
 
-        foreach ($tenants as $tenant) {
-            $vertical_id = $tenant['vertical_id'] ?? 'default';
-            $vertical_name = $tenant['vertical_name'] ?? 'Sin Vertical';
+    return [
+      'avg_ltv_cac_ratio' => round($total_ratio / $count, 1),
+      'avg_payback_months' => round($total_payback / $count, 1),
+      'vip_count' => count(array_filter($economics, fn($e) => $e['status'] === 'vip')),
+      'healthy_count' => count(array_filter($economics, fn($e) => $e['status'] === 'healthy')),
+      'at_risk_count' => count(array_filter($economics, fn($e) => $e['status'] === 'at_risk')),
+      'loss_count' => count(array_filter($economics, fn($e) => $e['status'] === 'loss')),
+    ];
+  }
 
-            if (!isset($verticals[$vertical_id])) {
-                $verticals[$vertical_id] = [
-                    'id' => $vertical_id,
-                    'name' => $vertical_name,
-                    'tenant_count' => 0,
-                    'total_revenue' => 0,
-                    'total_cost' => 0,
-                    'total_profit' => 0,
-                    'margin_percent' => 0,
-                ];
-            }
+  /**
+   * Calcula rentabilidad por Vertical.
+   *
+   * @param array $tenants
+   *   Array de datos de tenants.
+   *
+   * @return array
+   *   Array con P&L por vertical.
+   */
+  protected function getVerticalProfitability(array $tenants): array {
+    $verticals = [];
 
-            $mrr = $tenant['plan_cost']['monthly'] ?? 0;
-            $cost = $tenant['costs']['total'] ?? 0;
+    foreach ($tenants as $tenant) {
+      $vertical_id = $tenant['vertical_id'] ?? 'default';
+      $vertical_name = $tenant['vertical_name'] ?? 'Sin Vertical';
 
-            $verticals[$vertical_id]['tenant_count']++;
-            $verticals[$vertical_id]['total_revenue'] += $mrr;
-            $verticals[$vertical_id]['total_cost'] += $cost;
-            $verticals[$vertical_id]['total_profit'] += ($mrr - $cost);
-        }
+      if (!isset($verticals[$vertical_id])) {
+        $verticals[$vertical_id] = [
+          'id' => $vertical_id,
+          'name' => $vertical_name,
+          'tenant_count' => 0,
+          'total_revenue' => 0,
+          'total_cost' => 0,
+          'total_profit' => 0,
+          'margin_percent' => 0,
+        ];
+      }
 
-        // Calcular margen % para cada vertical
-        foreach ($verticals as &$v) {
-            if ($v['total_revenue'] > 0) {
-                $v['margin_percent'] = round(($v['total_profit'] / $v['total_revenue']) * 100, 1);
-            }
+      $mrr = $tenant['plan_cost']['monthly'] ?? 0;
+      $cost = $tenant['costs']['total'] ?? 0;
 
-            // Status de la vertical
-            $v['status'] = 'healthy';
-            if ($v['margin_percent'] < 20) {
-                $v['status'] = 'warning';
-            }
-            if ($v['margin_percent'] < 0) {
-                $v['status'] = 'critical';
-            }
-            if ($v['margin_percent'] >= 50) {
-                $v['status'] = 'star';
-            }
-
-            // Formatear valores
-            $v['total_revenue'] = round($v['total_revenue'], 2);
-            $v['total_cost'] = round($v['total_cost'], 2);
-            $v['total_profit'] = round($v['total_profit'], 2);
-        }
-
-        // Ordenar por profit descendente
-        uasort($verticals, fn($a, $b) => $b['total_profit'] <=> $a['total_profit']);
-
-        return array_values($verticals);
+      $verticals[$vertical_id]['tenant_count']++;
+      $verticals[$vertical_id]['total_revenue'] += $mrr;
+      $verticals[$vertical_id]['total_cost'] += $cost;
+      $verticals[$vertical_id]['total_profit'] += ($mrr - $cost);
     }
 
-    /**
-     * Obtiene métricas de costes de IA desde AICostOptimizationService.
-     *
-     * @return array
-     *   Métricas de uso y costes de IA.
-     */
-    protected function getAiCostMetrics(): array
-    {
-        $default = [
-            'enabled' => FALSE,
-            'message' => $this->t('AI Cost tracking not available.'),
-        ];
+    // Calcular margen % para cada vertical.
+    foreach ($verticals as &$v) {
+      if ($v['total_revenue'] > 0) {
+        $v['margin_percent'] = round(($v['total_profit'] / $v['total_revenue']) * 100, 1);
+      }
 
-        if (!$this->aiCostService) {
-            return $default;
+      // Status de la vertical.
+      $v['status'] = 'healthy';
+      if ($v['margin_percent'] < 20) {
+        $v['status'] = 'warning';
+      }
+      if ($v['margin_percent'] < 0) {
+        $v['status'] = 'critical';
+      }
+      if ($v['margin_percent'] >= 50) {
+        $v['status'] = 'star';
+      }
+
+      // Formatear valores.
+      $v['total_revenue'] = round($v['total_revenue'], 2);
+      $v['total_cost'] = round($v['total_cost'], 2);
+      $v['total_profit'] = round($v['total_profit'], 2);
+    }
+
+    // Ordenar por profit descendente.
+    uasort($verticals, fn($a, $b) => $b['total_profit'] <=> $a['total_profit']);
+
+    return array_values($verticals);
+  }
+
+  /**
+   * Obtiene métricas de costes de IA desde AICostOptimizationService.
+   *
+   * @return array
+   *   Métricas de uso y costes de IA.
+   */
+  protected function getAiCostMetrics(): array {
+    $default = [
+      'enabled' => FALSE,
+      'message' => $this->t('AI Cost tracking not available.'),
+    ];
+
+    if (!$this->aiCostService) {
+      return $default;
+    }
+
+    try {
+      $state = $this->state;
+
+      // Obtener datos agregados desde el servicio.
+      $totalTokens = $state->get('ai_cost_total_tokens', 0);
+      $totalCost = $state->get('ai_cost_total_cost', 0);
+      $totalCalls = $state->get('ai_cost_total_calls', 0);
+      $cacheHits = $state->get('ai_cost_cache_hits', 0);
+      $savings = $state->get('ai_cost_savings', 0);
+
+      // Obtener uso por tenant (sample del primero disponible)
+      $usageByProvider = [];
+      foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+        $key = "ai_cost_{$provider}_tokens";
+        $tokens = $state->get($key, 0);
+        if ($tokens > 0) {
+          $usageByProvider[$provider] = [
+            'tokens' => $tokens,
+            'calls' => $state->get("ai_cost_{$provider}_calls", 0),
+            'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
+          ];
         }
+      }
 
-        try {
-            $state = $this->state;
+      // Estimar ahorro por routing inteligente.
+      $savingsPercent = $totalCost > 0 ? round(($savings / ($totalCost + $savings)) * 100, 1) : 0;
 
-            // Obtener datos agregados desde el servicio
-            $totalTokens = $state->get('ai_cost_total_tokens', 0);
-            $totalCost = $state->get('ai_cost_total_cost', 0);
-            $totalCalls = $state->get('ai_cost_total_calls', 0);
-            $cacheHits = $state->get('ai_cost_cache_hits', 0);
-            $savings = $state->get('ai_cost_savings', 0);
+      // Cache hit rate.
+      $cacheHitRate = $totalCalls > 0 ? round(($cacheHits / $totalCalls) * 100, 1) : 0;
 
-            // Obtener uso por tenant (sample del primero disponible)
-            $usageByProvider = [];
-            foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
-                $key = "ai_cost_{$provider}_tokens";
-                $tokens = $state->get($key, 0);
-                if ($tokens > 0) {
-                    $usageByProvider[$provider] = [
-                        'tokens' => $tokens,
-                        'calls' => $state->get("ai_cost_{$provider}_calls", 0),
-                        'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
-                    ];
-                }
-            }
-
-            // Estimar ahorro por routing inteligente
-            $savingsPercent = $totalCost > 0 ? round(($savings / ($totalCost + $savings)) * 100, 1) : 0;
-
-            // Cache hit rate
-            $cacheHitRate = $totalCalls > 0 ? round(($cacheHits / $totalCalls) * 100, 1) : 0;
-
-            return [
-                'enabled' => TRUE,
-                'summary' => [
-                    'total_tokens' => $totalTokens,
-                    'total_cost' => round($totalCost, 2),
-                    'total_calls' => $totalCalls,
-                    'avg_cost_per_call' => $totalCalls > 0 ? round($totalCost / $totalCalls, 4) : 0,
-                ],
-                'optimization' => [
-                    'cache_hits' => $cacheHits,
-                    'cache_hit_rate' => $cacheHitRate,
-                    'savings' => round($savings, 2),
-                    'savings_percent' => $savingsPercent,
-                ],
-                'by_provider' => $usageByProvider,
-                'thresholds' => [
-                    'daily_warning' => 3.0,
-                    'daily_critical' => 5.0,
-                    'monthly_warning' => 50.0,
-                    'monthly_critical' => 100.0,
-                ],
-                'status' => $this->getAiCostStatus($totalCost),
-            ];
-        } catch (\Exception $e) {
-            $this->getLogger('ecosistema_jaraba_core')->warning(
-                'FinOps: Error getting AI cost metrics: @error',
-                ['@error' => $e->getMessage()]
+      return [
+        'enabled' => TRUE,
+        'summary' => [
+          'total_tokens' => $totalTokens,
+          'total_cost' => round($totalCost, 2),
+          'total_calls' => $totalCalls,
+          'avg_cost_per_call' => $totalCalls > 0 ? round($totalCost / $totalCalls, 4) : 0,
+        ],
+        'optimization' => [
+          'cache_hits' => $cacheHits,
+          'cache_hit_rate' => $cacheHitRate,
+          'savings' => round($savings, 2),
+          'savings_percent' => $savingsPercent,
+        ],
+        'by_provider' => $usageByProvider,
+        'thresholds' => [
+          'daily_warning' => 3.0,
+          'daily_critical' => 5.0,
+          'monthly_warning' => 50.0,
+          'monthly_critical' => 100.0,
+        ],
+        'status' => $this->getAiCostStatus($totalCost),
+      ];
+    }
+    catch (\Exception $e) {
+      $this->getLogger('ecosistema_jaraba_core')->warning(
+            'FinOps: Error getting AI cost metrics: @error',
+            ['@error' => $e->getMessage()]
             );
-            return $default;
-        }
+      return $default;
     }
+  }
 
-    /**
-     * Determina el estado de costes de IA.
-     */
-    protected function getAiCostStatus(float $dailyCost): string
-    {
-        if ($dailyCost >= 5.0) {
-            return 'critical';
-        }
-        if ($dailyCost >= 3.0) {
-            return 'warning';
-        }
-        return 'normal';
+  /**
+   * Determina el estado de costes de IA.
+   */
+  protected function getAiCostStatus(float $dailyCost): string {
+    if ($dailyCost >= 5.0) {
+      return 'critical';
     }
+    if ($dailyCost >= 3.0) {
+      return 'warning';
+    }
+    return 'normal';
+  }
 
-    /**
-     * Obtiene historial de costes de IA para gráficos Chart.js.
-     *
-     * @return array
-     *   Array con 'daily' (últimos 30 días) y 'by_provider'.
-     */
-    protected function getAiCostHistory(): array
-    {
-        $state = $this->state;
-        $result = [
-            'daily' => [],
-            'by_provider' => [],
+  /**
+   * Obtiene historial de costes de IA para gráficos Chart.js.
+   *
+   * @return array
+   *   Array con 'daily' (últimos 30 días) y 'by_provider'.
+   */
+  protected function getAiCostHistory(): array {
+    $state = $this->state;
+    $result = [
+      'daily' => [],
+      'by_provider' => [],
+    ];
+
+    try {
+      // Obtener datos históricos diarios de los últimos 30 días.
+      $today = new \DateTime();
+      for ($i = 29; $i >= 0; $i--) {
+        $date = (clone $today)->sub(new \DateInterval("P{$i}D"));
+        $dateKey = $date->format('Y-m-d');
+        $stateKey = 'ai_usage_daily_' . $dateKey;
+
+        $dailyData = $state->get($stateKey, [
+          'cost' => 0,
+          'tokens' => 0,
+          'calls' => 0,
+        ]);
+
+        $result['daily'][] = [
+          'date' => $date->format('d M'),
+          'cost' => round($dailyData['cost'] ?? 0, 4),
+          'tokens' => $dailyData['tokens'] ?? 0,
+          'calls' => $dailyData['calls'] ?? 0,
         ];
+      }
 
-        try {
-            // Obtener datos históricos diarios de los últimos 30 días
-            $today = new \DateTime();
-            for ($i = 29; $i >= 0; $i--) {
-                $date = (clone $today)->sub(new \DateInterval("P{$i}D"));
-                $dateKey = $date->format('Y-m-d');
-                $stateKey = 'ai_usage_daily_' . $dateKey;
+      // Obtener datos por proveedor del mes actual.
+      $monthKey = 'ai_usage_' . date('Y-m');
+      $monthlyData = $state->get($monthKey, []);
 
-                $dailyData = $state->get($stateKey, [
-                    'cost' => 0,
-                    'tokens' => 0,
-                    'calls' => 0,
-                ]);
-
-                $result['daily'][] = [
-                    'date' => $date->format('d M'),
-                    'cost' => round($dailyData['cost'] ?? 0, 4),
-                    'tokens' => $dailyData['tokens'] ?? 0,
-                    'calls' => $dailyData['calls'] ?? 0,
-                ];
-            }
-
-            // Obtener datos por proveedor del mes actual
-            $monthKey = 'ai_usage_' . date('Y-m');
-            $monthlyData = $state->get($monthKey, []);
-
-            foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
-                if (isset($monthlyData[$provider])) {
-                    $result['by_provider'][$provider] = [
-                        'cost' => round($monthlyData[$provider]['cost'] ?? 0, 4),
-                        'tokens' => ($monthlyData[$provider]['tokens_in'] ?? 0) + ($monthlyData[$provider]['tokens_out'] ?? 0),
-                        'calls' => $monthlyData[$provider]['calls'] ?? 0,
-                    ];
-                }
-            }
-
-            // Si no hay datos del mes, usar datos legacy
-            if (empty($result['by_provider'])) {
-                foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
-                    $tokens = $state->get("ai_cost_{$provider}_tokens", 0);
-                    if ($tokens > 0) {
-                        $result['by_provider'][$provider] = [
-                            'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
-                            'tokens' => $tokens,
-                            'calls' => $state->get("ai_cost_{$provider}_calls", 0),
-                        ];
-                    }
-                }
-            }
-
-        } catch (\Exception $e) {
-            $this->getLogger('ecosistema_jaraba_core')->warning(
-                'FinOps: Error getting AI cost history: @error',
-                ['@error' => $e->getMessage()]
-            );
+      foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+        if (isset($monthlyData[$provider])) {
+          $result['by_provider'][$provider] = [
+            'cost' => round($monthlyData[$provider]['cost'] ?? 0, 4),
+            'tokens' => ($monthlyData[$provider]['tokens_in'] ?? 0) + ($monthlyData[$provider]['tokens_out'] ?? 0),
+            'calls' => $monthlyData[$provider]['calls'] ?? 0,
+          ];
         }
+      }
 
-        return $result;
+      // Si no hay datos del mes, usar datos legacy.
+      if (empty($result['by_provider'])) {
+        foreach (['anthropic', 'openai', 'google_gemini'] as $provider) {
+          $tokens = $state->get("ai_cost_{$provider}_tokens", 0);
+          if ($tokens > 0) {
+            $result['by_provider'][$provider] = [
+              'cost' => round($state->get("ai_cost_{$provider}_cost", 0), 4),
+              'tokens' => $tokens,
+              'calls' => $state->get("ai_cost_{$provider}_calls", 0),
+            ];
+          }
+        }
+      }
+
     }
+    catch (\Exception $e) {
+      $this->getLogger('ecosistema_jaraba_core')->warning(
+            'FinOps: Error getting AI cost history: @error',
+            ['@error' => $e->getMessage()]
+            );
+    }
+
+    return $result;
+  }
 
 }

@@ -93,8 +93,8 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     // Verificación de firma HMAC-SHA256.
     if (!$this->stripeConnect->verifyWebhookSignature($payload, $sigHeader)) {
       $this->billingLogger->warning('Billing webhook rechazado: firma inválida.');
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 400);
     }
 
     $event = json_decode($payload, TRUE);

@@ -94,7 +94,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // source_id + external_ref forman la clave de negocio.
     // content_hash permite deduplicacion por contenido.
     // =========================================================================
-
     $fields['source_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Source ID'))
       ->setDescription(t('Identificador de la fuente de datos: cendoj, boe, dgt, teac, tjue, eurlex, tedh, edpb, etc.'))
@@ -123,7 +122,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // Campos descriptivos principales de la resolucion: titulo, tipo,
     // organo emisor, jurisdiccion, fechas y estado legal.
     // =========================================================================
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setDescription(t('Titulo oficial de la resolucion.'))
@@ -188,7 +186,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 3: TEXTO COMPLETO + URL ORIGINAL
     // =========================================================================
-
     $fields['full_text'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Full Text'))
       ->setDescription(t('Texto integro de la resolucion. Procesado por Apache Tika (PDF/HTML a texto plano) y pipeline NLP.'))
@@ -205,7 +202,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // Rellenados por el pipeline NLP (Fase 2): Gemini 2.0 Flash para
     // clasificacion y resumen, spaCy para NER.
     // =========================================================================
-
     $fields['abstract_ai'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('AI Abstract'))
       ->setDescription(t('Resumen de 3-5 lineas generado por Gemini 2.0 Flash con strict grounding.'))
@@ -232,7 +228,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // Permiten busqueda facetada por procedimiento, estado demandado,
     // nivel de importancia y articulos CEDH.
     // =========================================================================
-
     $fields['celex_number'] = BaseFieldDefinition::create('string')
       ->setLabel(t('CELEX Number'))
       ->setDescription(t('Identificador CELEX de EUR-Lex (ej: 62011CJ0415).'))
@@ -310,7 +305,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // Vinculan la resolucion con sus chunks vectorizados en Qdrant.
     // vector_ids contiene los UUIDs de los puntos en la coleccion.
     // =========================================================================
-
     $fields['vector_ids'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Qdrant Vector IDs'))
       ->setDescription(t('Array de UUIDs de puntos en Qdrant (JSON). Cada punto es un chunk de 512 tokens.'))
@@ -326,7 +320,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 7: SEO
     // =========================================================================
-
     $fields['seo_slug'] = BaseFieldDefinition::create('string')
       ->setLabel(t('SEO Slug'))
       ->setDescription(t('Slug URL-friendly para paginas publicas (ej: sentencia-ts-1234-2024-desahucio).'))
@@ -337,7 +330,6 @@ class LegalResolution extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 8: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp de creacion del registro en el sistema.'));

@@ -123,7 +123,7 @@ class CalculadoraPuntoEquilibrioService {
    *   punto_equilibrio_clientes: float,
    *   punto_equilibrio_euros: float,
    *   escenarios: list<array{clientes: int, ingresos: float, beneficio_neto: float}>,
-   * }
+   *   }
    *   Resultado del cálculo con punto de equilibrio y escenarios.
    *
    * @throws \InvalidArgumentException

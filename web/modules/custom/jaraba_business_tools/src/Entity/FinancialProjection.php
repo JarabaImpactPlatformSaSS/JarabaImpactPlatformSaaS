@@ -61,320 +61,300 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.financial_projection.settings",
  * )
  */
-class FinancialProjection extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface
-{
+class FinancialProjection extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * Scenario types.
-     */
-    public const SCENARIO_PESSIMISTIC = 'pessimistic';
-    public const SCENARIO_REALISTIC = 'realistic';
-    public const SCENARIO_OPTIMISTIC = 'optimistic';
+  /**
+   * Scenario types.
+   */
+  public const SCENARIO_PESSIMISTIC = 'pessimistic';
+  public const SCENARIO_REALISTIC = 'realistic';
+  public const SCENARIO_OPTIMISTIC = 'optimistic';
 
-    /**
-     * Gets the projection title.
-     */
-    public function getTitle(): string
-    {
-        return $this->get('title')->value ?? '';
+  /**
+   * Gets the projection title.
+   */
+  public function getTitle(): string {
+    return $this->get('title')->value ?? '';
+  }
+
+  /**
+   * Gets the linked canvas ID.
+   */
+  public function getCanvasId(): ?int {
+    $value = $this->get('canvas_id')->target_id;
+    return $value ? (int) $value : NULL;
+  }
+
+  /**
+   * Gets the projection period in months.
+   */
+  public function getPeriodMonths(): int {
+    return (int) $this->get('period_months')->value;
+  }
+
+  /**
+   * Gets monthly revenue projections.
+   */
+  public function getRevenueProjections(): array {
+    $value = $this->get('revenue_projections')->value;
+    return $value ? json_decode($value, TRUE) : [];
+  }
+
+  /**
+   * Sets monthly revenue projections.
+   */
+  public function setRevenueProjections(array $projections): self {
+    $this->set('revenue_projections', json_encode($projections));
+    return $this;
+  }
+
+  /**
+   * Gets monthly cost projections.
+   */
+  public function getCostProjections(): array {
+    $value = $this->get('cost_projections')->value;
+    return $value ? json_decode($value, TRUE) : [];
+  }
+
+  /**
+   * Sets monthly cost projections.
+   */
+  public function setCostProjections(array $projections): self {
+    $this->set('cost_projections', json_encode($projections));
+    return $this;
+  }
+
+  /**
+   * Gets fixed costs breakdown.
+   */
+  public function getFixedCosts(): array {
+    $value = $this->get('fixed_costs')->value;
+    return $value ? json_decode($value, TRUE) : [];
+  }
+
+  /**
+   * Gets variable costs as percentage of revenue.
+   */
+  public function getVariableCostPercentage(): float {
+    return (float) $this->get('variable_cost_percentage')->value;
+  }
+
+  /**
+   * Gets the initial investment required.
+   */
+  public function getInitialInvestment(): float {
+    return (float) $this->get('initial_investment')->value;
+  }
+
+  /**
+   * Gets the current scenario type.
+   */
+  public function getScenario(): string {
+    return $this->get('scenario')->value ?? self::SCENARIO_REALISTIC;
+  }
+
+  /**
+   * Gets the break-even month (calculated).
+   */
+  public function getBreakEvenMonth(): ?int {
+    $value = $this->get('break_even_month')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
+
+  /**
+   * Sets the break-even month.
+   */
+  public function setBreakEvenMonth(?int $month): self {
+    $this->set('break_even_month', $month);
+    return $this;
+  }
+
+  /**
+   * Gets the monthly cash flow.
+   */
+  public function getCashFlowProjections(): array {
+    $revenues = $this->getRevenueProjections();
+    $costs = $this->getCostProjections();
+    $cashFlow = [];
+
+    $runningTotal = -$this->getInitialInvestment();
+
+    for ($i = 0; $i < count($revenues); $i++) {
+      $monthRevenue = $revenues[$i] ?? 0;
+      $monthCost = $costs[$i] ?? 0;
+      $monthProfit = $monthRevenue - $monthCost;
+      $runningTotal += $monthProfit;
+
+      $cashFlow[] = [
+        'month' => $i + 1,
+        'revenue' => $monthRevenue,
+        'costs' => $monthCost,
+        'profit' => $monthProfit,
+        'cumulative' => $runningTotal,
+      ];
     }
 
-    /**
-     * Gets the linked canvas ID.
-     */
-    public function getCanvasId(): ?int
-    {
-        $value = $this->get('canvas_id')->target_id;
-        return $value ? (int) $value : NULL;
+    return $cashFlow;
+  }
+
+  /**
+   * Calculates total projected revenue.
+   */
+  public function getTotalRevenue(): float {
+    return array_sum($this->getRevenueProjections());
+  }
+
+  /**
+   * Calculates total projected costs.
+   */
+  public function getTotalCosts(): float {
+    return array_sum($this->getCostProjections());
+  }
+
+  /**
+   * Calculates net profit.
+   */
+  public function getNetProfit(): float {
+    return $this->getTotalRevenue() - $this->getTotalCosts() - $this->getInitialInvestment();
+  }
+
+  /**
+   * Calculates ROI percentage.
+   */
+  public function getRoi(): float {
+    $investment = $this->getInitialInvestment();
+    if ($investment <= 0) {
+      return 0;
     }
+    return ($this->getNetProfit() / $investment) * 100;
+  }
 
-    /**
-     * Gets the projection period in months.
-     */
-    public function getPeriodMonths(): int
-    {
-        return (int) $this->get('period_months')->value;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-    /**
-     * Gets monthly revenue projections.
-     */
-    public function getRevenueProjections(): array
-    {
-        $value = $this->get('revenue_projections')->value;
-        return $value ? json_decode($value, TRUE) : [];
-    }
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Title'))
+      ->setDescription(t('Projection title.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * Sets monthly revenue projections.
-     */
-    public function setRevenueProjections(array $projections): self
-    {
-        $this->set('revenue_projections', json_encode($projections));
-        return $this;
-    }
+    $fields['canvas_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Canvas'))
+      ->setDescription(t('Linked Business Model Canvas.'))
+      ->setSetting('target_type', 'business_model_canvas')
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * Gets monthly cost projections.
-     */
-    public function getCostProjections(): array
-    {
-        $value = $this->get('cost_projections')->value;
-        return $value ? json_decode($value, TRUE) : [];
-    }
+    $fields['scenario'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Scenario'))
+      ->setDescription(t('Projection scenario type.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        self::SCENARIO_PESSIMISTIC => t('Pessimistic'),
+        self::SCENARIO_REALISTIC => t('Realistic'),
+        self::SCENARIO_OPTIMISTIC => t('Optimistic'),
+      ])
+      ->setDefaultValue(self::SCENARIO_REALISTIC)
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * Sets monthly cost projections.
-     */
-    public function setCostProjections(array $projections): self
-    {
-        $this->set('cost_projections', json_encode($projections));
-        return $this;
-    }
+    $fields['period_months'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Projection Period (Months)'))
+      ->setDescription(t('Number of months to project.'))
+      ->setRequired(TRUE)
+      ->setDefaultValue(12)
+      ->setSetting('min', 1)
+      ->setSetting('max', 60)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * Gets fixed costs breakdown.
-     */
-    public function getFixedCosts(): array
-    {
-        $value = $this->get('fixed_costs')->value;
-        return $value ? json_decode($value, TRUE) : [];
-    }
+    $fields['initial_investment'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Initial Investment'))
+      ->setDescription(t('Initial investment required (€).'))
+      ->setSetting('precision', 12)
+      ->setSetting('scale', 2)
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -7,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * Gets variable costs as percentage of revenue.
-     */
-    public function getVariableCostPercentage(): float
-    {
-        return (float) $this->get('variable_cost_percentage')->value;
-    }
+    $fields['revenue_projections'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Revenue Projections'))
+      ->setDescription(t('JSON array of monthly revenue projections.'))
+      ->setDefaultValue('[]');
 
-    /**
-     * Gets the initial investment required.
-     */
-    public function getInitialInvestment(): float
-    {
-        return (float) $this->get('initial_investment')->value;
-    }
+    $fields['cost_projections'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Cost Projections'))
+      ->setDescription(t('JSON array of monthly cost projections.'))
+      ->setDefaultValue('[]');
 
-    /**
-     * Gets the current scenario type.
-     */
-    public function getScenario(): string
-    {
-        return $this->get('scenario')->value ?? self::SCENARIO_REALISTIC;
-    }
+    $fields['fixed_costs'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Fixed Costs'))
+      ->setDescription(t('JSON breakdown of fixed costs.'))
+      ->setDefaultValue('{}');
 
-    /**
-     * Gets the break-even month (calculated).
-     */
-    public function getBreakEvenMonth(): ?int
-    {
-        $value = $this->get('break_even_month')->value;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+    $fields['variable_cost_percentage'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Variable Cost %'))
+      ->setDescription(t('Variable costs as percentage of revenue.'))
+      ->setSetting('precision', 5)
+      ->setSetting('scale', 2)
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * Sets the break-even month.
-     */
-    public function setBreakEvenMonth(?int $month): self
-    {
-        $this->set('break_even_month', $month);
-        return $this;
-    }
+    $fields['break_even_month'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Break-Even Month'))
+      ->setDescription(t('Calculated month when break-even is reached.'))
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * Gets the monthly cash flow.
-     */
-    public function getCashFlowProjections(): array
-    {
-        $revenues = $this->getRevenueProjections();
-        $costs = $this->getCostProjections();
-        $cashFlow = [];
+    $fields['assumptions'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Assumptions'))
+      ->setDescription(t('Key assumptions for this projection.'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $runningTotal = -$this->getInitialInvestment();
+    $fields['notes'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Notes'))
+      ->setDescription(t('Additional notes.'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 6,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        for ($i = 0; $i < count($revenues); $i++) {
-            $monthRevenue = $revenues[$i] ?? 0;
-            $monthCost = $costs[$i] ?? 0;
-            $monthProfit = $monthRevenue - $monthCost;
-            $runningTotal += $monthProfit;
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'));
 
-            $cashFlow[] = [
-                'month' => $i + 1,
-                'revenue' => $monthRevenue,
-                'costs' => $monthCost,
-                'profit' => $monthProfit,
-                'cumulative' => $runningTotal,
-            ];
-        }
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'));
 
-        return $cashFlow;
-    }
-
-    /**
-     * Calculates total projected revenue.
-     */
-    public function getTotalRevenue(): float
-    {
-        return array_sum($this->getRevenueProjections());
-    }
-
-    /**
-     * Calculates total projected costs.
-     */
-    public function getTotalCosts(): float
-    {
-        return array_sum($this->getCostProjections());
-    }
-
-    /**
-     * Calculates net profit.
-     */
-    public function getNetProfit(): float
-    {
-        return $this->getTotalRevenue() - $this->getTotalCosts() - $this->getInitialInvestment();
-    }
-
-    /**
-     * Calculates ROI percentage.
-     */
-    public function getRoi(): float
-    {
-        $investment = $this->getInitialInvestment();
-        if ($investment <= 0) {
-            return 0;
-        }
-        return ($this->getNetProfit() / $investment) * 100;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
-
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Title'))
-            ->setDescription(t('Projection title.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['canvas_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Canvas'))
-            ->setDescription(t('Linked Business Model Canvas.'))
-            ->setSetting('target_type', 'business_model_canvas')
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['scenario'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Scenario'))
-            ->setDescription(t('Projection scenario type.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                self::SCENARIO_PESSIMISTIC => t('Pessimistic'),
-                self::SCENARIO_REALISTIC => t('Realistic'),
-                self::SCENARIO_OPTIMISTIC => t('Optimistic'),
-            ])
-            ->setDefaultValue(self::SCENARIO_REALISTIC)
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => -9,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['period_months'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Projection Period (Months)'))
-            ->setDescription(t('Number of months to project.'))
-            ->setRequired(TRUE)
-            ->setDefaultValue(12)
-            ->setSetting('min', 1)
-            ->setSetting('max', 60)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['initial_investment'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Initial Investment'))
-            ->setDescription(t('Initial investment required (€).'))
-            ->setSetting('precision', 12)
-            ->setSetting('scale', 2)
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => -7,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['revenue_projections'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Revenue Projections'))
-            ->setDescription(t('JSON array of monthly revenue projections.'))
-            ->setDefaultValue('[]');
-
-        $fields['cost_projections'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Cost Projections'))
-            ->setDescription(t('JSON array of monthly cost projections.'))
-            ->setDefaultValue('[]');
-
-        $fields['fixed_costs'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Fixed Costs'))
-            ->setDescription(t('JSON breakdown of fixed costs.'))
-            ->setDefaultValue('{}');
-
-        $fields['variable_cost_percentage'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Variable Cost %'))
-            ->setDescription(t('Variable costs as percentage of revenue.'))
-            ->setSetting('precision', 5)
-            ->setSetting('scale', 2)
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => -4,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['break_even_month'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Break-Even Month'))
-            ->setDescription(t('Calculated month when break-even is reached.'))
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['assumptions'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Assumptions'))
-            ->setDescription(t('Key assumptions for this projection.'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['notes'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Notes'))
-            ->setDescription(t('Additional notes.'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 6,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Created'));
-
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Changed'));
-
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

@@ -12,6 +12,9 @@ use Drupal\Core\Entity\EntityListBuilder;
  */
 class LexnetSubmissionListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['subject'] = $this->t('Asunto');
     $header['submission_type'] = $this->t('Tipo');
@@ -21,6 +24,9 @@ class LexnetSubmissionListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $statusLabels = [
       'draft' => $this->t('Borrador'),

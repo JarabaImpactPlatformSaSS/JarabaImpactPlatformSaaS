@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_servicios_conecta\Service;
 
+use Drupal\Core\File\FileExists;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
@@ -86,13 +88,13 @@ class BookingContractService {
 
       // Save PDF as managed file.
       $directory = 'private://contratos/' . date('Y-m');
-      \Drupal::service('file_system')->prepareDirectory($directory, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+      \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
       $filename = 'contrato-booking-' . $bookingId . '-' . time() . '.pdf';
       $file = \Drupal::service('file.repository')->writeData(
         $pdfContent,
         $directory . '/' . $filename,
-        \Drupal\Core\File\FileExists::Replace
+        FileExists::Replace
       );
 
       if (!$file) {

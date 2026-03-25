@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_agent_flows\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -47,7 +48,7 @@ class AgentFlowMetricsServiceTest extends UnitTestCase {
   public function testGetDashboardMetricsReturnsDefaults(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
 
-    $queryMock = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $queryMock = $this->createMock(QueryInterface::class);
     $queryMock->method('accessCheck')->willReturnSelf();
     $queryMock->method('count')->willReturnSelf();
     $queryMock->method('condition')->willReturnSelf();

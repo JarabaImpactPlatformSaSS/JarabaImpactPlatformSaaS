@@ -18,6 +18,9 @@ class LegalCoherenceValidatorServiceTest extends TestCase {
 
   protected LegalCoherenceValidatorService $validator;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->validator = new LegalCoherenceValidatorService(new NullLogger());

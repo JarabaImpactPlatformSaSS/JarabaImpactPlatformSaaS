@@ -63,6 +63,9 @@ class SessionReviewAccessControlHandler extends EntityAccessControlHandler imple
     };
   }
 
+  /**
+   *
+   */
   protected function checkViewAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     // Reviews aprobadas son publicas.
     $status = NULL;
@@ -83,6 +86,9 @@ class SessionReviewAccessControlHandler extends EntityAccessControlHandler imple
     return AccessResult::neutral()->cachePerUser()->addCacheableDependency($entity);
   }
 
+  /**
+   *
+   */
   protected function checkUpdateAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     // Solo el reviewer puede editar su propia review.
     if ($entity->hasField('reviewer_id') && (int) $entity->get('reviewer_id')->target_id === (int) $account->id()) {

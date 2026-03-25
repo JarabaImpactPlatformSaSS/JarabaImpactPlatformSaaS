@@ -255,7 +255,6 @@ function jaraba_sepe_teleformacion_cron(): void {
   }
 }
 
-
 /**
  * Prepares variables for sepe_accion_formativa templates.
  *

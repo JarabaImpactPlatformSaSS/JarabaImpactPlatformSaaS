@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_messaging\Plugin\ECA\Condition;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\eca\Plugin\ECA\Condition\ConditionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

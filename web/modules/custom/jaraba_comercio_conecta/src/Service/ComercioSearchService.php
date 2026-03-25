@@ -8,6 +8,9 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ComercioSearchService {
 
   public function __construct(
@@ -36,7 +39,7 @@ class ComercioSearchService {
    * @return array
    *   Array de resultados con entity_type_ref, entity_id_ref, title, distance.
    */
-  public function search(string $query, array $filters = [], float $lat = NULL, float $lng = NULL, int $limit = 20): array {
+  public function search(string $query, array $filters = [], ?float $lat = NULL, ?float $lng = NULL, int $limit = 20): array {
     try {
       $storage = $this->entityTypeManager->getStorage('comercio_search_index');
       $entity_query = $storage->getQuery()

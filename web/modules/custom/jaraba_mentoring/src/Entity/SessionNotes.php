@@ -40,81 +40,79 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.session_notes.settings",
  * )
  */
-class SessionNotes extends ContentEntityBase
-{
+class SessionNotes extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['session_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Sesión'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'mentoring_session');
+    $fields['session_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Sesión'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'mentoring_session');
 
-        $fields['template_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Template'))
-            ->setSetting('allowed_values', [
-                'general' => 'General',
-                'diagnostic' => 'Diagnóstico',
-                'action_plan' => 'Plan de Acción',
-                'review' => 'Revisión',
-            ])
-            ->setDefaultValue('general');
+    $fields['template_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Template'))
+      ->setSetting('allowed_values', [
+        'general' => 'General',
+        'diagnostic' => 'Diagnóstico',
+        'action_plan' => 'Plan de Acción',
+        'review' => 'Revisión',
+      ])
+      ->setDefaultValue('general');
 
-        $fields['topics_discussed'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Temas Tratados'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['topics_discussed'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Temas Tratados'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['key_insights'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Insights Clave'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['key_insights'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Insights Clave'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['challenges_identified'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Desafíos Identificados'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['challenges_identified'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Desafíos Identificados'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['resources_shared'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Recursos Compartidos'))
-            ->setCardinality(-1)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['resources_shared'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Recursos Compartidos'))
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['next_session_focus'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Foco Próxima Sesión'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['next_session_focus'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Foco Próxima Sesión'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['is_shared_with_mentee'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Compartido con Emprendedor'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 25,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_shared_with_mentee'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Compartido con Emprendedor'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 25,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

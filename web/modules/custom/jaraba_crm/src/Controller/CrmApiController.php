@@ -168,10 +168,13 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
         'notes' => $body['notes'] ?? NULL,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $entity->id(),
-        'name' => $entity->label(),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'name' => $entity->label(),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando empresa: @error', ['@error' => $e->getMessage()]);
@@ -339,10 +342,13 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
         'notes' => $body['notes'] ?? NULL,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $entity->id(),
-        'full_name' => $entity->label(),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'full_name' => $entity->label(),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando contacto: @error', ['@error' => $e->getMessage()]);
@@ -509,10 +515,13 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
         'notes' => $body['notes'] ?? NULL,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $entity->id(),
-        'title' => $entity->label(),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'title' => $entity->label(),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando oportunidad: @error', ['@error' => $e->getMessage()]);
@@ -807,10 +816,13 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
         'notes' => $body['notes'] ?? NULL,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $entity->id(),
-        'subject' => $entity->label(),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'subject' => $entity->label(),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando actividad: @error', ['@error' => $e->getMessage()]);

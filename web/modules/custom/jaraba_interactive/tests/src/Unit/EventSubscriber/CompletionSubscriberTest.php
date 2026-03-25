@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\EventSubscriber;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -59,7 +60,7 @@ class CompletionSubscriberTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 

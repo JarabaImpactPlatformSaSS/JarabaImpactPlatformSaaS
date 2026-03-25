@@ -141,12 +141,16 @@ class AddonApiController extends ControllerBase {
         $data[] = $this->serializeAddon($addon);
       }
 
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $data,
+        'meta' => [
           'total' => count($data),
           'filter_type' => $type ?: NULL,
         ],
-        'errors' => []]);
+        'errors' => [],
+      ]);
     }
     catch (\Exception $e) {
       return $this->errorResponse(
@@ -207,7 +211,10 @@ class AddonApiController extends ControllerBase {
     try {
       $subscription = $this->subscriptionService->subscribe($addon_id, $tenant_id, $billing_cycle);
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeSubscription($subscription), 'meta' => [
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeSubscription($subscription),
+        'meta' => [
           'message' => $this->t('Subscription created successfully.')->__toString(),
         ],
         'errors' => [],
@@ -280,7 +287,8 @@ class AddonApiController extends ControllerBase {
         'meta' => [
           'message' => $this->t('Subscription cancelled successfully.')->__toString(),
         ],
-        'errors' => []]);
+        'errors' => [],
+      ]);
     }
     catch (\Exception $e) {
       return $this->errorResponse(
@@ -322,11 +330,15 @@ class AddonApiController extends ControllerBase {
         $data[] = $this->serializeSubscription($subscription);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $data,
+        'meta' => [
           'total' => count($data),
           'tenant_id' => $tenant_id,
         ],
-        'errors' => []]);
+        'errors' => [],
+      ]);
     }
     catch (\Exception $e) {
       return $this->errorResponse(

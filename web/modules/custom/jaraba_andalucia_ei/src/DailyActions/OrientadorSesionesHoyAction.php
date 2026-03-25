@@ -25,58 +25,100 @@ class OrientadorSesionesHoyAction implements DailyActionInterface {
     protected readonly AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'orientador_ei.sesiones_hoy';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'orientador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Sesiones de hoy');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Consultar las sesiones programadas para hoy');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'education', 'name' => 'calendar-clock', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.orientador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $count = 0;
     try {

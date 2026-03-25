@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_billing\Unit\Controller;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
@@ -194,7 +195,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       ->willReturn(TRUE);
 
     // Mock EntityTypeManager for tenant loading.
-    $tenant = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $tenant = $this->createMock(ContentEntityInterface::class);
     $tenant->method('set')->willReturnSelf();
     $tenant->method('save')->willReturn(1);
 
@@ -210,7 +211,6 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $reflection = new \ReflectionClass($this->controller);
     // We can't easily inject entityTypeManager for ControllerBase,
     // but we verify the handler method exists and the controller processes correctly.
-
     $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 

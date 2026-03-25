@@ -10,6 +10,7 @@
 
 declare(strict_types=1);
 
+use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -31,7 +32,8 @@ function jaraba_candidate_theme(): array {
     'career_dashboard' => [
       'variables' => [
         'phase_name' => '',
-        'phase_emoji' => '',  // SVG icon handled in template
+    // SVG icon handled in template.
+        'phase_emoji' => '',
         'phase_number' => 1,
         'completeness' => 0,
         'tutor_message' => '',
@@ -159,7 +161,6 @@ function jaraba_candidate_theme(): array {
     ],
   ];
 }
-
 
 /**
  * Implements hook_page_attachments_alter().
@@ -299,7 +300,7 @@ function jaraba_candidate_entity_presave(EntityInterface $entity): void {
     $originalCity = $original->get('city')->value ?? '';
     $originalCountry = $original->get('country')->value ?? '';
     $hasLocation = !$entity->get('location')->isEmpty();
-    
+
     if ($hasLocation && $originalCity === $city && $originalCountry === $country) {
       return;
     }
@@ -328,17 +329,17 @@ function jaraba_candidate_entity_presave(EntityInterface $entity): void {
   try {
     /** @var \Drupal\geocoder\GeocoderInterface $geocoder */
     $geocoder = \Drupal::service('geocoder');
-    
+
     // Use OpenStreetMap/Nominatim provider (free, no API key needed).
     $result = $geocoder->geocode($address, ['nominatim']);
-    
+
     if ($result && !$result->isEmpty()) {
       $coordinates = $result->first()->getCoordinates();
       $entity->set('location', [
         'lat' => $coordinates->getLatitude(),
         'lon' => $coordinates->getLongitude(),
       ]);
-      
+
       \Drupal::logger('jaraba_candidate')->info(
         'Geocoded @address to @lat, @lon',
         [
@@ -397,7 +398,7 @@ function template_preprocess_candidate_profile(array &$variables): void {
   if ($entity->hasField('photo') && !$entity->get('photo')->isEmpty()) {
     $file = $entity->get('photo')->entity;
     if ($file) {
-      $style = \Drupal\image\Entity\ImageStyle::load('thumbnail');
+      $style = ImageStyle::load('thumbnail');
       $profile['photo_url'] = $style
         ? $style->buildUrl($file->getFileUri())
         : \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
@@ -437,7 +438,6 @@ function template_preprocess_candidate_experience(array &$variables): void {
     'location' => $entity->get('location')->value ?? '',
   ];
 }
-
 
 /**
  * Prepares variables for candidate_education templates.

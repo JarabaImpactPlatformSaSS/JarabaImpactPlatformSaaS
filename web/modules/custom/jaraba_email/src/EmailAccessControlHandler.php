@@ -28,57 +28,55 @@ use Drupal\Core\Access\AccessResultInterface;
  *
  * ESPECIFICACIÓN: Doc 139 - Email_Marketing_Technical_Guide
  */
-class EmailAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class EmailAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     *
-     * Verifica el acceso a una entidad de email existente.
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        $entityType = $entity->getEntityTypeId();
-
-        // El permiso de administración otorga acceso completo.
-        $adminPermission = "administer {$entityType}s";
-        if ($account->hasPermission($adminPermission)) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        switch ($operation) {
-            case 'view':
-                // Verificar permiso de vista específico o permiso de analíticas.
-                if ($account->hasPermission('view email analytics')) {
-                    return AccessResult::allowed()->cachePerPermissions();
-                }
-                break;
-
-            case 'update':
-            case 'delete':
-                // Solo los administradores pueden actualizar/eliminar.
-                break;
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   *
+   * Verifica el acceso a una entidad de email existente.
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Verifica el acceso para crear nuevas entidades de email.
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        $entityType = $context['entity_type_id'] ?? 'email_list';
-        $adminPermission = "administer {$entityType}s";
+    $entityType = $entity->getEntityTypeId();
 
-        return AccessResult::allowedIfHasPermission($account, $adminPermission);
+    // El permiso de administración otorga acceso completo.
+    $adminPermission = "administer {$entityType}s";
+    if ($account->hasPermission($adminPermission)) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+
+    switch ($operation) {
+      case 'view':
+        // Verificar permiso de vista específico o permiso de analíticas.
+        if ($account->hasPermission('view email analytics')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        break;
+
+      case 'update':
+      case 'delete':
+        // Solo los administradores pueden actualizar/eliminar.
+        break;
+    }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Verifica el acceso para crear nuevas entidades de email.
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    $entityType = $context['entity_type_id'] ?? 'email_list';
+    $adminPermission = "administer {$entityType}s";
+
+    return AccessResult::allowedIfHasPermission($account, $adminPermission);
+  }
 
 }

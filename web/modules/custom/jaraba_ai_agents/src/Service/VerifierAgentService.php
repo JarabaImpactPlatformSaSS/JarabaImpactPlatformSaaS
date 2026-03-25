@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
@@ -139,9 +141,9 @@ class VerifierAgentService {
       ]);
 
       $provider = $this->aiProvider->createInstance($routingConfig['provider_id']);
-      $input = new \Drupal\ai\OperationType\Chat\ChatInput([
-        new \Drupal\ai\OperationType\Chat\ChatMessage('system', 'You are a response quality verifier. Respond only with valid JSON.'),
-        new \Drupal\ai\OperationType\Chat\ChatMessage('user', $verificationPrompt),
+      $input = new ChatInput([
+        new ChatMessage('system', 'You are a response quality verifier. Respond only with valid JSON.'),
+        new ChatMessage('user', $verificationPrompt),
       ]);
 
       $response = $provider->chat($input, $routingConfig['model_id'], [

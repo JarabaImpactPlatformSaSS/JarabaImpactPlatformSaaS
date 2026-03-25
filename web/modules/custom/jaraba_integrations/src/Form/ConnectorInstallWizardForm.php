@@ -130,8 +130,8 @@ class ConnectorInstallWizardForm extends FormBase {
   protected function buildAuthStep(array &$form, FormStateInterface $form_state): void {
     $form['auth_info'] = [
       '#markup' => '<p class="connector-install-wizard__info">' .
-        $this->t('Revisa los permisos que el conector solicita:') .
-        '</p>',
+      $this->t('Revisa los permisos que el conector solicita:') .
+      '</p>',
     ];
 
     $form['permissions'] = [
@@ -174,9 +174,9 @@ class ConnectorInstallWizardForm extends FormBase {
   protected function buildConfirmStep(array &$form, FormStateInterface $form_state): void {
     $form['confirmation'] = [
       '#markup' => '<div class="connector-install-wizard__confirm">' .
-        '<p>' . $this->t('Se instalara el conector con la configuracion proporcionada.') . '</p>' .
-        '<p>' . $this->t('Podras modificar la configuracion en cualquier momento desde el panel de integraciones.') . '</p>' .
-        '</div>',
+      '<p>' . $this->t('Se instalara el conector con la configuracion proporcionada.') . '</p>' .
+      '<p>' . $this->t('Podras modificar la configuracion en cualquier momento desde el panel de integraciones.') . '</p>' .
+      '</div>',
     ];
 
     $form['actions'] = ['#type' => 'actions'];

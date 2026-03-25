@@ -60,34 +60,58 @@ class ProfessionalProfileSection extends AbstractUserProfileSection {
     parent::__construct($currentUser);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'professional_profile';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     return (string) $this->t('Mi Perfil Profesional');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     return (string) $this->t('Gestiona tu presencia profesional en el ecosistema');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'ui', 'name' => 'user'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'innovation';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     return array_filter([
       $this->makeLink(
@@ -111,6 +135,9 @@ class ProfessionalProfileSection extends AbstractUserProfileSection {
     ]);
   }
 
+  /**
+   *
+   */
   public function getExtraData(int $uid): array {
     if (!$this->profileCompletion) {
       return [];
@@ -129,7 +156,7 @@ class ProfessionalProfileSection extends AbstractUserProfileSection {
       $sectionDetails[] = [
         'name' => $this->t(self::SECTION_LABELS[$key]),
         'completed' => \in_array($key, self::ALWAYS_COMPLETED, TRUE)
-          || \in_array($key, $completion['completed_sections'] ?? [], TRUE),
+        || \in_array($key, $completion['completed_sections'] ?? [], TRUE),
         'url' => $this->resolveRoute(self::SECTION_ROUTES[$key] ?? 'jaraba_candidate.my_profile.edit') ?: '',
         'slide_panel_title' => $this->t(self::SECTION_LABELS[$key]),
       ];

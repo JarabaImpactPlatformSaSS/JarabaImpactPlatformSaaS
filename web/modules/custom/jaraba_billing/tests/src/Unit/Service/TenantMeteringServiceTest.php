@@ -6,7 +6,6 @@ namespace Drupal\Tests\jaraba_billing\Unit\Service;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Database\Query\Insert;
 use Drupal\Core\Database\Query\Select;
 use Drupal\Core\Database\StatementInterface;
 use Drupal\jaraba_billing\Service\TenantMeteringService;

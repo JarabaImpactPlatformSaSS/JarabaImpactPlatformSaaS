@@ -38,11 +38,11 @@ class StockLocationListBuilder extends EntityListBuilder {
     $row['name'] = $entity->get('name')->value;
     $row['type'] = $entity->get('type')->value ?? '-';
 
-    // Nombre del comercio propietario
+    // Nombre del comercio propietario.
     $merchant = $entity->get('merchant_id')->entity;
     $row['merchant'] = $merchant ? $merchant->get('business_name')->value : '-';
 
-    // Flags como iconos de texto
+    // Flags como iconos de texto.
     $row['is_pickup_point'] = $entity->get('is_pickup_point')->value ? '✓' : '—';
     $row['is_ship_from'] = $entity->get('is_ship_from')->value ? '✓' : '—';
     $row['priority'] = $entity->get('priority')->value ?? '1';

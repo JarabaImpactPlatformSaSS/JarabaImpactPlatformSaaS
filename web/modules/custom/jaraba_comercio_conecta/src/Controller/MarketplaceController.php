@@ -68,7 +68,7 @@ class MarketplaceController extends ControllerBase {
   public function marketplace(Request $request): array {
     $tenant_id = $this->getTenantId();
 
-    // Recoger filtros de los query parameters
+    // Recoger filtros de los query parameters.
     $filters = [
       'category_id' => $request->query->get('category'),
       'brand_id' => $request->query->get('brand'),
@@ -78,21 +78,21 @@ class MarketplaceController extends ControllerBase {
       'in_stock_only' => $request->query->get('in_stock'),
     ];
 
-    // Limpiar filtros vacíos
+    // Limpiar filtros vacíos.
     $filters = array_filter($filters, fn($v) => $v !== NULL && $v !== '');
 
     $sort = $request->query->get('sort', 'newest');
     $page = max(0, (int) $request->query->get('page', 0));
 
-    // Obtener productos del marketplace
+    // Obtener productos del marketplace.
     $result = $this->marketplaceService->getMarketplaceProducts(
       $tenant_id, $filters, $sort, $page
     );
 
-    // Obtener comercios para el filtro lateral
+    // Obtener comercios para el filtro lateral.
     $merchants = $this->marketplaceService->getMerchants($tenant_id);
 
-    // Obtener categorías para el filtro lateral
+    // Obtener categorías para el filtro lateral.
     $categories = $this->getCategories();
 
     return [
@@ -141,7 +141,7 @@ class MarketplaceController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    // Obtener productos del comercio
+    // Obtener productos del comercio.
     $result = $this->marketplaceService->getMarketplaceProducts(
       $tenant_id,
       ['merchant_id' => $merchant->id()],

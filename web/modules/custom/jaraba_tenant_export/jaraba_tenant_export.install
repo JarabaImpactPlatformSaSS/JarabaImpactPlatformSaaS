@@ -74,7 +74,6 @@ function jaraba_tenant_export_update_10001(): void {
   }
 }
 
-
 /**
  * Implements hook_requirements().
  */

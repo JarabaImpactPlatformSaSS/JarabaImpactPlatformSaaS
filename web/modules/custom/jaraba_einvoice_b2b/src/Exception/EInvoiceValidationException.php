@@ -30,10 +30,16 @@ class EInvoiceValidationException extends \RuntimeException {
     parent::__construct($message, $code, $previous);
   }
 
+  /**
+   *
+   */
   public function getErrors(): array {
     return $this->errors;
   }
 
+  /**
+   *
+   */
   public function getLayer(): string {
     return $this->layer;
   }

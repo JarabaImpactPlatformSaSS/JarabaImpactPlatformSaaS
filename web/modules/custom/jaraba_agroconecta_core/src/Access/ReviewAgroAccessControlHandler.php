@@ -66,6 +66,9 @@ class ReviewAgroAccessControlHandler extends EntityAccessControlHandler implemen
     };
   }
 
+  /**
+   *
+   */
   protected function checkViewAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     $status = $entity->hasField('state') ? $entity->get('state')->value : NULL;
     if ($status === 'approved') {

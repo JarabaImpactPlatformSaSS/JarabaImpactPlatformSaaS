@@ -10,32 +10,29 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * List builder for AI Workflow entities.
  */
-class AIWorkflowListBuilder extends ConfigEntityListBuilder
-{
+class AIWorkflowListBuilder extends ConfigEntityListBuilder {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildHeader(): array
-    {
-        $header['label'] = $this->t('Workflow');
-        $header['description'] = $this->t('Description');
-        $header['steps'] = $this->t('Steps');
-        $header['status'] = $this->t('Status');
-        return $header + parent::buildHeader();
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildHeader(): array {
+    $header['label'] = $this->t('Workflow');
+    $header['description'] = $this->t('Description');
+    $header['steps'] = $this->t('Steps');
+    $header['status'] = $this->t('Status');
+    return $header + parent::buildHeader();
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildRow(EntityInterface $entity): array
-    {
-        /** @var \Drupal\jaraba_ai_agents\Entity\AIWorkflow $entity */
-        $row['label'] = $entity->label();
-        $row['description'] = $entity->getDescription();
-        $row['steps'] = count($entity->getSteps());
-        $row['status'] = $entity->status() ? $this->t('Active') : $this->t('Disabled');
-        return $row + parent::buildRow($entity);
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildRow(EntityInterface $entity): array {
+    /** @var \Drupal\jaraba_ai_agents\Entity\AIWorkflow $entity */
+    $row['label'] = $entity->label();
+    $row['description'] = $entity->getDescription();
+    $row['steps'] = count($entity->getSteps());
+    $row['status'] = $entity->status() ? $this->t('Active') : $this->t('Disabled');
+    return $row + parent::buildRow($entity);
+  }
 
 }

@@ -7,8 +7,6 @@ namespace Drupal\jaraba_predictive\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
-use Drupal\jaraba_predictive\Service\FeatureStoreService;
-use Drupal\jaraba_predictive\Service\RetentionWorkflowService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -108,12 +106,13 @@ class ChurnPredictorService {
 
     // --- Recolección de señales REALES via FeatureStore ---
     $features = $this->featureStore->getFeatures($tenantId);
-    
+
     $inactivityScore = min(100, ($features['days_since_last_login'] / 30) * 100);
     $paymentScore = min(100, $features['payment_failure_count'] * 33);
     $supportScore = min(100, ($features['support_ticket_count'] / 5) * 100);
     $adoptionScore = (1.0 - $features['feature_adoption_rate']) * 100;
-    $contractScore = 20.0; // Fallback heurístico por ahora.
+    // Fallback heurístico por ahora.
+    $contractScore = 20.0;
 
     // --- Ponderación con pesos configurables ---
     $wInactivity = (float) ($weights['inactivity'] ?? 0.35);

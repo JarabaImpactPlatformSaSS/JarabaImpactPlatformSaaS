@@ -182,7 +182,7 @@ class UsagePricingServiceTest extends UnitTestCase {
 
     $this->setupStorageToReturnRule($rule);
 
-    // ceil(2500 / 1000) = 3 packages * 9.99 = 29.97
+    // ceil(2500 / 1000) = 3 packages * 9.99 = 29.97.
     $result = $this->service->calculateCost('emails', 2500.0, 10);
 
     $this->assertEquals(29.97, $result);

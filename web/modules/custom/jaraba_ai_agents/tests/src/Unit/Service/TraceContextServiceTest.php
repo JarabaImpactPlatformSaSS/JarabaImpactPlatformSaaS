@@ -185,7 +185,8 @@ class TraceContextServiceTest extends TestCase {
 
     $this->assertSame($traceId, $context['trace_id']);
     $this->assertSame($span1, $context['span_id']);
-    $this->assertNull($context['parent_span_id']); // span1 is root.
+    // span1 is root.
+    $this->assertNull($context['parent_span_id']);
     $this->assertSame('first.op', $context['operation_name']);
   }
 

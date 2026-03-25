@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -18,7 +22,6 @@ declare(strict_types=1);
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_theme().
@@ -32,7 +35,7 @@ use Drupal\Core\Render\Markup;
  */
 function jaraba_comercio_conecta_theme(): array {
   return [
-    // Template principal del marketplace con grid de productos y filtros
+    // Template principal del marketplace con grid de productos y filtros.
     'comercio_marketplace' => [
       'variables' => [
         'products' => [],
@@ -45,7 +48,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-marketplace',
     ],
-    // Página de detalle de un producto individual
+    // Página de detalle de un producto individual.
     'comercio_product_detail' => [
       'variables' => [
         'product' => NULL,
@@ -61,7 +64,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-product-detail',
     ],
-    // Dashboard del comerciante con KPIs y acciones rápidas
+    // Dashboard del comerciante con KPIs y acciones rápidas.
     'comercio_merchant_dashboard' => [
       'variables' => [
         'merchant' => NULL,
@@ -74,7 +77,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-dashboard',
     ],
-    // Listado de productos del comerciante
+    // Listado de productos del comerciante.
     'comercio_merchant_products' => [
       'variables' => [
         'merchant' => NULL,
@@ -84,7 +87,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-products',
     ],
-    // Dashboard de analíticas del comerciante
+    // Dashboard de analíticas del comerciante.
     'comercio_merchant_analytics' => [
       'variables' => [
         'merchant' => NULL,
@@ -95,7 +98,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-analytics',
     ],
-    // F6: Pagina de checkout
+    // F6: Pagina de checkout.
     'comercio_checkout' => [
       'variables' => [
         'cart' => NULL,
@@ -108,7 +111,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-checkout',
     ],
-    // F6 + P2-06: Confirmacion de pedido con recibo real
+    // F6 + P2-06: Confirmacion de pedido con recibo real.
     'comercio_checkout_confirmation' => [
       'variables' => [
         'order' => NULL,
@@ -137,7 +140,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-my-orders',
     ],
-    // F6: Detalle de pedido
+    // F6: Detalle de pedido.
     'comercio_order_detail' => [
       'variables' => [
         'order' => NULL,
@@ -154,7 +157,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-order-detail',
     ],
-    // F7: Dashboard del consumidor
+    // F7: Dashboard del consumidor.
     'comercio_customer_dashboard' => [
       'variables' => [
         'profile' => NULL,
@@ -164,7 +167,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-customer-dashboard',
     ],
-    // F7: Wishlist del consumidor
+    // F7: Wishlist del consumidor.
     'comercio_customer_wishlist' => [
       'variables' => [
         'wishlist' => NULL,
@@ -173,7 +176,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-customer-wishlist',
     ],
-    // F7: Pedidos recibidos del comerciante
+    // F7: Pedidos recibidos del comerciante.
     'comercio_merchant_orders' => [
       'variables' => [
         'merchant' => NULL,
@@ -184,7 +187,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-orders',
     ],
-    // F7: Pagos y comisiones del comerciante
+    // F7: Pagos y comisiones del comerciante.
     'comercio_merchant_payments' => [
       'variables' => [
         'merchant' => NULL,
@@ -194,14 +197,14 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-merchant-payments',
     ],
-    // F7: Configuracion del comercio
+    // F7: Configuracion del comercio.
     'comercio_merchant_settings' => [
       'variables' => [
         'merchant' => NULL,
       ],
       'template' => 'comercio-merchant-settings',
     ],
-    // F8: Pagina de busqueda
+    // F8: Pagina de busqueda.
     'comercio_search' => [
       'variables' => [
         'query' => '',
@@ -211,7 +214,7 @@ function jaraba_comercio_conecta_theme(): array {
       ],
       'template' => 'comercio-search',
     ],
-    // P1-06: Importacion CSV de productos
+    // P1-06: Importacion CSV de productos.
     'comercio_merchant_import' => [
       'variables' => [
         'merchant' => NULL,
@@ -258,12 +261,12 @@ function jaraba_comercio_conecta_theme(): array {
  *   La entidad recién creada.
  */
 function jaraba_comercio_conecta_entity_insert(EntityInterface $entity): void {
-  // Auto-generar slug para nuevos perfiles de comerciante
+  // Auto-generar slug para nuevos perfiles de comerciante.
   if ($entity->getEntityTypeId() === 'merchant_profile') {
     $slug = $entity->get('slug')->value;
     if (empty($slug)) {
       $business_name = $entity->get('business_name')->value;
-      // Genera slug limpio: minúsculas, sin acentos, guiones
+      // Genera slug limpio: minúsculas, sin acentos, guiones.
       $slug = _jaraba_comercio_conecta_generate_slug($business_name);
       $entity->set('slug', $slug);
       $entity->save();
@@ -316,7 +319,7 @@ function jaraba_comercio_conecta_entity_update(EntityInterface $entity): void {
     }
   }
 
-  // Detectar stock bajo en productos
+  // Detectar stock bajo en productos.
   if ($entity->getEntityTypeId() === 'product_retail') {
     $stock = (int) $entity->get('stock_quantity')->value;
     $threshold = (int) ($entity->get('low_stock_threshold')->value ?: 5);
@@ -374,7 +377,7 @@ function jaraba_comercio_conecta_cron(): void {
   $last_run = $state->get('jaraba_comercio_conecta.cron_last_run', 0);
   $now = \Drupal::time()->getRequestTime();
 
-  // Ejecutar cada 30 minutos como máximo
+  // Ejecutar cada 30 minutos como máximo.
   if (($now - $last_run) < 1800) {
     return;
   }
@@ -558,12 +561,12 @@ function jaraba_comercio_conecta_preprocess_html(array &$variables): void {
     'jaraba_comercio_conecta.merchant_portal.analytics' => 'page-comercio-merchant-analytics',
     'jaraba_comercio_conecta.merchant_portal.profile' => 'page-comercio-merchant-profile',
     'jaraba_comercio_conecta.merchant_portal.product_add' => 'page-comercio-merchant-products',
-    // F6: Checkout y pedidos
+    // F6: Checkout y pedidos.
     'jaraba_comercio_conecta.checkout' => 'page-comercio-checkout',
     'jaraba_comercio_conecta.checkout.confirmation' => 'page-comercio-checkout',
     'jaraba_comercio_conecta.my_orders' => 'page-comercio-my-orders',
     'jaraba_comercio_conecta.my_orders.detail' => 'page-comercio-order-detail',
-    // F7: Customer Portal
+    // F7: Customer Portal.
     'jaraba_comercio_conecta.customer_portal' => 'page-comercio-customer',
     'jaraba_comercio_conecta.customer_portal.wishlist' => 'page-comercio-customer-wishlist',
     'jaraba_comercio_conecta.customer_portal.profile' => 'page-comercio-customer-profile',
@@ -571,7 +574,7 @@ function jaraba_comercio_conecta_preprocess_html(array &$variables): void {
     'jaraba_comercio_conecta.merchant_portal.orders' => 'page-comercio-merchant-orders',
     'jaraba_comercio_conecta.merchant_portal.payments' => 'page-comercio-merchant-payments',
     'jaraba_comercio_conecta.merchant_portal.settings' => 'page-comercio-merchant-settings',
-    // F8: Search
+    // F8: Search.
     'jaraba_comercio_conecta.search' => 'page-comercio-search',
   ];
 
@@ -740,21 +743,32 @@ function jaraba_comercio_conecta_page_attachments_alter(array &$attachments): vo
  *   Slug limpio y único.
  */
 function _jaraba_comercio_conecta_generate_slug(string $text): string {
-  // Tabla de transliteración para caracteres españoles
+  // Tabla de transliteración para caracteres españoles.
   $transliteration = [
-    'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-    'ñ' => 'n', 'ü' => 'u', 'Á' => 'a', 'É' => 'e', 'Í' => 'i',
-    'Ó' => 'o', 'Ú' => 'u', 'Ñ' => 'n', 'Ü' => 'u',
+    'á' => 'a',
+    'é' => 'e',
+    'í' => 'i',
+    'ó' => 'o',
+    'ú' => 'u',
+    'ñ' => 'n',
+    'ü' => 'u',
+    'Á' => 'a',
+    'É' => 'e',
+    'Í' => 'i',
+    'Ó' => 'o',
+    'Ú' => 'u',
+    'Ñ' => 'n',
+    'Ü' => 'u',
   ];
 
   $slug = strtr(mb_strtolower($text), $transliteration);
-  // Solo caracteres alfanuméricos y guiones
+  // Solo caracteres alfanuméricos y guiones.
   $slug = preg_replace('/[^a-z0-9\-]/', '-', $slug);
-  // Eliminar guiones múltiples
+  // Eliminar guiones múltiples.
   $slug = preg_replace('/-+/', '-', $slug);
-  // Eliminar guiones al inicio y final
+  // Eliminar guiones al inicio y final.
   $slug = trim($slug, '-');
-  // Truncar a 128 caracteres
+  // Truncar a 128 caracteres.
   $slug = substr($slug, 0, 128);
 
   return $slug;

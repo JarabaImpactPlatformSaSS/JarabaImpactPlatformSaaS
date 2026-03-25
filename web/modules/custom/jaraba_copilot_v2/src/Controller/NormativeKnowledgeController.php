@@ -67,7 +67,7 @@ class NormativeKnowledgeController extends ControllerBase {
         }
       }
       else {
-        // Buscar en ambos dominios
+        // Buscar en ambos dominios.
         foreach (['TAX', 'SOCIAL_SECURITY'] as $dom) {
           $topics = $this->knowledge->detectTopics($query, $dom);
           foreach ($topics as $topic) {
@@ -77,7 +77,7 @@ class NormativeKnowledgeController extends ControllerBase {
         }
       }
 
-      // Eliminar duplicados
+      // Eliminar duplicados.
       $uniqueResults = [];
       $seen = [];
       foreach ($results as $result) {

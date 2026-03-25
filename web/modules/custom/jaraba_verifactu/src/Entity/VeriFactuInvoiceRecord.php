@@ -66,7 +66,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- IDENTIFICACION DEL REGISTRO ---
-
     $fields['record_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Record Type'))
       ->setDescription(t('Type of VeriFactu record: alta (new) or anulacion (cancellation).'))
@@ -80,7 +79,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS DEL EMISOR (Anexo II, Bloque 1) ---
-
     $fields['nif_emisor'] = BaseFieldDefinition::create('string')
       ->setLabel(t('NIF Emisor'))
       ->setDescription(t('NIF/NIE of the invoice issuer (max 9 characters).'))
@@ -100,7 +98,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS DE LA FACTURA (Anexo II, Bloque 2) ---
-
     $fields['numero_factura'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Invoice Number'))
       ->setDescription(t('Invoice number as per the invoicing series (max 60 characters).'))
@@ -138,7 +135,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS FISCALES (Anexo II, Bloque 3) ---
-
     $fields['clave_regimen'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('VAT Regime Key'))
       ->setDescription(t('IVA regime key (01-15) per RD 1007/2023.'))
@@ -209,7 +205,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- HASH CHAIN (INTEGRIDAD) ---
-
     $fields['hash_record'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Record Hash'))
       ->setDescription(t('SHA-256 hash of this record.'))
@@ -224,7 +219,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- QR Y VERIFICACION ---
-
     $fields['qr_url'] = BaseFieldDefinition::create('string')
       ->setLabel(t('QR Verification URL'))
       ->setDescription(t('AEAT verification URL for QR code.'))
@@ -237,7 +231,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO AEAT ---
-
     $fields['aeat_status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('AEAT Status'))
       ->setDescription(t('Status of the record with the AEAT.'))
@@ -263,14 +256,12 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- XML Y DATOS TECNICOS ---
-
     $fields['xml_registro'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Record XML'))
       ->setDescription(t('Complete SOAP XML of the record.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- REFERENCIAS ---
-
     $fields['remision_batch_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Remision Batch'))
       ->setDescription(t('Reference to the AEAT remision batch.'))
@@ -285,7 +276,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SOFTWARE ID ---
-
     $fields['software_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Software ID'))
       ->setDescription(t('Identifier of the invoicing software (Jaraba).'))
@@ -302,7 +292,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('The tenant (Group) this record belongs to.'))
@@ -313,7 +302,6 @@ class VeriFactuInvoiceRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp when the record was created (UTC).'));

@@ -104,7 +104,6 @@ function jaraba_pilot_manager_update_10003(): string {
   }
 }
 
-
 /**
  * Implements hook_requirements().
  */

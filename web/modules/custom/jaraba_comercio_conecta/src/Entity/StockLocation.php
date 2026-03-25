@@ -71,7 +71,7 @@ class StockLocation extends ContentEntityBase {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    // Aislamiento multi-tenant obligatorio
+    // Aislamiento multi-tenant obligatorio.
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta ubicación para aislamiento multi-tenant.'))
@@ -84,7 +84,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Comercio propietario de la ubicación
+    // Comercio propietario de la ubicación.
     $fields['merchant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Comercio'))
       ->setDescription(t('Comercio propietario de esta ubicación de stock.'))
@@ -97,7 +97,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Nombre descriptivo de la ubicación
+    // Nombre descriptivo de la ubicación.
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre'))
       ->setDescription(t('Nombre descriptivo de la ubicación (ej: "Tienda Principal", "Almacén Trasero").'))
@@ -110,7 +110,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Tipo de ubicación: tienda física, almacén, o reserva online
+    // Tipo de ubicación: tienda física, almacén, o reserva online.
     $fields['type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Tipo'))
       ->setDescription(t('Tipo de ubicación que determina su función en la cadena de fulfillment.'))
@@ -127,7 +127,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Dirección física de la ubicación
+    // Dirección física de la ubicación.
     $fields['address'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Dirección'))
       ->setDescription(t('Dirección física completa de la ubicación.'))
@@ -139,7 +139,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Coordenada latitud para geolocalización
+    // Coordenada latitud para geolocalización.
     $fields['latitude'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Latitud'))
       ->setDescription(t('Coordenada de latitud para calcular distancias (Click & Collect, Ship-from-Store).'))
@@ -152,7 +152,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Coordenada longitud para geolocalización
+    // Coordenada longitud para geolocalización.
     $fields['longitude'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Longitud'))
       ->setDescription(t('Coordenada de longitud para calcular distancias.'))
@@ -165,7 +165,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Si esta ubicación acepta recogida Click & Collect
+    // Si esta ubicación acepta recogida Click & Collect.
     $fields['is_pickup_point'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Punto de recogida'))
       ->setDescription(t('Indica si esta ubicación acepta recogida de pedidos Click & Collect.'))
@@ -178,7 +178,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Si se puede enviar desde esta ubicación
+    // Si se puede enviar desde esta ubicación.
     $fields['is_ship_from'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Envío desde aquí'))
       ->setDescription(t('Indica si se pueden realizar envíos desde esta ubicación (Ship-from-Store).'))
@@ -191,7 +191,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Prioridad de fulfillment: 1 = se usa primero
+    // Prioridad de fulfillment: 1 = se usa primero.
     $fields['priority'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Prioridad'))
       ->setDescription(t('Prioridad de fulfillment: 1 = más prioritario. Determina desde dónde se sirve primero.'))
@@ -204,7 +204,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Estado activo de la ubicación
+    // Estado activo de la ubicación.
     $fields['is_active'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Activa'))
       ->setDescription(t('Indica si la ubicación está activa y operativa.'))
@@ -217,7 +217,7 @@ class StockLocation extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Timestamp de creación
+    // Timestamp de creación.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creación'))
       ->setDescription(t('Fecha en que se creó la ubicación.'));

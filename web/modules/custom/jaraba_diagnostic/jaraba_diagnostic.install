@@ -16,7 +16,7 @@ function jaraba_diagnostic_install(): void {
  * Implements hook_uninstall().
  */
 function jaraba_diagnostic_uninstall(): void {
-  // Eliminar configuración del módulo si existe
+  // Eliminar configuración del módulo si existe.
   \Drupal::configFactory()->getEditable('jaraba_diagnostic.settings')->delete();
 }
 

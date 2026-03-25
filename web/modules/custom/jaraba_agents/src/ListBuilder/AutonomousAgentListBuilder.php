@@ -6,7 +6,6 @@ namespace Drupal\jaraba_agents\ListBuilder;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Listado de agentes autonomos en la interfaz de administracion.

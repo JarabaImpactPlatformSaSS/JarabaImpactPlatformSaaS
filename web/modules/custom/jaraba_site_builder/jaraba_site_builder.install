@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update y uninstall hooks para jaraba_site_builder.
  */
 
-declare(strict_types=1);
+use Drupal\jaraba_site_builder\Entity\SiteConfig;
+
 
 /**
  * Instala las entidades de navegación global: SiteMenu, SiteMenuItem,
@@ -69,7 +72,7 @@ function jaraba_site_builder_update_10003(): string {
     return 'site_config entity type not installed yet.';
   }
 
-  $fields = \Drupal\jaraba_site_builder\Entity\SiteConfig::baseFieldDefinitions($entity_type);
+  $fields = SiteConfig::baseFieldDefinitions($entity_type);
   $installed = [];
   $target_fields = [
     'footer_col1_title',
@@ -226,7 +229,7 @@ function jaraba_site_builder_update_10008(): string {
 /**
  * Reconcile site_config: install translation fields + uninstall orphan metatag.
  *
- * update_10005 made site_config translatable but didn't install the
+ * Update_10005 made site_config translatable but didn't install the
  * content_translation tracking fields. Also, previous hooks incorrectly
  * stored the metatag computed field as a field storage definition.
  *

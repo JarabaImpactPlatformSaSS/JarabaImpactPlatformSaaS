@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_pilot_manager\Plugin\ECA\Event;
 
+use Drupal\Component\EventDispatcher\Event;
 use Drupal\eca\Attributes\Token;
 use Drupal\eca\Plugin\ECA\Event\EventBase;
 
@@ -31,7 +32,7 @@ class PilotCompletedEvent extends EventBase {
       'jaraba_pilot_manager_pilot_completed' => [
         'label' => 'Pilot program completed',
         'event_name' => 'jaraba_pilot_manager.pilot_completed',
-        'event_class' => \Drupal\Component\EventDispatcher\Event::class,
+        'event_class' => Event::class,
       ],
     ];
   }

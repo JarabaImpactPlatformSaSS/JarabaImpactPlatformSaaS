@@ -116,13 +116,13 @@ class SubscriptionProfileSection extends AbstractUserProfileSection {
             'ecosistema_jaraba_core.tenant.change_plan',
             'finance', 'plan-upgrade', 'impulse',
             ['description' => $this->t('Compara planes y cambia el tuyo')],
-          )
+      )
         : $this->makeLink(
             $this->t('Elegir plan'),
             'ecosistema_jaraba_core.pricing.page',
             'finance', 'plan-upgrade', 'impulse',
             ['description' => $this->t('Compara planes y desbloquea funcionalidades')],
-          ),
+      ),
       // Add-ons y complementos (siempre visible — conversion).
       $this->makeLink(
         $this->t('Complementos y add-ons'),

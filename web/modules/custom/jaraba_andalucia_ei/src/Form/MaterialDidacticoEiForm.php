@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Form;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;

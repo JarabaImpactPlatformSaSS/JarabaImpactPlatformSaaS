@@ -47,7 +47,7 @@ class ActuacionStoService {
    * - orientacion_grupal → horas_orientacion_grup
    * - formacion → horas_formacion
    * - tutoria → horas_mentoria_humana
-   * - prospeccion, intermediacion → no incrementan horas del participante
+   * - prospeccion, intermediacion → no incrementan horas del participante.
    */
   public function incrementarHorasParticipante(int $participanteId, string $tipoActuacion, float $horas): void {
     $campoMap = [

@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Dashboard admin de analiticas de resenas.
  *
  * B-05: Review Analytics Dashboard.
- * Pagina: /admin/reports/reviews
+ * Pagina: /admin/reports/reviews.
  */
 class ReviewAnalyticsDashboardController extends ControllerBase {
 

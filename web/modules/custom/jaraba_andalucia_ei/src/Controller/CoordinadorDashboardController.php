@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Controller;
 
+use Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
@@ -294,10 +295,10 @@ class CoordinadorDashboardController extends ControllerBase {
               'estados' => ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'],
               // Sprint 19: Calendar config.
               'calendarConfig' => [
-                'tiposSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::TIPOS_SESION,
-                'modalidades' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::MODALIDADES,
-                'estadosSesion' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::ESTADOS,
-                'fases' => \Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface::FASES_PROGRAMA,
+                'tiposSesion' => SesionProgramadaEiInterface::TIPOS_SESION,
+                'modalidades' => SesionProgramadaEiInterface::MODALIDADES,
+                'estadosSesion' => SesionProgramadaEiInterface::ESTADOS,
+                'fases' => SesionProgramadaEiInterface::FASES_PROGRAMA,
               ],
             ],
           ],

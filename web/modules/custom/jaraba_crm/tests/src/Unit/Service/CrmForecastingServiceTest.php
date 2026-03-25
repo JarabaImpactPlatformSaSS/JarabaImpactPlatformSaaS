@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_crm\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_crm\Service\CrmForecastingService;
@@ -89,8 +91,8 @@ class CrmForecastingServiceTest extends UnitTestCase {
    * Tests avg deal size sin datos.
    */
   public function testGetAvgDealSizeEmpty(): void {
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $query = $this->createMock(QueryInterface::class);
 
     $query->method('accessCheck')->willReturn($query);
     $query->method('condition')->willReturn($query);
@@ -110,8 +112,8 @@ class CrmForecastingServiceTest extends UnitTestCase {
    * Tests sales cycle avg sin datos.
    */
   public function testGetSalesCycleAvgEmpty(): void {
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $query = $this->createMock(QueryInterface::class);
 
     $query->method('accessCheck')->willReturn($query);
     $query->method('condition')->willReturn($query);

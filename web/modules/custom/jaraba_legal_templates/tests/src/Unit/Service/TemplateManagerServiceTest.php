@@ -306,14 +306,32 @@ class TemplateManagerServiceTest extends UnitTestCase {
  * Temporary interface for mocking legal templates.
  */
 interface LegalTemplateMockInterface {
+
+  /**
+   *
+   */
   public function id();
+
+  /**
+   *
+   */
   public function uuid();
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }
 
 /**
  * Temporary interface for mocking field item lists.
  */
 interface FieldItemListMockInterface {
+
+  /**
+   *
+   */
   public function getValue();
+
 }

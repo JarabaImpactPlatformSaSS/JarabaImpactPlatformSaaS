@@ -12,14 +12,24 @@ use Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface;
  */
 class WeightDiscrepancyRule implements FraudRuleInterface {
 
+  /**
+   *
+   */
   public function getName(): string {
     return 'agro_weight_discrepancy';
   }
 
+  /**
+   *
+   */
   public function getWeight(): float {
-    return 0.8; // Alta importancia.
+    // Alta importancia.
+    return 0.8;
   }
 
+  /**
+   *
+   */
   public function evaluate(mixed $subject, array $context = []): int {
     if (!$subject instanceof AgroShipmentInterface) {
       return 0;
@@ -28,12 +38,20 @@ class WeightDiscrepancyRule implements FraudRuleInterface {
     $declaredWeight = (float) $subject->get('weight_value')->value;
     $carrierWeight = (float) ($context['carrier_weight'] ?? $declaredWeight);
 
-    if ($carrierWeight === 0.0) return 0;
+    if ($carrierWeight === 0.0) {
+      return 0;
+    }
 
     $diff = abs($declaredWeight - $carrierWeight) / $declaredWeight;
 
-    if ($diff > 0.30) return 100; // 30% de diferencia = Fraude Seguro.
-    if ($diff > 0.15) return 50;  // 15% de diferencia = Sospechoso.
+    // 30% de diferencia = Fraude Seguro.
+    if ($diff > 0.30) {
+      return 100;
+    }
+    // 15% de diferencia = Sospechoso.
+    if ($diff > 0.15) {
+      return 50;
+    }
 
     return 0;
   }

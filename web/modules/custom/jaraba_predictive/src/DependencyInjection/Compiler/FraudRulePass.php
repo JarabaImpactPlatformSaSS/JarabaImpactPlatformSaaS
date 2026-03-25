@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class FraudRulePass implements CompilerPassInterface {
 
+  /**
+   *
+   */
   public function process(ContainerBuilder $container): void {
     if (!$container->has('jaraba_predictive.fraud_engine')) {
       return;

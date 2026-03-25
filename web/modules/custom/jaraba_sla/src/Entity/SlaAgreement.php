@@ -108,7 +108,6 @@ class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {
     // =========================================================================
     // BLOCK 1: MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant that owns this SLA agreement.'))
@@ -121,7 +120,6 @@ class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {
     // =========================================================================
     // BLOCK 2: SLA DEFINITION
     // =========================================================================
-
     $fields['sla_tier'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('SLA Tier'))
       ->setDescription(new TranslatableMarkup('The SLA service tier.'))
@@ -165,7 +163,6 @@ class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {
     // =========================================================================
     // BLOCK 3: DATES
     // =========================================================================
-
     $fields['effective_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Effective Date'))
       ->setDescription(new TranslatableMarkup('When the SLA agreement becomes effective.'))
@@ -186,7 +183,6 @@ class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {
     // =========================================================================
     // BLOCK 4: STATUS
     // =========================================================================
-
     $fields['is_active'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Active'))
       ->setDescription(new TranslatableMarkup('Whether this SLA agreement is currently active.'))
@@ -198,7 +194,6 @@ class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {
     // =========================================================================
     // BLOCK 5: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Created'));
 

@@ -25,58 +25,100 @@ class LearnerCertificadosAction implements DailyActionInterface {
     protected readonly AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'learner_lms.certificados';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'learner_lms';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Mis certificados');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Descarga tus certificados de finalización');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'achievement', 'name' => 'award', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_lms.my_learning';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $completed = 0;
     try {

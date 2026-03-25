@@ -21,197 +21,196 @@ use Psr\Log\LoggerInterface;
  *
  * @see \Drupal\ai\AiProviderPluginManager
  */
-class SolicitudTriageService
-{
+class SolicitudTriageService {
 
-    /**
-     * Proveedores con failover ordenados por preferencia.
-     */
-    private const PROVIDERS = [
+  /**
+   * Proveedores con failover ordenados por preferencia.
+   */
+  private const PROVIDERS = [
         ['id' => 'anthropic', 'model' => 'claude-3-haiku-20240307'],
         ['id' => 'openai', 'model' => 'gpt-4o-mini'],
-    ];
+  ];
 
-    public function __construct(
-        private ?AiProviderPluginManager $aiProvider,
-        private LoggerInterface $logger,
-    ) {
+  public function __construct(
+    private ?AiProviderPluginManager $aiProvider,
+    private LoggerInterface $logger,
+  ) {
+  }
+
+  /**
+   * Evalúa una solicitud con IA y retorna score + justificación.
+   *
+   * @param \Drupal\jaraba_andalucia_ei\Entity\SolicitudEiInterface $solicitud
+   *   La solicitud a evaluar.
+   *
+   * @return array{score: ?int, justificacion: string, recomendacion: string}
+   *   Array con score (0-100), justificación textual y recomendación.
+   */
+  public function triageSolicitud(SolicitudEiInterface $solicitud): array {
+    if ($this->aiProvider === NULL) {
+      $this->logger->warning('AI provider not available for triage of @nombre', [
+        '@nombre' => $solicitud->getNombre(),
+      ]);
+      return [
+        'score' => NULL,
+        'justificacion' => 'Evaluación IA no disponible. Requiere revisión manual.',
+        'recomendacion' => 'revisar',
+      ];
     }
 
-    /**
-     * Evalúa una solicitud con IA y retorna score + justificación.
-     *
-     * @param \Drupal\jaraba_andalucia_ei\Entity\SolicitudEiInterface $solicitud
-     *   La solicitud a evaluar.
-     *
-     * @return array{score: ?int, justificacion: string, recomendacion: string}
-     *   Array con score (0-100), justificación textual y recomendación.
-     */
-    public function triageSolicitud(SolicitudEiInterface $solicitud): array
-    {
-        if ($this->aiProvider === NULL) {
-            $this->logger->warning('AI provider not available for triage of @nombre', [
-                '@nombre' => $solicitud->getNombre(),
-            ]);
-            return [
-                'score' => NULL,
-                'justificacion' => 'Evaluación IA no disponible. Requiere revisión manual.',
-                'recomendacion' => 'revisar',
-            ];
-        }
+    $prompt = $this->buildTriagePrompt($solicitud);
+    $systemPrompt = $this->getSystemPrompt();
 
-        $prompt = $this->buildTriagePrompt($solicitud);
-        $systemPrompt = $this->getSystemPrompt();
+    foreach (self::PROVIDERS as $providerConfig) {
+      try {
+        $llm = $this->aiProvider->createInstance($providerConfig['id']);
+        $input = new ChatInput([
+          new ChatMessage('user', $prompt),
+        ]);
+        $input->setSystemPrompt($systemPrompt);
+        $response = $llm->chat($input, $providerConfig['model']);
 
-        foreach (self::PROVIDERS as $providerConfig) {
-            try {
-                $llm = $this->aiProvider->createInstance($providerConfig['id']);
-                $input = new ChatInput([
-                    new ChatMessage('user', $prompt),
-                ]);
-                $input->setSystemPrompt($systemPrompt);
-                $response = $llm->chat($input, $providerConfig['model']);
+        $text = $response->getNormalized()->getText();
+        $result = $this->parseResponse($text);
 
-                $text = $response->getNormalized()->getText();
-                $result = $this->parseResponse($text);
-
-                $this->logger->info('Triaje IA completado para solicitud @nombre (score: @score, rec: @rec)', [
-                    '@nombre' => $solicitud->getNombre(),
-                    '@score' => $result['score'] ?? 'N/A',
-                    '@rec' => $result['recomendacion'],
-                ]);
-
-                return $result;
-            } catch (\Throwable $e) {
-                $this->logger->warning('Proveedor IA @id falló para triaje: @msg', [
-                    '@id' => $providerConfig['id'],
-                    '@msg' => $e->getMessage(),
-                ]);
-                continue;
-            }
-        }
-
-        // Fallback si todos los proveedores fallan.
-        $this->logger->error('Todos los proveedores IA fallaron para triaje de solicitud @nombre', [
-            '@nombre' => $solicitud->getNombre(),
+        $this->logger->info('Triaje IA completado para solicitud @nombre (score: @score, rec: @rec)', [
+          '@nombre' => $solicitud->getNombre(),
+          '@score' => $result['score'] ?? 'N/A',
+          '@rec' => $result['recomendacion'],
         ]);
 
-        return [
-            'score' => NULL,
-            'justificacion' => 'Evaluación IA no disponible temporalmente. Requiere revisión manual.',
-            'recomendacion' => 'revisar',
-        ];
+        return $result;
+      }
+      catch (\Throwable $e) {
+        $this->logger->warning('Proveedor IA @id falló para triaje: @msg', [
+          '@id' => $providerConfig['id'],
+          '@msg' => $e->getMessage(),
+        ]);
+        continue;
+      }
     }
 
-    /**
-     * Construye el prompt de triaje con datos de la solicitud.
-     */
-    private function buildTriagePrompt(SolicitudEiInterface $solicitud): string
-    {
-        $provincias = [
-            'almeria' => 'Almería',
-            'cadiz' => 'Cádiz',
-            'cordoba' => 'Córdoba',
-            'granada' => 'Granada',
-            'huelva' => 'Huelva',
-            'jaen' => 'Jaén',
-            'malaga' => 'Málaga',
-            'sevilla' => 'Sevilla',
-        ];
+    // Fallback si todos los proveedores fallan.
+    $this->logger->error('Todos los proveedores IA fallaron para triaje de solicitud @nombre', [
+      '@nombre' => $solicitud->getNombre(),
+    ]);
 
-        $edad = '';
-        $fechaNac = $solicitud->get('fecha_nacimiento')->value ?? '';
-        if ($fechaNac) {
-            try {
-                $birth = new \DateTime($fechaNac);
-                $now = new \DateTime();
-                $edad = (string) $now->diff($birth)->y . ' años';
-            } catch (\Exception $e) {
-                $edad = 'No disponible';
-            }
-        }
+    return [
+      'score' => NULL,
+      'justificacion' => 'Evaluación IA no disponible temporalmente. Requiere revisión manual.',
+      'recomendacion' => 'revisar',
+    ];
+  }
 
-        $colectivos = [
-            'larga_duracion' => 'Desempleados larga duración (+12 meses)',
-            'mayores_45' => 'Mayores de 45 años en desempleo',
-            'migrantes' => 'Personas migrantes',
-            'perceptores_prestaciones' => 'Perceptores de prestaciones/subsidio/RAI',
-            'otros' => 'Otros',
-        ];
+  /**
+   * Construye el prompt de triaje con datos de la solicitud.
+   */
+  private function buildTriagePrompt(SolicitudEiInterface $solicitud): string {
+    $provincias = [
+      'almeria' => 'Almería',
+      'cadiz' => 'Cádiz',
+      'cordoba' => 'Córdoba',
+      'granada' => 'Granada',
+      'huelva' => 'Huelva',
+      'jaen' => 'Jaén',
+      'malaga' => 'Málaga',
+      'sevilla' => 'Sevilla',
+    ];
 
-        $provincia = $provincias[$solicitud->getProvincia()] ?? $solicitud->getProvincia();
-        $colectivoKey = $solicitud->getColectivoInferido();
-        $colectivo = $colectivos[$colectivoKey] ?? 'Sin determinar';
+    $edad = '';
+    $fechaNac = $solicitud->get('fecha_nacimiento')->value ?? '';
+    if ($fechaNac) {
+      try {
+        $birth = new \DateTime($fechaNac);
+        $now = new \DateTime();
+        $edad = (string) $now->diff($birth)->y . ' años';
+      }
+      catch (\Exception $e) {
+        $edad = 'No disponible';
+      }
+    }
 
-        $nivelesDigitales = [
-            'ninguno' => 'Ninguno (no usa ordenador ni móvil)',
-            'basico' => 'Básico (email, WhatsApp, navegación)',
-            'intermedio' => 'Intermedio (ofimática, redes, apps)',
-            'avanzado' => 'Avanzado (herramientas profesionales)',
-        ];
+    $colectivos = [
+      'larga_duracion' => 'Desempleados larga duración (+12 meses)',
+      'mayores_45' => 'Mayores de 45 años en desempleo',
+      'migrantes' => 'Personas migrantes',
+      'perceptores_prestaciones' => 'Perceptores de prestaciones/subsidio/RAI',
+      'otros' => 'Otros',
+    ];
 
-        $nivelesIA = [
-            'no_conozco' => 'No conoce la IA',
-            'he_oido' => 'Ha oído hablar pero no la ha usado',
-            'uso_basico' => 'Uso básico (ChatGPT o similar alguna vez)',
-            'uso_habitual' => 'Uso habitual (IA regularmente)',
-        ];
+    $provincia = $provincias[$solicitud->getProvincia()] ?? $solicitud->getProvincia();
+    $colectivoKey = $solicitud->getColectivoInferido();
+    $colectivo = $colectivos[$colectivoKey] ?? 'Sin determinar';
 
-        $accesoOrdenador = [
-            'no_tengo' => 'Sin acceso a ordenador',
-            'compartido' => 'Ordenador compartido',
-            'propio_antiguo' => 'Ordenador propio (antiguo/limitado)',
-            'propio_reciente' => 'Ordenador propio (reciente)',
-        ];
+    $nivelesDigitales = [
+      'ninguno' => 'Ninguno (no usa ordenador ni móvil)',
+      'basico' => 'Básico (email, WhatsApp, navegación)',
+      'intermedio' => 'Intermedio (ofimática, redes, apps)',
+      'avanzado' => 'Avanzado (herramientas profesionales)',
+    ];
 
-        $accesoInternet = [
-            'sin_acceso' => 'Sin Internet en casa',
-            'movil_solo' => 'Solo datos móviles',
-            'wifi_inestable' => 'Wi-Fi inestable',
-            'fibra_estable' => 'Fibra/conexión estable',
-        ];
+    $nivelesIA = [
+      'no_conozco' => 'No conoce la IA',
+      'he_oido' => 'Ha oído hablar pero no la ha usado',
+      'uso_basico' => 'Uso básico (ChatGPT o similar alguna vez)',
+      'uso_habitual' => 'Uso habitual (IA regularmente)',
+    ];
 
-        $disponibilidades = [
-            'mananas' => 'Mañanas (9-14h)',
-            'tardes' => 'Tardes (16-20h)',
-            'flexible' => 'Flexible',
-            'fines_semana' => 'Solo fines de semana',
-        ];
+    $accesoOrdenador = [
+      'no_tengo' => 'Sin acceso a ordenador',
+      'compartido' => 'Ordenador compartido',
+      'propio_antiguo' => 'Ordenador propio (antiguo/limitado)',
+      'propio_reciente' => 'Ordenador propio (reciente)',
+    ];
 
-        $canales = [
-            'redes_sociales' => 'Redes sociales',
-            'web' => 'Búsqueda web',
-            'conocido' => 'Recomendación personal',
-            'sae' => 'SAE',
-            'ayuntamiento' => 'Ayuntamiento/admin pública',
-            'otro' => 'Otro',
-        ];
+    $accesoInternet = [
+      'sin_acceso' => 'Sin Internet en casa',
+      'movil_solo' => 'Solo datos móviles',
+      'wifi_inestable' => 'Wi-Fi inestable',
+      'fibra_estable' => 'Fibra/conexión estable',
+    ];
 
-        $nivelDigitalKey = $solicitud->get('nivel_digital')->value ?? '';
-        $conoceIaKey = $solicitud->get('conoce_ia')->value ?? '';
-        $accesoOrdKey = $solicitud->get('acceso_ordenador')->value ?? '';
-        $accesoIntKey = $solicitud->get('acceso_internet')->value ?? '';
-        $dispKey = $solicitud->get('disponibilidad_horaria')->value ?? '';
-        $canalKey = $solicitud->get('como_conocio')->value ?? '';
+    $disponibilidades = [
+      'mananas' => 'Mañanas (9-14h)',
+      'tardes' => 'Tardes (16-20h)',
+      'flexible' => 'Flexible',
+      'fines_semana' => 'Solo fines de semana',
+    ];
 
-        // Pre-resolve for heredoc (no ?? inside heredoc).
-        $nivelDigitalLabel = $nivelesDigitales[$nivelDigitalKey] ?? 'No indicado';
-        $conoceIaLabel = $nivelesIA[$conoceIaKey] ?? 'No indicado';
-        $accesoOrdLabel = $accesoOrdenador[$accesoOrdKey] ?? 'No indicado';
-        $accesoIntLabel = $accesoInternet[$accesoIntKey] ?? 'No indicado';
-        $dispLabel = $disponibilidades[$dispKey] ?? 'No indicada';
-        $canalLabel = $canales[$canalKey] ?? 'No indicado';
-        $municipio = $solicitud->get('municipio')->value ?? '';
-        $situacionLaboral = $solicitud->get('situacion_laboral')->value ?? '';
-        $tiempoDesempleo = $solicitud->get('tiempo_desempleo')->value ?? '';
-        $nivelEstudios = $solicitud->get('nivel_estudios')->value ?? '';
-        $esMigrante = $this->boolToStr((bool) $solicitud->get('es_migrante')->value);
-        $percibePrestacion = $this->boolToStr((bool) $solicitud->get('percibe_prestacion')->value);
-        $experiencia = $solicitud->get('experiencia_sector')->value ?? '';
-        $motivacion = $solicitud->get('motivacion')->value ?? '';
-        $nombre = $solicitud->getNombre();
+    $canales = [
+      'redes_sociales' => 'Redes sociales',
+      'web' => 'Búsqueda web',
+      'conocido' => 'Recomendación personal',
+      'sae' => 'SAE',
+      'ayuntamiento' => 'Ayuntamiento/admin pública',
+      'otro' => 'Otro',
+    ];
 
-        return <<<PROMPT
+    $nivelDigitalKey = $solicitud->get('nivel_digital')->value ?? '';
+    $conoceIaKey = $solicitud->get('conoce_ia')->value ?? '';
+    $accesoOrdKey = $solicitud->get('acceso_ordenador')->value ?? '';
+    $accesoIntKey = $solicitud->get('acceso_internet')->value ?? '';
+    $dispKey = $solicitud->get('disponibilidad_horaria')->value ?? '';
+    $canalKey = $solicitud->get('como_conocio')->value ?? '';
+
+    // Pre-resolve for heredoc (no ?? inside heredoc).
+    $nivelDigitalLabel = $nivelesDigitales[$nivelDigitalKey] ?? 'No indicado';
+    $conoceIaLabel = $nivelesIA[$conoceIaKey] ?? 'No indicado';
+    $accesoOrdLabel = $accesoOrdenador[$accesoOrdKey] ?? 'No indicado';
+    $accesoIntLabel = $accesoInternet[$accesoIntKey] ?? 'No indicado';
+    $dispLabel = $disponibilidades[$dispKey] ?? 'No indicada';
+    $canalLabel = $canales[$canalKey] ?? 'No indicado';
+    $municipio = $solicitud->get('municipio')->value ?? '';
+    $situacionLaboral = $solicitud->get('situacion_laboral')->value ?? '';
+    $tiempoDesempleo = $solicitud->get('tiempo_desempleo')->value ?? '';
+    $nivelEstudios = $solicitud->get('nivel_estudios')->value ?? '';
+    $esMigrante = $this->boolToStr((bool) $solicitud->get('es_migrante')->value);
+    $percibePrestacion = $this->boolToStr((bool) $solicitud->get('percibe_prestacion')->value);
+    $experiencia = $solicitud->get('experiencia_sector')->value ?? '';
+    $motivacion = $solicitud->get('motivacion')->value ?? '';
+    $nombre = $solicitud->getNombre();
+
+    return <<<PROMPT
 DATOS DE LA SOLICITUD:
 - Nombre: {$nombre}
 - Edad: {$edad}
@@ -238,14 +237,13 @@ DISPONIBILIDAD Y MOTIVACIÓN:
 
 Evalúa esta solicitud para el programa Andalucía +ei de emprendimiento.
 PROMPT;
-    }
+  }
 
-    /**
-     * System prompt para el triaje IA.
-     */
-    private function getSystemPrompt(): string
-    {
-        return <<<SYSTEM
+  /**
+   * System prompt para el triaje IA.
+   */
+  private function getSystemPrompt(): string {
+    return <<<SYSTEM
 Eres un asistente de triaje para el programa público Andalucía +ei de emprendimiento e inserción laboral.
 
 Tu tarea es evaluar solicitudes de participación y proporcionar:
@@ -277,44 +275,43 @@ UMBRALES:
 RESPONDE EXCLUSIVAMENTE en formato JSON válido, sin markdown:
 {"score": <número>, "justificacion": "<texto>", "recomendacion": "<admitir|revisar|rechazar>"}
 SYSTEM;
+  }
+
+  /**
+   * Parsea la respuesta del LLM.
+   */
+  private function parseResponse(string $text): array {
+    // Limpiar posible markdown wrapping.
+    $text = preg_replace('/^```(?:json)?\s*/', '', trim($text));
+    $text = preg_replace('/\s*```$/', '', $text);
+
+    $data = json_decode(trim($text), TRUE);
+
+    if (is_array($data) && isset($data['score'])) {
+      return [
+        'score' => max(0, min(100, (int) $data['score'])),
+        'justificacion' => (string) ($data['justificacion'] ?? ''),
+        'recomendacion' => in_array($data['recomendacion'] ?? '', ['admitir', 'revisar', 'rechazar'])
+          ? $data['recomendacion']
+          : 'revisar',
+      ];
     }
 
-    /**
-     * Parsea la respuesta del LLM.
-     */
-    private function parseResponse(string $text): array
-    {
-        // Limpiar posible markdown wrapping.
-        $text = preg_replace('/^```(?:json)?\s*/', '', trim($text));
-        $text = preg_replace('/\s*```$/', '', $text);
+    // Si no se pudo parsear, intentar extraer score del texto.
+    $this->logger->warning('Respuesta IA no JSON válido: @text', ['@text' => substr($text, 0, 500)]);
 
-        $data = json_decode(trim($text), TRUE);
+    return [
+      'score' => NULL,
+      'justificacion' => 'Respuesta IA no estructurada. ' . substr($text, 0, 300),
+      'recomendacion' => 'revisar',
+    ];
+  }
 
-        if (is_array($data) && isset($data['score'])) {
-            return [
-                'score' => max(0, min(100, (int) $data['score'])),
-                'justificacion' => (string) ($data['justificacion'] ?? ''),
-                'recomendacion' => in_array($data['recomendacion'] ?? '', ['admitir', 'revisar', 'rechazar'])
-                    ? $data['recomendacion']
-                    : 'revisar',
-            ];
-        }
+  /**
+   * Convierte boolean a string legible.
+   */
+  private function boolToStr(bool $value): string {
+    return $value ? 'Sí' : 'No';
+  }
 
-        // Si no se pudo parsear, intentar extraer score del texto.
-        $this->logger->warning('Respuesta IA no JSON válido: @text', ['@text' => substr($text, 0, 500)]);
-
-        return [
-            'score' => NULL,
-            'justificacion' => 'Respuesta IA no estructurada. ' . substr($text, 0, 300),
-            'recomendacion' => 'revisar',
-        ];
-    }
-
-    /**
-     * Convierte boolean a string legible.
-     */
-    private function boolToStr(bool $value): string
-    {
-        return $value ? 'Sí' : 'No';
-    }
 }

@@ -79,7 +79,7 @@ class EventAnalyticsService {
       return [];
     }
 
-    // Obtener todos los registros del evento
+    // Obtener todos los registros del evento.
     $reg_storage = $this->entityTypeManager->getStorage('event_registration');
     $reg_ids = $reg_storage->getQuery()
       ->accessCheck(FALSE)
@@ -154,13 +154,13 @@ class EventAnalyticsService {
    *   - 'upcoming_events' (int): Eventos futuros programados.
    */
   public function getTenantEventMetrics(int $tenant_id, string $period = '30d'): array {
-    // Calcular fecha de inicio según periodo
+    // Calcular fecha de inicio según periodo.
     $days = (int) filter_var($period, FILTER_SANITIZE_NUMBER_INT);
     $since = date('Y-m-d\TH:i:s', strtotime("-{$days} days"));
 
     $event_storage = $this->entityTypeManager->getStorage('marketing_event');
 
-    // Eventos del tenant en el periodo
+    // Eventos del tenant en el periodo.
     $event_ids = $event_storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('tenant_id', $tenant_id)
@@ -194,7 +194,7 @@ class EventAnalyticsService {
       $type = $event->get('event_type')->value;
       $metrics['events_by_type'][$type] = ($metrics['events_by_type'][$type] ?? 0) + 1;
 
-      // Obtener performance de cada evento
+      // Obtener performance de cada evento.
       $perf = $this->getEventPerformance((int) $event->id());
       $metrics['total_registrations'] += $perf['registrations'];
       $metrics['total_revenue'] += $perf['revenue'];

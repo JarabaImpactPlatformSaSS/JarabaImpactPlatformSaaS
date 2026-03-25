@@ -72,7 +72,6 @@ class ServiceAgreement extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece este acuerdo.'))
@@ -83,7 +82,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- IDENTIFICACIÓN ---
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Título'))
       ->setDescription(new TranslatableMarkup('Título del acuerdo de servicio.'))
@@ -109,7 +107,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERSIONADO ---
-
     $fields['version'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Versión'))
       ->setDescription(new TranslatableMarkup('Versión del acuerdo (ej: 1.0, 2.0).'))
@@ -120,7 +117,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CONTENIDO ---
-
     $fields['content_html'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Contenido HTML'))
       ->setDescription(new TranslatableMarkup('Texto completo del acuerdo en formato HTML.'))
@@ -135,7 +131,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PUBLICACIÓN ---
-
     $fields['published_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de publicación'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de publicación del acuerdo.'))
@@ -152,7 +147,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ACEPTACIÓN ---
-
     $fields['requires_acceptance'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Requiere aceptación'))
       ->setDescription(new TranslatableMarkup('Indica si los tenants deben aceptar este acuerdo explícitamente.'))
@@ -168,7 +162,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VIGENCIA ---
-
     $fields['effective_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de entrada en vigor'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC desde el que el acuerdo es efectivo.'))
@@ -177,7 +170,6 @@ class ServiceAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

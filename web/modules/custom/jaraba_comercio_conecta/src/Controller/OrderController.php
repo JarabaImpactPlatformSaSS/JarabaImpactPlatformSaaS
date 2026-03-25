@@ -12,18 +12,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ *
+ */
 class OrderController extends ControllerBase {
 
   public function __construct(
     protected OrderRetailService $orderService,
   ) {}
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_comercio_conecta.order_retail'),
     );
   }
 
+  /**
+   *
+   */
   public function myOrders(Request $request): array {
     $uid = (int) $this->currentUser()->id();
     if ($uid <= 0) {
@@ -62,6 +71,9 @@ class OrderController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   public function orderDetail(int $order_id): array {
     $result = $this->orderService->getOrder($order_id);
     if (!$result) {
@@ -107,6 +119,9 @@ class OrderController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   public function apiListOrders(Request $request): JsonResponse {
     $uid = (int) $this->currentUser()->id();
     $page = max(0, (int) $request->query->get('page', 0));
@@ -119,15 +134,22 @@ class OrderController extends ControllerBase {
       $data[] = $this->serializeOrder($order);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'page' => $result['page'],
         'per_page' => $result['per_page'],
         'total_pages' => $result['total_pages'],
-      ]]);
+      ],
+    ]);
   }
 
+  /**
+   *
+   */
   public function apiGetOrder(int $order_id): JsonResponse {
     $result = $this->orderService->getOrder($order_id);
     if (!$result) {
@@ -157,6 +179,9 @@ class OrderController extends ControllerBase {
     return new JsonResponse(['success' => TRUE, 'data' => $order_data, 'meta' => ['timestamp' => time()]]);
   }
 
+  /**
+   *
+   */
   public function apiUpdateStatus(int $order_id, Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     $new_status = $data['status'] ?? '';
@@ -173,6 +198,9 @@ class OrderController extends ControllerBase {
     return new JsonResponse(['success' => TRUE, 'data' => ['status' => $new_status, 'order_id' => $order_id], 'meta' => ['timestamp' => time()]]);
   }
 
+  /**
+   *
+   */
   protected function serializeOrder(object $order): array {
     return [
       'id' => (int) $order->id(),

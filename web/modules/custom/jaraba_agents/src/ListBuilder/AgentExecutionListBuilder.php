@@ -95,8 +95,8 @@ class AgentExecutionListBuilder extends EntityListBuilder {
     $row['status'] = [
       'data' => [
         '#markup' => '<span class="execution-status execution-status--' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '">'
-          . ($status_labels[$status] ?? $status)
-          . '</span>',
+        . ($status_labels[$status] ?? $status)
+        . '</span>',
       ],
     ];
     $row['tokens_used'] = number_format($tokens);

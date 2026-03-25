@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_integrations\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\jaraba_integrations\Service\AppApprovalService;
@@ -83,7 +84,7 @@ class AppSubmissionForm extends FormBase {
     $form['actions']['cancel'] = [
       '#type' => 'link',
       '#title' => $this->t('Cancelar'),
-      '#url' => \Drupal\Core\Url::fromRoute('jaraba_integrations.developer_portal'),
+      '#url' => Url::fromRoute('jaraba_integrations.developer_portal'),
       '#attributes' => [
         'class' => ['button', 'button--secondary'],
       ],

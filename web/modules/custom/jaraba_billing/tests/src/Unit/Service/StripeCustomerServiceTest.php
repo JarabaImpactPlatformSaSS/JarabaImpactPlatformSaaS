@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_billing\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
@@ -89,12 +90,14 @@ class StripeCustomerServiceTest extends UnitTestCase {
     $this->stripeConnect->expects($this->exactly(2))
       ->method('stripeRequest')
       ->willReturnOnConsecutiveCalls(
-        ['data' => []], // No existing customer.
-        $newCustomer     // Create new.
+    // No existing customer.
+        ['data' => []],
+    // Create new.
+        $newCustomer
       );
 
     // Mock billing_customer storage for syncBillingCustomer().
-    $mockEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $mockEntity = $this->createMock(ContentEntityInterface::class);
     $mockEntity->method('save')->willReturn(1);
 
     $billingCustomerStorage = $this->createMock(EntityStorageInterface::class);
@@ -158,7 +161,7 @@ class StripeCustomerServiceTest extends UnitTestCase {
       ->method('stripeRequest')
       ->willReturn($stripeData);
 
-    $mockEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $mockEntity = $this->createMock(ContentEntityInterface::class);
     $mockEntity->expects($this->once())->method('save');
 
     $storage = $this->createMock(EntityStorageInterface::class);

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal\Unit;
 
+use Drupal\jaraba_legal\Entity\UsageLimitRecord;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -38,9 +42,9 @@ class AupEnforcerServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
-    $stateMock = $this->createMock(\Drupal\Core\State\StateInterface::class);
+    $stateMock = $this->createMock(StateInterface::class);
     $container->set('state', $stateMock);
     \Drupal::setContainer($container);
 
@@ -96,9 +100,9 @@ class AupEnforcerServiceTest extends UnitTestCase {
 
     // Mock para create() que se llama desde updateUsageRecord
     // cuando no existe un registro previo para el recurso.
-    $fieldItem = $this->createMock(\Drupal\Core\Field\FieldItemListInterface::class);
+    $fieldItem = $this->createMock(FieldItemListInterface::class);
     $fieldItem->value = NULL;
-    $recordMock = $this->getMockBuilder(\Drupal\jaraba_legal\Entity\UsageLimitRecord::class)
+    $recordMock = $this->getMockBuilder(UsageLimitRecord::class)
       ->disableOriginalConstructor()
       ->getMock();
     $recordMock->method('id')->willReturn(1);

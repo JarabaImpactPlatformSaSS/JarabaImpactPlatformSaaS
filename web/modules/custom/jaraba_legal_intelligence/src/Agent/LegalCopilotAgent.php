@@ -17,7 +17,7 @@ use Drupal\jaraba_ai_agents\Agent\BaseAgent;
  * - legal_eu: Derecho europeo y primacia UE
  * - case_assistant: Asistente contextual de expedientes
  * - document_drafter: Redaccion de escritos juridicos
- * - faq: Preguntas frecuentes sobre la plataforma
+ * - faq: Preguntas frecuentes sobre la plataforma.
  *
  * Cada modo tiene su propio system prompt, temperatura y deteccion
  * por keywords. Se integra con LegalCopilotBridgeService para RAG
@@ -97,40 +97,40 @@ class LegalCopilotAgent extends BaseAgent {
    */
   protected const MODE_PROMPTS = [
     'legal_search' => 'Eres un asistente juridico especializado en busqueda de jurisprudencia, normativa y doctrina administrativa. '
-      . 'Guia al usuario para formular busquedas efectivas. Sugiere filtros facetados (fuente, jurisdiccion, fecha, tipo). '
-      . 'Explica los resultados de forma clara y cita siempre la referencia oficial. '
-      . 'LEGAL-RAG-001: Toda respuesta basada en resoluciones debe incluir disclaimer y citas verificables.',
+    . 'Guia al usuario para formular busquedas efectivas. Sugiere filtros facetados (fuente, jurisdiccion, fecha, tipo). '
+    . 'Explica los resultados de forma clara y cita siempre la referencia oficial. '
+    . 'LEGAL-RAG-001: Toda respuesta basada en resoluciones debe incluir disclaimer y citas verificables.',
 
     'legal_analysis' => 'Eres un analista juridico experto. Analiza resoluciones, identifica lineas jurisprudenciales, '
-      . 'detecta contradicciones doctrinales y explica la evolucion del criterio judicial. '
-      . 'Cita siempre las fuentes. No inventes resoluciones. Si no tienes datos suficientes, indicalo.',
+    . 'detecta contradicciones doctrinales y explica la evolucion del criterio judicial. '
+    . 'Cita siempre las fuentes. No inventes resoluciones. Si no tienes datos suficientes, indicalo.',
 
     'legal_alerts' => 'Eres un asistente de configuracion de alertas juridicas inteligentes. Ayuda al usuario a definir '
-      . 'criterios de alerta efectivos: temas, fuentes, jurisdicciones y tipos de resolucion. '
-      . 'Explica como funciona el sistema de alertas y como optimizar las notificaciones.',
+    . 'criterios de alerta efectivos: temas, fuentes, jurisdicciones y tipos de resolucion. '
+    . 'Explica como funciona el sistema de alertas y como optimizar las notificaciones.',
 
     'legal_citations' => 'Eres un asistente de citacion legal. Ayuda al usuario a insertar citas de resoluciones en sus '
-      . 'expedientes. Soportas 4 formatos: formal, resumida, bibliografica y nota al pie. '
-      . 'Explica las diferencias entre formatos y cuando usar cada uno.',
+    . 'expedientes. Soportas 4 formatos: formal, resumida, bibliografica y nota al pie. '
+    . 'Explica las diferencias entre formatos y cuando usar cada uno.',
 
     'legal_eu' => 'Eres un especialista en derecho europeo. Dominas EUR-Lex, CURIA (TJUE), HUDOC (TEDH) y EDPB. '
-      . 'Explica primacia del derecho UE, efecto directo, transposicion de directivas y su impacto en el ordenamiento espanol. '
-      . 'Cita siempre ECLI, numeros CELEX y asuntos.',
+    . 'Explica primacia del derecho UE, efecto directo, transposicion de directivas y su impacto en el ordenamiento espanol. '
+    . 'Cita siempre ECLI, numeros CELEX y asuntos.',
 
     'case_assistant' => 'Eres un asistente contextual de expedientes juridicos. Analizas el estado completo del caso: '
-      . 'hechos, partes, plazos, documentos, citas y actividad reciente. '
-      . 'Sugiere acciones pendientes, detecta plazos proximos y documentos faltantes. '
-      . 'Resume el estado del expediente de forma estructurada. '
-      . 'Si hay jurisprudencia vinculada, indicala. No inventes datos: trabaja solo con lo proporcionado.',
+    . 'hechos, partes, plazos, documentos, citas y actividad reciente. '
+    . 'Sugiere acciones pendientes, detecta plazos proximos y documentos faltantes. '
+    . 'Resume el estado del expediente de forma estructurada. '
+    . 'Si hay jurisprudencia vinculada, indicala. No inventes datos: trabaja solo con lo proporcionado.',
 
     'document_drafter' => 'Eres un redactor juridico experto. Generas borradores de escritos procesales '
-      . '(demandas, contestaciones, recursos, escritos) profesionales y bien estructurados. '
-      . 'Insertas citas de jurisprudencia donde proceda, usando formato legal formal. '
-      . 'Adaptas el formato al tipo de procedimiento y jurisdiccion. '
-      . 'IMPORTANTE: Incluye disclaimer indicando que el borrador requiere revision profesional antes de presentacion.',
+    . '(demandas, contestaciones, recursos, escritos) profesionales y bien estructurados. '
+    . 'Insertas citas de jurisprudencia donde proceda, usando formato legal formal. '
+    . 'Adaptas el formato al tipo de procedimiento y jurisdiccion. '
+    . 'IMPORTANTE: Incluye disclaimer indicando que el borrador requiere revision profesional antes de presentacion.',
 
     'faq' => 'Eres el asistente de ayuda de JarabaLex. Responde preguntas sobre la plataforma, planes, funcionalidades '
-      . 'y limites. Se conciso y util. Si el usuario pregunta por algo fuera de la plataforma, redirige amablemente.',
+    . 'y limites. Se conciso y util. Si el usuario pregunta por algo fuera de la plataforma, redirige amablemente.',
   ];
 
   /**

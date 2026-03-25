@@ -21,7 +21,8 @@ use Psr\Log\LoggerInterface;
  *
  * COBERTURA:
  * Verifica la logica de calculo de metricas SaaS sin acceso a base de datos.
- * Todos los queries de base de datos se simulan con mocks.
+ *
+ * @todo s los queries de base de datos se simulan con mocks.
  *
  * METRICAS VERIFICADAS:
  * - MRR: Monthly Recurring Revenue

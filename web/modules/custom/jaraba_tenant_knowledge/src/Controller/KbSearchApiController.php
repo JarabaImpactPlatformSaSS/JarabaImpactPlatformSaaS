@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * PROPÓSITO:
  * Endpoint REST para búsqueda semántica en la KB.
- * GET /api/v1/kb/search?q=term&tenant_id=X
+ * GET /api/v1/kb/search?q=term&tenant_id=X.
  *
  * DIRECTRICES:
  * - Respuesta JSON estandarizada con success, data, meta

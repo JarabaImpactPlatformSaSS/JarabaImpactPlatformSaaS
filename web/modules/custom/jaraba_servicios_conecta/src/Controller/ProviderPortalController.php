@@ -89,7 +89,7 @@ class ProviderPortalController extends ControllerBase {
       : NULL;
     $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('provider_servicios', $tenantId) ?? [];
 
-    // KPIs del profesional
+    // KPIs del profesional.
     $kpis = [
       'total_bookings' => (int) $provider->get('total_bookings')->value,
       'average_rating' => (float) $provider->get('average_rating')->value,
@@ -178,9 +178,9 @@ class ProviderPortalController extends ControllerBase {
 
     return [
       '#markup' => '<div class="servicios-provider-bookings">'
-        . '<h2>' . $this->t('Mis Reservas') . '</h2>'
-        . '<p>' . $this->t('@count reservas próximas.', ['@count' => count($upcoming)]) . '</p>'
-        . '</div>',
+      . '<h2>' . $this->t('Mis Reservas') . '</h2>'
+      . '<p>' . $this->t('@count reservas próximas.', ['@count' => count($upcoming)]) . '</p>'
+      . '</div>',
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/provider-portal'],
       ],

@@ -13,119 +13,115 @@ use Drupal\jaraba_candidate\Entity\CandidateProfileInterface;
 /**
  * Service for managing candidate profiles.
  */
-class CandidateProfileService
-{
+class CandidateProfileService {
 
-    /**
-     * The entity type manager.
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
+  /**
+   * The entity type manager.
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
-    /**
-     * The current user.
-     */
-    protected AccountProxyInterface $currentUser;
+  /**
+   * The current user.
+   */
+  protected AccountProxyInterface $currentUser;
 
-    /**
-     * The database connection.
-     */
-    protected Connection $database;
+  /**
+   * The database connection.
+   */
+  protected Connection $database;
 
-    /**
-     * The logger.
-     */
-    protected $logger;
+  /**
+   * The logger.
+   */
+  protected $logger;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entity_type_manager,
-        AccountProxyInterface $current_user,
-        Connection $database,
-        LoggerChannelFactoryInterface $logger_factory
-    ) {
-        $this->entityTypeManager = $entity_type_manager;
-        $this->currentUser = $current_user;
-        $this->database = $database;
-        $this->logger = $logger_factory->get('jaraba_candidate');
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    AccountProxyInterface $current_user,
+    Connection $database,
+    LoggerChannelFactoryInterface $logger_factory,
+  ) {
+    $this->entityTypeManager = $entity_type_manager;
+    $this->currentUser = $current_user;
+    $this->database = $database;
+    $this->logger = $logger_factory->get('jaraba_candidate');
+  }
+
+  /**
+   * Gets a profile by user ID.
+   */
+  public function getProfileByUserId(int $user_id): ?CandidateProfileInterface {
+    $profiles = $this->entityTypeManager
+      ->getStorage('candidate_profile')
+      ->loadByProperties(['user_id' => $user_id]);
+
+    return !empty($profiles) ? reset($profiles) : NULL;
+  }
+
+  /**
+   * Creates a new profile for a user.
+   */
+  public function createProfile(int $user_id, array $data = []): CandidateProfileInterface {
+    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
+
+    $profile = $this->entityTypeManager
+      ->getStorage('candidate_profile')
+      ->create([
+        'user_id' => $user_id,
+        'email' => $user ? $user->getEmail() : '',
+        'first_name' => $data['first_name'] ?? '',
+        'last_name' => $data['last_name'] ?? '',
+      ] + $data);
+
+    $profile->save();
+
+    $this->logger->info('Created profile for user @user', ['@user' => $user_id]);
+
+    return $profile;
+  }
+
+  /**
+   * Gets skills for a profile.
+   */
+  public function getSkills(int $userId): array {
+    try {
+      $skillEntities = $this->entityTypeManager
+        ->getStorage('candidate_skill')
+        ->loadByProperties(['user_id' => $userId]);
+
+      $skills = [];
+      foreach ($skillEntities as $skill) {
+        $skills[] = [
+          'id' => (int) $skill->id(),
+          'skill_id' => $skill->getSkillId(),
+          'level' => $skill->getLevel(),
+          'years_experience' => $skill->getYearsExperience(),
+          'is_verified' => $skill->isVerified(),
+        ];
+      }
+
+      return $skills;
     }
-
-    /**
-     * Gets a profile by user ID.
-     */
-    public function getProfileByUserId(int $user_id): ?CandidateProfileInterface
-    {
-        $profiles = $this->entityTypeManager
-            ->getStorage('candidate_profile')
-            ->loadByProperties(['user_id' => $user_id]);
-
-        return !empty($profiles) ? reset($profiles) : NULL;
+    catch (\Exception $e) {
+      $this->logger->error('Error loading skills for user @user: @error', [
+        '@user' => $userId,
+        '@error' => $e->getMessage(),
+      ]);
+      return [];
     }
+  }
 
-    /**
-     * Creates a new profile for a user.
-     */
-    public function createProfile(int $user_id, array $data = []): CandidateProfileInterface
-    {
-        $user = $this->entityTypeManager->getStorage('user')->load($user_id);
-
-        $profile = $this->entityTypeManager
-            ->getStorage('candidate_profile')
-            ->create([
-                'user_id' => $user_id,
-                'email' => $user ? $user->getEmail() : '',
-                'first_name' => $data['first_name'] ?? '',
-                'last_name' => $data['last_name'] ?? '',
-            ] + $data);
-
-        $profile->save();
-
-        $this->logger->info('Created profile for user @user', ['@user' => $user_id]);
-
-        return $profile;
+  /**
+   * Gets the current user's profile.
+   */
+  public function getCurrentUserProfile(): ?CandidateProfileInterface {
+    if ($this->currentUser->isAnonymous()) {
+      return NULL;
     }
-
-    /**
-     * Gets skills for a profile.
-     */
-    public function getSkills(int $userId): array
-    {
-        try {
-            $skillEntities = $this->entityTypeManager
-                ->getStorage('candidate_skill')
-                ->loadByProperties(['user_id' => $userId]);
-
-            $skills = [];
-            foreach ($skillEntities as $skill) {
-                $skills[] = [
-                    'id' => (int) $skill->id(),
-                    'skill_id' => $skill->getSkillId(),
-                    'level' => $skill->getLevel(),
-                    'years_experience' => $skill->getYearsExperience(),
-                    'is_verified' => $skill->isVerified(),
-                ];
-            }
-
-            return $skills;
-        } catch (\Exception $e) {
-            $this->logger->error('Error loading skills for user @user: @error', [
-                '@user' => $userId,
-                '@error' => $e->getMessage(),
-            ]);
-            return [];
-        }
-    }
-
-    /**
-     * Gets the current user's profile.
-     */
-    public function getCurrentUserProfile(): ?CandidateProfileInterface
-    {
-        if ($this->currentUser->isAnonymous()) {
-            return NULL;
-        }
-        return $this->getProfileByUserId((int) $this->currentUser->id());
-    }
+    return $this->getProfileByUserId((int) $this->currentUser->id());
+  }
 
 }

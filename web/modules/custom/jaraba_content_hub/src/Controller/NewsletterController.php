@@ -22,69 +22,67 @@ use Symfony\Component\HttpFoundation\Request;
  * - Rate limiting por IP (básico).
  * - Solo acepta POST.
  */
-class NewsletterController extends ControllerBase
-{
+class NewsletterController extends ControllerBase {
 
-    /**
-     * Procesa la suscripción al newsletter.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con resultado.
-     */
-    public function subscribe(Request $request): JsonResponse
-    {
-        $content = json_decode($request->getContent(), TRUE);
-        $email = trim($content['email'] ?? '');
+  /**
+   * Procesa la suscripción al newsletter.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con resultado.
+   */
+  public function subscribe(Request $request): JsonResponse {
+    $content = json_decode($request->getContent(), TRUE);
+    $email = trim($content['email'] ?? '');
 
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'message' => (string) $this->t('Please provide a valid email address.'),
-            ], 422);
-        }
-
-        // Verificar si ya existe un suscriptor con ese email.
-        $storage = $this->entityTypeManager()->getStorage('email_subscriber');
-        $existing = $storage->getQuery()
-            ->condition('email', $email)
-            ->accessCheck(FALSE)
-            ->range(0, 1)
-            ->execute();
-
-        if (!empty($existing)) {
-            return new JsonResponse([
-                'success' => TRUE,
-                'message' => (string) $this->t('You are already subscribed. Thank you!'),
-            ]);
-        }
-
-        try {
-            $subscriber = $storage->create([
-                'email' => $email,
-                'status' => 'subscribed',
-                'source' => 'blog_newsletter',
-            ]);
-            $subscriber->save();
-
-            return new JsonResponse([
-                'success' => TRUE,
-                'message' => (string) $this->t('Successfully subscribed! Thank you.'),
-            ]);
-        }
-        catch (\Exception $e) {
-            $this->getLogger('jaraba_content_hub')->error(
-                'Error creating newsletter subscriber: @error',
-                ['@error' => $e->getMessage()]
-            );
-
-            return new JsonResponse([
-                'success' => FALSE,
-                'message' => (string) $this->t('An error occurred. Please try again later.'),
-            ], 500);
-        }
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => (string) $this->t('Please provide a valid email address.'),
+      ], 422);
     }
+
+    // Verificar si ya existe un suscriptor con ese email.
+    $storage = $this->entityTypeManager()->getStorage('email_subscriber');
+    $existing = $storage->getQuery()
+      ->condition('email', $email)
+      ->accessCheck(FALSE)
+      ->range(0, 1)
+      ->execute();
+
+    if (!empty($existing)) {
+      return new JsonResponse([
+        'success' => TRUE,
+        'message' => (string) $this->t('You are already subscribed. Thank you!'),
+      ]);
+    }
+
+    try {
+      $subscriber = $storage->create([
+        'email' => $email,
+        'status' => 'subscribed',
+        'source' => 'blog_newsletter',
+      ]);
+      $subscriber->save();
+
+      return new JsonResponse([
+        'success' => TRUE,
+        'message' => (string) $this->t('Successfully subscribed! Thank you.'),
+      ]);
+    }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_content_hub')->error(
+            'Error creating newsletter subscriber: @error',
+            ['@error' => $e->getMessage()]
+        );
+
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => (string) $this->t('An error occurred. Please try again later.'),
+      ], 500);
+    }
+  }
 
 }

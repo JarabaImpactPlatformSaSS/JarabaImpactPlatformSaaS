@@ -386,50 +386,86 @@ class TestableMcpServerController extends McpServerController {
   protected function currentUser(): AccountInterface {
     $account = new class implements AccountInterface {
 
+      /**
+       *
+       */
       public function id() {
         return 42;
       }
 
+      /**
+       *
+       */
       public function getRoles($exclude_locked_roles = FALSE) {
         return ['authenticated'];
       }
 
+      /**
+       *
+       */
       public function hasPermission($permission) {
         return TRUE;
       }
 
+      /**
+       *
+       */
       public function isAuthenticated() {
         return TRUE;
       }
 
+      /**
+       *
+       */
       public function isAnonymous() {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function getPreferredLangcode($fallback_to_default = TRUE) {
         return 'es';
       }
 
+      /**
+       *
+       */
       public function getPreferredAdminLangcode($fallback_to_default = TRUE) {
         return 'es';
       }
 
+      /**
+       *
+       */
       public function getAccountName() {
         return 'test_user';
       }
 
+      /**
+       *
+       */
       public function getDisplayName() {
         return 'Test User';
       }
 
+      /**
+       *
+       */
       public function getEmail() {
         return 'test@example.com';
       }
 
+      /**
+       *
+       */
       public function getTimeZone() {
         return 'Europe/Madrid';
       }
 
+      /**
+       *
+       */
       public function getLastAccessedTime() {
         return time();
       }

@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\jaraba_support\Entity\SupportTicketInterface;
-use Drupal\jaraba_support\Entity\TicketMessage;
 use Drupal\jaraba_support\Entity\TicketMessageInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Psr\Log\LoggerInterface;
@@ -23,7 +22,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * - Agent assignment
  * - Message addition
  * - Event logging
- * - Tenant-scoped queries
+ * - Tenant-scoped queries.
  */
 class TicketService {
 

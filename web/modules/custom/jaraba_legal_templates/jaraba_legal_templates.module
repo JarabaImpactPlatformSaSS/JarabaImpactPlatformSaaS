@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_templates.module — Plantillas y Generacion de Documentos.
+ * Jaraba_legal_templates.module — Plantillas y Generacion de Documentos.
  *
  * Estructura: Hooks de modulo para el sistema de plantillas juridicas.
  * Logica: hook_theme, hook_preprocess_html, hook_preprocess_page.

@@ -21,6 +21,9 @@ class OpenApiSpecServiceTest extends UnitTestCase {
   protected EntityTypeManagerInterface $entityTypeManager;
   protected EntityFieldManagerInterface $entityFieldManager;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);

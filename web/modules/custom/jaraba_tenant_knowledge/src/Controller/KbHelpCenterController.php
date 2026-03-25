@@ -46,9 +46,11 @@ class KbHelpCenterController extends ControllerBase {
     EntityTypeManagerInterface $entityTypeManager,
     KbArticleManagerService $article_manager,
     LoggerInterface $logger,
-    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    TenantContextService $tenantContext,
   ) {
-    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    $this->tenantContext = $tenantContext;
     $this->entityTypeManager = $entityTypeManager;
     $this->articleManager = $article_manager;
     $this->kbLogger = $logger;
@@ -62,7 +64,8 @@ class KbHelpCenterController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_tenant_knowledge.kb_manager'),
       $container->get('logger.channel.jaraba_tenant_knowledge'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 

@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class NotificationService {
 
   public function __construct(

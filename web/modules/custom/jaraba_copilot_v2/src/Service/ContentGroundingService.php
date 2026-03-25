@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Servicio de grounding en contenido Drupal para el Copiloto.
  *
- * v2: Usa GroundingProviders (tagged services) para buscar contenido
+ * V2: Usa GroundingProviders (tagged services) para buscar contenido
  * en TODOS los entity types del ecosistema, no solo 3.
  *
  * Forma parte del Nivel 2 (POR KEYWORD MATCH) de la cascada de busqueda IA.
@@ -53,7 +53,7 @@ class ContentGroundingService {
   /**
    * Obtiene contexto de contenido basado en el mensaje del usuario.
    *
-   * v2: Usa providers si estan disponibles. Fallback a busqueda legacy.
+   * V2: Usa providers si estan disponibles. Fallback a busqueda legacy.
    *
    * @param string $userMessage
    *   Mensaje del usuario para extraer keywords.

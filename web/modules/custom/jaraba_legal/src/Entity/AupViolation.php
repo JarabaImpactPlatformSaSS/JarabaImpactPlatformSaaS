@@ -71,7 +71,6 @@ class AupViolation extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece esta violación.'))
@@ -82,7 +81,6 @@ class AupViolation extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CLASIFICACIÓN ---
-
     $fields['violation_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de violación'))
       ->setDescription(new TranslatableMarkup('Categoría de la violación de AUP detectada.'))
@@ -114,7 +112,6 @@ class AupViolation extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DETALLE ---
-
     $fields['description'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripción'))
       ->setDescription(new TranslatableMarkup('Descripción detallada de la violación detectada.'))
@@ -123,7 +120,6 @@ class AupViolation extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ACCIÓN ---
-
     $fields['action_taken'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Acción tomada'))
       ->setDescription(new TranslatableMarkup('Acción aplicada como consecuencia de la violación.'))
@@ -138,7 +134,6 @@ class AupViolation extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['detected_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de detección'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de detección de la violación.'))

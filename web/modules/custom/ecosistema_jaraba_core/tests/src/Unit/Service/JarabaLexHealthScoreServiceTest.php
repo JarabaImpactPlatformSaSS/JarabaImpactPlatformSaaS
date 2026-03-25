@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Database\Query\Select;
+use Drupal\Core\Database\StatementInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexHealthScoreService;
@@ -253,13 +256,13 @@ class JarabaLexHealthScoreServiceTest extends UnitTestCase {
   public function testCalculateVerticalKpisReturnsAllKpis(): void {
     // The database select for searches_per_user_month may throw.
     // We mock it to return a count.
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
+    $statement = $this->createMock(StatementInterface::class);
     $statement->method('fetchField')->willReturn(0);
 
-    $countQuery = $this->createMock(\Drupal\Core\Database\Query\Select::class);
+    $countQuery = $this->createMock(Select::class);
     $countQuery->method('execute')->willReturn($statement);
 
-    $select = $this->createMock(\Drupal\Core\Database\Query\Select::class);
+    $select = $this->createMock(Select::class);
     $select->method('condition')->willReturnSelf();
     $select->method('countQuery')->willReturn($countQuery);
 
@@ -296,13 +299,13 @@ class JarabaLexHealthScoreServiceTest extends UnitTestCase {
    * @covers ::calculateVerticalKpis
    */
   public function testKpiStatusValuesAreValid(): void {
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
+    $statement = $this->createMock(StatementInterface::class);
     $statement->method('fetchField')->willReturn(0);
 
-    $countQuery = $this->createMock(\Drupal\Core\Database\Query\Select::class);
+    $countQuery = $this->createMock(Select::class);
     $countQuery->method('execute')->willReturn($statement);
 
-    $select = $this->createMock(\Drupal\Core\Database\Query\Select::class);
+    $select = $this->createMock(Select::class);
     $select->method('condition')->willReturnSelf();
     $select->method('countQuery')->willReturn($countQuery);
 
@@ -333,7 +336,7 @@ class JarabaLexHealthScoreServiceTest extends UnitTestCase {
   public function testCalculateUserHealthReturnsExpectedStructure(): void {
     // Without Drupal container, all dimension calculators catch exceptions
     // and return 0. The entityTypeManager storages will fail gracefully.
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')->willReturn([]);
 
     $this->entityTypeManager->method('getStorage')
@@ -357,7 +360,7 @@ class JarabaLexHealthScoreServiceTest extends UnitTestCase {
    * @covers ::calculateUserHealth
    */
   public function testDimensionOutputStructure(): void {
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')->willReturn([]);
 
     $this->entityTypeManager->method('getStorage')

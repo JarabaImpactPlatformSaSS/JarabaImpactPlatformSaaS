@@ -8,6 +8,9 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class LocalSeoService {
 
   public function __construct(

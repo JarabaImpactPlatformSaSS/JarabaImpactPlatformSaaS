@@ -91,8 +91,8 @@ class CalendarApiController extends ControllerBase {
   public function storeDeadline(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['title']) || empty($content['case_id']) || empty($content['due_date'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos obligatorios: title, case_id, due_date.']], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos obligatorios: title, case_id, due_date.']], 400);
     }
 
     $storage = $this->entityTypeManager->getStorage('legal_deadline');

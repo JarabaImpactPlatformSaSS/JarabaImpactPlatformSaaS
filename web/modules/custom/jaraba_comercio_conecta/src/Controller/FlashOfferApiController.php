@@ -29,6 +29,9 @@ class FlashOfferApiController extends ControllerBase {
     protected NotificationService $notificationService,
   ) {}
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_comercio_conecta.flash_offer'),
@@ -72,8 +75,8 @@ class FlashOfferApiController extends ControllerBase {
       ];
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -166,10 +169,12 @@ class FlashOfferApiController extends ControllerBase {
       $lng
     );
 
-    return new JsonResponse(['data' => [
-      'target_url' => $resolved['target_url'],
-      'ab_variant' => $resolved['ab_variant'],
-    ]]);
+    return new JsonResponse([
+      'data' => [
+        'target_url' => $resolved['target_url'],
+        'ab_variant' => $resolved['ab_variant'],
+      ],
+    ]);
   }
 
   /**
@@ -276,10 +281,14 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Error creando resena.')], 500);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => [
-      'id' => (int) $review->id(),
-      'status' => $review->get('status')->value,
-    ], 'meta' => ['timestamp' => time()]], 201);
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'id' => (int) $review->id(),
+        'status' => $review->get('status')->value,
+      ],
+      'meta' => ['timestamp' => time()],
+    ], 201);
   }
 
   /**

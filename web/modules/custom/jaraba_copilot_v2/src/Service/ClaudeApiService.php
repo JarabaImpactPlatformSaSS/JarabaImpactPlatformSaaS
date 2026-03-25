@@ -31,181 +31,177 @@ use GuzzleHttp\Exception\RequestException;
  * @see \Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService
  * @see \Drupal\jaraba_ai_agents\Agent\BaseAgent::callAiApi()
  */
-class ClaudeApiService
-{
+class ClaudeApiService {
 
-    use RetryableHttpClientTrait;
+  use RetryableHttpClientTrait;
 
-    /**
-     * URL base de la API de Anthropic.
-     */
-    const API_URL = 'https://api.anthropic.com/v1/messages';
+  /**
+   * URL base de la API de Anthropic.
+   */
+  const API_URL = 'https://api.anthropic.com/v1/messages';
 
-    /**
-     * Versión de la API de Anthropic.
-     */
-    const API_VERSION = '2023-06-01';
+  /**
+   * Versión de la API de Anthropic.
+   */
+  const API_VERSION = '2023-06-01';
 
-    /**
-     * Modelo por defecto.
-     */
-    const DEFAULT_MODEL = 'claude-sonnet-4-5-20250929';
+  /**
+   * Modelo por defecto.
+   */
+  const DEFAULT_MODEL = 'claude-sonnet-4-5-20250929';
 
-    /**
-     * Config factory.
-     */
-    protected ConfigFactoryInterface $configFactory;
+  /**
+   * Config factory.
+   */
+  protected ConfigFactoryInterface $configFactory;
 
-    /**
-     * Key repository.
-     */
-    protected KeyRepositoryInterface $keyRepository;
+  /**
+   * Key repository.
+   */
+  protected KeyRepositoryInterface $keyRepository;
 
-    /**
-     * HTTP client.
-     */
-    protected ClientInterface $httpClient;
+  /**
+   * HTTP client.
+   */
+  protected ClientInterface $httpClient;
 
-    /**
-     * Logger.
-     */
-    protected LoggerInterface $logger;
+  /**
+   * Logger.
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * Feature unlock service.
-     */
-    protected FeatureUnlockService $featureUnlock;
+  /**
+   * Feature unlock service.
+   */
+  protected FeatureUnlockService $featureUnlock;
 
-    /**
-     * Normative knowledge service.
-     */
-    protected NormativeKnowledgeService $normativeKnowledge;
+  /**
+   * Normative knowledge service.
+   */
+  protected NormativeKnowledgeService $normativeKnowledge;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        ConfigFactoryInterface $configFactory,
-        KeyRepositoryInterface $keyRepository,
-        ClientInterface $httpClient,
-        LoggerInterface $logger,
-        FeatureUnlockService $featureUnlock,
-        NormativeKnowledgeService $normativeKnowledge
-    ) {
-        $this->configFactory = $configFactory;
-        $this->keyRepository = $keyRepository;
-        $this->httpClient = $httpClient;
-        $this->logger = $logger;
-        $this->featureUnlock = $featureUnlock;
-        $this->normativeKnowledge = $normativeKnowledge;
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    ConfigFactoryInterface $configFactory,
+    KeyRepositoryInterface $keyRepository,
+    ClientInterface $httpClient,
+    LoggerInterface $logger,
+    FeatureUnlockService $featureUnlock,
+    NormativeKnowledgeService $normativeKnowledge,
+  ) {
+    $this->configFactory = $configFactory;
+    $this->keyRepository = $keyRepository;
+    $this->httpClient = $httpClient;
+    $this->logger = $logger;
+    $this->featureUnlock = $featureUnlock;
+    $this->normativeKnowledge = $normativeKnowledge;
+  }
+
+  /**
+   * Envía un mensaje al Copiloto y obtiene respuesta.
+   *
+   * @param string $message
+   *   Mensaje del usuario.
+   * @param array $context
+   *   Contexto del emprendedor.
+   * @param string $mode
+   *   Modo del copiloto detectado.
+   *
+   * @return array
+   *   Respuesta estructurada con 'text', 'mode', 'suggestions'.
+   */
+  public function chat(string $message, array $context, string $mode): array {
+    $apiKey = $this->getApiKey();
+
+    if (empty($apiKey)) {
+      return $this->getFallbackResponse($message, $mode, 'API key not configured');
     }
 
-    /**
-     * Envía un mensaje al Copiloto y obtiene respuesta.
-     *
-     * @param string $message
-     *   Mensaje del usuario.
-     * @param array $context
-     *   Contexto del emprendedor.
-     * @param string $mode
-     *   Modo del copiloto detectado.
-     *
-     * @return array
-     *   Respuesta estructurada con 'text', 'mode', 'suggestions'.
-     */
-    public function chat(string $message, array $context, string $mode): array
-    {
-        $apiKey = $this->getApiKey();
+    try {
+      $systemPrompt = $this->buildSystemPrompt($context, $mode);
+      $enrichedContext = $this->enrichWithNormativeKnowledge($mode, $message);
 
-        if (empty($apiKey)) {
-            return $this->getFallbackResponse($message, $mode, 'API key not configured');
-        }
+      $response = $this->callClaudeApi($message, $systemPrompt, $enrichedContext);
 
-        try {
-            $systemPrompt = $this->buildSystemPrompt($context, $mode);
-            $enrichedContext = $this->enrichWithNormativeKnowledge($mode, $message);
+      return $this->formatResponse($response, $mode);
+    }
+    catch (RequestException $e) {
+      $this->logger->error('Claude API error: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+      return $this->getFallbackResponse($message, $mode, $e->getMessage());
+    }
+  }
 
-            $response = $this->callClaudeApi($message, $systemPrompt, $enrichedContext);
+  /**
+   * Llama a la API de Claude.
+   */
+  protected function callClaudeApi(string $message, string $systemPrompt, array $additionalContext): array {
+    $config = $this->configFactory->get('jaraba_copilot_v2.settings');
+    $model = $config->get('claude_model') ?? self::DEFAULT_MODEL;
 
-            return $this->formatResponse($response, $mode);
-        } catch (RequestException $e) {
-            $this->logger->error('Claude API error: @message', [
-                '@message' => $e->getMessage(),
-            ]);
-            return $this->getFallbackResponse($message, $mode, $e->getMessage());
-        }
+    // Añadir contexto normativo al mensaje si existe.
+    $userMessage = $message;
+    if (!empty($additionalContext)) {
+      $contextText = "\n\n---\nCONTEXTO NORMATIVO RELEVANTE:\n";
+      foreach ($additionalContext as $item) {
+        $contextText .= sprintf(
+              "• %s: %s (Ref: %s)\n",
+              $item['content_key'],
+              $item['content_es'],
+              $item['legal_reference'] ?? 'N/A'
+          );
+      }
+      $userMessage = $message . $contextText;
     }
 
-    /**
-     * Llama a la API de Claude.
-     */
-    protected function callClaudeApi(string $message, string $systemPrompt, array $additionalContext): array
-    {
-        $config = $this->configFactory->get('jaraba_copilot_v2.settings');
-        $model = $config->get('claude_model') ?? self::DEFAULT_MODEL;
+    $payload = [
+      'model' => $model,
+      'max_tokens' => 2048,
+      'system' => $systemPrompt,
+      'messages' => [
+              [
+                'role' => 'user',
+                'content' => $userMessage,
+              ],
+      ],
+    ];
 
-        // Añadir contexto normativo al mensaje si existe
-        $userMessage = $message;
-        if (!empty($additionalContext)) {
-            $contextText = "\n\n---\nCONTEXTO NORMATIVO RELEVANTE:\n";
-            foreach ($additionalContext as $item) {
-                $contextText .= sprintf(
-                    "• %s: %s (Ref: %s)\n",
-                    $item['content_key'],
-                    $item['content_es'],
-                    $item['legal_reference'] ?? 'N/A'
-                );
-            }
-            $userMessage = $message . $contextText;
-        }
+    $response = $this->requestWithRetry('POST', self::API_URL, [
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'x-api-key' => $this->getApiKey(),
+        'anthropic-version' => self::API_VERSION,
+      ],
+      'json' => $payload,
+      'timeout' => 60,
+    ]);
 
-        $payload = [
-            'model' => $model,
-            'max_tokens' => 2048,
-            'system' => $systemPrompt,
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => $userMessage,
-                ],
-            ],
-        ];
+    return json_decode((string) $response->getBody(), TRUE);
+  }
 
-        $response = $this->requestWithRetry('POST', self::API_URL, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'x-api-key' => $this->getApiKey(),
-                'anthropic-version' => self::API_VERSION,
-            ],
-            'json' => $payload,
-            'timeout' => 60,
-        ]);
+  /**
+   * Construye el system prompt según el modo y contexto.
+   */
+  protected function buildSystemPrompt(array $context, string $mode): string {
+    $basePrompt = $this->getBasePrompt();
+    $modePrompt = $this->getModePrompt($mode);
+    $contextPrompt = $this->formatContextPrompt($context);
 
-        return json_decode((string) $response->getBody(), TRUE);
-    }
+    return implode("\n\n", array_filter([
+      $basePrompt,
+      $modePrompt,
+      $contextPrompt,
+    ]));
+  }
 
-    /**
-     * Construye el system prompt según el modo y contexto.
-     */
-    protected function buildSystemPrompt(array $context, string $mode): string
-    {
-        $basePrompt = $this->getBasePrompt();
-        $modePrompt = $this->getModePrompt($mode);
-        $contextPrompt = $this->formatContextPrompt($context);
-
-        return implode("\n\n", array_filter([
-            $basePrompt,
-            $modePrompt,
-            $contextPrompt,
-        ]));
-    }
-
-    /**
-     * Obtiene el prompt base del Copiloto.
-     */
-    protected function getBasePrompt(): string
-    {
-        return <<<PROMPT
+  /**
+   * Obtiene el prompt base del Copiloto.
+   */
+  protected function getBasePrompt(): string {
+    return <<<PROMPT
 # IDENTIDAD Y ROL
 Eres el Copiloto de Emprendimiento de Andalucía +ei, un asistente de IA experto en validación de modelos de negocio. Tu misión es guiar a emprendedores andaluces en las primeras fases de desarrollo de sus ideas, usando metodologías probadas como Lean Startup, Design Thinking y Business Model Canvas.
 
@@ -229,15 +225,14 @@ Estructura tus respuestas así:
 2. Contenido principal (adaptado al modo)
 3. Pregunta orientadora o próximo paso sugerido
 PROMPT;
-    }
+  }
 
-    /**
-     * Obtiene el prompt específico del modo.
-     */
-    protected function getModePrompt(string $mode): string
-    {
-        $modePrompts = [
-            'coach' => <<<PROMPT
+  /**
+   * Obtiene el prompt específico del modo.
+   */
+  protected function getModePrompt(string $mode): string {
+    $modePrompts = [
+      'coach' => <<<PROMPT
 ## MODO COACH EMOCIONAL 🧠
 Estás en modo de apoyo emocional. El emprendedor puede estar experimentando:
 - Síndrome del impostor
@@ -252,7 +247,7 @@ Tu enfoque:
 - NO minimizar preocupaciones
 PROMPT,
 
-            'consultor' => <<<PROMPT
+      'consultor' => <<<PROMPT
 ## MODO CONSULTOR TÁCTICO 🔧
 Estás en modo de instrucciones paso a paso. El emprendedor necesita:
 - Guía práctica específica
@@ -266,7 +261,7 @@ Tu enfoque:
 - Checkpoints de verificación
 PROMPT,
 
-            'sparring' => <<<PROMPT
+      'sparring' => <<<PROMPT
 ## MODO SPARRING PARTNER 🥊
 Estás en modo de simulación y práctica. Ayuda a:
 - Practicar pitch de inversores
@@ -280,7 +275,7 @@ Tu enfoque:
 - Sugerencias de mejora específicas
 PROMPT,
 
-            'cfo' => <<<PROMPT
+      'cfo' => <<<PROMPT
 ## MODO CFO SINTÉTICO 💰
 Estás en modo de análisis financiero. Ayuda a:
 - Validar precios y márgenes
@@ -295,7 +290,7 @@ Tu enfoque:
 - Sugiere escenarios conservadores
 PROMPT,
 
-            'fiscal' => <<<PROMPT
+      'fiscal' => <<<PROMPT
 ## MODO EXPERTO TRIBUTARIO 🏛️
 Estás orientando sobre obligaciones fiscales para autónomos/emprendedores en España.
 
@@ -310,7 +305,7 @@ Tu enfoque:
 "Esta información es orientativa. La normativa puede cambiar y cada caso es único. Para decisiones importantes, consulta con un asesor fiscal colegiado."
 PROMPT,
 
-            'laboral' => <<<PROMPT
+      'laboral' => <<<PROMPT
 ## MODO EXPERTO SEGURIDAD SOCIAL 🛡️
 Estás orientando sobre el RETA y obligaciones de Seguridad Social para autónomos en España.
 
@@ -325,7 +320,7 @@ Tu enfoque:
 "Esta información es orientativa. Verifica tu situación específica en la Seguridad Social o con un graduado social colegiado."
 PROMPT,
 
-            'devil' => <<<PROMPT
+      'devil' => <<<PROMPT
 ## MODO ABOGADO DEL DIABLO 😈
 Estás en modo de desafío constructivo. Tu rol es:
 - Cuestionar supuestos no validados
@@ -339,172 +334,165 @@ Tu enfoque:
 - Nunca destruir, siempre fortalecer
 - Reconocer cuando un argumento es sólido
 PROMPT,
-        ];
+    ];
 
-        return $modePrompts[$mode] ?? $modePrompts['consultor'];
+    return $modePrompts[$mode] ?? $modePrompts['consultor'];
+  }
+
+  /**
+   * Formatea el contexto del emprendedor para el prompt.
+   */
+  protected function formatContextPrompt(array $context): string {
+    if (empty($context)) {
+      return '';
     }
 
-    /**
-     * Formatea el contexto del emprendedor para el prompt.
-     */
-    protected function formatContextPrompt(array $context): string
-    {
-        if (empty($context)) {
-            return '';
-        }
+    $lines = ["## CONTEXTO DEL EMPRENDEDOR"];
 
-        $lines = ["## CONTEXTO DEL EMPRENDEDOR"];
-
-        if (!empty($context['name'])) {
-            $lines[] = "- Nombre: {$context['name']}";
-        }
-        if (!empty($context['carril'])) {
-            $lines[] = "- Carril: {$context['carril']}";
-        }
-        if (!empty($context['phase'])) {
-            $lines[] = "- Fase: {$context['phase']}";
-        }
-        if (!empty($context['sector'])) {
-            $lines[] = "- Sector: {$context['sector']}";
-        }
-        if (!empty($context['week'])) {
-            $lines[] = "- Semana del programa: {$context['week']}/12";
-        }
-        if (!empty($context['idea'])) {
-            $lines[] = "- Idea de negocio: {$context['idea']}";
-        }
-        if (!empty($context['blockages']) && is_array($context['blockages'])) {
-            $lines[] = "- Bloqueos detectados: " . implode(', ', $context['blockages']);
-        }
-
-        return implode("\n", $lines);
+    if (!empty($context['name'])) {
+      $lines[] = "- Nombre: {$context['name']}";
+    }
+    if (!empty($context['carril'])) {
+      $lines[] = "- Carril: {$context['carril']}";
+    }
+    if (!empty($context['phase'])) {
+      $lines[] = "- Fase: {$context['phase']}";
+    }
+    if (!empty($context['sector'])) {
+      $lines[] = "- Sector: {$context['sector']}";
+    }
+    if (!empty($context['week'])) {
+      $lines[] = "- Semana del programa: {$context['week']}/12";
+    }
+    if (!empty($context['idea'])) {
+      $lines[] = "- Idea de negocio: {$context['idea']}";
+    }
+    if (!empty($context['blockages']) && is_array($context['blockages'])) {
+      $lines[] = "- Bloqueos detectados: " . implode(', ', $context['blockages']);
     }
 
-    /**
-     * Enriquece con conocimiento normativo para modos expertos.
-     */
-    protected function enrichWithNormativeKnowledge(string $mode, string $message): array
-    {
-        if (!in_array($mode, ['fiscal', 'laboral'])) {
-            return [];
-        }
+    return implode("\n", $lines);
+  }
 
-        return $this->normativeKnowledge->enrichContext($mode, $message);
+  /**
+   * Enriquece con conocimiento normativo para modos expertos.
+   */
+  protected function enrichWithNormativeKnowledge(string $mode, string $message): array {
+    if (!in_array($mode, ['fiscal', 'laboral'])) {
+      return [];
     }
 
-    /**
-     * Formatea la respuesta de Claude.
-     */
-    protected function formatResponse(array $apiResponse, string $mode): array
-    {
-        $text = $apiResponse['content'][0]['text'] ?? '';
+    return $this->normativeKnowledge->enrichContext($mode, $message);
+  }
 
-        // Añadir disclaimer si es modo experto y no está ya incluido
-        if (in_array($mode, ['fiscal', 'laboral'])) {
-            $disclaimer = $this->normativeKnowledge->getDisclaimer($mode);
-            if ($disclaimer && !str_contains($text, 'orientativa')) {
-                $text .= "\n\n" . $disclaimer;
-            }
-        }
+  /**
+   * Formatea la respuesta de Claude.
+   */
+  protected function formatResponse(array $apiResponse, string $mode): array {
+    $text = $apiResponse['content'][0]['text'] ?? '';
 
-        return [
-            'text' => $text,
-            'mode' => $mode,
-            'model' => $apiResponse['model'] ?? self::DEFAULT_MODEL,
-            'usage' => $apiResponse['usage'] ?? [],
-            'suggestions' => $this->extractSuggestions($text),
-        ];
+    // Añadir disclaimer si es modo experto y no está ya incluido.
+    if (in_array($mode, ['fiscal', 'laboral'])) {
+      $disclaimer = $this->normativeKnowledge->getDisclaimer($mode);
+      if ($disclaimer && !str_contains($text, 'orientativa')) {
+        $text .= "\n\n" . $disclaimer;
+      }
     }
 
-    /**
-     * Extrae sugerencias de acción de la respuesta.
-     */
-    protected function extractSuggestions(string $text): array
-    {
-        $suggestions = [];
+    return [
+      'text' => $text,
+      'mode' => $mode,
+      'model' => $apiResponse['model'] ?? self::DEFAULT_MODEL,
+      'usage' => $apiResponse['usage'] ?? [],
+      'suggestions' => $this->extractSuggestions($text),
+    ];
+  }
 
-        // Buscar patrones de sugerencias numeradas
-        if (preg_match_all('/^\d+\.\s*(.+)$/m', $text, $matches)) {
-            $suggestions = array_slice($matches[1], 0, 3);
-        }
+  /**
+   * Extrae sugerencias de acción de la respuesta.
+   */
+  protected function extractSuggestions(string $text): array {
+    $suggestions = [];
 
-        return $suggestions;
+    // Buscar patrones de sugerencias numeradas.
+    if (preg_match_all('/^\d+\.\s*(.+)$/m', $text, $matches)) {
+      $suggestions = array_slice($matches[1], 0, 3);
     }
 
-    /**
-     * Respuesta de fallback cuando la API no está disponible.
-     * 
-     * IMPORTANTE: Sin formato markdown, texto plano.
-     */
-    protected function getFallbackResponse(string $message, string $mode, string $error): array
-    {
-        $modeLabels = [
-            'coach' => 'Coach Emocional',
-            'consultor' => 'Consultor Táctico',
-            'sparring' => 'Sparring Partner',
-            'cfo' => 'CFO Sintético',
-            'fiscal' => 'Experto Tributario',
-            'laboral' => 'Experto Seguridad Social',
-            'devil' => 'Abogado del Diablo',
-            'landing_copilot' => 'Asesor de Jaraba',
-        ];
+    return $suggestions;
+  }
 
-        $modeLabel = $modeLabels[$mode] ?? 'Copiloto';
+  /**
+   * Respuesta de fallback cuando la API no está disponible.
+   *
+   * IMPORTANTE: Sin formato markdown, texto plano.
+   */
+  protected function getFallbackResponse(string $message, string $mode, string $error): array {
+    $modeLabels = [
+      'coach' => 'Coach Emocional',
+      'consultor' => 'Consultor Táctico',
+      'sparring' => 'Sparring Partner',
+      'cfo' => 'CFO Sintético',
+      'fiscal' => 'Experto Tributario',
+      'laboral' => 'Experto Seguridad Social',
+      'devil' => 'Abogado del Diablo',
+      'landing_copilot' => 'Asesor de Jaraba',
+    ];
 
-        // Fallback especial para copiloto público
-        if ($mode === 'landing_copilot') {
-            return [
-                'text' => "Lo siento, en este momento no puedo procesar tu consulta. Te invito a explorar nuestra plataforma: puedes ver ofertas de empleo, conocer el programa de emprendimiento, o registrarte gratis para acceder a todas las funcionalidades.",
-                'mode' => $mode,
-                'error' => TRUE,
-                'error_message' => $error,
-                'suggestions' => [
-                    'Explorar ofertas de empleo',
-                    'Conocer programa emprendimiento',
-                    'Registrarse gratis',
-                ],
-            ];
-        }
+    $modeLabel = $modeLabels[$mode] ?? 'Copiloto';
 
-        return [
-            'text' => "Estoy en modo {$modeLabel} pero actualmente no puedo procesar tu consulta. Por favor, inténtalo de nuevo en unos momentos. Mientras tanto, puedes revisar la biblioteca de experimentos, consultar tu Business Model Canvas, o revisar tus hipótesis pendientes de validar.",
-            'mode' => $mode,
-            'error' => TRUE,
-            'error_message' => $error,
-            'suggestions' => [
-                'Revisar biblioteca de experimentos',
-                'Consultar Business Model Canvas',
-                'Revisar hipótesis pendientes',
-            ],
-        ];
+    // Fallback especial para copiloto público.
+    if ($mode === 'landing_copilot') {
+      return [
+        'text' => "Lo siento, en este momento no puedo procesar tu consulta. Te invito a explorar nuestra plataforma: puedes ver ofertas de empleo, conocer el programa de emprendimiento, o registrarte gratis para acceder a todas las funcionalidades.",
+        'mode' => $mode,
+        'error' => TRUE,
+        'error_message' => $error,
+        'suggestions' => [
+          'Explorar ofertas de empleo',
+          'Conocer programa emprendimiento',
+          'Registrarse gratis',
+        ],
+      ];
     }
 
-    /**
-     * Obtiene la API key desde el módulo Key.
-     */
-    protected function getApiKey(): ?string
-    {
-        $config = $this->configFactory->get('jaraba_copilot_v2.settings');
-        $keyId = $config->get('claude_api_key');
+    return [
+      'text' => "Estoy en modo {$modeLabel} pero actualmente no puedo procesar tu consulta. Por favor, inténtalo de nuevo en unos momentos. Mientras tanto, puedes revisar la biblioteca de experimentos, consultar tu Business Model Canvas, o revisar tus hipótesis pendientes de validar.",
+      'mode' => $mode,
+      'error' => TRUE,
+      'error_message' => $error,
+      'suggestions' => [
+        'Revisar biblioteca de experimentos',
+        'Consultar Business Model Canvas',
+        'Revisar hipótesis pendientes',
+      ],
+    ];
+  }
 
-        if (empty($keyId)) {
-            return NULL;
-        }
+  /**
+   * Obtiene la API key desde el módulo Key.
+   */
+  protected function getApiKey(): ?string {
+    $config = $this->configFactory->get('jaraba_copilot_v2.settings');
+    $keyId = $config->get('claude_api_key');
 
-        $key = $this->keyRepository->getKey($keyId);
-        if ($key) {
-            return $key->getKeyValue();
-        }
-
-        return NULL;
+    if (empty($keyId)) {
+      return NULL;
     }
 
-    /**
-     * Verifica si el servicio está configurado.
-     */
-    public function isConfigured(): bool
-    {
-        return !empty($this->getApiKey());
+    $key = $this->keyRepository->getKey($keyId);
+    if ($key) {
+      return $key->getKeyValue();
     }
+
+    return NULL;
+  }
+
+  /**
+   * Verifica si el servicio está configurado.
+   */
+  public function isConfigured(): bool {
+    return !empty($this->getApiKey());
+  }
 
 }

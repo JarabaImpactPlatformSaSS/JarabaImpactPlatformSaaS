@@ -16,37 +16,34 @@ use Drupal\Core\Access\AccessResultInterface;
  * Solo lectura. Solo administradores con 'manage agro notifications'
  * pueden ver y eliminar logs. No hay operación de creación vía UI.
  */
-class NotificationLogAgroAccessControlHandler extends EntityAccessControlHandler
-{
+class NotificationLogAgroAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        $admin_permission = $this->entityType->getAdminPermission();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    $admin_permission = $this->entityType->getAdminPermission();
 
-        if ($account->hasPermission($admin_permission)) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        switch ($operation) {
-            case 'view':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
-
-            default:
-                return AccessResult::neutral();
-        }
+    if ($account->hasPermission($admin_permission)) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        // Los logs se crean programáticamente, nunca desde un formulario.
-        return AccessResult::allowedIfHasPermission($account, $this->entityType->getAdminPermission());
+    switch ($operation) {
+      case 'view':
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
+
+      default:
+        return AccessResult::neutral();
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    // Los logs se crean programáticamente, nunca desde un formulario.
+    return AccessResult::allowedIfHasPermission($account, $this->entityType->getAdminPermission());
+  }
 
 }

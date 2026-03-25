@@ -29,11 +29,16 @@ class PlazoEnforcementService {
    * Fuente: BOE + BOJA calendario laboral 2026.
    */
   private const FESTIVOS_2026 = [
-    '2026-01-01', '2026-01-06', '2026-02-28', // Año Nuevo, Reyes, Día Andalucía
-    '2026-04-02', '2026-04-03',               // Jueves Santo, Viernes Santo
-    '2026-05-01', '2026-08-15',               // Trabajo, Asunción
-    '2026-10-12', '2026-11-02',               // Hispanidad, Todos los Santos (lun)
-    '2026-12-07', '2026-12-08', '2026-12-25', // Puente Constitución, Inmaculada, Navidad
+  // Año Nuevo, Reyes, Día Andalucía.
+    '2026-01-01', '2026-01-06', '2026-02-28',
+  // Jueves Santo, Viernes Santo.
+    '2026-04-02', '2026-04-03',
+  // Trabajo, Asunción.
+    '2026-05-01', '2026-08-15',
+  // Hispanidad, Todos los Santos (lun)
+    '2026-10-12', '2026-11-02',
+  // Puente Constitución, Inmaculada, Navidad.
+    '2026-12-07', '2026-12-08', '2026-12-25',
   ];
 
   public function __construct(
@@ -244,7 +249,8 @@ class PlazoEnforcementService {
 
     foreach ($storage->loadMultiple($ids) as $participante) {
       $changedTimestamp = (int) ($participante->get('changed')->value ?? $now);
-      $deadline = $changedTimestamp + (60 * 86400); // 2 meses ≈ 60 días
+      // 2 meses ≈ 60 días
+      $deadline = $changedTimestamp + (60 * 86400);
       $diasRestantes = (int) ceil(($deadline - $now) / 86400);
 
       if ($diasRestantes <= 0) {
@@ -308,7 +314,8 @@ class PlazoEnforcementService {
     }
 
     $created = (int) ($primerParticipante->get('created')->value ?? $now);
-    $finPrograma = $created + (18 * 30 * 86400); // 18 meses ≈ 540 días
+    // 18 meses ≈ 540 días
+    $finPrograma = $created + (18 * 30 * 86400);
     $diasRestantes = (int) ceil(($finPrograma - $now) / 86400);
 
     if ($diasRestantes <= 0) {

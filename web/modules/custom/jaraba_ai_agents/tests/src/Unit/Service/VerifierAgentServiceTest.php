@@ -289,8 +289,14 @@ class VerifierAgentServiceTest extends TestCase {
 
       public function __construct(protected int $entityId) {}
 
+      /**
+       *
+       */
       public function save(): void {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->entityId;
       }

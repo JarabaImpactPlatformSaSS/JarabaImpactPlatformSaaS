@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * Analiza patrones de engagement y ajusta:
  * - Frecuencia de nudges (más activo para participantes en riesgo)
  * - Recomendaciones de cursos (ajustadas a nivel real)
- * - Duración sugerida de sesiones IA
+ * - Duración sugerida de sesiones IA.
  */
 class AdaptiveDifficultyEngine {
 
@@ -97,7 +97,8 @@ class AdaptiveDifficultyEngine {
     // Progress vs. time (30 pts max).
     if ($created) {
       $daysEnrolled = max(1, ($this->time->getRequestTime() - $created) / 86400);
-      $expectedHoursPerDay = 60 / max(1, $daysEnrolled); // 60h total expected
+      // 60h total expected
+      $expectedHoursPerDay = 60 / max(1, $daysEnrolled);
       $actualHours = $participante->getTotalHorasOrientacion()
         + (float) ($participante->get('horas_formacion')->value ?? 0);
       $actualPerDay = $actualHours / $daysEnrolled;

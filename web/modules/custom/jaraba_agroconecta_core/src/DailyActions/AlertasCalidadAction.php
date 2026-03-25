@@ -24,58 +24,100 @@ class AlertasCalidadAction implements DailyActionInterface {
     protected readonly ?TenantContextService $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'producer_agro.alertas';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'producer_agro';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Alertas de calidad');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Revisar alertas activas de calidad');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'compliance', 'name' => 'shield-check', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'entity.alert_rule_agro.collection';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 40;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $active = 0;
     try {

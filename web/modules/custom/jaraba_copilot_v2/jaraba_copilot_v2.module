@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -7,6 +11,7 @@ declare(strict_types=1);
  * Primary module hooks for Jaraba Copilot v2.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -78,7 +83,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'copilot-dashboard',
     ],
-    // BMC Dashboard frontend
+    // BMC Dashboard frontend.
     'bmc_dashboard' => [
       'variables' => [
         'blocks' => [],
@@ -94,7 +99,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'bmc-dashboard',
     ],
-    // Hypothesis Manager frontend
+    // Hypothesis Manager frontend.
     'hypothesis_manager' => [
       'variables' => [
         'hypotheses' => [],
@@ -104,7 +109,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'hypothesis-manager',
     ],
-    // Experiment Lifecycle frontend
+    // Experiment Lifecycle frontend.
     'experiment_lifecycle' => [
       'variables' => [
         'experiments' => [],
@@ -113,7 +118,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'experiment-lifecycle',
     ],
-    // Copilot Chat Widget
+    // Copilot Chat Widget.
     'copilot_chat_widget' => [
       'variables' => [
         'position' => 'inline',
@@ -121,7 +126,7 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'copilot-chat-widget',
     ],
-    // Dashboard Analytics del Copiloto
+    // Dashboard Analytics del Copiloto.
     'copilot_analytics_dashboard' => [
       'variables' => [
         'table_ready' => FALSE,
@@ -138,12 +143,11 @@ function jaraba_copilot_v2_theme($existing, $type, $theme, $path) {
   ];
 }
 
-
 /**
  * Implements hook_preprocess_HOOK() for feature_locked.
  */
 function jaraba_copilot_v2_preprocess_feature_locked(&$variables) {
-  // Calcular semanas restantes
+  // Calcular semanas restantes.
   if (isset($variables['unlock_week']) && isset($variables['current_week'])) {
     $variables['weeks_remaining'] = max(0, $variables['unlock_week'] - $variables['current_week']);
   }
@@ -153,11 +157,11 @@ function jaraba_copilot_v2_preprocess_feature_locked(&$variables) {
  * Implements hook_page_attachments().
  */
 function jaraba_copilot_v2_page_attachments(array &$attachments) {
-  // Adjuntar biblioteca de estilos en páginas relevantes
+  // Adjuntar biblioteca de estilos en páginas relevantes.
   $route_match = \Drupal::routeMatch();
   $route_name = $route_match->getRouteName();
-  
-  // Páginas donde adjuntar el Copilot
+
+  // Páginas donde adjuntar el Copilot.
   $copilot_routes = [
     'jaraba_copilot_v2.dashboard',
     'jaraba_copilot_v2.chat',
@@ -169,7 +173,7 @@ function jaraba_copilot_v2_page_attachments(array &$attachments) {
   if (in_array($route_name, $copilot_routes)) {
     $attachments['#attached']['library'][] = 'jaraba_copilot_v2/copilot-widget';
 
-    // Pasar configuración de desbloqueo
+    // Pasar configuración de desbloqueo.
     $featureUnlock = \Drupal::service('jaraba_copilot_v2.feature_unlock');
     $status = $featureUnlock->getUnlockStatus();
 
@@ -181,7 +185,7 @@ function jaraba_copilot_v2_page_attachments(array &$attachments) {
     ];
   }
 
-  // BMC Dashboard, Hypothesis Manager, Experiment Lifecycle
+  // BMC Dashboard, Hypothesis Manager, Experiment Lifecycle.
   $frontend_library_map = [
     'jaraba_copilot_v2.bmc_dashboard' => 'jaraba_copilot_v2/bmc-dashboard',
     'jaraba_copilot_v2.hypothesis_manager' => 'jaraba_copilot_v2/hypothesis-manager',
@@ -334,7 +338,7 @@ function jaraba_copilot_v2_get_locked_feature_info(string $feature): array {
  * Syncs entrepreneur_profile creation with CRM pipeline as 'lead'.
  * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
  */
-function jaraba_copilot_v2_entity_insert(\Drupal\Core\Entity\EntityInterface $entity) {
+function jaraba_copilot_v2_entity_insert(EntityInterface $entity) {
   if ($entity->getEntityTypeId() === 'entrepreneur_profile') {
     _jaraba_copilot_v2_sync_to_crm($entity, 'lead');
   }
@@ -346,7 +350,7 @@ function jaraba_copilot_v2_entity_insert(\Drupal\Core\Entity\EntityInterface $en
  * Syncs emprendimiento entity updates with CRM pipeline.
  * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
  */
-function jaraba_copilot_v2_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+function jaraba_copilot_v2_entity_update(EntityInterface $entity) {
   $entityType = $entity->getEntityTypeId();
 
   // Experiment with decision VALIDATED → CRM stage 'demo'.
@@ -392,7 +396,7 @@ function jaraba_copilot_v2_entity_update(\Drupal\Core\Entity\EntityInterface $en
  *
  * Plan Elevación Emprendimiento v2 — Fase 6 (G6).
  */
-function _jaraba_copilot_v2_sync_to_crm(\Drupal\Core\Entity\EntityInterface $entity, string $stage): void {
+function _jaraba_copilot_v2_sync_to_crm(EntityInterface $entity, string $stage): void {
   if (!\Drupal::hasService('jaraba_crm.opportunity') || !\Drupal::hasService('jaraba_crm.contact')) {
     return;
   }
@@ -558,7 +562,6 @@ function _jaraba_copilot_v2_ensure_crm_contact(int $userId): ?int {
     return NULL;
   }
 }
-
 
 /**
  * Prepares variables for entrepreneur_learning templates.

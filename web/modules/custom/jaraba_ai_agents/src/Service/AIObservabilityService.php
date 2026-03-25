@@ -265,427 +265,417 @@ class AIObservabilityService {
     }
   }
 
-    /**
-     * Obtiene estadísticas de uso para un período de tiempo.
-     *
-     * @param string $period
-     *   Período: 'day', 'week', 'month', 'year'.
-     * @param string|null $tenantId
-     *   Filtro opcional por tenant.
-     *
-     * @return array
-     *   Array de estadísticas:
-     *   - total_executions: int
-     *   - successful: int
-     *   - failed: int
-     *   - success_rate: float (porcentaje)
-     *   - total_cost: float
-     *   - total_tokens: int
-     *   - avg_duration_ms: int
-     *   - avg_quality_score: float|null
-     */
-    public function getStats(string $period = 'day', ?string $tenantId = NULL): array
-    {
-        $startTime = $this->getPeriodStart($period);
+  /**
+   * Obtiene estadísticas de uso para un período de tiempo.
+   *
+   * @param string $period
+   *   Período: 'day', 'week', 'month', 'year'.
+   * @param string|null $tenantId
+   *   Filtro opcional por tenant.
+   *
+   * @return array
+   *   Array de estadísticas:
+   *   - total_executions: int
+   *   - successful: int
+   *   - failed: int
+   *   - success_rate: float (porcentaje)
+   *   - total_cost: float
+   *   - total_tokens: int
+   *   - avg_duration_ms: int
+   *   - avg_quality_score: float|null
+   */
+  public function getStats(string $period = 'day', ?string $tenantId = NULL): array {
+    $startTime = $this->getPeriodStart($period);
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
 
-        if ($tenantId) {
-            $query->condition('tenant_id', $tenantId);
-        }
-
-        $ids = $query->execute();
-
-        if (empty($ids)) {
-            return $this->getEmptyStats();
-        }
-
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
-
-        return $this->calculateStats($logs);
+    if ($tenantId) {
+      $query->condition('tenant_id', $tenantId);
     }
 
-    /**
-     * Obtiene desglose de costos por tier.
-     *
-     * @param string $period
-     *   Período: 'day', 'week', 'month', 'year'.
-     *
-     * @return array
-     *   Desglose de costos por tier:
-     *   - fast: float
-     *   - balanced: float
-     *   - premium: float
-     */
-    public function getCostByTier(string $period = 'month'): array
-    {
-        $startTime = $this->getPeriodStart($period);
+    $ids = $query->execute();
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
-
-        $ids = $query->execute();
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
-
-        $byTier = ['fast' => 0, 'balanced' => 0, 'premium' => 0];
-
-        foreach ($logs as $log) {
-            $tier = $log->getTier() ?: 'balanced';
-            if (isset($byTier[$tier])) {
-                $byTier[$tier] += $log->getCost();
-            }
-        }
-
-        return array_map(fn($cost) => round($cost, 4), $byTier);
+    if (empty($ids)) {
+      return $this->getEmptyStats();
     }
 
-    /**
-     * Obtiene uso por agente.
-     *
-     * @param string $period
-     *   Período de tiempo.
-     *
-     * @return array
-     *   Estadísticas por agente:
-     *   - [agent_id] => ['count' => int, 'cost' => float, 'success_rate' => float]
-     */
-    public function getUsageByAgent(string $period = 'month'): array
-    {
-        $startTime = $this->getPeriodStart($period);
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
+    return $this->calculateStats($logs);
+  }
 
-        $ids = $query->execute();
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+  /**
+   * Obtiene desglose de costos por tier.
+   *
+   * @param string $period
+   *   Período: 'day', 'week', 'month', 'year'.
+   *
+   * @return array
+   *   Desglose de costos por tier:
+   *   - fast: float
+   *   - balanced: float
+   *   - premium: float
+   */
+  public function getCostByTier(string $period = 'month'): array {
+    $startTime = $this->getPeriodStart($period);
 
-        $byAgent = [];
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
 
-        foreach ($logs as $log) {
-            $agentId = $log->getAgentId();
-            if (!isset($byAgent[$agentId])) {
-                $byAgent[$agentId] = ['count' => 0, 'cost' => 0, 'success_rate' => 0, 'successes' => 0];
-            }
-            $byAgent[$agentId]['count']++;
-            $byAgent[$agentId]['cost'] += $log->getCost();
-            if ($log->isSuccessful()) {
-                $byAgent[$agentId]['successes']++;
-            }
-        }
+    $ids = $query->execute();
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
 
-        // Calcular tasas de éxito.
-        foreach ($byAgent as $agentId => &$data) {
-            $data['success_rate'] = $data['count'] > 0
+    $byTier = ['fast' => 0, 'balanced' => 0, 'premium' => 0];
+
+    foreach ($logs as $log) {
+      $tier = $log->getTier() ?: 'balanced';
+      if (isset($byTier[$tier])) {
+        $byTier[$tier] += $log->getCost();
+      }
+    }
+
+    return array_map(fn($cost) => round($cost, 4), $byTier);
+  }
+
+  /**
+   * Obtiene uso por agente.
+   *
+   * @param string $period
+   *   Período de tiempo.
+   *
+   * @return array
+   *   Estadísticas por agente:
+   *   - [agent_id] => ['count' => int, 'cost' => float, 'success_rate' => float]
+   */
+  public function getUsageByAgent(string $period = 'month'): array {
+    $startTime = $this->getPeriodStart($period);
+
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
+
+    $ids = $query->execute();
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+    $byAgent = [];
+
+    foreach ($logs as $log) {
+      $agentId = $log->getAgentId();
+      if (!isset($byAgent[$agentId])) {
+        $byAgent[$agentId] = ['count' => 0, 'cost' => 0, 'success_rate' => 0, 'successes' => 0];
+      }
+      $byAgent[$agentId]['count']++;
+      $byAgent[$agentId]['cost'] += $log->getCost();
+      if ($log->isSuccessful()) {
+        $byAgent[$agentId]['successes']++;
+      }
+    }
+
+    // Calcular tasas de éxito.
+    foreach ($byAgent as $agentId => &$data) {
+      $data['success_rate'] = $data['count'] > 0
                 ? round(($data['successes'] / $data['count']) * 100, 1)
                 : 0;
-            $data['cost'] = round($data['cost'], 4);
-            unset($data['successes']);
-        }
-
-        return $byAgent;
+      $data['cost'] = round($data['cost'], 4);
+      unset($data['successes']);
     }
 
-    /**
-     * Calcula el ahorro por Model Routing.
-     *
-     * Compara el costo real con lo que costaría si todas
-     * las llamadas usaran el tier premium.
-     *
-     * @param string $period
-     *   Período de tiempo.
-     *
-     * @return array
-     *   Cálculo de ahorros:
-     *   - actual_cost: float - Costo real incurrido.
-     *   - premium_equivalent: float - Costo si todo fuera premium.
-     *   - savings: float - Ahorro absoluto.
-     *   - savings_percent: float - Porcentaje de ahorro.
-     */
-    public function getSavings(string $period = 'month'): array
-    {
-        $startTime = $this->getPeriodStart($period);
+    return $byAgent;
+  }
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
+  /**
+   * Calcula el ahorro por Model Routing.
+   *
+   * Compara el costo real con lo que costaría si todas
+   * las llamadas usaran el tier premium.
+   *
+   * @param string $period
+   *   Período de tiempo.
+   *
+   * @return array
+   *   Cálculo de ahorros:
+   *   - actual_cost: float - Costo real incurrido.
+   *   - premium_equivalent: float - Costo si todo fuera premium.
+   *   - savings: float - Ahorro absoluto.
+   *   - savings_percent: float - Porcentaje de ahorro.
+   */
+  public function getSavings(string $period = 'month'): array {
+    $startTime = $this->getPeriodStart($period);
 
-        $ids = $query->execute();
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
 
-        $actualCost = 0;
-        $premiumEquivalent = 0;
+    $ids = $query->execute();
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
 
-        // Costo del tier premium por 1K tokens (promedio).
-        $premiumCostPer1K = 0.045;
+    $actualCost = 0;
+    $premiumEquivalent = 0;
 
-        foreach ($logs as $log) {
-            $actualCost += $log->getCost();
-            $totalTokens = ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
-            $premiumEquivalent += ($totalTokens / 1000) * $premiumCostPer1K;
-        }
+    // Costo del tier premium por 1K tokens (promedio).
+    $premiumCostPer1K = 0.045;
 
-        $savings = max(0, $premiumEquivalent - $actualCost);
-        $savingsPercent = $premiumEquivalent > 0 ? ($savings / $premiumEquivalent) * 100 : 0;
-
-        return [
-            'actual_cost' => round($actualCost, 4),
-            'premium_equivalent' => round($premiumEquivalent, 4),
-            'savings' => round($savings, 4),
-            'savings_percent' => round($savingsPercent, 1),
-        ];
+    foreach ($logs as $log) {
+      $actualCost += $log->getCost();
+      $totalTokens = ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
+      $premiumEquivalent += ($totalTokens / 1000) * $premiumCostPer1K;
     }
 
-    /**
-     * GAP-AUD-004: Gets usage grouped by region/tenant.
-     *
-     * Groups AI usage logs by tenant_id as a proxy for region,
-     * since tenants map to geographic regions.
-     *
-     * @param string $tenantId
-     *   Optional tenant filter (empty = all tenants).
-     * @param int $days
-     *   Number of days to look back.
-     *
-     * @return array
-     *   Array of ['region' => string, 'count' => int, 'cost' => float, 'tokens' => int].
-     */
-    public function getUsageByRegion(string $tenantId = '', int $days = 30): array
-    {
-        $startTime = strtotime("-{$days} days");
+    $savings = max(0, $premiumEquivalent - $actualCost);
+    $savingsPercent = $premiumEquivalent > 0 ? ($savings / $premiumEquivalent) * 100 : 0;
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
+    return [
+      'actual_cost' => round($actualCost, 4),
+      'premium_equivalent' => round($premiumEquivalent, 4),
+      'savings' => round($savings, 4),
+      'savings_percent' => round($savingsPercent, 1),
+    ];
+  }
 
-        if (!empty($tenantId)) {
-            $query->condition('tenant_id', $tenantId);
-        }
+  /**
+   * GAP-AUD-004: Gets usage grouped by region/tenant.
+   *
+   * Groups AI usage logs by tenant_id as a proxy for region,
+   * since tenants map to geographic regions.
+   *
+   * @param string $tenantId
+   *   Optional tenant filter (empty = all tenants).
+   * @param int $days
+   *   Number of days to look back.
+   *
+   * @return array
+   *   Array of ['region' => string, 'count' => int, 'cost' => float, 'tokens' => int].
+   */
+  public function getUsageByRegion(string $tenantId = '', int $days = 30): array {
+    $startTime = strtotime("-{$days} days");
 
-        $ids = $query->execute();
-        if (empty($ids)) {
-            return [];
-        }
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
 
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
-
-        $byRegion = [];
-        foreach ($logs as $log) {
-            $region = $log->get('tenant_id')->value ?: 'global';
-            if (!isset($byRegion[$region])) {
-                $byRegion[$region] = ['region' => $region, 'count' => 0, 'cost' => 0.0, 'tokens' => 0];
-            }
-            $byRegion[$region]['count']++;
-            $byRegion[$region]['cost'] += $log->getCost();
-            $byRegion[$region]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
-        }
-
-        // Round costs.
-        foreach ($byRegion as &$data) {
-            $data['cost'] = round($data['cost'], 4);
-        }
-
-        return array_values($byRegion);
+    if (!empty($tenantId)) {
+      $query->condition('tenant_id', $tenantId);
     }
 
-    /**
-     * GAP-AUD-004: Exports usage data as CSV string.
-     *
-     * @param string $tenantId
-     *   Optional tenant filter.
-     * @param int $days
-     *   Number of days to export.
-     *
-     * @return string
-     *   CSV formatted string with headers.
-     */
-    public function exportCsv(string $tenantId = '', int $days = 30): string
-    {
-        $startTime = strtotime("-{$days} days");
-
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=')
-            ->sort('created', 'DESC');
-
-        if (!empty($tenantId)) {
-            $query->condition('tenant_id', $tenantId);
-        }
-
-        $ids = $query->range(0, 10000)->execute();
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
-
-        $output = fopen('php://temp', 'r+');
-        fputcsv($output, [
-            'id', 'agent_id', 'action', 'tier', 'model_id', 'provider_id',
-            'tenant_id', 'vertical', 'input_tokens', 'output_tokens',
-            'cost', 'duration_ms', 'success', 'quality_score', 'created',
-        ]);
-
-        foreach ($logs as $log) {
-            fputcsv($output, [
-                $log->id(),
-                $log->get('agent_id')->value ?? '',
-                $log->get('action')->value ?? '',
-                $log->get('tier')->value ?? '',
-                $log->get('model_id')->value ?? '',
-                $log->get('provider_id')->value ?? '',
-                $log->get('tenant_id')->value ?? '',
-                $log->get('vertical')->value ?? '',
-                $log->get('input_tokens')->value ?? 0,
-                $log->get('output_tokens')->value ?? 0,
-                $log->getCost(),
-                $log->get('duration_ms')->value ?? 0,
-                $log->isSuccessful() ? '1' : '0',
-                $log->get('quality_score')->value ?? '',
-                date('Y-m-d H:i:s', (int) $log->get('created')->value),
-            ]);
-        }
-
-        rewind($output);
-        $csv = stream_get_contents($output);
-        fclose($output);
-
-        return $csv;
+    $ids = $query->execute();
+    if (empty($ids)) {
+      return [];
     }
 
-    /**
-     * GAP-AUD-004: Gets daily usage trend for sparklines.
-     *
-     * @param string $tenantId
-     *   Optional tenant filter.
-     * @param int $days
-     *   Number of days for the trend.
-     *
-     * @return array
-     *   Array of ['date' => 'Y-m-d', 'tokens' => int, 'cost' => float, 'count' => int].
-     */
-    public function getUsageTrend(string $tenantId = '', int $days = 7): array
-    {
-        $startTime = strtotime("-{$days} days");
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
 
-        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('created', $startTime, '>=');
-
-        if (!empty($tenantId)) {
-            $query->condition('tenant_id', $tenantId);
-        }
-
-        $ids = $query->execute();
-        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
-
-        // Initialize all days.
-        $trend = [];
-        for ($i = $days; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-{$i} days"));
-            $trend[$date] = ['date' => $date, 'tokens' => 0, 'cost' => 0.0, 'count' => 0];
-        }
-
-        foreach ($logs as $log) {
-            $date = date('Y-m-d', (int) $log->get('created')->value);
-            if (isset($trend[$date])) {
-                $trend[$date]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
-                $trend[$date]['cost'] += $log->getCost();
-                $trend[$date]['count']++;
-            }
-        }
-
-        // Round costs.
-        foreach ($trend as &$day) {
-            $day['cost'] = round($day['cost'], 4);
-        }
-
-        return array_values($trend);
+    $byRegion = [];
+    foreach ($logs as $log) {
+      $region = $log->get('tenant_id')->value ?: 'global';
+      if (!isset($byRegion[$region])) {
+        $byRegion[$region] = ['region' => $region, 'count' => 0, 'cost' => 0.0, 'tokens' => 0];
+      }
+      $byRegion[$region]['count']++;
+      $byRegion[$region]['cost'] += $log->getCost();
+      $byRegion[$region]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
     }
 
-    /**
-     * Obtiene el timestamp de inicio para un período.
-     *
-     * @param string $period
-     *   El período: day, week, month, year.
-     *
-     * @return int
-     *   Timestamp de inicio del período.
-     */
-    protected function getPeriodStart(string $period): int
-    {
-        return match ($period) {
-            'day' => strtotime('-1 day'),
+    // Round costs.
+    foreach ($byRegion as &$data) {
+      $data['cost'] = round($data['cost'], 4);
+    }
+
+    return array_values($byRegion);
+  }
+
+  /**
+   * GAP-AUD-004: Exports usage data as CSV string.
+   *
+   * @param string $tenantId
+   *   Optional tenant filter.
+   * @param int $days
+   *   Number of days to export.
+   *
+   * @return string
+   *   CSV formatted string with headers.
+   */
+  public function exportCsv(string $tenantId = '', int $days = 30): string {
+    $startTime = strtotime("-{$days} days");
+
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=')
+      ->sort('created', 'DESC');
+
+    if (!empty($tenantId)) {
+      $query->condition('tenant_id', $tenantId);
+    }
+
+    $ids = $query->range(0, 10000)->execute();
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+    $output = fopen('php://temp', 'r+');
+    fputcsv($output, [
+      'id', 'agent_id', 'action', 'tier', 'model_id', 'provider_id',
+      'tenant_id', 'vertical', 'input_tokens', 'output_tokens',
+      'cost', 'duration_ms', 'success', 'quality_score', 'created',
+    ]);
+
+    foreach ($logs as $log) {
+      fputcsv($output, [
+        $log->id(),
+        $log->get('agent_id')->value ?? '',
+        $log->get('action')->value ?? '',
+        $log->get('tier')->value ?? '',
+        $log->get('model_id')->value ?? '',
+        $log->get('provider_id')->value ?? '',
+        $log->get('tenant_id')->value ?? '',
+        $log->get('vertical')->value ?? '',
+        $log->get('input_tokens')->value ?? 0,
+        $log->get('output_tokens')->value ?? 0,
+        $log->getCost(),
+        $log->get('duration_ms')->value ?? 0,
+        $log->isSuccessful() ? '1' : '0',
+        $log->get('quality_score')->value ?? '',
+        date('Y-m-d H:i:s', (int) $log->get('created')->value),
+      ]);
+    }
+
+    rewind($output);
+    $csv = stream_get_contents($output);
+    fclose($output);
+
+    return $csv;
+  }
+
+  /**
+   * GAP-AUD-004: Gets daily usage trend for sparklines.
+   *
+   * @param string $tenantId
+   *   Optional tenant filter.
+   * @param int $days
+   *   Number of days for the trend.
+   *
+   * @return array
+   *   Array of ['date' => 'Y-m-d', 'tokens' => int, 'cost' => float, 'count' => int].
+   */
+  public function getUsageTrend(string $tenantId = '', int $days = 7): array {
+    $startTime = strtotime("-{$days} days");
+
+    $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('created', $startTime, '>=');
+
+    if (!empty($tenantId)) {
+      $query->condition('tenant_id', $tenantId);
+    }
+
+    $ids = $query->execute();
+    $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+    // Initialize all days.
+    $trend = [];
+    for ($i = $days; $i >= 0; $i--) {
+      $date = date('Y-m-d', strtotime("-{$i} days"));
+      $trend[$date] = ['date' => $date, 'tokens' => 0, 'cost' => 0.0, 'count' => 0];
+    }
+
+    foreach ($logs as $log) {
+      $date = date('Y-m-d', (int) $log->get('created')->value);
+      if (isset($trend[$date])) {
+        $trend[$date]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
+        $trend[$date]['cost'] += $log->getCost();
+        $trend[$date]['count']++;
+      }
+    }
+
+    // Round costs.
+    foreach ($trend as &$day) {
+      $day['cost'] = round($day['cost'], 4);
+    }
+
+    return array_values($trend);
+  }
+
+  /**
+   * Obtiene el timestamp de inicio para un período.
+   *
+   * @param string $period
+   *   El período: day, week, month, year.
+   *
+   * @return int
+   *   Timestamp de inicio del período.
+   */
+  protected function getPeriodStart(string $period): int {
+    return match ($period) {
+      'day' => strtotime('-1 day'),
             'week' => strtotime('-1 week'),
             'month' => strtotime('-1 month'),
             'year' => strtotime('-1 year'),
             default => strtotime('-1 day'),
-        };
+    };
+  }
+
+  /**
+   * Retorna estructura de estadísticas vacía.
+   *
+   * @return array
+   *   Estadísticas vacías con valores por defecto.
+   */
+  protected function getEmptyStats(): array {
+    return [
+      'total_executions' => 0,
+      'successful' => 0,
+      'failed' => 0,
+      'success_rate' => 0,
+      'total_cost' => 0,
+      'total_tokens' => 0,
+      'avg_duration_ms' => 0,
+      'avg_quality_score' => NULL,
+    ];
+  }
+
+  /**
+   * Calcula estadísticas a partir de entidades de log.
+   *
+   * @param array $logs
+   *   Array de entidades AIUsageLog.
+   *
+   * @return array
+   *   Estadísticas calculadas.
+   */
+  protected function calculateStats(array $logs): array {
+    $total = count($logs);
+    $successful = 0;
+    $totalCost = 0;
+    $totalTokens = 0;
+    $totalDuration = 0;
+    $qualityScores = [];
+
+    foreach ($logs as $log) {
+      if ($log->isSuccessful()) {
+        $successful++;
+      }
+      $totalCost += $log->getCost();
+      $totalTokens += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
+      $totalDuration += $log->get('duration_ms')->value ?? 0;
+
+      $quality = $log->get('quality_score')->value;
+      if ($quality !== NULL) {
+        $qualityScores[] = (float) $quality;
+      }
     }
 
-    /**
-     * Retorna estructura de estadísticas vacía.
-     *
-     * @return array
-     *   Estadísticas vacías con valores por defecto.
-     */
-    protected function getEmptyStats(): array
-    {
-        return [
-            'total_executions' => 0,
-            'successful' => 0,
-            'failed' => 0,
-            'success_rate' => 0,
-            'total_cost' => 0,
-            'total_tokens' => 0,
-            'avg_duration_ms' => 0,
-            'avg_quality_score' => NULL,
-        ];
-    }
-
-    /**
-     * Calcula estadísticas a partir de entidades de log.
-     *
-     * @param array $logs
-     *   Array de entidades AIUsageLog.
-     *
-     * @return array
-     *   Estadísticas calculadas.
-     */
-    protected function calculateStats(array $logs): array
-    {
-        $total = count($logs);
-        $successful = 0;
-        $totalCost = 0;
-        $totalTokens = 0;
-        $totalDuration = 0;
-        $qualityScores = [];
-
-        foreach ($logs as $log) {
-            if ($log->isSuccessful()) {
-                $successful++;
-            }
-            $totalCost += $log->getCost();
-            $totalTokens += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
-            $totalDuration += $log->get('duration_ms')->value ?? 0;
-
-            $quality = $log->get('quality_score')->value;
-            if ($quality !== NULL) {
-                $qualityScores[] = (float) $quality;
-            }
-        }
-
-        return [
-            'total_executions' => $total,
-            'successful' => $successful,
-            'failed' => $total - $successful,
-            'success_rate' => $total > 0 ? round(($successful / $total) * 100, 1) : 0,
-            'total_cost' => round($totalCost, 4),
-            'total_tokens' => $totalTokens,
-            'avg_duration_ms' => $total > 0 ? round($totalDuration / $total) : 0,
-            'avg_quality_score' => !empty($qualityScores)
-                ? round(array_sum($qualityScores) / count($qualityScores), 2)
-                : NULL,
-        ];
-    }
+    return [
+      'total_executions' => $total,
+      'successful' => $successful,
+      'failed' => $total - $successful,
+      'success_rate' => $total > 0 ? round(($successful / $total) * 100, 1) : 0,
+      'total_cost' => round($totalCost, 4),
+      'total_tokens' => $totalTokens,
+      'avg_duration_ms' => $total > 0 ? round($totalDuration / $total) : 0,
+      'avg_quality_score' => !empty($qualityScores)
+        ? round(array_sum($qualityScores) / count($qualityScores), 2)
+        : NULL,
+    ];
+  }
 
 }

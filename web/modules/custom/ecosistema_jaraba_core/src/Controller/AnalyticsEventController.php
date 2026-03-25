@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * REST Controller for funnel analytics event collection.
  *
- * Sprint 6 — POST /api/v1/analytics/event
+ * Sprint 6 — POST /api/v1/analytics/event.
  *
  * Receives events from funnel-analytics.js (via sendBeacon)
  * and stores them in a lightweight DB table for dashboard consumption.

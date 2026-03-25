@@ -40,7 +40,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center
+   * GET /admin/jaraba/center.
    *
    * Dashboard principal del Admin Center.
    */
@@ -74,7 +74,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/tenants
+   * GET /admin/jaraba/center/tenants.
    *
    * Pagina de gestion de tenants con DataTable.
    */
@@ -104,7 +104,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/users
+   * GET /admin/jaraba/center/users.
    *
    * Pagina de gestion de usuarios con DataTable.
    */
@@ -132,7 +132,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/finance
+   * GET /admin/jaraba/center/finance.
    *
    * Centro Financiero con metricas SaaS y analytics.
    */
@@ -161,7 +161,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/analytics
+   * GET /admin/jaraba/center/analytics.
    *
    * Dashboard de analytics de plataforma.
    */
@@ -190,7 +190,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/logs
+   * GET /admin/jaraba/center/logs.
    *
    * Visor de logs de actividad y sistema.
    */
@@ -218,7 +218,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/alerts
+   * GET /admin/jaraba/center/alerts.
    *
    * Dashboard de alertas y playbooks del Admin Center.
    */
@@ -248,7 +248,7 @@ class AdminCenterController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/settings
+   * GET /admin/jaraba/center/settings.
    *
    * Configuración global de la plataforma.
    */
@@ -391,7 +391,9 @@ class AdminCenterController extends ControllerBase {
    */
   protected function searchShipments(string $query, array &$results): void {
     try {
-      if (!$this->entityTypeManager()->hasDefinition('agro_shipment')) return;
+      if (!$this->entityTypeManager()->hasDefinition('agro_shipment')) {
+        return;
+      }
       $storage = $this->entityTypeManager()->getStorage('agro_shipment');
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
@@ -413,7 +415,8 @@ class AdminCenterController extends ControllerBase {
         ];
       }
     }
-    catch (\Exception $e) {}
+    catch (\Exception $e) {
+    }
   }
 
   /**
@@ -421,7 +424,9 @@ class AdminCenterController extends ControllerBase {
    */
   protected function searchBatches(string $query, array &$results): void {
     try {
-      if (!$this->entityTypeManager()->hasDefinition('agro_batch')) return;
+      if (!$this->entityTypeManager()->hasDefinition('agro_batch')) {
+        return;
+      }
       $storage = $this->entityTypeManager()->getStorage('agro_batch');
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
@@ -439,7 +444,8 @@ class AdminCenterController extends ControllerBase {
         ];
       }
     }
-    catch (\Exception $e) {}
+    catch (\Exception $e) {
+    }
   }
 
 }

@@ -9,10 +9,9 @@ use Drupal\jaraba_skills\Service\SkillManager;
 use Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager;
 use Drupal\jaraba_tenant_knowledge\Service\KnowledgeIndexerService;
 use Psr\Log\LoggerInterface;
-use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
- * SERVICIO CONSTRUCTOR DE PROMPT UNIFICADO
+ * SERVICIO CONSTRUCTOR DE PROMPT UNIFICADO.
  *
  * PROPÓSITO:
  * Combina el conocimiento del tenant con las habilidades IA en un
@@ -36,246 +35,244 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * @see SkillManager Para la resolución jerárquica de skills
  * @see TenantKnowledgeManager Para el contexto del negocio
  */
-class UnifiedPromptBuilder
-{
+class UnifiedPromptBuilder {
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected ?SkillManager $skillManager,
-        protected ?TenantKnowledgeManager $knowledgeManager,
-        protected ?KnowledgeIndexerService $knowledgeIndexer,
-        protected LoggerInterface $logger,
-        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
-        protected ?AIGuardrailsService $guardrails = NULL, // FIX-015: Guardrails para queries.
-    ) {
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected ?SkillManager $skillManager,
+    protected ?TenantKnowledgeManager $knowledgeManager,
+    protected ?KnowledgeIndexerService $knowledgeIndexer,
+    protected LoggerInterface $logger,
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
+    // FIX-015: Guardrails para queries.
+    protected ?AIGuardrailsService $guardrails = NULL,
+  ) {
+  }
+
+  /**
+   * Construye el prompt completo para un agente IA.
+   *
+   * PROPÓSITO:
+   * Genera el system prompt que contextualiza al agente con todo
+   * el conocimiento disponible para el tenant actual.
+   *
+   * @param array $context
+   *   Contexto de ejecución:
+   *   - 'vertical': ID de vertical (empleabilidad, emprendimiento, etc.)
+   *   - 'agent_type': Tipo de agente (copilot, assistant, etc.)
+   *   - 'tenant_id': ID del tenant (se obtiene automáticamente si NULL)
+   * @param string|null $query
+   *   Query del usuario para búsqueda RAG (opcional).
+   *
+   * @return string
+   *   Prompt XML estructurado listo para inyección.
+   */
+  public function buildPrompt(array $context = [], ?string $query = NULL): string {
+    $output = "<jaraba_context>\n";
+
+    // 1. Skills (CÓMO actuar).
+    if ($this->skillManager) {
+      $skillsSection = $this->skillManager->generatePromptSection($context);
+      if (!empty($skillsSection)) {
+        $output .= $skillsSection . "\n";
+      }
     }
 
-    /**
-     * Construye el prompt completo para un agente IA.
-     *
-     * PROPÓSITO:
-     * Genera el system prompt que contextualiza al agente con todo
-     * el conocimiento disponible para el tenant actual.
-     *
-     * @param array $context
-     *   Contexto de ejecución:
-     *   - 'vertical': ID de vertical (empleabilidad, emprendimiento, etc.)
-     *   - 'agent_type': Tipo de agente (copilot, assistant, etc.)
-     *   - 'tenant_id': ID del tenant (se obtiene automáticamente si NULL)
-     * @param string|null $query
-     *   Query del usuario para búsqueda RAG (opcional).
-     *
-     * @return string
-     *   Prompt XML estructurado listo para inyección.
-     */
-    public function buildPrompt(array $context = [], ?string $query = NULL): string
-    {
-        $output = "<jaraba_context>\n";
+    // 2. Business Context (QUÉ sabe el negocio).
+    if ($this->knowledgeManager) {
+      $businessContext = $this->knowledgeManager->generatePromptContext();
+      if (!empty($businessContext)) {
+        $output .= $businessContext . "\n";
+      }
+    }
 
-        // 1. Skills (CÓMO actuar).
-        if ($this->skillManager) {
-            $skillsSection = $this->skillManager->generatePromptSection($context);
-            if (!empty($skillsSection)) {
-                $output .= $skillsSection . "\n";
-            }
-        }
+    // 3. Correcciones aplicadas (prevención de errores).
+    $correctionsSection = $this->getActiveCorrections($context['tenant_id'] ?? NULL);
+    if (!empty($correctionsSection)) {
+      $output .= $correctionsSection . "\n";
+    }
 
-        // 2. Business Context (QUÉ sabe el negocio).
-        if ($this->knowledgeManager) {
-            $businessContext = $this->knowledgeManager->generatePromptContext();
-            if (!empty($businessContext)) {
-                $output .= $businessContext . "\n";
-            }
-        }
-
-        // 3. Correcciones aplicadas (prevención de errores).
-        $correctionsSection = $this->getActiveCorrections($context['tenant_id'] ?? NULL);
-        if (!empty($correctionsSection)) {
-            $output .= $correctionsSection . "\n";
-        }
-
-        // 4. Conocimiento relevante (RAG per-query).
-        // FIX-015: Validar query con guardrails antes de usarla en RAG.
-        if (!empty($query)) {
-            $sanitizedQuery = $query;
-            if ($this->guardrails) {
-                $guardrailResult = $this->guardrails->validate($query, [
-                    'tenant_id' => (string) ($context['tenant_id'] ?? 'unknown'),
-                    'pipeline' => 'unified_prompt',
-                ]);
-                if ($guardrailResult['action'] === AIGuardrailsService::ACTION_BLOCK) {
-                    $this->logger->warning('UnifiedPromptBuilder: query bloqueada por guardrails.');
-                    $sanitizedQuery = NULL;
-                }
-                elseif ($guardrailResult['action'] === AIGuardrailsService::ACTION_MODIFY) {
-                    $sanitizedQuery = $guardrailResult['processed_prompt'];
-                }
-            }
-
-            if ($sanitizedQuery) {
-                $ragSection = $this->getRelevantKnowledge($sanitizedQuery, $context['tenant_id'] ?? NULL);
-                if (!empty($ragSection)) {
-                    $output .= $ragSection . "\n";
-                }
-            }
-        }
-
-        $output .= "</jaraba_context>";
-
-        $this->logger->debug('Built unified prompt with context: @context', [
-            '@context' => json_encode($context),
+    // 4. Conocimiento relevante (RAG per-query).
+    // FIX-015: Validar query con guardrails antes de usarla en RAG.
+    if (!empty($query)) {
+      $sanitizedQuery = $query;
+      if ($this->guardrails) {
+        $guardrailResult = $this->guardrails->validate($query, [
+          'tenant_id' => (string) ($context['tenant_id'] ?? 'unknown'),
+          'pipeline' => 'unified_prompt',
         ]);
+        if ($guardrailResult['action'] === AIGuardrailsService::ACTION_BLOCK) {
+          $this->logger->warning('UnifiedPromptBuilder: query bloqueada por guardrails.');
+          $sanitizedQuery = NULL;
+        }
+        elseif ($guardrailResult['action'] === AIGuardrailsService::ACTION_MODIFY) {
+          $sanitizedQuery = $guardrailResult['processed_prompt'];
+        }
+      }
 
-        return $output;
+      if ($sanitizedQuery) {
+        $ragSection = $this->getRelevantKnowledge($sanitizedQuery, $context['tenant_id'] ?? NULL);
+        if (!empty($ragSection)) {
+          $output .= $ragSection . "\n";
+        }
+      }
     }
 
-    /**
-     * Obtiene las correcciones de IA activas para prevenir errores.
-     *
-     * @param int|null $tenantId
-     *   ID del tenant (usa actual si NULL).
-     *
-     * @return string
-     *   Sección XML de correcciones.
-     */
-    protected function getActiveCorrections(?int $tenantId): string
-    {
-        if (!$tenantId) {
-            $tenantId = $this->getCurrentTenantId();
-        }
+    $output .= "</jaraba_context>";
 
-        if (!$tenantId) {
-            return '';
-        }
+    $this->logger->debug('Built unified prompt with context: @context', [
+      '@context' => json_encode($context),
+    ]);
 
-        try {
-            $storage = $this->entityTypeManager->getStorage('tenant_ai_correction');
-            $corrections = $storage->loadByProperties([
-                'tenant_id' => $tenantId,
-                'status' => 'applied',
-            ]);
+    return $output;
+  }
 
-            if (empty($corrections)) {
-                return '';
-            }
-
-            $output = "<corrections>\n";
-            $output .= "<!-- Las siguientes reglas DEBEN aplicarse para evitar errores repetidos -->\n";
-
-            foreach ($corrections as $correction) {
-                /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantAiCorrection $correction */
-                $rule = $correction->get('generated_rule')->value;
-                if (!empty($rule)) {
-                    $type = $correction->get('correction_type')->value;
-                    $output .= "<rule type=\"{$type}\">{$rule}</rule>\n";
-                }
-            }
-
-            $output .= "</corrections>";
-
-            return $output;
-        } catch (\Exception $e) {
-            $this->logger->warning('Error loading corrections: @error', [
-                '@error' => $e->getMessage(),
-            ]);
-            return '';
-        }
+  /**
+   * Obtiene las correcciones de IA activas para prevenir errores.
+   *
+   * @param int|null $tenantId
+   *   ID del tenant (usa actual si NULL).
+   *
+   * @return string
+   *   Sección XML de correcciones.
+   */
+  protected function getActiveCorrections(?int $tenantId): string {
+    if (!$tenantId) {
+      $tenantId = $this->getCurrentTenantId();
     }
 
-    /**
-     * Obtiene conocimiento relevante mediante búsqueda RAG.
-     *
-     * @param string $query
-     *   Query del usuario.
-     * @param int|null $tenantId
-     *   ID del tenant.
-     *
-     * @return string
-     *   Sección XML con conocimiento relevante.
-     */
-    protected function getRelevantKnowledge(string $query, ?int $tenantId): string
-    {
-        if (!$tenantId) {
-            $tenantId = $this->getCurrentTenantId();
-        }
-
-        if (!$tenantId || !$this->knowledgeIndexer) {
-            return '';
-        }
-
-        try {
-            $results = $this->knowledgeIndexer->searchKnowledge($query, $tenantId, [
-                'limit' => 5,
-                'threshold' => 0.65,
-            ]);
-
-            if (empty($results)) {
-                return '';
-            }
-
-            $output = "<relevant_knowledge>\n";
-            $output .= "<!-- Información relevante encontrada en la base de conocimiento -->\n";
-
-            foreach ($results as $result) {
-                $type = $result['type'] ?? 'unknown';
-                $content = $result['content'] ?? '';
-                $score = round($result['score'] ?? 0, 2);
-
-                $output .= "<knowledge type=\"{$type}\" score=\"{$score}\">\n";
-                $output .= trim($content) . "\n";
-                $output .= "</knowledge>\n";
-            }
-
-            $output .= "</relevant_knowledge>";
-
-            return $output;
-        } catch (\Exception $e) {
-            $this->logger->warning('Error searching knowledge: @error', [
-                '@error' => $e->getMessage(),
-            ]);
-            return '';
-        }
+    if (!$tenantId) {
+      return '';
     }
 
-    /**
-     * Genera un prompt específico para el Copiloto del tenant.
-     *
-     * PROPÓSITO:
-     * Shortcut para el caso más común: el copiloto del tenant
-     * respondiendo a una pregunta del usuario.
-     *
-     * @param string $userMessage
-     *   Mensaje del usuario.
-     * @param int|null $tenantId
-     *   ID del tenant (usa actual si NULL).
-     *
-     * @return string
-     *   Prompt completo para el copiloto.
-     */
-    public function buildCopilotPrompt(string $userMessage, ?int $tenantId = NULL): string
-    {
-        $context = [
-            'agent_type' => 'copilot',
-            'tenant_id' => $tenantId ?? $this->getCurrentTenantId(),
-        ];
+    try {
+      $storage = $this->entityTypeManager->getStorage('tenant_ai_correction');
+      $corrections = $storage->loadByProperties([
+        'tenant_id' => $tenantId,
+        'status' => 'applied',
+      ]);
 
-        return $this->buildPrompt($context, $userMessage);
-    }
+      if (empty($corrections)) {
+        return '';
+      }
 
-    /**
-     * Obtiene el ID del tenant actual.
-     */
-    protected function getCurrentTenantId(): ?int
-    {
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
+      $output = "<corrections>\n";
+      $output .= "<!-- Las siguientes reglas DEBEN aplicarse para evitar errores repetidos -->\n";
+
+      foreach ($corrections as $correction) {
+        /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantAiCorrection $correction */
+        $rule = $correction->get('generated_rule')->value;
+        if (!empty($rule)) {
+          $type = $correction->get('correction_type')->value;
+          $output .= "<rule type=\"{$type}\">{$rule}</rule>\n";
         }
-        return NULL;
+      }
+
+      $output .= "</corrections>";
+
+      return $output;
     }
+    catch (\Exception $e) {
+      $this->logger->warning('Error loading corrections: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return '';
+    }
+  }
+
+  /**
+   * Obtiene conocimiento relevante mediante búsqueda RAG.
+   *
+   * @param string $query
+   *   Query del usuario.
+   * @param int|null $tenantId
+   *   ID del tenant.
+   *
+   * @return string
+   *   Sección XML con conocimiento relevante.
+   */
+  protected function getRelevantKnowledge(string $query, ?int $tenantId): string {
+    if (!$tenantId) {
+      $tenantId = $this->getCurrentTenantId();
+    }
+
+    if (!$tenantId || !$this->knowledgeIndexer) {
+      return '';
+    }
+
+    try {
+      $results = $this->knowledgeIndexer->searchKnowledge($query, $tenantId, [
+        'limit' => 5,
+        'threshold' => 0.65,
+      ]);
+
+      if (empty($results)) {
+        return '';
+      }
+
+      $output = "<relevant_knowledge>\n";
+      $output .= "<!-- Información relevante encontrada en la base de conocimiento -->\n";
+
+      foreach ($results as $result) {
+        $type = $result['type'] ?? 'unknown';
+        $content = $result['content'] ?? '';
+        $score = round($result['score'] ?? 0, 2);
+
+        $output .= "<knowledge type=\"{$type}\" score=\"{$score}\">\n";
+        $output .= trim($content) . "\n";
+        $output .= "</knowledge>\n";
+      }
+
+      $output .= "</relevant_knowledge>";
+
+      return $output;
+    }
+    catch (\Exception $e) {
+      $this->logger->warning('Error searching knowledge: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return '';
+    }
+  }
+
+  /**
+   * Genera un prompt específico para el Copiloto del tenant.
+   *
+   * PROPÓSITO:
+   * Shortcut para el caso más común: el copiloto del tenant
+   * respondiendo a una pregunta del usuario.
+   *
+   * @param string $userMessage
+   *   Mensaje del usuario.
+   * @param int|null $tenantId
+   *   ID del tenant (usa actual si NULL).
+   *
+   * @return string
+   *   Prompt completo para el copiloto.
+   */
+  public function buildCopilotPrompt(string $userMessage, ?int $tenantId = NULL): string {
+    $context = [
+      'agent_type' => 'copilot',
+      'tenant_id' => $tenantId ?? $this->getCurrentTenantId(),
+    ];
+
+    return $this->buildPrompt($context, $userMessage);
+  }
+
+  /**
+   * Obtiene el ID del tenant actual.
+   */
+  protected function getCurrentTenantId(): ?int {
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
+      $tenant = $tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
+    }
+    return NULL;
+  }
 
 }

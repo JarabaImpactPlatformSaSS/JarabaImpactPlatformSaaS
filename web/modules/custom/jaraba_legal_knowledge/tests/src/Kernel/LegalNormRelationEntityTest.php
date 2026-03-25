@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal_knowledge\Kernel;
 
-use Drupal\jaraba_legal_knowledge\Entity\LegalNorm;
 use Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation;
 use Drupal\KernelTests\KernelTestBase;
 

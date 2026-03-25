@@ -74,9 +74,14 @@ class MensajeriaIntegrationServiceTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConMessagingService(): void {
     $messagingService = new class {
+
+      /**
+       *
+       */
       public function createConversation(array $participants, string $title, string $type, string $context, string $contextId): array {
         return ['id' => 1];
       }
+
     };
 
     $service = new MensajeriaIntegrationService(

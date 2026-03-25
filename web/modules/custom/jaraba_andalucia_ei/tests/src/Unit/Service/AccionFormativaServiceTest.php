@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\jaraba_andalucia_ei\Entity\AccionFormativaEiInterface;
 use Drupal\jaraba_andalucia_ei\Service\AccionFormativaService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;

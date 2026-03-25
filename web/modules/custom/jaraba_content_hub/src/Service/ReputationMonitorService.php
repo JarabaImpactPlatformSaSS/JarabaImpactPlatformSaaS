@@ -47,9 +47,9 @@ class ReputationMonitorService {
    */
   protected function triggerReputationAlert(ContentArticleInterface $article, float $score): void {
     $tenantId = $article->get('tenant_id')->target_id ?? 0;
-    
+
     $msg = "⚠️ ALERTA DE REPUTACIÓN: El artículo '{$article->label()}' tiene un tono negativo crítico (Score: {$score}).";
-    
+
     $this->logger->warning($msg, ['tenant_id' => $tenantId]);
 
     // Notificar al Editor Jefe / Admin del Tenant via PWA (si disponible).

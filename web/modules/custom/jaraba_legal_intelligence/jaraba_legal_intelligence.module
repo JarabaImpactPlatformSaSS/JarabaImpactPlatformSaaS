@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -302,7 +306,7 @@ function _jaraba_legal_intelligence_ensure_crm_contact(int $userId): ?int {
  * - first_search: lead -> mql
  * - alert_created: mql -> sql
  * - citation_inserted: sql -> demo
- * - plan_upgraded: demo -> closed_won
+ * - plan_upgraded: demo -> closed_won.
  *
  * @param int $userId
  *   User ID.

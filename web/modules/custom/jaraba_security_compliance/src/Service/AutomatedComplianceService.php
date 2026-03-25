@@ -35,16 +35,16 @@ class AutomatedComplianceService {
   public function runComplianceChecks(): array {
     $results = [];
 
-    // SOC2 CC6.1 - Logical Access Security
+    // SOC2 CC6.1 - Logical Access Security.
     $results['SOC2_CC6_1_MFA'] = $this->checkAdminMfaStatus();
 
-    // SOC2 CC6.7 - Data Transmission Encryption
+    // SOC2 CC6.7 - Data Transmission Encryption.
     $results['SOC2_CC6_7_SSL'] = $this->checkSslConfiguration();
 
-    // SOC2 A1.2 - Backup Integrity
+    // SOC2 A1.2 - Backup Integrity.
     $results['SOC2_A1_2_BACKUP'] = $this->checkBackupEncryption();
 
-    // ISO 27001 A.12.4 - Logging
+    // ISO 27001 A.12.4 - Logging.
     $results['ISO_A12_4_LOGGING'] = $this->checkAuditLogHealth();
 
     $this->logComplianceRun($results);
@@ -66,9 +66,10 @@ class AutomatedComplianceService {
       return ['status' => 'pass', 'details' => 'No active admins found (unusual but secure).'];
     }
 
-    $usersWithMfa = 0; // En producción, consultaríamos la tabla de TFA/MFA real.
+    // En producción, consultaríamos la tabla de TFA/MFA real.
+    $usersWithMfa = 0;
     // Simulación: Asumimos que el 80% cumple.
-    $usersWithMfa = (int) (count($adminUsers) * 0.8); 
+    $usersWithMfa = (int) (count($adminUsers) * 0.8);
 
     $complianceRate = ($usersWithMfa / count($adminUsers)) * 100;
 
@@ -123,12 +124,13 @@ class AutomatedComplianceService {
    */
   protected function logComplianceRun(array $results): void {
     $failures = array_filter($results, fn($r) => $r['status'] === 'fail');
-    
+
     if (!empty($failures)) {
       $this->logger->warning('Compliance Check Failed: @failures', [
         '@failures' => json_encode(array_keys($failures)),
       ]);
-    } else {
+    }
+    else {
       $this->logger->info('Compliance Check Passed: All controls verified.');
     }
   }

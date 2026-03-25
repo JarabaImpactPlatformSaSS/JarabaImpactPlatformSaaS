@@ -61,7 +61,6 @@ class SiteFooterConfig extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- Tenant ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('El tenant al que pertenece esta configuración de footer.'))
@@ -74,7 +73,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ]);
 
     // --- Tipo y layout ---
-
     $fields['footer_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Tipo de Footer'))
       ->setDescription(t('Variante visual del footer.'))
@@ -97,7 +95,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Logo ---
-
     $fields['logo_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Logo del Footer'))
       ->setDescription(t('Logo alternativo para el footer.'))
@@ -133,7 +130,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Columnas ---
-
     $fields['columns_config'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Configuración de columnas'))
       ->setDescription(t('JSON con configuración de columnas del footer.'))
@@ -145,7 +141,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Social ---
-
     $fields['show_social'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Mostrar redes sociales'))
       ->setDefaultValue(TRUE)
@@ -172,7 +167,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Newsletter ---
-
     $fields['show_newsletter'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Mostrar newsletter'))
       ->setDefaultValue(FALSE)
@@ -210,7 +204,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- CTA del Footer ---
-
     $fields['cta_title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Título CTA'))
       ->setSettings(['max_length' => 255])
@@ -248,7 +241,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Copyright ---
-
     $fields['copyright_text'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Texto Copyright'))
       ->setDescription(t('Usa {year} para insertar el año actual automáticamente.'))
@@ -271,7 +263,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Colores ---
-
     $fields['bg_color'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Color de fondo'))
       ->setSettings(['max_length' => 7])
@@ -304,7 +295,6 @@ class SiteFooterConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Sistema ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'))
       ->setDescription(t('Fecha de creación.'));

@@ -59,125 +59,121 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class NotificationPreferenceAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface
-{
+class NotificationPreferenceAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        // Tipo de notificación (order_confirmed, new_review, etc.).
-        $fields['notification_type'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Tipo de notificación'))
-            ->setDescription(t('Tipo de notificación al que aplica esta preferencia.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 64)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Tipo de notificación (order_confirmed, new_review, etc.).
+    $fields['notification_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Tipo de notificación'))
+      ->setDescription(t('Tipo de notificación al que aplica esta preferencia.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 64)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Canal Email habilitado.
-        $fields['channel_email'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Email'))
-            ->setDescription(t('Recibir notificaciones por email.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -9,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Canal Email habilitado.
+    $fields['channel_email'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Email'))
+      ->setDescription(t('Recibir notificaciones por email.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Canal Push habilitado.
-        $fields['channel_push'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Push'))
-            ->setDescription(t('Recibir notificaciones push.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Canal Push habilitado.
+    $fields['channel_push'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Push'))
+      ->setDescription(t('Recibir notificaciones push.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Canal SMS habilitado.
-        $fields['channel_sms'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('SMS'))
-            ->setDescription(t('Recibir notificaciones por SMS.'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -7,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Canal SMS habilitado.
+    $fields['channel_sms'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('SMS'))
+      ->setDescription(t('Recibir notificaciones por SMS.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -7,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Canal In-App habilitado.
-        $fields['channel_in_app'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('In-App'))
-            ->setDescription(t('Recibir notificaciones dentro de la aplicación.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -6,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Canal In-App habilitado.
+    $fields['channel_in_app'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('In-App'))
+      ->setDescription(t('Recibir notificaciones dentro de la aplicación.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Campos de sistema.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    // Campos de sistema.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
+    return $fields;
+  }
+
+  /**
+   * Comprueba si un canal está habilitado.
+   *
+   * @param string $channel
+   *   Nombre del canal: email, push, sms, in_app.
+   *
+   * @return bool
+   *   TRUE si el canal está habilitado para este tipo de notificación.
+   */
+  public function isChannelEnabled(string $channel): bool {
+    $field_name = 'channel_' . $channel;
+    if ($this->hasField($field_name)) {
+      return (bool) $this->get($field_name)->value;
     }
+    return FALSE;
+  }
 
-    /**
-     * Comprueba si un canal está habilitado.
-     *
-     * @param string $channel
-     *   Nombre del canal: email, push, sms, in_app.
-     *
-     * @return bool
-     *   TRUE si el canal está habilitado para este tipo de notificación.
-     */
-    public function isChannelEnabled(string $channel): bool
-    {
-        $field_name = 'channel_' . $channel;
-        if ($this->hasField($field_name)) {
-            return (bool) $this->get($field_name)->value;
-        }
-        return FALSE;
+  /**
+   * Obtiene la lista de canales habilitados.
+   *
+   * @return array
+   *   Array de nombres de canales habilitados.
+   */
+  public function getEnabledChannels(): array {
+    $channels = ['email', 'push', 'sms', 'in_app'];
+    $enabled = [];
+    foreach ($channels as $channel) {
+      if ($this->isChannelEnabled($channel)) {
+        $enabled[] = $channel;
+      }
     }
-
-    /**
-     * Obtiene la lista de canales habilitados.
-     *
-     * @return array
-     *   Array de nombres de canales habilitados.
-     */
-    public function getEnabledChannels(): array
-    {
-        $channels = ['email', 'push', 'sms', 'in_app'];
-        $enabled = [];
-        foreach ($channels as $channel) {
-            if ($this->isChannelEnabled($channel)) {
-                $enabled[] = $channel;
-            }
-        }
-        return $enabled;
-    }
+    return $enabled;
+  }
 
 }

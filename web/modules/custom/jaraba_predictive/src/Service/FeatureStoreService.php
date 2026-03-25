@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_predictive\Service;
 
-use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;

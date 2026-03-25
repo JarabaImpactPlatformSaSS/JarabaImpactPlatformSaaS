@@ -30,7 +30,7 @@ class SeurCarrierAdapter extends BaseCarrierAdapter {
    */
   public function createShipment(array $data): array {
     $config = $this->getCarrierConfig($data['tenant_id'], $data['producer_id'] ?? NULL);
-    
+
     if (!$config) {
       return ['success' => FALSE, 'error' => 'Credenciales de SEUR no configuradas.'];
     }
@@ -87,7 +87,7 @@ class SeurCarrierAdapter extends BaseCarrierAdapter {
    * {@inheritdoc}
    */
   public function getTrackingStatus(string $trackingNumber): array {
-    // Consulta a /v1/tracking/{number}
+    // Consulta a /v1/tracking/{number}.
     return ['status' => 'picked_up'];
   }
 
@@ -107,13 +107,15 @@ class SeurCarrierAdapter extends BaseCarrierAdapter {
       ->accessCheck(FALSE)
       ->condition('tenant_id', $tenantId)
       ->condition('carrier_id', 'seur');
-    
+
     if ($producerId) {
       $query->condition('producer_id', $producerId);
     }
 
     $ids = $query->execute();
-    if (empty($ids)) return NULL;
+    if (empty($ids)) {
+      return NULL;
+    }
 
     $entity = $storage->load(reset($ids));
     return [

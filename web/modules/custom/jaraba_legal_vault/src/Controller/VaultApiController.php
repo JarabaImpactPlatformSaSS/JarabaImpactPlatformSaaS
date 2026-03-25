@@ -72,8 +72,8 @@ class VaultApiController extends ControllerBase {
     $file = $request->files->get('file');
 
     if (!$title || !$file) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y file son obligatorios.']], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y file son obligatorios.']], 400);
     }
 
     $content = file_get_contents($file->getPathname());
@@ -313,7 +313,9 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Token invalido.'], 403);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document']),
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $this->serializeDocument($result['document']),
     ]);
   }
 
@@ -341,7 +343,9 @@ class VaultApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data, 'meta' => ['total' => $result['total'], 'export_format' => $format]]);
+      'data' => $data,
+      'meta' => ['total' => $result['total'], 'export_format' => $format],
+    ]);
   }
 
   /**

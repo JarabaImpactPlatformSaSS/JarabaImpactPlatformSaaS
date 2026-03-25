@@ -68,10 +68,16 @@ class MyVerticalSection extends AbstractUserProfileSection {
     parent::__construct($currentUser);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'my_vertical';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     $result = $this->detectAvatar();
     $label = $this->getAvatarLabel($result);
@@ -81,6 +87,9 @@ class MyVerticalSection extends AbstractUserProfileSection {
     return (string) $this->t('Mi Vertical');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     $result = $this->detectAvatar();
     $label = $this->getAvatarLabel($result);
@@ -90,10 +99,16 @@ class MyVerticalSection extends AbstractUserProfileSection {
     return (string) $this->t('Accesos directos a tus herramientas');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'verticals', 'name' => 'rocket'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     $result = $this->detectAvatar();
     if ($result) {
@@ -102,15 +117,24 @@ class MyVerticalSection extends AbstractUserProfileSection {
     return 'primary';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 20;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     $result = $this->detectAvatar();
     return $result !== NULL && $result->avatarType !== 'general';
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     if (!$this->avatarNavigation) {
       return [];
@@ -167,6 +191,9 @@ class MyVerticalSection extends AbstractUserProfileSection {
     return $this->cachedResult;
   }
 
+  /**
+   *
+   */
   private function getAvatarLabel(?object $result): ?string {
     if (!$result || !isset($result->avatarType)) {
       return NULL;

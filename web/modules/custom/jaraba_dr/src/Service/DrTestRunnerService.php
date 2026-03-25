@@ -372,8 +372,10 @@ class DrTestRunnerService {
    */
   public function calculateRtoRpo(): array {
     $config = $this->configFactory->get('jaraba_dr.settings');
-    $rtoTarget = $config->get('rto_target_seconds') ?? 14400;  // 4 horas.
-    $rpoTarget = $config->get('rpo_target_seconds') ?? 3600;   // 1 hora.
+    // 4 horas.
+    $rtoTarget = $config->get('rto_target_seconds') ?? 14400;
+    // 1 hora.
+    $rpoTarget = $config->get('rpo_target_seconds') ?? 3600;
 
     $storage = $this->entityTypeManager->getStorage('dr_test_result');
 

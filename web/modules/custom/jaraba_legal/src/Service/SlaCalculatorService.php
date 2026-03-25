@@ -45,15 +45,15 @@ class SlaCalculatorService {
    * entre el target y el uptime real.
    */
   const CREDIT_TABLE = [
-    // diferencia < 0.1% => sin credito.
+    // Diferencia < 0.1% => sin credito.
     ['min_diff' => 0.0, 'max_diff' => 0.1, 'credit' => 0.0],
-    // diferencia 0.1% - 1.0% => 10% credito.
+    // Diferencia 0.1% - 1.0% => 10% credito.
     ['min_diff' => 0.1, 'max_diff' => 1.0, 'credit' => 10.0],
-    // diferencia 1.0% - 2.0% => 25% credito.
+    // Diferencia 1.0% - 2.0% => 25% credito.
     ['min_diff' => 1.0, 'max_diff' => 2.0, 'credit' => 25.0],
-    // diferencia 2.0% - 5.0% => 50% credito.
+    // Diferencia 2.0% - 5.0% => 50% credito.
     ['min_diff' => 2.0, 'max_diff' => 5.0, 'credit' => 50.0],
-    // diferencia > 5.0% => 100% credito.
+    // Diferencia > 5.0% => 100% credito.
     ['min_diff' => 5.0, 'max_diff' => 100.0, 'credit' => 100.0],
   ];
 

@@ -46,7 +46,7 @@ class DeviceApiController extends ControllerBase {
   /**
    * Registers a new device.
    *
-   * POST /api/v1/mobile/devices/register
+   * POST /api/v1/mobile/devices/register.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -110,7 +110,7 @@ class DeviceApiController extends ControllerBase {
   /**
    * Unregisters a device.
    *
-   * DELETE /api/v1/mobile/devices/unregister
+   * DELETE /api/v1/mobile/devices/unregister.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -159,7 +159,7 @@ class DeviceApiController extends ControllerBase {
   /**
    * Updates the push token for a device.
    *
-   * PUT /api/v1/mobile/devices/token
+   * PUT /api/v1/mobile/devices/token.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -208,7 +208,7 @@ class DeviceApiController extends ControllerBase {
   /**
    * Lists all active devices for the current user.
    *
-   * GET /api/v1/mobile/devices
+   * GET /api/v1/mobile/devices.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON response with device list.

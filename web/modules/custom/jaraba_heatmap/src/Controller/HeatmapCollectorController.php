@@ -22,102 +22,99 @@ use Drupal\jaraba_heatmap\Service\HeatmapCollectorService;
  *
  * Ref: Doc Técnico #180 - Native Heatmaps System
  */
-class HeatmapCollectorController extends ControllerBase
-{
+class HeatmapCollectorController extends ControllerBase {
 
-    /**
-     * Servicio de recolección de heatmaps.
-     *
-     * @var \Drupal\jaraba_heatmap\Service\HeatmapCollectorService
-     */
-    protected $collector;
+  /**
+   * Servicio de recolección de heatmaps.
+   *
+   * @var \Drupal\jaraba_heatmap\Service\HeatmapCollectorService
+   */
+  protected $collector;
 
-    /**
-     * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
-     */
-    protected $tenantContext;
+  /**
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
+   */
+  protected $tenantContext;
 
-    /**
-     * Constructor.
-     *
-     * @param \Drupal\jaraba_heatmap\Service\HeatmapCollectorService $collector
-     *   Servicio de recolección de eventos.
-     * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext
-     *   Servicio de contexto de tenant.
-     */
-    public function __construct(HeatmapCollectorService $collector, TenantContextService $tenantContext)
-    {
-        $this->collector = $collector;
-        $this->tenantContext = $tenantContext;
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\jaraba_heatmap\Service\HeatmapCollectorService $collector
+   *   Servicio de recolección de eventos.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext
+   *   Servicio de contexto de tenant.
+   */
+  public function __construct(HeatmapCollectorService $collector, TenantContextService $tenantContext) {
+    $this->collector = $collector;
+    $this->tenantContext = $tenantContext;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+          $container->get('jaraba_heatmap.collector'),
+          $container->get('ecosistema_jaraba_core.tenant_context')
+      );
+  }
+
+  /**
+   * Recibe y procesa eventos de heatmap del tracker.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con payload JSON.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   Respuesta 204 No Content para Beacon API.
+   */
+  public function collect(Request $request): Response {
+    // Verificar método POST.
+    if ($request->getMethod() !== 'POST') {
+      return new Response('', 405);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container)
-    {
-        return new static(
-            $container->get('jaraba_heatmap.collector'),
-            $container->get('ecosistema_jaraba_core.tenant_context')
-        );
+    // Decodificar payload JSON.
+    $content = $request->getContent();
+    $payload = json_decode($content, TRUE);
+
+    // Validar payload mínimo.
+    if (!$payload || empty($payload['events']) || !is_array($payload['events'])) {
+      // 400 Bad Request pero sin body para Beacon API.
+      return new Response('', 400);
     }
 
-    /**
-     * Recibe y procesa eventos de heatmap del tracker.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP con payload JSON.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     *   Respuesta 204 No Content para Beacon API.
-     */
-    public function collect(Request $request): Response
-    {
-        // Verificar método POST.
-        if ($request->getMethod() !== 'POST') {
-            return new Response('', 405);
-        }
-
-        // Decodificar payload JSON.
-        $content = $request->getContent();
-        $payload = json_decode($content, TRUE);
-
-        // Validar payload mínimo.
-        if (!$payload || empty($payload['events']) || !is_array($payload['events'])) {
-            // 400 Bad Request pero sin body para Beacon API.
-            return new Response('', 400);
-        }
-
-        // Validar campos requeridos del payload.
-        $required = ['session_id', 'page'];
-        foreach ($required as $field) {
-            if (empty($payload[$field])) {
-                return new Response('', 400);
-            }
-        }
-
-        // AUDIT-SEC-N06: Resolver tenant_id desde el contexto del servidor,
-        // NO confiar en el valor enviado por el cliente.
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        if (!$tenantId) {
-            return new Response('', 403);
-        }
-        $payload['tenant_id'] = $tenantId;
-
-        // Procesar eventos via servicio (patrón Thin Controller).
-        try {
-            $this->collector->processEvents($payload);
-        } catch (\Exception $e) {
-            // Loguear error pero retornar 204 para no bloquear cliente.
-            $this->getLogger('jaraba_heatmap')->error('Error procesando eventos: @message', [
-                '@message' => $e->getMessage(),
-            ]);
-        }
-
-        // Respuesta 204 optimizada para Beacon API.
-        $response = new Response('', 204);
-        $response->headers->set('Cache-Control', 'no-store, no-cache');
-        return $response;
+    // Validar campos requeridos del payload.
+    $required = ['session_id', 'page'];
+    foreach ($required as $field) {
+      if (empty($payload[$field])) {
+        return new Response('', 400);
+      }
     }
+
+    // AUDIT-SEC-N06: Resolver tenant_id desde el contexto del servidor,
+    // NO confiar en el valor enviado por el cliente.
+    $tenantId = $this->tenantContext->getCurrentTenantId();
+    if (!$tenantId) {
+      return new Response('', 403);
+    }
+    $payload['tenant_id'] = $tenantId;
+
+    // Procesar eventos via servicio (patrón Thin Controller).
+    try {
+      $this->collector->processEvents($payload);
+    }
+    catch (\Exception $e) {
+      // Loguear error pero retornar 204 para no bloquear cliente.
+      $this->getLogger('jaraba_heatmap')->error('Error procesando eventos: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+    }
+
+    // Respuesta 204 optimizada para Beacon API.
+    $response = new Response('', 204);
+    $response->headers->set('Cache-Control', 'no-store, no-cache');
+    return $response;
+  }
 
 }

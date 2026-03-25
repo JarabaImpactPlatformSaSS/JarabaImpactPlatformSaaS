@@ -195,7 +195,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS PRINCIPALES ===
-
     $fields['titulo'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Título'))
       ->setDescription(t('Nombre de la acción formativa. Ejemplo: "Módulo 1: Competencias Digitales Básicas".'))
@@ -274,7 +273,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === HORAS Y DURACIÓN ===
-
     $fields['horas_previstas'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Horas Previstas'))
       ->setDescription(t('Duración total prevista en horas. Ejemplo: 10.5 para diez horas y media.'))
@@ -309,7 +307,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === VOBO SAE ===
-
     $fields['estado'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado'))
       ->setDescription(t('Estado actual de la acción formativa en el workflow VoBo SAE.'))
@@ -363,7 +360,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === SPRINT 14: ALINEAMIENTO STO Y MATERIALES ===
-
     $fields['contenido_sto'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Contenido STO'))
       ->setDescription(t('Tipificación de contenido según STO para acciones formativas. Selección múltiple.'))
@@ -405,7 +401,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === REFERENCIAS CROSS-MODULE (ENTITY-FK-001: integer para cross-module) ===
-
     $fields['course_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Curso LMS'))
       ->setDescription(t('ID del curso en jaraba_lms (si existe contenido digital asociado).'))
@@ -431,7 +426,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === FORMADOR ===
-
     $fields['formador_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Formador/a'))
       ->setDescription(t('Profesional responsable de impartir la formación.'))
@@ -457,7 +451,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === METADATOS ===
-
     $fields['orden'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Orden'))
       ->setDescription(t('Orden de la acción dentro del plan formativo.'))
@@ -483,7 +476,6 @@ class AccionFormativaEi extends ContentEntityBase implements AccionFormativaEiIn
       ->setDisplayConfigurable('view', TRUE);
 
     // === TIMESTAMPS ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creación'))
       ->setRevisionable(TRUE)

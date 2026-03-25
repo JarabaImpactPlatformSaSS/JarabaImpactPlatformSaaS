@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_diagnostic\Controller;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_diagnostic\Service\EmployabilityScoringService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Url;
 
 /**
@@ -163,7 +162,7 @@ class EmployabilityDiagnosticController extends ControllerBase {
     $entities = $storage->loadByProperties(['uuid' => $uuid]);
 
     if (empty($entities)) {
-      throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+      throw new NotFoundHttpException();
     }
 
     $diagnostic = reset($entities);

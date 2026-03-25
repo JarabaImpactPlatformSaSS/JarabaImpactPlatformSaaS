@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 
@@ -76,12 +78,12 @@ class AgentSelfReflectionService {
       ]);
 
       $provider = $this->aiProvider->createInstance($routingConfig['provider_id']);
-      $input = new \Drupal\ai\OperationType\Chat\ChatInput([
-        new \Drupal\ai\OperationType\Chat\ChatMessage(
+      $input = new ChatInput([
+        new ChatMessage(
           'system',
           'You are a quality evaluation agent. Respond only with valid JSON.',
         ),
-        new \Drupal\ai\OperationType\Chat\ChatMessage('user', $evaluationPrompt),
+        new ChatMessage('user', $evaluationPrompt),
       ]);
 
       $response = $provider->chat($input, $routingConfig['model_id'], [

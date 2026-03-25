@@ -30,7 +30,7 @@ class AgroAnalyticsService {
   /**
    * Genera el snapshot diario para un productor o tenant.
    */
-  public function generateDailySnapshot(int $tenantId, ?int $producerId = NULL, string $date = NULL): AnalyticsDailyAgro {
+  public function generateDailySnapshot(int $tenantId, ?int $producerId = NULL, ?string $date = NULL): AnalyticsDailyAgro {
     if (!$date) {
       $date = date('Y-m-d', strtotime('yesterday'));
     }
@@ -38,24 +38,28 @@ class AgroAnalyticsService {
     $data = $this->collectMetrics($tenantId, $producerId, $date);
 
     $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
-    
+
     // Buscar si ya existe para actualizar, o crear nuevo.
     $query = $storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('tenant_id', $tenantId)
       ->condition('date', $date);
-    
+
     if ($producerId) {
-      $query->condition('uid', $producerId); // Usamos uid como owner (productor)
-    } else {
-      $query->condition('uid', 0); // Snapshot global del tenant
+      // Usamos uid como owner (productor)
+      $query->condition('uid', $producerId);
+    }
+    else {
+      // Snapshot global del tenant.
+      $query->condition('uid', 0);
     }
 
     $ids = $query->execute();
-    
+
     if (!empty($ids)) {
       $entity = $storage->load(reset($ids));
-    } else {
+    }
+    else {
       $entity = $storage->create([
         'tenant_id' => $tenantId,
         'uid' => $producerId ?? 0,
@@ -87,12 +91,15 @@ class AgroAnalyticsService {
 
     if ($producerId) {
       $query->condition('uid', $producerId);
-    } else {
+    }
+    else {
       $query->condition('uid', 0);
     }
 
     $ids = $query->execute();
-    if (empty($ids)) return [];
+    if (empty($ids)) {
+      return [];
+    }
 
     $snapshots = $storage->loadMultiple($ids);
     $summary = [];
@@ -124,7 +131,7 @@ class AgroAnalyticsService {
       ->fields('s', ['subtotal', 'shipping_amount'])
       ->condition('s.tenant_id', $tenantId)
       ->condition('s.created', [strtotime($start), strtotime($end)], 'BETWEEN');
-    
+
     if ($producerId) {
       $query->condition('s.producer_id', $producerId);
     }
@@ -140,7 +147,7 @@ class AgroAnalyticsService {
       ->fields('sh', ['id', 'is_refrigerated', 'state'])
       ->condition('sh.tenant_id', $tenantId)
       ->condition('sh.created', [strtotime($start), strtotime($end)], 'BETWEEN');
-    
+
     // El shipment no tiene producer_id directo, filtramos por sub_order_id.
     if ($producerId) {
       $ship_query->join('agro_suborder', 'so', 'sh.sub_order_id = so.id');
@@ -149,7 +156,7 @@ class AgroAnalyticsService {
 
     $shipments = $ship_query->execute()->fetchAll();
     $metrics['shipments_count'] = count($shipments);
-    
+
     // Alertas de frío (Incidencias en envíos refrigerados).
     $cold_alerts = 0;
     foreach ($shipments as $sh) {
@@ -162,7 +169,7 @@ class AgroAnalyticsService {
     // 3. Marketing (QR).
     $qr_query = $this->database->select('qr_scan_event', 'qse')
       ->condition('qse.created', [strtotime($start), strtotime($end)], 'BETWEEN');
-    
+
     if ($producerId) {
       $qr_query->join('qr_code_agro', 'qca', 'qse.qr_id = qca.id');
       $qr_query->condition('qca.target_entity_type', 'producer_profile');

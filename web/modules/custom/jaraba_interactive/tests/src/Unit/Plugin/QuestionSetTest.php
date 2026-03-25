@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\QuestionSet;
 use Drupal\Tests\UnitTestCase;
 
@@ -53,7 +54,7 @@ class QuestionSetTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -65,8 +66,10 @@ class QuestionSetTest extends UnitTestCase {
 
   // =========================================================================
   // GET SCHEMA TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArray(): void {
     $schema = $this->plugin->getSchema();
@@ -76,6 +79,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertArrayHasKey('settings', $schema);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaQuestionsRequired(): void {
     $schema = $this->plugin->getSchema();
@@ -84,6 +90,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame('array', $schema['questions']['type']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaSettingsDefaults(): void {
     $schema = $this->plugin->getSchema();
@@ -94,6 +103,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame('immediate', $settings['show_feedback']['default']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaQuestionTypeEnumValues(): void {
     $schema = $this->plugin->getSchema();
@@ -108,8 +120,10 @@ class QuestionSetTest extends UnitTestCase {
 
   // =========================================================================
   // CALCULATE SCORE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePerfect(): void {
     $data = [
@@ -145,6 +159,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame(3, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePartial(): void {
     $data = [
@@ -182,6 +199,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame(2, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreZero(): void {
     $data = [
@@ -208,6 +228,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame(1, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreNoResponses(): void {
     $data = [
@@ -231,6 +254,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertFalse($result['passed']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreEmptyQuestions(): void {
     $data = ['questions' => [], 'settings' => ['passing_score' => 70]];
@@ -241,6 +267,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertSame(0, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreShortAnswerCaseInsensitive(): void {
     $data = [
@@ -264,6 +293,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertTrue($result['passed']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreDetailsStructure(): void {
     $data = [
@@ -295,6 +327,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertArrayHasKey('feedback', $detail);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreTrueFalseIncorrect(): void {
     $data = [
@@ -322,8 +357,10 @@ class QuestionSetTest extends UnitTestCase {
 
   // =========================================================================
   // XAPI VERBS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsExpected(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -338,8 +375,10 @@ class QuestionSetTest extends UnitTestCase {
 
   // =========================================================================
   // RENDER TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsTheme(): void {
     $data = [
@@ -354,6 +393,9 @@ class QuestionSetTest extends UnitTestCase {
     $this->assertArrayHasKey('#settings', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderMergesSettings(): void {
     $data = [

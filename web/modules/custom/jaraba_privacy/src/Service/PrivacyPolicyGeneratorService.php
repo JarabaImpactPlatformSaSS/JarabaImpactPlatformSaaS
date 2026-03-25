@@ -223,8 +223,8 @@ class PrivacyPolicyGeneratorService {
     $defaults = [
       'label' => (string) new TranslatableMarkup('General'),
       'data_collected' => '<li>' . (string) new TranslatableMarkup('Datos identificativos') . '</li>'
-        . '<li>' . (string) new TranslatableMarkup('Datos de contacto') . '</li>'
-        . '<li>' . (string) new TranslatableMarkup('Datos de uso de la plataforma') . '</li>',
+      . '<li>' . (string) new TranslatableMarkup('Datos de contacto') . '</li>'
+      . '<li>' . (string) new TranslatableMarkup('Datos de uso de la plataforma') . '</li>',
       'legal_basis' => (string) new TranslatableMarkup('Ejecución de contrato (RGPD Art. 6.1.b) y consentimiento (Art. 6.1.a).'),
     ];
 
@@ -232,23 +232,23 @@ class PrivacyPolicyGeneratorService {
       'empleo' => [
         'label' => (string) new TranslatableMarkup('Empleo y Empleabilidad'),
         'data_collected' => $defaults['data_collected']
-          . '<li>' . (string) new TranslatableMarkup('CV y experiencia profesional') . '</li>'
-          . '<li>' . (string) new TranslatableMarkup('Competencias y habilidades') . '</li>'
-          . '<li>' . (string) new TranslatableMarkup('Resultados de diagnóstico de empleabilidad') . '</li>',
+        . '<li>' . (string) new TranslatableMarkup('CV y experiencia profesional') . '</li>'
+        . '<li>' . (string) new TranslatableMarkup('Competencias y habilidades') . '</li>'
+        . '<li>' . (string) new TranslatableMarkup('Resultados de diagnóstico de empleabilidad') . '</li>',
         'legal_basis' => (string) new TranslatableMarkup('Ejecución de contrato (intermediación laboral) y consentimiento.'),
       ],
       'emprendimiento' => [
         'label' => (string) new TranslatableMarkup('Emprendimiento'),
         'data_collected' => $defaults['data_collected']
-          . '<li>' . (string) new TranslatableMarkup('Datos de plan de negocio') . '</li>'
-          . '<li>' . (string) new TranslatableMarkup('Métricas de experimentos') . '</li>',
+        . '<li>' . (string) new TranslatableMarkup('Datos de plan de negocio') . '</li>'
+        . '<li>' . (string) new TranslatableMarkup('Métricas de experimentos') . '</li>',
         'legal_basis' => $defaults['legal_basis'],
       ],
       'comercio' => [
         'label' => (string) new TranslatableMarkup('Comercio'),
         'data_collected' => $defaults['data_collected']
-          . '<li>' . (string) new TranslatableMarkup('Datos de comercio (productos, inventario)') . '</li>'
-          . '<li>' . (string) new TranslatableMarkup('Datos de transacciones comerciales') . '</li>',
+        . '<li>' . (string) new TranslatableMarkup('Datos de comercio (productos, inventario)') . '</li>'
+        . '<li>' . (string) new TranslatableMarkup('Datos de transacciones comerciales') . '</li>',
         'legal_basis' => $defaults['legal_basis'],
       ],
     ];

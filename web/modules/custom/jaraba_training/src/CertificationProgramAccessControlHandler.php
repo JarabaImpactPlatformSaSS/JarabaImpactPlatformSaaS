@@ -13,22 +13,20 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para CertificationProgram.
  */
-class CertificationProgramAccessControlHandler extends EntityAccessControlHandler
-{
+class CertificationProgramAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        return AccessResult::allowedIfHasPermission($account, 'administer certification programs');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'administer certification programs');
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'administer certification programs');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'administer certification programs');
+  }
 
 }

@@ -377,7 +377,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- AI Fields ---
-
     $fields['ai_classification'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('AI Classification'))
       ->setDescription(t('JSON: {category, confidence, sentiment, urgency, vertical}.'))
@@ -398,7 +397,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SLA Fields ---
-
     $fields['sla_policy_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('SLA Policy'))
       ->setDescription(t('ID of the SLA policy applied (ConfigEntity ID).'))
@@ -441,7 +439,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Satisfaction Fields ---
-
     $fields['satisfaction_rating'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('CSAT Rating'))
       ->setDescription(t('Customer satisfaction rating (1-5).'))
@@ -473,7 +470,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Resolution Fields ---
-
     $fields['resolution_notes'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Resolution Notes'))
       ->setDescription(t('Notes from the agent about how the issue was resolved.'))
@@ -486,7 +482,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Metadata Fields ---
-
     $fields['tags'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Tags'))
       ->setDescription(t('JSON array of tags for organization.'))
@@ -515,7 +510,6 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Merge / Parent-Child Fields (GAP-SUP-01, GAP-SUP-05) ---
-
     $fields['merged_into_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Merged Into'))
       ->setDescription(t('The canonical ticket this one was merged into.'))
@@ -545,14 +539,12 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface,
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Watcher Fields (GAP-SUP-06) ---
-
     $fields['cc_uids'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('CC Users'))
       ->setDescription(t('JSON array of user IDs receiving notifications.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Timestamps ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time the ticket was created.'))

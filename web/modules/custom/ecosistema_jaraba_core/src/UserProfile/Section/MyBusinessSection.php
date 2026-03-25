@@ -27,34 +27,58 @@ class MyBusinessSection extends AbstractUserProfileSection {
     parent::__construct($currentUser);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'my_business';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     return (string) $this->t('Mi Negocio');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     return (string) $this->t('Administra tu organizacion y suscripcion');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'business', 'name' => 'briefcase'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'corporate';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     return $this->resolveTenant() !== NULL;
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     return array_values(array_filter([
       $this->makeLink(
@@ -90,6 +114,9 @@ class MyBusinessSection extends AbstractUserProfileSection {
     ]));
   }
 
+  /**
+   *
+   */
   private function resolveTenant(): ?object {
     if (!$this->tenantContext) {
       return NULL;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_billing\Unit\Service;
 
+use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Delete;
 use Drupal\Core\Database\Query\Merge;
 use Drupal\Core\Database\Query\Select;
-use Drupal\Core\Database\Query\Update;
 use Drupal\Core\Database\StatementInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -174,7 +174,7 @@ class DunningServiceTest extends UnitTestCase {
     $delete->expects($this->once())
       ->method('execute');
 
-    $tenant = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\TenantInterface::class);
+    $tenant = $this->createMock(TenantInterface::class);
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with(42)->willReturn($tenant);
     $this->entityTypeManager->method('getStorage')
@@ -203,7 +203,7 @@ class DunningServiceTest extends UnitTestCase {
     $countQuery->method('execute')->willReturn($statement);
     $statement->method('fetchField')->willReturn('0');
 
-    // merge for creating record.
+    // Merge for creating record.
     $merge = $this->createMock(Merge::class);
     $this->database->method('merge')->willReturn($merge);
     $merge->method('key')->willReturnSelf();

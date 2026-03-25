@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Controlador para el centro de preferencias de notificaciones.
  *
  * Ruta frontend: /mi-cuenta/notificaciones
- * API: GET/PATCH /api/v1/user/notification-preferences
+ * API: GET/PATCH /api/v1/user/notification-preferences.
  *
  * Frontend route con _admin_route: FALSE.
  */

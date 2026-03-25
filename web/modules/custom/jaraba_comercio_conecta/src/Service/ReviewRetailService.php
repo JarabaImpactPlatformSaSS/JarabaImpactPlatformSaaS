@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ReviewRetailService {
 
   public function __construct(

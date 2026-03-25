@@ -17,7 +17,7 @@
  * - heatmap_events: Eventos raw antes de agregación (7 días retención)
  * - heatmap_aggregated: Datos agregados por buckets (90 días retención)
  * - heatmap_scroll_depth: Análisis de profundidad de scroll
- * - heatmap_page_screenshots: Capturas para overlay de heatmap
+ * - heatmap_page_screenshots: Capturas para overlay de heatmap.
  */
 function jaraba_heatmap_schema() {
   $schema = [];

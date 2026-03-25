@@ -41,93 +41,87 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   },
  * )
  */
-class AiFeedback extends ContentEntityBase implements ContentEntityInterface
-{
+class AiFeedback extends ContentEntityBase implements ContentEntityInterface {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Response ID — links feedback to the AI response it rates.
-        $fields['response_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Response ID'))
-            ->setDescription(t('The ID of the AI response being rated.'))
-            ->setRequired(TRUE)
-            ->setSettings(['max_length' => 255])
-            ->setDisplayOptions('view', ['weight' => 0]);
+    // Response ID — links feedback to the AI response it rates.
+    $fields['response_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Response ID'))
+      ->setDescription(t('The ID of the AI response being rated.'))
+      ->setRequired(TRUE)
+      ->setSettings(['max_length' => 255])
+      ->setDisplayOptions('view', ['weight' => 0]);
 
-        // User ID — the user who submitted the feedback.
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('User'))
-            ->setDescription(t('The user who submitted the feedback.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'user')
-            ->setDisplayOptions('view', ['weight' => 1]);
+    // User ID — the user who submitted the feedback.
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('User'))
+      ->setDescription(t('The user who submitted the feedback.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setDisplayOptions('view', ['weight' => 1]);
 
-        // Tenant ID — multi-tenant isolation via group reference.
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('The tenant (group) this feedback belongs to.'))
-            ->setSetting('target_type', 'group')
-            ->setDisplayOptions('view', ['weight' => 2]);
+    // Tenant ID — multi-tenant isolation via group reference.
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('The tenant (group) this feedback belongs to.'))
+      ->setSetting('target_type', 'group')
+      ->setDisplayOptions('view', ['weight' => 2]);
 
-        // Rating — integer 1-5.
-        $fields['rating'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Rating'))
-            ->setDescription(t('User rating of the AI response (1-5).'))
-            ->setRequired(TRUE)
-            ->setSetting('min', 1)
-            ->setSetting('max', 5)
-            ->setDisplayOptions('view', ['weight' => 3]);
+    // Rating — integer 1-5.
+    $fields['rating'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Rating'))
+      ->setDescription(t('User rating of the AI response (1-5).'))
+      ->setRequired(TRUE)
+      ->setSetting('min', 1)
+      ->setSetting('max', 5)
+      ->setDisplayOptions('view', ['weight' => 3]);
 
-        // Comment — optional free-text feedback.
-        $fields['comment'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Comment'))
-            ->setDescription(t('Optional free-text feedback on the AI response.'))
-            ->setDisplayOptions('view', ['weight' => 4]);
+    // Comment — optional free-text feedback.
+    $fields['comment'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Comment'))
+      ->setDescription(t('Optional free-text feedback on the AI response.'))
+      ->setDisplayOptions('view', ['weight' => 4]);
 
-        // Created timestamp.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Created'))
-            ->setDescription(t('When the feedback was submitted.'))
-            ->setDisplayOptions('view', ['weight' => 5]);
+    // Created timestamp.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'))
+      ->setDescription(t('When the feedback was submitted.'))
+      ->setDisplayOptions('view', ['weight' => 5]);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Gets the response ID.
-     */
-    public function getResponseId(): string
-    {
-        return $this->get('response_id')->value ?? '';
-    }
+  /**
+   * Gets the response ID.
+   */
+  public function getResponseId(): string {
+    return $this->get('response_id')->value ?? '';
+  }
 
-    /**
-     * Gets the rating.
-     */
-    public function getRating(): int
-    {
-        return (int) ($this->get('rating')->value ?? 0);
-    }
+  /**
+   * Gets the rating.
+   */
+  public function getRating(): int {
+    return (int) ($this->get('rating')->value ?? 0);
+  }
 
-    /**
-     * Gets the comment.
-     */
-    public function getComment(): string
-    {
-        return $this->get('comment')->value ?? '';
-    }
+  /**
+   * Gets the comment.
+   */
+  public function getComment(): string {
+    return $this->get('comment')->value ?? '';
+  }
 
-    /**
-     * Gets the user ID of the feedback author.
-     */
-    public function getFeedbackUserId(): int
-    {
-        return (int) ($this->get('user_id')->target_id ?? 0);
-    }
+  /**
+   * Gets the user ID of the feedback author.
+   */
+  public function getFeedbackUserId(): int {
+    return (int) ($this->get('user_id')->target_id ?? 0);
+  }
 
 }

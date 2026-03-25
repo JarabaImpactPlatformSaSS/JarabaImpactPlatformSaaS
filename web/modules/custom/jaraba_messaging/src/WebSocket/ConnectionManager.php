@@ -143,7 +143,7 @@ class ConnectionManager {
    * @param int $userId
    *   The user ID.
    *
-   * @return ConnectionInterface[]
+   * @return \Ratchet\ConnectionInterface[]
    *   Array of active connections for this user.
    */
   public function getConnectionsForUser(int $userId): array {
@@ -158,7 +158,7 @@ class ConnectionManager {
    * @param int[] $participantIds
    *   Array of user IDs who are participants.
    *
-   * @return ConnectionInterface[]
+   * @return \Ratchet\ConnectionInterface[]
    *   Array of active connections belonging to any of the given participants.
    */
   public function getConnectionsForConversation(int $conversationId, array $participantIds): array {

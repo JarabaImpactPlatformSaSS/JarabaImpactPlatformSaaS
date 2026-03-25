@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_vault\Service;
 
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Psr\Log\LoggerInterface;
 
@@ -250,7 +251,7 @@ class VaultEncryptionService {
     if (empty($kekBase64)) {
       // Generar KEK por defecto para desarrollo. En produccion debe configurarse.
       $this->logger->warning('Vault KEK not configured. Using derived key from Drupal hash salt.');
-      $hashSalt = \Drupal\Core\Site\Settings::getHashSalt();
+      $hashSalt = Settings::getHashSalt();
       return hash('sha256', 'vault_kek_' . $hashSalt, TRUE);
     }
 

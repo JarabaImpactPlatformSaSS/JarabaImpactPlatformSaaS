@@ -478,10 +478,16 @@ class ScimHandlerService {
           'description' => 'User Account',
           'attributes' => [
             ['name' => 'userName', 'type' => 'string', 'required' => TRUE, 'mutability' => 'readWrite'],
-            ['name' => 'name', 'type' => 'complex', 'required' => FALSE, 'mutability' => 'readWrite', 'subAttributes' => [
+            [
+              'name' => 'name',
+              'type' => 'complex',
+              'required' => FALSE,
+              'mutability' => 'readWrite',
+              'subAttributes' => [
               ['name' => 'givenName', 'type' => 'string'],
               ['name' => 'familyName', 'type' => 'string'],
-            ]],
+              ],
+            ],
             ['name' => 'emails', 'type' => 'complex', 'required' => TRUE, 'multiValued' => TRUE, 'mutability' => 'readWrite'],
             ['name' => 'active', 'type' => 'boolean', 'required' => FALSE, 'mutability' => 'readWrite'],
           ],

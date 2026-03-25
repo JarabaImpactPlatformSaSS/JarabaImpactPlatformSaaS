@@ -88,7 +88,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 1: MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece la plantilla.'))
@@ -100,7 +99,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 2: IDENTIFICACION DE LA PLANTILLA
     // =========================================================================
-
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre'))
       ->setDescription(new TranslatableMarkup('Nombre descriptivo de la plantilla.'))
@@ -131,7 +129,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 3: CLASIFICACION TAXONOMICA
     // =========================================================================
-
     $fields['practice_area_tid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Area de Practica'))
       ->setDescription(new TranslatableMarkup('Area juridica de la plantilla.'))
@@ -151,7 +148,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 4: CONTENIDO DEL TEMPLATE
     // =========================================================================
-
     $fields['template_body'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Cuerpo de la Plantilla'))
       ->setDescription(new TranslatableMarkup('Contenido con merge-fields: {{ case.title }}, {{ client.name }}, etc.'))
@@ -175,7 +171,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 5: FLAGS Y CONTADORES
     // =========================================================================
-
     $fields['is_system'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Plantilla del Sistema'))
       ->setDescription(new TranslatableMarkup('Las plantillas del sistema no pueden ser eliminadas por usuarios.'))
@@ -203,7 +198,6 @@ class LegalTemplate extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 6: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

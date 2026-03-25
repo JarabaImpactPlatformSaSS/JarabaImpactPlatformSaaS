@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
@@ -93,7 +94,7 @@ class AgroConectaFeatureGateServiceTest extends UnitTestCase {
     $plan = 'profesional';
 
     // Mock a limit entity that returns -1 (unlimited).
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->with('limit_value')->willReturn(-1);
     $limitEntity->method('status')->willReturn(TRUE);
 
@@ -119,7 +120,7 @@ class AgroConectaFeatureGateServiceTest extends UnitTestCase {
     $plan = 'free';
 
     // Mock a limit entity with value 0 (not included).
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->willReturnMap([
       ['limit_value', 0],
       ['upgrade_message', 'Upgrade to access Partner Hub.'],

@@ -7,7 +7,7 @@ namespace Drupal\jaraba_agroconecta_core\Shipping;
 /**
  * Interface for AgroConecta carrier adapters.
  *
- * All carrier integrations must implement this interface to ensure a 
+ * All carrier integrations must implement this interface to ensure a
  * unified experience for label generation and tracking.
  *
  * F5 — Doc 51 §5.1.

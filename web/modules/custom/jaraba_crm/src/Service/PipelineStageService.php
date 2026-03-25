@@ -37,7 +37,7 @@ class PipelineStageService {
    * @param int $tenantId
    *   ID del tenant.
    *
-   * @return PipelineStage[]
+   * @return \Drupal\jaraba_crm\Entity\PipelineStage[]
    *   Etapas ordenadas por posicion.
    */
   public function getStagesForTenant(int $tenantId): array {
@@ -57,7 +57,7 @@ class PipelineStageService {
    * @param int $stageId
    *   ID de la etapa.
    *
-   * @return PipelineStage|null
+   * @return \Drupal\jaraba_crm\Entity\PipelineStage|null
    *   La etapa o NULL si no existe.
    */
   public function getStageById(int $stageId): ?PipelineStage {
@@ -71,7 +71,7 @@ class PipelineStageService {
    * @param int $tenantId
    *   ID del tenant.
    *
-   * @return PipelineStage[]
+   * @return \Drupal\jaraba_crm\Entity\PipelineStage[]
    *   Etapas creadas.
    */
   public function createDefaultStages(int $tenantId): array {

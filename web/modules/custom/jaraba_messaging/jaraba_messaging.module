@@ -129,7 +129,6 @@ function jaraba_messaging_mail(string $key, array &$message, array $params): voi
   }
 }
 
-
 /**
  * Prepares variables for secure_conversation templates.
  *

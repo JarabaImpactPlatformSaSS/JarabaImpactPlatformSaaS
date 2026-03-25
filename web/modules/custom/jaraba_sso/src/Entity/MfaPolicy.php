@@ -10,7 +10,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
- * MFA POLICY ENTITY — MfaPolicy
+ * MFA POLICY ENTITY — MfaPolicy.
  *
  * PURPOSE:
  * Stores per-tenant Multi-Factor Authentication policies.

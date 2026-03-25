@@ -13,39 +13,37 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for Membership Plan entities.
  */
-class MembershipPlanAccessControlHandler extends EntityAccessControlHandler
-{
+class MembershipPlanAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        if ($account->hasPermission('administer membership plans')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        switch ($operation) {
-            case 'view':
-                // Public can view active plans.
-                if ($entity->get('status')->value === 'active') {
-                    return AccessResult::allowed()->addCacheableDependency($entity);
-                }
-                return AccessResult::forbidden();
-
-            case 'update':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'administer membership plans');
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    if ($account->hasPermission('administer membership plans')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
+    switch ($operation) {
+      case 'view':
+        // Public can view active plans.
+        if ($entity->get('status')->value === 'active') {
+          return AccessResult::allowed()->addCacheableDependency($entity);
+        }
+        return AccessResult::forbidden();
+
+      case 'update':
+      case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'administer membership plans');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'administer membership plans');
+  }
 
 }

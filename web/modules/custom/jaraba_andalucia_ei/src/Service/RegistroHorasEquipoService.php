@@ -62,21 +62,21 @@ final class RegistroHorasEquipoService {
    * @return bool
    *   TRUE si el registro fue exitoso, FALSE en caso contrario.
    */
-  public function registrarHoras(int $uid, string $rol, float $horas, string $descripcion, ?int $tenantId = null): bool {
+  public function registrarHoras(int $uid, string $rol, float $horas, string $descripcion, ?int $tenantId = NULL): bool {
     try {
       if ($horas <= 0.0) {
         $this->logger->warning('Intento de registrar horas <= 0 para uid @uid, rol @rol.', [
           '@uid' => $uid,
           '@rol' => $rol,
         ]);
-        return false;
+        return FALSE;
       }
 
-      if (!in_array($rol, self::ROLES_EQUIPO, true)) {
+      if (!in_array($rol, self::ROLES_EQUIPO, TRUE)) {
         $this->logger->warning('Rol no válido "@rol" para registro de horas equipo.', [
           '@rol' => $rol,
         ]);
-        return false;
+        return FALSE;
       }
 
       $duracionMinutos = (int) round($horas * 60);
@@ -94,7 +94,7 @@ final class RegistroHorasEquipoService {
         'fecha' => date('Y-m-d'),
       ]);
 
-      if ($tenantId !== null) {
+      if ($tenantId !== NULL) {
         $actuacion->set('tenant_id', $tenantId);
       }
 
@@ -106,13 +106,13 @@ final class RegistroHorasEquipoService {
         '@rol' => $rol,
       ]);
 
-      return true;
+      return TRUE;
     }
     catch (\Throwable $e) {
       $this->logger->error('Error registrando horas equipo: @message', [
         '@message' => $e->getMessage(),
       ]);
-      return false;
+      return FALSE;
     }
   }
 
@@ -130,12 +130,12 @@ final class RegistroHorasEquipoService {
    * @return float
    *   Total de horas dedicadas por ese rol.
    */
-  public function getHorasPorRol(string $rol, ?int $tenantId = null): float {
+  public function getHorasPorRol(string $rol, ?int $tenantId = NULL): float {
     try {
       // Obtener UIDs de usuarios con el rol indicado.
       $userStorage = $this->entityTypeManager->getStorage('user');
       $userQuery = $userStorage->getQuery()
-        ->accessCheck(false)
+        ->accessCheck(FALSE)
         ->condition('roles', $rol)
         ->condition('status', 1);
 
@@ -147,12 +147,12 @@ final class RegistroHorasEquipoService {
 
       $storage = $this->entityTypeManager->getStorage('actuacion_sto');
       $query = $storage->getQuery()
-        ->accessCheck(false)
+        ->accessCheck(FALSE)
         ->condition('tipo_actuacion', self::TIPO_DEDICACION)
         ->condition('orientador_id', array_values($userIds), 'IN');
 
       // TENANT-001: Filtrar por tenant si se proporciona.
-      if ($tenantId !== null) {
+      if ($tenantId !== NULL) {
         $query->condition('tenant_id', $tenantId);
       }
 
@@ -184,16 +184,16 @@ final class RegistroHorasEquipoService {
    * @return float
    *   Total de horas dedicadas por ese usuario.
    */
-  public function getHorasPorUsuario(int $uid, ?int $tenantId = null): float {
+  public function getHorasPorUsuario(int $uid, ?int $tenantId = NULL): float {
     try {
       $storage = $this->entityTypeManager->getStorage('actuacion_sto');
       $query = $storage->getQuery()
-        ->accessCheck(false)
+        ->accessCheck(FALSE)
         ->condition('tipo_actuacion', self::TIPO_DEDICACION)
         ->condition('orientador_id', $uid);
 
       // TENANT-001: Filtrar por tenant si se proporciona.
-      if ($tenantId !== null) {
+      if ($tenantId !== NULL) {
         $query->condition('tenant_id', $tenantId);
       }
 
@@ -223,7 +223,7 @@ final class RegistroHorasEquipoService {
    * @return array<string, float>
    *   Array con keys: coordinador, orientador, formador, total.
    */
-  public function getResumenEquipo(?int $tenantId = null): array {
+  public function getResumenEquipo(?int $tenantId = NULL): array {
     try {
       $coordinador = $this->getHorasPorRol('coordinador', $tenantId);
       $orientador = $this->getHorasPorRol('orientador', $tenantId);

@@ -59,195 +59,186 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   field_ui_base_route = "entity.vertical.collection",
  * )
  */
-class Vertical extends ContentEntityBase implements VerticalInterface
-{
+class Vertical extends ContentEntityBase implements VerticalInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName(): string
-    {
-        return $this->get('name')->value ?? '';
+  /**
+   * {@inheritdoc}
+   */
+  public function getName(): string {
+    return $this->get('name')->value ?? '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setName(string $name): VerticalInterface {
+    $this->set('name', $name);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMachineName(): string {
+    return $this->get('machine_name')->value ?? '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): ?string {
+    return $this->get('description')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEnabledFeatures(): array {
+    $features = [];
+    foreach ($this->get('enabled_features') as $item) {
+      if ($item->target_id) {
+        $features[] = $item->target_id;
+      }
     }
+    return $features;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName(string $name): VerticalInterface
-    {
-        $this->set('name', $name);
-        return $this;
+  /**
+   * {@inheritdoc}
+   */
+  public function hasFeature(string $feature): bool {
+    return in_array($feature, $this->getEnabledFeatures(), TRUE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getThemeSettings(): array {
+    $settings = $this->get('theme_settings')->value;
+    if (is_string($settings)) {
+      return json_decode($settings, TRUE) ?? [];
     }
+    return $settings ?? [];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMachineName(): string
-    {
-        return $this->get('machine_name')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): ?string
-    {
-        return $this->get('description')->value;
-    }
+    // Nombre de la vertical.
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre'))
+      ->setDescription(t('El nombre de la vertical (ej: AgroConecta).'))
+      ->setRequired(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSetting('max_length', 100)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => -5,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEnabledFeatures(): array
-    {
-        $features = [];
-        foreach ($this->get('enabled_features') as $item) {
-            if ($item->target_id) {
-                $features[] = $item->target_id;
-            }
-        }
-        return $features;
-    }
+    // Machine name (identificador único).
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Machine Name'))
+      ->setDescription(t('Identificador único para código y URLs (ej: agroconecta).'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 50)
+      ->addConstraint('UniqueField')
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasFeature(string $feature): bool
-    {
-        return in_array($feature, $this->getEnabledFeatures(), TRUE);
-    }
+    // Descripción.
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDescription(t('Descripción de la vertical para landing pages y marketing.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'text_default',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getThemeSettings(): array
-    {
-        $settings = $this->get('theme_settings')->value;
-        if (is_string($settings)) {
-            return json_decode($settings, TRUE) ?? [];
-        }
-        return $settings ?? [];
-    }
+    // Features habilitadas (referencia a Feature config entity).
+    $fields['enabled_features'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Features Habilitadas'))
+      ->setDescription(t('Funcionalidades activas para esta vertical.'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('target_type', 'feature')
+      ->setSetting('handler', 'default')
+      ->setDisplayOptions('form', [
+        'type' => 'options_buttons',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+    // Configuración de tema (JSON).
+    $fields['theme_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Configuración de Tema'))
+      ->setDescription(t('Configuración JSON con colores, tipografía y logo por defecto.'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 10,
+        'settings' => [
+          'rows' => 10,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // Nombre de la vertical.
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre'))
-            ->setDescription(t('El nombre de la vertical (ej: AgroConecta).'))
-            ->setRequired(TRUE)
-            ->setTranslatable(TRUE)
-            ->setSetting('max_length', 100)
-            ->setDisplayOptions('view', [
-                'label' => 'hidden',
-                'type' => 'string',
-                'weight' => -5,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Agentes IA habilitados (referencia a AIAgent config entity).
+    $fields['ai_agents'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Agentes IA'))
+      ->setDescription(t('Agentes de IA disponibles para esta vertical.'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('target_type', 'ai_agent')
+      ->setSetting('handler', 'default')
+      ->setDisplayOptions('form', [
+        'type' => 'options_buttons',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // Machine name (identificador único).
-        $fields['machine_name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Machine Name'))
-            ->setDescription(t('Identificador único para código y URLs (ej: agroconecta).'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 50)
-            ->addConstraint('UniqueField')
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -4,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    // Estado activo/inactivo.
+    $fields['status'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Activa'))
+      ->setDescription(t('Indica si la vertical está activa y disponible.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // Descripción.
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDescription(t('Descripción de la vertical para landing pages y marketing.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'text_default',
-                'weight' => 0,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Timestamps.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de creación'))
+      ->setDescription(t('Fecha en que se creó la vertical.'));
 
-        // Features habilitadas (referencia a Feature config entity).
-        $fields['enabled_features'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Features Habilitadas'))
-            ->setDescription(t('Funcionalidades activas para esta vertical.'))
-            ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-            ->setSetting('target_type', 'feature')
-            ->setSetting('handler', 'default')
-            ->setDisplayOptions('form', [
-                'type' => 'options_buttons',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Fecha de modificación'))
+      ->setDescription(t('Fecha de la última modificación.'));
 
-        // Configuración de tema (JSON).
-        $fields['theme_settings'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Configuración de Tema'))
-            ->setDescription(t('Configuración JSON con colores, tipografía y logo por defecto.'))
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 10,
-                'settings' => [
-                    'rows' => 10,
-                ],
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        // Agentes IA habilitados (referencia a AIAgent config entity).
-        $fields['ai_agents'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Agentes IA'))
-            ->setDescription(t('Agentes de IA disponibles para esta vertical.'))
-            ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-            ->setSetting('target_type', 'ai_agent')
-            ->setSetting('handler', 'default')
-            ->setDisplayOptions('form', [
-                'type' => 'options_buttons',
-                'weight' => 15,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        // Estado activo/inactivo.
-        $fields['status'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Activa'))
-            ->setDescription(t('Indica si la vertical está activa y disponible.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
-
-        // Timestamps.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de creación'))
-            ->setDescription(t('Fecha en que se creó la vertical.'));
-
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Fecha de modificación'))
-            ->setDescription(t('Fecha de la última modificación.'));
-
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

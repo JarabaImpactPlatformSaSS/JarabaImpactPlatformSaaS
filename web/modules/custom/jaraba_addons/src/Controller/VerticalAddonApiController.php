@@ -183,6 +183,9 @@ class VerticalAddonApiController extends ControllerBase {
     }
   }
 
+  /**
+   *
+   */
   protected function getCurrentTenantId(): ?int {
     if (!$this->tenantContext) {
       return NULL;
@@ -196,6 +199,9 @@ class VerticalAddonApiController extends ControllerBase {
     }
   }
 
+  /**
+   *
+   */
   protected function errorResponse(string $message, int $statusCode): JsonResponse {
     return new JsonResponse([
       'data' => NULL,

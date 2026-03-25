@@ -30,11 +30,17 @@ class EntitySchemaTest extends KernelTestBase {
 
   protected $strictConfigSchema = FALSE;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('user');
   }
 
+  /**
+   *
+   */
   public function testEntityTypesExist(): void {
     $etm = \Drupal::entityTypeManager();
     $this->assertTrue($etm->hasDefinition('success_case'));

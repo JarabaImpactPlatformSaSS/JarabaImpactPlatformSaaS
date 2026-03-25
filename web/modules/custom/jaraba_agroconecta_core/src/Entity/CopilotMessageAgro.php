@@ -50,82 +50,95 @@ use Drupal\ecosistema_jaraba_core\Trait\CopilotMessageTrait;
  *   field_ui_base_route = "entity.copilot_message_agro.settings",
  * )
  */
-class CopilotMessageAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotMessageInterface
-{
+class CopilotMessageAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotMessageInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
-    use CopilotMessageTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
+  use CopilotMessageTrait;
 
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   *
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['conversation_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Conversación'))
-            ->setSetting('target_type', 'copilot_conversation_agro')
-            ->setRequired(TRUE);
+    $fields['conversation_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Conversación'))
+      ->setSetting('target_type', 'copilot_conversation_agro')
+      ->setRequired(TRUE);
 
-        $fields['role'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Rol'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'user' => t('Productor'),
-                'assistant' => t('Copiloto IA'),
-                'system' => t('Sistema'),
-            ]);
+    $fields['role'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Rol'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'user' => t('Productor'),
+        'assistant' => t('Copiloto IA'),
+        'system' => t('Sistema'),
+      ]);
 
-        $fields['content'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Contenido'))
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['content'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Contenido'))
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['intent_detected'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Intent detectado'))
-            ->setSetting('max_length', 64);
+    $fields['intent_detected'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Intent detectado'))
+      ->setSetting('max_length', 64);
 
-        $fields['model_used'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Modelo IA'))
-            ->setSetting('max_length', 64)
-            ->setDescription(t('ej: gpt-4o, claude-3.5-sonnet'));
+    $fields['model_used'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Modelo IA'))
+      ->setSetting('max_length', 64)
+      ->setDescription(t('ej: gpt-4o, claude-3.5-sonnet'));
 
-        $fields['tokens_input'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tokens entrada'))
-            ->setDefaultValue(0);
+    $fields['tokens_input'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Tokens entrada'))
+      ->setDefaultValue(0);
 
-        $fields['tokens_output'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tokens salida'))
-            ->setDefaultValue(0);
+    $fields['tokens_output'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Tokens salida'))
+      ->setDefaultValue(0);
 
-        $fields['latency_ms'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Latencia (ms)'))
-            ->setDefaultValue(0);
+    $fields['latency_ms'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Latencia (ms)'))
+      ->setDefaultValue(0);
 
-        $fields['metadata'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Metadatos'))
-            ->setDescription(t('JSON con contexto usado, tools invocadas, etc.'));
+    $fields['metadata'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Metadatos'))
+      ->setDescription(t('JSON con contexto usado, tools invocadas, etc.'));
 
-        $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
-        $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
+    $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    public function getRole(): string
-    {
-        return $this->get('role')->value ?? 'user';
-    }
-    public function getContent(): string
-    {
-        return $this->get('content')->value ?? '';
-    }
-    public function getTokensInput(): int
-    {
-        return (int) ($this->get('tokens_input')->value ?? 0);
-    }
-    public function getTokensOutput(): int
-    {
-        return (int) ($this->get('tokens_output')->value ?? 0);
-    }
+  /**
+   *
+   */
+  public function getRole(): string {
+    return $this->get('role')->value ?? 'user';
+  }
+
+  /**
+   *
+   */
+  public function getContent(): string {
+    return $this->get('content')->value ?? '';
+  }
+
+  /**
+   *
+   */
+  public function getTokensInput(): int {
+    return (int) ($this->get('tokens_input')->value ?? 0);
+  }
+
+  /**
+   *
+   */
+  public function getTokensOutput(): int {
+    return (int) ($this->get('tokens_output')->value ?? 0);
+  }
+
 }

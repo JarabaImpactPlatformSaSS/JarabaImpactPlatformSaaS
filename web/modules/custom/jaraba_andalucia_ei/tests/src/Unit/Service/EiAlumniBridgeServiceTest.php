@@ -63,23 +63,37 @@ class EiAlumniBridgeServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionSucceeds(): void {
     $service = $this->createService();
     $this->assertInstanceOf(EiAlumniBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithMentoringService(): void {
     $mentoring = new class {
+
+      /**
+       *
+       */
       public function getMentor(): ?array {
         return NULL;
       }
+
     };
     $service = $this->createService(mentoringService: $mentoring);
     $this->assertInstanceOf(EiAlumniBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithAllOptionalServices(): void {
     $mentoring = new class {};
@@ -89,6 +103,9 @@ class EiAlumniBridgeServiceTest extends UnitTestCase {
     $this->assertInstanceOf(EiAlumniBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function getAlumniDirectoryReturnsEmptyArrayWhenNoResults(): void {
     $this->query->method('execute')->willReturn([]);
@@ -100,6 +117,9 @@ class EiAlumniBridgeServiceTest extends UnitTestCase {
     $this->assertSame([], $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function getAlumniDirectoryReturnsEmptyArrayWithFilters(): void {
     $this->query->method('execute')->willReturn([]);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_predictive\Unit\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -130,7 +131,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $tenantId = 42;
 
     // --- Group storage: tenant exists ---
-    $tenantEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $tenantEntity = $this->createMock(EntityInterface::class);
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
@@ -155,10 +156,10 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $churnQuery->method('accessCheck')->willReturnSelf();
     $churnQuery->method('condition')->willReturnSelf();
     $churnQuery->method('count')->willReturnSelf();
-    // count query returns 0 (no previous predictions).
+    // Count query returns 0 (no previous predictions).
     $churnQuery->method('execute')->willReturn(0);
 
-    $predictionEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $predictionEntity = $this->createMock(EntityInterface::class);
     $predictionEntity->method('save')->willReturn(1);
 
     $churnStorage = $this->createMock(EntityStorageInterface::class);
@@ -187,7 +188,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
   public function testCalculateChurnRiskPersistsPrediction(): void {
     $tenantId = 7;
 
-    $tenantEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $tenantEntity = $this->createMock(EntityInterface::class);
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
@@ -210,7 +211,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $churnQuery->method('count')->willReturnSelf();
     $churnQuery->method('execute')->willReturn(0);
 
-    $predictionEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $predictionEntity = $this->createMock(EntityInterface::class);
     // save() must be called exactly once.
     $predictionEntity->expects($this->once())->method('save');
 
@@ -234,7 +235,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
   public function testCalculateChurnRiskScoreIsClamped(): void {
     $tenantId = 1;
 
-    $tenantEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $tenantEntity = $this->createMock(EntityInterface::class);
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
@@ -260,7 +261,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $churnQuery->method('count')->willReturnSelf();
     $churnQuery->method('execute')->willReturn(0);
 
-    $predictionEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $predictionEntity = $this->createMock(EntityInterface::class);
     $predictionEntity->method('save')->willReturn(1);
 
     $churnStorage = $this->createMock(EntityStorageInterface::class);
@@ -436,7 +437,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
   public function testCalculateChurnRiskLogsResult(): void {
     $tenantId = 15;
 
-    $tenantEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $tenantEntity = $this->createMock(EntityInterface::class);
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
@@ -457,7 +458,7 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $churnQuery->method('count')->willReturnSelf();
     $churnQuery->method('execute')->willReturn(0);
 
-    $predictionEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $predictionEntity = $this->createMock(EntityInterface::class);
     $predictionEntity->method('save')->willReturn(1);
 
     $churnStorage = $this->createMock(EntityStorageInterface::class);

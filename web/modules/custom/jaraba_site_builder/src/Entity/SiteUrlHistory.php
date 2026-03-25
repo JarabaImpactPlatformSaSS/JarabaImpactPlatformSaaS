@@ -14,7 +14,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  * Registra todos los cambios de URL de páginas para:
  * - Auditoría y compliance
  * - Debugging de redirects
- * - Analytics de cambios estructurales
+ * - Analytics de cambios estructurales.
  *
  * @ContentEntityType(
  *   id = "site_url_history",
@@ -39,97 +39,93 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.site_url_history.settings",
  * )
  */
-class SiteUrlHistory extends ContentEntityBase
-{
+class SiteUrlHistory extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Tenant (multi-tenant).
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setSetting('target_type', 'group')
-            ->setRequired(TRUE);
+    // Tenant (multi-tenant).
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setSetting('target_type', 'group')
+      ->setRequired(TRUE);
 
-        // Referencia a la página.
-        $fields['page_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Página'))
-            ->setSetting('target_type', 'page_content')
-            ->setRequired(TRUE);
+    // Referencia a la página.
+    $fields['page_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Página'))
+      ->setSetting('target_type', 'page_content')
+      ->setRequired(TRUE);
 
-        // URL anterior.
-        $fields['old_path'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('URL Anterior'))
-            ->setSettings(['max_length' => 2048])
-            ->setRequired(TRUE);
+    // URL anterior.
+    $fields['old_path'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('URL Anterior'))
+      ->setSettings(['max_length' => 2048])
+      ->setRequired(TRUE);
 
-        // URL nueva.
-        $fields['new_path'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('URL Nueva'))
-            ->setSettings(['max_length' => 2048])
-            ->setRequired(TRUE);
+    // URL nueva.
+    $fields['new_path'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('URL Nueva'))
+      ->setSettings(['max_length' => 2048])
+      ->setRequired(TRUE);
 
-        // Tipo de cambio.
-        $fields['change_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Cambio'))
-            ->setSettings([
-                'allowed_values' => [
-                    'slug_change' => 'Cambio de slug',
-                    'parent_change' => 'Cambio de padre',
-                    'manual' => 'Edición manual',
-                    'migration' => 'Migración',
-                    'bulk' => 'Cambio masivo',
-                ],
-            ])
-            ->setDefaultValue('slug_change');
+    // Tipo de cambio.
+    $fields['change_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Cambio'))
+      ->setSettings([
+        'allowed_values' => [
+          'slug_change' => 'Cambio de slug',
+          'parent_change' => 'Cambio de padre',
+          'manual' => 'Edición manual',
+          'migration' => 'Migración',
+          'bulk' => 'Cambio masivo',
+        ],
+      ])
+      ->setDefaultValue('slug_change');
 
-        // Usuario que realizó el cambio.
-        $fields['changed_by'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Usuario'))
-            ->setSetting('target_type', 'user');
+    // Usuario que realizó el cambio.
+    $fields['changed_by'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Usuario'))
+      ->setSetting('target_type', 'user');
 
-        // Timestamp del cambio.
-        $fields['changed_at'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de Cambio'));
+    // Timestamp del cambio.
+    $fields['changed_at'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de Cambio'));
 
-        // ID del redirect creado (si aplica).
-        $fields['redirect_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Redirect Creado'))
-            ->setSetting('target_type', 'site_redirect');
+    // ID del redirect creado (si aplica).
+    $fields['redirect_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Redirect Creado'))
+      ->setSetting('target_type', 'site_redirect');
 
-        // Notas adicionales.
-        $fields['notes'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Notas'));
+    // Notas adicionales.
+    $fields['notes'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Notas'));
 
-        return $fields;
+    return $fields;
+  }
+
+  /**
+   * Obtiene la página asociada.
+   */
+  public function getPage(): ?object {
+    $pageId = $this->get('page_id')->target_id;
+    if (!$pageId) {
+      return NULL;
     }
+    return \Drupal::entityTypeManager()->getStorage('page_content')->load($pageId);
+  }
 
-    /**
-     * Obtiene la página asociada.
-     */
-    public function getPage(): ?object
-    {
-        $pageId = $this->get('page_id')->target_id;
-        if (!$pageId) {
-            return NULL;
-        }
-        return \Drupal::entityTypeManager()->getStorage('page_content')->load($pageId);
+  /**
+   * Obtiene el usuario que hizo el cambio.
+   */
+  public function getChangedBy(): ?object {
+    $userId = $this->get('changed_by')->target_id;
+    if (!$userId) {
+      return NULL;
     }
-
-    /**
-     * Obtiene el usuario que hizo el cambio.
-     */
-    public function getChangedBy(): ?object
-    {
-        $userId = $this->get('changed_by')->target_id;
-        if (!$userId) {
-            return NULL;
-        }
-        return \Drupal::entityTypeManager()->getStorage('user')->load($userId);
-    }
+    return \Drupal::entityTypeManager()->getStorage('user')->load($userId);
+  }
 
 }

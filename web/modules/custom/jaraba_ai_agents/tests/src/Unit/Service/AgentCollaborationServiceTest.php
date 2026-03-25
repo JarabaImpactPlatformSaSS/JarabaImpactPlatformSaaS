@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ai_agents\Unit\Service;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -153,10 +155,10 @@ class AgentCollaborationServiceTest extends TestCase {
 
     // The addMessage method calls \Drupal::time() which requires a container.
     // We need to set up the Drupal container for this test.
-    $timeMock = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $timeMock = $this->createMock(TimeInterface::class);
     $timeMock->method('getRequestTime')->willReturn(1700000100);
 
-    $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('datetime.time', $timeMock);
     \Drupal::setContainer($container);
 
@@ -240,10 +242,10 @@ class AgentCollaborationServiceTest extends TestCase {
       ->willReturn($mockSession);
 
     // failSession calls \Drupal::time() so set up the container.
-    $timeMock = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $timeMock = $this->createMock(TimeInterface::class);
     $timeMock->method('getRequestTime')->willReturn(1700000200);
 
-    $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('datetime.time', $timeMock);
     \Drupal::setContainer($container);
 
@@ -321,11 +323,11 @@ class AgentCollaborationServiceTest extends TestCase {
       ->with($sessionId)
       ->willReturn($mockSession);
 
-    // handoff calls addMessage which calls \Drupal::time().
-    $timeMock = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    // Handoff calls addMessage which calls \Drupal::time().
+    $timeMock = $this->createMock(TimeInterface::class);
     $timeMock->method('getRequestTime')->willReturn(1700000300);
 
-    $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('datetime.time', $timeMock);
     \Drupal::setContainer($container);
 

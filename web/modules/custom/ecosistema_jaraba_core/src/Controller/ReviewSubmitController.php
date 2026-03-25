@@ -7,7 +7,6 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Flood\FloodInterface;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\ecosistema_jaraba_core\Service\ReviewTenantSettingsResolver;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Renders the review submission form for authenticated users.
  * Supports slide-panel rendering (SLIDE-PANEL-RENDER-001).
  */
-class ReviewSubmitController extends ControllerBase
-{
+class ReviewSubmitController extends ControllerBase {
 
   /**
    * Target ID field per review entity type.
@@ -57,8 +55,7 @@ class ReviewSubmitController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('flood'),
@@ -71,8 +68,7 @@ class ReviewSubmitController extends ControllerBase
   /**
    * Render the review submission form.
    */
-  public function submitForm(string $entity_id, Request $request): array|Response
-  {
+  public function submitForm(string $entity_id, Request $request): array|Response {
     $reviewEntityType = $request->attributes->get('review_entity_type');
     $targetEntityType = $request->attributes->get('target_entity_type');
     $vertical = $request->attributes->get('vertical');
@@ -85,7 +81,8 @@ class ReviewSubmitController extends ControllerBase
     // Verify target entity exists.
     try {
       $target = $this->entityTypeManager()->getStorage($targetEntityType)->load($entityId);
-    } catch (\Exception) {
+    }
+    catch (\Exception) {
       $target = NULL;
     }
     if ($target === NULL) {
@@ -113,9 +110,11 @@ class ReviewSubmitController extends ControllerBase
         if ((int) $existing > 0) {
           throw new AccessDeniedHttpException($this->t('Ya has dejado una resena para este recurso.'));
         }
-      } catch (AccessDeniedHttpException $e) {
+      }
+      catch (AccessDeniedHttpException $e) {
         throw $e;
-      } catch (\Exception) {
+      }
+      catch (\Exception) {
       }
     }
 
@@ -141,9 +140,9 @@ class ReviewSubmitController extends ControllerBase
       ],
       '#attached' => [
         'library' => [
-            'ecosistema_jaraba_core/review-submit',
-            'ecosistema_jaraba_core/review-interactions',
-          ],
+          'ecosistema_jaraba_core/review-submit',
+          'ecosistema_jaraba_core/review-interactions',
+        ],
         'drupalSettings' => [
           'reviewSubmit' => [
             'vertical' => $vertical,

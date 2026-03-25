@@ -51,7 +51,7 @@ class OnboardingEmailSubscriber implements EventSubscriberInterface {
    */
   public function __construct(
     MailManagerInterface $mail_manager,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
   ) {
     $this->mailManager = $mail_manager;
     $this->configFactory = $config_factory;

@@ -159,7 +159,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === RELACIONES ===
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta prospección.'))
@@ -168,7 +167,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS DE LA EMPRESA ===
-
     $fields['empresa_nombre'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre de la Empresa'))
       ->setDescription(t('Razón social o nombre comercial.'))
@@ -236,7 +234,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === CONTACTO ===
-
     $fields['contacto_nombre'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Persona de Contacto'))
       ->setDescription(t('Nombre de la persona de contacto en la empresa.'))
@@ -281,7 +278,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === ESTADO DE LA PROSPECCIÓN ===
-
     $fields['estado'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado'))
       ->setDescription(t('Estado actual de la prospección.'))
@@ -307,7 +303,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === PUESTOS DISPONIBLES ===
-
     $fields['puestos_disponibles'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Puestos Disponibles'))
       ->setDescription(t('Número de puestos ofertados o potenciales.'))
@@ -331,7 +326,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === SEGUIMIENTO ===
-
     $fields['fecha_primer_contacto'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha Primer Contacto'))
       ->setDescription(t('Fecha del primer contacto con la empresa.'))
@@ -365,7 +359,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === PARTICIPANTES VINCULADOS ===
-
     $fields['participantes_derivados'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Participantes Derivados'))
       ->setDescription(t('Número de participantes derivados a esta empresa.'))
@@ -383,7 +376,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('view', TRUE);
 
     // === PUBLICACIÓN ===
-
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publicado'))
       ->setDescription(t('Estado de publicación de la prospección.'))
@@ -395,7 +387,6 @@ class ProspeccionEmpresarial extends ContentEntityBase implements ProspeccionEmp
       ->setDisplayConfigurable('form', TRUE);
 
     // === CAMPOS DE SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

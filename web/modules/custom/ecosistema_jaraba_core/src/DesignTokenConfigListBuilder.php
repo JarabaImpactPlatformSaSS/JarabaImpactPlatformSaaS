@@ -11,58 +11,55 @@ use Drupal\Core\Entity\EntityInterface;
  * Muestra las configuraciones de tokens organizadas por scope
  * (Platform, Vertical, Plan, Tenant) con indicadores de estado.
  */
-class DesignTokenConfigListBuilder extends ConfigEntityListBuilder
-{
+class DesignTokenConfigListBuilder extends ConfigEntityListBuilder {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildHeader()
-    {
-        $header['label'] = $this->t('Nombre');
-        $header['scope'] = $this->t('Alcance');
-        $header['vertical'] = $this->t('Vertical');
-        $header['preset'] = $this->t('Preset');
-        $header['tokens'] = $this->t('Tokens definidos');
-        $header['status'] = $this->t('Estado');
-        return $header + parent::buildHeader();
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildHeader() {
+    $header['label'] = $this->t('Nombre');
+    $header['scope'] = $this->t('Alcance');
+    $header['vertical'] = $this->t('Vertical');
+    $header['preset'] = $this->t('Preset');
+    $header['tokens'] = $this->t('Tokens definidos');
+    $header['status'] = $this->t('Estado');
+    return $header + parent::buildHeader();
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildRow(EntityInterface $entity)
-    {
-        /** @var \Drupal\ecosistema_jaraba_core\Entity\DesignTokenConfigInterface $entity */
+  /**
+   * {@inheritdoc}
+   */
+  public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\ecosistema_jaraba_core\Entity\DesignTokenConfigInterface $entity */
 
-        // Etiquetas y badges visuales por scope.
-        $scopeLabels = [
-            'platform' => $this->t('Platform (global)'),
-            'vertical' => $this->t('Vertical'),
-            'plan' => $this->t('Plan'),
-            'tenant' => $this->t('Tenant'),
-        ];
-        $scope = $entity->getScope();
+    // Etiquetas y badges visuales por scope.
+    $scopeLabels = [
+      'platform' => $this->t('Platform (global)'),
+      'vertical' => $this->t('Vertical'),
+      'plan' => $this->t('Plan'),
+      'tenant' => $this->t('Tenant'),
+    ];
+    $scope = $entity->getScope();
 
-        $row['label'] = $entity->label();
-        $row['scope'] = $scopeLabels[$scope] ?? $scope;
-        $row['vertical'] = $entity->getVerticalId() ?: '—';
-        $row['preset'] = $entity->getPresetId() ?: '—';
+    $row['label'] = $entity->label();
+    $row['scope'] = $scopeLabels[$scope] ?? $scope;
+    $row['vertical'] = $entity->getVerticalId() ?: '—';
+    $row['preset'] = $entity->getPresetId() ?: '—';
 
-        // Contar tokens definidos por categoría.
-        $tokenCount = count($entity->getColorTokens())
+    // Contar tokens definidos por categoría.
+    $tokenCount = count($entity->getColorTokens())
             + count($entity->getTypographyTokens())
             + count($entity->getSpacingTokens())
             + count($entity->getEffectTokens());
-        $variantCount = count($entity->getComponentVariants());
-        $row['tokens'] = $this->t('@tokens tokens, @variants variantes', [
-            '@tokens' => $tokenCount,
-            '@variants' => $variantCount,
-        ]);
+    $variantCount = count($entity->getComponentVariants());
+    $row['tokens'] = $this->t('@tokens tokens, @variants variantes', [
+      '@tokens' => $tokenCount,
+      '@variants' => $variantCount,
+    ]);
 
-        $row['status'] = $entity->status() ? $this->t('Activo') : $this->t('Inactivo');
+    $row['status'] = $entity->status() ? $this->t('Activo') : $this->t('Inactivo');
 
-        return $row + parent::buildRow($entity);
-    }
+    return $row + parent::buildRow($entity);
+  }
 
 }

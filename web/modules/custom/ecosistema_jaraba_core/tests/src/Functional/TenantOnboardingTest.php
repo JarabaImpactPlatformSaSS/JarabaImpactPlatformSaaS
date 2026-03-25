@@ -12,175 +12,168 @@ use Drupal\Tests\BrowserTestBase;
  * 2. Fills organization details
  * 3. Selects vertical and plan
  * 4. Submits form
- * 5. Verifies Tenant, Group, Domain are created
+ * 5. Verifies Tenant, Group, Domain are created.
  *
  * @group ecosistema_jaraba_core
  * @requires module group
  * @requires module domain
  */
-class TenantOnboardingTest extends BrowserTestBase
-{
+class TenantOnboardingTest extends BrowserTestBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $defaultTheme = 'stark';
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
-    /**
-     * Modules to enable.
-     *
-     * @var array
-     */
-    protected static $modules = [
-        'node',
-        'user',
-        'field',
-        'text',
-        'options',
-        'group',
-        'domain',
-        'ecosistema_jaraba_core',
-    ];
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  protected static $modules = [
+    'node',
+    'user',
+    'field',
+    'text',
+    'options',
+    'group',
+    'domain',
+    'ecosistema_jaraba_core',
+  ];
 
-    /**
-     * The admin user.
-     *
-     * @var \Drupal\user\UserInterface
-     */
-    protected $adminUser;
+  /**
+   * The admin user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $adminUser;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp(): void
-    {
-        // BrowserTestBase fully installs all modules including their config.
-        // This can fail due to:
-        // 1. Missing action plugins (node_make_sticky_action) in Drupal 11
-        // 2. Contrib modules (group, domain) with unresolved dependencies
-        // 3. Config schema validation during config import
-        // If setUp fails, we skip the test with a clear message.
-        try {
-            parent::setUp();
-        } catch (\Exception $e) {
-            $this->markTestSkipped(
-                'BrowserTestBase setUp failed: ' . $e->getMessage() .
-                ' — These functional tests require a fully bootstrapped Drupal ' .
-                'environment with group, domain, and all contrib modules properly installed.'
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    // BrowserTestBase fully installs all modules including their config.
+    // This can fail due to:
+    // 1. Missing action plugins (node_make_sticky_action) in Drupal 11
+    // 2. Contrib modules (group, domain) with unresolved dependencies
+    // 3. Config schema validation during config import
+    // If setUp fails, we skip the test with a clear message.
+    try {
+      parent::setUp();
+    }
+    catch (\Exception $e) {
+      $this->markTestSkipped(
+            'BrowserTestBase setUp failed: ' . $e->getMessage() .
+            ' — These functional tests require a fully bootstrapped Drupal ' .
+            'environment with group, domain, and all contrib modules properly installed.'
             );
-        }
-
-        // Create admin user with necessary permissions
-        $this->adminUser = $this->drupalCreateUser([
-            'administer site configuration',
-            'administer tenants',
-            'administer verticals',
-            'administer saas plans',
-        ]);
     }
 
-    /**
-     * Tests the onboarding page is accessible.
-     */
-    public function testOnboardingPageExists(): void
-    {
-        $this->drupalGet('/onboarding');
+    // Create admin user with necessary permissions.
+    $this->adminUser = $this->drupalCreateUser([
+      'administer site configuration',
+      'administer tenants',
+      'administer verticals',
+      'administer saas plans',
+    ]);
+  }
 
-        // Should be accessible (not 404)
-        $this->assertSession()->statusCodeEquals(200);
+  /**
+   * Tests the onboarding page is accessible.
+   */
+  public function testOnboardingPageExists(): void {
+    $this->drupalGet('/onboarding');
 
-        // Should have the onboarding form
-        $this->assertSession()->pageTextContains('Onboarding');
+    // Should be accessible (not 404)
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Should have the onboarding form.
+    $this->assertSession()->pageTextContains('Onboarding');
+  }
+
+  /**
+   * Tests onboarding form has required fields.
+   */
+  public function testOnboardingFormFields(): void {
+    $this->drupalGet('/onboarding');
+
+    // Check for essential form fields.
+    $this->assertSession()->fieldExists('organization_name');
+    $this->assertSession()->fieldExists('email');
+    $this->assertSession()->fieldExists('vertical');
+    $this->assertSession()->fieldExists('plan');
+  }
+
+  /**
+   * Tests successful onboarding submission creates entities.
+   */
+  public function testOnboardingCreatesEntities(): void {
+    // Skip if Stripe is not configured in test environment.
+    if (!$this->isStripeConfigured()) {
+      $this->markTestSkipped('Stripe configuration required for full onboarding test.');
     }
 
-    /**
-     * Tests onboarding form has required fields.
-     */
-    public function testOnboardingFormFields(): void
-    {
-        $this->drupalGet('/onboarding');
+    $this->drupalGet('/onboarding');
 
-        // Check for essential form fields
-        $this->assertSession()->fieldExists('organization_name');
-        $this->assertSession()->fieldExists('email');
-        $this->assertSession()->fieldExists('vertical');
-        $this->assertSession()->fieldExists('plan');
-    }
+    // Fill the form.
+    $this->submitForm([
+      'organization_name' => 'Test Organization ' . time(),
+      'email' => 'test' . time() . '@example.com',
+    // AgroConecta.
+      'vertical' => 1,
+      'plan' => 'starter',
+    ], 'Submit');
 
-    /**
-     * Tests successful onboarding submission creates entities.
-     */
-    public function testOnboardingCreatesEntities(): void
-    {
-        // Skip if Stripe is not configured in test environment
-        if (!$this->isStripeConfigured()) {
-            $this->markTestSkipped('Stripe configuration required for full onboarding test.');
-        }
+    // Should redirect to success or Stripe checkout.
+    $this->assertSession()->statusCodeEquals(200);
+  }
 
-        $this->drupalGet('/onboarding');
+  /**
+   * Tests onboarding validation errors.
+   */
+  public function testOnboardingValidation(): void {
+    $this->drupalGet('/onboarding');
 
-        // Fill the form
-        $this->submitForm([
-            'organization_name' => 'Test Organization ' . time(),
-            'email' => 'test' . time() . '@example.com',
-            'vertical' => 1, // AgroConecta
-            'plan' => 'starter',
-        ], 'Submit');
+    // Submit empty form.
+    $this->submitForm([], 'Submit');
 
-        // Should redirect to success or Stripe checkout
-        $this->assertSession()->statusCodeEquals(200);
-    }
+    // Should show validation errors.
+    $this->assertSession()->pageTextContains('required');
+  }
 
-    /**
-     * Tests onboarding validation errors.
-     */
-    public function testOnboardingValidation(): void
-    {
-        $this->drupalGet('/onboarding');
+  /**
+   * Tests tenant dashboard access after onboarding.
+   */
+  public function testTenantDashboardAfterOnboarding(): void {
+    $this->drupalLogin($this->adminUser);
 
-        // Submit empty form
-        $this->submitForm([], 'Submit');
+    // Access tenant dashboard.
+    $this->drupalGet('/tenant/dashboard');
 
-        // Should show validation errors
-        $this->assertSession()->pageTextContains('required');
-    }
+    // Should be accessible for authenticated users.
+    $response = $this->getSession()->getStatusCode();
+    $this->assertTrue(in_array($response, [200, 403]), 'Dashboard should return 200 or 403 based on tenant association');
+  }
 
-    /**
-     * Tests tenant dashboard access after onboarding.
-     */
-    public function testTenantDashboardAfterOnboarding(): void
-    {
-        $this->drupalLogin($this->adminUser);
+  /**
+   * Tests the change plan page exists.
+   */
+  public function testChangePlanPageExists(): void {
+    $this->drupalLogin($this->adminUser);
 
-        // Access tenant dashboard
-        $this->drupalGet('/tenant/dashboard');
+    $this->drupalGet('/tenant/change-plan');
 
-        // Should be accessible for authenticated users
-        $response = $this->getSession()->getStatusCode();
-        $this->assertTrue(in_array($response, [200, 403]), 'Dashboard should return 200 or 403 based on tenant association');
-    }
+    // Should be accessible.
+    $response = $this->getSession()->getStatusCode();
+    $this->assertTrue(in_array($response, [200, 403]), 'Change plan page should be accessible');
+  }
 
-    /**
-     * Tests the change plan page exists.
-     */
-    public function testChangePlanPageExists(): void
-    {
-        $this->drupalLogin($this->adminUser);
-
-        $this->drupalGet('/tenant/change-plan');
-
-        // Should be accessible
-        $response = $this->getSession()->getStatusCode();
-        $this->assertTrue(in_array($response, [200, 403]), 'Change plan page should be accessible');
-    }
-
-    /**
-     * Helper to check if Stripe is configured.
-     */
-    protected function isStripeConfigured(): bool
-    {
-        $config = \Drupal::config('ecosistema_jaraba_core.stripe');
-        return !empty($config->get('public_key')) && !empty($config->get('secret_key'));
-    }
+  /**
+   * Helper to check if Stripe is configured.
+   */
+  protected function isStripeConfigured(): bool {
+    $config = \Drupal::config('ecosistema_jaraba_core.stripe');
+    return !empty($config->get('public_key')) && !empty($config->get('secret_key'));
+  }
 
 }

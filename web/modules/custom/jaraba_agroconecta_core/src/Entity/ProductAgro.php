@@ -58,356 +58,351 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class ProductAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface
-{
+class ProductAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        // Nombre del producto
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre'))
-            ->setDescription(t('Nombre del producto agroalimentario.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Nombre del producto.
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre'))
+      ->setDescription(t('Nombre del producto agroalimentario.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // SKU / Referencia
-        $fields['sku'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('SKU'))
-            ->setDescription(t('Referencia única del producto.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 64)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -9,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // SKU / Referencia.
+    $fields['sku'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('SKU'))
+      ->setDescription(t('Referencia única del producto.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 64)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Descripción corta
-        $fields['description_short'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Descripción corta'))
-            ->setDescription(t('Resumen del producto para listados.'))
-            ->setSetting('max_length', 500)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Descripción corta.
+    $fields['description_short'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Descripción corta'))
+      ->setDescription(t('Resumen del producto para listados.'))
+      ->setSetting('max_length', 500)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Descripción larga
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDescription(t('Descripción detallada del producto.'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => -7,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Descripción larga.
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDescription(t('Descripción detallada del producto.'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => -7,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Precio
-        $fields['price'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Precio'))
-            ->setDescription(t('Precio del producto en euros.'))
-            ->setRequired(TRUE)
-            ->setSetting('precision', 10)
-            ->setSetting('scale', 2)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => -6,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Precio.
+    $fields['price'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Precio'))
+      ->setDescription(t('Precio del producto en euros.'))
+      ->setRequired(TRUE)
+      ->setSetting('precision', 10)
+      ->setSetting('scale', 2)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Moneda (por defecto EUR)
-        $fields['currency_code'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Moneda'))
-            ->setDescription(t('Código de moneda ISO 4217.'))
-            ->setDefaultValue('EUR')
-            ->setSetting('max_length', 3)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Moneda (por defecto EUR)
+    $fields['currency_code'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Moneda'))
+      ->setDescription(t('Código de moneda ISO 4217.'))
+      ->setDefaultValue('EUR')
+      ->setSetting('max_length', 3)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Stock
-        $fields['stock'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Stock'))
-            ->setDescription(t('Unidades disponibles.'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => -4,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Stock.
+    $fields['stock'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Stock'))
+      ->setDescription(t('Unidades disponibles.'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Unidad de medida (kg, unidades, litros, etc.)
-        $fields['unit'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Unidad de medida'))
-            ->setDescription(t('Unidad de medida del producto (kg, uds, L, etc.).'))
-            ->setDefaultValue('kg')
-            ->setSetting('max_length', 20)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -3,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Unidad de medida (kg, unidades, litros, etc.)
+    $fields['unit'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Unidad de medida'))
+      ->setDescription(t('Unidad de medida del producto (kg, uds, L, etc.).'))
+      ->setDefaultValue('kg')
+      ->setSetting('max_length', 20)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Categoría
-        $fields['category'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Categoría'))
-            ->setDescription(t('Categoría del producto (frutas, verduras, lácteos, etc.).'))
-            ->setSetting('max_length', 128)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Categoría.
+    $fields['category'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Categoría'))
+      ->setDescription(t('Categoría del producto (frutas, verduras, lácteos, etc.).'))
+      ->setSetting('max_length', 128)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Origen / Denominación de origen
-        $fields['origin'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Origen'))
-            ->setDescription(t('Denominación de origen o zona geográfica.'))
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Origen / Denominación de origen.
+    $fields['origin'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Origen'))
+      ->setDescription(t('Denominación de origen o zona geográfica.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Referencia al productor
-        $fields['producer_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Productor'))
-            ->setDescription(t('Perfil del productor propietario del producto.'))
-            ->setSetting('target_type', 'producer_profile')
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Referencia al productor.
+    $fields['producer_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Productor'))
+      ->setDescription(t('Perfil del productor propietario del producto.'))
+      ->setSetting('target_type', 'producer_profile')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Tenant ID para multi-tenancy
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('Organización propietaria.'))
-            ->setSetting('target_type', 'taxonomy_term')
-            ->setSetting('handler_settings', ['target_bundles' => ['tenants' => 'tenants']])
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', FALSE);
+    // Tenant ID para multi-tenancy.
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Organización propietaria.'))
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler_settings', ['target_bundles' => ['tenants' => 'tenants']])
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE);
 
-        // Estado del producto
-        $fields['status'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Publicado'))
-            ->setDescription(t('Si el producto está visible en el marketplace.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Estado del producto.
+    $fields['status'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Publicado'))
+      ->setDescription(t('Si el producto está visible en el marketplace.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Imagen principal
-        $fields['image'] = BaseFieldDefinition::create('image')
-            ->setLabel(t('Imagen'))
-            ->setDescription(t('Imagen principal del producto.'))
-            ->setSetting('file_extensions', 'png jpg jpeg webp')
-            ->setSetting('file_directory', 'agro/products')
-            ->setDisplayOptions('form', [
-                'type' => 'image_image',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Imagen principal.
+    $fields['image'] = BaseFieldDefinition::create('image')
+      ->setLabel(t('Imagen'))
+      ->setDescription(t('Imagen principal del producto.'))
+      ->setSetting('file_extensions', 'png jpg jpeg webp')
+      ->setSetting('file_directory', 'agro/products')
+      ->setDisplayOptions('form', [
+        'type' => 'image_image',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Galería multi-imagen (hasta 5 fotos).
-        $fields['images'] = BaseFieldDefinition::create('image')
-            ->setLabel(t('Galería de imágenes'))
-            ->setDescription(t('Imágenes adicionales del producto (hasta 5).'))
-            ->setCardinality(5)
-            ->setSetting('file_extensions', 'png jpg jpeg webp')
-            ->setSetting('file_directory', 'agro/products/gallery')
-            ->setDisplayOptions('form', [
-                'type' => 'image_image',
-                'weight' => 6,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Galería multi-imagen (hasta 5 fotos).
+    $fields['images'] = BaseFieldDefinition::create('image')
+      ->setLabel(t('Galería de imágenes'))
+      ->setDescription(t('Imágenes adicionales del producto (hasta 5).'))
+      ->setCardinality(5)
+      ->setSetting('file_extensions', 'png jpg jpeg webp')
+      ->setSetting('file_directory', 'agro/products/gallery')
+      ->setDisplayOptions('form', [
+        'type' => 'image_image',
+        'weight' => 6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Número de lote de producción (trazabilidad).
-        $fields['lot_number'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Número de lote'))
-            ->setDescription(t('Código de lote para trazabilidad.'))
-            ->setSetting('max_length', 64)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 7,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Número de lote de producción (trazabilidad).
+    $fields['lot_number'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Número de lote'))
+      ->setDescription(t('Código de lote para trazabilidad.'))
+      ->setSetting('max_length', 64)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 7,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Certificación (Ecológico, DOP, IGP, etc.).
-        $fields['certification'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Certificación'))
-            ->setDescription(t('Tipo de certificación agroalimentaria.'))
-            ->setSetting('allowed_values', [
-                'ecologico' => 'Ecológico',
-                'dop' => 'DOP (Denominación de Origen Protegida)',
-                'igp' => 'IGP (Indicación Geográfica Protegida)',
-                'conversion' => 'En conversión ecológica',
-                'integrada' => 'Producción integrada',
-                'sin_certificar' => 'Sin certificar',
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 8,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Certificación (Ecológico, DOP, IGP, etc.).
+    $fields['certification'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Certificación'))
+      ->setDescription(t('Tipo de certificación agroalimentaria.'))
+      ->setSetting('allowed_values', [
+        'ecologico' => 'Ecológico',
+        'dop' => 'DOP (Denominación de Origen Protegida)',
+        'igp' => 'IGP (Indicación Geográfica Protegida)',
+        'conversion' => 'En conversión ecológica',
+        'integrada' => 'Producción integrada',
+        'sin_certificar' => 'Sin certificar',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 8,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Origen geográfico detallado.
-        $fields['geographic_origin'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Origen geográfico'))
-            ->setDescription(t('Comarca, municipio o denominación de origen.'))
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 9,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Origen geográfico detallado.
+    $fields['geographic_origin'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Origen geográfico'))
+      ->setDescription(t('Comarca, municipio o denominación de origen.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 9,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Temporada de cosecha.
-        $fields['harvest_season'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Temporada de cosecha'))
-            ->setDescription(t('Época del año en que se recolecta.'))
-            ->setSetting('allowed_values', [
-                'primavera' => 'Primavera',
-                'verano' => 'Verano',
-                'otono' => 'Otoño',
-                'invierno' => 'Invierno',
-                'todo_ano' => 'Todo el año',
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Temporada de cosecha.
+    $fields['harvest_season'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Temporada de cosecha'))
+      ->setDescription(t('Época del año en que se recolecta.'))
+      ->setSetting('allowed_values', [
+        'primavera' => 'Primavera',
+        'verano' => 'Verano',
+        'otono' => 'Otoño',
+        'invierno' => 'Invierno',
+        'todo_ano' => 'Todo el año',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Unidad de peso/medida del formato.
-        $fields['weight_unit'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Unidad de peso'))
-            ->setDescription(t('Unidad de medida del formato de venta.'))
-            ->setSetting('allowed_values', [
-                'kg' => 'Kilogramo (kg)',
-                'g' => 'Gramo (g)',
-                'unidad' => 'Unidad',
-                'caja' => 'Caja',
-                'saco' => 'Saco',
-                'litro' => 'Litro (L)',
-                'docena' => 'Docena',
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 11,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Unidad de peso/medida del formato.
+    $fields['weight_unit'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Unidad de peso'))
+      ->setDescription(t('Unidad de medida del formato de venta.'))
+      ->setSetting('allowed_values', [
+        'kg' => 'Kilogramo (kg)',
+        'g' => 'Gramo (g)',
+        'unidad' => 'Unidad',
+        'caja' => 'Caja',
+        'saco' => 'Saco',
+        'litro' => 'Litro (L)',
+        'docena' => 'Docena',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: Valor de peso por unidad.
-        $fields['weight_value'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Peso por unidad'))
-            ->setDescription(t('Peso o volumen por unidad de venta.'))
-            ->setSetting('precision', 8)
-            ->setSetting('scale', 2)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 12,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: Valor de peso por unidad.
+    $fields['weight_value'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Peso por unidad'))
+      ->setDescription(t('Peso o volumen por unidad de venta.'))
+      ->setSetting('precision', 8)
+      ->setSetting('scale', 2)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 12,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // P1-05: URL del código QR de trazabilidad.
-        $fields['qr_code_url'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('QR de trazabilidad'))
-            ->setDescription(t('URL del código QR que enlaza a la ficha de trazabilidad.'))
-            ->setSetting('max_length', 512)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 13,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // P1-05: URL del código QR de trazabilidad.
+    $fields['qr_code_url'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('QR de trazabilidad'))
+      ->setDescription(t('URL del código QR que enlaza a la ficha de trazabilidad.'))
+      ->setSetting('max_length', 512)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 13,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Campos de sistema
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    // Campos de sistema.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene el precio formateado.
-     *
-     * @return string
-     *   El precio con formato (ej: "12,50 €").
-     */
-    public function getFormattedPrice(): string
-    {
-        $price = $this->get('price')->value ?? 0;
-        $currency = $this->get('currency_code')->value ?? 'EUR';
-        return number_format((float) $price, 2, ',', '.') . ' ' . ($currency === 'EUR' ? '€' : $currency);
-    }
+  /**
+   * Obtiene el precio formateado.
+   *
+   * @return string
+   *   El precio con formato (ej: "12,50 €").
+   */
+  public function getFormattedPrice(): string {
+    $price = $this->get('price')->value ?? 0;
+    $currency = $this->get('currency_code')->value ?? 'EUR';
+    return number_format((float) $price, 2, ',', '.') . ' ' . ($currency === 'EUR' ? '€' : $currency);
+  }
 
-    /**
-     * Verifica si el producto tiene stock disponible.
-     *
-     * @return bool
-     *   TRUE si hay stock, FALSE en caso contrario.
-     */
-    public function hasStock(): bool
-    {
-        return ((int) $this->get('stock')->value) > 0;
-    }
+  /**
+   * Verifica si el producto tiene stock disponible.
+   *
+   * @return bool
+   *   TRUE si hay stock, FALSE en caso contrario.
+   */
+  public function hasStock(): bool {
+    return ((int) $this->get('stock')->value) > 0;
+  }
 
-    /**
-     * Verifica si el producto está publicado.
-     *
-     * @return bool
-     *   TRUE si está publicado.
-     */
-    public function isPublished(): bool
-    {
-        return (bool) $this->get('status')->value;
-    }
+  /**
+   * Verifica si el producto está publicado.
+   *
+   * @return bool
+   *   TRUE si está publicado.
+   */
+  public function isPublished(): bool {
+    return (bool) $this->get('status')->value;
+  }
 
 }

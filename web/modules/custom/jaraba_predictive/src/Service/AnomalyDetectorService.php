@@ -249,7 +249,7 @@ class AnomalyDetectorService {
   public function detectAiUsageAnomaly(int $tenantId): array {
     // 1. Obtener historial de consumo diario de los últimos 15 días.
     $history = $this->meteringService->getHistoricalUsage((string) $tenantId, 15);
-    
+
     $tokenSeries = [];
     foreach ($history as $period => $metrics) {
       $tokenSeries[] = $metrics[TenantMeteringService::METRIC_AI_TOKENS] ?? 0.0;
@@ -271,16 +271,17 @@ class AnomalyDetectorService {
     // 3. Evaluar uso actual.
     $usageData = $this->meteringService->getUsage((string) $tenantId);
     $currentUsage = $usageData['metrics'][TenantMeteringService::METRIC_AI_TOKENS]['total'] ?? 0;
-    
+
     $threshold = $mean + (self::SIGMA_THRESHOLD * $stdDev);
 
-    if ($currentUsage > $threshold && $currentUsage > 5000) { // Ignorar ruidos pequeños.
+    // Ignorar ruidos pequeños.
+    if ($currentUsage > $threshold && $currentUsage > 5000) {
       $this->logger->critical('ALERTA DE SEGURIDAD IA: Tenant @id consumiendo @cur (Media: @mean)', [
         '@id' => $tenantId,
         '@cur' => $currentUsage,
-        '@mean' => $mean
+        '@mean' => $mean,
       ]);
-      
+
       return [
         'is_anomaly' => TRUE,
         'type' => 'ai_token_spike',

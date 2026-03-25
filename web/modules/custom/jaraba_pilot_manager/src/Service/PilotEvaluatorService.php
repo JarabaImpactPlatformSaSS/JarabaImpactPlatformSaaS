@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_pilot_manager\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -127,7 +126,7 @@ class PilotEvaluatorService {
    * - Activation score: 30%
    * - Retention D30: 30%
    * - Engagement score: 25%
-   * - Onboarding completed: 15% bonus
+   * - Onboarding completed: 15% bonus.
    *
    * @param object $tenant
    *   The pilot tenant entity.

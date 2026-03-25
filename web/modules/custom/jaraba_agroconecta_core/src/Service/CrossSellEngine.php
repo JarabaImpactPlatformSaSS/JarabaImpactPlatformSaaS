@@ -458,7 +458,6 @@ class CrossSellEngine {
     // Las claves de CROSS_SELL_RULES usan la forma con acento para jamón.
     // Necesitamos que la clave final coincida con las de CROSS_SELL_RULES.
     // Las demás claves ya están sin acentos.
-
     return $normalized;
   }
 

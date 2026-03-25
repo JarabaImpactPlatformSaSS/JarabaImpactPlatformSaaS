@@ -585,7 +585,8 @@ class LearningPathService {
    *   Relevance score (0.0 - 100.0). Higher is more relevant.
    */
   protected function calculateRelevanceScore(array $pathData, array $userProfile, int $userId): float {
-    $score = 50.0; // Base score.
+    // Base score.
+    $score = 50.0;
 
     // Boost if path matches user's diagnostic profile type.
     if (!empty($userProfile['profile_type']) && $pathData['target_profile'] === $userProfile['profile_type']) {
@@ -600,7 +601,8 @@ class LearningPathService {
     // Slight boost for paths the user has started but not finished.
     $completion = $this->calculateCompletionPercentage($userId, $pathData['id']);
     if ($completion > 0 && $completion < 100) {
-      $score += 10.0; // User already invested effort.
+      // User already invested effort.
+      $score += 10.0;
     }
 
     return min($score, 100.0);

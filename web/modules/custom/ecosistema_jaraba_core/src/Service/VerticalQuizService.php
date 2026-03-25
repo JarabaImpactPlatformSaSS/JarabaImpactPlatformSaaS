@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -702,8 +704,8 @@ class VerticalQuizService {
       $modelId = $routing['model_id'] ?? '';
       if ($providerId !== '' && $modelId !== '') {
         $provider = $this->aiProvider->createInstance($providerId);
-        $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
-          new \Drupal\ai\OperationType\Chat\ChatMessage('user', $prompt),
+        $chatInput = new ChatInput([
+          new ChatMessage('user', $prompt),
         ]);
         $response = $provider->chat($chatInput, $modelId, [
           'temperature' => 0.7,

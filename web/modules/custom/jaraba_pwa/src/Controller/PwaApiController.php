@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_pwa\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\jaraba_pwa\Service\PlatformPushService;
 use Drupal\jaraba_pwa\Service\PwaManifestService;
 use Drupal\jaraba_pwa\Service\PwaSyncManagerService;

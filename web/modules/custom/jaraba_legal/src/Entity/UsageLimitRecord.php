@@ -71,7 +71,6 @@ class UsageLimitRecord extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece este registro de límites.'))
@@ -82,7 +81,6 @@ class UsageLimitRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIPO DE LÍMITE ---
-
     $fields['limit_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de límite'))
       ->setDescription(new TranslatableMarkup('Recurso al que aplica el límite de uso.'))
@@ -100,7 +98,6 @@ class UsageLimitRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VALORES ---
-
     $fields['limit_value'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Valor del límite'))
       ->setDescription(new TranslatableMarkup('Valor máximo permitido para este recurso.'))
@@ -118,7 +115,6 @@ class UsageLimitRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PERIODO ---
-
     $fields['period'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Periodo'))
       ->setDescription(new TranslatableMarkup('Periodo de medición del límite.'))
@@ -133,7 +129,6 @@ class UsageLimitRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- EXCESO ---
-
     $fields['exceeded_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de exceso'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC en que se excedió el límite.'))
@@ -146,7 +141,6 @@ class UsageLimitRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

@@ -23,6 +23,9 @@ class FinancialDashboardController extends ControllerBase {
     protected TenantContextService $tenantContext,
   ) {}
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_billing.wallet'),

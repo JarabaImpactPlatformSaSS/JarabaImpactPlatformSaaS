@@ -127,7 +127,6 @@ function jaraba_theming_theme_suggestions_alter(array &$suggestions, array $vari
   }
 }
 
-
 /**
  * Prepares variables for tenant_theme_config templates.
  *

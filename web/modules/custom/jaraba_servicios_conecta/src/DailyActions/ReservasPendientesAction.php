@@ -24,58 +24,100 @@ class ReservasPendientesAction implements DailyActionInterface {
     protected readonly ?TenantContextService $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'provider_servicios.reservas';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'provider_servicios';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Reservas pendientes');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Gestionar reservas de clientes');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'education', 'name' => 'calendar-clock', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_servicios_conecta.provider_portal.bookings';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $pending = 0;
     try {

@@ -6,7 +6,6 @@ namespace Drupal\Tests\ecosistema_jaraba_core\Kernel;
 
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanFeatures;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanTier;
-use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -16,7 +15,7 @@ use Drupal\KernelTests\KernelTestBase;
  * - Tier CRUD + alias resolution
  * - Features cascade (specific → default → NULL)
  * - Limit checks
- * - PlanResolverService integration
+ * - PlanResolverService integration.
  *
  * @group plan-config-contract
  * @group ecosistema_jaraba_core

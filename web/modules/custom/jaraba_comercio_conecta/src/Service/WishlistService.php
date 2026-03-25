@@ -8,6 +8,9 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 
+/**
+ *
+ */
 class WishlistService {
 
   public function __construct(
@@ -15,6 +18,9 @@ class WishlistService {
     protected AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getOrCreateDefaultWishlist(int $userId): ContentEntityInterface {
     $storage = $this->entityTypeManager->getStorage('wishlist_retail');
 
@@ -40,6 +46,9 @@ class WishlistService {
     return $wishlist;
   }
 
+  /**
+   *
+   */
   public function getUserWishlists(int $userId): array {
     $storage = $this->entityTypeManager->getStorage('wishlist_retail');
 
@@ -53,6 +62,9 @@ class WishlistService {
     return $ids ? array_values($storage->loadMultiple($ids)) : [];
   }
 
+  /**
+   *
+   */
   public function addItem(int $wishlistId, int $productId, string $note = ''): bool {
     $wishlistStorage = $this->entityTypeManager->getStorage('wishlist_retail');
     $wishlist = $wishlistStorage->load($wishlistId);
@@ -89,6 +101,9 @@ class WishlistService {
     }
   }
 
+  /**
+   *
+   */
   public function removeItem(int $wishlistId, int $productId): bool {
     $itemStorage = $this->entityTypeManager->getStorage('wishlist_item_retail');
 
@@ -113,6 +128,9 @@ class WishlistService {
     }
   }
 
+  /**
+   *
+   */
   public function getItems(int $wishlistId): array {
     $itemStorage = $this->entityTypeManager->getStorage('wishlist_item_retail');
 
@@ -144,6 +162,9 @@ class WishlistService {
     return $result;
   }
 
+  /**
+   *
+   */
   public function isInWishlist(int $userId, int $productId): bool {
     $wishlistStorage = $this->entityTypeManager->getStorage('wishlist_retail');
 
@@ -168,6 +189,9 @@ class WishlistService {
     return $count > 0;
   }
 
+  /**
+   *
+   */
   public function getItemCount(int $wishlistId): int {
     $itemStorage = $this->entityTypeManager->getStorage('wishlist_item_retail');
 
@@ -178,6 +202,9 @@ class WishlistService {
       ->execute();
   }
 
+  /**
+   *
+   */
   public function moveItem(int $fromWishlistId, int $toWishlistId, int $productId): bool {
     $itemStorage = $this->entityTypeManager->getStorage('wishlist_item_retail');
 

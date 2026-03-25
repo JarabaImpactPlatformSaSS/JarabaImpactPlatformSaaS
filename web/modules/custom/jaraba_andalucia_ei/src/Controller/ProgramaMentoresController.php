@@ -10,7 +10,6 @@ use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Mentores contextualizados para el programa Andalucía +ei.

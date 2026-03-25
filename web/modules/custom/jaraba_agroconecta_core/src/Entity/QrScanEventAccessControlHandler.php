@@ -10,18 +10,26 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResultInterface;
 
-class QrScanEventAccessControlHandler extends EntityAccessControlHandler
-{
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        return match ($operation) {
-            'view' => AccessResult::allowedIfHasPermission($account, 'view agro qr'),
-            default => AccessResult::allowedIfHasPermission($account, 'manage agro qr'),
-        };
-    }
+/**
+ *
+ */
+class QrScanEventAccessControlHandler extends EntityAccessControlHandler {
 
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage agro qr');
-    }
+  /**
+   *
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    return match ($operation) {
+      'view' => AccessResult::allowedIfHasPermission($account, 'view agro qr'),
+            default => AccessResult::allowedIfHasPermission($account, 'manage agro qr'),
+    };
+  }
+
+  /**
+   *
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'manage agro qr');
+  }
+
 }

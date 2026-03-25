@@ -2,17 +2,15 @@
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Controlador para gestionar la firma electrónica con AutoFirma.
@@ -21,10 +19,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * - Generar documentos PDF para firma
  * - Recibir documentos firmados
  * - Validar firmas
- * - Consultar estado de documentos
+ * - Consultar estado de documentos.
  */
-class AutoFirmaController extends ControllerBase
-{
+class AutoFirmaController extends ControllerBase {
 
   /**
    * Sistema de archivos.
@@ -39,8 +36,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->fileSystem = $container->get('file_system');
     $instance->currentUser = $container->get('current_user');
@@ -60,15 +56,14 @@ class AutoFirmaController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON con el documento en Base64 y metadatos.
    */
-  public function getDocumento(string $document_id, Request $request): JsonResponse
-  {
-    // Validar que el usuario tiene permiso
+  public function getDocumento(string $document_id, Request $request): JsonResponse {
+    // Validar que el usuario tiene permiso.
     if (!$this->currentUser->isAuthenticated()) {
       throw new AccessDeniedHttpException('Usuario no autenticado');
     }
 
     try {
-      // Cargar el nodo del documento
+      // Cargar el nodo del documento.
       $node = $this->loadDocumentoNode($document_id);
 
       if (!$node) {
@@ -78,7 +73,7 @@ class AutoFirmaController extends ControllerBase
         ], 404);
       }
 
-      // Verificar que el usuario puede firmar este documento
+      // Verificar que el usuario puede firmar este documento.
       if (!$this->canUserSign($node)) {
         return new JsonResponse([
           'success' => FALSE,
@@ -86,7 +81,7 @@ class AutoFirmaController extends ControllerBase
         ], 403);
       }
 
-      // Verificar estado del documento
+      // Verificar estado del documento.
       $estado = $node->get('field_estado_firma')->value ?? 'pendiente';
       if ($estado === 'firmado') {
         return new JsonResponse([
@@ -95,7 +90,7 @@ class AutoFirmaController extends ControllerBase
         ], 400);
       }
 
-      // Obtener el archivo PDF
+      // Obtener el archivo PDF.
       $file = $node->get('field_documento_pdf')->entity;
       if (!$file) {
         return new JsonResponse([
@@ -104,12 +99,12 @@ class AutoFirmaController extends ControllerBase
         ], 404);
       }
 
-      // Leer y codificar en Base64
+      // Leer y codificar en Base64.
       $file_path = $this->fileSystem->realpath($file->getFileUri());
       $pdf_content = file_get_contents($file_path);
       $pdf_base64 = base64_encode($pdf_content);
 
-      // Calcular hash para verificación
+      // Calcular hash para verificación.
       $hash = hash('sha256', $pdf_content);
 
       return new JsonResponse([
@@ -121,16 +116,18 @@ class AutoFirmaController extends ControllerBase
           'filename' => $file->getFilename(),
           'hash' => $hash,
           'mime_type' => 'application/pdf',
-          'sign_format' => 'PAdES',  // Formato de firma para PDF
+      // Formato de firma para PDF.
+          'sign_format' => 'PAdES',
           'sign_algorithm' => 'SHA256withRSA',
         ],
       ]);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->getLogger('ecosistema_jaraba_core')->error(
         '🚫 AutoFirma: Error al obtener documento: @error',
         ['@error' => $e->getMessage()]
-      );
+          );
 
       return new JsonResponse([
         'success' => FALSE,
@@ -142,7 +139,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Recibe el documento firmado desde AutoFirma.
    *
-   * Endpoint: POST /api/v1/autofirma/firmar
+   * Endpoint: POST /api/v1/autofirma/firmar.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La petición HTTP con el documento firmado.
@@ -150,14 +147,13 @@ class AutoFirmaController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Resultado de la operación.
    */
-  public function recibirFirma(Request $request): JsonResponse
-  {
+  public function recibirFirma(Request $request): JsonResponse {
     if (!$this->currentUser->isAuthenticated()) {
       throw new AccessDeniedHttpException('Usuario no autenticado');
     }
 
     try {
-      // Obtener datos de la petición
+      // Obtener datos de la petición.
       $content = json_decode($request->getContent(), TRUE);
 
       if (!$content) {
@@ -178,7 +174,7 @@ class AutoFirmaController extends ControllerBase
         ], 400);
       }
 
-      // Cargar el documento
+      // Cargar el documento.
       $node = $this->loadDocumentoNode($document_id);
 
       if (!$node) {
@@ -188,7 +184,7 @@ class AutoFirmaController extends ControllerBase
         ], 404);
       }
 
-      // Verificar permisos
+      // Verificar permisos.
       if (!$this->canUserSign($node)) {
         return new JsonResponse([
           'success' => FALSE,
@@ -196,7 +192,7 @@ class AutoFirmaController extends ControllerBase
         ], 403);
       }
 
-      // Decodificar el contenido firmado
+      // Decodificar el contenido firmado.
       $signed_pdf = base64_decode($signed_content);
 
       if (!$signed_pdf) {
@@ -206,7 +202,7 @@ class AutoFirmaController extends ControllerBase
         ], 400);
       }
 
-      // Validar que es un PDF válido
+      // Validar que es un PDF válido.
       if (substr($signed_pdf, 0, 4) !== '%PDF') {
         return new JsonResponse([
           'success' => FALSE,
@@ -224,7 +220,7 @@ class AutoFirmaController extends ControllerBase
         ], 400);
       }
 
-      // Guardar el documento firmado
+      // Guardar el documento firmado.
       $saved_file = $this->saveSignedDocument($node, $signed_pdf, $certificate_info);
 
       if (!$saved_file) {
@@ -234,7 +230,7 @@ class AutoFirmaController extends ControllerBase
         ], 500);
       }
 
-      // Actualizar estado del documento
+      // Actualizar estado del documento.
       $node->set('field_estado_firma', 'firmado');
       $node->set('field_fecha_firma', date('Y-m-d\TH:i:s'));
       $node->set('field_firmante_uid', $this->currentUser->id());
@@ -253,12 +249,11 @@ class AutoFirmaController extends ControllerBase
 
       $node->save();
 
-      // Registrar en auditoría
+      // Registrar en auditoría.
       $this->logSignatureAudit($node, $certificate_info);
 
       // Disparar evento para notificaciones
-      // \Drupal::service('event_dispatcher')->dispatch(...);
-
+      // \Drupal::service('event_dispatcher')->dispatch(...);.
       return new JsonResponse([
         'success' => TRUE,
         'message' => 'Documento firmado correctamente',
@@ -270,11 +265,12 @@ class AutoFirmaController extends ControllerBase
         ],
       ]);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->getLogger('ecosistema_jaraba_core')->error(
         '🚫 AutoFirma: Error al procesar firma: @error',
         ['@error' => $e->getMessage()]
-      );
+          );
 
       return new JsonResponse([
         'success' => FALSE,
@@ -294,8 +290,7 @@ class AutoFirmaController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Estado del documento.
    */
-  public function getEstado(string $document_id): JsonResponse
-  {
+  public function getEstado(string $document_id): JsonResponse {
     if (!$this->currentUser->isAuthenticated()) {
       throw new AccessDeniedHttpException('Usuario no autenticado');
     }
@@ -314,7 +309,7 @@ class AutoFirmaController extends ControllerBase
     $firmante = NULL;
 
     if ($firmante_uid = $node->get('field_firmante_uid')->target_id) {
-      $firmante_user = \Drupal\user\Entity\User::load($firmante_uid);
+      $firmante_user = User::load($firmante_uid);
       $firmante = $firmante_user ? $firmante_user->getDisplayName() : NULL;
     }
 
@@ -334,19 +329,19 @@ class AutoFirmaController extends ControllerBase
   /**
    * Verifica la disponibilidad de AutoFirma.
    *
-   * Endpoint: GET /api/v1/autofirma/check
+   * Endpoint: GET /api/v1/autofirma/check.
    *
    * Devuelve información para el cliente sobre cómo conectar.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Configuración de AutoFirma.
    */
-  public function checkAutoFirma(): JsonResponse
-  {
+  public function checkAutoFirma(): JsonResponse {
     return new JsonResponse([
       'success' => TRUE,
       'data' => [
-        'websocket_ports' => [63117, 63217, 63317],  // Puertos estándar de AutoFirma
+    // Puertos estándar de AutoFirma.
+        'websocket_ports' => [63117, 63217, 63317],
         'protocol' => 'afirma',
         'download_url' => 'https://firmaelectronica.gob.es/Home/Descargas.html',
         'help_url' => '/ayuda/autofirma',
@@ -357,7 +352,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Genera un documento PDF para firma.
    *
-   * Endpoint: POST /api/v1/autofirma/generar
+   * Endpoint: POST /api/v1/autofirma/generar.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   Petición con datos del documento a generar.
@@ -365,8 +360,7 @@ class AutoFirmaController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   ID del documento generado.
    */
-  public function generarDocumento(Request $request): JsonResponse
-  {
+  public function generarDocumento(Request $request): JsonResponse {
     if (!$this->currentUser->isAuthenticated()) {
       throw new AccessDeniedHttpException('Usuario no autenticado');
     }
@@ -383,7 +377,7 @@ class AutoFirmaController extends ControllerBase
     }
 
     try {
-      // Generar PDF según el tipo
+      // Generar PDF según el tipo.
       $pdf_service = \Drupal::service('ecosistema_jaraba_core.documento_firma_pdf');
       $result = $pdf_service->generate($tipo, $datos, $this->currentUser->id());
 
@@ -403,11 +397,12 @@ class AutoFirmaController extends ControllerBase
         ],
       ]);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->getLogger('ecosistema_jaraba_core')->error(
         '🚫 AutoFirma: Error al generar documento: @error',
         ['@error' => $e->getMessage()]
-      );
+          );
 
       return new JsonResponse([
         'success' => FALSE,
@@ -425,9 +420,8 @@ class AutoFirmaController extends ControllerBase
    * @return \Drupal\node\Entity\Node|null
    *   El nodo o NULL si no existe.
    */
-  protected function loadDocumentoNode(string $document_id): ?Node
-  {
-    // Intentar cargar por NID
+  protected function loadDocumentoNode(string $document_id): ?Node {
+    // Intentar cargar por NID.
     if (is_numeric($document_id)) {
       $node = Node::load($document_id);
       if ($node && $node->bundle() === 'documento_firma') {
@@ -435,7 +429,7 @@ class AutoFirmaController extends ControllerBase
       }
     }
 
-    // Intentar cargar por UUID
+    // Intentar cargar por UUID.
     $nodes = \Drupal::entityTypeManager()
       ->getStorage('node')
       ->loadByProperties([
@@ -455,16 +449,15 @@ class AutoFirmaController extends ControllerBase
    * @return bool
    *   TRUE si puede firmar.
    */
-  protected function canUserSign(Node $node): bool
-  {
+  protected function canUserSign(Node $node): bool {
     $uid = $this->currentUser->id();
 
-    // Administradores pueden firmar cualquier documento
+    // Administradores pueden firmar cualquier documento.
     if ($this->currentUser->hasPermission('administer ecosistema jaraba core')) {
       return TRUE;
     }
 
-    // Verificar si el usuario es el destinatario de la firma
+    // Verificar si el usuario es el destinatario de la firma.
     if ($node->hasField('field_firmante_destinatario')) {
       $destinatario_uid = $node->get('field_firmante_destinatario')->target_id;
       if ($destinatario_uid && $destinatario_uid == $uid) {
@@ -472,7 +465,7 @@ class AutoFirmaController extends ControllerBase
       }
     }
 
-    // Verificar si es el autor del contenido relacionado
+    // Verificar si es el autor del contenido relacionado.
     if ($node->hasField('field_contenido_relacionado')) {
       $contenido = $node->get('field_contenido_relacionado')->entity;
       if ($contenido && $contenido->getOwnerId() == $uid) {
@@ -492,12 +485,10 @@ class AutoFirmaController extends ControllerBase
    * @return bool
    *   TRUE si la firma es válida.
    */
-  protected function validateSignature(string $pdf_content): bool
-  {
+  protected function validateSignature(string $pdf_content): bool {
     // Verificación básica: buscar estructura de firma en el PDF
-    // En producción, usar una librería de validación como SetaPDF o pdfsig
-
-    // Buscar diccionario de firma en el PDF
+    // En producción, usar una librería de validación como SetaPDF o pdfsig.
+    // Buscar diccionario de firma en el PDF.
     if (
       strpos($pdf_content, '/Type /Sig') !== FALSE ||
       strpos($pdf_content, '/SubFilter /adbe.pkcs7') !== FALSE ||
@@ -506,7 +497,7 @@ class AutoFirmaController extends ControllerBase
       return TRUE;
     }
 
-    // Alternativa: usar pdfsig si está disponible
+    // Alternativa: usar pdfsig si está disponible.
     $temp_file = $this->fileSystem->getTempDirectory() . '/validate_' . uniqid() . '.pdf';
     file_put_contents($temp_file, $pdf_content);
 
@@ -516,7 +507,7 @@ class AutoFirmaController extends ControllerBase
 
     unlink($temp_file);
 
-    // pdfsig devuelve 0 si la firma es válida
+    // Pdfsig devuelve 0 si la firma es válida.
     return $return_var === 0;
   }
 
@@ -533,21 +524,20 @@ class AutoFirmaController extends ControllerBase
    * @return \Drupal\file\Entity\File|null
    *   El archivo guardado o NULL si falla.
    */
-  protected function saveSignedDocument(Node $node, string $signed_content, array $certificate_info): ?File
-  {
-    // Preparar directorio
+  protected function saveSignedDocument(Node $node, string $signed_content, array $certificate_info): ?File {
+    // Preparar directorio.
     $directory = 'private://documentos-firmados/' . date('Y/m');
     $this->fileSystem->prepareDirectory(
       $directory,
       FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS
     );
 
-    // Generar nombre de archivo
+    // Generar nombre de archivo.
     $original_file = $node->get('field_documento_pdf')->entity;
     $original_name = $original_file ? pathinfo($original_file->getFilename(), PATHINFO_FILENAME) : 'documento';
     $filename = $original_name . '-firmado-' . date('Ymd-His') . '.pdf';
 
-    // Guardar archivo
+    // Guardar archivo.
     $uri = $directory . '/' . $filename;
     $saved_uri = $this->fileSystem->saveData($signed_content, $uri, FileSystemInterface::EXISTS_RENAME);
 
@@ -555,7 +545,7 @@ class AutoFirmaController extends ControllerBase
       return NULL;
     }
 
-    // Crear entidad File
+    // Crear entidad File.
     $file = File::create([
       'uri' => $saved_uri,
       'uid' => $this->currentUser->id(),
@@ -564,7 +554,7 @@ class AutoFirmaController extends ControllerBase
     ]);
     $file->save();
 
-    // Registrar uso del archivo
+    // Registrar uso del archivo.
     \Drupal::service('file.usage')->add($file, 'ecosistema_jaraba_core', 'node', $node->id());
 
     return $file;
@@ -578,8 +568,7 @@ class AutoFirmaController extends ControllerBase
    * @param array $certificate_info
    *   Información del certificado (sin datos sensibles).
    */
-  protected function logSignatureAudit(Node $node, array $certificate_info): void
-  {
+  protected function logSignatureAudit(Node $node, array $certificate_info): void {
     $audit_data = [
       'action' => 'document_signed',
       'document_id' => $node->id(),

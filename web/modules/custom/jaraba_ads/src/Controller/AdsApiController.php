@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * la estructura { data, meta, errors }.
  *
  * LOGICA:
- * Todos los endpoints obtienen el tenant_id del contexto actual y
+ *
+ * @todo s los endpoints obtienen el tenant_id del contexto actual y
  * filtran las consultas por tenant para aislamiento multi-tenant.
  * Las respuestas siguen la convención JSON API con data (payload),
  * meta (metadatos como timestamp, tenant_id) y errors (lista vacía
@@ -382,7 +383,10 @@ class AdsApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON response.
    */
-  // AUDIT-CONS-N08: Standardized JSON envelope.
+
+  /**
+   * AUDIT-CONS-N08: Standardized JSON envelope.
+   */
   protected function successResponse($data, array $meta = []): JsonResponse {
     $meta['timestamp'] = time();
 

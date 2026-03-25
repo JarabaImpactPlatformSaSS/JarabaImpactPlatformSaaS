@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class ReviewRetailListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['title'] = $this->t('Titulo');
     $header['rating'] = $this->t('Valoracion');
@@ -18,6 +24,9 @@ class ReviewRetailListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $status_labels = [
       'pending' => $this->t('Pendiente'),

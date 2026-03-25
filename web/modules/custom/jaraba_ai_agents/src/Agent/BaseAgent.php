@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Agent;
 
-use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -30,509 +29,499 @@ use Psr\Log\LoggerInterface;
  *
  * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
  */
-abstract class BaseAgent implements AgentInterface
-{
+abstract class BaseAgent implements AgentInterface {
 
-    /**
-     * FIX-027: Canonical vertical identifiers.
-     *
-     * Single source of truth for vertical names across the platform.
-     * All modules MUST reference these canonical names.
-     *
-     * @var string[]
-     */
-    public const VERTICALS = [
-        'empleabilidad',
-        'emprendimiento',
-        'comercioconecta',
-        'agroconecta',
-        'jarabalex',
-        'serviciosconecta',
-        'andalucia_ei',
-        'jaraba_content_hub',
-        'formacion',
-        'demo',
+  /**
+   * FIX-027: Canonical vertical identifiers.
+   *
+   * Single source of truth for vertical names across the platform.
+   * All modules MUST reference these canonical names.
+   *
+   * @var string[]
+   */
+  public const VERTICALS = [
+    'empleabilidad',
+    'emprendimiento',
+    'comercioconecta',
+    'agroconecta',
+    'jarabalex',
+    'serviciosconecta',
+    'andalucia_ei',
+    'jaraba_content_hub',
+    'formacion',
+    'demo',
+  ];
+
+  /**
+   * El gestor de proveedores IA.
+   *
+   * Permite acceso dinámico a diferentes proveedores (OpenAI, Claude, etc.)
+   * basándose en la configuración del módulo ai.
+   *
+   * @var object
+   */
+  protected ?object $aiProvider = NULL;
+
+  /**
+   * La factoría de configuración.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface|null
+   */
+  protected ?ConfigFactoryInterface $configFactory = NULL;
+
+  /**
+   * El logger para registrar eventos y errores.
+   *
+   * @var \Psr\Log\LoggerInterface|null
+   */
+  protected ?LoggerInterface $logger = NULL;
+
+  /**
+   * El servicio de Brand Voice por tenant.
+   *
+   * Proporciona prompts personalizados según la configuración del tenant.
+   *
+   * @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null
+   */
+  protected ?TenantBrandVoiceService $brandVoice = NULL;
+
+  /**
+   * El servicio de observabilidad IA.
+   *
+   * Registra métricas de uso, tokens y latencia para analytics.
+   * KERNEL-OPTIONAL-AI-001: Nullable for Kernel tests where jaraba_ai_agents
+   * services are not installed. Agents guard with null-check before calling.
+   *
+   * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null
+   */
+  protected ?AIObservabilityService $observability = NULL;
+
+  /**
+   * Constructor de prompts unificados.
+   *
+   * Combina Skills + Knowledge + Corrections + RAG.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null
+   */
+  protected ?UnifiedPromptBuilder $promptBuilder = NULL;
+
+  /**
+   * Acción actual en ejecución para logging.
+   *
+   * @var string
+   */
+  protected string $currentAction = 'unknown';
+
+  /**
+   * ID del tenant actual.
+   *
+   * NULL indica contexto global (sin tenant específico).
+   *
+   * @var string|null
+   */
+  protected ?string $tenantId = NULL;
+
+  /**
+   * Vertical actual del tenant.
+   *
+   * Uses canonical names from self::VERTICALS.
+   *
+   * @var string|null
+   */
+  protected ?string $vertical = NULL;
+
+  /**
+   * Construye un BaseAgent.
+   *
+   * @param object $aiProvider
+   *   El gestor de proveedores IA.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   La factoría de configuración.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El servicio de logging.
+   * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice
+   *   El servicio de Brand Voice por tenant.
+   * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
+   *   El servicio de observabilidad IA.
+   */
+  public function __construct(
+    object $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+  ) {
+    $this->aiProvider = $aiProvider;
+    $this->configFactory = $configFactory;
+    $this->logger = $logger;
+    $this->brandVoice = $brandVoice;
+    $this->observability = $observability;
+    $this->promptBuilder = $promptBuilder;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Establece el contexto de tenant y vertical para personalización.
+   */
+  public function setTenantContext(string $tenantId, string $vertical): void {
+    $this->tenantId = $tenantId;
+    $this->vertical = $vertical;
+  }
+
+  /**
+   * Obtiene el prompt de Brand Voice para el tenant actual.
+   *
+   * Si no hay tenant establecido, retorna el Brand Voice por defecto
+   * definido en la implementación concreta del agente.
+   *
+   * @return string
+   *   El prompt de sistema con Brand Voice aplicado.
+   */
+  protected function getBrandVoicePrompt(): string {
+    if (!$this->tenantId || !$this->brandVoice) {
+      return $this->getDefaultBrandVoice();
+    }
+    return $this->brandVoice->getPromptForTenant($this->tenantId);
+  }
+
+  /**
+   * Obtiene el contexto unificado de Skills + Knowledge.
+   *
+   * PROPÓSITO:
+   * Combina el conocimiento enseñado (AI Skills) con el conocimiento
+   * factual del tenant (Knowledge Training) para enriquecer el prompt.
+   *
+   * @param string|null $userMessage
+   *   Mensaje del usuario para búsqueda RAG contextual.
+   *
+   * @return string
+   *   Contexto XML para inyectar en el prompt.
+   */
+  protected function getUnifiedContext(?string $userMessage = NULL): string {
+    if (!$this->promptBuilder) {
+      return '';
+    }
+
+    $context = [
+      'vertical' => $this->vertical,
+      'agent_type' => $this->getAgentId(),
+      'tenant_id' => $this->tenantId ? (int) $this->tenantId : NULL,
     ];
 
-    /**
-     * El gestor de proveedores IA.
-     *
-     * Permite acceso dinámico a diferentes proveedores (OpenAI, Claude, etc.)
-     * basándose en la configuración del módulo ai.
-     *
-     * @var object
-     */
-    protected ?object $aiProvider = NULL;
+    return $this->promptBuilder->buildPrompt($context, $userMessage);
+  }
 
-    /**
-     * La factoría de configuración.
-     *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface|null
-     */
-    protected ?ConfigFactoryInterface $configFactory = NULL;
+  /**
+   * Construye el system prompt completo.
+   *
+   * PROPÓSITO:
+   * Combina Brand Voice + Contexto Unificado (Skills + Knowledge)
+   * para crear un prompt de sistema completo y personalizado.
+   *
+   * @param string|null $userMessage
+   *   Mensaje del usuario para contexto RAG.
+   *
+   * @return string
+   *   System prompt completo.
+   */
+  protected function buildSystemPrompt(?string $userMessage = NULL): string {
+    $parts = [];
 
-    /**
-     * El logger para registrar eventos y errores.
-     *
-     * @var \Psr\Log\LoggerInterface|null
-     */
-    protected ?LoggerInterface $logger = NULL;
+    // 0. Regla de identidad global (NUNCA revelar modelo de IA subyacente).
+    // FIX-014: Usa constante centralizada AIIdentityRule::IDENTITY_PROMPT.
+    $parts[] = AIIdentityRule::IDENTITY_PROMPT;
 
-    /**
-     * El servicio de Brand Voice por tenant.
-     *
-     * Proporciona prompts personalizados según la configuración del tenant.
-     *
-     * @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null
-     */
-    protected ?TenantBrandVoiceService $brandVoice = NULL;
+    // 1. Brand Voice (personalidad y tono).
+    $parts[] = $this->getBrandVoicePrompt();
 
-    /**
-     * El servicio de observabilidad IA.
-     *
-     * Registra métricas de uso, tokens y latencia para analytics.
-     * KERNEL-OPTIONAL-AI-001: Nullable for Kernel tests where jaraba_ai_agents
-     * services are not installed. Agents guard with null-check before calling.
-     *
-     * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null
-     */
-    protected ?AIObservabilityService $observability = NULL;
-
-    /**
-     * Constructor de prompts unificados.
-     *
-     * Combina Skills + Knowledge + Corrections + RAG.
-     *
-     * @var \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null
-     */
-    protected ?UnifiedPromptBuilder $promptBuilder = NULL;
-
-    /**
-     * Acción actual en ejecución para logging.
-     *
-     * @var string
-     */
-    protected string $currentAction = 'unknown';
-
-    /**
-     * ID del tenant actual.
-     *
-     * NULL indica contexto global (sin tenant específico).
-     *
-     * @var string|null
-     */
-    protected ?string $tenantId = NULL;
-
-    /**
-     * Vertical actual del tenant.
-     *
-     * Uses canonical names from self::VERTICALS.
-     *
-     * @var string|null
-     */
-    protected ?string $vertical = NULL;
-
-    /**
-     * Construye un BaseAgent.
-     *
-     * @param object $aiProvider
-     *   El gestor de proveedores IA.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   La factoría de configuración.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El servicio de logging.
-     * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice
-     *   El servicio de Brand Voice por tenant.
-     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
-     *   El servicio de observabilidad IA.
-     */
-    public function __construct(
-        object $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-    ) {
-        $this->aiProvider = $aiProvider;
-        $this->configFactory = $configFactory;
-        $this->logger = $logger;
-        $this->brandVoice = $brandVoice;
-        $this->observability = $observability;
-        $this->promptBuilder = $promptBuilder;
+    // 2. Contexto unificado (Skills + Knowledge + RAG).
+    $unifiedContext = $this->getUnifiedContext($userMessage);
+    if (!empty($unifiedContext)) {
+      $parts[] = $unifiedContext;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Establece el contexto de tenant y vertical para personalización.
-     */
-    public function setTenantContext(string $tenantId, string $vertical): void
-    {
-        $this->tenantId = $tenantId;
-        $this->vertical = $vertical;
+    // 3. Contexto de vertical.
+    $verticalContext = $this->getVerticalContext();
+    if (!empty($verticalContext)) {
+      $parts[] = "\n<vertical_context>" . $verticalContext . "</vertical_context>";
     }
 
-    /**
-     * Obtiene el prompt de Brand Voice para el tenant actual.
-     *
-     * Si no hay tenant establecido, retorna el Brand Voice por defecto
-     * definido en la implementación concreta del agente.
-     *
-     * @return string
-     *   El prompt de sistema con Brand Voice aplicado.
-     */
-    protected function getBrandVoicePrompt(): string
-    {
-        if (!$this->tenantId || !$this->brandVoice) {
-            return $this->getDefaultBrandVoice();
-        }
-        return $this->brandVoice->getPromptForTenant($this->tenantId);
-    }
+    return implode("\n\n", array_filter($parts));
+  }
 
-    /**
-     * Obtiene el contexto unificado de Skills + Knowledge.
-     *
-     * PROPÓSITO:
-     * Combina el conocimiento enseñado (AI Skills) con el conocimiento
-     * factual del tenant (Knowledge Training) para enriquecer el prompt.
-     *
-     * @param string|null $userMessage
-     *   Mensaje del usuario para búsqueda RAG contextual.
-     *
-     * @return string
-     *   Contexto XML para inyectar en el prompt.
-     */
-    protected function getUnifiedContext(?string $userMessage = NULL): string
-    {
-        if (!$this->promptBuilder) {
-            return '';
-        }
+  /**
+   * Ejecuta una llamada al proveedor IA.
+   *
+   * Método central que gestiona la comunicación con el modelo IA.
+   * Incluye: construcción del mensaje, manejo de errores, estimación
+   * de tokens y registro en observabilidad.
+   *
+   * @param string $prompt
+   *   El prompt del usuario a enviar al modelo.
+   * @param array $options
+   *   Configuración opcional:
+   *   - 'temperature': float (por defecto 0.7) - Creatividad del modelo.
+   *   - 'max_tokens': int (por defecto 2000) - Límite de respuesta.
+   *   - 'tier': string (fast|balanced|premium) - Tier de modelo.
+   *
+   * @return array
+   *   Array de resultado con claves:
+   *   - 'success': bool - Si la llamada fue exitosa.
+   *   - 'data': array - Datos de respuesta (incluye 'text').
+   *   - 'error': string - Mensaje de error si success=false.
+   *   - 'tenant_id': string|null - ID del tenant usado.
+   *   - 'vertical': string|null - Vertical del contexto.
+   *   - 'agent_id': string - ID del agente que ejecutó.
+   */
+  protected function callAiApi(string $prompt, array $options = []): array {
+    $startTime = microtime(TRUE);
+    $tier = $options['tier'] ?? 'balanced';
+    $success = FALSE;
+    $inputTokens = 0;
+    $outputTokens = 0;
+    $modelId = '';
 
-        $context = [
-            'vertical' => $this->vertical,
-            'agent_type' => $this->getAgentId(),
-            'tenant_id' => $this->tenantId ? (int) $this->tenantId : NULL,
+    try {
+      // Obtener proveedor por defecto para operación chat.
+      $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+      if (empty($defaults)) {
+        $this->logger->error('No hay proveedor IA configurado para operación chat.');
+        return [
+          'success' => FALSE,
+          'error' => 'No hay proveedor IA configurado.',
         ];
+      }
 
-        return $this->promptBuilder->buildPrompt($context, $userMessage);
+      $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+      $modelId = $defaults['model_id'];
+      // Construir system prompt completo con Skills + Knowledge + RAG.
+      $systemPrompt = $this->buildSystemPrompt($prompt);
+
+      // Estimar tokens de entrada (aprox 4 caracteres por token).
+      $inputTokens = (int) ceil((strlen($systemPrompt) + strlen($prompt)) / 4);
+
+      // Construir input de chat con mensaje de sistema y usuario.
+      $chatInput = new ChatInput([
+        new ChatMessage('system', $systemPrompt),
+        new ChatMessage('user', $prompt),
+      ]);
+
+      $configuration = [
+        'temperature' => $options['temperature'] ?? 0.7,
+      ];
+
+      // Ejecutar llamada al modelo.
+      $response = $provider->chat($chatInput, $defaults['model_id'], $configuration);
+      $text = $response->getNormalized()->getText();
+
+      // Estimar tokens de salida.
+      $outputTokens = (int) ceil(strlen($text) / 4);
+      $success = TRUE;
+
+      $this->logger->info('Agente @agent ejecutado exitosamente para tenant @tenant', [
+        '@agent' => $this->getAgentId(),
+        '@tenant' => $this->tenantId ?? 'global',
+      ]);
+
+      $result = [
+        'success' => TRUE,
+        'data' => ['text' => $text],
+        'tenant_id' => $this->tenantId,
+        'vertical' => $this->vertical,
+        'agent_id' => $this->getAgentId(),
+      ];
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error en Agente IA: @msg', ['@msg' => $e->getMessage()]);
+      $result = [
+        'success' => FALSE,
+        'error' => $e->getMessage(),
+      ];
     }
 
-    /**
-     * Construye el system prompt completo.
-     *
-     * PROPÓSITO:
-     * Combina Brand Voice + Contexto Unificado (Skills + Knowledge)
-     * para crear un prompt de sistema completo y personalizado.
-     *
-     * @param string|null $userMessage
-     *   Mensaje del usuario para contexto RAG.
-     *
-     * @return string
-     *   System prompt completo.
-     */
-    protected function buildSystemPrompt(?string $userMessage = NULL): string
-    {
-        $parts = [];
+    // Calcular duración y registrar en observabilidad.
+    $durationMs = (int) ((microtime(TRUE) - $startTime) * 1000);
 
-        // 0. Regla de identidad global (NUNCA revelar modelo de IA subyacente).
-        // FIX-014: Usa constante centralizada AIIdentityRule::IDENTITY_PROMPT.
-        $parts[] = AIIdentityRule::IDENTITY_PROMPT;
+    $this->observability?->log([
+      'agent_id' => $this->getAgentId(),
+      'action' => $this->currentAction,
+      'tier' => $tier,
+      'model_id' => $modelId,
+      'tenant_id' => $this->tenantId,
+      'vertical' => $this->vertical,
+      'input_tokens' => $inputTokens,
+      'output_tokens' => $outputTokens,
+      'duration_ms' => $durationMs,
+      'success' => $success,
+    ]);
 
-        // 1. Brand Voice (personalidad y tono).
-        $parts[] = $this->getBrandVoicePrompt();
+    return $result;
+  }
 
-        // 2. Contexto unificado (Skills + Knowledge + RAG).
-        $unifiedContext = $this->getUnifiedContext($userMessage);
-        if (!empty($unifiedContext)) {
-            $parts[] = $unifiedContext;
-        }
+  /**
+   * Establece la acción actual para propósitos de logging.
+   *
+   * Debe llamarse al inicio de execute() para registrar
+   * qué operación se está ejecutando.
+   *
+   * @param string $action
+   *   El ID de la acción en ejecución.
+   */
+  protected function setCurrentAction(string $action): void {
+    $this->currentAction = $action;
+  }
 
-        // 3. Contexto de vertical.
-        $verticalContext = $this->getVerticalContext();
-        if (!empty($verticalContext)) {
-            $parts[] = "\n<vertical_context>" . $verticalContext . "</vertical_context>";
-        }
+  /**
+   * Limpia JSON de bloques de código markdown.
+   *
+   * Los modelos IA a menudo retornan JSON envuelto en ```json...```.
+   * Este método extrae el JSON puro para parseo.
+   *
+   * @param string $text
+   *   El texto que puede contener JSON en bloques de código.
+   *
+   * @return string
+   *   Cadena JSON limpia sin delimitadores markdown.
+   */
+  protected function cleanJsonString(string $text): string {
+    // Eliminar bloques de código markdown.
+    $text = preg_replace('/```(?:json)?\s*/is', '', $text);
+    $text = preg_replace('/\s*```/is', '', $text);
 
-        return implode("\n\n", array_filter($parts));
+    // Extraer objeto JSON si está presente.
+    if (preg_match('/(\{[\s\S]*\})/m', $text, $matches)) {
+      return trim($matches[1]);
     }
 
-    /**
-     * Ejecuta una llamada al proveedor IA.
-     *
-     * Método central que gestiona la comunicación con el modelo IA.
-     * Incluye: construcción del mensaje, manejo de errores, estimación
-     * de tokens y registro en observabilidad.
-     *
-     * @param string $prompt
-     *   El prompt del usuario a enviar al modelo.
-     * @param array $options
-     *   Configuración opcional:
-     *   - 'temperature': float (por defecto 0.7) - Creatividad del modelo.
-     *   - 'max_tokens': int (por defecto 2000) - Límite de respuesta.
-     *   - 'tier': string (fast|balanced|premium) - Tier de modelo.
-     *
-     * @return array
-     *   Array de resultado con claves:
-     *   - 'success': bool - Si la llamada fue exitosa.
-     *   - 'data': array - Datos de respuesta (incluye 'text').
-     *   - 'error': string - Mensaje de error si success=false.
-     *   - 'tenant_id': string|null - ID del tenant usado.
-     *   - 'vertical': string|null - Vertical del contexto.
-     *   - 'agent_id': string - ID del agente que ejecutó.
-     */
-    protected function callAiApi(string $prompt, array $options = []): array
-    {
-        $startTime = microtime(true);
-        $tier = $options['tier'] ?? 'balanced';
-        $success = false;
-        $inputTokens = 0;
-        $outputTokens = 0;
-        $modelId = '';
+    return trim($text);
+  }
 
-        try {
-            // Obtener proveedor por defecto para operación chat.
-            $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
-            if (empty($defaults)) {
-                $this->logger->error('No hay proveedor IA configurado para operación chat.');
-                return [
-                    'success' => FALSE,
-                    'error' => 'No hay proveedor IA configurado.',
-                ];
-            }
+  /**
+   * Parsea respuesta IA como JSON.
+   *
+   * Combina limpieza de markdown con decodificación JSON.
+   * Registra warnings si el parseo falla.
+   *
+   * @param string $text
+   *   El texto de respuesta del modelo IA.
+   *
+   * @return array|null
+   *   Array parseado o NULL si el parseo falla.
+   */
+  protected function parseJsonResponse(string $text): ?array {
+    $cleaned = $this->cleanJsonString($text);
+    $decoded = json_decode($cleaned, TRUE);
 
-            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
-            $modelId = $defaults['model_id'];
-            // Construir system prompt completo con Skills + Knowledge + RAG.
-            $systemPrompt = $this->buildSystemPrompt($prompt);
-
-            // Estimar tokens de entrada (aprox 4 caracteres por token).
-            $inputTokens = (int) ceil((strlen($systemPrompt) + strlen($prompt)) / 4);
-
-            // Construir input de chat con mensaje de sistema y usuario.
-            $chatInput = new ChatInput([
-                new ChatMessage('system', $systemPrompt),
-                new ChatMessage('user', $prompt),
-            ]);
-
-            $configuration = [
-                'temperature' => $options['temperature'] ?? 0.7,
-            ];
-
-            // Ejecutar llamada al modelo.
-            $response = $provider->chat($chatInput, $defaults['model_id'], $configuration);
-            $text = $response->getNormalized()->getText();
-
-            // Estimar tokens de salida.
-            $outputTokens = (int) ceil(strlen($text) / 4);
-            $success = true;
-
-            $this->logger->info('Agente @agent ejecutado exitosamente para tenant @tenant', [
-                '@agent' => $this->getAgentId(),
-                '@tenant' => $this->tenantId ?? 'global',
-            ]);
-
-            $result = [
-                'success' => TRUE,
-                'data' => ['text' => $text],
-                'tenant_id' => $this->tenantId,
-                'vertical' => $this->vertical,
-                'agent_id' => $this->getAgentId(),
-            ];
-
-        } catch (\Exception $e) {
-            $this->logger->error('Error en Agente IA: @msg', ['@msg' => $e->getMessage()]);
-            $result = [
-                'success' => FALSE,
-                'error' => $e->getMessage(),
-            ];
-        }
-
-        // Calcular duración y registrar en observabilidad.
-        $durationMs = (int) ((microtime(true) - $startTime) * 1000);
-
-        $this->observability?->log([
-            'agent_id' => $this->getAgentId(),
-            'action' => $this->currentAction,
-            'tier' => $tier,
-            'model_id' => $modelId,
-            'tenant_id' => $this->tenantId,
-            'vertical' => $this->vertical,
-            'input_tokens' => $inputTokens,
-            'output_tokens' => $outputTokens,
-            'duration_ms' => $durationMs,
-            'success' => $success,
-        ]);
-
-        return $result;
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      $this->logger->warning('Error al parsear respuesta JSON: @error', [
+        '@error' => json_last_error_msg(),
+      ]);
+      return NULL;
     }
 
-    /**
-     * Establece la acción actual para propósitos de logging.
-     *
-     * Debe llamarse al inicio de execute() para registrar
-     * qué operación se está ejecutando.
-     *
-     * @param string $action
-     *   El ID de la acción en ejecución.
-     */
-    protected function setCurrentAction(string $action): void
-    {
-        $this->currentAction = $action;
+    return $decoded;
+  }
+
+  /**
+   * Retorna el contexto específico del vertical para prompts.
+   *
+   * Añade información contextual al agente sobre el sector/vertical
+   * del tenant para respuestas más relevantes.
+   *
+   * @return string
+   *   Descripción del contexto vertical.
+   */
+  protected function getVerticalContext(): string {
+    // FIX-027: Canonical vertical names with rich descriptions.
+    $contexts = [
+      'empleabilidad' => 'Sector de empleabilidad y búsqueda de trabajo.',
+      'emprendimiento' => 'Sector de emprendimiento y startups.',
+      'comercioconecta' => 'Sistema Operativo de Barrio para comercio de proximidad. Marketplace omnicanal con ofertas flash, QR dinamico, SEO local, analytics y copiloto IA para comerciantes.',
+      'agroconecta' => 'Ecosistema digital para productores agroalimentarios. Marketplace con trazabilidad, QR phy-gitales, IA para produccion, precios y marketing.',
+      'jarabalex' => 'Plataforma de Inteligencia Legal con IA. Busqueda semantica en jurisprudencia (CENDOJ, EUR-Lex, CURIA, HUDOC), legislacion (BOE, EUR-Lex), doctrina administrativa (DGT, TEAC, EDPB). Gestion de expedientes, agenda juridica, boveda documental, facturacion legal, integracion LexNET y plantillas procesales.',
+      'serviciosconecta' => 'Marketplace de servicios profesionales con reservas online. Sistema de gestion de consultas con calendario inteligente, buzon de confianza, firma digital, triaje IA, videoconsultas, analytics de rendimiento y copiloto IA para profesionales de servicios.',
+      'andalucia_ei' => 'Programa Integral de Insercion Laboral (PIIL) Andalucia +ei, cofinanciado FSE+. Gestion de participantes con 6 fases (acogida, diagnostico, atencion, insercion, seguimiento, baja), 3 carriles formativos (impulso_digital, acelera_pro, hibrido), acciones formativas con workflow VoBo SAE (8 estados), sesiones programadas con inscripciones y control de asistencia, planes formativos con validacion de minimos (50h formacion + 10h orientacion), indicadores ESF+ (CO01-CO14, CR01-CR06), expediente documental STO, firma electronica, acceso cross-vertical temporal, alertas normativas e integracion con emprendimiento.',
+      'jaraba_content_hub' => 'Hub centralizado de contenido editorial y recursos de la plataforma.',
+      'formacion' => 'Plataforma de formacion online con cursos, certificaciones y rutas de aprendizaje.',
+      'demo' => 'Entorno de demostración de la plataforma multi-vertical.',
+      'general' => 'Plataforma multi-vertical.',
+    ];
+
+    // FIX-027: Legacy alias mapping for backward compatibility.
+    $aliases = [
+      'empleo' => 'empleabilidad',
+      'comercio' => 'comercioconecta',
+      'instituciones' => 'comercioconecta',
+    ];
+
+    $vertical = $this->vertical ?? 'general';
+    $vertical = $aliases[$vertical] ?? $vertical;
+
+    $primaryContext = $contexts[$vertical] ?? $contexts['general'];
+
+    // Multi-vertical: si el tenant tiene verticales addon, enriquecer contexto.
+    $addonVerticalContext = $this->getAddonVerticalsContext($contexts);
+    if ($addonVerticalContext) {
+      $primaryContext .= "\n\nEste tenant tambien tiene activos los siguientes verticales adicionales:\n" . $addonVerticalContext;
     }
 
-    /**
-     * Limpia JSON de bloques de código markdown.
-     *
-     * Los modelos IA a menudo retornan JSON envuelto en ```json...```.
-     * Este método extrae el JSON puro para parseo.
-     *
-     * @param string $text
-     *   El texto que puede contener JSON en bloques de código.
-     *
-     * @return string
-     *   Cadena JSON limpia sin delimitadores markdown.
-     */
-    protected function cleanJsonString(string $text): string
-    {
-        // Eliminar bloques de código markdown.
-        $text = preg_replace('/```(?:json)?\s*/is', '', $text);
-        $text = preg_replace('/\s*```/is', '', $text);
+    return $primaryContext;
+  }
 
-        // Extraer objeto JSON si está presente.
-        if (preg_match('/(\{[\s\S]*\})/m', $text, $matches)) {
-            return trim($matches[1]);
-        }
-
-        return trim($text);
+  /**
+   * Obtiene contexto de verticales addon activos del tenant.
+   *
+   * Consulta TenantVerticalService (si disponible) para obtener
+   * los verticales addon activos y sus descripciones.
+   *
+   * @param array $contexts
+   *   Mapa de descripciones de verticales.
+   *
+   * @return string
+   *   Texto con verticales addon o cadena vacia.
+   */
+  protected function getAddonVerticalsContext(array $contexts): string {
+    if (!$this->tenantId) {
+      return '';
     }
 
-    /**
-     * Parsea respuesta IA como JSON.
-     *
-     * Combina limpieza de markdown con decodificación JSON.
-     * Registra warnings si el parseo falla.
-     *
-     * @param string $text
-     *   El texto de respuesta del modelo IA.
-     *
-     * @return array|null
-     *   Array parseado o NULL si el parseo falla.
-     */
-    protected function parseJsonResponse(string $text): ?array
-    {
-        $cleaned = $this->cleanJsonString($text);
-        $decoded = json_decode($cleaned, TRUE);
+    try {
+      if (!\Drupal::hasService('jaraba_addons.tenant_vertical')) {
+        return '';
+      }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->logger->warning('Error al parsear respuesta JSON: @error', [
-                '@error' => json_last_error_msg(),
-            ]);
-            return NULL;
-        }
+      $tenantVerticalService = \Drupal::service('jaraba_addons.tenant_vertical');
+      $addonVerticals = $tenantVerticalService->getAddonVerticals((int) $this->tenantId);
 
-        return $decoded;
+      if (empty($addonVerticals)) {
+        return '';
+      }
+
+      $parts = [];
+      foreach ($addonVerticals as $key => $data) {
+        $desc = $contexts[$key] ?? ucfirst($key);
+        $parts[] = "- {$data['label']}: {$desc}";
+      }
+
+      return implode("\n", $parts);
     }
-
-    /**
-     * Retorna el contexto específico del vertical para prompts.
-     *
-     * Añade información contextual al agente sobre el sector/vertical
-     * del tenant para respuestas más relevantes.
-     *
-     * @return string
-     *   Descripción del contexto vertical.
-     */
-    protected function getVerticalContext(): string
-    {
-        // FIX-027: Canonical vertical names with rich descriptions.
-        $contexts = [
-            'empleabilidad' => 'Sector de empleabilidad y búsqueda de trabajo.',
-            'emprendimiento' => 'Sector de emprendimiento y startups.',
-            'comercioconecta' => 'Sistema Operativo de Barrio para comercio de proximidad. Marketplace omnicanal con ofertas flash, QR dinamico, SEO local, analytics y copiloto IA para comerciantes.',
-            'agroconecta' => 'Ecosistema digital para productores agroalimentarios. Marketplace con trazabilidad, QR phy-gitales, IA para produccion, precios y marketing.',
-            'jarabalex' => 'Plataforma de Inteligencia Legal con IA. Busqueda semantica en jurisprudencia (CENDOJ, EUR-Lex, CURIA, HUDOC), legislacion (BOE, EUR-Lex), doctrina administrativa (DGT, TEAC, EDPB). Gestion de expedientes, agenda juridica, boveda documental, facturacion legal, integracion LexNET y plantillas procesales.',
-            'serviciosconecta' => 'Marketplace de servicios profesionales con reservas online. Sistema de gestion de consultas con calendario inteligente, buzon de confianza, firma digital, triaje IA, videoconsultas, analytics de rendimiento y copiloto IA para profesionales de servicios.',
-            'andalucia_ei' => 'Programa Integral de Insercion Laboral (PIIL) Andalucia +ei, cofinanciado FSE+. Gestion de participantes con 6 fases (acogida, diagnostico, atencion, insercion, seguimiento, baja), 3 carriles formativos (impulso_digital, acelera_pro, hibrido), acciones formativas con workflow VoBo SAE (8 estados), sesiones programadas con inscripciones y control de asistencia, planes formativos con validacion de minimos (50h formacion + 10h orientacion), indicadores ESF+ (CO01-CO14, CR01-CR06), expediente documental STO, firma electronica, acceso cross-vertical temporal, alertas normativas e integracion con emprendimiento.',
-            'jaraba_content_hub' => 'Hub centralizado de contenido editorial y recursos de la plataforma.',
-            'formacion' => 'Plataforma de formacion online con cursos, certificaciones y rutas de aprendizaje.',
-            'demo' => 'Entorno de demostración de la plataforma multi-vertical.',
-            'general' => 'Plataforma multi-vertical.',
-        ];
-
-        // FIX-027: Legacy alias mapping for backward compatibility.
-        $aliases = [
-            'empleo' => 'empleabilidad',
-            'comercio' => 'comercioconecta',
-            'instituciones' => 'comercioconecta',
-        ];
-
-        $vertical = $this->vertical ?? 'general';
-        $vertical = $aliases[$vertical] ?? $vertical;
-
-        $primaryContext = $contexts[$vertical] ?? $contexts['general'];
-
-        // Multi-vertical: si el tenant tiene verticales addon, enriquecer contexto.
-        $addonVerticalContext = $this->getAddonVerticalsContext($contexts);
-        if ($addonVerticalContext) {
-            $primaryContext .= "\n\nEste tenant tambien tiene activos los siguientes verticales adicionales:\n" . $addonVerticalContext;
-        }
-
-        return $primaryContext;
+    catch (\Exception) {
+      return '';
     }
+  }
 
-    /**
-     * Obtiene contexto de verticales addon activos del tenant.
-     *
-     * Consulta TenantVerticalService (si disponible) para obtener
-     * los verticales addon activos y sus descripciones.
-     *
-     * @param array $contexts
-     *   Mapa de descripciones de verticales.
-     *
-     * @return string
-     *   Texto con verticales addon o cadena vacia.
-     */
-    protected function getAddonVerticalsContext(array $contexts): string
-    {
-        if (!$this->tenantId) {
-            return '';
-        }
-
-        try {
-            if (!\Drupal::hasService('jaraba_addons.tenant_vertical')) {
-                return '';
-            }
-
-            $tenantVerticalService = \Drupal::service('jaraba_addons.tenant_vertical');
-            $addonVerticals = $tenantVerticalService->getAddonVerticals((int) $this->tenantId);
-
-            if (empty($addonVerticals)) {
-                return '';
-            }
-
-            $parts = [];
-            foreach ($addonVerticals as $key => $data) {
-                $desc = $contexts[$key] ?? ucfirst($key);
-                $parts[] = "- {$data['label']}: {$desc}";
-            }
-
-            return implode("\n", $parts);
-        }
-        catch (\Exception) {
-            return '';
-        }
-    }
-
-    /**
-     * Retorna el Brand Voice por defecto sin tenant.
-     *
-     * Cada agente especializado debe implementar su propio
-     * Brand Voice genérico cuando no hay contexto de tenant.
-     *
-     * @return string
-     *   Prompt de Brand Voice por defecto.
-     */
-    abstract protected function getDefaultBrandVoice(): string;
+  /**
+   * Retorna el Brand Voice por defecto sin tenant.
+   *
+   * Cada agente especializado debe implementar su propio
+   * Brand Voice genérico cuando no hay contexto de tenant.
+   *
+   * @return string
+   *   Prompt de Brand Voice por defecto.
+   */
+  abstract protected function getDefaultBrandVoice(): string;
 
 }

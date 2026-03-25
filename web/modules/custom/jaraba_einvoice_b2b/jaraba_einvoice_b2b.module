@@ -151,7 +151,8 @@ function jaraba_einvoice_b2b_cron(): void {
 
   // ECA-EI-003: Morosity detection — daily at 08:00.
   $lastMorosityCheck = (int) $state->get('jaraba_einvoice_b2b.last_morosity_check', 0);
-  $morosityInterval = 86400; // 24 hours.
+  // 24 hours.
+  $morosityInterval = 86400;
   if (($now - $lastMorosityCheck) >= $morosityInterval) {
     $currentHour = (int) date('G', $now);
     if ($currentHour >= 8) {
@@ -162,7 +163,8 @@ function jaraba_einvoice_b2b_cron(): void {
 
   // ECA-EI-005: SPFE payment communication — every 6 hours.
   $lastSpfeCommunication = (int) $state->get('jaraba_einvoice_b2b.last_spfe_communication', 0);
-  $spfeInterval = 21600; // 6 hours.
+  // 6 hours.
+  $spfeInterval = 21600;
   if (($now - $lastSpfeCommunication) >= $spfeInterval) {
     _jaraba_einvoice_b2b_communicate_pending_to_spfe();
     $state->set('jaraba_einvoice_b2b.last_spfe_communication', $now);

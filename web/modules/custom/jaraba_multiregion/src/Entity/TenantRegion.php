@@ -97,7 +97,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 1: IDENTIFICACION Y TENANT
     // Vinculo 1:1 entre tenant y su configuracion regional.
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant propietario de esta configuracion regional.'))
@@ -110,7 +109,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 2: CONFIGURACION DE MONEDA
     // Moneda base para facturacion y monedas adicionales de display.
     // =========================================================================
-
     $fields['base_currency'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Moneda base'))
       ->setDescription(new TranslatableMarkup('Moneda principal del tenant para facturacion y contabilidad.'))
@@ -136,7 +134,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 3: CONFIGURACION STRIPE Y DATA RESIDENCY
     // Pais de la cuenta Stripe, region de datos y datacenter principal.
     // =========================================================================
-
     $fields['stripe_account_country'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Pais cuenta Stripe'))
       ->setDescription(new TranslatableMarkup('Codigo ISO 3166-1 alpha-2 del pais de la cuenta Stripe.'))
@@ -171,7 +168,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 4: JURISDICCION LEGAL Y FISCAL
     // Jurisdiccion, numero IVA y validacion VIES.
     // =========================================================================
-
     $fields['legal_jurisdiction'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Jurisdiccion legal'))
       ->setDescription(new TranslatableMarkup('Codigo ISO 3166-1 alpha-2 de la jurisdiccion legal del tenant.'))
@@ -207,7 +203,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 5: GDPR
     // Representante GDPR designado para la jurisdiccion del tenant.
     // =========================================================================
-
     $fields['gdpr_representative'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Representante GDPR'))
       ->setDescription(new TranslatableMarkup('Nombre o razon social del representante GDPR designado en la UE.'))
@@ -220,7 +215,6 @@ class TenantRegion extends ContentEntityBase implements EntityOwnerInterface, En
     // BLOQUE 6: METADATOS TEMPORALES
     // Timestamps de creacion y ultima modificacion.
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

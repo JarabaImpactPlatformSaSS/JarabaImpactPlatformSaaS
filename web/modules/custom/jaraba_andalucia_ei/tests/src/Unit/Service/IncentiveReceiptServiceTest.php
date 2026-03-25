@@ -51,23 +51,37 @@ class IncentiveReceiptServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithoutBrandedPdf(): void {
     $service = $this->createService();
     $this->assertInstanceOf(IncentiveReceiptService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithBrandedPdf(): void {
     $brandedPdf = new class {
+
+      /**
+       *
+       */
       public function generateReport(): string {
         return 'pdf-content';
       }
+
     };
     $service = $this->createService($brandedPdf);
     $this->assertInstanceOf(IncentiveReceiptService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarRecibiReturnsNullWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(999)->willReturn(NULL);
@@ -78,6 +92,9 @@ class IncentiveReceiptServiceTest extends UnitTestCase {
     $this->assertNull($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarRecibiLogsWarningWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(42)->willReturn(NULL);

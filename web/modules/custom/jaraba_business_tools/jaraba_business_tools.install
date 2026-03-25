@@ -13,7 +13,7 @@ declare(strict_types=1);
 function jaraba_business_tools_install(): void {
   // Create default canvas templates.
   _jaraba_business_tools_create_default_templates();
-  
+
   \Drupal::messenger()->addStatus(t('Jaraba Business Tools instalado correctamente.'));
 }
 
@@ -133,19 +133,20 @@ function _jaraba_business_tools_create_default_templates(): void {
 function _jaraba_business_tools_create_template(array $data): void {
   $canvasStorage = \Drupal::entityTypeManager()->getStorage('business_model_canvas');
   $blockStorage = \Drupal::entityTypeManager()->getStorage('canvas_block');
-  
+
   // Create canvas marked as template.
   $canvas = $canvasStorage->create([
     'title' => $data['title'],
     'sector' => $data['sector'],
     'business_stage' => 'idea',
-    'user_id' => 1, // Admin.
+  // Admin.
+    'user_id' => 1,
     'is_template' => TRUE,
     'status' => 'active',
     'completeness_score' => 100,
   ]);
   $canvas->save();
-  
+
   // Create blocks with items.
   foreach ($data['blocks'] as $blockType => $items) {
     $itemsArray = [];
@@ -160,7 +161,7 @@ function _jaraba_business_tools_create_template(array $data): void {
         'position' => ['x' => 0, 'y' => $index * 40],
       ];
     }
-    
+
     $block = $blockStorage->create([
       'canvas_id' => $canvas->id(),
       'block_type' => $blockType,
@@ -224,14 +225,13 @@ function jaraba_business_tools_uninstall(): void {
   // Clean up state variables.
   $state = \Drupal::state();
   $state->delete('jaraba_canvas_daily_version_last');
-  
+
   // Delete any remaining state for canvas changes.
   $db = \Drupal::database();
   $db->delete('key_value')
     ->condition('name', 'jaraba_canvas_changes_%', 'LIKE')
     ->execute();
 }
-
 
 /**
  * Implements hook_requirements().

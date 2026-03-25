@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_billing.install — Instalacion y actualizaciones del modulo.
+ * Jaraba_legal_billing.install — Instalacion y actualizaciones del modulo.
  *
  * Estructura: hook_install para crear taxonomias y config por defecto.
  * Logica: Crea vocabulario 'service_category' con categorias iniciales.

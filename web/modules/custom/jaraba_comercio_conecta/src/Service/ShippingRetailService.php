@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ShippingRetailService {
 
   protected LoggerInterface $logger;
@@ -20,6 +23,9 @@ class ShippingRetailService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.shipping');
   }
 
+  /**
+   *
+   */
   public function calculateShippingCost(int $shippingMethodId, float $weight, string $postalCode): float {
     try {
       $method = $this->entityTypeManager->getStorage('shipping_method_retail')->load($shippingMethodId);
@@ -43,6 +49,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   public function getAvailableMethods(string $postalCode): array {
     try {
       $storage = $this->entityTypeManager->getStorage('shipping_method_retail');
@@ -78,6 +87,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   public function createShipment(int $orderId, int $carrierId, int $methodId, array $data): ?ContentEntityInterface {
     try {
       $storage = $this->entityTypeManager->getStorage('shipment_retail');
@@ -114,6 +126,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   public function updateTrackingStatus(int $shipmentId, string $status): bool {
     try {
       $storage = $this->entityTypeManager->getStorage('shipment_retail');
@@ -147,6 +162,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   public function getShipmentByOrder(int $orderId): ?ContentEntityInterface {
     try {
       $storage = $this->entityTypeManager->getStorage('shipment_retail');
@@ -172,6 +190,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   public function getTrackingUrl(int $shipmentId): ?string {
     try {
       $storage = $this->entityTypeManager->getStorage('shipment_retail');
@@ -211,6 +232,9 @@ class ShippingRetailService {
     }
   }
 
+  /**
+   *
+   */
   protected function getZoneSurcharge(string $postalCode): float {
     try {
       $storage = $this->entityTypeManager->getStorage('shipping_zone');

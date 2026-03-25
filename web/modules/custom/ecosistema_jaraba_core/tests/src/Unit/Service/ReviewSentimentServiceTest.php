@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\ReviewSentimentService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -153,9 +152,13 @@ class ReviewSentimentServiceTest extends UnitTestCase {
         $this->empty = ($v === '');
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->empty;
       }
+
     };
 
     $ratingField = new class ($rating) {
@@ -165,17 +168,25 @@ class ReviewSentimentServiceTest extends UnitTestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return FALSE;
       }
+
     };
 
     $emptyField = new class () {
       public $value = NULL;
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return TRUE;
       }
+
     };
 
     $entity->method('get')->willReturnCallback(function ($field) use ($bodyField, $ratingField, $emptyField) {

@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class TrackingEventForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'event' => [
@@ -35,10 +38,16 @@ class TrackingEventForm extends PremiumEntityFormBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'analytics', 'name' => 'chart'];
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));

@@ -12,8 +12,7 @@ use Drupal\Core\Entity\EntityInterface;
  * Defines the contract for interactive result entities used by
  * CompletionSubscriber and XApiEmitter services.
  */
-interface InteractiveResultInterface extends EntityInterface
-{
+interface InteractiveResultInterface extends EntityInterface {
 
   /**
    * Obtiene el contenido interactivo asociado.

@@ -22,226 +22,222 @@ use Symfony\Component\HttpFoundation\Request;
  * POST /api/v1/producer/copilot/generate/price          → Sugerencia de precio
  * POST /api/v1/producer/copilot/generate/review-response → Respuesta a reseña
  * GET  /api/v1/producer/copilot/conversations           → Historial conversaciones
- * GET  /api/v1/producer/copilot/conversations/{id}/messages → Mensajes
+ * GET  /api/v1/producer/copilot/conversations/{id}/messages → Mensajes.
  */
-class CopilotApiController extends ControllerBase implements ContainerInjectionInterface
-{
+class CopilotApiController extends ControllerBase implements ContainerInjectionInterface {
 
-    public function __construct(
-        protected ProducerCopilotService $copilotService,
-        protected DemandForecasterService $demandForecaster,
-        protected MarketSpyService $marketSpy,
-    ) {
+  public function __construct(
+    protected ProducerCopilotService $copilotService,
+    protected DemandForecasterService $demandForecaster,
+    protected MarketSpyService $marketSpy,
+  ) {
+  }
+
+  /**
+   *
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+    // AUDIT-CONS-N05: canonical prefix.
+          $container->get('jaraba_agroconecta_core.copilot_service'),
+    // AUDIT-CONS-N05: canonical prefix.
+          $container->get('jaraba_agroconecta_core.demand_forecaster'),
+    // AUDIT-CONS-N05: canonical prefix.
+          $container->get('jaraba_agroconecta_core.market_spy'),
+      );
+  }
+
+  /**
+   * Conversación libre con el copiloto.
+   */
+  public function chat(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $producerId = (int) $this->currentUser()->id();
+    $message = $data['message'] ?? '';
+    $conversationId = $data['conversation_id'] ?? NULL;
+
+    if (!$message) {
+      return new JsonResponse(['error' => 'message es requerido'], 400);
     }
 
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_agroconecta_core.copilot_service'), // AUDIT-CONS-N05: canonical prefix
-            $container->get('jaraba_agroconecta_core.demand_forecaster'), // AUDIT-CONS-N05: canonical prefix
-            $container->get('jaraba_agroconecta_core.market_spy'), // AUDIT-CONS-N05: canonical prefix
-        );
+    $result = $this->copilotService->chat($producerId, $message, $conversationId ? (int) $conversationId : NULL);
+
+    if (isset($result['error'])) {
+      return new JsonResponse($result, 400);
     }
 
-    /**
-     * Conversación libre con el copiloto.
-     */
-    public function chat(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $producerId = (int) $this->currentUser()->id();
-        $message = $data['message'] ?? '';
-        $conversationId = $data['conversation_id'] ?? NULL;
+    return new JsonResponse($result);
+  }
 
-        if (!$message) {
-            return new JsonResponse(['error' => 'message es requerido'], 400);
-        }
+  /**
+   * Generar descripción SEO para un producto.
+   */
+  public function generateDescription(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $productId = (int) ($data['product_id'] ?? 0);
 
-        $result = $this->copilotService->chat($producerId, $message, $conversationId ? (int) $conversationId : NULL);
-
-        if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
-        }
-
-        return new JsonResponse($result);
+    if (!$productId) {
+      return new JsonResponse(['error' => 'product_id es requerido'], 400);
     }
 
-    /**
-     * Generar descripción SEO para un producto.
-     */
-    public function generateDescription(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $productId = (int) ($data['product_id'] ?? 0);
-
-        if (!$productId) {
-            return new JsonResponse(['error' => 'product_id es requerido'], 400);
-        }
-
-        // Verify product ownership.
-        $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
-        if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
-        }
-
-        $result = $this->copilotService->generateDescription($productId);
-
-        if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
-        }
-
-        return new JsonResponse($result);
+    // Verify product ownership.
+    $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
+    if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+      return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
     }
 
-    /**
-     * Sugerencia de precio.
-     */
-    public function suggestPrice(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $productId = (int) ($data['product_id'] ?? 0);
+    $result = $this->copilotService->generateDescription($productId);
 
-        if (!$productId) {
-            return new JsonResponse(['error' => 'product_id es requerido'], 400);
-        }
-
-        // Verify product ownership.
-        $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
-        if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
-        }
-
-        $result = $this->copilotService->suggestPrice($productId);
-
-        if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
-        }
-
-        return new JsonResponse($result);
+    if (isset($result['error'])) {
+      return new JsonResponse($result, 400);
     }
 
-    /**
-     * Borrador de respuesta a reseña.
-     */
-    public function reviewResponse(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $reviewId = (int) ($data['review_id'] ?? 0);
+    return new JsonResponse($result);
+  }
 
-        if (!$reviewId) {
-            return new JsonResponse(['error' => 'review_id es requerido'], 400);
-        }
+  /**
+   * Sugerencia de precio.
+   */
+  public function suggestPrice(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $productId = (int) ($data['product_id'] ?? 0);
 
-        // Verify review ownership via product owner.
-        $review = \Drupal::entityTypeManager()->getStorage('review_agro')->load($reviewId);
-        if ($review) {
-            $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($review->get('target_entity_id')->value);
-            if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
-                return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
-            }
-        }
-
-        $result = $this->copilotService->respondToReview($reviewId);
-
-        if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
-        }
-
-        return new JsonResponse($result);
+    if (!$productId) {
+      return new JsonResponse(['error' => 'product_id es requerido'], 400);
     }
 
-    /**
-     * Historial de conversaciones de un productor.
-     */
-    public function conversations(Request $request): JsonResponse
-    {
-        $producerId = (int) $this->currentUser()->id();
-        $limit = min((int) $request->query->get('limit', 20), 50);
-
-        $conversations = $this->copilotService->getConversations($producerId, $limit);
-
-        return new JsonResponse([
-            'conversations' => $conversations,
-            'total' => count($conversations),
-        ]);
+    // Verify product ownership.
+    $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
+    if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+      return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
     }
 
-    /**
-     * Mensajes de una conversación.
-     */
-    public function messages(int $conversation_id): JsonResponse
-    {
-        // Verify conversation ownership.
-        $conversation = \Drupal::entityTypeManager()->getStorage('copilot_conversation')->load($conversation_id);
-        if ($conversation && (int) ($conversation->get('producer_id')->value ?? $conversation->getOwnerId()) !== (int) $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Acceso denegado.'], 403);
-        }
+    $result = $this->copilotService->suggestPrice($productId);
 
-        $messages = $this->copilotService->getMessages($conversation_id);
-
-        return new JsonResponse([
-            'conversation_id' => $conversation_id,
-            'messages' => $messages,
-            'total' => count($messages),
-        ]);
+    if (isset($result['error'])) {
+      return new JsonResponse($result, 400);
     }
 
-    /**
-     * Predicción de demanda para un producto.
-     */
-    public function forecastDemand(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $productId = (int) ($data['product_id'] ?? 0);
-        $daysAhead = (int) ($data['days_ahead'] ?? 30);
+    return new JsonResponse($result);
+  }
 
-        if (!$productId) {
-            return new JsonResponse(['error' => 'product_id es requerido'], 400);
-        }
+  /**
+   * Borrador de respuesta a reseña.
+   */
+  public function reviewResponse(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $reviewId = (int) ($data['review_id'] ?? 0);
 
-        $daysAhead = min(max($daysAhead, 7), 90);
-
-        try {
-            $result = $this->demandForecaster->forecast($productId, $daysAhead);
-            return new JsonResponse(['success' => TRUE, 'data' => $result]);
-        }
-        catch (\Exception $e) {
-            \Drupal::logger('jaraba_agroconecta_core')->error('Demand forecast failed: @msg', ['@msg' => $e->getMessage()]);
-            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
-        }
+    if (!$reviewId) {
+      return new JsonResponse(['error' => 'review_id es requerido'], 400);
     }
 
-    /**
-     * Productos tendencia del marketplace.
-     */
-    public function trendingProducts(Request $request): JsonResponse
-    {
-        $limit = min((int) $request->query->get('limit', 10), 50);
-
-        try {
-            $result = $this->marketSpy->getTrendingProducts($limit);
-            return new JsonResponse(['success' => TRUE, 'data' => $result, 'total' => count($result)]);
-        }
-        catch (\Exception $e) {
-            \Drupal::logger('jaraba_agroconecta_core')->error('Trending products failed: @msg', ['@msg' => $e->getMessage()]);
-            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
-        }
+    // Verify review ownership via product owner.
+    $review = \Drupal::entityTypeManager()->getStorage('review_agro')->load($reviewId);
+    if ($review) {
+      $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($review->get('target_entity_id')->value);
+      if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+        return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
+      }
     }
 
-    /**
-     * Posición competitiva de un productor.
-     */
-    public function competitivePosition(Request $request): JsonResponse
-    {
-        $producerId = (int) $this->currentUser()->id();
+    $result = $this->copilotService->respondToReview($reviewId);
 
-        try {
-            $result = $this->marketSpy->getCompetitivePosition($producerId);
-            return new JsonResponse(['success' => TRUE, 'data' => $result]);
-        }
-        catch (\Exception $e) {
-            \Drupal::logger('jaraba_agroconecta_core')->error('Competitive position failed: @msg', ['@msg' => $e->getMessage()]);
-            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
-        }
+    if (isset($result['error'])) {
+      return new JsonResponse($result, 400);
     }
+
+    return new JsonResponse($result);
+  }
+
+  /**
+   * Historial de conversaciones de un productor.
+   */
+  public function conversations(Request $request): JsonResponse {
+    $producerId = (int) $this->currentUser()->id();
+    $limit = min((int) $request->query->get('limit', 20), 50);
+
+    $conversations = $this->copilotService->getConversations($producerId, $limit);
+
+    return new JsonResponse([
+      'conversations' => $conversations,
+      'total' => count($conversations),
+    ]);
+  }
+
+  /**
+   * Mensajes de una conversación.
+   */
+  public function messages(int $conversation_id): JsonResponse {
+    // Verify conversation ownership.
+    $conversation = \Drupal::entityTypeManager()->getStorage('copilot_conversation')->load($conversation_id);
+    if ($conversation && (int) ($conversation->get('producer_id')->value ?? $conversation->getOwnerId()) !== (int) $this->currentUser()->id()) {
+      return new JsonResponse(['error' => 'Acceso denegado.'], 403);
+    }
+
+    $messages = $this->copilotService->getMessages($conversation_id);
+
+    return new JsonResponse([
+      'conversation_id' => $conversation_id,
+      'messages' => $messages,
+      'total' => count($messages),
+    ]);
+  }
+
+  /**
+   * Predicción de demanda para un producto.
+   */
+  public function forecastDemand(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $productId = (int) ($data['product_id'] ?? 0);
+    $daysAhead = (int) ($data['days_ahead'] ?? 30);
+
+    if (!$productId) {
+      return new JsonResponse(['error' => 'product_id es requerido'], 400);
+    }
+
+    $daysAhead = min(max($daysAhead, 7), 90);
+
+    try {
+      $result = $this->demandForecaster->forecast($productId, $daysAhead);
+      return new JsonResponse(['success' => TRUE, 'data' => $result]);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_agroconecta_core')->error('Demand forecast failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
+    }
+  }
+
+  /**
+   * Productos tendencia del marketplace.
+   */
+  public function trendingProducts(Request $request): JsonResponse {
+    $limit = min((int) $request->query->get('limit', 10), 50);
+
+    try {
+      $result = $this->marketSpy->getTrendingProducts($limit);
+      return new JsonResponse(['success' => TRUE, 'data' => $result, 'total' => count($result)]);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_agroconecta_core')->error('Trending products failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
+    }
+  }
+
+  /**
+   * Posición competitiva de un productor.
+   */
+  public function competitivePosition(Request $request): JsonResponse {
+    $producerId = (int) $this->currentUser()->id();
+
+    try {
+      $result = $this->marketSpy->getCompetitivePosition($producerId);
+      return new JsonResponse(['success' => TRUE, 'data' => $result]);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_agroconecta_core')->error('Competitive position failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
+    }
+  }
+
 }

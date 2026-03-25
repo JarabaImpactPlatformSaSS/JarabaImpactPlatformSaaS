@@ -92,9 +92,14 @@ class HojaServicioMentoriaServiceTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConTodosLosServicios(): void {
     $brandedPdf = new class {
+
+      /**
+       *
+       */
       public function generateReport(array $data, ?int $tenantId = NULL): string {
         return 'private://reports/test.pdf';
       }
+
     };
 
     $service = new HojaServicioMentoriaService(
@@ -164,11 +169,15 @@ class HojaServicioMentoriaServiceTest extends UnitTestCase {
    */
   protected function createSessionMock(string $status, string $notes): object {
     return new class($status, $notes) {
+
       public function __construct(
         private readonly string $status,
         private readonly string $notes,
       ) {}
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $values = [
           'status' => $this->status,
@@ -200,19 +209,33 @@ class HojaServicioMentoriaServiceTest extends UnitTestCase {
             $this->entity = NULL;
           }
 
+          /**
+           *
+           */
           public function isEmpty(): bool {
             return $this->value === NULL || $this->value === '';
           }
+
         };
       }
 
+      /**
+       *
+       */
       public function id(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): void {}
 
+      /**
+       *
+       */
       public function save(): void {}
+
     };
   }
 

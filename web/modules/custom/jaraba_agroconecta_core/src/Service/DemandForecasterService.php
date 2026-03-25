@@ -23,18 +23,30 @@ class DemandForecasterService {
    * Enero-Diciembre. Navidad (diciembre) y verano (junio-agosto) son picos.
    */
   private const SEASONAL_WEIGHTS = [
-    1 => 0.80,  // Enero
-    2 => 0.85,  // Febrero
-    3 => 0.95,  // Marzo
-    4 => 1.00,  // Abril
-    5 => 1.10,  // Mayo
-    6 => 1.15,  // Junio
-    7 => 1.20,  // Julio
-    8 => 1.10,  // Agosto
-    9 => 1.00,  // Septiembre
-    10 => 0.95, // Octubre
-    11 => 0.90, // Noviembre
-    12 => 1.30, // Diciembre (Navidad)
+  // Enero.
+    1 => 0.80,
+  // Febrero.
+    2 => 0.85,
+  // Marzo.
+    3 => 0.95,
+  // Abril.
+    4 => 1.00,
+  // Mayo.
+    5 => 1.10,
+  // Junio.
+    6 => 1.15,
+  // Julio.
+    7 => 1.20,
+  // Agosto.
+    8 => 1.10,
+  // Septiembre.
+    9 => 1.00,
+  // Octubre.
+    10 => 0.95,
+  // Noviembre.
+    11 => 0.90,
+  // Diciembre (Navidad)
+    12 => 1.30,
   ];
 
   public function __construct(

@@ -41,135 +41,126 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class CandidateExperience extends ContentEntityBase implements CandidateExperienceInterface, EntityOwnerInterface, EntityChangedInterface
-{
+class CandidateExperience extends ContentEntityBase implements CandidateExperienceInterface, EntityOwnerInterface, EntityChangedInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCompanyName(): string
-    {
-        return $this->get('company_name')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getCompanyName(): string {
+    return $this->get('company_name')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJobTitle(): string
-    {
-        return $this->get('job_title')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getJobTitle(): string {
+    return $this->get('job_title')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartDate(): ?int
-    {
-        $value = $this->get('start_date')->value;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getStartDate(): ?int {
+    $value = $this->get('start_date')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEndDate(): ?int
-    {
-        $value = $this->get('end_date')->value;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getEndDate(): ?int {
+    $value = $this->get('end_date')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCurrent(): bool
-    {
-        return (bool) $this->get('is_current')->value;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function isCurrent(): bool {
+    return (bool) $this->get('is_current')->value;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return $this->get('description')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return $this->get('description')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLocation(): string
-    {
-        return $this->get('location')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLocation(): string {
+    return $this->get('location')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('User'))
-            ->setDescription(t('The candidate who has this experience.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'user')
-            ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -10]);
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('User'))
+      ->setDescription(t('The candidate who has this experience.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -10]);
 
-        $fields['profile_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Profile ID'))
-            ->setDescription(t('The candidate profile ID.'));
+    $fields['profile_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Profile ID'))
+      ->setDescription(t('The candidate profile ID.'));
 
-        $fields['company_name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Company Name'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -9]);
+    $fields['company_name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Company Name'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -9]);
 
-        $fields['job_title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Job Title'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -8]);
+    $fields['job_title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Job Title'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -8]);
 
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Description'))
-            ->setDescription(t('Description of responsibilities and achievements.'))
-            ->setDisplayOptions('form', ['type' => 'text_textarea', 'weight' => -5, 'settings' => ['rows' => 4]]);
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Description'))
+      ->setDescription(t('Description of responsibilities and achievements.'))
+      ->setDisplayOptions('form', ['type' => 'text_textarea', 'weight' => -5, 'settings' => ['rows' => 4]]);
 
-        $fields['location'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Location'))
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -4]);
+    $fields['location'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Location'))
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -4]);
 
-        $fields['start_date'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Start Date'))
-            ->setRequired(TRUE)
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -3]);
+    $fields['start_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Start Date'))
+      ->setRequired(TRUE)
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -3]);
 
-        $fields['end_date'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('End Date'))
-            ->setDescription(t('Leave empty if current position.'))
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -2]);
+    $fields['end_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('End Date'))
+      ->setDescription(t('Leave empty if current position.'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -2]);
 
-        $fields['is_current'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Is Current'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', ['type' => 'boolean_checkbox', 'weight' => -1]);
+    $fields['is_current'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Is Current'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', ['type' => 'boolean_checkbox', 'weight' => -1]);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Created'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Changed'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

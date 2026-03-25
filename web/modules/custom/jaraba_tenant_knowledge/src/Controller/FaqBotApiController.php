@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * Endpoints públicos sin autenticación con rate limiting:
  * - POST /api/v1/help/chat — Chat con el FAQ Bot
- * - POST /api/v1/help/chat/feedback — Feedback de respuestas
+ * - POST /api/v1/help/chat/feedback — Feedback de respuestas.
  *
  * Patrón basado en PublicCopilotController pero enfocado
  * en respuestas grounded en la KB del tenant.

@@ -8,7 +8,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\ClientInterface;
 
 /**
- * xAPI (Experience API) integration service.
+ * XAPI (Experience API) integration service.
  *
  * Envía y consulta statements xAPI a un Learning Record Store (LRS)
  * para tracking granular de actividades de aprendizaje.
@@ -16,7 +16,7 @@ use GuzzleHttp\ClientInterface;
 class XApiService {
 
   /**
-   * xAPI specification version.
+   * XAPI specification version.
    */
   private const XAPI_VERSION = '1.0.3';
 

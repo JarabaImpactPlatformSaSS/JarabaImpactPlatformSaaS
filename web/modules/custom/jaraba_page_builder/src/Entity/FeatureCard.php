@@ -59,135 +59,128 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.feature_card.settings",
  * )
  */
-class FeatureCard extends ContentEntityBase
-{
+class FeatureCard extends ContentEntityBase {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Título de la tarjeta (traducible).
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setDescription(t('Título de la característica'))
-            ->setRequired(TRUE)
-            ->setTranslatable(TRUE)
-            ->setSettings([
-                'max_length' => 100,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Título de la tarjeta (traducible).
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setDescription(t('Título de la característica'))
+      ->setRequired(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSettings([
+        'max_length' => 100,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Descripción (traducible).
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDescription(t('Descripción detallada de la característica'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Descripción (traducible).
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDescription(t('Descripción detallada de la característica'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Badge (etiqueta destacada).
-        $fields['badge'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Badge'))
-            ->setDescription(t('Etiqueta destacada (ej: "Nuevo", "Popular")'))
-            ->setSettings([
-                'max_length' => 50,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Badge (etiqueta destacada).
+    $fields['badge'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Badge'))
+      ->setDescription(t('Etiqueta destacada (ej: "Nuevo", "Popular")'))
+      ->setSettings([
+        'max_length' => 50,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Nombre del icono (jaraba_icon).
-        $fields['icon'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Icono'))
-            ->setDescription(t('Nombre del icono para jaraba_icon() - ej: "rocket", "users"'))
-            ->setSettings([
-                'max_length' => 100,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 3,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Nombre del icono (jaraba_icon).
+    $fields['icon'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Icono'))
+      ->setDescription(t('Nombre del icono para jaraba_icon() - ej: "rocket", "users"'))
+      ->setSettings([
+        'max_length' => 100,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Peso para ordenación.
-        $fields['weight'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Peso'))
-            ->setDescription(t('Orden de aparición (menor = primero)'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    // Peso para ordenación.
+    $fields['weight'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Peso'))
+      ->setDescription(t('Orden de aparición (menor = primero)'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // Timestamps.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'))
-            ->setDescription(t('Fecha de creación'));
+    // Timestamps.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'))
+      ->setDescription(t('Fecha de creación'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'))
-            ->setDescription(t('Fecha de última modificación'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'))
+      ->setDescription(t('Fecha de última modificación'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene el título de la tarjeta.
-     */
-    public function getTitle(): string
-    {
-        return $this->get('title')->value ?? '';
-    }
+  /**
+   * Obtiene el título de la tarjeta.
+   */
+  public function getTitle(): string {
+    return $this->get('title')->value ?? '';
+  }
 
-    /**
-     * Obtiene la descripción.
-     */
-    public function getDescription(): string
-    {
-        return $this->get('description')->value ?? '';
-    }
+  /**
+   * Obtiene la descripción.
+   */
+  public function getDescription(): string {
+    return $this->get('description')->value ?? '';
+  }
 
-    /**
-     * Obtiene el badge.
-     */
-    public function getBadge(): string
-    {
-        return $this->get('badge')->value ?? '';
-    }
+  /**
+   * Obtiene el badge.
+   */
+  public function getBadge(): string {
+    return $this->get('badge')->value ?? '';
+  }
 
-    /**
-     * Obtiene el nombre del icono.
-     */
-    public function getIcon(): string
-    {
-        return $this->get('icon')->value ?? '';
-    }
+  /**
+   * Obtiene el nombre del icono.
+   */
+  public function getIcon(): string {
+    return $this->get('icon')->value ?? '';
+  }
 
-    /**
-     * Obtiene el peso para ordenación.
-     */
-    public function getWeight(): int
-    {
-        return (int) $this->get('weight')->value;
-    }
+  /**
+   * Obtiene el peso para ordenación.
+   */
+  public function getWeight(): int {
+    return (int) $this->get('weight')->value;
+  }
 
 }

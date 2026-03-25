@@ -102,12 +102,16 @@ class AgentsApiController extends ControllerBase {
         $data[] = $this->serializeAgent($agent);
       }
 
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $data,
+        'meta' => [
           'total' => $total,
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -134,7 +138,9 @@ class AgentsApiController extends ControllerBase {
         ], 404);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeAgent($agent),
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeAgent($agent),
       ]);
     }
     catch (\Exception $e) {
@@ -292,11 +298,13 @@ class AgentsApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data, 'meta' => [
+        'data' => $data,
+        'meta' => [
           'total' => $total,
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -323,7 +331,9 @@ class AgentsApiController extends ControllerBase {
         ], 404);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeExecution($execution),
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeExecution($execution),
       ]);
     }
     catch (\Exception $e) {
@@ -370,11 +380,13 @@ class AgentsApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data, 'meta' => [
+        'data' => $data,
+        'meta' => [
           'total' => $total,
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([

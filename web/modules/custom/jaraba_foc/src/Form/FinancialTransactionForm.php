@@ -67,7 +67,7 @@ class FinancialTransactionForm extends PremiumEntityFormBase {
       '#weight' => -1001,
       'message' => [
         '#markup' => '<strong>' . $this->t('Immutability Notice') . ':</strong> '
-          . $this->t('Financial transactions are immutable. Once created, they cannot be edited or deleted. For corrections, register a compensating entry.'),
+        . $this->t('Financial transactions are immutable. Once created, they cannot be edited or deleted. For corrections, register a compensating entry.'),
       ],
     ];
 

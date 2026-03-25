@@ -29,6 +29,7 @@ class TenantExportCommands extends DrushCommands {
    * @aliases te-backup
    * @param int $tenantId
    *   The group/tenant ID to export.
+   *
    * @option sections Comma-separated list of sections to export.
    * @option type Export type: full, partial, or gdpr_portability.
    * @usage tenant-export:backup 42
@@ -51,7 +52,8 @@ class TenantExportCommands extends DrushCommands {
       : [];
 
     $type = $options['type'] ?: 'full';
-    $userId = 1; // Admin for CLI exports.
+    // Admin for CLI exports.
+    $userId = 1;
 
     // Look for tenant entity.
     $tenantEntityId = 0;

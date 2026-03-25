@@ -84,8 +84,10 @@ class CartRecoveryServiceTest extends TestCase {
 
   // =========================================================================
   // GENERATE DISCOUNT CODE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGenerateDiscountCodeFormat(): void {
     $code = $this->service->generateDiscountCode('VUELVE5', 5.0);
@@ -95,6 +97,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertGreaterThan(7, strlen($code), 'Discount code should be longer than just the prefix');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGenerateDiscountCodeUnique(): void {
     $code1 = $this->service->generateDiscountCode('TEST', 10.0);
@@ -105,8 +110,10 @@ class CartRecoveryServiceTest extends TestCase {
 
   // =========================================================================
   // RECOVERY MESSAGE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryMessageAt1Hour(): void {
     // Mock conversation query — return empty (no associated conversation).
@@ -129,6 +136,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertNotEmpty($result['message'], 'Message should have a body');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryMessageAt24Hours(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -148,6 +158,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertStringStartsWith('VUELVE5', $result['code'], '24h interval code should start with VUELVE5');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryMessageAt72Hours(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -167,6 +180,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertStringStartsWith('VUELVE10', $result['code'], '72h interval code should start with VUELVE10');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryMessageAt7Days(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -186,6 +202,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertStringStartsWith('ENVIOGRATIS', $result['code'], '7d interval code should start with ENVIOGRATIS');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryMessageReturnsStructure(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -216,8 +235,10 @@ class CartRecoveryServiceTest extends TestCase {
 
   // =========================================================================
   // RECOVERY STATS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryStatsReturnsStructure(): void {
     // We catch the Drupal::time() static call by wrapping in try/catch.
@@ -255,8 +276,10 @@ class CartRecoveryServiceTest extends TestCase {
 
   // =========================================================================
   // CONSTANT VALUES TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDiscountScheduleValues(): void {
     $reflection = new \ReflectionClass(CartRecoveryService::class);
@@ -275,6 +298,9 @@ class CartRecoveryServiceTest extends TestCase {
     $this->assertSame(10, $constant['7d'], '7d interval should have 10% discount');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRecoveryIntervalsValues(): void {
     $reflection = new \ReflectionClass(CartRecoveryService::class);

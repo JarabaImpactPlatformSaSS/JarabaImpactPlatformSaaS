@@ -17,58 +17,100 @@ class NuevoParticipanteAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'coordinador_ei.participante';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'coordinador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Nuevo participante');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Registrar un nuevo participante en el programa');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'users', 'name' => 'user-plus', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'azul-corporativo';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'entity.programa_participante_ei.add_form';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'large';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 20;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

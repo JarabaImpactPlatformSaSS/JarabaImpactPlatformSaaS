@@ -27,8 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @see \Drupal\jaraba_page_builder\Entity\PageContent
  */
-class PageConfigApiController extends ControllerBase
-{
+class PageConfigApiController extends ControllerBase {
 
   /**
    * Maneja la request (GET o PATCH).
@@ -41,8 +40,7 @@ class PageConfigApiController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Respuesta JSON con los metadatos de la página.
    */
-  public function handleRequest(int $id, Request $request): JsonResponse
-  {
+  public function handleRequest(int $id, Request $request): JsonResponse {
     $storage = $this->entityTypeManager()->getStorage('page_content');
     $page = $storage->load($id);
 
@@ -68,11 +66,10 @@ class PageConfigApiController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON con título, slug, meta SEO, estado, revisiones.
    */
-  protected function handleGet($page): JsonResponse
-  {
+  protected function handleGet($page): JsonResponse {
     $data = $this->buildPageConfigData($page);
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -86,8 +83,7 @@ class PageConfigApiController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON con los datos actualizados o errores de validación.
    */
-  protected function handlePatch($page, Request $request): JsonResponse
-  {
+  protected function handlePatch($page, Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
 
     if (empty($content)) {
@@ -163,13 +159,15 @@ class PageConfigApiController extends ControllerBase
       $page->set('revision_log', $this->t('Configuración actualizada desde el Canvas Editor.'));
       $page->set('revision_uid', \Drupal::currentUser()->id());
       $page->set('revision_timestamp', \Drupal::time()->getRequestTime());
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Si la revisión falla, continuar sin ella.
     }
 
     try {
       $page->save();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return new JsonResponse([
         'error' => $this->t('Error al guardar: @msg', ['@msg' => $e->getMessage()]),
       ], 500);
@@ -191,8 +189,7 @@ class PageConfigApiController extends ControllerBase
    * @return array
    *   Array con todos los metadatos para el panel de configuración.
    */
-  protected function buildPageConfigData($page): array
-  {
+  protected function buildPageConfigData($page): array {
     // Datos de la última revisión.
     $revisionUser = NULL;
     $revisionDate = NULL;
@@ -213,7 +210,8 @@ class PageConfigApiController extends ControllerBase
           'd/m/Y H:i'
         );
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Silenciar errores de revisión — no bloquear el panel.
     }
 
@@ -226,10 +224,10 @@ class PageConfigApiController extends ControllerBase
         ->count()
         ->accessCheck(FALSE)
         ->execute();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Silenciar.
     }
-
 
     // Datos de timestamps.
     $created = '';
@@ -251,7 +249,8 @@ class PageConfigApiController extends ControllerBase
           'd/m/Y H:i'
         );
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Silenciar.
     }
 

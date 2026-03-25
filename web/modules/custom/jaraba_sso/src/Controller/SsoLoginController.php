@@ -90,7 +90,7 @@ class SsoLoginController extends ControllerBase {
   /**
    * SAML Assertion Consumer Service (ACS).
    *
-   * POST /sso/acs
+   * POST /sso/acs.
    *
    * Receives the SAML Response from the IdP, validates it,
    * provisions or updates the user, and logs them in.
@@ -148,7 +148,7 @@ class SsoLoginController extends ControllerBase {
   /**
    * SAML Single Logout Service (SLS).
    *
-   * GET /sso/sls
+   * GET /sso/sls.
    *
    * Handles IdP-initiated or SP-initiated logout.
    */
@@ -185,7 +185,7 @@ class SsoLoginController extends ControllerBase {
   /**
    * OIDC Callback Handler.
    *
-   * GET /sso/oidc/callback
+   * GET /sso/oidc/callback.
    *
    * Handles the authorization code callback from the OIDC IdP.
    */

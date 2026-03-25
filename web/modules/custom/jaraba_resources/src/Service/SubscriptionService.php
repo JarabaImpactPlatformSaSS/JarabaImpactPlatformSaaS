@@ -14,354 +14,339 @@ use Psr\Log\LoggerInterface;
 /**
  * Service for managing user subscriptions.
  */
-class SubscriptionService
-{
+class SubscriptionService {
 
-    /**
-     * The entity type manager.
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
+  /**
+   * The entity type manager.
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
-    /**
-     * The current user.
-     */
-    protected AccountProxyInterface $currentUser;
+  /**
+   * The current user.
+   */
+  protected AccountProxyInterface $currentUser;
 
-    /**
-     * The logger.
-     */
-    protected LoggerInterface $logger;
+  /**
+   * The logger.
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * Constructs a new SubscriptionService.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entityTypeManager,
-        AccountProxyInterface $currentUser,
-        $loggerFactory
-    ) {
-        $this->entityTypeManager = $entityTypeManager;
-        $this->currentUser = $currentUser;
-        $this->logger = $loggerFactory->get('jaraba_resources');
+  /**
+   * Constructs a new SubscriptionService.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entityTypeManager,
+    AccountProxyInterface $currentUser,
+    $loggerFactory,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->currentUser = $currentUser;
+    $this->logger = $loggerFactory->get('jaraba_resources');
+  }
+
+  /**
+   * Gets the current user's active subscription.
+   */
+  public function getCurrentSubscription(?int $userId = NULL): ?UserSubscription {
+    $userId = $userId ?? $this->currentUser->id();
+
+    $storage = $this->entityTypeManager->getStorage('user_subscription');
+    $subscriptions = $storage->loadByProperties([
+      'user_id' => $userId,
+      'subscription_status' => [
+        UserSubscription::STATUS_ACTIVE,
+        UserSubscription::STATUS_TRIAL,
+      ],
+    ]);
+
+    return !empty($subscriptions) ? reset($subscriptions) : NULL;
+  }
+
+  /**
+   * Gets the user's current plan type.
+   */
+  public function getUserPlanType(?int $userId = NULL): string {
+    $subscription = $this->getCurrentSubscription($userId);
+
+    if (!$subscription) {
+      return MembershipPlan::TYPE_FREE;
     }
 
-    /**
-     * Gets the current user's active subscription.
-     */
-    public function getCurrentSubscription(?int $userId = NULL): ?UserSubscription
-    {
-        $userId = $userId ?? $this->currentUser->id();
+    $plan = $subscription->getPlan();
+    return $plan ? $plan->getPlanType() : MembershipPlan::TYPE_FREE;
+  }
 
-        $storage = $this->entityTypeManager->getStorage('user_subscription');
-        $subscriptions = $storage->loadByProperties([
-            'user_id' => $userId,
-            'subscription_status' => [
-                UserSubscription::STATUS_ACTIVE,
-                UserSubscription::STATUS_TRIAL,
-            ],
-        ]);
+  /**
+   * Checks if user can access a digital kit.
+   */
+  public function canAccessKit(DigitalKit $kit, ?int $userId = NULL): bool {
+    $requiredLevel = $kit->getAccessLevel();
 
-        return !empty($subscriptions) ? reset($subscriptions) : NULL;
+    // Free kits are always accessible.
+    if ($requiredLevel === DigitalKit::ACCESS_FREE) {
+      return TRUE;
     }
 
-    /**
-     * Gets the user's current plan type.
-     */
-    public function getUserPlanType(?int $userId = NULL): string
-    {
-        $subscription = $this->getCurrentSubscription($userId);
+    $userPlanType = $this->getUserPlanType($userId);
 
-        if (!$subscription) {
-            return MembershipPlan::TYPE_FREE;
-        }
+    $accessHierarchy = [
+      DigitalKit::ACCESS_FREE => 0,
+      DigitalKit::ACCESS_STARTER => 1,
+      DigitalKit::ACCESS_PROFESSIONAL => 2,
+      DigitalKit::ACCESS_ENTERPRISE => 3,
+    ];
 
-        $plan = $subscription->getPlan();
-        return $plan ? $plan->getPlanType() : MembershipPlan::TYPE_FREE;
+    $planHierarchy = [
+      MembershipPlan::TYPE_FREE => 0,
+      MembershipPlan::TYPE_STARTER => 1,
+      MembershipPlan::TYPE_PROFESSIONAL => 2,
+      MembershipPlan::TYPE_ENTERPRISE => 3,
+    ];
+
+    $required = $accessHierarchy[$requiredLevel] ?? 0;
+    $userLevel = $planHierarchy[$userPlanType] ?? 0;
+
+    return $userLevel >= $required;
+  }
+
+  /**
+   * Gets all available plans.
+   */
+  public function getAvailablePlans(): array {
+    $storage = $this->entityTypeManager->getStorage('membership_plan');
+
+    return $storage->loadByProperties([
+      'status' => 'active',
+    ]);
+  }
+
+  /**
+   * Creates a subscription for a user.
+   */
+  public function createSubscription(
+    int $userId,
+    int $planId,
+    ?string $stripeSubscriptionId = NULL,
+    ?string $stripeCustomerId = NULL,
+  ): UserSubscription {
+    // Check if user already has active subscription.
+    $existing = $this->getCurrentSubscription($userId);
+    if ($existing) {
+      throw new \RuntimeException('User already has an active subscription');
     }
 
-    /**
-     * Checks if user can access a digital kit.
-     */
-    public function canAccessKit(DigitalKit $kit, ?int $userId = NULL): bool
-    {
-        $requiredLevel = $kit->getAccessLevel();
-
-        // Free kits are always accessible.
-        if ($requiredLevel === DigitalKit::ACCESS_FREE) {
-            return TRUE;
-        }
-
-        $userPlanType = $this->getUserPlanType($userId);
-
-        $accessHierarchy = [
-            DigitalKit::ACCESS_FREE => 0,
-            DigitalKit::ACCESS_STARTER => 1,
-            DigitalKit::ACCESS_PROFESSIONAL => 2,
-            DigitalKit::ACCESS_ENTERPRISE => 3,
-        ];
-
-        $planHierarchy = [
-            MembershipPlan::TYPE_FREE => 0,
-            MembershipPlan::TYPE_STARTER => 1,
-            MembershipPlan::TYPE_PROFESSIONAL => 2,
-            MembershipPlan::TYPE_ENTERPRISE => 3,
-        ];
-
-        $required = $accessHierarchy[$requiredLevel] ?? 0;
-        $userLevel = $planHierarchy[$userPlanType] ?? 0;
-
-        return $userLevel >= $required;
+    // Load plan to get billing interval.
+    $plan = $this->entityTypeManager->getStorage('membership_plan')->load($planId);
+    if (!$plan) {
+      throw new \InvalidArgumentException('Plan not found');
     }
 
-    /**
-     * Gets all available plans.
-     */
-    public function getAvailablePlans(): array
-    {
-        $storage = $this->entityTypeManager->getStorage('membership_plan');
+    // Calculate period end.
+    $periodEnd = $this->calculatePeriodEnd($plan->getBillingInterval());
 
-        return $storage->loadByProperties([
-            'status' => 'active',
-        ]);
+    $subscription = UserSubscription::create([
+      'user_id' => $userId,
+      'plan_id' => $planId,
+      'subscription_status' => UserSubscription::STATUS_ACTIVE,
+      'stripe_subscription_id' => $stripeSubscriptionId,
+      'stripe_customer_id' => $stripeCustomerId,
+      'current_period_start' => date('Y-m-d\TH:i:s'),
+      'current_period_end' => $periodEnd,
+      'usage_reset_at' => date('Y-m-d\TH:i:s'),
+    ]);
+    $subscription->save();
+
+    $this->logger->info('Created subscription @id for user @uid to plan @plan', [
+      '@id' => $subscription->id(),
+      '@uid' => $userId,
+      '@plan' => $plan->getName(),
+    ]);
+
+    return $subscription;
+  }
+
+  /**
+   * Creates a trial subscription.
+   */
+  public function createTrialSubscription(int $userId, int $planId, int $trialDays = 14): UserSubscription {
+    $existing = $this->getCurrentSubscription($userId);
+    if ($existing) {
+      throw new \RuntimeException('User already has an active subscription');
     }
 
-    /**
-     * Creates a subscription for a user.
-     */
-    public function createSubscription(
-        int $userId,
-        int $planId,
-        ?string $stripeSubscriptionId = NULL,
-        ?string $stripeCustomerId = NULL
-    ): UserSubscription {
-        // Check if user already has active subscription.
-        $existing = $this->getCurrentSubscription($userId);
-        if ($existing) {
-            throw new \RuntimeException('User already has an active subscription');
-        }
+    $trialEnd = date('Y-m-d\TH:i:s', strtotime("+{$trialDays} days"));
 
-        // Load plan to get billing interval.
-        $plan = $this->entityTypeManager->getStorage('membership_plan')->load($planId);
-        if (!$plan) {
-            throw new \InvalidArgumentException('Plan not found');
-        }
+    $subscription = UserSubscription::create([
+      'user_id' => $userId,
+      'plan_id' => $planId,
+      'subscription_status' => UserSubscription::STATUS_TRIAL,
+      'current_period_start' => date('Y-m-d\TH:i:s'),
+      'current_period_end' => $trialEnd,
+      'trial_end' => $trialEnd,
+      'usage_reset_at' => date('Y-m-d\TH:i:s'),
+    ]);
+    $subscription->save();
 
-        // Calculate period end.
-        $periodEnd = $this->calculatePeriodEnd($plan->getBillingInterval());
+    $this->logger->info('Created trial subscription for user @uid', ['@uid' => $userId]);
 
-        $subscription = UserSubscription::create([
-            'user_id' => $userId,
-            'plan_id' => $planId,
-            'subscription_status' => UserSubscription::STATUS_ACTIVE,
-            'stripe_subscription_id' => $stripeSubscriptionId,
-            'stripe_customer_id' => $stripeCustomerId,
-            'current_period_start' => date('Y-m-d\TH:i:s'),
-            'current_period_end' => $periodEnd,
-            'usage_reset_at' => date('Y-m-d\TH:i:s'),
-        ]);
-        $subscription->save();
+    return $subscription;
+  }
 
-        $this->logger->info('Created subscription @id for user @uid to plan @plan', [
-            '@id' => $subscription->id(),
-            '@uid' => $userId,
-            '@plan' => $plan->getName(),
-        ]);
+  /**
+   * Cancels a subscription.
+   */
+  public function cancelSubscription(UserSubscription $subscription, bool $immediately = FALSE): void {
+    if ($immediately) {
+      $subscription->set('subscription_status', UserSubscription::STATUS_CANCELLED);
+    }
+    // Otherwise, let it expire at end of period.
+    $subscription->set('cancelled_at', date('Y-m-d\TH:i:s'));
+    $subscription->save();
 
-        return $subscription;
+    $this->logger->info('Cancelled subscription @id', ['@id' => $subscription->id()]);
+  }
+
+  /**
+   * Upgrades a subscription to a new plan.
+   */
+  public function upgradePlan(UserSubscription $subscription, int $newPlanId): void {
+    $oldPlan = $subscription->getPlan();
+    $newPlan = $this->entityTypeManager->getStorage('membership_plan')->load($newPlanId);
+
+    if (!$newPlan) {
+      throw new \InvalidArgumentException('Plan not found');
     }
 
-    /**
-     * Creates a trial subscription.
-     */
-    public function createTrialSubscription(int $userId, int $planId, int $trialDays = 14): UserSubscription
-    {
-        $existing = $this->getCurrentSubscription($userId);
-        if ($existing) {
-            throw new \RuntimeException('User already has an active subscription');
-        }
-
-        $trialEnd = date('Y-m-d\TH:i:s', strtotime("+{$trialDays} days"));
-
-        $subscription = UserSubscription::create([
-            'user_id' => $userId,
-            'plan_id' => $planId,
-            'subscription_status' => UserSubscription::STATUS_TRIAL,
-            'current_period_start' => date('Y-m-d\TH:i:s'),
-            'current_period_end' => $trialEnd,
-            'trial_end' => $trialEnd,
-            'usage_reset_at' => date('Y-m-d\TH:i:s'),
-        ]);
-        $subscription->save();
-
-        $this->logger->info('Created trial subscription for user @uid', ['@uid' => $userId]);
-
-        return $subscription;
+    if (!$newPlan->isHigherThan($oldPlan)) {
+      throw new \RuntimeException('Can only upgrade to a higher plan');
     }
 
-    /**
-     * Cancels a subscription.
-     */
-    public function cancelSubscription(UserSubscription $subscription, bool $immediately = FALSE): void
-    {
-        if ($immediately) {
-            $subscription->set('subscription_status', UserSubscription::STATUS_CANCELLED);
-        }
-        // Otherwise, let it expire at end of period.
+    $subscription->set('plan_id', $newPlanId);
+    $subscription->save();
 
-        $subscription->set('cancelled_at', date('Y-m-d\TH:i:s'));
-        $subscription->save();
+    $this->logger->info('Upgraded subscription @id from @old to @new', [
+      '@id' => $subscription->id(),
+      '@old' => $oldPlan->getName(),
+      '@new' => $newPlan->getName(),
+    ]);
+  }
 
-        $this->logger->info('Cancelled subscription @id', ['@id' => $subscription->id()]);
+  /**
+   * Renews a subscription for a new period.
+   */
+  public function renewSubscription(UserSubscription $subscription): void {
+    $plan = $subscription->getPlan();
+    if (!$plan) {
+      return;
     }
 
-    /**
-     * Upgrades a subscription to a new plan.
-     */
-    public function upgradePlan(UserSubscription $subscription, int $newPlanId): void
-    {
-        $oldPlan = $subscription->getPlan();
-        $newPlan = $this->entityTypeManager->getStorage('membership_plan')->load($newPlanId);
+    $periodEnd = $this->calculatePeriodEnd($plan->getBillingInterval());
 
-        if (!$newPlan) {
-            throw new \InvalidArgumentException('Plan not found');
-        }
+    $subscription->set('current_period_start', date('Y-m-d\TH:i:s'));
+    $subscription->set('current_period_end', $periodEnd);
+    $subscription->set('subscription_status', UserSubscription::STATUS_ACTIVE);
+    $subscription->resetMonthlyUsage();
+    $subscription->save();
 
-        if (!$newPlan->isHigherThan($oldPlan)) {
-            throw new \RuntimeException('Can only upgrade to a higher plan');
-        }
+    $this->logger->info('Renewed subscription @id', ['@id' => $subscription->id()]);
+  }
 
-        $subscription->set('plan_id', $newPlanId);
-        $subscription->save();
+  /**
+   * Checks and expires past-due subscriptions.
+   */
+  public function processExpiredSubscriptions(): int {
+    $storage = $this->entityTypeManager->getStorage('user_subscription');
 
-        $this->logger->info('Upgraded subscription @id from @old to @new', [
-            '@id' => $subscription->id(),
-            '@old' => $oldPlan->getName(),
-            '@new' => $newPlan->getName(),
-        ]);
+    $query = $storage->getQuery()
+      ->condition('subscription_status', [
+        UserSubscription::STATUS_ACTIVE,
+        UserSubscription::STATUS_TRIAL,
+      ], 'IN')
+      ->condition('current_period_end', date('Y-m-d\TH:i:s'), '<')
+      ->accessCheck(FALSE);
+
+    $ids = $query->execute();
+    $count = 0;
+
+    foreach ($storage->loadMultiple($ids) as $subscription) {
+      $subscription->set('subscription_status', UserSubscription::STATUS_EXPIRED);
+      $subscription->save();
+      $count++;
+
+      $this->logger->info('Expired subscription @id', ['@id' => $subscription->id()]);
     }
 
-    /**
-     * Renews a subscription for a new period.
-     */
-    public function renewSubscription(UserSubscription $subscription): void
-    {
-        $plan = $subscription->getPlan();
-        if (!$plan) {
-            return;
-        }
+    return $count;
+  }
 
-        $periodEnd = $this->calculatePeriodEnd($plan->getBillingInterval());
+  /**
+   * Resets monthly usage for all subscriptions.
+   */
+  public function resetMonthlyUsage(): int {
+    $storage = $this->entityTypeManager->getStorage('user_subscription');
 
-        $subscription->set('current_period_start', date('Y-m-d\TH:i:s'));
-        $subscription->set('current_period_end', $periodEnd);
-        $subscription->set('subscription_status', UserSubscription::STATUS_ACTIVE);
-        $subscription->resetMonthlyUsage();
-        $subscription->save();
+    // Find subscriptions that haven't been reset this month.
+    $firstOfMonth = date('Y-m-01\T00:00:00');
 
-        $this->logger->info('Renewed subscription @id', ['@id' => $subscription->id()]);
+    $query = $storage->getQuery()
+      ->condition('subscription_status', UserSubscription::STATUS_ACTIVE)
+      ->condition('usage_reset_at', $firstOfMonth, '<')
+      ->accessCheck(FALSE);
+
+    $ids = $query->execute();
+    $count = 0;
+
+    foreach ($storage->loadMultiple($ids) as $subscription) {
+      $subscription->resetMonthlyUsage();
+      $subscription->save();
+      $count++;
     }
 
-    /**
-     * Checks and expires past-due subscriptions.
-     */
-    public function processExpiredSubscriptions(): int
-    {
-        $storage = $this->entityTypeManager->getStorage('user_subscription');
+    return $count;
+  }
 
-        $query = $storage->getQuery()
-            ->condition('subscription_status', [
-                UserSubscription::STATUS_ACTIVE,
-                UserSubscription::STATUS_TRIAL,
-            ], 'IN')
-            ->condition('current_period_end', date('Y-m-d\TH:i:s'), '<')
-            ->accessCheck(FALSE);
-
-        $ids = $query->execute();
-        $count = 0;
-
-        foreach ($storage->loadMultiple($ids) as $subscription) {
-            $subscription->set('subscription_status', UserSubscription::STATUS_EXPIRED);
-            $subscription->save();
-            $count++;
-
-            $this->logger->info('Expired subscription @id', ['@id' => $subscription->id()]);
-        }
-
-        return $count;
-    }
-
-    /**
-     * Resets monthly usage for all subscriptions.
-     */
-    public function resetMonthlyUsage(): int
-    {
-        $storage = $this->entityTypeManager->getStorage('user_subscription');
-
-        // Find subscriptions that haven't been reset this month.
-        $firstOfMonth = date('Y-m-01\T00:00:00');
-
-        $query = $storage->getQuery()
-            ->condition('subscription_status', UserSubscription::STATUS_ACTIVE)
-            ->condition('usage_reset_at', $firstOfMonth, '<')
-            ->accessCheck(FALSE);
-
-        $ids = $query->execute();
-        $count = 0;
-
-        foreach ($storage->loadMultiple($ids) as $subscription) {
-            $subscription->resetMonthlyUsage();
-            $subscription->save();
-            $count++;
-        }
-
-        return $count;
-    }
-
-    /**
-     * Calculates period end based on billing interval.
-     */
-    protected function calculatePeriodEnd(string $interval): string
-    {
-        $modifier = match ($interval) {
-            MembershipPlan::INTERVAL_MONTHLY => '+1 month',
+  /**
+   * Calculates period end based on billing interval.
+   */
+  protected function calculatePeriodEnd(string $interval): string {
+    $modifier = match ($interval) {
+      MembershipPlan::INTERVAL_MONTHLY => '+1 month',
             MembershipPlan::INTERVAL_QUARTERLY => '+3 months',
             MembershipPlan::INTERVAL_YEARLY => '+1 year',
             MembershipPlan::INTERVAL_LIFETIME => '+100 years',
             default => '+1 month',
-        };
+    };
 
-        return date('Y-m-d\TH:i:s', strtotime($modifier));
+    return date('Y-m-d\TH:i:s', strtotime($modifier));
+  }
+
+  /**
+   * Gets user's remaining mentoring sessions.
+   */
+  public function getRemainingMentoringSessions(?int $userId = NULL): int {
+    $subscription = $this->getCurrentSubscription($userId);
+
+    if (!$subscription) {
+      return 0;
     }
 
-    /**
-     * Gets user's remaining mentoring sessions.
-     */
-    public function getRemainingMentoringSessions(?int $userId = NULL): int
-    {
-        $subscription = $this->getCurrentSubscription($userId);
+    return $subscription->getRemainingMentoringSessions();
+  }
 
-        if (!$subscription) {
-            return 0;
-        }
+  /**
+   * Uses one mentoring session from the user's quota.
+   */
+  public function useMentoringSession(?int $userId = NULL): bool {
+    $subscription = $this->getCurrentSubscription($userId);
 
-        return $subscription->getRemainingMentoringSessions();
+    if (!$subscription || $subscription->getRemainingMentoringSessions() <= 0) {
+      return FALSE;
     }
 
-    /**
-     * Uses one mentoring session from the user's quota.
-     */
-    public function useMentoringSession(?int $userId = NULL): bool
-    {
-        $subscription = $this->getCurrentSubscription($userId);
+    $subscription->useMentoringSession();
+    $subscription->save();
 
-        if (!$subscription || $subscription->getRemainingMentoringSessions() <= 0) {
-            return FALSE;
-        }
-
-        $subscription->useMentoringSession();
-        $subscription->save();
-
-        return TRUE;
-    }
+    return TRUE;
+  }
 
 }

@@ -8,9 +8,11 @@ namespace {
      * Dummy SoapFault for environments without ext-soap.
      */
     class SoapFault extends \Exception {
+
       public function __construct($code, $message) {
         parent::__construct($message);
       }
+
     }
   }
 }

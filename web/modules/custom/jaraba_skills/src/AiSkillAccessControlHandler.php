@@ -13,38 +13,36 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para entidades AiSkill.
  */
-class AiSkillAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class AiSkillAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'view ai skills');
-
-            case 'update':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'manage ai skills');
-
-            default:
-                return parent::checkAccess($entity, $operation, $account);
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'view ai skills');
+
+      case 'update':
+      case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'manage ai skills');
+
+      default:
+        return parent::checkAccess($entity, $operation, $account);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'manage ai skills');
+  }
 
 }

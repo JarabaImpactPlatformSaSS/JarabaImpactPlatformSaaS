@@ -48,11 +48,16 @@ class NIFValidationServiceTest extends UnitTestCase {
    */
   public static function validNifProvider(): array {
     return [
-      'NIF 00000000T' => ['00000000T'], // 0 % 23 = 0 -> T
-      'NIF 00000001R' => ['00000001R'], // 1 % 23 = 1 -> R
-      'NIF 12345678Z' => ['12345678Z'], // 12345678 % 23 = 14 -> Z
-      'NIF 99999999R' => ['99999999R'], // 99999999 % 23 = 1 -> R
-      'NIF 50000000R' => ['50000000R'], // 50000000 % 23 = 1 -> R
+    // 0 % 23 = 0 -> T
+      'NIF 00000000T' => ['00000000T'],
+    // 1 % 23 = 1 -> R
+      'NIF 00000001R' => ['00000001R'],
+    // 12345678 % 23 = 14 -> Z
+      'NIF 12345678Z' => ['12345678Z'],
+    // 99999999 % 23 = 1 -> R
+      'NIF 99999999R' => ['99999999R'],
+    // 50000000 % 23 = 1 -> R
+      'NIF 50000000R' => ['50000000R'],
     ];
   }
 
@@ -100,11 +105,11 @@ class NIFValidationServiceTest extends UnitTestCase {
    */
   public static function validNieProvider(): array {
     return [
-      // X0000000T: 00000000 % 23 = 0 -> T
+      // X0000000T: 00000000 % 23 = 0 -> T.
       'NIE X0000000T' => ['X0000000T'],
       // Y0000000Z: 10000000 % 23 = 18 -> Z  (10000000 mod 23 = 10000000 - 434782*23 = 10000000 - 9999986 = 14 -> Z)
       'NIE Y0000000Z' => ['Y0000000Z'],
-      // Z0000000M: 20000000 % 23 = 20000000 - 869565*23 = 20000000 - 19999995 = 5 -> M
+      // Z0000000M: 20000000 % 23 = 20000000 - 869565*23 = 20000000 - 19999995 = 5 -> M.
       'NIE Z0000000M' => ['Z0000000M'],
       // X1234567L: 01234567 % 23 = 1234567 - 53676*23 = 1234567 - 1234548 = 19 -> L  (Hmm let me compute: 1234567/23 = 53676.8... -> 53676*23 = 1234548. 1234567-1234548=19 -> L)
       'NIE X1234567L' => ['X1234567L'],
@@ -176,8 +181,7 @@ class NIFValidationServiceTest extends UnitTestCase {
     // Pos7 (odd): 0*2=0 -> 0
     // sumOdd=1+9+0+0=10, sumEven=8+0+0=8, total=18
     // Control = (10-18%10)%10 = (10-8)%10 = 2 -> digit '2'
-    // A type requires digit control -> A58900002
-
+    // A type requires digit control -> A58900002.
     return [
       'CIF B00000000 (all zeros, digit ctrl)' => ['B00000000'],
       'CIF A58900002 (digit ctrl)' => ['A58900002'],

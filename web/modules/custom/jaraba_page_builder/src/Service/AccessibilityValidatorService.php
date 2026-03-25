@@ -35,7 +35,7 @@ class AccessibilityValidatorService {
    * - selector: CSS selector para encontrar el elemento
    * - attribute: Atributo ARIA requerido
    * - level: 'A' o 'AA' segun WCAG
-   * - message: Descripcion del problema
+   * - message: Descripcion del problema.
    */
   protected const ARIA_RULES = [
     // Reglas globales para todos los bloques.

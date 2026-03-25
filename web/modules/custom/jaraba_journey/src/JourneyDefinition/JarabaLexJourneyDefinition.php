@@ -12,7 +12,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * Define 3 avatares con sus recorridos:
  * - profesional_juridico: Abogado/asesor que busca jurisprudencia
  * - gestor_fiscal: Profesional tributario enfocado en DGT/TEAC
- * - investigador_legal: Academico o investigador juridico
+ * - investigador_legal: Academico o investigador juridico.
  *
  * Cada avatar tiene 4 estados: discovery, activation, engagement, conversion.
  *

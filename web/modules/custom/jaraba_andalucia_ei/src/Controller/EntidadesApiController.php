@@ -150,7 +150,7 @@ class EntidadesApiController extends ControllerBase {
    * Lista actuaciones STO filtradas por tenant.
    *
    * GET /api/v1/andalucia-ei/actuaciones
-   * Query params: ?participante_id, ?tipo_actuacion, ?page, ?limit
+   * Query params: ?participante_id, ?tipo_actuacion, ?page, ?limit.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La peticion HTTP.
@@ -269,7 +269,7 @@ class EntidadesApiController extends ControllerBase {
    * Lista indicadores FSE+ filtrados por tenant.
    *
    * GET /api/v1/andalucia-ei/indicadores-fse
-   * Query params: ?participante_id, ?momento
+   * Query params: ?participante_id, ?momento.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La peticion HTTP.
@@ -386,7 +386,7 @@ class EntidadesApiController extends ControllerBase {
    * Lista inserciones laborales filtradas por tenant.
    *
    * GET /api/v1/andalucia-ei/inserciones
-   * Query params: ?participante_id, ?tipo, ?page, ?limit
+   * Query params: ?participante_id, ?tipo, ?page, ?limit.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La peticion HTTP.
@@ -503,7 +503,7 @@ class EntidadesApiController extends ControllerBase {
    * Lista prospecciones empresariales filtradas por tenant.
    *
    * GET /api/v1/andalucia-ei/prospecciones
-   * Query params: ?estado, ?page, ?limit
+   * Query params: ?estado, ?page, ?limit.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La peticion HTTP.

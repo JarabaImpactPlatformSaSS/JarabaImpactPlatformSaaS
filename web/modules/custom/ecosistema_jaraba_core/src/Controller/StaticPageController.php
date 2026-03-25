@@ -155,6 +155,7 @@ class StaticPageController extends ControllerBase {
       ],
     ];
   }
+
   /**
    * Renders the /acuerdo-procesamiento-datos (DPA) page.
    *

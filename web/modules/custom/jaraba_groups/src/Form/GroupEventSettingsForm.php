@@ -10,33 +10,29 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Settings form for Group Event Field UI.
  */
-class GroupEventSettingsForm extends FormBase
-{
+class GroupEventSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'group_event_settings';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'group_event_settings';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['info'] = [
-            '#markup' => '<p>' . $this->t('Configuración de campos para Eventos de Grupo.') . '</p>',
-        ];
-        return $form;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['info'] = [
+      '#markup' => '<p>' . $this->t('Configuración de campos para Eventos de Grupo.') . '</p>',
+    ];
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  }
 
 }

@@ -26,18 +26,18 @@ class NegotiationProtocolService {
    */
   public function initiateSession(string $initiatorDid, string $targetDid, array $initialOffer): string {
     // 1. Validar identidades (en un sistema real, resolveríamos el DID Document).
-    
     // 2. Crear sesión.
     $session = $this->entityTypeManager->getStorage('negotiation_session')->create([
       'initiator_did' => $initiatorDid,
       'responder_did' => $targetDid,
       'status' => 'active',
-      'ledger' => json_encode([]), // Historial vacío.
+    // Historial vacío.
+      'ledger' => json_encode([]),
     ]);
-    
+
     // 3. Registrar primera oferta firmada.
     $this->recordStep($session, $initiatorDid, 'OFFER', $initialOffer);
-    
+
     $session->save();
     return $session->id();
   }
@@ -62,14 +62,15 @@ class NegotiationProtocolService {
     // 3. Actualizar ledger (Append-only log).
     $ledger = json_decode($session->get('ledger')->value, TRUE) ?? [];
     $ledger[] = $message;
-    
+
     $session->set('ledger', json_encode($ledger));
-    
+
     // 4. Actualizar estado si es terminal.
     if ($action === 'ACCEPT') {
       $session->set('status', 'closed_won');
       // Aquí se dispararía el Smart Contract / Pago.
-    } elseif ($action === 'REJECT') {
+    }
+    elseif ($action === 'REJECT') {
       $session->set('status', 'closed_lost');
     }
   }

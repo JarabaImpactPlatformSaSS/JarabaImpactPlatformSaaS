@@ -32,6 +32,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  */
 class NegotiationSession extends ContentEntityBase {
 
+  /**
+   *
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 

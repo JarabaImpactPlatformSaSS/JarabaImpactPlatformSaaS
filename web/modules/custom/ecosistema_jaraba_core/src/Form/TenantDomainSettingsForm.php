@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Site\Settings;
-use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Trait\TenantFormHeroPremiumTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -83,9 +82,9 @@ class TenantDomainSettingsForm extends FormBase {
 
     $form['current_section']['current_url'] = [
       '#markup' => '<div class="tenant-form__code-block">'
-        . '<code>' . $cnameTarget . '</code>'
-        . '</div>'
-        . '<p class="domain-guide__hint">' . $this->t('Esta es la URL por defecto de tu metasitio. Puedes conectar tu propio dominio para una experiencia profesional.') . '</p>',
+      . '<code>' . $cnameTarget . '</code>'
+      . '</div>'
+      . '<p class="domain-guide__hint">' . $this->t('Esta es la URL por defecto de tu metasitio. Puedes conectar tu propio dominio para una experiencia profesional.') . '</p>',
     ];
 
     // ── Section 2: Custom domain input ──────────────────────────────────────
@@ -114,18 +113,18 @@ class TenantDomainSettingsForm extends FormBase {
 
     $form['dns_guide']['section_title'] = [
       '#markup' => '<h3 class="tenant-form__section-title">' . $this->t('Guia de configuracion DNS') . '</h3>'
-        . '<p class="domain-guide__intro">' . $this->t('Sigue estos pasos para conectar tu dominio. El proceso es sencillo y lo tendras listo en minutos.') . '</p>',
+      . '<p class="domain-guide__intro">' . $this->t('Sigue estos pasos para conectar tu dominio. El proceso es sencillo y lo tendras listo en minutos.') . '</p>',
     ];
 
     // Step 1: Enter domain.
     $form['dns_guide']['step1'] = [
       '#markup' => '<div class="domain-guide__step">'
-        . '<div class="domain-guide__step-number">1</div>'
-        . '<div class="domain-guide__step-content">'
-        .   '<h4 class="domain-guide__step-title">' . $this->t('Introduce tu dominio arriba') . '</h4>'
-        .   '<p class="domain-guide__step-text">' . $this->t('Escribe el dominio que quieres conectar (ej: miempresa.com) y pulsa Guardar.') . '</p>'
-        . '</div>'
-        . '</div>',
+      . '<div class="domain-guide__step-number">1</div>'
+      . '<div class="domain-guide__step-content">'
+      . '<h4 class="domain-guide__step-title">' . $this->t('Introduce tu dominio arriba') . '</h4>'
+      . '<p class="domain-guide__step-text">' . $this->t('Escribe el dominio que quieres conectar (ej: miempresa.com) y pulsa Guardar.') . '</p>'
+      . '</div>'
+      . '</div>',
     ];
 
     // Step 2: CNAME record — the key piece.
@@ -135,34 +134,34 @@ class TenantDomainSettingsForm extends FormBase {
         '<div class="domain-guide__step">'
         . '<div class="domain-guide__step-number">2</div>'
         . '<div class="domain-guide__step-content">'
-        .   '<h4 class="domain-guide__step-title">' . $this->t('Crea un registro CNAME en tu proveedor DNS') . '</h4>'
-        .   '<p class="domain-guide__step-text">' . $this->t('Accede al panel de tu proveedor de dominios y crea el siguiente registro:') . '</p>'
-        .   '<div class="domain-guide__record">'
-        .     '<div class="domain-guide__record-row">'
-        .       '<span class="domain-guide__record-label">' . $this->t('Tipo') . '</span>'
-        .       '<span class="domain-guide__record-value">CNAME</span>'
-        .     '</div>'
-        .     '<div class="domain-guide__record-row">'
-        .       '<span class="domain-guide__record-label">' . $this->t('Nombre / Host') . '</span>'
-        .       '<span class="domain-guide__record-value">www</span>'
-        .     '</div>'
-        .     '<div class="domain-guide__record-row">'
-        .       '<span class="domain-guide__record-label">' . $this->t('Valor / Apunta a') . '</span>'
-        .       '<span class="domain-guide__record-value domain-guide__record-value--cname" data-domain-cname>'
-        .         $cnameTarget
-        .       '</span>'
-        .       '<button type="button" class="domain-guide__copy-btn" data-domain-copy="' . $cnameTarget . '" aria-label="' . $this->t('Copiar valor CNAME') . '">'
-        .         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
-        .       '</button>'
-        .     '</div>'
-        .     '<div class="domain-guide__record-row">'
-        .       '<span class="domain-guide__record-label">TTL</span>'
-        .       '<span class="domain-guide__record-value">3600 <span class="domain-guide__record-hint">(' . $this->t('o automatico') . ')</span></span>'
-        .     '</div>'
-        .   '</div>'
-        .   '<p class="domain-guide__tip">'
-        .     $this->t('Si quieres usar el dominio raiz (miempresa.com sin www), algunos proveedores soportan CNAME flattening o registros ALIAS. Consulta la guia de tu proveedor mas abajo.')
-        .   '</p>'
+        . '<h4 class="domain-guide__step-title">' . $this->t('Crea un registro CNAME en tu proveedor DNS') . '</h4>'
+        . '<p class="domain-guide__step-text">' . $this->t('Accede al panel de tu proveedor de dominios y crea el siguiente registro:') . '</p>'
+        . '<div class="domain-guide__record">'
+        . '<div class="domain-guide__record-row">'
+        . '<span class="domain-guide__record-label">' . $this->t('Tipo') . '</span>'
+        . '<span class="domain-guide__record-value">CNAME</span>'
+        . '</div>'
+        . '<div class="domain-guide__record-row">'
+        . '<span class="domain-guide__record-label">' . $this->t('Nombre / Host') . '</span>'
+        . '<span class="domain-guide__record-value">www</span>'
+        . '</div>'
+        . '<div class="domain-guide__record-row">'
+        . '<span class="domain-guide__record-label">' . $this->t('Valor / Apunta a') . '</span>'
+        . '<span class="domain-guide__record-value domain-guide__record-value--cname" data-domain-cname>'
+        . $cnameTarget
+        . '</span>'
+        . '<button type="button" class="domain-guide__copy-btn" data-domain-copy="' . $cnameTarget . '" aria-label="' . $this->t('Copiar valor CNAME') . '">'
+        . '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+        . '</button>'
+        . '</div>'
+        . '<div class="domain-guide__record-row">'
+        . '<span class="domain-guide__record-label">TTL</span>'
+        . '<span class="domain-guide__record-value">3600 <span class="domain-guide__record-hint">(' . $this->t('o automatico') . ')</span></span>'
+        . '</div>'
+        . '</div>'
+        . '<p class="domain-guide__tip">'
+        . $this->t('Si quieres usar el dominio raiz (miempresa.com sin www), algunos proveedores soportan CNAME flattening o registros ALIAS. Consulta la guia de tu proveedor mas abajo.')
+        . '</p>'
         . '</div>'
         . '</div>'
       ),
@@ -171,23 +170,23 @@ class TenantDomainSettingsForm extends FormBase {
     // Step 3: Wait propagation.
     $form['dns_guide']['step3'] = [
       '#markup' => '<div class="domain-guide__step">'
-        . '<div class="domain-guide__step-number">3</div>'
-        . '<div class="domain-guide__step-content">'
-        .   '<h4 class="domain-guide__step-title">' . $this->t('Espera la propagacion DNS') . '</h4>'
-        .   '<p class="domain-guide__step-text">' . $this->t('Los cambios DNS pueden tardar entre 5 minutos y 48 horas en propagarse, aunque normalmente es menos de 1 hora. Puedes verificar el estado en cualquier momento.') . '</p>'
-        . '</div>'
-        . '</div>',
+      . '<div class="domain-guide__step-number">3</div>'
+      . '<div class="domain-guide__step-content">'
+      . '<h4 class="domain-guide__step-title">' . $this->t('Espera la propagacion DNS') . '</h4>'
+      . '<p class="domain-guide__step-text">' . $this->t('Los cambios DNS pueden tardar entre 5 minutos y 48 horas en propagarse, aunque normalmente es menos de 1 hora. Puedes verificar el estado en cualquier momento.') . '</p>'
+      . '</div>'
+      . '</div>',
     ];
 
     // Step 4: Verify.
     $form['dns_guide']['step4'] = [
       '#markup' => '<div class="domain-guide__step">'
-        . '<div class="domain-guide__step-number">4</div>'
-        . '<div class="domain-guide__step-content">'
-        .   '<h4 class="domain-guide__step-title">' . $this->t('Verifica y activa') . '</h4>'
-        .   '<p class="domain-guide__step-text">' . $this->t('Pulsa el boton "Verificar DNS" de abajo. Si la configuracion es correcta, tu dominio se activara y el certificado SSL se generara automaticamente.') . '</p>'
-        . '</div>'
-        . '</div>',
+      . '<div class="domain-guide__step-number">4</div>'
+      . '<div class="domain-guide__step-content">'
+      . '<h4 class="domain-guide__step-title">' . $this->t('Verifica y activa') . '</h4>'
+      . '<p class="domain-guide__step-text">' . $this->t('Pulsa el boton "Verificar DNS" de abajo. Si la configuracion es correcta, tu dominio se activara y el certificado SSL se generara automaticamente.') . '</p>'
+      . '</div>'
+      . '</div>',
     ];
 
     // ── Section 4: Provider-specific guides ─────────────────────────────────
@@ -198,7 +197,7 @@ class TenantDomainSettingsForm extends FormBase {
 
     $form['providers']['section_title'] = [
       '#markup' => '<h3 class="tenant-form__section-title">' . $this->t('Guias por proveedor') . '</h3>'
-        . '<p class="domain-guide__intro">' . $this->t('Selecciona tu proveedor de dominios para ver instrucciones paso a paso.') . '</p>',
+      . '<p class="domain-guide__intro">' . $this->t('Selecciona tu proveedor de dominios para ver instrucciones paso a paso.') . '</p>',
     ];
 
     $providers = $this->getProviderGuides($cnameTarget);
@@ -206,11 +205,11 @@ class TenantDomainSettingsForm extends FormBase {
     foreach ($providers as $id => $provider) {
       $providerMarkup .= '<div class="domain-guide__provider" data-domain-provider="' . $id . '">'
         . '<button type="button" class="domain-guide__provider-header" data-domain-provider-toggle="' . $id . '" aria-expanded="false" aria-controls="provider-' . $id . '">'
-        .   '<span class="domain-guide__provider-name">' . $provider['name'] . '</span>'
-        .   '<svg class="domain-guide__provider-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
+        . '<span class="domain-guide__provider-name">' . $provider['name'] . '</span>'
+        . '<svg class="domain-guide__provider-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
         . '</button>'
         . '<div class="domain-guide__provider-body" id="provider-' . $id . '" hidden>'
-        .   '<ol class="domain-guide__provider-steps">';
+        . '<ol class="domain-guide__provider-steps">';
       foreach ($provider['steps'] as $step) {
         $providerMarkup .= '<li>' . $step . '</li>';
       }
@@ -246,11 +245,11 @@ class TenantDomainSettingsForm extends FormBase {
           '#markup' => Markup::create(
             '<div class="domain-guide__status domain-guide__status--verified">'
             . '<div class="domain-guide__status-icon">'
-            .   '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+            . '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
             . '</div>'
             . '<div class="domain-guide__status-text">'
-            .   '<strong>' . $this->t('Dominio verificado') . '</strong>'
-            .   '<p>' . $this->t('Tu dominio @domain esta activo y funcionando. El certificado SSL esta configurado.', ['@domain' => $currentDomain]) . '</p>'
+            . '<strong>' . $this->t('Dominio verificado') . '</strong>'
+            . '<p>' . $this->t('Tu dominio @domain esta activo y funcionando. El certificado SSL esta configurado.', ['@domain' => $currentDomain]) . '</p>'
             . '</div>'
             . '</div>'
           ),
@@ -261,11 +260,11 @@ class TenantDomainSettingsForm extends FormBase {
           '#markup' => Markup::create(
             '<div class="domain-guide__status domain-guide__status--pending">'
             . '<div class="domain-guide__status-icon">'
-            .   '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+            . '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
             . '</div>'
             . '<div class="domain-guide__status-text">'
-            .   '<strong>' . $this->t('Pendiente de verificacion') . '</strong>'
-            .   '<p>' . $this->t('Configura el registro CNAME de @domain apuntando a @target y luego verifica.', ['@domain' => $currentDomain, '@target' => $cnameTarget]) . '</p>'
+            . '<strong>' . $this->t('Pendiente de verificacion') . '</strong>'
+            . '<p>' . $this->t('Configura el registro CNAME de @domain apuntando a @target y luego verifica.', ['@domain' => $currentDomain, '@target' => $cnameTarget]) . '</p>'
             . '</div>'
             . '</div>'
           ),
@@ -278,11 +277,11 @@ class TenantDomainSettingsForm extends FormBase {
         '#markup' => Markup::create(
           '<div class="domain-guide__status domain-guide__status--empty">'
           . '<div class="domain-guide__status-icon">'
-          .   '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+          . '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
           . '</div>'
           . '<div class="domain-guide__status-text">'
-          .   '<strong>' . $this->t('Sin dominio configurado') . '</strong>'
-          .   '<p>' . $this->t('Introduce tu dominio arriba y sigue la guia de configuracion DNS.') . '</p>'
+          . '<strong>' . $this->t('Sin dominio configurado') . '</strong>'
+          . '<p>' . $this->t('Introduce tu dominio arriba y sigue la guia de configuracion DNS.') . '</p>'
           . '</div>'
           . '</div>'
         ),
@@ -304,11 +303,11 @@ class TenantDomainSettingsForm extends FormBase {
     foreach ($faqs as $index => $faq) {
       $faqMarkup .= '<div class="domain-guide__faq">'
         . '<button type="button" class="domain-guide__faq-question" data-domain-faq-toggle="' . $index . '" aria-expanded="false" aria-controls="faq-' . $index . '">'
-        .   '<span>' . $faq['q'] . '</span>'
-        .   '<svg class="domain-guide__faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
+        . '<span>' . $faq['q'] . '</span>'
+        . '<svg class="domain-guide__faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
         . '</button>'
         . '<div class="domain-guide__faq-answer" id="faq-' . $index . '" hidden>'
-        .   '<p>' . $faq['a'] . '</p>'
+        . '<p>' . $faq['a'] . '</p>'
         . '</div>'
         . '</div>';
     }

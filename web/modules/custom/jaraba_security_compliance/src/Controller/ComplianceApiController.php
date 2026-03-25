@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * Endpoints:
  * - GET /api/v1/security/compliance/status
- * - GET /api/v1/security/policies
+ * - GET /api/v1/security/policies.
  */
 class ComplianceApiController extends ControllerBase {
 
@@ -106,7 +106,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Returns the compliance status for all frameworks.
    *
-   * GET /api/v1/security/compliance/status
+   * GET /api/v1/security/compliance/status.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request. Optional query param: tenant_id.
@@ -145,7 +145,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Returns active security policies.
    *
-   * GET /api/v1/security/policies
+   * GET /api/v1/security/policies.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request. Optional query param: tenant_id.
@@ -190,7 +190,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Returns the ISO 27001 risk register.
    *
-   * GET /api/v1/compliance/risk-register
+   * GET /api/v1/compliance/risk-register.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
@@ -233,7 +233,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Creates or updates a risk assessment.
    *
-   * POST /api/v1/compliance/risk-assessment
+   * POST /api/v1/compliance/risk-assessment.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request with JSON body.
@@ -316,7 +316,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Returns ENS measures status.
    *
-   * GET /api/v1/compliance/ens/measures
+   * GET /api/v1/compliance/ens/measures.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
@@ -360,7 +360,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Seeds default ENS measures for a tenant.
    *
-   * POST /api/v1/compliance/ens/seed
+   * POST /api/v1/compliance/ens/seed.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.
@@ -402,7 +402,7 @@ class ComplianceApiController extends ControllerBase {
   /**
    * Returns SOC 2 control mapping.
    *
-   * GET /api/v1/compliance/soc2/controls
+   * GET /api/v1/compliance/soc2/controls.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The HTTP request.

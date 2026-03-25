@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_referral\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_referral\Service\ReferralTrackingService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -294,9 +294,9 @@ class ReferralTrackingServiceTest extends UnitTestCase {
     $this->assertEquals(50, $stats['total_signups']);
     $this->assertEquals(15, $stats['total_conversions']);
     $this->assertEquals(1500.00, $stats['total_revenue']);
-    // click_to_signup_rate = (50/300)*100 = 16.7
+    // click_to_signup_rate = (50/300)*100 = 16.7.
     $this->assertEquals(16.7, $stats['click_to_signup_rate']);
-    // signup_to_conversion_rate = (15/50)*100 = 30.0
+    // signup_to_conversion_rate = (15/50)*100 = 30.0.
     $this->assertEquals(30.0, $stats['signup_to_conversion_rate']);
   }
 
@@ -316,7 +316,7 @@ class ReferralTrackingServiceTest extends UnitTestCase {
    *   Mock de la entidad.
    */
   protected function createActiveCodeEntity(int $clicks, int $signups, int $conversions, float $revenue): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     $isActiveField = new \stdClass();
     $isActiveField->value = TRUE;
@@ -356,7 +356,7 @@ class ReferralTrackingServiceTest extends UnitTestCase {
    *   Mock de la entidad.
    */
   protected function createInactiveCodeEntity(): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     $isActiveField = new \stdClass();
     $isActiveField->value = FALSE;
@@ -385,7 +385,7 @@ class ReferralTrackingServiceTest extends UnitTestCase {
    *   Mock de la entidad.
    */
   protected function createStatsCodeEntity(int $clicks, int $signups, int $conversions, float $revenue): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     $clicksField = new \stdClass();
     $clicksField->value = $clicks;

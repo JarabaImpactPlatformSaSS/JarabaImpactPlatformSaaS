@@ -15,58 +15,100 @@ class EntrepreneurAprendizajeAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'entrepreneur_tools.aprendizaje';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'entrepreneur_tools';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Ruta de aprendizaje');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Continúa tu formación emprendedora');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'education', 'name' => 'book', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'verde-innovacion';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_lms.my_learning';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 20;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

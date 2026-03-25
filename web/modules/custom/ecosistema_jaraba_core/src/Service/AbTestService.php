@@ -42,7 +42,7 @@ class AbTestService {
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
-    AccountProxyInterface $current_user
+    AccountProxyInterface $current_user,
   ) {
     $this->configFactory = $config_factory;
     $this->currentUser = $current_user;

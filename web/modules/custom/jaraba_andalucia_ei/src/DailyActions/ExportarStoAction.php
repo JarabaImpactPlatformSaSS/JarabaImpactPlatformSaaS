@@ -17,58 +17,100 @@ class ExportarStoAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'coordinador_ei.sto';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'coordinador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Exportar STO');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Generar fichero STO para SEPE');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'business', 'name' => 'file-export', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.sto_export';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 40;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

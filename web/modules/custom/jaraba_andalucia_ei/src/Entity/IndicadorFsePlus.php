@@ -209,7 +209,6 @@ class IndicadorFsePlus extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS DE RECOGIDA ===
-
     $fields['participante_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Participante'))
       ->setDescription(t('Participante al que corresponden los indicadores FSE+.'))
@@ -247,7 +246,6 @@ class IndicadorFsePlus extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === INDICADORES DE ENTRADA (sociodemográficos) ===
-
     $fields['situacion_laboral'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Situación Laboral'))
       ->setDescription(t('Situación laboral al momento de la recogida.'))
@@ -385,7 +383,6 @@ class IndicadorFsePlus extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === INDICADORES DE RESULTADO (salida / seguimiento 6 meses) ===
-
     $fields['situacion_laboral_resultado'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Situación Laboral (Resultado)'))
       ->setDescription(t('Situación laboral al momento de salida o seguimiento.'))
@@ -453,7 +450,6 @@ class IndicadorFsePlus extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === SISTEMA ===
-
     $fields['completado'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Completado'))
       ->setDescription(t('Indica si la ficha de indicadores está completa.'))

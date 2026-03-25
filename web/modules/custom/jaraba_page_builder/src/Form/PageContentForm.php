@@ -2,6 +2,7 @@
 
 namespace Drupal\jaraba_page_builder\Form;
 
+use Drupal\jaraba_page_builder\PageTemplateInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 use Drupal\jaraba_page_builder\Service\FormBuilderService;
@@ -145,10 +146,10 @@ class PageContentForm extends PremiumEntityFormBase {
           '#weight' => -998,
           'info' => [
             '#markup' => '<div class="template-badge">'
-              . '<strong>' . $this->t('Template:') . '</strong> '
-              . $template->label()
-              . ($template->isPremium() ? ' <span class="premium-badge">★ Premium</span>' : '')
-              . '</div>',
+            . '<strong>' . $this->t('Template:') . '</strong> '
+            . $template->label()
+            . ($template->isPremium() ? ' <span class="premium-badge">★ Premium</span>' : '')
+            . '</div>',
           ],
         ];
 
@@ -334,7 +335,7 @@ class PageContentForm extends PremiumEntityFormBase {
   /**
    * Gets the selected template for the current page.
    */
-  protected function getSelectedTemplate(FormStateInterface $form_state): ?\Drupal\jaraba_page_builder\PageTemplateInterface {
+  protected function getSelectedTemplate(FormStateInterface $form_state): ?PageTemplateInterface {
     /** @var \Drupal\jaraba_page_builder\PageContentInterface $page */
     $page = $this->entity;
 
@@ -352,7 +353,7 @@ class PageContentForm extends PremiumEntityFormBase {
       ->getStorage('page_template')
       ->load($template_id);
 
-    return $template instanceof \Drupal\jaraba_page_builder\PageTemplateInterface ? $template : NULL;
+    return $template instanceof PageTemplateInterface ? $template : NULL;
   }
 
 }

@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class PosIntegrationService {
 
   protected LoggerInterface $logger;
@@ -19,6 +22,9 @@ class PosIntegrationService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.pos');
   }
 
+  /**
+   *
+   */
   public function syncStock(int $connectionId): int {
     try {
       $connection = $this->entityTypeManager->getStorage('pos_connection')->load($connectionId);
@@ -67,6 +73,9 @@ class PosIntegrationService {
     }
   }
 
+  /**
+   *
+   */
   public function pushStockUpdate(int $connectionId, int $productId, int $quantity): bool {
     try {
       $connection = $this->entityTypeManager->getStorage('pos_connection')->load($connectionId);
@@ -96,6 +105,9 @@ class PosIntegrationService {
     }
   }
 
+  /**
+   *
+   */
   public function detectConflicts(int $connectionId): array {
     try {
       $storage = $this->entityTypeManager->getStorage('pos_conflict');
@@ -132,6 +144,9 @@ class PosIntegrationService {
     }
   }
 
+  /**
+   *
+   */
   public function resolveConflict(int $conflictId, string $resolution): bool {
     try {
       $storage = $this->entityTypeManager->getStorage('pos_conflict');
@@ -180,6 +195,9 @@ class PosIntegrationService {
     }
   }
 
+  /**
+   *
+   */
   public function getConnectionStatus(int $connectionId): array {
     try {
       $connection = $this->entityTypeManager->getStorage('pos_connection')->load($connectionId);
@@ -214,6 +232,9 @@ class PosIntegrationService {
     }
   }
 
+  /**
+   *
+   */
   public function getSyncHistory(int $connectionId, int $limit = 50): array {
     try {
       $storage = $this->entityTypeManager->getStorage('pos_sync');

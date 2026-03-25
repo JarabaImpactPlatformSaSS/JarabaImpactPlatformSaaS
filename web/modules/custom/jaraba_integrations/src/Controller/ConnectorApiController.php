@@ -30,7 +30,8 @@ class ConnectorApiController extends ControllerBase {
     protected ConnectorRegistryService $connectorRegistry,
     protected ConnectorInstallerService $connectorInstaller,
     protected ConnectorHealthCheckService $healthCheck,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -41,7 +42,8 @@ class ConnectorApiController extends ControllerBase {
       $container->get('jaraba_integrations.connector_registry'),
       $container->get('jaraba_integrations.connector_installer'),
       $container->get('jaraba_integrations.health_check'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -75,11 +77,13 @@ class ConnectorApiController extends ControllerBase {
     $connector = $storage->load($connector_id);
 
     if (!$connector) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeConnector($connector),
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $this->serializeConnector($connector),
     ]);
   }
 
@@ -109,7 +113,9 @@ class ConnectorApiController extends ControllerBase {
         'id' => $installation->id(),
         'connector_id' => $connector_id,
         'status' => $installation->getInstallationStatus(),
-      ], 'meta' => ['timestamp' => time()]], 201);
+      ],
+      'meta' => ['timestamp' => time()],
+    ], 201);
   }
 
   /**

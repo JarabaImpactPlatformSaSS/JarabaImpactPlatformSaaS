@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class ConnectorForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'basic_info' => [
@@ -35,10 +38,16 @@ class ConnectorForm extends PremiumEntityFormBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'ui', 'name' => 'link'];
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));

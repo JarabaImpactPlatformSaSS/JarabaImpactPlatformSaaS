@@ -311,14 +311,14 @@ class AccessibilityAuditServiceTest extends TestCase {
    * Tests WCAG level classification.
    */
   public function testWcagLevelClassification(): void {
-    // Score >= 90 => AA
+    // Score >= 90 => AA.
     $this->assertSame('AA', 95 >= 90 ? 'AA' : (95 >= 70 ? 'partial' : 'fail'));
     $this->assertSame('AA', 90 >= 90 ? 'AA' : (90 >= 70 ? 'partial' : 'fail'));
 
-    // Score >= 70 and < 90 => partial
+    // Score >= 70 and < 90 => partial.
     $this->assertSame('partial', 80 >= 90 ? 'AA' : (80 >= 70 ? 'partial' : 'fail'));
 
-    // Score < 70 => fail
+    // Score < 70 => fail.
     $this->assertSame('fail', 50 >= 90 ? 'AA' : (50 >= 70 ? 'partial' : 'fail'));
   }
 

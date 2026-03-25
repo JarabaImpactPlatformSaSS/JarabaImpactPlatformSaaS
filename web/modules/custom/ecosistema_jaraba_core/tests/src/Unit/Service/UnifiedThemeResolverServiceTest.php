@@ -6,7 +6,6 @@ namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Service\UnifiedThemeResolverService;
 use PHPUnit\Framework\TestCase;
@@ -183,6 +182,9 @@ class UnifiedThemeResolverServiceTest extends TestCase {
   public function testMetaSiteResolverExceptionIsCaught(): void {
     $resolver = new class {
 
+      /**
+       *
+       */
       public function resolveFromRequest(Request $request): ?array {
         throw new \RuntimeException('DNS lookup failed');
       }
@@ -236,11 +238,17 @@ class UnifiedThemeResolverServiceTest extends TestCase {
         $this->fields = $fields;
       }
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return array_key_exists($name, $this->fields)
           || str_starts_with($name, 'social_');
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         $value = $this->fields[$name] ?? NULL;
         return new class ($value) {
@@ -281,18 +289,30 @@ class UnifiedThemeResolverServiceTest extends TestCase {
         $this->headerType = $ht;
       }
 
+      /**
+       *
+       */
       public function isTranslatable(): bool {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function hasTranslation(string $langcode): bool {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return in_array($name, ['tenant_id', 'site_logo', 'footer_col1_title', 'footer_col2_title', 'footer_col3_title']);
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         if ($name === 'tenant_id') {
           $entity = new class ($this->tenantId) {
@@ -303,6 +323,9 @@ class UnifiedThemeResolverServiceTest extends TestCase {
               $this->id = $id;
             }
 
+            /**
+             *
+             */
             public function id(): int {
               return $this->id;
             }
@@ -326,34 +349,58 @@ class UnifiedThemeResolverServiceTest extends TestCase {
         };
       }
 
+      /**
+       *
+       */
       public function getHeaderCtaText(): string {
         return $this->ctaText;
       }
 
+      /**
+       *
+       */
       public function getHeaderCtaUrl(): string {
         return $this->ctaUrl;
       }
 
+      /**
+       *
+       */
       public function getHeaderType(): string {
         return $this->headerType;
       }
 
+      /**
+       *
+       */
       public function isHeaderSticky(): bool {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function getFooterType(): string {
         return '';
       }
 
+      /**
+       *
+       */
       public function getFooterCopyright(): string {
         return '';
       }
 
+      /**
+       *
+       */
       public function isHeaderShowAuth(): bool {
         return TRUE;
       }
 
+      /**
+       *
+       */
       public function isEcosystemFooterEnabled(): bool {
         return FALSE;
       }
@@ -373,6 +420,9 @@ class UnifiedThemeResolverServiceTest extends TestCase {
         $this->metaSite = $ms;
       }
 
+      /**
+       *
+       */
       public function resolveFromRequest(Request $request): ?array {
         return $this->metaSite;
       }

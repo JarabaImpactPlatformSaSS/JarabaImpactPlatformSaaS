@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -134,7 +138,7 @@ function _jaraba_training_generate_certificate_number(EntityInterface $certifica
   }
 
   $year = date('Y');
-  
+
   // Obtener siguiente secuencia del año.
   $database = \Drupal::database();
   $count = $database->select('user_certification', 'uc')
@@ -315,7 +319,6 @@ function _jaraba_training_process_expiration_reminders(): void {
     ['@count' => count($ids)]
   );
 }
-
 
 /**
  * Prepares variables for certification_program templates.

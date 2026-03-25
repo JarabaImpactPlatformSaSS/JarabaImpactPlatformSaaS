@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_candidate\Controller;
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\EnforcedResponseException;
 use Drupal\jaraba_candidate\Entity\CandidateProfileInterface;
@@ -16,621 +17,607 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Controller for candidate profile pages.
  */
-class ProfileController extends ControllerBase
-{
+class ProfileController extends ControllerBase {
 
-    /**
-     * The profile service.
-     */
-    protected CandidateProfileService $profileService;
+  /**
+   * The profile service.
+   */
+  protected CandidateProfileService $profileService;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(CandidateProfileService $profile_service)
-    {
-        $this->profileService = $profile_service;
+  /**
+   * Constructor.
+   */
+  public function __construct(CandidateProfileService $profile_service) {
+    $this->profileService = $profile_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('jaraba_candidate.profile')
+      );
+  }
+
+  /**
+   * Check if request is a slide-panel AJAX (not a Drupal modal dialog).
+   *
+   * Drupal modal/dialog sends XHR with _wrapper_format query parameter.
+   * Slide-panel sends XHR without it. Only return bare HTML for slide-panel.
+   */
+  protected function isSlidePanelRequest(Request $request): bool {
+    return $request->isXmlHttpRequest() && !$request->query->has('_wrapper_format');
+  }
+
+  /**
+   * Displays a public candidate profile.
+   */
+  public function view(CandidateProfileInterface $candidate_profile): array {
+    if (!$candidate_profile->isPublic() && $candidate_profile->getOwnerId() != $this->currentUser()->id()) {
+      throw new AccessDeniedHttpException();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_candidate.profile')
-        );
+    $user_id = (int) $candidate_profile->getOwnerId();
+
+    // Build photo URL if available.
+    $photo_url = NULL;
+    try {
+      $photo_ref = $candidate_profile->get('photo')->target_id;
+      if ($photo_ref) {
+        $file = $this->entityTypeManager()->getStorage('file')->load($photo_ref);
+        if ($file) {
+          $photo_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // Photo not available.
     }
 
-    /**
-     * Check if request is a slide-panel AJAX (not a Drupal modal dialog).
-     *
-     * Drupal modal/dialog sends XHR with _wrapper_format query parameter.
-     * Slide-panel sends XHR without it. Only return bare HTML for slide-panel.
-     */
-    protected function isSlidePanelRequest(Request $request): bool {
-        return $request->isXmlHttpRequest() && !$request->query->has('_wrapper_format');
-    }
+    // Availability label map.
+    $availability_labels = [
+      'active' => $this->t('Actively looking'),
+      'passive' => $this->t('Open to opportunities'),
+      'not_looking' => $this->t('Not looking'),
+      'employed' => $this->t('Employed'),
+    ];
+    $availability_raw = $candidate_profile->getAvailability();
 
-    /**
-     * Displays a public candidate profile.
-     */
-    public function view(CandidateProfileInterface $candidate_profile): array
-    {
-        if (!$candidate_profile->isPublic() && $candidate_profile->getOwnerId() != $this->currentUser()->id()) {
-            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
-        }
+    // Experience level label map.
+    $level_labels = [
+      'entry' => $this->t('Entry level'),
+      'junior' => $this->t('Junior'),
+      'mid' => $this->t('Mid-level'),
+      'senior' => $this->t('Senior'),
+      'executive' => $this->t('Executive'),
+    ];
+    $exp_level_raw = $candidate_profile->get('experience_level')->value ?? '';
 
-        $user_id = (int) $candidate_profile->getOwnerId();
+    // Education level label map.
+    $edu_labels = [
+      'secondary' => $this->t('Secondary'),
+      'vocational' => $this->t('Vocational'),
+      'bachelor' => $this->t('Bachelor'),
+      'master' => $this->t('Master'),
+      'phd' => $this->t('PhD'),
+    ];
+    $edu_level_raw = $candidate_profile->getEducationLevel();
 
-        // Build photo URL if available.
-        $photo_url = NULL;
-        try {
-            $photo_ref = $candidate_profile->get('photo')->target_id;
-            if ($photo_ref) {
-                $file = $this->entityTypeManager()->getStorage('file')->load($photo_ref);
-                if ($file) {
-                    $photo_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
-                }
-            }
-        }
-        catch (\Exception $e) {
-            // Photo not available.
-        }
-
-        // Availability label map.
-        $availability_labels = [
-            'active' => $this->t('Actively looking'),
-            'passive' => $this->t('Open to opportunities'),
-            'not_looking' => $this->t('Not looking'),
-            'employed' => $this->t('Employed'),
-        ];
-        $availability_raw = $candidate_profile->getAvailability();
-
-        // Experience level label map.
-        $level_labels = [
-            'entry' => $this->t('Entry level'),
-            'junior' => $this->t('Junior'),
-            'mid' => $this->t('Mid-level'),
-            'senior' => $this->t('Senior'),
-            'executive' => $this->t('Executive'),
-        ];
-        $exp_level_raw = $candidate_profile->get('experience_level')->value ?? '';
-
-        // Education level label map.
-        $edu_labels = [
-            'secondary' => $this->t('Secondary'),
-            'vocational' => $this->t('Vocational'),
-            'bachelor' => $this->t('Bachelor'),
-            'master' => $this->t('Master'),
-            'phd' => $this->t('PhD'),
-        ];
-        $edu_level_raw = $candidate_profile->getEducationLevel();
-
-        // Load skills (resilient).
-        $skills = [];
-        try {
-            $skill_entities = $this->entityTypeManager()
-                ->getStorage('candidate_skill')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($skill_entities as $skill_entity) {
-                $skill_term_id = $skill_entity->get('skill_id')->target_id;
-                if ($skill_term_id) {
-                    $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($skill_term_id);
-                    if ($term) {
-                        $skills[] = [
-                            'name' => $term->label(),
-                            'level' => $skill_entity->get('level')->value ?? 'intermediate',
-                            'verified' => (bool) $skill_entity->get('is_verified')->value,
-                        ];
-                    }
-                }
-            }
-        }
-        catch (\Exception $e) {
-            // Entity type may not be installed yet.
-        }
-
-        // Load experiences (resilient).
-        $experiences = [];
-        try {
-            $loaded = $this->entityTypeManager()
-                ->getStorage('candidate_experience')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($loaded as $exp) {
-                $experiences[] = [
-                    'company_name' => $exp->getCompanyName(),
-                    'job_title' => $exp->getJobTitle(),
-                    'description' => $exp->getDescription(),
-                    'location' => $exp->getLocation(),
-                    'start_date' => $exp->getStartDate(),
-                    'end_date' => $exp->getEndDate(),
-                    'is_current' => $exp->isCurrent(),
-                ];
-            }
-            usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
-        }
-        catch (\Exception $e) {
-            // Entity type may not be installed yet.
-        }
-
-        // Load education (resilient).
-        $educations = [];
-        try {
-            $loaded = $this->entityTypeManager()
-                ->getStorage('candidate_education')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($loaded as $edu) {
-                $educations[] = [
-                    'institution' => $edu->get('institution')->value ?? '',
-                    'degree' => $edu->get('degree')->value ?? '',
-                    'field_of_study' => $edu->get('field_of_study')->value ?? '',
-                    'start_date' => $edu->get('start_date')->value ?? NULL,
-                    'end_date' => $edu->get('end_date')->value ?? NULL,
-                ];
-            }
-        }
-        catch (\Exception $e) {
-            // Entity type may not be installed yet.
-        }
-
-        $is_own_profile = ($user_id == $this->currentUser()->id());
-
-        return [
-            '#theme' => 'candidate_profile_view',
-            '#profile' => [
-                'full_name' => $candidate_profile->getFullName(),
-                'headline' => $candidate_profile->getHeadline(),
-                'summary' => $candidate_profile->getSummary(),
-                'city' => $candidate_profile->getCity(),
-                'province' => $candidate_profile->get('province')->value ?? '',
-                'experience_years' => $candidate_profile->getExperienceYears(),
-                'experience_level' => $level_labels[$exp_level_raw] ?? '',
-                'education_level' => $edu_labels[$edu_level_raw] ?? '',
-                'availability' => $availability_labels[$availability_raw] ?? '',
-                'availability_raw' => $availability_raw,
-                'completion_percent' => $candidate_profile->getCompletionPercent(),
-                'photo_url' => $photo_url,
-                'linkedin_url' => $candidate_profile->get('linkedin_url')->value ?? '',
-                'github_url' => $candidate_profile->get('github_url')->value ?? '',
-                'portfolio_url' => $candidate_profile->get('portfolio_url')->value ?? '',
-                'website_url' => $candidate_profile->get('website_url')->value ?? '',
-                'skills' => $skills,
-                'experiences' => $experiences,
-                'educations' => $educations,
-            ],
-            '#is_own_profile' => $is_own_profile,
-            '#attached' => [
-                'library' => ['jaraba_candidate/profile_view'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'tags' => ['candidate_profile:' . $candidate_profile->id()],
-            ],
-        ];
-    }
-
-    /**
-     * Displays the current user's profile.
-     */
-    public function myProfile(): array
-    {
-        $user_id = (int) $this->currentUser()->id();
-        $profile = $this->profileService->getProfileByUserId($user_id);
-
-        if (!$profile) {
-            return [
-                '#theme' => 'my_profile_empty',
-                '#attached' => [
-                    'library' => ['jaraba_candidate/profile_view'],
-                ],
+    // Load skills (resilient).
+    $skills = [];
+    try {
+      $skill_entities = $this->entityTypeManager()
+        ->getStorage('candidate_skill')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($skill_entities as $skill_entity) {
+        $skill_term_id = $skill_entity->get('skill_id')->target_id;
+        if ($skill_term_id) {
+          $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($skill_term_id);
+          if ($term) {
+            $skills[] = [
+              'name' => $term->label(),
+              'level' => $skill_entity->get('level')->value ?? 'intermediate',
+              'verified' => (bool) $skill_entity->get('is_verified')->value,
             ];
+          }
         }
-
-        return $this->view($profile);
+      }
+    }
+    catch (\Exception $e) {
+      // Entity type may not be installed yet.
     }
 
-    /**
-     * Title callback for profile page.
-     */
-    public function profileTitle(CandidateProfileInterface $candidate_profile): string
-    {
-        return $candidate_profile->getFullName();
-    }
-
-    /**
-     * Displays experience section.
-     *
-     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
-     */
-    public function experienceSection(Request $request): array|Response
-    {
-        $user_id = (int) $this->currentUser()->id();
-
-        // Load experiences (resilient to missing entity type).
-        $experiences = [];
-        try {
-            $loaded = $this->entityTypeManager()
-                ->getStorage('candidate_experience')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($loaded as $exp) {
-                $experiences[] = [
-                    'id' => $exp->id(),
-                    'company_name' => $exp->getCompanyName(),
-                    'job_title' => $exp->getJobTitle(),
-                    'description' => $exp->getDescription(),
-                    'location' => $exp->getLocation(),
-                    'start_date' => $exp->getStartDate(),
-                    'end_date' => $exp->getEndDate(),
-                    'is_current' => $exp->isCurrent(),
-                ];
-            }
-            // Sort by start_date descending.
-            usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
-        }
-        catch (\Exception $e) {
-            // Entity type may not be installed yet.
-        }
-
-        $build = [
-            '#theme' => 'my_profile_experience',
-            '#experiences' => $experiences,
-            '#attached' => [
-                'library' => ['jaraba_candidate/profile_section_manager'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'max-age' => 300,
-            ],
+    // Load experiences (resilient).
+    $experiences = [];
+    try {
+      $loaded = $this->entityTypeManager()
+        ->getStorage('candidate_experience')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($loaded as $exp) {
+        $experiences[] = [
+          'company_name' => $exp->getCompanyName(),
+          'job_title' => $exp->getJobTitle(),
+          'description' => $exp->getDescription(),
+          'location' => $exp->getLocation(),
+          'start_date' => $exp->getStartDate(),
+          'end_date' => $exp->getEndDate(),
+          'is_current' => $exp->isCurrent(),
         ];
-
-        if ($this->isSlidePanelRequest($request)) {
-            $html = (string) \Drupal::service('renderer')->render($build);
-            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
-        }
-
-        return $build;
+      }
+      usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
+    }
+    catch (\Exception $e) {
+      // Entity type may not be installed yet.
     }
 
-    /**
-     * Displays education section.
-     *
-     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
-     */
-    public function educationSection(Request $request): array|Response
-    {
-        $user_id = (int) $this->currentUser()->id();
-
-        // Load education records (resilient to missing entity type).
-        $educations = [];
-        try {
-            $loaded = $this->entityTypeManager()
-                ->getStorage('candidate_education')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($loaded as $edu) {
-                $educations[] = [
-                    'id' => $edu->id(),
-                    'institution' => $edu->get('institution')->value ?? '',
-                    'degree' => $edu->get('degree')->value ?? '',
-                    'field_of_study' => $edu->get('field_of_study')->value ?? '',
-                    'start_date' => $edu->get('start_date')->value ?? NULL,
-                    'end_date' => $edu->get('end_date')->value ?? NULL,
-                ];
-            }
-        }
-        catch (\Exception $e) {
-            // Entity type may not be installed yet.
-        }
-
-        $build = [
-            '#theme' => 'my_profile_education',
-            '#educations' => $educations,
-            '#attached' => [
-                'library' => ['jaraba_candidate/profile_section_manager'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'max-age' => 300,
-            ],
+    // Load education (resilient).
+    $educations = [];
+    try {
+      $loaded = $this->entityTypeManager()
+        ->getStorage('candidate_education')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($loaded as $edu) {
+        $educations[] = [
+          'institution' => $edu->get('institution')->value ?? '',
+          'degree' => $edu->get('degree')->value ?? '',
+          'field_of_study' => $edu->get('field_of_study')->value ?? '',
+          'start_date' => $edu->get('start_date')->value ?? NULL,
+          'end_date' => $edu->get('end_date')->value ?? NULL,
         ];
-
-        if ($this->isSlidePanelRequest($request)) {
-            $html = (string) \Drupal::service('renderer')->render($build);
-            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
-        }
-
-        return $build;
+      }
+    }
+    catch (\Exception $e) {
+      // Entity type may not be installed yet.
     }
 
-    /**
-     * Displays and manages user's skills section.
-     *
-     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
-     */
-    public function skillsSection(Request $request): array|Response
-    {
-        $user_id = (int) $this->currentUser()->id();
+    $is_own_profile = ($user_id == $this->currentUser()->id());
 
-        // Get user's current skills
-        $skill_entities = $this->entityTypeManager()
-            ->getStorage('candidate_skill')
-            ->loadByProperties(['user_id' => $user_id]);
+    return [
+      '#theme' => 'candidate_profile_view',
+      '#profile' => [
+        'full_name' => $candidate_profile->getFullName(),
+        'headline' => $candidate_profile->getHeadline(),
+        'summary' => $candidate_profile->getSummary(),
+        'city' => $candidate_profile->getCity(),
+        'province' => $candidate_profile->get('province')->value ?? '',
+        'experience_years' => $candidate_profile->getExperienceYears(),
+        'experience_level' => $level_labels[$exp_level_raw] ?? '',
+        'education_level' => $edu_labels[$edu_level_raw] ?? '',
+        'availability' => $availability_labels[$availability_raw] ?? '',
+        'availability_raw' => $availability_raw,
+        'completion_percent' => $candidate_profile->getCompletionPercent(),
+        'photo_url' => $photo_url,
+        'linkedin_url' => $candidate_profile->get('linkedin_url')->value ?? '',
+        'github_url' => $candidate_profile->get('github_url')->value ?? '',
+        'portfolio_url' => $candidate_profile->get('portfolio_url')->value ?? '',
+        'website_url' => $candidate_profile->get('website_url')->value ?? '',
+        'skills' => $skills,
+        'experiences' => $experiences,
+        'educations' => $educations,
+      ],
+      '#is_own_profile' => $is_own_profile,
+      '#attached' => [
+        'library' => ['jaraba_candidate/profile_view'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['candidate_profile:' . $candidate_profile->id()],
+      ],
+    ];
+  }
 
-        $user_skills = [];
-        foreach ($skill_entities as $skill_entity) {
-            $skill_term_id = $skill_entity->get('skill_id')->target_id;
-            if ($skill_term_id) {
-                $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($skill_term_id);
-                if ($term) {
-                    $user_skills[] = [
-                        'id' => $skill_entity->id(),
-                        'skill_id' => $skill_term_id,
-                        'name' => $term->label(),
-                        'level' => $skill_entity->get('level')->value ?? 'intermediate',
-                        'years' => $skill_entity->get('years_experience')->value ?? 0,
-                        'verified' => (bool) $skill_entity->get('is_verified')->value,
-                    ];
-                }
-            }
-        }
+  /**
+   * Displays the current user's profile.
+   */
+  public function myProfile(): array {
+    $user_id = (int) $this->currentUser()->id();
+    $profile = $this->profileService->getProfileByUserId($user_id);
 
-        // Get all available skills grouped by category
-        $terms = $this->entityTypeManager()
-            ->getStorage('taxonomy_term')
-            ->loadByProperties(['vid' => 'skills']);
+    if (!$profile) {
+      return [
+        '#theme' => 'my_profile_empty',
+        '#attached' => [
+          'library' => ['jaraba_candidate/profile_view'],
+        ],
+      ];
+    }
 
-        $categories = [];
-        $all_skills = [];
-        foreach ($terms as $term) {
-            $parent = $term->get('parent')->target_id;
-            if (empty($parent) || $parent == 0) {
-                // This is a category
-                $categories[$term->id()] = [
-                    'id' => $term->id(),
-                    'name' => $term->label(),
-                    'skills' => [],
-                ];
-            } else {
-                // This is a skill
-                $all_skills[] = [
-                    'id' => $term->id(),
-                    'name' => $term->label(),
-                    'parent' => $parent,
-                ];
-            }
-        }
+    return $this->view($profile);
+  }
 
-        // Assign skills to categories
-        foreach ($all_skills as $skill) {
-            if (isset($categories[$skill['parent']])) {
-                $categories[$skill['parent']]['skills'][] = $skill;
-            }
-        }
+  /**
+   * Title callback for profile page.
+   */
+  public function profileTitle(CandidateProfileInterface $candidate_profile): string {
+    return $candidate_profile->getFullName();
+  }
 
-        $build = [
-            '#theme' => 'my_profile_skills',
-            '#user_skills' => $user_skills,
-            '#categories' => array_values($categories),
-            '#attached' => [
-                'library' => ['jaraba_candidate/skills_manager'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'tags' => ['user:' . $user_id, 'taxonomy_term_list:skills'],
-            ],
+  /**
+   * Displays experience section.
+   *
+   * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
+   */
+  public function experienceSection(Request $request): array|Response {
+    $user_id = (int) $this->currentUser()->id();
+
+    // Load experiences (resilient to missing entity type).
+    $experiences = [];
+    try {
+      $loaded = $this->entityTypeManager()
+        ->getStorage('candidate_experience')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($loaded as $exp) {
+        $experiences[] = [
+          'id' => $exp->id(),
+          'company_name' => $exp->getCompanyName(),
+          'job_title' => $exp->getJobTitle(),
+          'description' => $exp->getDescription(),
+          'location' => $exp->getLocation(),
+          'start_date' => $exp->getStartDate(),
+          'end_date' => $exp->getEndDate(),
+          'is_current' => $exp->isCurrent(),
         ];
-
-        if ($this->isSlidePanelRequest($request)) {
-            $html = (string) \Drupal::service('renderer')->render($build);
-            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
-        }
-
-        return $build;
+      }
+      // Sort by start_date descending.
+      usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
+    }
+    catch (\Exception $e) {
+      // Entity type may not be installed yet.
     }
 
-    /**
-     * Displays languages section.
-     *
-     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
-     */
-    public function languagesSection(Request $request): array|Response
-    {
-        $user_id = (int) $this->currentUser()->id();
+    $build = [
+      '#theme' => 'my_profile_experience',
+      '#experiences' => $experiences,
+      '#attached' => [
+        'library' => ['jaraba_candidate/profile_section_manager'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'max-age' => 300,
+      ],
+    ];
 
-        $languages = [];
-        try {
-            $loaded = $this->entityTypeManager()
-                ->getStorage('candidate_language')
-                ->loadByProperties(['user_id' => $user_id]);
-            foreach ($loaded as $lang) {
-                $languages[] = [
-                    'id' => $lang->id(),
-                    'language_name' => $lang->get('language_name')->value ?? '',
-                    'proficiency_level' => $lang->get('proficiency_level')->value ?? 'A1',
-                    'is_native' => (bool) ($lang->get('is_native')->value ?? FALSE),
-                    'certification' => $lang->get('certification')->value ?? '',
-                ];
-            }
-        }
-        catch (\Exception) {
-            // Entity type may not be installed yet.
-        }
+    if ($this->isSlidePanelRequest($request)) {
+      $html = (string) \Drupal::service('renderer')->render($build);
+      return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+    }
 
-        $build = [
-            '#theme' => 'my_profile_languages',
-            '#languages' => $languages,
-            '#attached' => [
-                'library' => ['jaraba_candidate/profile_section_manager'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'max-age' => 300,
-            ],
+    return $build;
+  }
+
+  /**
+   * Displays education section.
+   *
+   * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
+   */
+  public function educationSection(Request $request): array|Response {
+    $user_id = (int) $this->currentUser()->id();
+
+    // Load education records (resilient to missing entity type).
+    $educations = [];
+    try {
+      $loaded = $this->entityTypeManager()
+        ->getStorage('candidate_education')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($loaded as $edu) {
+        $educations[] = [
+          'id' => $edu->id(),
+          'institution' => $edu->get('institution')->value ?? '',
+          'degree' => $edu->get('degree')->value ?? '',
+          'field_of_study' => $edu->get('field_of_study')->value ?? '',
+          'start_date' => $edu->get('start_date')->value ?? NULL,
+          'end_date' => $edu->get('end_date')->value ?? NULL,
         ];
-
-        if ($this->isSlidePanelRequest($request)) {
-            $html = (string) \Drupal::service('renderer')->render($build);
-            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
-        }
-
-        return $build;
+      }
+    }
+    catch (\Exception $e) {
+      // Entity type may not be installed yet.
     }
 
-    /**
-     * Load or create the current user's profile.
-     *
-     * @return \Drupal\jaraba_candidate\Entity\CandidateProfileInterface|null
-     *   The profile entity, or NULL if creation failed.
-     */
-    protected function loadOrCreateProfile(): ?CandidateProfileInterface {
-        $user_id = (int) $this->currentUser()->id();
-        $profile = $this->profileService->getProfileByUserId($user_id);
+    $build = [
+      '#theme' => 'my_profile_education',
+      '#educations' => $educations,
+      '#attached' => [
+        'library' => ['jaraba_candidate/profile_section_manager'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'max-age' => 300,
+      ],
+    ];
 
-        if (!$profile) {
-            $profile = $this->profileService->createProfile($user_id);
-        }
-
-        return $profile;
+    if ($this->isSlidePanelRequest($request)) {
+      $html = (string) \Drupal::service('renderer')->render($build);
+      return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    /**
-     * Renders an entity form operation as a page or slide-panel response.
-     *
-     * @param \Drupal\jaraba_candidate\Entity\CandidateProfileInterface $profile
-     *   The profile entity.
-     * @param string $operation
-     *   The form operation name (e.g. 'default', 'personal_info').
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The current request.
-     *
-     * @return array|\Symfony\Component\HttpFoundation\Response
-     *   Render array or bare HTML response for slide-panel.
-     */
-    protected function renderFormOperation(CandidateProfileInterface $profile, string $operation, Request $request): array|Response {
-        // Slide-panel POST: catch the redirect after successful save and
-        // return a JSON response so the slide-panel JS can close + refresh.
-        if ($this->isSlidePanelRequest($request) && $request->isMethod('POST')) {
-            try {
-                $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
-            }
-            catch (EnforcedResponseException $e) {
-                // Save succeeded — the form set a redirect which triggered
-                // this exception. Return JSON for the slide-panel JS.
-                return new JsonResponse([
-                    'success' => TRUE,
-                    'message' => (string) $this->t('Guardado correctamente.'),
-                ]);
-            }
+    return $build;
+  }
 
-            // If we get here, the form had validation errors (no redirect).
-            // Re-render the form with errors visible.
-            $form['#action'] = $request->getRequestUri();
-            $html = (string) \Drupal::service('renderer')->renderPlain($form);
-            return new Response($html, 200, [
-                'Content-Type' => 'text/html; charset=UTF-8',
-            ]);
+  /**
+   * Displays and manages user's skills section.
+   *
+   * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
+   */
+  public function skillsSection(Request $request): array|Response {
+    $user_id = (int) $this->currentUser()->id();
+
+    // Get user's current skills.
+    $skill_entities = $this->entityTypeManager()
+      ->getStorage('candidate_skill')
+      ->loadByProperties(['user_id' => $user_id]);
+
+    $user_skills = [];
+    foreach ($skill_entities as $skill_entity) {
+      $skill_term_id = $skill_entity->get('skill_id')->target_id;
+      if ($skill_term_id) {
+        $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($skill_term_id);
+        if ($term) {
+          $user_skills[] = [
+            'id' => $skill_entity->id(),
+            'skill_id' => $skill_term_id,
+            'name' => $term->label(),
+            'level' => $skill_entity->get('level')->value ?? 'intermediate',
+            'years' => $skill_entity->get('years_experience')->value ?? 0,
+            'verified' => (bool) $skill_entity->get('is_verified')->value,
+          ];
         }
+      }
+    }
 
-        // GET request (both full-page and slide-panel).
+    // Get all available skills grouped by category.
+    $terms = $this->entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'skills']);
+
+    $categories = [];
+    $all_skills = [];
+    foreach ($terms as $term) {
+      $parent = $term->get('parent')->target_id;
+      if (empty($parent) || $parent == 0) {
+        // This is a category.
+        $categories[$term->id()] = [
+          'id' => $term->id(),
+          'name' => $term->label(),
+          'skills' => [],
+        ];
+      }
+      else {
+        // This is a skill.
+        $all_skills[] = [
+          'id' => $term->id(),
+          'name' => $term->label(),
+          'parent' => $parent,
+        ];
+      }
+    }
+
+    // Assign skills to categories.
+    foreach ($all_skills as $skill) {
+      if (isset($categories[$skill['parent']])) {
+        $categories[$skill['parent']]['skills'][] = $skill;
+      }
+    }
+
+    $build = [
+      '#theme' => 'my_profile_skills',
+      '#user_skills' => $user_skills,
+      '#categories' => array_values($categories),
+      '#attached' => [
+        'library' => ['jaraba_candidate/skills_manager'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['user:' . $user_id, 'taxonomy_term_list:skills'],
+      ],
+    ];
+
+    if ($this->isSlidePanelRequest($request)) {
+      $html = (string) \Drupal::service('renderer')->render($build);
+      return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+    }
+
+    return $build;
+  }
+
+  /**
+   * Displays languages section.
+   *
+   * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
+   */
+  public function languagesSection(Request $request): array|Response {
+    $user_id = (int) $this->currentUser()->id();
+
+    $languages = [];
+    try {
+      $loaded = $this->entityTypeManager()
+        ->getStorage('candidate_language')
+        ->loadByProperties(['user_id' => $user_id]);
+      foreach ($loaded as $lang) {
+        $languages[] = [
+          'id' => $lang->id(),
+          'language_name' => $lang->get('language_name')->value ?? '',
+          'proficiency_level' => $lang->get('proficiency_level')->value ?? 'A1',
+          'is_native' => (bool) ($lang->get('is_native')->value ?? FALSE),
+          'certification' => $lang->get('certification')->value ?? '',
+        ];
+      }
+    }
+    catch (\Exception) {
+      // Entity type may not be installed yet.
+    }
+
+    $build = [
+      '#theme' => 'my_profile_languages',
+      '#languages' => $languages,
+      '#attached' => [
+        'library' => ['jaraba_candidate/profile_section_manager'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'max-age' => 300,
+      ],
+    ];
+
+    if ($this->isSlidePanelRequest($request)) {
+      $html = (string) \Drupal::service('renderer')->render($build);
+      return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+    }
+
+    return $build;
+  }
+
+  /**
+   * Load or create the current user's profile.
+   *
+   * @return \Drupal\jaraba_candidate\Entity\CandidateProfileInterface|null
+   *   The profile entity, or NULL if creation failed.
+   */
+  protected function loadOrCreateProfile(): ?CandidateProfileInterface {
+    $user_id = (int) $this->currentUser()->id();
+    $profile = $this->profileService->getProfileByUserId($user_id);
+
+    if (!$profile) {
+      $profile = $this->profileService->createProfile($user_id);
+    }
+
+    return $profile;
+  }
+
+  /**
+   * Renders an entity form operation as a page or slide-panel response.
+   *
+   * @param \Drupal\jaraba_candidate\Entity\CandidateProfileInterface $profile
+   *   The profile entity.
+   * @param string $operation
+   *   The form operation name (e.g. 'default', 'personal_info').
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   *
+   * @return array|\Symfony\Component\HttpFoundation\Response
+   *   Render array or bare HTML response for slide-panel.
+   */
+  protected function renderFormOperation(CandidateProfileInterface $profile, string $operation, Request $request): array|Response {
+    // Slide-panel POST: catch the redirect after successful save and
+    // return a JSON response so the slide-panel JS can close + refresh.
+    if ($this->isSlidePanelRequest($request) && $request->isMethod('POST')) {
+      try {
         $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
+      }
+      catch (EnforcedResponseException $e) {
+        // Save succeeded — the form set a redirect which triggered
+        // this exception. Return JSON for the slide-panel JS.
+        return new JsonResponse([
+          'success' => TRUE,
+          'message' => (string) $this->t('Guardado correctamente.'),
+        ]);
+      }
 
-        if ($this->isSlidePanelRequest($request)) {
-            // Set form action explicitly — BigPipe placeholders are not
-            // resolved when rendering outside the main page pipeline.
-            $form['#action'] = $request->getRequestUri();
-            $html = (string) \Drupal::service('renderer')->renderPlain($form);
-            return new Response($html, 200, [
-                'Content-Type' => 'text/html; charset=UTF-8',
-            ]);
-        }
-
-        return $form;
+      // If we get here, the form had validation errors (no redirect).
+      // Re-render the form with errors visible.
+      $form['#action'] = $request->getRequestUri();
+      $html = (string) \Drupal::service('renderer')->renderPlain($form);
+      return new Response($html, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+      ]);
     }
 
-    /**
-     * Edit profile form for current user (backward compatibility).
-     *
-     * Supports slide-panel AJAX: if the request is XMLHttpRequest,
-     * returns only the rendered form HTML (no page chrome).
-     */
-    public function editProfile(Request $request): array|Response
-    {
-        $profile = $this->loadOrCreateProfile();
+    // GET request (both full-page and slide-panel).
+    $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
 
-        if (!$profile) {
-            return [
-                '#theme' => 'my_profile_empty',
-                '#attached' => [
-                    'library' => ['jaraba_candidate/profile_view'],
-                ],
-            ];
-        }
-
-        return $this->renderFormOperation($profile, 'default', $request);
+    if ($this->isSlidePanelRequest($request)) {
+      // Set form action explicitly — BigPipe placeholders are not
+      // resolved when rendering outside the main page pipeline.
+      $form['#action'] = $request->getRequestUri();
+      $html = (string) \Drupal::service('renderer')->renderPlain($form);
+      return new Response($html, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+      ]);
     }
 
-    /**
-     * Personal info section form (Datos Personales).
-     *
-     * Focused form: name, email, phone, photo.
-     */
-    public function personalInfoSection(Request $request): array|Response
-    {
-        $profile = $this->loadOrCreateProfile();
+    return $form;
+  }
 
-        if (!$profile) {
-            return [
-                '#theme' => 'my_profile_empty',
-                '#attached' => [
-                    'library' => ['jaraba_candidate/profile_view'],
-                ],
-            ];
-        }
+  /**
+   * Edit profile form for current user (backward compatibility).
+   *
+   * Supports slide-panel AJAX: if the request is XMLHttpRequest,
+   * returns only the rendered form HTML (no page chrome).
+   */
+  public function editProfile(Request $request): array|Response {
+    $profile = $this->loadOrCreateProfile();
 
-        return $this->renderFormOperation($profile, 'personal_info', $request);
+    if (!$profile) {
+      return [
+        '#theme' => 'my_profile_empty',
+        '#attached' => [
+          'library' => ['jaraba_candidate/profile_view'],
+        ],
+      ];
     }
 
-    /**
-     * Professional brand section form (Marca Profesional).
-     *
-     * Star form with AI-assisted headline and summary.
-     */
-    public function professionalBrandSection(Request $request): array|Response
-    {
-        $profile = $this->loadOrCreateProfile();
+    return $this->renderFormOperation($profile, 'default', $request);
+  }
 
-        if (!$profile) {
-            return [
-                '#theme' => 'my_profile_empty',
-                '#attached' => [
-                    'library' => ['jaraba_candidate/profile_view'],
-                ],
-            ];
-        }
+  /**
+   * Personal info section form (Datos Personales).
+   *
+   * Focused form: name, email, phone, photo.
+   */
+  public function personalInfoSection(Request $request): array|Response {
+    $profile = $this->loadOrCreateProfile();
 
-        return $this->renderFormOperation($profile, 'professional_brand', $request);
+    if (!$profile) {
+      return [
+        '#theme' => 'my_profile_empty',
+        '#attached' => [
+          'library' => ['jaraba_candidate/profile_view'],
+        ],
+      ];
     }
 
-    /**
-     * Privacy settings section form (Privacidad).
-     *
-     * Controls profile visibility: public/private, show photo, show contact.
-     */
-    public function privacySection(Request $request): array|Response
-    {
-        $profile = $this->loadOrCreateProfile();
+    return $this->renderFormOperation($profile, 'personal_info', $request);
+  }
 
-        if (!$profile) {
-            return [
-                '#theme' => 'my_profile_empty',
-                '#attached' => [
-                    'library' => ['jaraba_candidate/profile_view'],
-                ],
-            ];
-        }
+  /**
+   * Professional brand section form (Marca Profesional).
+   *
+   * Star form with AI-assisted headline and summary.
+   */
+  public function professionalBrandSection(Request $request): array|Response {
+    $profile = $this->loadOrCreateProfile();
 
-        return $this->renderFormOperation($profile, 'privacy', $request);
+    if (!$profile) {
+      return [
+        '#theme' => 'my_profile_empty',
+        '#attached' => [
+          'library' => ['jaraba_candidate/profile_view'],
+        ],
+      ];
     }
+
+    return $this->renderFormOperation($profile, 'professional_brand', $request);
+  }
+
+  /**
+   * Privacy settings section form (Privacidad).
+   *
+   * Controls profile visibility: public/private, show photo, show contact.
+   */
+  public function privacySection(Request $request): array|Response {
+    $profile = $this->loadOrCreateProfile();
+
+    if (!$profile) {
+      return [
+        '#theme' => 'my_profile_empty',
+        '#attached' => [
+          'library' => ['jaraba_candidate/profile_view'],
+        ],
+      ];
+    }
+
+    return $this->renderFormOperation($profile, 'privacy', $request);
+  }
 
 }
-

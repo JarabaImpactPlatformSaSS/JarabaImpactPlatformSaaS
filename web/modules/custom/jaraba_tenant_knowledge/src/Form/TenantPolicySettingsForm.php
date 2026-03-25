@@ -7,12 +7,21 @@ namespace Drupal\jaraba_tenant_knowledge\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ *
+ */
 final class TenantPolicySettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'tenant_policy_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Politica del Tenant.') . '</p>',
@@ -20,6 +29,9 @@ final class TenantPolicySettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

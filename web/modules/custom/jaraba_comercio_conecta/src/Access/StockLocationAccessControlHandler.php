@@ -42,7 +42,7 @@ class StockLocationAccessControlHandler extends DefaultEntityAccessControlHandle
 
       case 'update':
       case 'delete':
-        // Los comerciantes pueden gestionar sus propias ubicaciones
+        // Los comerciantes pueden gestionar sus propias ubicaciones.
         if ($account->hasPermission('edit own merchant profile')) {
           $merchant = $entity->get('merchant_id')->entity;
           if ($merchant) {

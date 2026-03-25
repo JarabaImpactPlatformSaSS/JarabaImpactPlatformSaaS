@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_billing\Controller;
 
+use Dompdf\Dompdf;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_legal_billing\Service\QuoteEstimatorService;
@@ -48,13 +49,13 @@ class QuoteApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * POST /api/v1/legal/billing/quotes
+   * POST /api/v1/legal/billing/quotes.
    */
   public function store(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['title']) || empty($data['client_name']) || empty($data['client_email'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: title, client_name, client_email.']], 422);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: title, client_name, client_email.']], 422);
     }
 
     $result = $this->quoteManager->create($data);
@@ -88,7 +89,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/billing/quotes
+   * GET /api/v1/legal/billing/quotes.
    */
   public function listQuotes(Request $request): JsonResponse {
     $filters = [];
@@ -102,7 +103,9 @@ class QuoteApiController extends ControllerBase {
     $result = $this->quoteManager->listQuotes($filters, $limit, $offset);
 
     return new JsonResponse([
-      'data' => $result['items'], 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
+      'data' => $result['items'],
+      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
+    ]);
   }
 
   /**
@@ -147,7 +150,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/quotes/{uuid}/send
+   * POST /api/v1/legal/billing/quotes/{uuid}/send.
    */
   public function sendQuote(string $uuid): JsonResponse {
     $result = $this->quoteManager->send($uuid);
@@ -159,7 +162,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/quotes/{uuid}/duplicate
+   * POST /api/v1/legal/billing/quotes/{uuid}/duplicate.
    */
   public function duplicateQuote(string $uuid): JsonResponse {
     $result = $this->quoteManager->duplicate($uuid);
@@ -171,7 +174,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/billing/quotes/{uuid}/pdf
+   * GET /api/v1/legal/billing/quotes/{uuid}/pdf.
    */
   public function quotePdf(string $uuid): Response {
     // AUDIT-TODO-RESOLVED: PDF generation implemented.
@@ -196,7 +199,7 @@ class QuoteApiController extends ControllerBase {
 
       // Use DOMPDF if available, otherwise return HTML with print-friendly headers.
       if (class_exists('\Dompdf\Dompdf')) {
-        $dompdf = new \Dompdf\Dompdf(['isRemoteEnabled' => FALSE]);
+        $dompdf = new Dompdf(['isRemoteEnabled' => FALSE]);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
@@ -271,7 +274,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/quotes/view/{token}/accept
+   * POST /api/v1/legal/billing/quotes/view/{token}/accept.
    */
   public function portalAccept(string $token): JsonResponse {
     $quote = $this->quoteManager->loadByToken($token);
@@ -290,7 +293,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/quotes/view/{token}/reject
+   * POST /api/v1/legal/billing/quotes/view/{token}/reject.
    */
   public function portalReject(string $token, Request $request): JsonResponse {
     $quote = $this->quoteManager->loadByToken($token);
@@ -311,7 +314,7 @@ class QuoteApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/quotes/view/{token}/negotiate
+   * POST /api/v1/legal/billing/quotes/view/{token}/negotiate.
    */
   public function portalNegotiate(string $token, Request $request): JsonResponse {
     $quote = $this->quoteManager->loadByToken($token);
@@ -372,15 +375,19 @@ class QuoteApiController extends ControllerBase {
       ]);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => [
-      'status' => 'negotiation_requested',
-      'quote_number' => $quote->get('quote_number')->value,
-      'message' => $data['message'] ?? '',
-    ], 'meta' => ['timestamp' => time()]]);
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'status' => 'negotiation_requested',
+        'quote_number' => $quote->get('quote_number')->value,
+        'message' => $data['message'] ?? '',
+      ],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**
-   * GET /api/v1/legal/billing/quotes/view/{token}/pdf
+   * GET /api/v1/legal/billing/quotes/view/{token}/pdf.
    */
   public function portalPdf(string $token): Response {
     $quote = $this->quoteManager->loadByToken($token);
@@ -403,7 +410,7 @@ class QuoteApiController extends ControllerBase {
 
       // Use DOMPDF if available, otherwise return HTML with print-friendly headers.
       if (class_exists('\Dompdf\Dompdf')) {
-        $dompdf = new \Dompdf\Dompdf(['isRemoteEnabled' => FALSE]);
+        $dompdf = new Dompdf(['isRemoteEnabled' => FALSE]);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();

@@ -117,7 +117,8 @@ function jaraba_legal_cron(): void {
     }
 
     // 2. Calcular metricas SLA del mes (solo el dia 1 del mes siguiente).
-    $today = date('j'); // Dia del mes (1-31).
+    // Dia del mes (1-31).
+    $today = date('j');
     if ($today === '1') {
       /** @var \Drupal\jaraba_legal\Service\SlaCalculatorService $slaCalculator */
       $slaCalculator = \Drupal::service('jaraba_legal.sla_calculator');

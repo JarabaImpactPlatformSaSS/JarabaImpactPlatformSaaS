@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Access\FacturaeFaceLogAccessControlHandler;
+use Drupal\jaraba_facturae\Access\FacturaeDocumentAccessControlHandler;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +26,7 @@ class FacturaeAccessControlTest extends KernelTestBase {
    */
   public function testDocumentAccessControlHandlerExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Access\FacturaeDocumentAccessControlHandler::class),
+      class_exists(FacturaeDocumentAccessControlHandler::class),
       'FacturaeDocumentAccessControlHandler class should exist.'
     );
   }
@@ -34,7 +36,7 @@ class FacturaeAccessControlTest extends KernelTestBase {
    */
   public function testFaceLogAccessControlHandlerExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Access\FacturaeFaceLogAccessControlHandler::class),
+      class_exists(FacturaeFaceLogAccessControlHandler::class),
       'FacturaeFaceLogAccessControlHandler class should exist.'
     );
   }

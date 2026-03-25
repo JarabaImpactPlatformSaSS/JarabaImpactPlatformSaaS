@@ -51,29 +51,48 @@ class AdaptacionItinerarioServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionSucceeds(): void {
     $service = $this->createService();
     $this->assertInstanceOf(AdaptacionItinerarioService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithOptionalServices(): void {
     $riesgo = new class {
+
+      /**
+       *
+       */
       public function evaluarRiesgo(): array {
         return [];
       }
+
     };
     $tenant = new class {
+
+      /**
+       *
+       */
       public function getCurrentTenantId(): int {
         return 1;
       }
+
     };
 
     $service = $this->createService($riesgo, $tenant);
     $this->assertInstanceOf(AdaptacionItinerarioService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function barrierWeightsConstantExists(): void {
     $service = $this->createService();
@@ -91,6 +110,9 @@ class AdaptacionItinerarioServiceTest extends UnitTestCase {
     $this->assertArrayHasKey('movilidad_geografica', $constant);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function barrierWeightsArePositiveIntegers(): void {
     $reflection = new \ReflectionClass(AdaptacionItinerarioService::class);
@@ -102,6 +124,9 @@ class AdaptacionItinerarioServiceTest extends UnitTestCase {
     }
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function evaluarBarrerasReturnsDefaultStructureWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(999)->willReturn(NULL);

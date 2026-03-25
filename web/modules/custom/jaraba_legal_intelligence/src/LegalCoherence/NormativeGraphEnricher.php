@@ -91,7 +91,7 @@ final class NormativeGraphEnricher {
    *
    * @param array $ragResults
    *   Resultados de busqueda semantica (de Qdrant).
-   *   Cada item: ['score' => float, 'payload' => [...], ...]
+   *   Cada item: ['score' => float, 'payload' => [...], ...].
    * @param array $context
    *   Contexto de la consulta:
    *   - territory: CCAA del tenant (ej: 'Andalucia').
@@ -411,6 +411,7 @@ final class NormativeGraphEnricher {
    * @return array
    *   Array de relaciones con source_norm_id, target_norm_id, relation_type.
    */
+
   /**
    * Obtiene relaciones normativas para un conjunto de normas.
    *

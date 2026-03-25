@@ -25,191 +25,187 @@ use Symfony\Component\HttpFoundation\Request;
  * - POST /checkout/confirm → Confirma pedido tras pago (AJAX)
  * - GET /pedido/{order_number}/confirmacion → Página de éxito
  */
-class CheckoutController extends ControllerBase implements ContainerInjectionInterface
-{
+class CheckoutController extends ControllerBase implements ContainerInjectionInterface {
 
-    /**
-     * Constructor del controlador.
-     */
-    public function __construct(
-        protected OrderService $orderService,
-        protected StripePaymentService $stripePaymentService,
-    ) {
+  /**
+   * Constructor del controlador.
+   */
+  public function __construct(
+    protected OrderService $orderService,
+    protected StripePaymentService $stripePaymentService,
+  ) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+    // AUDIT-CONS-N05: canonical prefix.
+          $container->get('jaraba_agroconecta_core.order_service'),
+    // AUDIT-CONS-N05: canonical prefix.
+          $container->get('jaraba_agroconecta_core.stripe_payment_service'),
+      );
+  }
+
+  /**
+   * Renderiza la página de checkout.
+   *
+   * @return array
+   *   Render array con el template de checkout.
+   */
+  public function checkout(): array {
+    $config = $this->config('jaraba_agroconecta_core.settings');
+
+    return [
+      '#theme' => 'agro_checkout',
+      '#marketplace_name' => $config->get('marketplace_name') ?? 'AgroConecta',
+      '#attached' => [
+        'library' => ['jaraba_agroconecta_core/agroconecta.checkout'],
+        'drupalSettings' => [
+          'agroconecta' => [
+            'checkoutProcessUrl' => '/checkout/process',
+            'checkoutConfirmUrl' => '/checkout/confirm',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Procesa la creación del pedido y genera PaymentIntent.
+   *
+   * Endpoint AJAX: POST /checkout/process.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con datos del carrito y cliente.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con client_secret del PaymentIntent.
+   */
+  public function processCheckout(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+
+    if (empty($data['items']) || empty($data['customer'])) {
+      return new JsonResponse([
+        'error' => 'Datos del carrito o cliente incompletos.',
+      ], 400);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_agroconecta_core.order_service'), // AUDIT-CONS-N05: canonical prefix
-            $container->get('jaraba_agroconecta_core.stripe_payment_service'), // AUDIT-CONS-N05: canonical prefix
-        );
+    // Crear pedido.
+    $order = $this->orderService->createOrderFromCart(
+          $data['items'],
+          $data['customer']
+      );
+
+    if (!$order) {
+      return new JsonResponse([
+        'error' => 'Error al crear el pedido. Inténtelo de nuevo.',
+      ], 500);
     }
 
-    /**
-     * Renderiza la página de checkout.
-     *
-     * @return array
-     *   Render array con el template de checkout.
-     */
-    public function checkout(): array
-    {
-        $config = $this->config('jaraba_agroconecta_core.settings');
+    // Crear PaymentIntent.
+    $paymentIntent = $this->stripePaymentService->createPaymentIntent(
+          (int) $order->id()
+      );
 
-        return [
-            '#theme' => 'agro_checkout',
-            '#marketplace_name' => $config->get('marketplace_name') ?? 'AgroConecta',
-            '#attached' => [
-                'library' => ['jaraba_agroconecta_core/agroconecta.checkout'],
-                'drupalSettings' => [
-                    'agroconecta' => [
-                        'checkoutProcessUrl' => '/checkout/process',
-                        'checkoutConfirmUrl' => '/checkout/confirm',
-                    ],
-                ],
-            ],
-        ];
+    if (!$paymentIntent) {
+      return new JsonResponse([
+        'error' => 'Error al inicializar el pago. Inténtelo de nuevo.',
+      ], 500);
     }
 
-    /**
-     * Procesa la creación del pedido y genera PaymentIntent.
-     *
-     * Endpoint AJAX: POST /checkout/process
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP con datos del carrito y cliente.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con client_secret del PaymentIntent.
-     */
-    public function processCheckout(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
+    return new JsonResponse([
+      'order_number' => $order->get('order_number')->value,
+      'client_secret' => $paymentIntent['client_secret'],
+      'amount' => $paymentIntent['amount'],
+      'currency' => $paymentIntent['currency'],
+    ]);
+  }
 
-        if (empty($data['items']) || empty($data['customer'])) {
-            return new JsonResponse([
-                'error' => 'Datos del carrito o cliente incompletos.',
-            ], 400);
-        }
+  /**
+   * Confirma el pedido tras pago exitoso.
+   *
+   * Endpoint AJAX: POST /checkout/confirm.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con payment_intent_id.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con URL de confirmación.
+   */
+  public function confirmOrder(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
+    $paymentIntentId = $data['payment_intent_id'] ?? '';
 
-        // Crear pedido.
-        $order = $this->orderService->createOrderFromCart(
-            $data['items'],
-            $data['customer']
-        );
-
-        if (!$order) {
-            return new JsonResponse([
-                'error' => 'Error al crear el pedido. Inténtelo de nuevo.',
-            ], 500);
-        }
-
-        // Crear PaymentIntent.
-        $paymentIntent = $this->stripePaymentService->createPaymentIntent(
-            (int) $order->id()
-        );
-
-        if (!$paymentIntent) {
-            return new JsonResponse([
-                'error' => 'Error al inicializar el pago. Inténtelo de nuevo.',
-            ], 500);
-        }
-
-        return new JsonResponse([
-            'order_number' => $order->get('order_number')->value,
-            'client_secret' => $paymentIntent['client_secret'],
-            'amount' => $paymentIntent['amount'],
-            'currency' => $paymentIntent['currency'],
-        ]);
+    if (empty($paymentIntentId)) {
+      return new JsonResponse([
+        'error' => 'ID de pago no proporcionado.',
+      ], 400);
     }
 
-    /**
-     * Confirma el pedido tras pago exitoso.
-     *
-     * Endpoint AJAX: POST /checkout/confirm
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP con payment_intent_id.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con URL de confirmación.
-     */
-    public function confirmOrder(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
-        $paymentIntentId = $data['payment_intent_id'] ?? '';
+    $success = $this->stripePaymentService->handlePaymentConfirmation($paymentIntentId);
 
-        if (empty($paymentIntentId)) {
-            return new JsonResponse([
-                'error' => 'ID de pago no proporcionado.',
-            ], 400);
-        }
-
-        $success = $this->stripePaymentService->handlePaymentConfirmation($paymentIntentId);
-
-        if (!$success) {
-            return new JsonResponse([
-                'error' => 'Error al confirmar el pedido.',
-            ], 500);
-        }
-
-        // Buscar el order_number para redirigir.
-        $orderStorage = $this->entityTypeManager()->getStorage('order_agro');
-        $orderIds = $orderStorage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('stripe_payment_intent', $paymentIntentId)
-            ->execute();
-
-        $orderNumber = '';
-        if (!empty($orderIds)) {
-            $order = $orderStorage->load(reset($orderIds));
-            $orderNumber = $order ? $order->get('order_number')->value : '';
-        }
-
-        return new JsonResponse([
-            'success' => TRUE,
-            'redirect_url' => '/pedido/' . $orderNumber . '/confirmacion',
-            'order_number' => $orderNumber,
-        ]);
+    if (!$success) {
+      return new JsonResponse([
+        'error' => 'Error al confirmar el pedido.',
+      ], 500);
     }
 
-    /**
-     * Renderiza la página de confirmación de pedido.
-     *
-     * @param string $order_number
-     *   Número del pedido confirmado.
-     *
-     * @return array
-     *   Render array con el template de confirmación.
-     */
-    public function orderConfirmation(string $order_number): array
-    {
-        $orderStorage = $this->entityTypeManager()->getStorage('order_agro');
-        $orderIds = $orderStorage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('order_number', $order_number)
-            ->execute();
+    // Buscar el order_number para redirigir.
+    $orderStorage = $this->entityTypeManager()->getStorage('order_agro');
+    $orderIds = $orderStorage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('stripe_payment_intent', $paymentIntentId)
+      ->execute();
 
-        $order = NULL;
-        $orderData = [];
-
-        if (!empty($orderIds)) {
-            $order = $orderStorage->load(reset($orderIds));
-            if ($order) {
-                $orderData = $this->orderService->serializeOrder($order);
-            }
-        }
-
-        return [
-            '#theme' => 'agro_order_confirmation',
-            '#order' => $orderData,
-            '#order_number' => $order_number,
-            '#attached' => [
-                'library' => ['jaraba_agroconecta_core/agroconecta.frontend'],
-            ],
-        ];
+    $orderNumber = '';
+    if (!empty($orderIds)) {
+      $order = $orderStorage->load(reset($orderIds));
+      $orderNumber = $order ? $order->get('order_number')->value : '';
     }
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'redirect_url' => '/pedido/' . $orderNumber . '/confirmacion',
+      'order_number' => $orderNumber,
+    ]);
+  }
+
+  /**
+   * Renderiza la página de confirmación de pedido.
+   *
+   * @param string $order_number
+   *   Número del pedido confirmado.
+   *
+   * @return array
+   *   Render array con el template de confirmación.
+   */
+  public function orderConfirmation(string $order_number): array {
+    $orderStorage = $this->entityTypeManager()->getStorage('order_agro');
+    $orderIds = $orderStorage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('order_number', $order_number)
+      ->execute();
+
+    $order = NULL;
+    $orderData = [];
+
+    if (!empty($orderIds)) {
+      $order = $orderStorage->load(reset($orderIds));
+      if ($order) {
+        $orderData = $this->orderService->serializeOrder($order);
+      }
+    }
+
+    return [
+      '#theme' => 'agro_order_confirmation',
+      '#order' => $orderData,
+      '#order_number' => $order_number,
+      '#attached' => [
+        'library' => ['jaraba_agroconecta_core/agroconecta.frontend'],
+      ],
+    ];
+  }
 
 }

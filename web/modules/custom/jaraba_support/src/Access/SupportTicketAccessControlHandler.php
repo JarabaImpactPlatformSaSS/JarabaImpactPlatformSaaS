@@ -12,7 +12,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Access\AccessResultInterface;
 
 /**
  * Access control handler for Support entities.

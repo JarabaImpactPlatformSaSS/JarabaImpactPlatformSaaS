@@ -150,7 +150,6 @@ function jaraba_interactive_preprocess_html(array &$variables): void {
   }
 }
 
-
 /**
  * Prepares variables for interactive_content templates.
  *

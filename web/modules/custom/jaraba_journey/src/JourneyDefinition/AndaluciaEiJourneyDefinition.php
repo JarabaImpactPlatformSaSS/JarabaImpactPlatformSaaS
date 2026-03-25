@@ -12,7 +12,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * Segun Doc 103:
  * - Beneficiario: Solicitudes completas >85%, Subsanaciones <20%
  * - Tecnico STO: Expedientes/dia
- * - Administrador: Ejecucion presupuesto
+ * - Administrador: Ejecucion presupuesto.
  *
  * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  *

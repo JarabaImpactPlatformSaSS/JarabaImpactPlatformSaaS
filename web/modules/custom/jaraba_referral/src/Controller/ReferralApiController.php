@@ -21,7 +21,8 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * ESTRUCTURA:
  * Controlador que expone endpoints REST para el programa de referidos:
  * programas, códigos, recompensas, leaderboard, tracking y estadísticas.
- * Todos los endpoints devuelven JsonResponse con estructura data/meta/errors.
+ *
+ * @todo s los endpoints devuelven JsonResponse con estructura data/meta/errors.
  *
  * LÓGICA:
  * GET  /api/v1/referral/programs     — lista programas activos del tenant
@@ -71,9 +72,11 @@ class ReferralApiController extends ControllerBase {
     ReferralTrackingService $tracking,
     LoggerInterface $logger,
     EntityTypeManagerInterface $entity_type_manager,
-    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    TenantContextService $tenantContext,
   ) {
-    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    $this->tenantContext = $tenantContext;
     $this->rewardProcessing = $reward_processing;
     $this->leaderboard = $leaderboard;
     $this->tracking = $tracking;
@@ -91,7 +94,8 @@ class ReferralApiController extends ControllerBase {
       $container->get('jaraba_referral.tracking'),
       $container->get('logger.channel.jaraba_referral'),
       $container->get('entity_type.manager'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -164,8 +168,8 @@ class ReferralApiController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando programas de referidos: @error', ['@error' => $e->getMessage()]);
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo programas de referidos.']], 500);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo programas de referidos.']], 500);
     }
   }
 
@@ -260,7 +264,9 @@ class ReferralApiController extends ControllerBase {
 
       $baseUrl = $request->getSchemeAndHttpHost();
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
           'id' => (int) $codeEntity->id(),
           'code' => $codeString,
           'share_url' => $baseUrl . '/ref/' . $codeString,
@@ -286,7 +292,9 @@ class ReferralApiController extends ControllerBase {
       $leaderboard = $this->leaderboard->getLeaderboard($tenantId);
 
       return new JsonResponse([
-        'data' => $leaderboard, 'meta' => ['count' => count($leaderboard), 'tenant_id' => $tenantId]]);
+        'data' => $leaderboard,
+        'meta' => ['count' => count($leaderboard), 'tenant_id' => $tenantId],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo leaderboard: @error', ['@error' => $e->getMessage()]);
@@ -339,7 +347,9 @@ class ReferralApiController extends ControllerBase {
 
       $result = $this->tracking->trackClick($code, $context);
 
-      return new JsonResponse(['success' => TRUE, 'data' => ['tracked' => $result],
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => ['tracked' => $result],
       ]);
     }
     catch (\Exception $e) {
@@ -448,7 +458,9 @@ class ReferralApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data, 'meta' => ['count' => count($data)]]);
+        'data' => $data,
+        'meta' => ['count' => count($data)],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando referidos: @error', ['@error' => $e->getMessage()]);
@@ -478,7 +490,9 @@ class ReferralApiController extends ControllerBase {
       $uid = (int) $this->currentUser()->id();
       $result = $this->rewardProcessing->processReferral($code, $uid, $action);
 
-      return new JsonResponse(['success' => TRUE, 'data' => ['processed' => $result, 'action' => $action],
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => ['processed' => $result, 'action' => $action],
       ]);
     }
     catch (\Exception $e) {
@@ -516,7 +530,9 @@ class ReferralApiController extends ControllerBase {
           'tracking' => $trackingStats,
           'leaderboard' => $leaderboardStats,
           'pending_rewards' => count($pendingRewards),
-        ], 'meta' => ['tenant_id' => $tenantId]]);
+        ],
+        'meta' => ['tenant_id' => $tenantId],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo estadísticas: @error', ['@error' => $e->getMessage()]);

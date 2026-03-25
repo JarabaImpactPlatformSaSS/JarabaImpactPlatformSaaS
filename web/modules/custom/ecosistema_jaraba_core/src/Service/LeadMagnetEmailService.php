@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * el email a traves del MailManager de Drupal. Cada email incluye:
  * - Resultados personalizados del lead magnet
  * - CTA "Descargar resultados"
- * - CTA "Registrate" con enlace a registro por vertical
+ * - CTA "Registrate" con enlace a registro por vertical.
  *
  * DIRECTRICES:
  * - i18n: $this->t() en todos los textos

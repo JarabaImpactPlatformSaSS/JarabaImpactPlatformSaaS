@@ -255,34 +255,63 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
  * Temporary interface for mocking billing invoice.
  */
 interface BillingInvoiceInterface {
+
+  /**
+   *
+   */
   public function id();
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }
 
 /**
  * Temporary interface for mocking verifactu service.
  */
 interface VerifactuRecordServiceInterface {
+
+  /**
+   *
+   */
   public function createFromBillingInvoice(object $invoice);
+
 }
 
 /**
  * Temporary interface for mocking facturae service.
  */
 interface FacturaeXmlServiceInterface {
+
+  /**
+   *
+   */
   public function generateFromBillingInvoice(object $invoice);
+
 }
 
 /**
  * Temporary interface for mocking einvoice service.
  */
 interface EinvoiceDeliveryServiceInterface {
+
+  /**
+   *
+   */
   public function createFromBillingInvoice(object $invoice);
+
 }
 
 /**
  * Temporary interface for mocking fiscal result entities.
  */
 interface FiscalResultEntityInterface {
+
+  /**
+   *
+   */
   public function id();
+
 }

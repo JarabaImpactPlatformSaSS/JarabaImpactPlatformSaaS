@@ -16,7 +16,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\InputBag;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -114,6 +113,9 @@ class AnalyticsServiceTest extends TestCase {
         $this->logger = $logger;
       }
 
+      /**
+       *
+       */
       public function get(string $channel): LoggerInterface {
         return $this->logger;
       }
@@ -356,7 +358,7 @@ class AnalyticsServiceTest extends TestCase {
 
     $result = $reflection->invoke($this->service, '192.168.1.100');
 
-    // The method zeroes the last octet: 192.168.1.0
+    // The method zeroes the last octet: 192.168.1.0.
     $expected = hash('sha256', '192.168.1.0');
 
     $this->assertSame($expected, $result);

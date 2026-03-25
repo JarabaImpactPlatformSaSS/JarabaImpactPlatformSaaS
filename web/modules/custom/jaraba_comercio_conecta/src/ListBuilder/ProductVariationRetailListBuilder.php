@@ -53,14 +53,14 @@ class ProductVariationRetailListBuilder extends EntityListBuilder {
     $row['title'] = $entity->get('title')->value;
     $row['sku'] = $entity->get('sku')->value;
 
-    // Precio formateado con símbolo de euro
+    // Precio formateado con símbolo de euro.
     $price = $entity->get('price')->value;
     $row['price'] = $price ? number_format((float) $price, 2, ',', '.') . ' €' : '-';
 
     $row['stock_quantity'] = $entity->get('stock_quantity')->value ?? '0';
     $row['status'] = $entity->get('status')->value ?? '-';
 
-    // Nombre del producto padre si existe la referencia
+    // Nombre del producto padre si existe la referencia.
     $product = $entity->get('product_id')->entity;
     $row['product'] = $product ? $product->get('title')->value : '-';
 

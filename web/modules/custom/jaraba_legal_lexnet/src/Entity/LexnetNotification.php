@@ -105,7 +105,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 1: MULTI-TENANT Y VINCULACION
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece la notificacion.'))
@@ -125,7 +124,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 2: IDENTIFICACION LEXNET
     // =========================================================================
-
     $fields['external_id'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('ID Externo LexNET'))
       ->setDescription(new TranslatableMarkup('Identificador unico de la notificacion en LexNET.'))
@@ -152,7 +150,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 3: DATOS JUDICIALES
     // =========================================================================
-
     $fields['court'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Organo Judicial'))
       ->setDescription(new TranslatableMarkup('Juzgado o tribunal que emite la notificacion.'))
@@ -181,7 +178,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 4: FECHAS Y PLAZOS
     // =========================================================================
-
     $fields['received_at'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha de Recepcion'))
       ->setDescription(new TranslatableMarkup('Fecha y hora en que se recibio la notificacion.'))
@@ -216,7 +212,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 5: ADJUNTOS Y DATOS CRUDOS
     // =========================================================================
-
     $fields['attachments'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Adjuntos'))
       ->setDescription(new TranslatableMarkup('Mapa de adjuntos descargados de la notificacion (filename => uri).'));
@@ -229,7 +224,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 6: ESTADO
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -247,7 +241,6 @@ class LexnetNotification extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 7: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

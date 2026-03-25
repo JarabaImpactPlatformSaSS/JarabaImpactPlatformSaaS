@@ -10,6 +10,9 @@
  *   y los términos iniciales para categorías de servicio y especialidades.
  */
 
+use Drupal\jaraba_servicios_conecta\Entity\Booking;
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_install().
  *
@@ -185,27 +188,27 @@ function jaraba_servicios_conecta_update_10002(): void {
   }
 
   $fields = [
-    'tenant_id' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    'tenant_id' => BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setRequired(TRUE)
       ->setSetting('target_type', 'group')
       ->setDisplayConfigurable('form', TRUE)
       ->setTargetEntityTypeId($entity_type_id),
-    'verified_purchase' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+    'verified_purchase' => BaseFieldDefinition::create('boolean')
       ->setLabel(t('Reserva verificada'))
       ->setDefaultValue(FALSE)
       ->setTargetEntityTypeId($entity_type_id),
-    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'helpful_count' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Votos de utilidad'))
       ->setDefaultValue(0)
       ->setTargetEntityTypeId($entity_type_id),
-    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'photos' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Fotos'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'ai_summary' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    'ai_summary_generated_at' => BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
   ];
@@ -227,7 +230,7 @@ function jaraba_servicios_conecta_update_10002(): void {
     if (!isset($allowed_values['flagged'])) {
       try {
         $allowed_values['flagged'] = t('Marcada');
-        $new_status = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+        $new_status = BaseFieldDefinition::create('list_string')
           ->setLabel(t('Estado'))
           ->setName('status')
           ->setRequired(TRUE)
@@ -260,7 +263,7 @@ function jaraba_servicios_conecta_update_10003(): void {
 
   // quote_id: integer FK to Quote entity (ENTITY-FK-001: cross-module = integer).
   if (!$update_manager->getFieldStorageDefinition('quote_id', $entity_type_id)) {
-    $field = \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    $field = BaseFieldDefinition::create('integer')
       ->setLabel(t('Presupuesto'))
       ->setDescription(t('ID del presupuesto asociado (Quote entity de jaraba_legal_billing).'))
       ->setSetting('unsigned', TRUE)
@@ -273,7 +276,7 @@ function jaraba_servicios_conecta_update_10003(): void {
 
   // contract_document_id: integer FK to documento_firma node.
   if (!$update_manager->getFieldStorageDefinition('contract_document_id', $entity_type_id)) {
-    $field = \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    $field = BaseFieldDefinition::create('integer')
       ->setLabel(t('Contrato Firmado'))
       ->setDescription(t('NID del documento de firma (documento_firma node).'))
       ->setSetting('unsigned', TRUE)
@@ -286,7 +289,7 @@ function jaraba_servicios_conecta_update_10003(): void {
 
   // conversation_uuid: string FK to SecureConversation UUID.
   if (!$update_manager->getFieldStorageDefinition('conversation_uuid', $entity_type_id)) {
-    $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $field = BaseFieldDefinition::create('string')
       ->setLabel(t('Conversación'))
       ->setDescription(t('UUID de la conversación segura en jaraba_messaging.'))
       ->setSetting('max_length', 36)
@@ -319,7 +322,7 @@ function jaraba_servicios_conecta_update_10004(): string {
   // 2. Ensure booking fields are installed with current definitions.
   $entity_type = $update_manager->getEntityType('booking');
   if ($entity_type) {
-    $fields = \Drupal\jaraba_servicios_conecta\Entity\Booking::baseFieldDefinitions($entity_type);
+    $fields = Booking::baseFieldDefinitions($entity_type);
     $synced = [];
     foreach (['quote_id', 'contract_document_id', 'conversation_uuid'] as $field_name) {
       if (!isset($fields[$field_name])) {

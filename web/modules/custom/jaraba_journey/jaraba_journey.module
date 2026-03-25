@@ -7,7 +7,7 @@
  * Motor de navegación inteligente por avatar según Doc 103:
  * - 19 avatares en 7 verticales
  * - 7 estados de journey (Discovery → Advocacy + At-Risk)
- * - 3 capas: Context Engine, Decision Engine, Presentation Engine
+ * - 3 capas: Context Engine, Decision Engine, Presentation Engine.
  *
  * @see https://docs/tecnicos/20260117f-103_UX_Journey_Specifications_Avatar_v1_Claude.md
  */

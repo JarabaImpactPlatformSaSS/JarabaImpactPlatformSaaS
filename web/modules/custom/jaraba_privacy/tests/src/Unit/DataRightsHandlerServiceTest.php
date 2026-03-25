@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_privacy\Unit;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -40,7 +40,7 @@ class DataRightsHandlerServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 

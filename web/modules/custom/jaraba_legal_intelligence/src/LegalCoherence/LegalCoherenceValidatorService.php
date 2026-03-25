@@ -90,7 +90,7 @@ final class LegalCoherenceValidatorService {
    *   regeneration_constraints: string[],
    *   retry_count: int,
    *   metadata: array,
-   * }
+   *   }
    */
   public function validate(string $output, array $context = []): array {
     $violations = [];

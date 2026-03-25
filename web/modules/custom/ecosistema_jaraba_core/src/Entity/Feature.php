@@ -57,221 +57,204 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   },
  * )
  */
-class Feature extends ConfigEntityBase implements FeatureInterface
-{
+class Feature extends ConfigEntityBase implements FeatureInterface {
 
-    /**
-     * El ID de la feature (machine name).
-     *
-     * @var string
-     */
-    protected $id;
+  /**
+   * El ID de la feature (machine name).
+   *
+   * @var string
+   */
+  protected $id;
 
-    /**
-     * El nombre visible de la feature.
-     *
-     * @var string
-     */
-    protected $label;
+  /**
+   * El nombre visible de la feature.
+   *
+   * @var string
+   */
+  protected $label;
 
-    /**
-     * Descripción de la feature.
-     *
-     * @var string
-     */
-    protected $description = '';
+  /**
+   * Descripción de la feature.
+   *
+   * @var string
+   */
+  protected $description = '';
 
-    /**
-     * Categoría para agrupar features.
-     *
-     * @var string
-     */
-    protected $category = 'general';
+  /**
+   * Categoría para agrupar features.
+   *
+   * @var string
+   */
+  protected $category = 'general';
 
-    /**
-     * Nombre del icono (opcional).
-     *
-     * @var string
-     */
-    protected $icon = '';
+  /**
+   * Nombre del icono (opcional).
+   *
+   * @var string
+   */
+  protected $icon = '';
 
-    /**
-     * Peso para ordenación.
-     *
-     * @var int
-     */
-    protected $weight = 0;
+  /**
+   * Peso para ordenación.
+   *
+   * @var int
+   */
+  protected $weight = 0;
 
-    // =========================================================================
-    // FINOPS COST FIELDS
-    // =========================================================================
+  // =========================================================================
+  // FINOPS COST FIELDS
+  // =========================================================================
 
-    /**
-     * Coste base mensual de la feature (€).
-     *
-     * @var float
-     */
-    protected $base_cost_monthly = 0.0;
+  /**
+   * Coste base mensual de la feature (€).
+   *
+   * @var float
+   */
+  protected $base_cost_monthly = 0.0;
 
-    /**
-     * Coste por unidad de uso (€).
-     *
-     * @var float
-     */
-    protected $unit_cost = 0.0;
+  /**
+   * Coste por unidad de uso (€).
+   *
+   * @var float
+   */
+  protected $unit_cost = 0.0;
 
-    /**
-     * Categoría de coste para agrupación FinOps.
-     *
-     * @var string
-     */
-    protected $cost_category = 'compute';
+  /**
+   * Categoría de coste para agrupación FinOps.
+   *
+   * @var string
+   */
+  protected $cost_category = 'compute';
 
-    /**
-     * Tipo de métrica de uso (api_calls, rag_queries, etc.).
-     *
-     * @var string
-     */
-    protected $usage_metric = '';
+  /**
+   * Tipo de métrica de uso (api_calls, rag_queries, etc.).
+   *
+   * @var string
+   */
+  protected $usage_metric = '';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return $this->description ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDescription(string $description): FeatureInterface
-    {
-        $this->description = $description;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setDescription(string $description): FeatureInterface {
+    $this->description = $description;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCategory(): string
-    {
-        return $this->category ?? 'general';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getCategory(): string {
+    return $this->category ?? 'general';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setCategory(string $category): FeatureInterface
-    {
-        $this->category = $category;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setCategory(string $category): FeatureInterface {
+    $this->category = $category;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIcon(): string
-    {
-        return $this->icon ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getIcon(): string {
+    return $this->icon ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setIcon(string $icon): FeatureInterface
-    {
-        $this->icon = $icon;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setIcon(string $icon): FeatureInterface {
+    $this->icon = $icon;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getWeight(): int
-    {
-        return $this->weight ?? 0;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getWeight(): int {
+    return $this->weight ?? 0;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setWeight(int $weight): FeatureInterface
-    {
-        $this->weight = $weight;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setWeight(int $weight): FeatureInterface {
+    $this->weight = $weight;
+    return $this;
+  }
 
-    // =========================================================================
-    // FINOPS COST METHODS
-    // =========================================================================
+  // =========================================================================
+  // FINOPS COST METHODS
+  // =========================================================================
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getBaseCostMonthly(): float
-    {
-        return (float) ($this->get('base_cost_monthly') ?? 0.0);
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getBaseCostMonthly(): float {
+    return (float) ($this->get('base_cost_monthly') ?? 0.0);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setBaseCostMonthly(float $cost): FeatureInterface
-    {
-        $this->base_cost_monthly = $cost;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setBaseCostMonthly(float $cost): FeatureInterface {
+    $this->base_cost_monthly = $cost;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUnitCost(): float
-    {
-        return (float) ($this->get('unit_cost') ?? 0.0);
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getUnitCost(): float {
+    return (float) ($this->get('unit_cost') ?? 0.0);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUnitCost(float $cost): FeatureInterface
-    {
-        $this->unit_cost = $cost;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setUnitCost(float $cost): FeatureInterface {
+    $this->unit_cost = $cost;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCostCategory(): string
-    {
-        return $this->get('cost_category') ?? 'compute';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getCostCategory(): string {
+    return $this->get('cost_category') ?? 'compute';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setCostCategory(string $category): FeatureInterface
-    {
-        $this->cost_category = $category;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setCostCategory(string $category): FeatureInterface {
+    $this->cost_category = $category;
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUsageMetric(): string
-    {
-        return $this->get('usage_metric') ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getUsageMetric(): string {
+    return $this->get('usage_metric') ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUsageMetric(string $metric): FeatureInterface
-    {
-        $this->usage_metric = $metric;
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setUsageMetric(string $metric): FeatureInterface {
+    $this->usage_metric = $metric;
+    return $this;
+  }
 
 }

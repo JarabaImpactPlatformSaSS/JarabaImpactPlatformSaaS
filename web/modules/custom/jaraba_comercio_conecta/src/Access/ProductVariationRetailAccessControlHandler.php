@@ -43,7 +43,7 @@ class ProductVariationRetailAccessControlHandler extends DefaultEntityAccessCont
       return $parentResult;
     }
 
-    // Acceso completo para administradores del módulo
+    // Acceso completo para administradores del módulo.
     if ($account->hasPermission('manage comercio products')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
@@ -54,7 +54,7 @@ class ProductVariationRetailAccessControlHandler extends DefaultEntityAccessCont
 
       case 'update':
       case 'delete':
-        // Los comerciantes pueden editar variaciones de sus propios productos
+        // Los comerciantes pueden editar variaciones de sus propios productos.
         if ($account->hasPermission('edit own comercio products')) {
           $product = $entity->get('product_id')->entity;
           if ($product) {

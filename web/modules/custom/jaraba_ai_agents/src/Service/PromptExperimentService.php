@@ -45,7 +45,7 @@ class PromptExperimentService {
    *   - system_prompt: string
    *   - temperature: float (0.0-1.0)
    *   - model_tier: string (fast|balanced|premium)
-   *   - is_control: bool
+   *   - is_control: bool.
    * @param int $tenantId
    *   Tenant ID.
    * @param array $options

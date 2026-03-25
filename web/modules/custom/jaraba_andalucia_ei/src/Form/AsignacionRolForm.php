@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\jaraba_andalucia_ei\Service\RolProgramaServiceInterface;
@@ -83,13 +84,13 @@ class AsignacionRolForm extends FormBase {
     $form['rol_descriptions'] = [
       '#type' => 'markup',
       '#markup' => '<div class="rol-descriptions">'
-        . '<p><strong>' . $this->t('Coordinador/a') . ':</strong> '
-        . $this->t('Gestión global del programa, acceso a todos los participantes, informes y configuración. Puede asignar y revocar roles.') . '</p>'
-        . '<p><strong>' . $this->t('Orientador/a') . ':</strong> '
-        . $this->t('Seguimiento individualizado de participantes asignados, itinerarios personalizados, hojas de servicio y mentorías.') . '</p>'
-        . '<p><strong>' . $this->t('Formador/a') . ':</strong> '
-        . $this->t('Impartición de acciones formativas, control de asistencia, evaluaciones y material didáctico.') . '</p>'
-        . '</div>',
+      . '<p><strong>' . $this->t('Coordinador/a') . ':</strong> '
+      . $this->t('Gestión global del programa, acceso a todos los participantes, informes y configuración. Puede asignar y revocar roles.') . '</p>'
+      . '<p><strong>' . $this->t('Orientador/a') . ':</strong> '
+      . $this->t('Seguimiento individualizado de participantes asignados, itinerarios personalizados, hojas de servicio y mentorías.') . '</p>'
+      . '<p><strong>' . $this->t('Formador/a') . ':</strong> '
+      . $this->t('Impartición de acciones formativas, control de asistencia, evaluaciones y material didáctico.') . '</p>'
+      . '</div>',
     ];
 
     $form['motivo'] = [
@@ -114,7 +115,7 @@ class AsignacionRolForm extends FormBase {
     $form['actions']['cancel'] = [
       '#type' => 'link',
       '#title' => $this->t('Cancelar'),
-      '#url' => \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.equipo_programa'),
+      '#url' => Url::fromRoute('jaraba_andalucia_ei.equipo_programa'),
       '#attributes' => [
         'class' => ['button', 'button--secondary'],
       ],
@@ -183,7 +184,7 @@ class AsignacionRolForm extends FormBase {
     }
 
     $form_state->setRedirectUrl(
-      \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.equipo_programa')
+      Url::fromRoute('jaraba_andalucia_ei.equipo_programa')
     );
   }
 

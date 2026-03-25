@@ -115,10 +115,13 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
         'description' => $body['description'] ?? NULL,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $entity->id(),
-        'name' => $entity->label(),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'name' => $entity->label(),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando lista: @error', ['@error' => $e->getMessage()]);

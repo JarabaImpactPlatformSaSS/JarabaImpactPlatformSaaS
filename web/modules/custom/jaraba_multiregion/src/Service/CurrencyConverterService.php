@@ -397,7 +397,7 @@ class CurrencyConverterService {
       // El namespace principal del BCE para los datos.
       $ecbNs = $namespaces[''] ?? 'http://www.ecb.int/vocabulary/2002-08-01/eurofxref';
 
-      // Navegar la estructura: Envelope > Cube > Cube[@time] > Cube[@currency]
+      // Navegar la estructura: Envelope > Cube > Cube[@time] > Cube[@currency].
       $cubeRoot = $xml->Cube ?? NULL;
       if (!$cubeRoot) {
         return [];

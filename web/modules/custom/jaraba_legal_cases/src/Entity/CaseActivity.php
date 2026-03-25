@@ -77,7 +77,6 @@ class CaseActivity extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 1: REFERENCIA AL EXPEDIENTE
     // =========================================================================
-
     $fields['case_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Expediente'))
       ->setDescription(new TranslatableMarkup('Expediente al que pertenece esta actividad.'))
@@ -89,7 +88,6 @@ class CaseActivity extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 2: DATOS DE LA ACTIVIDAD
     // =========================================================================
-
     $fields['activity_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de Actividad'))
       ->setRequired(TRUE)
@@ -134,7 +132,6 @@ class CaseActivity extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 3: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

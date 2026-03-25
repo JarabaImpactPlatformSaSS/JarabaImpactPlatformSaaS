@@ -116,7 +116,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 1: IDENTIFICACION DEL EXPEDIENTE
     // =========================================================================
-
     $fields['case_number'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Numero de Referencia'))
       ->setDescription(new TranslatableMarkup('Referencia auto-generada EXP-YYYY-NNNN.'))
@@ -182,7 +181,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 2: MULTI-TENANT Y ASIGNACION
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece el expediente.'))
@@ -202,7 +200,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 3: DATOS DEL CLIENTE
     // =========================================================================
-
     $fields['client_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del Cliente'))
       ->setRequired(TRUE)
@@ -234,7 +231,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 4: DESCRIPCION Y AREA LEGAL
     // =========================================================================
-
     $fields['description'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripcion'))
       ->setDescription(new TranslatableMarkup('Descripcion detallada del expediente.'))
@@ -253,7 +249,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 5: DATOS JUDICIALES
     // =========================================================================
-
     $fields['court_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Juzgado'))
       ->setSetting('max_length', 255)
@@ -292,7 +287,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 6: VALORACION Y NOTAS
     // =========================================================================
-
     $fields['estimated_value'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Valor Estimado'))
       ->setSetting('precision', 10)
@@ -310,7 +304,6 @@ class ClientCase extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 7: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

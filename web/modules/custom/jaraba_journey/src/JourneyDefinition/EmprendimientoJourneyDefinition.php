@@ -12,7 +12,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * Segun Doc 103:
  * - Emprendedor: Hitos completados >70%, Supervivencia 1 anio >80%
  * - Mentor: Mentees activos
- * - Gestor: Tasa supervivencia programa
+ * - Gestor: Tasa supervivencia programa.
  *
  * Cada step incluye un campo video_url opcional para video walkthroughs (G110-2).
  *

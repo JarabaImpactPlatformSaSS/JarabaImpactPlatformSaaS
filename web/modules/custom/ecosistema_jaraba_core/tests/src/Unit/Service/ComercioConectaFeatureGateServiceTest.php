@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
@@ -91,7 +92,7 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
     $featureKey = 'products';
     $plan = 'profesional';
 
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->with('limit_value')->willReturn(-1);
     $limitEntity->method('status')->willReturn(TRUE);
 
@@ -116,7 +117,7 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
     $featureKey = 'pos_integration';
     $plan = 'free';
 
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->willReturnMap([
       ['limit_value', 0],
       ['upgrade_message', 'Upgrade to access POS integration.'],

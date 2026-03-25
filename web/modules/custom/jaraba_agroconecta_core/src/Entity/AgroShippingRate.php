@@ -52,19 +52,16 @@ class AgroShippingRate extends ContentEntityBase {
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
-      ->setRequired(TRUE)
-;
+      ->setRequired(TRUE);
 
     $fields['zone_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Zona de Envío'))
       ->setSetting('target_type', 'agro_shipping_zone')
-      ->setRequired(TRUE)
-;
+      ->setRequired(TRUE);
 
     $fields['carrier_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Código Transportista'))
-      ->setRequired(TRUE)
-;
+      ->setRequired(TRUE);
 
     $fields['service_code'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Código Servicio'))

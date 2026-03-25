@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Tipografía (headings / body)
  * - Variantes de layout (header, footer)
  * - Estado activo/inactivo con badge de color
- * - Fecha de última modificación
+ * - Fecha de última modificación.
  */
 class TenantThemeConfigListBuilder extends EntityListBuilder {
 

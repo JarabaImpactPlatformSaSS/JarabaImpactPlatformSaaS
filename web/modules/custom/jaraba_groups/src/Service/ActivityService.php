@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_groups\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\jaraba_groups\Entity\CollaborationGroup;
 use Drupal\jaraba_groups\Entity\GroupDiscussion;
 use Psr\Log\LoggerInterface;
 

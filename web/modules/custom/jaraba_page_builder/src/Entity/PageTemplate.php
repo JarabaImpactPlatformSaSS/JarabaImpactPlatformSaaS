@@ -63,199 +63,188 @@ use Drupal\jaraba_page_builder\PageTemplateInterface;
  *   },
  * )
  */
-class PageTemplate extends ConfigEntityBase implements PageTemplateInterface
-{
+class PageTemplate extends ConfigEntityBase implements PageTemplateInterface {
 
-    /**
-     * El ID de la plantilla.
-     *
-     * @var string
-     */
-    protected $id;
+  /**
+   * El ID de la plantilla.
+   *
+   * @var string
+   */
+  protected $id;
 
-    /**
-     * El nombre visible de la plantilla.
-     *
-     * @var string
-     */
-    protected $label;
+  /**
+   * El nombre visible de la plantilla.
+   *
+   * @var string
+   */
+  protected $label;
 
-    /**
-     * Descripción de la plantilla.
-     *
-     * @var string
-     */
-    protected $description = '';
+  /**
+   * Descripción de la plantilla.
+   *
+   * @var string
+   */
+  protected $description = '';
 
-    /**
-     * Categoría de la plantilla.
-     *
-     * @var string
-     */
-    protected $category = 'content';
+  /**
+   * Categoría de la plantilla.
+   *
+   * @var string
+   */
+  protected $category = 'content';
 
-    /**
-     * Ruta al template Twig.
-     *
-     * @var string
-     */
-    protected $twig_template = '';
+  /**
+   * Ruta al template Twig.
+   *
+   * @var string
+   */
+  protected $twig_template = '';
 
-    /**
-     * JSON Schema para los campos configurables.
-     *
-     * @var array
-     */
-    protected $fields_schema = [];
+  /**
+   * JSON Schema para los campos configurables.
+   *
+   * @var array
+   */
+  protected $fields_schema = [];
 
-    /**
-     * Planes requeridos para usar esta plantilla.
-     *
-     * @var array
-     */
-    protected $plans_required = ['starter', 'professional', 'enterprise'];
+  /**
+   * Planes requeridos para usar esta plantilla.
+   *
+   * @var array
+   */
+  protected $plans_required = ['starter', 'professional', 'enterprise'];
 
-    /**
-     * Si es una plantilla premium (Aceternity/Magic UI).
-     *
-     * @var bool
-     */
-    protected $is_premium = FALSE;
+  /**
+   * Si es una plantilla premium (Aceternity/Magic UI).
+   *
+   * @var bool
+   */
+  protected $is_premium = FALSE;
 
-    /**
-     * Ruta a la imagen de preview.
-     *
-     * @var string
-     */
-    protected $preview_image = '';
+  /**
+   * Ruta a la imagen de preview.
+   *
+   * @var string
+   */
+  protected $preview_image = '';
 
-    /**
-     * Datos curados para preview que replican las miniaturas PNG.
-     *
-     * @var array
-     */
-    protected $preview_data = [];
+  /**
+   * Datos curados para preview que replican las miniaturas PNG.
+   *
+   * @var array
+   */
+  protected $preview_data = [];
 
-    /**
-     * Peso para ordenar.
-     *
-     * @var int
-     */
-    protected $weight = 0;
+  /**
+   * Peso para ordenar.
+   *
+   * @var int
+   */
+  protected $weight = 0;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return $this->description ?? '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCategory(): string {
+    return $this->category ?? 'content';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTwigTemplate(): string {
+    return $this->twig_template ?? '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldsSchema(): array {
+    return $this->fields_schema ?? [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPlansRequired(): array {
+    return $this->plans_required ?? ['starter', 'professional', 'enterprise'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isPremium(): bool {
+    return (bool) ($this->is_premium ?? FALSE);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Implementa fallback automático: si no hay preview_image configurado,
+   * intenta detectar el PNG por convención de nombre (ID del template).
+   *
+   * Incluye cache-busting automático (?v=<mtime>) para evitar que
+   * caches de servidor web (Nginx) o navegador sirvan imágenes obsoletas.
+   */
+  public function getPreviewImage(): string {
+    // Prioridad 1: Valor explícito en configuración.
+    if (!empty($this->preview_image)) {
+      $diskPath = DRUPAL_ROOT . $this->preview_image;
+      $version = file_exists($diskPath) ? filemtime($diskPath) : 0;
+      return $this->preview_image . '?v=' . $version;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCategory(): string
-    {
-        return $this->category ?? 'content';
+    // Prioridad 2: Auto-detección por convención de nombre
+    // El ID del template (ej: accordion_content) se convierte a
+    // nombre de archivo (ej: accordion-content.png)
+    $basePath = '/modules/custom/jaraba_page_builder/images/previews/';
+    $filename = str_replace('_', '-', $this->id()) . '.png';
+    $fullPath = DRUPAL_ROOT . $basePath . $filename;
+
+    if (file_exists($fullPath)) {
+      $version = filemtime($fullPath);
+      return $basePath . $filename . '?v=' . $version;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTwigTemplate(): string
-    {
-        return $this->twig_template ?? '';
-    }
+    return '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFieldsSchema(): array
-    {
-        return $this->fields_schema ?? [];
-    }
+  /**
+   * Alias de getPreviewImage para compatibilidad con templates.
+   *
+   * @return string
+   *   Ruta a la imagen de thumbnail.
+   */
+  public function getThumbnail(): string {
+    return $this->getPreviewImage();
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPlansRequired(): array
-    {
-        return $this->plans_required ?? ['starter', 'professional', 'enterprise'];
-    }
+  /**
+   * Verifica si el plan dado tiene acceso a esta plantilla.
+   *
+   * @param string $plan_id
+   *   El ID del plan a verificar.
+   *
+   * @return bool
+   *   TRUE si el plan tiene acceso.
+   */
+  public function isAvailableForPlan(string $plan_id): bool {
+    $plans = $this->getPlansRequired();
+    return in_array($plan_id, $plans, TRUE);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isPremium(): bool
-    {
-        return (bool) ($this->is_premium ?? FALSE);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * Implementa fallback automático: si no hay preview_image configurado,
-     * intenta detectar el PNG por convención de nombre (ID del template).
-     *
-     * Incluye cache-busting automático (?v=<mtime>) para evitar que
-     * caches de servidor web (Nginx) o navegador sirvan imágenes obsoletas.
-     */
-    public function getPreviewImage(): string
-    {
-        // Prioridad 1: Valor explícito en configuración
-        if (!empty($this->preview_image)) {
-            $diskPath = DRUPAL_ROOT . $this->preview_image;
-            $version = file_exists($diskPath) ? filemtime($diskPath) : 0;
-            return $this->preview_image . '?v=' . $version;
-        }
-
-        // Prioridad 2: Auto-detección por convención de nombre
-        // El ID del template (ej: accordion_content) se convierte a
-        // nombre de archivo (ej: accordion-content.png)
-        $basePath = '/modules/custom/jaraba_page_builder/images/previews/';
-        $filename = str_replace('_', '-', $this->id()) . '.png';
-        $fullPath = DRUPAL_ROOT . $basePath . $filename;
-
-        if (file_exists($fullPath)) {
-            $version = filemtime($fullPath);
-            return $basePath . $filename . '?v=' . $version;
-        }
-
-        return '';
-    }
-
-    /**
-     * Alias de getPreviewImage para compatibilidad con templates.
-     *
-     * @return string
-     *   Ruta a la imagen de thumbnail.
-     */
-    public function getThumbnail(): string
-    {
-        return $this->getPreviewImage();
-    }
-
-    /**
-     * Verifica si el plan dado tiene acceso a esta plantilla.
-     *
-     * @param string $plan_id
-     *   El ID del plan a verificar.
-     *
-     * @return bool
-     *   TRUE si el plan tiene acceso.
-     */
-    public function isAvailableForPlan(string $plan_id): bool
-    {
-        $plans = $this->getPlansRequired();
-        return in_array($plan_id, $plans, TRUE);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPreviewData(): array
-    {
-        return $this->preview_data ?? [];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getPreviewData(): array {
+    return $this->preview_data ?? [];
+  }
 
 }

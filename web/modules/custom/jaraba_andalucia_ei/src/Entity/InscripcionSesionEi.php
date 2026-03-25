@@ -167,7 +167,6 @@ class InscripcionSesionEi extends ContentEntityBase implements InscripcionSesion
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS DE INSCRIPCIÓN ===
-
     $fields['sesion_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Sesión Programada'))
       ->setDescription(t('Sesión programada a la que se inscribe el participante.'))
@@ -224,7 +223,6 @@ class InscripcionSesionEi extends ContentEntityBase implements InscripcionSesion
       ->setDisplayConfigurable('view', TRUE);
 
     // === ASISTENCIA ===
-
     $fields['fecha_asistencia'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha de Asistencia'))
       ->setDescription(t('Fecha en que se registró la asistencia.'))
@@ -261,7 +259,6 @@ class InscripcionSesionEi extends ContentEntityBase implements InscripcionSesion
       ->setDisplayConfigurable('view', TRUE);
 
     // === REGISTRO STO ===
-
     $fields['actuacion_sto_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Actuación STO'))
       ->setDescription(t('Actuación STO vinculada a esta inscripción.'))
@@ -285,7 +282,6 @@ class InscripcionSesionEi extends ContentEntityBase implements InscripcionSesion
       ->setDisplayConfigurable('view', TRUE);
 
     // === CAMPOS DE SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

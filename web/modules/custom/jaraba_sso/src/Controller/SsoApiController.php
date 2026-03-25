@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
  * - PATCH  /api/v1/sso/providers/{id}    — Update provider config
  * - DELETE /api/v1/sso/providers/{id}    — Delete provider
  * - GET    /api/v1/sso/mfa/policy        — Get MFA policy for tenant
- * - POST   /api/v1/sso/mfa/policy        — Set MFA policy
+ * - POST   /api/v1/sso/mfa/policy        — Set MFA policy.
  *
  * All endpoints return standard JSON envelope: { success, data/error }.
  * CSRF required on mutations.
@@ -48,7 +48,7 @@ class SsoApiController extends ControllerBase {
   /**
    * Lists all SSO providers for the current tenant.
    *
-   * GET /api/v1/sso/providers
+   * GET /api/v1/sso/providers.
    */
   public function listProviders(): JsonResponse {
     try {
@@ -107,7 +107,7 @@ class SsoApiController extends ControllerBase {
   /**
    * Creates a new SSO provider configuration.
    *
-   * POST /api/v1/sso/providers
+   * POST /api/v1/sso/providers.
    */
   public function createProvider(Request $request): JsonResponse {
     try {
@@ -300,7 +300,7 @@ class SsoApiController extends ControllerBase {
   /**
    * Gets the MFA policy for the current tenant.
    *
-   * GET /api/v1/sso/mfa/policy
+   * GET /api/v1/sso/mfa/policy.
    */
   public function getMfaPolicy(): JsonResponse {
     try {
@@ -350,7 +350,7 @@ class SsoApiController extends ControllerBase {
   /**
    * Sets/updates the MFA policy for the current tenant.
    *
-   * POST /api/v1/sso/mfa/policy
+   * POST /api/v1/sso/mfa/policy.
    */
   public function setMfaPolicy(Request $request): JsonResponse {
     try {

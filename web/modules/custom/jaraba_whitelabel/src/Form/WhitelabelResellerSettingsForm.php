@@ -7,12 +7,21 @@ namespace Drupal\jaraba_whitelabel\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ *
+ */
 final class WhitelabelResellerSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'whitelabel_reseller_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Reseller.') . '</p>',
@@ -20,6 +29,9 @@ final class WhitelabelResellerSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

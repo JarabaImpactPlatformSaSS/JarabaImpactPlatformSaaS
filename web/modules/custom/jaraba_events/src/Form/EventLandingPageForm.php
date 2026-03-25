@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class EventLandingPageForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'page' => [
@@ -47,10 +50,16 @@ class EventLandingPageForm extends PremiumEntityFormBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'ui', 'name' => 'layout'];
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $entity = $this->getEntity();
     if ($entity->isNew() && empty($entity->get('slug')->value)) {

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_templates.install — Setup del modulo Legal Templates.
+ * Jaraba_legal_templates.install — Setup del modulo Legal Templates.
  *
  * Estructura: Crea vocabulario de taxonomia para tipos de plantilla.
  */

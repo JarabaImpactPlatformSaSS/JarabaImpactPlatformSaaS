@@ -51,148 +51,145 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.sepe_participante.settings",
  * )
  */
-class SepeParticipante extends ContentEntityBase
-{
+class SepeParticipante extends ContentEntityBase {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['accion_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Acción Formativa'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'sepe_accion_formativa')
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['accion_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Acción Formativa'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'sepe_accion_formativa')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Nota: Almacenamos el ID de matrícula como integer ya que la entidad
-        // enrollment puede no existir en todas las instalaciones.
-        $fields['enrollment_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('ID Matrícula LMS'))
-            ->setDescription(t('ID de la matrícula del LMS vinculada (si aplica).'))
-            ->setDisplayConfigurable('form', TRUE);
+    // Nota: Almacenamos el ID de matrícula como integer ya que la entidad
+    // enrollment puede no existir en todas las instalaciones.
+    $fields['enrollment_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('ID Matrícula LMS'))
+      ->setDescription(t('ID de la matrícula del LMS vinculada (si aplica).'))
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['dni'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('DNI/NIE'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 9)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -9,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['dni'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('DNI/NIE'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 9)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['nombre'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 50)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['nombre'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 50)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['apellidos'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Apellidos'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 100)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -7,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['apellidos'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Apellidos'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 100)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -7,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['fecha_alta'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha de Alta'))
-            ->setRequired(TRUE)
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['fecha_alta'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha de Alta'))
+      ->setRequired(TRUE)
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['fecha_baja'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha de Baja'))
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['fecha_baja'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha de Baja'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['motivo_baja'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Motivo de Baja'))
-            ->setSetting('max_length', 100)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['motivo_baja'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Motivo de Baja'))
+      ->setSetting('max_length', 100)
+      ->setDisplayConfigurable('form', TRUE);
 
-        // === DATOS DE SEGUIMIENTO ===
+    // === DATOS DE SEGUIMIENTO ===
+    $fields['horas_conectado'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Horas Conectado'))
+      ->setDescription(t('Total horas de conexión a la plataforma.'))
+      ->setDefaultValue(0)
+      ->setSetting('precision', 8)
+      ->setSetting('scale', 2)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['horas_conectado'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Horas Conectado'))
-            ->setDescription(t('Total horas de conexión a la plataforma.'))
-            ->setDefaultValue(0)
-            ->setSetting('precision', 8)
-            ->setSetting('scale', 2)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['porcentaje_progreso'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('% Progreso'))
+      ->setDescription(t('Porcentaje de contenido completado.'))
+      ->setDefaultValue(0)
+      ->setSetting('min', 0)
+      ->setSetting('max', 100)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['porcentaje_progreso'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('% Progreso'))
-            ->setDescription(t('Porcentaje de contenido completado.'))
-            ->setDefaultValue(0)
-            ->setSetting('min', 0)
-            ->setSetting('max', 100)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['num_actividades'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Actividades Realizadas'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['num_actividades'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Actividades Realizadas'))
-            ->setDefaultValue(0)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['nota_media'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Nota Media'))
+      ->setSetting('precision', 5)
+      ->setSetting('scale', 2)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['nota_media'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Nota Media'))
-            ->setSetting('precision', 5)
-            ->setSetting('scale', 2)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['estado'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setSetting('allowed_values', [
+        'activo' => t('Activo'),
+        'baja' => t('Baja'),
+        'finalizado' => t('Finalizado'),
+        'certificado' => t('Certificado'),
+      ])
+      ->setDefaultValue('activo')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['estado'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setSetting('allowed_values', [
-                'activo' => t('Activo'),
-                'baja' => t('Baja'),
-                'finalizado' => t('Finalizado'),
-                'certificado' => t('Certificado'),
-            ])
-            ->setDefaultValue('activo')
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['ultima_conexion'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Última Conexión'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['ultima_conexion'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Última Conexión'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['fecha_finalizacion'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Finalización'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['fecha_finalizacion'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha Finalización'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['apto'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Apto'))
+      ->setDescription(t('Resultado final: APTO/NO APTO.'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['apto'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Apto'))
-            ->setDescription(t('Resultado final: APTO/NO APTO.'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
-
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

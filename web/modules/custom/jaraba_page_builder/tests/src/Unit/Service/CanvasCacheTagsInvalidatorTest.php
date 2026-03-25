@@ -219,7 +219,7 @@ class CanvasCacheTagsInvalidatorTest extends TestCase {
       ->with($this->callback(function (array $tags): bool {
         // Con page_content:10 y page_content:20, los tags unicos deben ser:
         // page_content_list, jaraba_sitemap, canvas_preview,
-        // canvas_preview:10, canvas_preview:20
+        // canvas_preview:10, canvas_preview:20.
         return count($tags) === 5
           && in_array('page_content_list', $tags, TRUE)
           && in_array('jaraba_sitemap', $tags, TRUE)

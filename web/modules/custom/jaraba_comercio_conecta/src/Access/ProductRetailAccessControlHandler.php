@@ -39,12 +39,12 @@ class ProductRetailAccessControlHandler extends DefaultEntityAccessControlHandle
 
     switch ($operation) {
       case 'view':
-        // Productos activos son públicos en el marketplace
+        // Productos activos son públicos en el marketplace.
         $is_active = $entity->get('status')->value === 'active';
         if ($is_active) {
           return AccessResult::allowed()->addCacheableDependency($entity);
         }
-        // Productos no activos: solo el dueño del comercio o admin
+        // Productos no activos: solo el dueño del comercio o admin.
         return $this->checkMerchantOwnership($entity, $account);
 
       case 'update':

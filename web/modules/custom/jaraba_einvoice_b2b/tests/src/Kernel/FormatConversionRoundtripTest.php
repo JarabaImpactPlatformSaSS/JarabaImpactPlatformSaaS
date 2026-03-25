@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_einvoice_b2b\Kernel;
 
-use Drupal\jaraba_einvoice_b2b\Service\EInvoiceFormatConverterService;
-use Drupal\jaraba_einvoice_b2b\Service\EInvoiceUblService;
+use Drupal\jaraba_einvoice_b2b\Model\EN16931Model;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -49,7 +48,7 @@ class FormatConversionRoundtripTest extends KernelTestBase {
     /** @var \Drupal\jaraba_einvoice_b2b\Service\EInvoiceFormatConverterService $converter */
     $converter = $this->container->get('jaraba_einvoice_b2b.format_converter');
 
-    $model = \Drupal\jaraba_einvoice_b2b\Model\EN16931Model::fromArray([
+    $model = EN16931Model::fromArray([
       'invoice_number' => 'RT-2026-001',
       'issue_date' => '2026-01-20',
       'invoice_type_code' => 380,

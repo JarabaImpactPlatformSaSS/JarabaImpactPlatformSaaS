@@ -69,155 +69,150 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class LifeWheelAssessment extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
-{
+class LifeWheelAssessment extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Campo owner (usuario propietario).
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+    // Campo owner (usuario propietario).
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Usuario'))
-            ->setDescription(t('Usuario al que pertenece esta evaluación.'))
-            ->setSetting('target_type', 'user')
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Usuario'))
+      ->setDescription(t('Usuario al que pertenece esta evaluación.'))
+      ->setSetting('target_type', 'user')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // ========================================
-        // PUNTUACIONES POR ÁREA (1-10)
-        // ========================================
+    // ========================================
+    // PUNTUACIONES POR ÁREA (1-10)
+    // ========================================
+    $areas = [
+      'career' => t('Trabajo/Carrera'),
+      'finance' => t('Finanzas'),
+      'health' => t('Salud'),
+      'family' => t('Familia'),
+      'social' => t('Social/Amistades'),
+      'growth' => t('Desarrollo Personal'),
+      'leisure' => t('Ocio'),
+      'environment' => t('Entorno Físico'),
+    ];
 
-        $areas = [
-            'career' => t('Trabajo/Carrera'),
-            'finance' => t('Finanzas'),
-            'health' => t('Salud'),
-            'family' => t('Familia'),
-            'social' => t('Social/Amistades'),
-            'growth' => t('Desarrollo Personal'),
-            'leisure' => t('Ocio'),
-            'environment' => t('Entorno Físico'),
-        ];
+    $weight = 0;
+    foreach ($areas as $key => $label) {
+      $fields["score_$key"] = BaseFieldDefinition::create('integer')
+        ->setLabel($label)
+        ->setDescription(t('Puntuación de 1 a 10 para @area.', ['@area' => $label]))
+        ->setSettings([
+          'min' => 1,
+          'max' => 10,
+        ])
+        ->setDefaultValue(5)
+        ->setDisplayOptions('view', [
+          'label' => 'inline',
+          'type' => 'number_integer',
+          'weight' => $weight,
+        ])
+        ->setDisplayOptions('form', [
+          'type' => 'number',
+          'weight' => $weight,
+        ])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE);
 
-        $weight = 0;
-        foreach ($areas as $key => $label) {
-            $fields["score_$key"] = BaseFieldDefinition::create('integer')
-                ->setLabel($label)
-                ->setDescription(t('Puntuación de 1 a 10 para @area.', ['@area' => $label]))
-                ->setSettings([
-                    'min' => 1,
-                    'max' => 10,
-                ])
-                ->setDefaultValue(5)
-                ->setDisplayOptions('view', [
-                    'label' => 'inline',
-                    'type' => 'number_integer',
-                    'weight' => $weight,
-                ])
-                ->setDisplayOptions('form', [
-                    'type' => 'number',
-                    'weight' => $weight,
-                ])
-                ->setDisplayConfigurable('form', TRUE)
-                ->setDisplayConfigurable('view', TRUE);
-
-            $weight++;
-        }
-
-        // Notas/Reflexiones.
-        $fields['notes'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Notas y Reflexiones'))
-            ->setDescription(t('Observaciones personales sobre esta evaluación.'))
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'text_default',
-                'weight' => 10,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        // Timestamp de creación.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de creación'))
-            ->setDescription(t('Fecha en que se realizó la evaluación.'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        // Timestamp de actualización.
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Última actualización'))
-            ->setDescription(t('Fecha de última modificación.'))
-            ->setDisplayConfigurable('view', TRUE);
-
-        return $fields;
+      $weight++;
     }
 
-    /**
-     * Obtiene la puntuación promedio de todas las áreas.
-     *
-     * @return float
-     *   Promedio de las 8 áreas.
-     */
-    public function getAverageScore(): float
-    {
-        $areas = ['career', 'finance', 'health', 'family', 'social', 'growth', 'leisure', 'environment'];
-        $total = 0;
-        $count = 0;
+    // Notas/Reflexiones.
+    $fields['notes'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Notas y Reflexiones'))
+      ->setDescription(t('Observaciones personales sobre esta evaluación.'))
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'text_default',
+        'weight' => 10,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        foreach ($areas as $area) {
-            $value = $this->get("score_$area")->value;
-            if ($value) {
-                $total += (int) $value;
-                $count++;
-            }
-        }
+    // Timestamp de creación.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de creación'))
+      ->setDescription(t('Fecha en que se realizó la evaluación.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        return $count > 0 ? round($total / $count, 1) : 0.0;
+    // Timestamp de actualización.
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Última actualización'))
+      ->setDescription(t('Fecha de última modificación.'))
+      ->setDisplayConfigurable('view', TRUE);
+
+    return $fields;
+  }
+
+  /**
+   * Obtiene la puntuación promedio de todas las áreas.
+   *
+   * @return float
+   *   Promedio de las 8 áreas.
+   */
+  public function getAverageScore(): float {
+    $areas = ['career', 'finance', 'health', 'family', 'social', 'growth', 'leisure', 'environment'];
+    $total = 0;
+    $count = 0;
+
+    foreach ($areas as $area) {
+      $value = $this->get("score_$area")->value;
+      if ($value) {
+        $total += (int) $value;
+        $count++;
+      }
     }
 
-    /**
-     * Obtiene todas las puntuaciones como array.
-     *
-     * @return array
-     *   Array asociativo área => puntuación.
-     */
-    public function getAllScores(): array
-    {
-        return [
-            'career' => (int) $this->get('score_career')->value,
-            'finance' => (int) $this->get('score_finance')->value,
-            'health' => (int) $this->get('score_health')->value,
-            'family' => (int) $this->get('score_family')->value,
-            'social' => (int) $this->get('score_social')->value,
-            'growth' => (int) $this->get('score_growth')->value,
-            'leisure' => (int) $this->get('score_leisure')->value,
-            'environment' => (int) $this->get('score_environment')->value,
-        ];
-    }
+    return $count > 0 ? round($total / $count, 1) : 0.0;
+  }
+
+  /**
+   * Obtiene todas las puntuaciones como array.
+   *
+   * @return array
+   *   Array asociativo área => puntuación.
+   */
+  public function getAllScores(): array {
+    return [
+      'career' => (int) $this->get('score_career')->value,
+      'finance' => (int) $this->get('score_finance')->value,
+      'health' => (int) $this->get('score_health')->value,
+      'family' => (int) $this->get('score_family')->value,
+      'social' => (int) $this->get('score_social')->value,
+      'growth' => (int) $this->get('score_growth')->value,
+      'leisure' => (int) $this->get('score_leisure')->value,
+      'environment' => (int) $this->get('score_environment')->value,
+    ];
+  }
 
 }

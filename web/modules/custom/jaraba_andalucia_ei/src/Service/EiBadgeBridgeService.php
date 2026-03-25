@@ -246,7 +246,7 @@ class EiBadgeBridgeService {
         ];
       }
 
-      // Todos los badges completados.
+      // @todo s los badges completados.
       return NULL;
     }
     catch (\Throwable $e) {

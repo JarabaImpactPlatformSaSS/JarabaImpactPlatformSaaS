@@ -37,7 +37,7 @@ class LexnetBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    // Dashboard: Home > JarabaLex
+    // Dashboard: Home > JarabaLex.
     if ($route_name === 'jaraba_legal_lexnet.dashboard') {
       $breadcrumb->addLink(Link::createFromRoute(
         $this->t('JarabaLex'),
@@ -46,7 +46,7 @@ class LexnetBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       return $breadcrumb;
     }
 
-    // Settings routes: Home > JarabaLex > Section
+    // Settings routes: Home > JarabaLex > Section.
     $settingsSections = [
       'jaraba_legal_lexnet.lexnet_notification.settings' => $this->t('Configuración Notificaciones'),
       'jaraba_legal_lexnet.lexnet_submission.settings' => $this->t('Configuración Envíos'),

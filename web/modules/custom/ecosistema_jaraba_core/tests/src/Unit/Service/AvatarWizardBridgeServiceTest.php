@@ -74,6 +74,9 @@ class AvatarWizardBridgeServiceTest extends UnitTestCase {
         $this->avatarType = $avatarType;
       }
 
+      /**
+       *
+       */
       public function get(string $field): object {
         return new class ($this->avatarType) {
 
@@ -116,6 +119,9 @@ class AvatarWizardBridgeServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+   *
+   */
   protected function createBridge(
     ?AvatarDetectionService $avatarDetection = NULL,
     ?TenantContextService $tenantContext = NULL,

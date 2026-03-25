@@ -42,6 +42,9 @@ class IdentityWallet extends ContentEntityBase implements EntityOwnerInterface, 
   use EntityChangedTrait;
   use EntityOwnerTrait;
 
+  /**
+   *
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);

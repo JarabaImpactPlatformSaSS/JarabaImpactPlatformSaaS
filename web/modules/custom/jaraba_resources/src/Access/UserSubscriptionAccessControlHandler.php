@@ -13,39 +13,37 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for User Subscription entities.
  */
-class UserSubscriptionAccessControlHandler extends EntityAccessControlHandler
-{
+class UserSubscriptionAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        if ($account->hasPermission('administer membership plans')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // Users can only view/manage their own subscriptions.
-        if ((int) $entity->getOwnerId() === (int) $account->id()) {
-            switch ($operation) {
-                case 'view':
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-
-                case 'update':
-                    return AccessResult::allowedIfHasPermission($account, 'manage own subscription')
-                        ->cachePerUser()
-                        ->addCacheableDependency($entity);
-            }
-        }
-
-        return AccessResult::forbidden()->cachePerUser();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    if ($account->hasPermission('administer membership plans')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'subscribe to plans');
+    // Users can only view/manage their own subscriptions.
+    if ((int) $entity->getOwnerId() === (int) $account->id()) {
+      switch ($operation) {
+        case 'view':
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+
+        case 'update':
+          return AccessResult::allowedIfHasPermission($account, 'manage own subscription')
+            ->cachePerUser()
+            ->addCacheableDependency($entity);
+      }
     }
+
+    return AccessResult::forbidden()->cachePerUser();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'subscribe to plans');
+  }
 
 }

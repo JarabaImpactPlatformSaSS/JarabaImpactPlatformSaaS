@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Service;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveTypeInterface;
 use Drupal\jaraba_interactive\Plugin\InteractiveTypeManager;
 use Drupal\jaraba_interactive\Service\Scorer;
@@ -44,7 +45,7 @@ class ScorerTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 

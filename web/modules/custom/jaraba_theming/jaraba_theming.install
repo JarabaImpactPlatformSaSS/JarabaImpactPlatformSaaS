@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update, and uninstall functions for jaraba_theming module.
  */
 
-declare(strict_types=1);
+use Drupal\Core\Field\BaseFieldDefinition;
+
 
 /**
  * Install entity types: tenant_theme_config.
@@ -55,7 +58,7 @@ function jaraba_theming_update_10002(): string {
   try {
     $update_manager = \Drupal::entityDefinitionUpdateManager();
 
-    $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $field = BaseFieldDefinition::create('string')
       ->setName('header_cta_url')
       ->setTargetEntityTypeId('tenant_theme_config')
       ->setLabel(t('URL CTA'))

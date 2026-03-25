@@ -37,67 +37,63 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   },
  * )
  */
-class DiagnosticAnswer extends ContentEntityBase
-{
+class DiagnosticAnswer extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Referencia al diagnóstico padre
-        $fields['diagnostic_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Diagnóstico'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'business_diagnostic');
+    // Referencia al diagnóstico padre.
+    $fields['diagnostic_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Diagnóstico'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'business_diagnostic');
 
-        // Referencia a la pregunta
-        $fields['question_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Pregunta'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'diagnostic_question');
+    // Referencia a la pregunta.
+    $fields['question_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Pregunta'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'diagnostic_question');
 
-        // Valor de la respuesta (flexible para distintos tipos)
-        $fields['answer_value'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Valor'))
-            ->setDescription(t('Valor de la respuesta (string para flexibilidad).'))
-            ->setSetting('max_length', 255);
+    // Valor de la respuesta (flexible para distintos tipos)
+    $fields['answer_value'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Valor'))
+      ->setDescription(t('Valor de la respuesta (string para flexibilidad).'))
+      ->setSetting('max_length', 255);
 
-        // Para respuestas múltiples o texto largo
-        $fields['answer_data'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Datos Adicionales'))
-            ->setDescription(t('JSON para respuestas complejas o texto largo.'));
+    // Para respuestas múltiples o texto largo.
+    $fields['answer_data'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Datos Adicionales'))
+      ->setDescription(t('JSON para respuestas complejas o texto largo.'));
 
-        // Score calculado de esta respuesta
-        $fields['calculated_score'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Score Calculado'))
-            ->setSetting('precision', 5)
-            ->setSetting('scale', 2)
-            ->setDefaultValue(0);
+    // Score calculado de esta respuesta.
+    $fields['calculated_score'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Score Calculado'))
+      ->setSetting('precision', 5)
+      ->setSetting('scale', 2)
+      ->setDefaultValue(0);
 
-        // Timestamp
-        $fields['answered_at'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Respondido'));
+    // Timestamp.
+    $fields['answered_at'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Respondido'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene el valor de la respuesta.
-     */
-    public function getAnswerValue(): string
-    {
-        return $this->get('answer_value')->value ?? '';
-    }
+  /**
+   * Obtiene el valor de la respuesta.
+   */
+  public function getAnswerValue(): string {
+    return $this->get('answer_value')->value ?? '';
+  }
 
-    /**
-     * Obtiene el score calculado.
-     */
-    public function getCalculatedScore(): float
-    {
-        return (float) ($this->get('calculated_score')->value ?? 0);
-    }
+  /**
+   * Obtiene el score calculado.
+   */
+  public function getCalculatedScore(): float {
+    return (float) ($this->get('calculated_score')->value ?? 0);
+  }
 
 }

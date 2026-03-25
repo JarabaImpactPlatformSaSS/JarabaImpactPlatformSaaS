@@ -13,35 +13,32 @@ use Drupal\Core\Session\AccountInterface;
 /**
  * Control de acceso para la entidad PartnerRelationship.
  */
-class PartnerRelationshipAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class PartnerRelationshipAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        if ($account->hasPermission('administer agroconecta')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-        return AccessResult::neutral()->cachePerPermissions();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        if ($account->hasPermission('administer agroconecta')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-        return AccessResult::neutral()->cachePerPermissions();
+    if ($account->hasPermission('administer agroconecta')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+    return AccessResult::neutral()->cachePerPermissions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    if ($account->hasPermission('administer agroconecta')) {
+      return AccessResult::allowed()->cachePerPermissions();
+    }
+    return AccessResult::neutral()->cachePerPermissions();
+  }
 
 }

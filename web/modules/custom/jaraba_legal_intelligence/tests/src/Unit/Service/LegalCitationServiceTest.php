@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal_intelligence\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -188,7 +189,7 @@ class LegalCitationServiceTest extends UnitTestCase {
       ->willReturn($resolution);
 
     // Mock bookmark creation.
-    $bookmark = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $bookmark = $this->createMock(ContentEntityInterface::class);
     $bookmark->method('id')->willReturn(100);
     $bookmark->method('save')->willReturn(1);
     $this->bookmarkStorage->method('create')->willReturn($bookmark);

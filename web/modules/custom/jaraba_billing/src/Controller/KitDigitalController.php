@@ -7,7 +7,6 @@ namespace Drupal\jaraba_billing\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
-use Drupal\jaraba_billing\Entity\KitDigitalAgreement;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -321,7 +320,7 @@ class KitDigitalController extends ControllerBase {
     // - next-generation-eu.png: PNG oficial de ec.europa.eu (ES horizontal POS)
     // - gobierno-espana.png: PNG oficial Ministerio de kitdigital.red.es
     // - kit-digital-composite.png: PNG compuesto oficial de red.es (1398x200)
-    // - redes-logo.png: PNG oficial Red.es de kitdigital.red.es
+    // - redes-logo.png: PNG oficial Red.es de kitdigital.red.es.
     return [
       [
         'src' => $themePath . '/images/kit-digital-logo.svg',

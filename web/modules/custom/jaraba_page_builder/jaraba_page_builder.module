@@ -22,6 +22,9 @@
  * @see docs/planificacion/20260126-Plan_Constructor_Paginas_SaaS_v1.md
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -93,7 +96,7 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'page-builder-template-picker',
     ],
-    // Dashboard visual de experimentos A/B - Gap 2 Clase Mundial
+    // Dashboard visual de experimentos A/B - Gap 2 Clase Mundial.
     'experiment_dashboard' => [
       'variables' => [
         'experiments' => [],
@@ -226,7 +229,7 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       }
 
       // Registrar theme dinámico para este bloque.
-      // El nombre sigue el patrón: page_builder_block__{template_id}
+      // El nombre sigue el patrón: page_builder_block__{template_id}.
       $theme_name = 'page_builder_block__' . $template_id;
 
       $themes[$theme_name] = [
@@ -309,7 +312,7 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   // - Tilt 3D
   // - Spotlight cursor
   // - Card Stack 3D
-  // - Counters animados
+  // - Counters animados.
   $attachments['#attached']['library'][] = 'jaraba_page_builder/premium-blocks';
 
   // Aceternity UI: Glassmorphism, Card Flip 3D, Hover Glow, Video Background Hero.
@@ -350,7 +353,7 @@ function jaraba_page_builder_page_attachments(array &$attachments) {
   $page_content = $route_match->getParameter('page_content');
   if ($page_content) {
     $pageId = $page_content->id();
-    
+
     // Siempre adjuntar el cliente para que pueda verificar con la API.
     $attachments['#attached']['library'][] = 'jaraba_page_builder/ab-testing';
     $attachments['#attached']['drupalSettings']['jarabaPageBuilder'] = [
@@ -873,17 +876,17 @@ function jaraba_page_builder_page_attachments_alter(array &$attachments) {
 function jaraba_page_builder_preprocess_recommended_courses(array &$variables): void {
   $content = $variables['content'] ?? [];
   $course_ids = $content['course_ids'] ?? [];
-  
+
   if (empty($course_ids)) {
     $variables['courses'] = [];
     return;
   }
-  
+
   // Cargar entidades de cursos.
   try {
     $course_storage = \Drupal::entityTypeManager()->getStorage('lms_course');
     $courses = $course_storage->loadMultiple($course_ids);
-    
+
     $variables['courses'] = [];
     foreach ($courses as $course) {
       // Obtener imagen del curso si existe.
@@ -895,15 +898,15 @@ function jaraba_page_builder_preprocess_recommended_courses(array &$variables): 
             ->generateAbsoluteString($image->getFileUri());
         }
       }
-      
+
       // Formatear duración.
       $duration_minutes = $course->getDurationMinutes();
-      $duration_formatted = $duration_minutes 
-        ? ($duration_minutes >= 60 
+      $duration_formatted = $duration_minutes
+        ? ($duration_minutes >= 60
           ? floor($duration_minutes / 60) . 'h ' . ($duration_minutes % 60 > 0 ? ($duration_minutes % 60) . 'min' : '')
           : $duration_minutes . ' min')
         : NULL;
-      
+
       // Construir datos del curso para el template.
       $variables['courses'][] = [
         'id' => $course->id(),
@@ -935,23 +938,23 @@ function jaraba_page_builder_preprocess_recommended_courses(array &$variables): 
  */
 function jaraba_page_builder_preprocess_course_catalog(array &$variables): void {
   $content = $variables['content'] ?? [];
-  
+
   // Solo procesar en modo dinámico.
   if (($content['source_mode'] ?? 'manual') !== 'dynamic') {
     return;
   }
-  
+
   $course_ids = $content['course_ids'] ?? [];
   if (empty($course_ids)) {
     $variables['dynamic_courses'] = [];
     return;
   }
-  
+
   // Reutilizar la lógica de carga de cursos.
   try {
     $course_storage = \Drupal::entityTypeManager()->getStorage('lms_course');
     $courses = $course_storage->loadMultiple($course_ids);
-    
+
     $variables['dynamic_courses'] = [];
     foreach ($courses as $course) {
       $image_url = NULL;
@@ -962,14 +965,14 @@ function jaraba_page_builder_preprocess_course_catalog(array &$variables): void 
             ->generateAbsoluteString($image->getFileUri());
         }
       }
-      
+
       $duration_minutes = $course->getDurationMinutes();
-      $duration_formatted = $duration_minutes 
-        ? ($duration_minutes >= 60 
+      $duration_formatted = $duration_minutes
+        ? ($duration_minutes >= 60
           ? floor($duration_minutes / 60) . 'h ' . ($duration_minutes % 60 > 0 ? ($duration_minutes % 60) . 'min' : '')
           : $duration_minutes . ' min')
         : NULL;
-      
+
       $variables['dynamic_courses'][] = [
         'id' => $course->id(),
         'title' => $course->getTitle(),
@@ -1141,7 +1144,6 @@ function jaraba_page_builder_preprocess_page_builder_block(array &$variables): v
   }
 }
 
-
 /**
  * Implements hook_entity_operation().
  *
@@ -1152,7 +1154,7 @@ function jaraba_page_builder_preprocess_page_builder_block(array &$variables): v
  * @see jaraba_page_builder.canvas_editor route
  * @see docs/tecnicos/20260203a-178_Page_Builder_Canvas_Visual_v2_Claude.md
  */
-function jaraba_page_builder_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+function jaraba_page_builder_entity_operation(EntityInterface $entity) {
   $operations = [];
 
   // Solo para entidades page_content.
@@ -1169,7 +1171,7 @@ function jaraba_page_builder_entity_operation(\Drupal\Core\Entity\EntityInterfac
   // Añadir operación "Editar en Canvas" con icono y peso para ordenarlo.
   $operations['canvas_editor'] = [
     'title' => t('Editar en Canvas'),
-    'url' => \Drupal\Core\Url::fromRoute('jaraba_page_builder.canvas_editor', [
+    'url' => Url::fromRoute('jaraba_page_builder.canvas_editor', [
       'page_content' => $entity->id(),
     ]),
     'weight' => 5,
@@ -1215,13 +1217,13 @@ function jaraba_page_builder_mail(string $key, array &$message, array $params): 
  * P2-03: Detecta cambios de moderation_state en page_content y delega
  * al servicio WorkflowTransitionSubscriber para notificaciones.
  */
-function jaraba_page_builder_entity_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_page_builder_entity_update(EntityInterface $entity): void {
   // Solo procesar entidades page_content con content moderation.
   if ($entity->getEntityTypeId() !== 'page_content') {
     return;
   }
 
-  if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+  if (!$entity instanceof ContentEntityInterface) {
     return;
   }
 
@@ -1356,8 +1358,6 @@ function _jaraba_page_builder_get_course_category($course): ?string {
   return $category ? $category->label() : NULL;
 }
 
-
-
 /**
  * Prepares variables for experiment_variant templates.
  *
@@ -1484,7 +1484,7 @@ function jaraba_page_builder_page_content_view_alter(array &$build): void {
  *
  * @see scripts/maintenance/backup-canvas.php
  */
-function jaraba_page_builder_page_content_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_page_builder_page_content_presave(EntityInterface $entity): void {
   // Skip during sync operations (translations, migrations).
   if ($entity->isSyncing()) {
     return;

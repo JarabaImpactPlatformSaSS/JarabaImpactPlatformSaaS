@@ -9,7 +9,7 @@
  * - Gestión de Contactos con engagement scoring
  * - Pipeline visual de Oportunidades (Kanban)
  * - Registro de Actividades (Timeline)
- * - Integración con jaraba_email y jaraba_pixels
+ * - Integración con jaraba_email y jaraba_pixels.
  */
 
 declare(strict_types=1);

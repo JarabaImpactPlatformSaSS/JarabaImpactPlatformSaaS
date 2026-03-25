@@ -45,110 +45,124 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.customer_preference_agro.settings",
  * )
  */
-class CustomerPreferenceAgro extends ContentEntityBase implements EntityChangedInterface
-{
+class CustomerPreferenceAgro extends ContentEntityBase implements EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   *
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['customer_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Cliente'))
-            ->setSetting('target_type', 'user')
-            ->setRequired(TRUE);
+    $fields['customer_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Cliente'))
+      ->setSetting('target_type', 'user')
+      ->setRequired(TRUE);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setSetting('target_type', 'tenant')
-            ->setRequired(TRUE);
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setSetting('target_type', 'tenant')
+      ->setRequired(TRUE);
 
-        $fields['preference_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de preferencia'))
-            ->setSetting('allowed_values', [
-                'dietary' => t('Dietética'),
-                'taste' => t('Gusto/sabor'),
-                'budget' => t('Presupuesto'),
-                'occasion' => t('Ocasión'),
-                'origin' => t('Origen preferido'),
-                'certification' => t('Certificación'),
-                'allergen' => t('Alérgeno a evitar'),
-                'packaging' => t('Preferencia de formato'),
-            ])
-            ->setRequired(TRUE);
+    $fields['preference_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de preferencia'))
+      ->setSetting('allowed_values', [
+        'dietary' => t('Dietética'),
+        'taste' => t('Gusto/sabor'),
+        'budget' => t('Presupuesto'),
+        'occasion' => t('Ocasión'),
+        'origin' => t('Origen preferido'),
+        'certification' => t('Certificación'),
+        'allergen' => t('Alérgeno a evitar'),
+        'packaging' => t('Preferencia de formato'),
+      ])
+      ->setRequired(TRUE);
 
-        $fields['preference_key'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Clave'))
-            ->setDescription(t('Clave específica: ej. "gluten_free", "organic", "budget_max".'))
-            ->setSetting('max_length', 128)
-            ->setRequired(TRUE);
+    $fields['preference_key'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Clave'))
+      ->setDescription(t('Clave específica: ej. "gluten_free", "organic", "budget_max".'))
+      ->setSetting('max_length', 128)
+      ->setRequired(TRUE);
 
-        $fields['preference_value'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Valor'))
-            ->setDescription(t('Valor de la preferencia: ej. "true", "50", "Córdoba".'))
-            ->setSetting('max_length', 255)
-            ->setRequired(TRUE);
+    $fields['preference_value'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Valor'))
+      ->setDescription(t('Valor de la preferencia: ej. "true", "50", "Córdoba".'))
+      ->setSetting('max_length', 255)
+      ->setRequired(TRUE);
 
-        $fields['source'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Fuente'))
-            ->setSetting('allowed_values', [
-                'declared' => t('Declarada por el usuario'),
-                'inferred' => t('Inferida por comportamiento'),
-                'purchase' => t('Historial de compras'),
-                'conversation' => t('Conversación con agente'),
-            ])
-            ->setRequired(TRUE)
-            ->setDefaultValue('declared');
+    $fields['source'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Fuente'))
+      ->setSetting('allowed_values', [
+        'declared' => t('Declarada por el usuario'),
+        'inferred' => t('Inferida por comportamiento'),
+        'purchase' => t('Historial de compras'),
+        'conversation' => t('Conversación con agente'),
+      ])
+      ->setRequired(TRUE)
+      ->setDefaultValue('declared');
 
-        $fields['confidence'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Confianza'))
-            ->setDescription(t('Nivel de confianza 0.0-1.0 (1.0 = declarada).'))
-            ->setSetting('precision', 3)
-            ->setSetting('scale', 2)
-            ->setDefaultValue('1.00');
+    $fields['confidence'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Confianza'))
+      ->setDescription(t('Nivel de confianza 0.0-1.0 (1.0 = declarada).'))
+      ->setSetting('precision', 3)
+      ->setSetting('scale', 2)
+      ->setDefaultValue('1.00');
 
-        $fields['is_active'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Activa'))
-            ->setDefaultValue(TRUE);
+    $fields['is_active'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Activa'))
+      ->setDefaultValue(TRUE);
 
-        $fields['last_verified'] = BaseFieldDefinition::create('timestamp')
-            ->setLabel(t('Última verificación'))
-            ->setDescription(t('Cuándo se confirmó por última vez esta preferencia.'));
+    $fields['last_verified'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Última verificación'))
+      ->setDescription(t('Cuándo se confirmó por última vez esta preferencia.'));
 
-        $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
-        $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
+    $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    public function getPreferenceType(): string
-    {
-        return $this->get('preference_type')->value ?? '';
-    }
+  /**
+   *
+   */
+  public function getPreferenceType(): string {
+    return $this->get('preference_type')->value ?? '';
+  }
 
-    public function getPreferenceKey(): string
-    {
-        return $this->get('preference_key')->value ?? '';
-    }
+  /**
+   *
+   */
+  public function getPreferenceKey(): string {
+    return $this->get('preference_key')->value ?? '';
+  }
 
-    public function getPreferenceValue(): string
-    {
-        return $this->get('preference_value')->value ?? '';
-    }
+  /**
+   *
+   */
+  public function getPreferenceValue(): string {
+    return $this->get('preference_value')->value ?? '';
+  }
 
-    public function getSource(): string
-    {
-        return $this->get('source')->value ?? 'declared';
-    }
+  /**
+   *
+   */
+  public function getSource(): string {
+    return $this->get('source')->value ?? 'declared';
+  }
 
-    public function getConfidence(): float
-    {
-        return (float) ($this->get('confidence')->value ?? 1.0);
-    }
+  /**
+   *
+   */
+  public function getConfidence(): float {
+    return (float) ($this->get('confidence')->value ?? 1.0);
+  }
 
-    public function isActive(): bool
-    {
-        return (bool) ($this->get('is_active')->value ?? TRUE);
-    }
+  /**
+   *
+   */
+  public function isActive(): bool {
+    return (bool) ($this->get('is_active')->value ?? TRUE);
+  }
+
 }

@@ -34,192 +34,191 @@ use Psr\Log\LoggerInterface;
  *
  * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
  */
-class QualityEvaluatorService
-{
+class QualityEvaluatorService {
 
-    /**
-     * El gestor de proveedores IA.
-     *
-     * @var \Drupal\ai\AiProviderPluginManager
-     */
-    protected AiProviderPluginManager $aiProvider;
+  /**
+   * El gestor de proveedores IA.
+   *
+   * @var \Drupal\ai\AiProviderPluginManager
+   */
+  protected AiProviderPluginManager $aiProvider;
 
-    /**
-     * La factoría de configuración.
-     *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface
-     */
-    protected ConfigFactoryInterface $configFactory;
+  /**
+   * La factoría de configuración.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactory;
 
-    /**
-     * El servicio de observabilidad.
-     *
-     * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService
-     */
-    protected AIObservabilityService $observability;
+  /**
+   * El servicio de observabilidad.
+   *
+   * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService
+   */
+  protected AIObservabilityService $observability;
 
-    /**
-     * El logger para registrar errores.
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected LoggerInterface $logger;
+  /**
+   * El logger para registrar errores.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * El gestor de tipos de entidad (GAP-06).
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
+  /**
+   * El gestor de tipos de entidad (GAP-06).
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
-    /**
-     * Construye un QualityEvaluatorService.
-     *
-     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
-     *   El gestor de proveedores IA.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   La factoría de configuración.
-     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
-     *   El servicio de observabilidad.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El servicio de logging.
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
-     *   Gestor de tipos de entidad para consultas aggregate (GAP-06).
-     *   Opcional para backward compatibility.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        AIObservabilityService $observability,
-        LoggerInterface $logger,
-        ?EntityTypeManagerInterface $entityTypeManager = NULL,
-    ) {
-        $this->aiProvider = $aiProvider;
-        $this->configFactory = $configFactory;
-        $this->observability = $observability;
-        $this->logger = $logger;
-        $this->entityTypeManager = $entityTypeManager ?? \Drupal::entityTypeManager();
+  /**
+   * Construye un QualityEvaluatorService.
+   *
+   * @param \Drupal\ai\AiProviderPluginManager $aiProvider
+   *   El gestor de proveedores IA.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   La factoría de configuración.
+   * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
+   *   El servicio de observabilidad.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El servicio de logging.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
+   *   Gestor de tipos de entidad para consultas aggregate (GAP-06).
+   *   Opcional para backward compatibility.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    AIObservabilityService $observability,
+    LoggerInterface $logger,
+    ?EntityTypeManagerInterface $entityTypeManager = NULL,
+  ) {
+    $this->aiProvider = $aiProvider;
+    $this->configFactory = $configFactory;
+    $this->observability = $observability;
+    $this->logger = $logger;
+    $this->entityTypeManager = $entityTypeManager ?? \Drupal::entityTypeManager();
+  }
+
+  /**
+   * Evalúa la calidad de una respuesta IA.
+   *
+   * @param string $prompt
+   *   El prompt original enviado al agente.
+   * @param string $response
+   *   La respuesta IA a evaluar.
+   * @param array $criteria
+   *   Criterios de evaluación (opcional, usa defaults).
+   * @param array $context
+   *   Contexto adicional para la evaluación:
+   *   - agent_id: ID del agente.
+   *   - action: Acción ejecutada.
+   *   - brand_voice: Brand Voice usado.
+   *
+   * @return array
+   *   Resultado de evaluación:
+   *   - success: bool
+   *   - data: array con scores, strengths, improvements
+   */
+  public function evaluate(
+    string $prompt,
+    string $response,
+    array $criteria = [],
+    array $context = [],
+  ): array {
+    $criteria = $criteria ?: $this->getDefaultCriteria();
+
+    $evaluationPrompt = $this->buildEvaluationPrompt($prompt, $response, $criteria, $context);
+
+    try {
+      $result = $this->callEvaluator($evaluationPrompt);
+
+      if ($result['success']) {
+        $evaluation = $this->parseEvaluation($result['data']['text']);
+        $evaluation['raw_evaluation'] = $result['data']['text'];
+
+        return [
+          'success' => TRUE,
+          'data' => $evaluation,
+        ];
+      }
+
+      return $result;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error en evaluación de calidad: @msg', ['@msg' => $e->getMessage()]);
+      return [
+        'success' => FALSE,
+        'error' => $e->getMessage(),
+      ];
+    }
+  }
+
+  /**
+   * Evalúa y registra la puntuación de calidad en el log.
+   *
+   * Útil para evaluación automática post-ejecución donde
+   * se quiere persistir el score en el ai_usage_log.
+   *
+   * @param int $logId
+   *   El ID del log de uso IA a actualizar.
+   * @param string $prompt
+   *   El prompt original.
+   * @param string $response
+   *   La respuesta a evaluar.
+   *
+   * @return array
+   *   Resultado de la evaluación.
+   */
+  public function evaluateAndLog(int $logId, string $prompt, string $response): array {
+    $evaluation = $this->evaluate($prompt, $response);
+
+    if ($evaluation['success'] && isset($evaluation['data']['overall_score'])) {
+      // Actualizar el log con la puntuación de calidad.
+      $this->updateLogQualityScore($logId, $evaluation['data']['overall_score']);
     }
 
-    /**
-     * Evalúa la calidad de una respuesta IA.
-     *
-     * @param string $prompt
-     *   El prompt original enviado al agente.
-     * @param string $response
-     *   La respuesta IA a evaluar.
-     * @param array $criteria
-     *   Criterios de evaluación (opcional, usa defaults).
-     * @param array $context
-     *   Contexto adicional para la evaluación:
-     *   - agent_id: ID del agente.
-     *   - action: Acción ejecutada.
-     *   - brand_voice: Brand Voice usado.
-     *
-     * @return array
-     *   Resultado de evaluación:
-     *   - success: bool
-     *   - data: array con scores, strengths, improvements
-     */
-    public function evaluate(
-        string $prompt,
-        string $response,
-        array $criteria = [],
-        array $context = [],
-    ): array {
-        $criteria = $criteria ?: $this->getDefaultCriteria();
+    return $evaluation;
+  }
 
-        $evaluationPrompt = $this->buildEvaluationPrompt($prompt, $response, $criteria, $context);
-
-        try {
-            $result = $this->callEvaluator($evaluationPrompt);
-
-            if ($result['success']) {
-                $evaluation = $this->parseEvaluation($result['data']['text']);
-                $evaluation['raw_evaluation'] = $result['data']['text'];
-
-                return [
-                    'success' => TRUE,
-                    'data' => $evaluation,
-                ];
-            }
-
-            return $result;
-        } catch (\Exception $e) {
-            $this->logger->error('Error en evaluación de calidad: @msg', ['@msg' => $e->getMessage()]);
-            return [
-                'success' => FALSE,
-                'error' => $e->getMessage(),
-            ];
-        }
+  /**
+   * Construye el prompt de evaluación.
+   *
+   * @param string $prompt
+   *   El prompt original.
+   * @param string $response
+   *   La respuesta a evaluar.
+   * @param array $criteria
+   *   Los criterios de evaluación.
+   * @param array $context
+   *   Contexto adicional.
+   *
+   * @return string
+   *   El prompt formateado para el evaluador.
+   */
+  protected function buildEvaluationPrompt(
+    string $prompt,
+    string $response,
+    array $criteria,
+    array $context,
+  ): string {
+    $criteriaList = '';
+    foreach ($criteria as $name => $definition) {
+      $criteriaList .= "- **{$name}**: {$definition['description']} (peso: {$definition['weight']})\n";
     }
 
-    /**
-     * Evalúa y registra la puntuación de calidad en el log.
-     *
-     * Útil para evaluación automática post-ejecución donde
-     * se quiere persistir el score en el ai_usage_log.
-     *
-     * @param int $logId
-     *   El ID del log de uso IA a actualizar.
-     * @param string $prompt
-     *   El prompt original.
-     * @param string $response
-     *   La respuesta a evaluar.
-     *
-     * @return array
-     *   Resultado de la evaluación.
-     */
-    public function evaluateAndLog(int $logId, string $prompt, string $response): array
-    {
-        $evaluation = $this->evaluate($prompt, $response);
-
-        if ($evaluation['success'] && isset($evaluation['data']['overall_score'])) {
-            // Actualizar el log con la puntuación de calidad.
-            $this->updateLogQualityScore($logId, $evaluation['data']['overall_score']);
-        }
-
-        return $evaluation;
+    $contextInfo = '';
+    if (!empty($context['agent_id'])) {
+      $contextInfo .= "Agente: {$context['agent_id']}\n";
+    }
+    if (!empty($context['action'])) {
+      $contextInfo .= "Acción: {$context['action']}\n";
+    }
+    if (!empty($context['brand_voice'])) {
+      $contextInfo .= "Brand Voice: {$context['brand_voice']}\n";
     }
 
-    /**
-     * Construye el prompt de evaluación.
-     *
-     * @param string $prompt
-     *   El prompt original.
-     * @param string $response
-     *   La respuesta a evaluar.
-     * @param array $criteria
-     *   Los criterios de evaluación.
-     * @param array $context
-     *   Contexto adicional.
-     *
-     * @return string
-     *   El prompt formateado para el evaluador.
-     */
-    protected function buildEvaluationPrompt(
-        string $prompt,
-        string $response,
-        array $criteria,
-        array $context,
-    ): string {
-        $criteriaList = '';
-        foreach ($criteria as $name => $definition) {
-            $criteriaList .= "- **{$name}**: {$definition['description']} (peso: {$definition['weight']})\n";
-        }
-
-        $contextInfo = '';
-        if (!empty($context['agent_id'])) {
-            $contextInfo .= "Agente: {$context['agent_id']}\n";
-        }
-        if (!empty($context['action'])) {
-            $contextInfo .= "Acción: {$context['action']}\n";
-        }
-        if (!empty($context['brand_voice'])) {
-            $contextInfo .= "Brand Voice: {$context['brand_voice']}\n";
-        }
-
-        return <<<EOT
+    return <<<EOT
 Eres un evaluador experto de respuestas IA. Evalúa la siguiente respuesta según los criterios proporcionados.
 
 ## PROMPT ORIGINAL
@@ -252,253 +251,251 @@ Eres un evaluador experto de respuestas IA. Evalúa la siguiente respuesta segú
   "summary": "Evaluación general breve"
 }
 EOT;
+  }
+
+  /**
+   * Obtiene los criterios de evaluación por defecto.
+   *
+   * @return array
+   *   Array de criterios con descripción y peso.
+   */
+  protected function getDefaultCriteria(): array {
+    return [
+      'relevance' => [
+        'description' => 'Qué tan bien responde al prompt original',
+        'weight' => 0.25,
+      ],
+      'accuracy' => [
+        'description' => 'Corrección factual y consistencia lógica',
+        'weight' => 0.25,
+      ],
+      'clarity' => [
+        'description' => 'Claridad, buena estructura, fácil de entender',
+        'weight' => 0.20,
+      ],
+      'brand_alignment' => [
+        'description' => 'Coincide con el tono y Brand Voice esperado',
+        'weight' => 0.15,
+      ],
+      'actionability' => [
+        'description' => 'Salida práctica y usable para su propósito',
+        'weight' => 0.15,
+      ],
+    ];
+  }
+
+  /**
+   * Llama al LLM evaluador.
+   *
+   * @param string $prompt
+   *   El prompt de evaluación.
+   *
+   * @return array
+   *   Respuesta del evaluador.
+   */
+  protected function callEvaluator(string $prompt): array {
+    $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+
+    if (empty($defaults)) {
+      return ['success' => FALSE, 'error' => 'No hay proveedor IA configurado.'];
     }
 
-    /**
-     * Obtiene los criterios de evaluación por defecto.
-     *
-     * @return array
-     *   Array de criterios con descripción y peso.
-     */
-    protected function getDefaultCriteria(): array
-    {
-        return [
-            'relevance' => [
-                'description' => 'Qué tan bien responde al prompt original',
-                'weight' => 0.25,
-            ],
-            'accuracy' => [
-                'description' => 'Corrección factual y consistencia lógica',
-                'weight' => 0.25,
-            ],
-            'clarity' => [
-                'description' => 'Claridad, buena estructura, fácil de entender',
-                'weight' => 0.20,
-            ],
-            'brand_alignment' => [
-                'description' => 'Coincide con el tono y Brand Voice esperado',
-                'weight' => 0.15,
-            ],
-            'actionability' => [
-                'description' => 'Salida práctica y usable para su propósito',
-                'weight' => 0.15,
-            ],
-        ];
+    $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+
+    $chatInput = new ChatInput([
+      new ChatMessage('system', 'Eres un evaluador experto. Siempre responde con JSON válido únicamente.'),
+      new ChatMessage('user', $prompt),
+    ]);
+
+    // Temperatura baja para evaluación consistente.
+    $configuration = ['temperature' => 0.3];
+
+    $response = $provider->chat($chatInput, $defaults['model_id'], $configuration);
+    $text = $response->getNormalized()->getText();
+
+    return [
+      'success' => TRUE,
+      'data' => ['text' => $text],
+    ];
+  }
+
+  /**
+   * Parsea la respuesta de evaluación.
+   *
+   * @param string $text
+   *   El texto de respuesta del evaluador.
+   *
+   * @return array
+   *   Evaluación parseada.
+   */
+  protected function parseEvaluation(string $text): array {
+    // Extraer JSON de la respuesta.
+    $json = $text;
+
+    if (preg_match('/```json?\s*([\s\S]*?)\s*```/', $text, $matches)) {
+      $json = $matches[1];
+    }
+    elseif (preg_match('/\{[\s\S]*\}/', $text, $matches)) {
+      $json = $matches[0];
     }
 
-    /**
-     * Llama al LLM evaluador.
-     *
-     * @param string $prompt
-     *   El prompt de evaluación.
-     *
-     * @return array
-     *   Respuesta del evaluador.
-     */
-    protected function callEvaluator(string $prompt): array
-    {
-        $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+    $decoded = json_decode($json, TRUE);
 
-        if (empty($defaults)) {
-            return ['success' => FALSE, 'error' => 'No hay proveedor IA configurado.'];
-        }
-
-        $provider = $this->aiProvider->createInstance($defaults['provider_id']);
-
-        $chatInput = new ChatInput([
-            new ChatMessage('system', 'Eres un evaluador experto. Siempre responde con JSON válido únicamente.'),
-            new ChatMessage('user', $prompt),
-        ]);
-
-        // Temperatura baja para evaluación consistente.
-        $configuration = ['temperature' => 0.3];
-
-        $response = $provider->chat($chatInput, $defaults['model_id'], $configuration);
-        $text = $response->getNormalized()->getText();
-
-        return [
-            'success' => TRUE,
-            'data' => ['text' => $text],
-        ];
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      return [
+        'overall_score' => NULL,
+        'parse_error' => 'No se pudo parsear la respuesta de evaluación',
+      ];
     }
 
-    /**
-     * Parsea la respuesta de evaluación.
-     *
-     * @param string $text
-     *   El texto de respuesta del evaluador.
-     *
-     * @return array
-     *   Evaluación parseada.
-     */
-    protected function parseEvaluation(string $text): array
-    {
-        // Extraer JSON de la respuesta.
-        $json = $text;
+    return [
+      'criteria_scores' => $decoded['criteria_scores'] ?? [],
+      'overall_score' => (float) ($decoded['overall_score'] ?? 0),
+      'strengths' => $decoded['strengths'] ?? [],
+      'improvements' => $decoded['improvements'] ?? [],
+      'summary' => $decoded['summary'] ?? '',
+    ];
+  }
 
-        if (preg_match('/```json?\s*([\s\S]*?)\s*```/', $text, $matches)) {
-            $json = $matches[1];
-        } elseif (preg_match('/\{[\s\S]*\}/', $text, $matches)) {
-            $json = $matches[0];
-        }
+  /**
+   * Actualiza una entrada de log con la puntuación de calidad.
+   *
+   * @param int $logId
+   *   El ID del log.
+   * @param float $score
+   *   La puntuación de calidad (0-1).
+   */
+  protected function updateLogQualityScore(int $logId, float $score): void {
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('ai_usage_log');
+      $log = $storage->load($logId);
 
-        $decoded = json_decode($json, TRUE);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return [
-                'overall_score' => NULL,
-                'parse_error' => 'No se pudo parsear la respuesta de evaluación',
-            ];
-        }
-
-        return [
-            'criteria_scores' => $decoded['criteria_scores'] ?? [],
-            'overall_score' => (float) ($decoded['overall_score'] ?? 0),
-            'strengths' => $decoded['strengths'] ?? [],
-            'improvements' => $decoded['improvements'] ?? [],
-            'summary' => $decoded['summary'] ?? '',
-        ];
+      if ($log) {
+        $log->set('quality_score', $score);
+        $log->save();
+      }
     }
-
-    /**
-     * Actualiza una entrada de log con la puntuación de calidad.
-     *
-     * @param int $logId
-     *   El ID del log.
-     * @param float $score
-     *   La puntuación de calidad (0-1).
-     */
-    protected function updateLogQualityScore(int $logId, float $score): void
-    {
-        try {
-            $storage = \Drupal::entityTypeManager()->getStorage('ai_usage_log');
-            $log = $storage->load($logId);
-
-            if ($log) {
-                $log->set('quality_score', $score);
-                $log->save();
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Error al actualizar puntuación de calidad: @msg', ['@msg' => $e->getMessage()]);
-        }
+    catch (\Exception $e) {
+      $this->logger->error('Error al actualizar puntuación de calidad: @msg', ['@msg' => $e->getMessage()]);
     }
+  }
 
-    /**
-     * Obtiene estadísticas de calidad para un período (GAP-06).
-     *
-     * Estructura: Combina las stats generales de AIObservabilityService
-     *             con consultas COUNT eficientes a nivel de BD para los
-     *             umbrales de calidad.
-     *
-     * Logica: Usa entity queries con count() para evitar loadMultiple()
-     *         de todos los logs. Los umbrales son:
-     *         - high_quality: quality_score >= 0.8 (clase mundial)
-     *         - acceptable: quality_score >= 0.6 y < 0.8 (aceptable)
-     *         - needs_improvement: quality_score < 0.6 (necesita mejora)
-     *
-     * @param string $period
-     *   El período: day, week, month, year.
-     *
-     * @return array
-     *   Estadísticas de calidad:
-     *   - avg_quality_score: float|null
-     *   - total_evaluated: int (logs con quality_score != NULL)
-     *   - high_quality: int (score >= 0.8)
-     *   - acceptable: int (0.6 <= score < 0.8)
-     *   - needs_improvement: int (score < 0.6)
-     *   - evaluation_rate: float (% de ejecuciones evaluadas)
-     *   - total_executions: int (todas las ejecuciones del periodo)
-     */
-    public function getQualityStats(string $period = 'month'): array {
-        $stats = $this->observability->getStats($period);
+  /**
+   * Obtiene estadísticas de calidad para un período (GAP-06).
+   *
+   * Estructura: Combina las stats generales de AIObservabilityService
+   *             con consultas COUNT eficientes a nivel de BD para los
+   *             umbrales de calidad.
+   *
+   * Logica: Usa entity queries con count() para evitar loadMultiple()
+   *         de todos los logs. Los umbrales son:
+   *         - high_quality: quality_score >= 0.8 (clase mundial)
+   *         - acceptable: quality_score >= 0.6 y < 0.8 (aceptable)
+   *         - needs_improvement: quality_score < 0.6 (necesita mejora)
+   *
+   * @param string $period
+   *   El período: day, week, month, year.
+   *
+   * @return array
+   *   Estadísticas de calidad:
+   *   - avg_quality_score: float|null
+   *   - total_evaluated: int (logs con quality_score != NULL)
+   *   - high_quality: int (score >= 0.8)
+   *   - acceptable: int (0.6 <= score < 0.8)
+   *   - needs_improvement: int (score < 0.6)
+   *   - evaluation_rate: float (% de ejecuciones evaluadas)
+   *   - total_executions: int (todas las ejecuciones del periodo)
+   */
+  public function getQualityStats(string $period = 'month'): array {
+    $stats = $this->observability->getStats($period);
 
-        try {
-            $storage = $this->entityTypeManager->getStorage('ai_usage_log');
-            $startTimestamp = $this->getPeriodStartTimestamp($period);
+    try {
+      $storage = $this->entityTypeManager->getStorage('ai_usage_log');
+      $startTimestamp = $this->getPeriodStartTimestamp($period);
 
-            // Total de logs evaluados (quality_score no es NULL).
-            $totalEvaluated = (int) $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('created', $startTimestamp, '>=')
-                ->exists('quality_score')
-                ->count()
-                ->execute();
+      // Total de logs evaluados (quality_score no es NULL).
+      $totalEvaluated = (int) $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('created', $startTimestamp, '>=')
+        ->exists('quality_score')
+        ->count()
+        ->execute();
 
-            // Clase mundial: quality_score >= 0.8.
-            $highQuality = (int) $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('created', $startTimestamp, '>=')
-                ->condition('quality_score', '0.80', '>=')
-                ->count()
-                ->execute();
+      // Clase mundial: quality_score >= 0.8.
+      $highQuality = (int) $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('created', $startTimestamp, '>=')
+        ->condition('quality_score', '0.80', '>=')
+        ->count()
+        ->execute();
 
-            // Aceptable: 0.6 <= quality_score < 0.8.
-            $acceptable = (int) $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('created', $startTimestamp, '>=')
-                ->condition('quality_score', '0.60', '>=')
-                ->condition('quality_score', '0.80', '<')
-                ->count()
-                ->execute();
+      // Aceptable: 0.6 <= quality_score < 0.8.
+      $acceptable = (int) $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('created', $startTimestamp, '>=')
+        ->condition('quality_score', '0.60', '>=')
+        ->condition('quality_score', '0.80', '<')
+        ->count()
+        ->execute();
 
-            // Necesita mejora: quality_score < 0.6.
-            $needsImprovement = (int) $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('created', $startTimestamp, '>=')
-                ->condition('quality_score', '0.60', '<')
-                ->exists('quality_score')
-                ->count()
-                ->execute();
+      // Necesita mejora: quality_score < 0.6.
+      $needsImprovement = (int) $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('created', $startTimestamp, '>=')
+        ->condition('quality_score', '0.60', '<')
+        ->exists('quality_score')
+        ->count()
+        ->execute();
 
-            $totalExecutions = $stats['total_executions'] ?? 0;
-            $evaluationRate = $totalExecutions > 0
+      $totalExecutions = $stats['total_executions'] ?? 0;
+      $evaluationRate = $totalExecutions > 0
                 ? round(($totalEvaluated / $totalExecutions) * 100, 1)
                 : 0.0;
 
-            return [
-                'avg_quality_score' => $stats['avg_quality_score'],
-                'total_evaluated' => $totalEvaluated,
-                'high_quality' => $highQuality,
-                'acceptable' => $acceptable,
-                'needs_improvement' => $needsImprovement,
-                'evaluation_rate' => $evaluationRate,
-                'total_executions' => $totalExecutions,
-            ];
-        }
-        catch (\Exception $e) {
-            $this->logger->error('GAP-06: Error obteniendo estadísticas de calidad: @msg', [
-                '@msg' => $e->getMessage(),
-            ]);
-
-            // Fallback resiliente con datos parciales de observabilidad.
-            return [
-                'avg_quality_score' => $stats['avg_quality_score'] ?? NULL,
-                'total_evaluated' => $stats['total_executions'] ?? 0,
-                'high_quality' => 0,
-                'acceptable' => 0,
-                'needs_improvement' => 0,
-                'evaluation_rate' => 0.0,
-                'total_executions' => $stats['total_executions'] ?? 0,
-            ];
-        }
+      return [
+        'avg_quality_score' => $stats['avg_quality_score'],
+        'total_evaluated' => $totalEvaluated,
+        'high_quality' => $highQuality,
+        'acceptable' => $acceptable,
+        'needs_improvement' => $needsImprovement,
+        'evaluation_rate' => $evaluationRate,
+        'total_executions' => $totalExecutions,
+      ];
     }
+    catch (\Exception $e) {
+      $this->logger->error('GAP-06: Error obteniendo estadísticas de calidad: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
 
-    /**
-     * Calcula el timestamp de inicio para un periodo (GAP-06).
-     *
-     * @param string $period
-     *   El periodo: day, week, month, year.
-     *
-     * @return int
-     *   Timestamp Unix del inicio del periodo.
-     */
-    protected function getPeriodStartTimestamp(string $period): int {
-        return match ($period) {
-            'day' => strtotime('-1 day'),
+      // Fallback resiliente con datos parciales de observabilidad.
+      return [
+        'avg_quality_score' => $stats['avg_quality_score'] ?? NULL,
+        'total_evaluated' => $stats['total_executions'] ?? 0,
+        'high_quality' => 0,
+        'acceptable' => 0,
+        'needs_improvement' => 0,
+        'evaluation_rate' => 0.0,
+        'total_executions' => $stats['total_executions'] ?? 0,
+      ];
+    }
+  }
+
+  /**
+   * Calcula el timestamp de inicio para un periodo (GAP-06).
+   *
+   * @param string $period
+   *   El periodo: day, week, month, year.
+   *
+   * @return int
+   *   Timestamp Unix del inicio del periodo.
+   */
+  protected function getPeriodStartTimestamp(string $period): int {
+    return match ($period) {
+      'day' => strtotime('-1 day'),
             'week' => strtotime('-1 week'),
             'year' => strtotime('-1 year'),
             default => strtotime('-1 month'),
-        };
-    }
+    };
+  }
 
 }

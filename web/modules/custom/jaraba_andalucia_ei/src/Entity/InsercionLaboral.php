@@ -178,7 +178,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS PRINCIPALES ===
-
     $fields['participante_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Participante'))
       ->setDescription(t('Participante que logra la inserción laboral.'))
@@ -227,7 +226,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === CUENTA AJENA ===
-
     $fields['empresa_nombre'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre de Empresa'))
       ->setDescription(t('Razón social de la empresa contratante.'))
@@ -330,7 +328,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === CUENTA PROPIA ===
-
     $fields['fecha_alta_reta'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha Alta RETA'))
       ->setDescription(t('Fecha de alta en el Régimen Especial de Trabajadores Autónomos.'))
@@ -376,7 +373,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === AGRARIO ===
-
     $fields['empresa_agraria'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Empresa Agraria'))
       ->setDescription(t('Nombre de la empresa o explotación agraria.'))
@@ -422,7 +418,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === DOCUMENTACIÓN ===
-
     $fields['documento_acreditativo_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Documento Acreditativo'))
       ->setDescription(t('Documento del expediente que acredita la inserción.'))
@@ -445,7 +440,6 @@ class InsercionLaboral extends ContentEntityBase implements EntityOwnerInterface
       ->setDisplayConfigurable('view', TRUE);
 
     // === SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

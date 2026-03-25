@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * - Compliance controls status (SOC2, ISO27001, ENS, GDPR)
  * - Recent audit log events
  * - Security headers verification
- * - Aggregate compliance statistics
+ * - Aggregate compliance statistics.
  *
  * Route: /admin/seguridad
  */

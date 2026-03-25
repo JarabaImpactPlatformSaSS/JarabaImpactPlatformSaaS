@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * - SEQ_COMERCIO_003: Re-engagement
  * - SEQ_COMERCIO_004: Upsell Starter
  * - SEQ_COMERCIO_005: Upsell Pro
- * - SEQ_COMERCIO_006: Retention
+ * - SEQ_COMERCIO_006: Retention.
  *
  * Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 14
  *
@@ -83,6 +83,9 @@ class ComercioConectaEmailSequenceService {
   ) {
   }
 
+  /**
+   *
+   */
   public function enroll(int $userId, string $sequenceKey): bool {
     if (!isset(self::SEQUENCES[$sequenceKey])) {
       $this->logger->warning('ComercioConecta email sequence @key not found.', ['@key' => $sequenceKey]);
@@ -133,10 +136,16 @@ class ComercioConectaEmailSequenceService {
     }
   }
 
+  /**
+   *
+   */
   public function getAvailableSequences(): array {
     return self::SEQUENCES;
   }
 
+  /**
+   *
+   */
   public function ensureSequences(): int {
     $created = 0;
     foreach (self::SEQUENCES as $key => $sequence) {

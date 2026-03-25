@@ -11,6 +11,9 @@
 
 declare(strict_types=1);
 
+use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -145,7 +148,7 @@ function jaraba_lms_theme(): array {
       ],
       'template' => 'course-detail',
     ],
-    // Caso de éxito: María López, Madrid
+    // Caso de éxito: María López, Madrid.
     'formacion_case_study' => [
       'variables' => [
         'hero_image' => '',
@@ -169,9 +172,9 @@ function jaraba_lms_theme(): array {
 /**
  * Implements hook_entity_access() for LMS entities.
  */
-function jaraba_lms_entity_access(EntityInterface $entity, string $operation, AccountInterface $account): \Drupal\Core\Access\AccessResultInterface {
-  // Las entidades LMS usan permisos específicos definidos en permissions.yml
-  return \Drupal\Core\Access\AccessResult::neutral();
+function jaraba_lms_entity_access(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
+  // Las entidades LMS usan permisos específicos definidos en permissions.yml.
+  return AccessResult::neutral();
 }
 
 /**
@@ -189,7 +192,7 @@ function jaraba_lms_cron(): void {
 
   // Procesar certificados pendientes.
   // @todo Implementar CertificationService::processQueuedCertificates()
-  //       cuando exista la cola de certificados pendientes.
+  //   cuando exista la cola de certificados pendientes.
   try {
     if (\Drupal::hasService('jaraba_lms.certification')) {
       $certification_service = \Drupal::service('jaraba_lms.certification');
@@ -208,17 +211,17 @@ function jaraba_lms_cron(): void {
  *
  * Automatizaciones al actualizar entidades LMS:
  * - Emitir badge al completar curso (100%)
- * - Otorgar XP por completar curso
+ * - Otorgar XP por completar curso.
  */
 function jaraba_lms_entity_update(EntityInterface $entity): void {
   $entity_type = $entity->getEntityTypeId();
 
-  // Solo procesar enrollments
+  // Solo procesar enrollments.
   if ($entity_type !== 'lms_enrollment') {
     return;
   }
 
-  // Verificar si el progreso llegó a 100%
+  // Verificar si el progreso llegó a 100%.
   if (!$entity->hasField('progress_percent')) {
     return;
   }
@@ -226,12 +229,12 @@ function jaraba_lms_entity_update(EntityInterface $entity): void {
   $progress = (int) ($entity->get('progress_percent')->value ?? 0);
   $originalProgress = 0;
 
-  // Obtener progreso anterior para detectar cambio
+  // Obtener progreso anterior para detectar cambio.
   if (isset($entity->original) && $entity->original->hasField('progress_percent')) {
     $originalProgress = (int) ($entity->original->get('progress_percent')->value ?? 0);
   }
 
-  // Solo actuar si pasó de <100 a 100
+  // Solo actuar si pasó de <100 a 100.
   if ($progress >= 100 && $originalProgress < 100) {
     $userId = $entity->get('user_id')->target_id ?? NULL;
     $courseId = $entity->get('course_id')->target_id ?? NULL;
@@ -266,7 +269,7 @@ function jaraba_lms_entity_insert(EntityInterface $entity): void {
     return;
   }
 
-  // Verificar si está completada
+  // Verificar si está completada.
   $completed = $entity->get('completed')->value ?? FALSE;
   if ($completed) {
     _jaraba_lms_award_lesson_xp($userId);
@@ -284,15 +287,16 @@ function _jaraba_lms_auto_issue_badge(int $userId, int $courseId): void {
 
     $badgeService = \Drupal::service('jaraba_lms.open_badge');
 
-    // Verificar si ya tiene badge para este curso
+    // Verificar si ya tiene badge para este curso.
     $existingBadges = $badgeService->getUserBadges($userId);
     foreach ($existingBadges as $badge) {
       if (($badge['course_id'] ?? 0) == $courseId) {
-        return; // Ya tiene badge
+        // Ya tiene badge.
+        return;
       }
     }
 
-    // Emitir nuevo badge
+    // Emitir nuevo badge.
     $result = $badgeService->issueBadge($courseId, $userId);
 
     \Drupal::logger('jaraba_lms')->info(
@@ -446,7 +450,7 @@ function jaraba_lms_preprocess_course_detail(array &$variables): void {
     if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
       $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
       $jsonLd = $schemaService->generateCourseSchema($courseData, $tenant);
-      
+
       if (!empty($jsonLd)) {
         $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
       }
@@ -562,7 +566,7 @@ function template_preprocess_lms_course(array &$variables): void {
   if ($entity->hasField('thumbnail') && !$entity->get('thumbnail')->isEmpty()) {
     $file = $entity->get('thumbnail')->entity;
     if ($file) {
-      $style = \Drupal\image\Entity\ImageStyle::load('medium');
+      $style = ImageStyle::load('medium');
       $course['thumbnail_url'] = $style
         ? $style->buildUrl($file->getFileUri())
         : \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
@@ -620,7 +624,6 @@ function template_preprocess_lms_lesson(array &$variables): void {
   $mins = $variables['lesson']['estimated_duration'];
   $variables['lesson']['duration_formatted'] = $mins . ' min';
 }
-
 
 /**
  * Prepares variables for course_review templates.

@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Batch demand forecasting
  * - Bulk skill inference
  * - Periodic content quality audits
- * - Scheduled SEO analysis
+ * - Scheduled SEO analysis.
  *
  * Designed for horizontal scaling via Redis queue + supervisor workers.
  *

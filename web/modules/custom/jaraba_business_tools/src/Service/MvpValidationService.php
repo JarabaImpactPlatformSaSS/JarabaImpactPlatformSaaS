@@ -261,7 +261,7 @@ class MvpValidationService {
    *   - 'framework': string (lean_canvas|bmc|design_thinking), defaults to 'lean_canvas'
    *   - 'responses': array keyed by dimension => criterion => score (0-5)
    *   - 'description': string with hypothesis description
-   *   - 'canvas_id': optional int linking to a BusinessModelCanvas
+   *   - 'canvas_id': optional int linking to a BusinessModelCanvas.
    *
    * @return array
    *   Validation results with scores, gaps, and recommendations.
@@ -373,7 +373,7 @@ class MvpValidationService {
    *   - 'unit_economics_positive': bool
    *   - 'time_to_market_months': estimated months to launch
    *   - 'competitive_advantage': 0-5 self-assessment
-   *   - 'team_capability': 0-5 self-assessment
+   *   - 'team_capability': 0-5 self-assessment.
    *
    * @return float
    *   Viability score from 0 to 100.

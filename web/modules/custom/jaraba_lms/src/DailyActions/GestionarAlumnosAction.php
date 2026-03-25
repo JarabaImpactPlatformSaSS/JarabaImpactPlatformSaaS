@@ -25,58 +25,100 @@ class GestionarAlumnosAction implements DailyActionInterface {
     protected readonly AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'instructor_lms.alumnos';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'instructor_lms';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Gestionar alumnos');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Revisar inscripciones y progreso');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'users', 'name' => 'users', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'azul-corporativo';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_lms.instructor.courses';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $active = 0;
     try {

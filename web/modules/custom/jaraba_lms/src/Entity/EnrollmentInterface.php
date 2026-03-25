@@ -10,82 +10,81 @@ use Drupal\Core\Entity\EntityChangedInterface;
 /**
  * Interface for Enrollment entity.
  */
-interface EnrollmentInterface extends ContentEntityInterface, EntityChangedInterface
-{
+interface EnrollmentInterface extends ContentEntityInterface, EntityChangedInterface {
 
-    /**
-     * Gets the enrolled user ID.
-     */
-    public function getUserId(): int;
+  /**
+   * Gets the enrolled user ID.
+   */
+  public function getUserId(): int;
 
-    /**
-     * Gets the course ID.
-     */
-    public function getCourseId(): int;
+  /**
+   * Gets the course ID.
+   */
+  public function getCourseId(): int;
 
-    /**
-     * Gets the course entity.
-     */
-    public function getCourse(): ?CourseInterface;
+  /**
+   * Gets the course entity.
+   */
+  public function getCourse(): ?CourseInterface;
 
-    /**
-     * Gets the enrollment status.
-     */
-    public function getStatus(): string;
+  /**
+   * Gets the enrollment status.
+   */
+  public function getStatus(): string;
 
-    /**
-     * Sets the enrollment status.
-     */
-    public function setStatus(string $status): EnrollmentInterface;
+  /**
+   * Sets the enrollment status.
+   */
+  public function setStatus(string $status): EnrollmentInterface;
 
-    /**
-     * Checks if enrollment is active.
-     */
-    public function isActive(): bool;
+  /**
+   * Checks if enrollment is active.
+   */
+  public function isActive(): bool;
 
-    /**
-     * Checks if enrollment is completed.
-     */
-    public function isCompleted(): bool;
+  /**
+   * Checks if enrollment is completed.
+   */
+  public function isCompleted(): bool;
 
-    /**
-     * Gets progress percentage.
-     */
-    public function getProgressPercent(): float;
+  /**
+   * Gets progress percentage.
+   */
+  public function getProgressPercent(): float;
 
-    /**
-     * Sets progress percentage.
-     */
-    public function setProgressPercent(float $percent): EnrollmentInterface;
+  /**
+   * Sets progress percentage.
+   */
+  public function setProgressPercent(float $percent): EnrollmentInterface;
 
-    /**
-     * Gets enrollment type.
-     */
-    public function getEnrollmentType(): string;
+  /**
+   * Gets enrollment type.
+   */
+  public function getEnrollmentType(): string;
 
-    /**
-     * Gets enrollment timestamp.
-     */
-    public function getEnrolledAt(): int;
+  /**
+   * Gets enrollment timestamp.
+   */
+  public function getEnrolledAt(): int;
 
-    /**
-     * Gets completion timestamp.
-     */
-    public function getCompletedAt(): ?int;
+  /**
+   * Gets completion timestamp.
+   */
+  public function getCompletedAt(): ?int;
 
-    /**
-     * Marks enrollment as completed.
-     */
-    public function markCompleted(): EnrollmentInterface;
+  /**
+   * Marks enrollment as completed.
+   */
+  public function markCompleted(): EnrollmentInterface;
 
-    /**
-     * Checks if certificate was issued.
-     */
-    public function isCertificateIssued(): bool;
+  /**
+   * Checks if certificate was issued.
+   */
+  public function isCertificateIssued(): bool;
 
-    /**
-     * Sets certificate issued status.
-     */
-    public function setCertificateIssued(bool $issued, ?int $certificate_id = NULL): EnrollmentInterface;
+  /**
+   * Sets certificate issued status.
+   */
+  public function setCertificateIssued(bool $issued, ?int $certificate_id = NULL): EnrollmentInterface;
 
 }

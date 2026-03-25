@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\InteractiveVideo;
 use Drupal\Tests\UnitTestCase;
 
@@ -30,7 +31,7 @@ class InteractiveVideoTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -42,8 +43,10 @@ class InteractiveVideoTest extends UnitTestCase {
 
   // =========================================================================
   // GET SCHEMA TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArray(): void {
     $schema = $this->plugin->getSchema();
@@ -55,6 +58,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertArrayHasKey('settings', $schema);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaVideoUrlRequired(): void {
     $schema = $this->plugin->getSchema();
@@ -63,6 +69,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertSame('string', $schema['video_url']['type']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaCheckpointsRequired(): void {
     $schema = $this->plugin->getSchema();
@@ -71,6 +80,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertSame('array', $schema['checkpoints']['type']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaCheckpointTypeEnum(): void {
     $schema = $this->plugin->getSchema();
@@ -82,6 +94,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertCount(3, $typeEnum);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaSettingsDefaults(): void {
     $schema = $this->plugin->getSchema();
@@ -96,8 +111,10 @@ class InteractiveVideoTest extends UnitTestCase {
 
   // =========================================================================
   // CALCULATE SCORE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePerfectQuizCheckpoints(): void {
     $data = [
@@ -144,6 +161,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertSame(3, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreIgnoresOverlayAndDecision(): void {
     $data = [
@@ -201,6 +221,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertArrayNotHasKey('cp2', $result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreNoQuizCheckpoints(): void {
     $data = [
@@ -224,6 +247,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertEmpty($result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePartialQuizResponses(): void {
     $data = [
@@ -268,6 +294,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertSame(2, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreDetailsIncludeTimestamp(): void {
     $data = [
@@ -299,6 +328,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertSame(1, $detail['points_earned']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreEmptyCheckpoints(): void {
     $data = [
@@ -315,8 +347,10 @@ class InteractiveVideoTest extends UnitTestCase {
 
   // =========================================================================
   // XAPI VERBS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsExpected(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -332,8 +366,10 @@ class InteractiveVideoTest extends UnitTestCase {
 
   // =========================================================================
   // RENDER TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsTheme(): void {
     $data = [
@@ -358,6 +394,9 @@ class InteractiveVideoTest extends UnitTestCase {
     $this->assertArrayHasKey('#settings', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderHandlesMissingOptionalFields(): void {
     $data = [

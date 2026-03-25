@@ -74,7 +74,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Lists all data classifications.
    *
-   * GET /api/v1/governance/classifications
+   * GET /api/v1/governance/classifications.
    */
   public function listClassifications(): JsonResponse {
     try {
@@ -138,7 +138,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Creates or updates a data classification.
    *
-   * POST /api/v1/governance/classifications
+   * POST /api/v1/governance/classifications.
    */
   public function saveClassification(Request $request): JsonResponse {
     try {
@@ -189,7 +189,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Lists retention policies with preview of affected entities.
    *
-   * GET /api/v1/governance/retention-policies
+   * GET /api/v1/governance/retention-policies.
    */
   public function listRetentionPolicies(): JsonResponse {
     try {
@@ -213,7 +213,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Executes retention policy cleanup.
    *
-   * POST /api/v1/governance/retention/execute
+   * POST /api/v1/governance/retention/execute.
    */
   public function executeRetention(): JsonResponse {
     try {
@@ -273,7 +273,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Creates a new GDPR erasure request.
    *
-   * POST /api/v1/governance/erasure-request
+   * POST /api/v1/governance/erasure-request.
    */
   public function createErasureRequest(Request $request): JsonResponse {
     try {
@@ -317,7 +317,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Lists pending erasure requests.
    *
-   * GET /api/v1/governance/erasure-requests
+   * GET /api/v1/governance/erasure-requests.
    */
   public function listErasureRequests(): JsonResponse {
     try {
@@ -341,7 +341,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Processes a pending erasure request.
    *
-   * POST /api/v1/governance/erasure-requests/{request_id}/process
+   * POST /api/v1/governance/erasure-requests/{request_id}/process.
    */
   public function processErasureRequest(int $request_id): JsonResponse {
     try {
@@ -410,7 +410,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Executes data masking for staging/dev environment.
    *
-   * POST /api/v1/governance/masking/execute
+   * POST /api/v1/governance/masking/execute.
    */
   public function executeMasking(): JsonResponse {
     try {
@@ -438,7 +438,7 @@ class GovernanceApiController extends ControllerBase {
   /**
    * Returns governance dashboard data (API).
    *
-   * GET /api/v1/governance/dashboard
+   * GET /api/v1/governance/dashboard.
    */
   public function dashboardData(): JsonResponse {
     try {

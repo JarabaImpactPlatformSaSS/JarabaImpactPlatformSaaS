@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class QrScanEventSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'qr_scan_event_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Escaneo QR Agro.') . '</p>',
@@ -23,6 +29,9 @@ final class QrScanEventSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

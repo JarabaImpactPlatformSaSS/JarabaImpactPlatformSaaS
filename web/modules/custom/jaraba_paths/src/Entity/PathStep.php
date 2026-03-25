@@ -51,87 +51,85 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.path_step.settings",
  * )
  */
-class PathStep extends ContentEntityBase
-{
+class PathStep extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['module_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Módulo'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'path_module')
-            ->setDisplayOptions('form', ['weight' => 0])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['module_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Módulo'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'path_module')
+      ->setDisplayOptions('form', ['weight' => 0])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('view', ['weight' => 1])
-            ->setDisplayOptions('form', ['weight' => 1])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayOptions('form', ['weight' => 1])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Instrucciones'))
-            ->setDisplayOptions('form', ['weight' => 2])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Instrucciones'))
+      ->setDisplayOptions('form', ['weight' => 2])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['step_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Paso'))
-            ->setSetting('allowed_values', [
-                'task' => 'Tarea',
-                'resource' => 'Recurso/Lectura',
-                'quick_win' => 'Quick Win',
-                'milestone' => 'Hito/Milestone',
-                'assessment' => 'Autoevaluación',
-            ])
-            ->setDefaultValue('task')
-            ->setDisplayOptions('form', ['weight' => 3])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['step_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Paso'))
+      ->setSetting('allowed_values', [
+        'task' => 'Tarea',
+        'resource' => 'Recurso/Lectura',
+        'quick_win' => 'Quick Win',
+        'milestone' => 'Hito/Milestone',
+        'assessment' => 'Autoevaluación',
+      ])
+      ->setDefaultValue('task')
+      ->setDisplayOptions('form', ['weight' => 3])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['order'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Orden'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', ['weight' => 4])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['order'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Orden'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', ['weight' => 4])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['estimated_minutes'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Minutos Estimados'))
-            ->setDefaultValue(30)
-            ->setDisplayOptions('form', ['weight' => 5])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['estimated_minutes'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Minutos Estimados'))
+      ->setDefaultValue(30)
+      ->setDisplayOptions('form', ['weight' => 5])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['is_required'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Obligatorio'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', ['weight' => 6])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_required'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Obligatorio'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', ['weight' => 6])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['xp_reward'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('XP de Recompensa'))
-            ->setDefaultValue(10)
-            ->setDisplayOptions('form', ['weight' => 7])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['xp_reward'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('XP de Recompensa'))
+      ->setDefaultValue(10)
+      ->setDisplayOptions('form', ['weight' => 7])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['resource_url'] = BaseFieldDefinition::create('link')
-            ->setLabel(t('Recurso Externo'))
-            ->setDisplayOptions('form', ['weight' => 8])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['resource_url'] = BaseFieldDefinition::create('link')
+      ->setLabel(t('Recurso Externo'))
+      ->setDisplayOptions('form', ['weight' => 8])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['tool_suggestion'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Herramienta Sugerida'))
-            ->setDescription(t('Nombre de herramienta recomendada para completar el paso.'))
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['weight' => 9])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['tool_suggestion'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Herramienta Sugerida'))
+      ->setDescription(t('Nombre de herramienta recomendada para completar el paso.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['weight' => 9])
+      ->setDisplayConfigurable('form', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Unit;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\ContentEntityInterface;

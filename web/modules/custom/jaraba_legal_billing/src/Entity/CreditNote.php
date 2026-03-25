@@ -67,7 +67,6 @@ class CreditNote extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -88,7 +87,6 @@ class CreditNote extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: NUMERACION
     // =========================================================================
-
     $fields['credit_note_number'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Numero de Nota de Credito'))
       ->setDescription(new TranslatableMarkup('Auto-generado: NC-YYYY-NNNN.'))
@@ -99,7 +97,6 @@ class CreditNote extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: DATOS ECONOMICOS
     // =========================================================================
-
     $fields['reason'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Motivo'))
       ->setSetting('allowed_values', [
@@ -140,7 +137,6 @@ class CreditNote extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 4: STRIPE REFUND
     // =========================================================================
-
     $fields['refund_status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado del Reembolso'))
       ->setSetting('allowed_values', [
@@ -160,7 +156,6 @@ class CreditNote extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 5: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

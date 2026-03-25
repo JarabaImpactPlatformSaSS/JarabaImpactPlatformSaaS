@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class BlogCategoryForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'general' => [
@@ -41,10 +44,16 @@ class BlogCategoryForm extends PremiumEntityFormBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'ui', 'name' => 'folder'];
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));

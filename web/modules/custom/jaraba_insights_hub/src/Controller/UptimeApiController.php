@@ -59,7 +59,7 @@ class UptimeApiController extends ControllerBase {
   /**
    * Devuelve el estado actual de todos los endpoints monitoreados.
    *
-   * GET /api/v1/insights/uptime/status
+   * GET /api/v1/insights/uptime/status.
    *
    * Query params:
    * - date_range: 7d|30d|90d (default: 30d) para calculo de uptime %
@@ -103,7 +103,7 @@ class UptimeApiController extends ControllerBase {
   /**
    * Lista los incidentes de disponibilidad.
    *
-   * GET /api/v1/insights/uptime/incidents
+   * GET /api/v1/insights/uptime/incidents.
    *
    * Query params:
    * - status: ongoing|resolved (opcional, todos si no se especifica)
@@ -180,7 +180,7 @@ class UptimeApiController extends ControllerBase {
   /**
    * Agrega un nuevo endpoint para monitorear.
    *
-   * POST /api/v1/insights/uptime/endpoints
+   * POST /api/v1/insights/uptime/endpoints.
    *
    * Body JSON esperado:
    * {

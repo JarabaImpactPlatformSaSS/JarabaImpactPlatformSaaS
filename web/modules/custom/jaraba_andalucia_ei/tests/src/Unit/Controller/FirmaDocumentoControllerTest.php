@@ -115,6 +115,7 @@ class FirmaDocumentoControllerTest extends UnitTestCase {
       public function __construct(string $val) {
         $this->value = $val;
       }
+
     };
 
     $archivoField = new class ($archivoNombre) {
@@ -123,6 +124,7 @@ class FirmaDocumentoControllerTest extends UnitTestCase {
       public function __construct(string $val) {
         $this->value = $val;
       }
+
     };
 
     // MOCK-METHOD-001: Usar ContentEntityInterface para hasField().

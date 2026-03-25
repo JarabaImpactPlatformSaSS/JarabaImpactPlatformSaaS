@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Controller;
 
+use Drupal\Core\Url;
+use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -53,7 +55,7 @@ class PageContentPublishController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/pages/{page_content}/publish
+   * POST /api/v1/pages/{page_content}/publish.
    *
    * Publica una página del Page Builder. Acciones:
    * 1. Verifica acceso granular (own/any + tenant isolation).
@@ -130,7 +132,7 @@ class PageContentPublishController extends ControllerBase {
       if (method_exists($page_content, 'setNewRevision')) {
         $page_content->setNewRevision(TRUE);
       }
-      if ($page_content instanceof \Drupal\Core\Entity\RevisionLogInterface) {
+      if ($page_content instanceof RevisionLogInterface) {
         $page_content->setRevisionLogMessage(
           $this->t('Página publicada desde el Canvas Editor por @user.', [
             '@user' => $account->getDisplayName(),
@@ -383,7 +385,7 @@ class PageContentPublishController extends ControllerBase {
 
     // Fallback a URL canónica de la entidad.
     try {
-      return \Drupal\Core\Url::fromRoute('entity.page_content.canonical', [
+      return Url::fromRoute('entity.page_content.canonical', [
         'page_content' => $page_content->id(),
       ])->setAbsolute()->toString();
     }

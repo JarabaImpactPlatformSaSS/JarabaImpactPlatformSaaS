@@ -60,7 +60,7 @@ class DashboardRedirectController extends ControllerBase {
   /**
    * Redirect to Job Seeker dashboard.
    *
-   * /dashboard/career → /jobseeker
+   * /dashboard/career → /jobseeker.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect to the career dashboard.
@@ -73,7 +73,7 @@ class DashboardRedirectController extends ControllerBase {
   /**
    * Redirect to Recruiter/Employer dashboard.
    *
-   * /dashboard/recruiter → /employer
+   * /dashboard/recruiter → /employer.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect to the employer dashboard.
@@ -86,7 +86,7 @@ class DashboardRedirectController extends ControllerBase {
   /**
    * Redirect to Entrepreneur dashboard.
    *
-   * /dashboard/entrepreneur → /entrepreneur/dashboard
+   * /dashboard/entrepreneur → /entrepreneur/dashboard.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect to the entrepreneur dashboard.
@@ -99,7 +99,7 @@ class DashboardRedirectController extends ControllerBase {
   /**
    * Redirect to Producer/Business dashboard.
    *
-   * /dashboard/producer → /my-company
+   * /dashboard/producer → /my-company.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect to the my-company dashboard.
@@ -112,7 +112,7 @@ class DashboardRedirectController extends ControllerBase {
   /**
    * Redirect to Mentor dashboard.
    *
-   * /dashboard/mentor → /mentor/dashboard
+   * /dashboard/mentor → /mentor/dashboard.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect to the mentor dashboard.

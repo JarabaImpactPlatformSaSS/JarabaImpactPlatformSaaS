@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
+use Drupal\user\UserInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -172,7 +173,7 @@ class RolProgramaServiceTest extends UnitTestCase {
    * @covers ::asignarRol
    */
   public function testAsignarRolAssignsDrupalRole(): void {
-    $user = $this->createMock(\Drupal\user\UserInterface::class);
+    $user = $this->createMock(UserInterface::class);
     $user->method('hasRole')->with('formador_ei')->willReturn(FALSE);
     $user->expects($this->once())->method('addRole')->with('formador_ei');
     $user->expects($this->once())->method('save');
@@ -199,7 +200,7 @@ class RolProgramaServiceTest extends UnitTestCase {
    * @covers ::revocarRol
    */
   public function testRevocarRolRemovesDrupalRole(): void {
-    $user = $this->createMock(\Drupal\user\UserInterface::class);
+    $user = $this->createMock(UserInterface::class);
     $user->method('hasRole')->with('orientador_ei')->willReturn(TRUE);
     $user->expects($this->once())->method('removeRole')->with('orientador_ei');
     $user->expects($this->once())->method('save');

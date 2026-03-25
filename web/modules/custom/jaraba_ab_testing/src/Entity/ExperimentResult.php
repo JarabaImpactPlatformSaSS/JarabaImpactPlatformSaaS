@@ -84,7 +84,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 1. REFERENCIA AL EXPERIMENTO
     // =========================================================================
-
     $fields['experiment_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Experimento'))
       ->setDescription(t('Experimento A/B al que pertenecen estos resultados.'))
@@ -97,7 +96,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 2. IDENTIFICACION DE VARIANTE Y METRICA
     // =========================================================================
-
     $fields['variant_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Clave de Variante'))
       ->setDescription(t('Identificador de la variante evaluada.'))
@@ -119,7 +117,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 3. METRICAS ESTADISTICAS
     // =========================================================================
-
     $fields['sample_size'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Tamano de Muestra'))
       ->setDescription(t('Numero de observaciones incluidas en el calculo.'))
@@ -156,7 +153,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 4. SIGNIFICANCIA ESTADISTICA
     // =========================================================================
-
     $fields['p_value'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('P-Value'))
       ->setDescription(t('Valor p del test estadistico. Valores menores indican mayor significancia.'))
@@ -186,7 +182,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 5. MOMENTO DE CALCULO
     // =========================================================================
-
     $fields['calculated_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de Calculo'))
       ->setDescription(t('Timestamp del momento en que se calcularon estos resultados.'))
@@ -197,7 +192,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 6. MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenecen estos resultados.'))
@@ -209,7 +203,6 @@ class ExperimentResult extends ContentEntityBase implements EntityChangedInterfa
     // =========================================================================
     // 7. METADATA
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Creacion'));
 

@@ -24,109 +24,102 @@ use Psr\Log\LoggerInterface;
  * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
  * model routing, tool use, provider fallback, and context window management.
  */
-class SupportAgent extends SmartBaseAgent
-{
+class SupportAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a SupportAgent.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
-    }
+  /**
+   * Constructs a SupportAgent.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ModelRouterService $modelRouter,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+    $this->setModelRouter($modelRouter);
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'support';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'support';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Agente de Soporte';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Agente de Soporte';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Gestiona soporte al cliente: respuestas a FAQs, tickets de soporte y documentación de ayuda.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Gestiona soporte al cliente: respuestas a FAQs, tickets de soporte y documentación de ayuda.';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'faq_answer' => [
-                'label' => 'Respuesta FAQ',
-                'description' => 'Genera respuestas para preguntas frecuentes.',
-                'requires' => ['question'],
-                'optional' => ['context', 'related_docs'],
-            ],
-            'ticket_response' => [
-                'label' => 'Respuesta a Ticket',
-                'description' => 'Crea respuestas para tickets de soporte.',
-                'requires' => ['ticket_content', 'category'],
-                'optional' => ['priority', 'previous_interactions'],
-            ],
-            'help_article' => [
-                'label' => 'Artículo de Ayuda',
-                'description' => 'Genera artículos para el centro de ayuda.',
-                'requires' => ['topic', 'steps'],
-                'optional' => ['screenshots_locations', 'common_errors'],
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    return [
+      'faq_answer' => [
+        'label' => 'Respuesta FAQ',
+        'description' => 'Genera respuestas para preguntas frecuentes.',
+        'requires' => ['question'],
+        'optional' => ['context', 'related_docs'],
+      ],
+      'ticket_response' => [
+        'label' => 'Respuesta a Ticket',
+        'description' => 'Crea respuestas para tickets de soporte.',
+        'requires' => ['ticket_content', 'category'],
+        'optional' => ['priority', 'previous_interactions'],
+      ],
+      'help_article' => [
+        'label' => 'Artículo de Ayuda',
+        'description' => 'Genera artículos para el centro de ayuda.',
+        'requires' => ['topic', 'steps'],
+        'optional' => ['screenshots_locations', 'common_errors'],
+      ],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        return match ($action) {
-            'faq_answer' => $this->generateFaqAnswer($context),
+  /**
+   * {@inheritdoc}
+   */
+  protected function doExecute(string $action, array $context): array {
+    return match ($action) {
+      'faq_answer' => $this->generateFaqAnswer($context),
             'ticket_response' => $this->generateTicketResponse($context),
             'help_article' => $this->generateHelpArticle($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
-    }
+    };
+  }
 
-    /**
-     * Genera una respuesta FAQ.
-     */
-    protected function generateFaqAnswer(array $context): array
-    {
-        $question = $context['question'] ?? '';
-        $additionalContext = $context['context'] ?? '';
+  /**
+   * Genera una respuesta FAQ.
+   */
+  protected function generateFaqAnswer(array $context): array {
+    $question = $context['question'] ?? '';
+    $additionalContext = $context['context'] ?? '';
 
-        $verticalContext = $this->getVerticalContext();
+    $verticalContext = $this->getVerticalContext();
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear respuesta para FAQ.
@@ -151,31 +144,30 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'faq_answer';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'faq_answer';
+      }
     }
 
-    /**
-     * Genera una respuesta a ticket de soporte.
-     */
-    protected function generateTicketResponse(array $context): array
-    {
-        $ticketContent = $context['ticket_content'] ?? '';
-        $category = $context['category'] ?? 'general';
-        $priority = $context['priority'] ?? 'normal';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera una respuesta a ticket de soporte.
+   */
+  protected function generateTicketResponse(array $context): array {
+    $ticketContent = $context['ticket_content'] ?? '';
+    $category = $context['category'] ?? 'general';
+    $priority = $context['priority'] ?? 'normal';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Responder ticket de soporte.
@@ -202,31 +194,30 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'ticket_response';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'ticket_response';
+      }
     }
 
-    /**
-     * Genera un artículo de ayuda.
-     */
-    protected function generateHelpArticle(array $context): array
-    {
-        $topic = $context['topic'] ?? '';
-        $steps = $context['steps'] ?? '';
-        $commonErrors = $context['common_errors'] ?? '';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera un artículo de ayuda.
+   */
+  protected function generateHelpArticle(array $context): array {
+    $topic = $context['topic'] ?? '';
+    $steps = $context['steps'] ?? '';
+    $commonErrors = $context['common_errors'] ?? '';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear artículo de ayuda.
@@ -258,25 +249,24 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'help_article';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'help_article';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return <<<EOT
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultBrandVoice(): string {
+    return <<<EOT
 Eres un agente de soporte experto, paciente y orientado a soluciones.
 
 ESTILO:
@@ -291,6 +281,6 @@ PRINCIPIOS:
 - Proporcionar recursos adicionales
 - Mantener tono positivo
 EOT;
-    }
+  }
 
 }

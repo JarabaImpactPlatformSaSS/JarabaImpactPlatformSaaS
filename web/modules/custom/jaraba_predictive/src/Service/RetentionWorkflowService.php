@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
  * Orquestador de flujos de retención proactiva.
  *
  * Ejecuta acciones automáticas basadas en el nivel de riesgo detectado.
- * 
+ *
  * F189 — Proactive Retention.
  */
 class RetentionWorkflowService {

@@ -61,7 +61,7 @@ class ProductRetailService {
       return NULL;
     }
 
-    // Cargar variaciones activas del producto
+    // Cargar variaciones activas del producto.
     $variation_storage = $this->entityTypeManager->getStorage('product_variation_retail');
     $variation_ids = $variation_storage->getQuery()
       ->accessCheck(TRUE)
@@ -72,10 +72,10 @@ class ProductRetailService {
 
     $variations = $variation_ids ? array_values($variation_storage->loadMultiple($variation_ids)) : [];
 
-    // Cargar comercio propietario
+    // Cargar comercio propietario.
     $merchant = $product->get('merchant_id')->entity;
 
-    // Generar Schema.org JSON-LD para SEO
+    // Generar Schema.org JSON-LD para SEO.
     $schema_json_ld = $this->generateProductSchema($product, $merchant);
 
     return [
@@ -150,7 +150,7 @@ class ProductRetailService {
 
     $entity->set('stock_quantity', $new_stock);
 
-    // Actualizar estado si el stock llega a 0
+    // Actualizar estado si el stock llega a 0.
     if ($new_stock === 0 && $entity_type === 'product_retail') {
       $entity->set('status', 'out_of_stock');
     }
@@ -204,14 +204,14 @@ class ProductRetailService {
       ],
     ];
 
-    // Añadir vendedor si existe
+    // Añadir vendedor si existe.
     if ($merchant) {
       $schema['offers']['seller'] = [
         '@type' => 'LocalBusiness',
         'name' => $merchant->get('business_name')->value,
       ];
 
-      // Añadir dirección del comercio
+      // Añadir dirección del comercio.
       $schema['offers']['seller']['address'] = [
         '@type' => 'PostalAddress',
         'streetAddress' => $merchant->get('address_street')->value ?? '',
@@ -221,7 +221,7 @@ class ProductRetailService {
       ];
     }
 
-    // Añadir rating agregado si existe
+    // Añadir rating agregado si existe.
     $average_rating = $product->get('merchant_id')->entity
       ? $product->get('merchant_id')->entity->get('average_rating')->value
       : NULL;

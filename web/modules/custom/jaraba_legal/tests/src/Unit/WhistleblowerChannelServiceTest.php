@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal\Unit;
 
+use Drupal\jaraba_legal\Entity\WhistleblowerReport;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -39,7 +41,7 @@ class WhistleblowerChannelServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -139,7 +141,7 @@ class WhistleblowerChannelServiceTest extends UnitTestCase {
       ->willReturn($storage);
 
     // Crear un mock de reporte que exista.
-    $report = $this->createMock(\Drupal\jaraba_legal\Entity\WhistleblowerReport::class);
+    $report = $this->createMock(WhistleblowerReport::class);
     $storage->method('load')
       ->with(1)
       ->willReturn($report);

@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class OrderRetailListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['order_number'] = $this->t('Pedido');
     $header['customer'] = $this->t('Cliente');
@@ -19,6 +25,9 @@ class OrderRetailListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $status_labels = [
       'draft' => $this->t('Borrador'),

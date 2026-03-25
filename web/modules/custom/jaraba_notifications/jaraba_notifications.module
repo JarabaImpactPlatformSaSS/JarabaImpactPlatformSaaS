@@ -56,7 +56,6 @@ function jaraba_notifications_user_insert(EntityInterface $entity): void {
   }
 }
 
-
 /**
  * Prepares variables for notification templates.
  *

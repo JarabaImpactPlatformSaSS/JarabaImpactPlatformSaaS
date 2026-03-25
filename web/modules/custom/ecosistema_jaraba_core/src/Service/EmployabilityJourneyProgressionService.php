@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  * - CV coaching after application frustration
  * - Interview prep activation
  * - Offer negotiation help
- * - Post-employment cross-vertical bridges
+ * - Post-employment cross-vertical bridges.
  *
  * Plan Elevación Empleabilidad v1 — Fase 9.
  */

@@ -114,7 +114,6 @@ function jaraba_integrations_preprocess_html(array &$variables): void {
   }
 }
 
-
 /**
  * Prepares variables for connector templates.
  *

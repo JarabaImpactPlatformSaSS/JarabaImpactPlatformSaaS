@@ -72,7 +72,6 @@ class DocumentDelivery extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['case_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Expediente'))
       ->setDescription(new TranslatableMarkup('Expediente juridico vinculado a la entrega.'))
@@ -92,7 +91,6 @@ class DocumentDelivery extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: PARTICIPANTES
     // =========================================================================
-
     $fields['delivered_by'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Entregado por'))
       ->setDescription(new TranslatableMarkup('Abogado que realiza la entrega.'))
@@ -108,7 +106,6 @@ class DocumentDelivery extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: DATOS DE LA ENTREGA
     // =========================================================================
-
     $fields['message'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Mensaje'))
       ->setDescription(new TranslatableMarkup('Mensaje para el destinatario.'))
@@ -136,7 +133,6 @@ class DocumentDelivery extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 4: ESTADO Y TRACKING
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -175,7 +171,6 @@ class DocumentDelivery extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 5: TIMESTAMP
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

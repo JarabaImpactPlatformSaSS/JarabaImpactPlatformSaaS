@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_usage_billing\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\jaraba_usage_billing\Entity\UsageAggregate;
 use Drupal\jaraba_usage_billing\Service\UsageAggregatorService;
 use Drupal\jaraba_usage_billing\Service\UsageAlertService;
 use Drupal\jaraba_usage_billing\Service\UsagePricingService;

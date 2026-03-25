@@ -74,7 +74,6 @@ class WhistleblowerReport extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- IDENTIFICACIÓN ---
-
     $fields['tracking_code'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Código de seguimiento'))
       ->setDescription(new TranslatableMarkup('Código único para seguimiento anónimo de la denuncia.'))
@@ -85,7 +84,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CLASIFICACIÓN ---
-
     $fields['category'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Categoría'))
       ->setDescription(new TranslatableMarkup('Categoría de la denuncia.'))
@@ -104,7 +102,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CONTENIDO CIFRADO ---
-
     $fields['description_encrypted'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripción (cifrada)'))
       ->setDescription(new TranslatableMarkup('Descripción detallada de la denuncia, almacenada cifrada.'))
@@ -114,7 +111,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SEVERIDAD Y ESTADO ---
-
     $fields['severity'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Severidad'))
       ->setDescription(new TranslatableMarkup('Nivel de severidad de la denuncia.'))
@@ -145,7 +141,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CONTACTO DEL DENUNCIANTE ---
-
     $fields['reporter_contact_encrypted'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Contacto del denunciante (cifrado)'))
       ->setDescription(new TranslatableMarkup('Datos de contacto cifrados del denunciante, si los proporcionó.'))
@@ -162,7 +157,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ASIGNACIÓN ---
-
     $fields['assigned_to'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Asignado a'))
       ->setDescription(new TranslatableMarkup('Usuario responsable de investigar la denuncia.'))
@@ -172,7 +166,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RESOLUCIÓN ---
-
     $fields['resolution'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Resolución'))
       ->setDescription(new TranslatableMarkup('Descripción de la resolución o resultado de la investigación.'))
@@ -186,7 +179,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- METADATA ---
-
     $fields['ip_address'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Dirección IP'))
       ->setDescription(new TranslatableMarkup('IP desde la que se realizó la denuncia.'))
@@ -194,7 +186,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant relacionado con la denuncia.'))
@@ -204,7 +195,6 @@ class WhistleblowerReport extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

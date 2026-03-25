@@ -89,7 +89,7 @@ final class LegalCoherenceVerifierService {
    *   premise_issues: array,
    *   citation_alignment: array,
    *   output: string,
-   * }
+   *   }
    */
   public function verify(string $userInput, string $agentOutput, array $context = []): array {
     $action = $context['action'] ?? '';

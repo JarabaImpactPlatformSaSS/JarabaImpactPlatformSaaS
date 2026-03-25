@@ -29,7 +29,7 @@ class SubscriptionContextService {
    * Centralizado aquí para evitar duplicación. Cada feature tiene:
    * - label: Texto traducible mostrado al usuario
    * - icon_cat: Categoría de icono (ICON-CONVENTION-001)
-   * - icon_name: Nombre del icono
+   * - icon_name: Nombre del icono.
    */
   protected const FEATURE_LABELS = [
     // Transversales.
@@ -374,7 +374,7 @@ class SubscriptionContextService {
       // Silenciar — si falla, no mostrar upgrade.
     }
 
-    // TODOS los planes (incluido Enterprise) → checkout directo con Stripe.
+    // @todo S los planes (incluido Enterprise) → checkout directo con Stripe.
     // El precio es público y el usuario sabe lo que obtiene.
     $checkoutUrl = '';
     if ($nextPlanId) {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_billing\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -87,7 +86,6 @@ class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, Entit
     // =========================================================================
     // BLOQUE 1: MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece el registro.'))
@@ -99,7 +97,6 @@ class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, Entit
     // =========================================================================
     // BLOQUE 2: REFERENCIAS
     // =========================================================================
-
     $fields['case_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Expediente'))
       ->setDescription(new TranslatableMarkup('Expediente al que se imputa el tiempo.'))
@@ -121,7 +118,6 @@ class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, Entit
     // =========================================================================
     // BLOQUE 3: DATOS DEL REGISTRO
     // =========================================================================
-
     $fields['description'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Descripcion'))
       ->setDescription(new TranslatableMarkup('Descripcion de la tarea realizada.'))
@@ -169,7 +165,6 @@ class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, Entit
     // =========================================================================
     // BLOQUE 4: VINCULACION A FACTURA
     // =========================================================================
-
     $fields['invoice_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Factura'))
       ->setDescription(new TranslatableMarkup('Factura a la que se ha imputado este tiempo (opcional).'))
@@ -181,7 +176,6 @@ class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, Entit
     // =========================================================================
     // BLOQUE 5: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

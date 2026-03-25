@@ -15,33 +15,30 @@ use Drupal\Core\Session\AccountInterface;
  *
  * Solo lectura — no permite crear ni editar manualmente.
  */
-class DocumentDownloadLogAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class DocumentDownloadLogAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        if ($operation === 'view' && $account->hasPermission('administer agroconecta')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-        return AccessResult::neutral()->cachePerPermissions();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        // Solo se crea programáticamente desde PartnerDocumentService.
-        return AccessResult::neutral();
+    if ($operation === 'view' && $account->hasPermission('administer agroconecta')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+    return AccessResult::neutral()->cachePerPermissions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    // Solo se crea programáticamente desde PartnerDocumentService.
+    return AccessResult::neutral();
+  }
 
 }

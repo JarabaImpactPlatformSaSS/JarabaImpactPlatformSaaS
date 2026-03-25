@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_support\Service;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\jaraba_support\Entity\SupportTicketInterface;
 use Drupal\jaraba_support\Entity\TicketMessageInterface;
@@ -44,7 +45,7 @@ final class TicketNotificationService {
     try {
       // Notify reporter with confirmation email.
       $reporterUid = $ticket->get('reporter_uid')->target_id;
-      $reporter = $reporterUid ? \Drupal\user\Entity\User::load($reporterUid) : NULL;
+      $reporter = $reporterUid ? User::load($reporterUid) : NULL;
       if ($reporter && $reporter->getEmail()) {
         $this->mailManager->mail('jaraba_support', 'ticket_created', $reporter->getEmail(), 'es', [
           'ticket' => $ticket,
@@ -54,7 +55,7 @@ final class TicketNotificationService {
       // Notify assignee if set.
       $assigneeUid = $ticket->get('assignee_uid')->target_id;
       if ($assigneeUid) {
-        $assignee = \Drupal\user\Entity\User::load($assigneeUid);
+        $assignee = User::load($assigneeUid);
         if ($assignee && $assignee->getEmail()) {
           $this->mailManager->mail('jaraba_support', 'ticket_created', $assignee->getEmail(), 'es', [
             'ticket' => $ticket,
@@ -119,7 +120,7 @@ final class TicketNotificationService {
         return;
       }
 
-      $recipient = \Drupal\user\Entity\User::load($recipientUid);
+      $recipient = User::load($recipientUid);
       if (!$recipient || !$recipient->getEmail()) {
         return;
       }
@@ -173,7 +174,7 @@ final class TicketNotificationService {
         return;
       }
 
-      $assignee = \Drupal\user\Entity\User::load($assigneeUid);
+      $assignee = User::load($assigneeUid);
       if (!$assignee || !$assignee->getEmail()) {
         return;
       }
@@ -222,7 +223,7 @@ final class TicketNotificationService {
 
       // Notify assignee if set.
       if ($assigneeUid) {
-        $assignee = \Drupal\user\Entity\User::load($assigneeUid);
+        $assignee = User::load($assigneeUid);
         if ($assignee && $assignee->getEmail()) {
           $this->mailManager->mail('jaraba_support', 'sla_breached', $assignee->getEmail(), 'es', [
             'ticket' => $ticket,
@@ -242,7 +243,7 @@ final class TicketNotificationService {
 
       /** @var \Drupal\user\UserInterface[] $managers */
       $managers = $managerIds !== []
-        ? \Drupal\user\Entity\User::loadMultiple($managerIds)
+        ? User::loadMultiple($managerIds)
         : [];
 
       foreach ($managers as $managerUid => $manager) {
@@ -301,7 +302,7 @@ final class TicketNotificationService {
   public function notifyTicketResolved(SupportTicketInterface $ticket): void {
     try {
       $reporterUid = $ticket->get('reporter_uid')->target_id;
-      $reporter = $reporterUid ? \Drupal\user\Entity\User::load($reporterUid) : NULL;
+      $reporter = $reporterUid ? User::load($reporterUid) : NULL;
 
       if ($reporter && $reporter->getEmail()) {
         // Build CSAT survey link.

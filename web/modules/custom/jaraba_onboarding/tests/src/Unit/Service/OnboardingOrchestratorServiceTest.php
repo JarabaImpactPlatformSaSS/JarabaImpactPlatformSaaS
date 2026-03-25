@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_onboarding\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantOnboardingService;
 use Drupal\jaraba_onboarding\Entity\OnboardingTemplate;
 use Drupal\jaraba_onboarding\Entity\UserOnboardingProgress;

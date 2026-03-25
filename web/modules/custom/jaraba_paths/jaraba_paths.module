@@ -13,18 +13,18 @@ use Drupal\Core\Entity\EntityInterface;
  * Auto-enrollment cuando se completa un diagnóstico.
  */
 function jaraba_paths_entity_insert(EntityInterface $entity): void {
-  // Placeholder para futura implementación
+  // Placeholder para futura implementación.
 }
 
 /**
  * Implements hook_entity_update().
  */
 function jaraba_paths_entity_update(EntityInterface $entity): void {
-  // Detectar diagnóstico completado -> auto-enrollment
+  // Detectar diagnóstico completado -> auto-enrollment.
   if ($entity->getEntityTypeId() === 'business_diagnostic') {
     $original = $entity->original ?? NULL;
 
-    // Si transición a completado
+    // Si transición a completado.
     if ($original &&
         $original->get('status')->value !== 'completed' &&
         $entity->get('status')->value === 'completed') {
@@ -47,10 +47,9 @@ function jaraba_paths_on_diagnostic_completed(EntityInterface $diagnostic): void
     $bestMatch = $recommendationService->getBestMatch((int) $diagnostic->id());
 
     if ($bestMatch && isset($bestMatch['path_id'])) {
-      // Guardar referencia en el diagnóstico
+      // Guardar referencia en el diagnóstico.
       $diagnostic->set('recommended_path_id', $bestMatch['path_id']);
-      // No guardar aquí para evitar loop, se guarda fuera
-
+      // No guardar aquí para evitar loop, se guarda fuera.
       \Drupal::logger('jaraba_paths')->info('Path @path recommended for diagnostic @diagnostic', [
         '@path' => $bestMatch['path_id'],
         '@diagnostic' => $diagnostic->id(),
@@ -108,7 +107,6 @@ function jaraba_paths_theme(): array {
     ],
   ];
 }
-
 
 /**
  * Prepares variables for digitalization_path templates.

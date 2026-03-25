@@ -11,7 +11,7 @@ use Drupal\jaraba_einvoice_b2b\Model\EN16931Model;
  *
  * Converts between invoice formats using the neutral EN16931Model as
  * intermediate representation. This ensures round-trip fidelity:
- *   Facturae -> EN16931Model -> UBL -> EN16931Model -> Facturae
+ *   Facturae -> EN16931Model -> UBL -> EN16931Model -> Facturae.
  *
  * Methods:
  *   - detectFormat(): Identifies XML format from root namespace.

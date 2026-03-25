@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * - Open Graph tags (og:title, og:description, og:image, og:type)
  * - Twitter Cards (twitter:card, twitter:title, twitter:description)
  * - Schema.org JSON-LD (BlogPosting, Article, NewsArticle)
- * - Canonical URLs
+ * - Canonical URLs.
  */
 class BlogSeoService {
 

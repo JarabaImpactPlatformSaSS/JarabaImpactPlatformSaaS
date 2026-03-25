@@ -11,7 +11,8 @@ use Drupal\Core\Form\FormStateInterface;
  * Formulario de configuracion del vertical ServiciosConecta.
  *
  * Accesible en /admin/config/jaraba/servicios-conecta.
- * Todos los labels usan $this->t() para i18n.
+ *
+ * @todo s los labels usan $this->t() para i18n.
  */
 class ServiciosConectaSettingsForm extends ConfigFormBase {
 

@@ -13,44 +13,42 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for Digital Kit entities.
  */
-class DigitalKitAccessControlHandler extends EntityAccessControlHandler
-{
+class DigitalKitAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        if ($account->hasPermission('administer digital kits')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        /** @var \Drupal\jaraba_resources\Entity\DigitalKit $entity */
-        switch ($operation) {
-            case 'view':
-                // Check if user has access based on subscription level.
-                if ($entity->canAccess((int) $account->id())) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                // Free kits are viewable by all authenticated users.
-                if ($entity->getAccessLevel() === 'free' && $account->isAuthenticated()) {
-                    return AccessResult::allowed()->cachePerUser();
-                }
-                return AccessResult::forbidden();
-
-            case 'update':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'administer digital kits');
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    if ($account->hasPermission('administer digital kits')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
+    /** @var \Drupal\jaraba_resources\Entity\DigitalKit $entity */
+    switch ($operation) {
+      case 'view':
+        // Check if user has access based on subscription level.
+        if ($entity->canAccess((int) $account->id())) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        // Free kits are viewable by all authenticated users.
+        if ($entity->getAccessLevel() === 'free' && $account->isAuthenticated()) {
+          return AccessResult::allowed()->cachePerUser();
+        }
+        return AccessResult::forbidden();
+
+      case 'update':
+      case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'administer digital kits');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'administer digital kits');
+  }
 
 }

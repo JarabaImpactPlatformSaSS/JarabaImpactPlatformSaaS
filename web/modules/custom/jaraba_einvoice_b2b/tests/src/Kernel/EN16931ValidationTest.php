@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_einvoice_b2b\Kernel;
 
 use Drupal\jaraba_einvoice_b2b\Model\EN16931Model;
-use Drupal\jaraba_einvoice_b2b\Service\EInvoiceUblService;
-use Drupal\jaraba_einvoice_b2b\Service\EInvoiceValidationService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**

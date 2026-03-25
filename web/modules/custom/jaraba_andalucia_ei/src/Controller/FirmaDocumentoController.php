@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Drupal\jaraba_andalucia_ei\Service\FirmaWorkflowService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

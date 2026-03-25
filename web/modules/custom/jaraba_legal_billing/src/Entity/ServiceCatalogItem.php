@@ -88,7 +88,6 @@ class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -118,7 +117,6 @@ class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 2: DATOS DEL SERVICIO
     // =========================================================================
-
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del Servicio'))
       ->setSetting('max_length', 255)
@@ -146,7 +144,6 @@ class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 3: MODELO DE PRECIOS
     // =========================================================================
-
     $fields['pricing_model'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Modelo de Precios'))
       ->setSetting('allowed_values', [
@@ -220,7 +217,6 @@ class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 4: INCLUIDO / EXCLUIDO (JSON maps)
     // =========================================================================
-
     $fields['includes'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Incluido'))
       ->setDescription(new TranslatableMarkup('Lista de conceptos incluidos en el servicio.'));
@@ -236,7 +232,6 @@ class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterfa
     // =========================================================================
     // BLOQUE 5: ESTADO Y ORDEN
     // =========================================================================
-
     $fields['is_active'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Activo'))
       ->setDefaultValue(TRUE)

@@ -115,7 +115,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 1: IDENTIFICACION DE LA CONSULTA
     // =========================================================================
-
     $fields['inquiry_number'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Numero de Consulta'))
       ->setDescription(new TranslatableMarkup('Referencia auto-generada CON-YYYY-NNNN.'))
@@ -178,7 +177,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 2: MULTI-TENANT Y ASIGNACION
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -196,7 +194,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 3: DATOS DEL CONSULTANTE
     // =========================================================================
-
     $fields['client_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del Consultante'))
       ->setRequired(TRUE)
@@ -221,7 +218,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 4: DESCRIPCION
     // =========================================================================
-
     $fields['description'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripcion'))
       ->setDescription(new TranslatableMarkup('Detalle de la consulta juridica.'))
@@ -239,7 +235,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 5: CONVERSION A EXPEDIENTE
     // =========================================================================
-
     $fields['converted_to_case_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Expediente Convertido'))
       ->setDescription(new TranslatableMarkup('ID del expediente ClientCase al que se convirtio esta consulta.'))
@@ -255,7 +250,6 @@ class ClientInquiry extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 6: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

@@ -34,257 +34,262 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * ESPECIFICACIÓN: Doc 128 - Platform_AI_Content_Hub_v2
  */
-class ArticleApiController extends ControllerBase implements ContainerInjectionInterface
-{
+class ArticleApiController extends ControllerBase implements ContainerInjectionInterface {
 
-    /**
-     * El servicio de artículos.
-     *
-     * Proporciona toda la lógica de negocio para operaciones con artículos.
-     *
-     * @var \Drupal\jaraba_content_hub\Service\ArticleService
-     */
-    protected ArticleService $articleService;
+  /**
+   * El servicio de artículos.
+   *
+   * Proporciona toda la lógica de negocio para operaciones con artículos.
+   *
+   * @var \Drupal\jaraba_content_hub\Service\ArticleService
+   */
+  protected ArticleService $articleService;
 
-    /**
-     * Construye un ArticleApiController.
-     *
-     * @param \Drupal\jaraba_content_hub\Service\ArticleService $articleService
-     *   El servicio de artículos.
-     */
-    public function __construct(ArticleService $articleService)
-    {
-        $this->articleService = $articleService;
+  /**
+   * Construye un ArticleApiController.
+   *
+   * @param \Drupal\jaraba_content_hub\Service\ArticleService $articleService
+   *   El servicio de artículos.
+   */
+  public function __construct(ArticleService $articleService) {
+    $this->articleService = $articleService;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('jaraba_content_hub.article_service'),
+      );
+  }
+
+  /**
+   * Lista artículos publicados con paginación.
+   *
+   * Soporta filtrado por categoría y paginación via query params.
+   * El límite máximo está fijado en 100 para evitar sobrecarga.
+   *
+   * Query params:
+   * - limit: Número de resultados (default 20, max 100)
+   * - offset: Offset para paginación (default 0)
+   * - category: ID de categoría para filtrar
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con listado y metadatos de paginación.
+   */
+  public function list(Request $request): JsonResponse {
+    $limit = (int) $request->query->get('limit', 20);
+    $offset = (int) $request->query->get('offset', 0);
+    $category = $request->query->get('category');
+
+    $filters = [
+      'limit' => min($limit, 100),
+      'offset' => $offset,
+    ];
+
+    if ($category) {
+      $filters['category'] = $category;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_content_hub.article_service'),
-        );
+    $articles = $this->articleService->getPublishedArticles($filters);
+
+    $data = [];
+    foreach ($articles as $article) {
+      $category_entity = $article->get('category')->entity;
+      $data[] = [
+        'uuid' => $article->uuid(),
+        'title' => $article->getTitle(),
+        'slug' => $article->getSlug(),
+        'excerpt' => $article->getExcerpt(),
+        'answer_capsule' => $article->getAnswerCapsule(),
+        'reading_time' => $article->getReadingTime(),
+        'publish_date' => $article->get('publish_date')->value,
+        'category' => $category_entity ? $category_entity->getName() : NULL,
+        'url' => $article->toUrl()->setAbsolute()->toString(),
+      ];
     }
 
-    /**
-     * Lista artículos publicados con paginación.
-     *
-     * Soporta filtrado por categoría y paginación via query params.
-     * El límite máximo está fijado en 100 para evitar sobrecarga.
-     *
-     * Query params:
-     * - limit: Número de resultados (default 20, max 100)
-     * - offset: Offset para paginación (default 0)
-     * - category: ID de categoría para filtrar
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con listado y metadatos de paginación.
-     */
-    public function list(Request $request): JsonResponse
-    {
-        $limit = (int) $request->query->get('limit', 20);
-        $offset = (int) $request->query->get('offset', 0);
-        $category = $request->query->get('category');
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
+        'count' => count($data),
+        'offset' => $offset,
+        'limit' => $limit,
+      ],
+    ]);
+  }
 
-        $filters = [
-            'limit' => min($limit, 100),
-            'offset' => $offset,
-        ];
+  /**
+   * Obtiene un artículo específico por UUID.
+   *
+   * Retorna información completa del artículo incluyendo:
+   * body HTML, categoría con detalles, autor, SEO y flags.
+   *
+   * @param string $uuid
+   *   El UUID del artículo.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con datos del artículo o error 404.
+   */
+  public function get(string $uuid): JsonResponse {
+    $article = $this->articleService->getByUuid($uuid);
 
-        if ($category) {
-            $filters['category'] = $category;
-        }
-
-        $articles = $this->articleService->getPublishedArticles($filters);
-
-        $data = [];
-        foreach ($articles as $article) {
-            $category_entity = $article->get('category')->entity;
-            $data[] = [
-                'uuid' => $article->uuid(),
-                'title' => $article->getTitle(),
-                'slug' => $article->getSlug(),
-                'excerpt' => $article->getExcerpt(),
-                'answer_capsule' => $article->getAnswerCapsule(),
-                'reading_time' => $article->getReadingTime(),
-                'publish_date' => $article->get('publish_date')->value,
-                'category' => $category_entity ? $category_entity->getName() : NULL,
-                'url' => $article->toUrl()->setAbsolute()->toString(),
-            ];
-        }
-
-        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
-                'count' => count($data),
-                'offset' => $offset,
-                'limit' => $limit,
-            ]]);
+    if (!$article) {
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
     }
 
-    /**
-     * Obtiene un artículo específico por UUID.
-     *
-     * Retorna información completa del artículo incluyendo:
-     * body HTML, categoría con detalles, autor, SEO y flags.
-     *
-     * @param string $uuid
-     *   El UUID del artículo.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con datos del artículo o error 404.
-     */
-    public function get(string $uuid): JsonResponse
-    {
-        $article = $this->articleService->getByUuid($uuid);
+    $category_entity = $article->get('category')->entity;
+    $author = $article->getOwner();
 
-        if (!$article) {
-            return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
-        }
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'uuid' => $article->uuid(),
+        'title' => $article->getTitle(),
+        'slug' => $article->getSlug(),
+        'excerpt' => $article->getExcerpt(),
+        'body' => $article->get('body')->value,
+        'answer_capsule' => $article->getAnswerCapsule(),
+        'reading_time' => $article->getReadingTime(),
+        'status' => $article->getPublicationStatus(),
+        'publish_date' => $article->get('publish_date')->value,
+        'category' => $category_entity ? [
+          'id' => $category_entity->id(),
+          'name' => $category_entity->getName(),
+          'slug' => $category_entity->getSlug(),
+        ] : NULL,
+        'author' => $author ? [
+          'id' => $author->id(),
+          'name' => $author->getDisplayName(),
+        ] : NULL,
+        'seo' => [
+          'title' => $article->get('seo_title')->value,
+          'description' => $article->get('seo_description')->value,
+        ],
+        'ai_generated' => $article->isAiGenerated(),
+        'url' => $article->toUrl()->setAbsolute()->toString(),
+      ],
+    ]);
+  }
 
-        $category_entity = $article->get('category')->entity;
-        $author = $article->getOwner();
+  /**
+   * Crea un nuevo artículo via API.
+   *
+   * Requiere al menos el campo 'title' en el body JSON.
+   * El artículo se crea en estado draft por defecto.
+   *
+   * Body JSON esperado:
+   * {
+   *   "title": "Título del artículo",
+   *   "body": "Contenido HTML",
+   *   "excerpt": "Extracto",
+   *   "category_id": 1
+   * }
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con datos JSON.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con datos del artículo creado (201) o error.
+   */
+  public function createArticle(Request $request): JsonResponse {
+    $data = json_decode($request->getContent(), TRUE);
 
-        return new JsonResponse(['success' => TRUE, 'data' => [
-                'uuid' => $article->uuid(),
-                'title' => $article->getTitle(),
-                'slug' => $article->getSlug(),
-                'excerpt' => $article->getExcerpt(),
-                'body' => $article->get('body')->value,
-                'answer_capsule' => $article->getAnswerCapsule(),
-                'reading_time' => $article->getReadingTime(),
-                'status' => $article->getPublicationStatus(),
-                'publish_date' => $article->get('publish_date')->value,
-                'category' => $category_entity ? [
-                    'id' => $category_entity->id(),
-                    'name' => $category_entity->getName(),
-                    'slug' => $category_entity->getSlug(),
-                ] : NULL,
-                'author' => $author ? [
-                    'id' => $author->id(),
-                    'name' => $author->getDisplayName(),
-                ] : NULL,
-                'seo' => [
-                    'title' => $article->get('seo_title')->value,
-                    'description' => $article->get('seo_description')->value,
-                ],
-                'ai_generated' => $article->isAiGenerated(),
-                'url' => $article->toUrl()->setAbsolute()->toString(),
-            ],
-        ]);
+    if (empty($data['title'])) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El título es requerido']], 400);
     }
 
-    /**
-     * Crea un nuevo artículo via API.
-     *
-     * Requiere al menos el campo 'title' en el body JSON.
-     * El artículo se crea en estado draft por defecto.
-     *
-     * Body JSON esperado:
-     * {
-     *   "title": "Título del artículo",
-     *   "body": "Contenido HTML",
-     *   "excerpt": "Extracto",
-     *   "category_id": 1
-     * }
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP con datos JSON.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con datos del artículo creado (201) o error.
-     */
-    public function createArticle(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), TRUE);
+    try {
+      $article = $this->articleService->create($data);
 
-        if (empty($data['title'])) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El título es requerido']], 400);
-        }
+      return new JsonResponse([
+        'data' => [
+          'uuid' => $article->uuid(),
+          'title' => $article->getTitle(),
+          'status' => $article->getPublicationStatus(),
+        ],
+        'meta' => ['timestamp' => time()],
+      ], 201);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
+    }
+  }
 
-        try {
-            $article = $this->articleService->create($data);
+  /**
+   * Actualiza un artículo existente.
+   *
+   * Solo actualiza los campos proporcionados en el body JSON.
+   * Campos soportados: title, body, excerpt, answer_capsule,
+   * seo_title, seo_description, status.
+   *
+   * @param string $uuid
+   *   El UUID del artículo a actualizar.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP con datos JSON.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON con datos actualizados o error 404.
+   */
+  public function update(string $uuid, Request $request): JsonResponse {
+    $article = $this->articleService->getByUuid($uuid);
 
-            return new JsonResponse([
-                'data' => [
-                    'uuid' => $article->uuid(),
-                    'title' => $article->getTitle(),
-                    'status' => $article->getPublicationStatus(),
-                ], 'meta' => ['timestamp' => time()]], 201);
-        } catch (\Exception $e) {
-            \Drupal::logger('jaraba_content_hub')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
-        }
+    if (!$article) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
     }
 
-    /**
-     * Actualiza un artículo existente.
-     *
-     * Solo actualiza los campos proporcionados en el body JSON.
-     * Campos soportados: title, body, excerpt, answer_capsule,
-     * seo_title, seo_description, status.
-     *
-     * @param string $uuid
-     *   El UUID del artículo a actualizar.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP con datos JSON.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON con datos actualizados o error 404.
-     */
-    public function update(string $uuid, Request $request): JsonResponse
-    {
-        $article = $this->articleService->getByUuid($uuid);
+    $data = json_decode($request->getContent(), TRUE);
 
-        if (!$article) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
-        }
-
-        $data = json_decode($request->getContent(), TRUE);
-
-        // Campos permitidos para actualización via API.
-        $fields = ['title', 'body', 'excerpt', 'answer_capsule', 'seo_title', 'seo_description', 'status'];
-        foreach ($fields as $field) {
-            if (isset($data[$field])) {
-                $article->set($field, $data[$field]);
-            }
-        }
-
-        $article->save();
-
-        return new JsonResponse(['success' => TRUE, 'data' => [
-                'uuid' => $article->uuid(),
-                'title' => $article->getTitle(),
-                'status' => $article->getPublicationStatus(),
-            ], 'meta' => ['timestamp' => time()]]);
+    // Campos permitidos para actualización via API.
+    $fields = ['title', 'body', 'excerpt', 'answer_capsule', 'seo_title', 'seo_description', 'status'];
+    foreach ($fields as $field) {
+      if (isset($data[$field])) {
+        $article->set($field, $data[$field]);
+      }
     }
 
-    /**
-     * Publica un artículo.
-     *
-     * Cambia el estado del artículo a 'published' y establece
-     * la fecha de publicación si no estaba ya definida.
-     *
-     * @param string $uuid
-     *   El UUID del artículo a publicar.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta JSON de confirmación o error 404.
-     */
-    public function publish(string $uuid): JsonResponse
-    {
-        $success = $this->articleService->publish($uuid);
+    $article->save();
 
-        if (!$success) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
-        }
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'uuid' => $article->uuid(),
+        'title' => $article->getTitle(),
+        'status' => $article->getPublicationStatus(),
+      ],
+      'meta' => ['timestamp' => time()],
+    ]);
+  }
 
-        return new JsonResponse([
-            'message' => 'Artículo publicado exitosamente',
-        ]);
+  /**
+   * Publica un artículo.
+   *
+   * Cambia el estado del artículo a 'published' y establece
+   * la fecha de publicación si no estaba ya definida.
+   *
+   * @param string $uuid
+   *   El UUID del artículo a publicar.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta JSON de confirmación o error 404.
+   */
+  public function publish(string $uuid): JsonResponse {
+    $success = $this->articleService->publish($uuid);
+
+    if (!$success) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
     }
+
+    return new JsonResponse([
+      'message' => 'Artículo publicado exitosamente',
+    ]);
+  }
 
 }

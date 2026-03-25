@@ -21,156 +21,151 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
  *
  * Q1 2027 - Sprint 4: Elevación y Page Builder
  */
-class DemoFeatureGateService
-{
+class DemoFeatureGateService {
 
-    /**
-     * Límites por defecto (fallback si config no disponible).
-     */
-    protected const DEFAULT_LIMITS = [
-        'demo_sessions_per_hour' => 5,
-        'ai_messages_per_session' => 10,
-        'story_generations_per_session' => 3,
-        'products_viewed_per_session' => 50,
+  /**
+   * Límites por defecto (fallback si config no disponible).
+   */
+  protected const DEFAULT_LIMITS = [
+    'demo_sessions_per_hour' => 5,
+    'ai_messages_per_session' => 10,
+    'story_generations_per_session' => 3,
+    'products_viewed_per_session' => 50,
+  ];
+
+  /**
+   * Constructor.
+   *
+   * HAL-DEMO-V3-BACK-003: Añadido ConfigFactoryInterface para leer
+   * ecosistema_jaraba_core.demo_settings en vez de constantes hardcoded.
+   */
+  public function __construct(
+    protected Connection $database,
+    protected ?LoggerChannelFactoryInterface $loggerFactory = NULL,
+    protected ?ConfigFactoryInterface $configFactory = NULL,
+  ) {
+  }
+
+  /**
+   * Obtiene los límites efectivos desde config o fallback a defaults.
+   *
+   * HAL-DEMO-V3-BACK-003 + HAL-DEMO-V3-CONF-001: Consume
+   * ecosistema_jaraba_core.demo_settings.feature_limits.
+   */
+  protected function getEffectiveLimits(): array {
+    if ($this->configFactory) {
+      $config = $this->configFactory->get('ecosistema_jaraba_core.demo_settings');
+      $configLimits = $config->get('feature_limits');
+      if (is_array($configLimits) && !empty($configLimits)) {
+        return $configLimits + self::DEFAULT_LIMITS;
+      }
+    }
+    return self::DEFAULT_LIMITS;
+  }
+
+  /**
+   * Comprueba si una funcionalidad está disponible para la sesión.
+   *
+   * @param string $sessionId
+   *   ID de la sesión demo.
+   * @param string $feature
+   *   ID de la funcionalidad (key de DEMO_LIMITS).
+   *
+   * @return array
+   *   Array con: allowed (bool), remaining (int), limit (int), current (int).
+   */
+  public function check(string $sessionId, string $feature): array {
+    $limits = $this->getEffectiveLimits();
+    $limit = $limits[$feature] ?? NULL;
+    if ($limit === NULL) {
+      // S8-02: Log warning para features desconocidas.
+      $this->loggerFactory?->get('demo_feature_gate')->warning(
+            'Unknown demo feature gate: @feature',
+            ['@feature' => $feature]
+        );
+      return ['allowed' => TRUE, 'remaining' => PHP_INT_MAX, 'limit' => PHP_INT_MAX, 'current' => 0];
+    }
+
+    $currentUsage = $this->getUsage($sessionId, $feature);
+    $allowed = $currentUsage < $limit;
+
+    return [
+      'allowed' => $allowed,
+      'remaining' => max(0, $limit - $currentUsage),
+      'limit' => $limit,
+      'current' => $currentUsage,
     ];
+  }
 
-    /**
-     * Constructor.
-     *
-     * HAL-DEMO-V3-BACK-003: Añadido ConfigFactoryInterface para leer
-     * ecosistema_jaraba_core.demo_settings en vez de constantes hardcoded.
-     */
-    public function __construct(
-        protected Connection $database,
-        protected ?LoggerChannelFactoryInterface $loggerFactory = NULL,
-        protected ?ConfigFactoryInterface $configFactory = NULL,
-    ) {
+  /**
+   * Registra el uso de una funcionalidad en la sesión.
+   *
+   * @param string $sessionId
+   *   ID de la sesión demo.
+   * @param string $feature
+   *   ID de la funcionalidad.
+   */
+  public function recordUsage(string $sessionId, string $feature): void {
+    // HAL-DEMO-V3-BACK-004: Transacción para evitar race condition
+    // en SELECT→decode→increment→UPDATE. Si dos requests concurrentes
+    // leen el mismo valor, una perdería su incremento.
+    $transaction = $this->database->startTransaction();
+    try {
+      $row = $this->database->select('demo_sessions', 'ds')
+        ->fields('ds', ['session_data'])
+        ->condition('session_id', $sessionId)
+        ->execute()
+        ->fetchField();
+
+      if (!$row) {
+        return;
+      }
+
+      $data = json_decode($row, TRUE) ?: [];
+      $data['feature_usage'][$feature] = ($data['feature_usage'][$feature] ?? 0) + 1;
+
+      $this->database->update('demo_sessions')
+        ->fields(['session_data' => json_encode($data, JSON_UNESCAPED_UNICODE)])
+        ->condition('session_id', $sessionId)
+        ->execute();
     }
-
-    /**
-     * Obtiene los límites efectivos desde config o fallback a defaults.
-     *
-     * HAL-DEMO-V3-BACK-003 + HAL-DEMO-V3-CONF-001: Consume
-     * ecosistema_jaraba_core.demo_settings.feature_limits.
-     */
-    protected function getEffectiveLimits(): array {
-        if ($this->configFactory) {
-            $config = $this->configFactory->get('ecosistema_jaraba_core.demo_settings');
-            $configLimits = $config->get('feature_limits');
-            if (is_array($configLimits) && !empty($configLimits)) {
-                return $configLimits + self::DEFAULT_LIMITS;
-            }
-        }
-        return self::DEFAULT_LIMITS;
+    catch (\Exception $e) {
+      $transaction->rollBack();
+      // Silencioso — el feature gate no debe bloquear la UX.
     }
+  }
 
-    /**
-     * Comprueba si una funcionalidad está disponible para la sesión.
-     *
-     * @param string $sessionId
-     *   ID de la sesión demo.
-     * @param string $feature
-     *   ID de la funcionalidad (key de DEMO_LIMITS).
-     *
-     * @return array
-     *   Array con: allowed (bool), remaining (int), limit (int), current (int).
-     */
-    public function check(string $sessionId, string $feature): array
-    {
-        $limits = $this->getEffectiveLimits();
-        $limit = $limits[$feature] ?? NULL;
-        if ($limit === NULL) {
-            // S8-02: Log warning para features desconocidas.
-            $this->loggerFactory?->get('demo_feature_gate')->warning(
-                'Unknown demo feature gate: @feature',
-                ['@feature' => $feature]
-            );
-            return ['allowed' => TRUE, 'remaining' => PHP_INT_MAX, 'limit' => PHP_INT_MAX, 'current' => 0];
-        }
+  /**
+   * Obtiene el uso actual de una funcionalidad en una sesión.
+   */
+  protected function getUsage(string $sessionId, string $feature): int {
+    try {
+      $row = $this->database->select('demo_sessions', 'ds')
+        ->fields('ds', ['session_data'])
+        ->condition('session_id', $sessionId)
+        ->execute()
+        ->fetchField();
 
-        $currentUsage = $this->getUsage($sessionId, $feature);
-        $allowed = $currentUsage < $limit;
+      if (!$row) {
+        return 0;
+      }
 
-        return [
-            'allowed' => $allowed,
-            'remaining' => max(0, $limit - $currentUsage),
-            'limit' => $limit,
-            'current' => $currentUsage,
-        ];
+      $data = json_decode($row, TRUE) ?: [];
+      return (int) ($data['feature_usage'][$feature] ?? 0);
     }
-
-    /**
-     * Registra el uso de una funcionalidad en la sesión.
-     *
-     * @param string $sessionId
-     *   ID de la sesión demo.
-     * @param string $feature
-     *   ID de la funcionalidad.
-     */
-    public function recordUsage(string $sessionId, string $feature): void
-    {
-        // HAL-DEMO-V3-BACK-004: Transacción para evitar race condition
-        // en SELECT→decode→increment→UPDATE. Si dos requests concurrentes
-        // leen el mismo valor, una perdería su incremento.
-        $transaction = $this->database->startTransaction();
-        try {
-            $row = $this->database->select('demo_sessions', 'ds')
-                ->fields('ds', ['session_data'])
-                ->condition('session_id', $sessionId)
-                ->execute()
-                ->fetchField();
-
-            if (!$row) {
-                return;
-            }
-
-            $data = json_decode($row, TRUE) ?: [];
-            $data['feature_usage'][$feature] = ($data['feature_usage'][$feature] ?? 0) + 1;
-
-            $this->database->update('demo_sessions')
-                ->fields(['session_data' => json_encode($data, JSON_UNESCAPED_UNICODE)])
-                ->condition('session_id', $sessionId)
-                ->execute();
-        }
-        catch (\Exception $e) {
-            $transaction->rollBack();
-            // Silencioso — el feature gate no debe bloquear la UX.
-        }
+    catch (\Exception $e) {
+      return 0;
     }
+  }
 
-    /**
-     * Obtiene el uso actual de una funcionalidad en una sesión.
-     */
-    protected function getUsage(string $sessionId, string $feature): int
-    {
-        try {
-            $row = $this->database->select('demo_sessions', 'ds')
-                ->fields('ds', ['session_data'])
-                ->condition('session_id', $sessionId)
-                ->execute()
-                ->fetchField();
-
-            if (!$row) {
-                return 0;
-            }
-
-            $data = json_decode($row, TRUE) ?: [];
-            return (int) ($data['feature_usage'][$feature] ?? 0);
-        }
-        catch (\Exception $e) {
-            return 0;
-        }
-    }
-
-    /**
-     * Obtiene todos los límites configurados.
-     *
-     * @return array
-     *   Array asociativo feature_id => limit.
-     */
-    public function getLimits(): array
-    {
-        return $this->getEffectiveLimits();
-    }
+  /**
+   * Obtiene todos los límites configurados.
+   *
+   * @return array
+   *   Array asociativo feature_id => limit.
+   */
+  public function getLimits(): array {
+    return $this->getEffectiveLimits();
+  }
 
 }

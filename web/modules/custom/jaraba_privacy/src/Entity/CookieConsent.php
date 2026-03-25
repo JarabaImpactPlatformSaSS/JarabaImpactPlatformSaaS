@@ -69,7 +69,6 @@ class CookieConsent extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant del sitio donde se otorgó el consentimiento.'))
@@ -78,7 +77,6 @@ class CookieConsent extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- USUARIO ---
-
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Usuario'))
       ->setDescription(new TranslatableMarkup('Usuario que otorgó el consentimiento (NULL si anónimo).'))
@@ -92,7 +90,6 @@ class CookieConsent extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CONSENTIMIENTO GRANULAR ---
-
     $fields['consent_analytics'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Cookies analíticas'))
       ->setDescription(new TranslatableMarkup('Consentimiento para cookies de analítica (Google Analytics, etc.).'))
@@ -118,7 +115,6 @@ class CookieConsent extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- METADATOS ---
-
     $fields['ip_address'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Dirección IP'))
       ->setDescription(new TranslatableMarkup('IP desde la que se otorgó el consentimiento.'))
@@ -131,7 +127,6 @@ class CookieConsent extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

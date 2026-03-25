@@ -53,7 +53,7 @@ class CookieConsentManagerService {
    *   - analytics: bool
    *   - marketing: bool
    *   - functional: bool
-   *   - thirdparty: bool
+   *   - thirdparty: bool.
    * @param string $ip_address
    *   Dirección IP del usuario.
    * @param int|null $user_id

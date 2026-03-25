@@ -317,7 +317,6 @@ class BlogPost extends ContentEntityBase implements EntityOwnerInterface, Entity
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Campos SEO ---
-
     $fields['meta_title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Meta Title'))
       ->setDescription(t('Titulo para SEO (max 70 caracteres).'))

@@ -68,7 +68,7 @@ class MetaAdsClientService {
       }
 
       // Llamada a la Graph API de Meta.
-      // En producción se usaría: GET /{ad_account_id}/campaigns
+      // En producción se usaría: GET /{ad_account_id}/campaigns.
       $this->logger->info('Meta Ads: obteniendo campañas para cuenta @id (@ext)', [
         '@id' => $accountId,
         '@ext' => $externalId,
@@ -161,7 +161,7 @@ class MetaAdsClientService {
       }, $emails);
 
       // Llamada a la Graph API de Meta.
-      // En producción: POST /{ad_account_id}/customaudiences
+      // En producción: POST /{ad_account_id}/customaudiences.
       $this->logger->info('Meta Ads: creando audiencia "@name" con @count miembros para cuenta @id', [
         '@name' => $name,
         '@count' => count($hashedEmails),
@@ -206,7 +206,7 @@ class MetaAdsClientService {
       }
 
       // Llamada a la Conversions API de Meta.
-      // En producción: POST /{pixel_id}/events
+      // En producción: POST /{pixel_id}/events.
       $this->logger->info('Meta Ads: subiendo @count conversiones offline para cuenta @id', [
         '@count' => count($events),
         '@id' => $accountId,
@@ -253,7 +253,7 @@ class MetaAdsClientService {
       }
 
       // Llamada a la Graph API de Meta para renovar el token.
-      // En producción: GET /oauth/access_token?grant_type=fb_exchange_token
+      // En producción: GET /oauth/access_token?grant_type=fb_exchange_token.
       $this->logger->info('Meta Ads: renovando token para cuenta @id', ['@id' => $accountId]);
 
       return TRUE;

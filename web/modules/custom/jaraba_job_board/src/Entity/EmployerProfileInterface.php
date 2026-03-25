@@ -11,27 +11,26 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Provides an interface for EmployerProfile entities.
  */
-interface EmployerProfileInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface EmployerProfileInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Gets the company name.
-     */
-    public function getCompanyName(): string;
+  /**
+   * Gets the company name.
+   */
+  public function getCompanyName(): string;
 
-    /**
-     * Gets the tenant ID.
-     */
-    public function getTenantId(): ?int;
+  /**
+   * Gets the tenant ID.
+   */
+  public function getTenantId(): ?int;
 
-    /**
-     * Checks if the employer is verified.
-     */
-    public function isVerified(): bool;
+  /**
+   * Checks if the employer is verified.
+   */
+  public function isVerified(): bool;
 
-    /**
-     * Checks if the employer is featured.
-     */
-    public function isFeatured(): bool;
+  /**
+   * Checks if the employer is featured.
+   */
+  public function isFeatured(): bool;
 
 }

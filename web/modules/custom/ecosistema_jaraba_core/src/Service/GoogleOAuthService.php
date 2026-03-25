@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * Lightweight OAuth2 client — no contrib module dependency.
  * Credentials via settings.secrets.php (SECRET-MGMT-001):
  *   SOCIAL_AUTH_GOOGLE_CLIENT_ID → social_auth_google.settings.client_id
- *   SOCIAL_AUTH_GOOGLE_CLIENT_SECRET → social_auth_google.settings.client_secret
+ *   SOCIAL_AUTH_GOOGLE_CLIENT_SECRET → social_auth_google.settings.client_secret.
  */
 class GoogleOAuthService {
 

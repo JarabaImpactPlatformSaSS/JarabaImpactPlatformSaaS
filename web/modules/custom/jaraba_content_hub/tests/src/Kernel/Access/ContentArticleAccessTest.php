@@ -15,7 +15,7 @@ use Drupal\user\Entity\User;
  * - Owner-based access (author field via getOwnerId)
  * - Published/unpublished view logic
  * - Admin bypass via administer content hub
- * - TENANT-ISOLATION-ACCESS-001: tenant check on update/delete
+ * - TENANT-ISOLATION-ACCESS-001: tenant check on update/delete.
  *
  * @group jaraba_content_hub
  * @group access_control

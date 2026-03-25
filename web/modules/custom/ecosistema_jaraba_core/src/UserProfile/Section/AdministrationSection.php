@@ -13,34 +13,58 @@ use Drupal\ecosistema_jaraba_core\UserProfile\AbstractUserProfileSection;
  */
 class AdministrationSection extends AbstractUserProfileSection {
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'administration';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     return (string) $this->t('Administracion');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     return (string) $this->t('Herramientas de gestion de la plataforma');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'ui', 'name' => 'shield'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'corporate';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 80;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     return \in_array('administrator', $this->currentUser->getRoles(), TRUE);
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     return array_values(array_filter([
       $this->makeLink(

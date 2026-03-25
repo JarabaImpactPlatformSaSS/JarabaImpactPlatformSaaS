@@ -49,7 +49,7 @@ class JitProvisionerService {
    *   - first_name: string
    *   - last_name: string
    *   - name_id: string (SAML) or sub: string (OIDC)
-   *   - groups: string[]
+   *   - groups: string[].
    * @param \Drupal\jaraba_sso\Entity\SsoConfigurationInterface $config
    *   The SSO configuration (provides default_role, attribute_mapping, tenant_id).
    *

@@ -88,7 +88,6 @@ class LegalCitation extends ContentEntityBase implements EntityOwnerInterface, E
     // BLOQUE 1: REFERENCIAS
     // Resolucion citada, expediente destino y usuario que inserto la cita.
     // =========================================================================
-
     $fields['resolution_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Resolution'))
       ->setDescription(t('Resolucion citada desde la que se genero el texto de cita.'))
@@ -115,7 +114,6 @@ class LegalCitation extends ContentEntityBase implements EntityOwnerInterface, E
     // BLOQUE 2: DATOS DE LA CITA
     // Formato y texto generado de la cita legal.
     // =========================================================================
-
     $fields['citation_format'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Citation Format'))
       ->setDescription(t('Formato de cita utilizado al generar el texto.'))
@@ -139,7 +137,6 @@ class LegalCitation extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 3: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp de creacion del registro en el sistema.'));

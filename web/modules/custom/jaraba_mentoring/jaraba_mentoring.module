@@ -11,7 +11,7 @@
  * - SES-001: Reserva confirmada → generar sala + enviar ICS
  * - SES-002: Recordatorios de sesión (24h, 1h, 15min)
  * - SES-003: Sesión completada → solicitar review
- * - SES-004: Detección no-show
+ * - SES-004: Detección no-show.
  */
 
 declare(strict_types=1);
@@ -119,7 +119,7 @@ function jaraba_mentoring_page_attachments_alter(array &$attachments): void {
  * Procesa automatizaciones periódicas:
  * - SES-002: Recordatorios de sesión (24h, 1h, 15min)
  * - SES-004: Detección de no-show
- * - MNT-003: Engagements expirando
+ * - MNT-003: Engagements expirando.
  */
 function jaraba_mentoring_cron(): void {
   // 1. Procesar recordatorios de sesión
@@ -272,7 +272,7 @@ function jaraba_mentoring_mail(string $key, array &$message, array $params): voi
       break;
   }
 
-  // Footer común
+  // Footer común.
   $message['body'][] = '';
   $message['body'][] = '---';
   $message['body'][] = t('Jaraba Impact Platform - Mentorías Premium');
@@ -283,7 +283,7 @@ function jaraba_mentoring_mail(string $key, array &$message, array $params): voi
  *
  * Automatizaciones:
  * - MNT-001: Alta nuevo mentor → notificar admin + bienvenida
- * - SES-001: Nueva sesión → generar sala + enviar emails con ICS
+ * - SES-001: Nueva sesión → generar sala + enviar emails con ICS.
  */
 function jaraba_mentoring_entity_insert(EntityInterface $entity): void {
   $entityType = $entity->getEntityTypeId();
@@ -306,7 +306,7 @@ function jaraba_mentoring_entity_insert(EntityInterface $entity): void {
  *
  * Automatizaciones:
  * - SES-003: Sesión completada → solicitar review
- * - MNT-002: Engagement activado → notificar ambas partes
+ * - MNT-002: Engagement activado → notificar ambas partes.
  */
 function jaraba_mentoring_entity_update(EntityInterface $entity): void {
   $entityType = $entity->getEntityTypeId();
@@ -384,12 +384,12 @@ function _jaraba_mentoring_handle_new_session(EntityInterface $session): void {
     'mentee_name' => $mentee->getDisplayName(),
   ];
 
-  // Email al mentor
+  // Email al mentor.
   if ($mentorUser) {
     _jaraba_mentoring_queue_email('session_booked_mentor', $mentorUser->getEmail(), $context);
   }
 
-  // Email al mentee
+  // Email al mentee.
   _jaraba_mentoring_queue_email('session_booked_mentee', $mentee->getEmail(), $context);
 
   \Drupal::logger('jaraba_mentoring')->info('SES-001: Sesión reservada para @date', [
@@ -437,7 +437,7 @@ function _jaraba_mentoring_handle_engagement_update(EntityInterface $engagement)
     $oldStatus = $engagement->original->get('status')->value ?? '';
   }
 
-  // pending → active significa pago completado
+  // Pending → active significa pago completado.
   if ($oldStatus === 'pending' && $newStatus === 'active') {
     _jaraba_mentoring_notify_engagement_activated($engagement);
   }
@@ -466,15 +466,15 @@ function _jaraba_mentoring_notify_engagement_activated(EntityInterface $engageme
     'booking_url' => '/mentor/' . $mentor->id(),
   ];
 
-  // Notificar mentor
+  // Notificar mentor.
   if ($mentorUser) {
     _jaraba_mentoring_queue_email('package_purchased_mentor', $mentorUser->getEmail(), $context);
   }
 
-  // Notificar mentee
+  // Notificar mentee.
   _jaraba_mentoring_queue_email('package_purchased_mentee', $mentee->getEmail(), $context);
 
-  // Incrementar total_sold del paquete
+  // Incrementar total_sold del paquete.
   $totalSold = (int) ($package->get('total_sold')->value ?? 0);
   $package->set('total_sold', $totalSold + 1);
   $package->save();
@@ -491,7 +491,7 @@ function _jaraba_mentoring_process_session_reminders(): void {
   $storage = \Drupal::entityTypeManager()->getStorage('mentoring_session');
   $now = new \DateTime();
 
-  // Ventanas de recordatorio: 24h, 1h, 15min
+  // Ventanas de recordatorio: 24h, 1h, 15min.
   $windows = [
     '24h' => ['field' => 'reminder_24h_sent', 'label' => '24 horas', 'minutes' => 1440],
     '1h' => ['field' => 'reminder_1h_sent', 'label' => '1 hora', 'minutes' => 60],
@@ -538,13 +538,13 @@ function _jaraba_mentoring_send_session_reminder(EntityInterface $session, strin
     'meeting_url' => $meetingUrl,
   ];
 
-  // Recordatorio al mentor
+  // Recordatorio al mentor.
   if ($mentorUser) {
     $context['user_name'] = $mentor->get('display_name')->value ?? '';
     _jaraba_mentoring_queue_email('session_reminder', $mentorUser->getEmail(), $context);
   }
 
-  // Recordatorio al mentee
+  // Recordatorio al mentee.
   $context['user_name'] = $mentee->getDisplayName();
   _jaraba_mentoring_queue_email('session_reminder', $mentee->getEmail(), $context);
 
@@ -642,7 +642,8 @@ function _jaraba_mentoring_schedule_review_request(EntityInterface $session): vo
   $queue = \Drupal::queue('mentoring_review_request');
   $queue->createItem([
     'session_id' => $session->id(),
-    'scheduled_at' => time() + 7200, // 2 horas después
+  // 2 horas después
+    'scheduled_at' => time() + 7200,
   ]);
 }
 
@@ -662,8 +663,6 @@ function _jaraba_mentoring_queue_email(string $key, string $to, array $context):
     'context' => $context,
   ]);
 }
-
-
 
 /**
  * Prepares variables for availability_slot templates.

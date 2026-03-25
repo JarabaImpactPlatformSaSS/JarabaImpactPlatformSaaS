@@ -109,7 +109,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     // --- BLOQUE 1: Identificacion ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant propietario de esta solicitud.'))
@@ -134,7 +133,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 2: Estado ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado actual de la solicitud.'))
@@ -152,7 +150,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 3: Importes ---
-
     $fields['amount_requested'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Importe solicitado'))
       ->setDescription(new TranslatableMarkup('Importe solicitado en euros.'))
@@ -170,7 +167,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 4: Fechas ---
-
     $fields['submission_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha de envio'))
       ->setDescription(new TranslatableMarkup('Fecha de presentacion de la solicitud.'))
@@ -193,7 +189,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 5: Datos complementarios ---
-
     $fields['budget_breakdown'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Desglose presupuestario'))
       ->setDescription(new TranslatableMarkup('Desglose detallado del presupuesto (JSON serializado).'))
@@ -213,7 +208,6 @@ class FundingApplication extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 6: Metadatos ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

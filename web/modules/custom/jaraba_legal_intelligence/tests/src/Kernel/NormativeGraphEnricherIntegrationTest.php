@@ -230,11 +230,19 @@ class NormativeGraphEnricherIntegrationTest extends KernelTestBase {
     $normStorage = $this->container->get('entity_type.manager')->getStorage('legal_norm');
 
     $norm1 = $normStorage->create([
-      'title' => 'Norm 1', 'norm_type' => 'ley', 'scope' => 'nacional', 'status' => 'vigente', 'tenant_id' => 1,
+      'title' => 'Norm 1',
+      'norm_type' => 'ley',
+      'scope' => 'nacional',
+      'status' => 'vigente',
+      'tenant_id' => 1,
     ]);
     $norm1->save();
     $norm2 = $normStorage->create([
-      'title' => 'Norm 2', 'norm_type' => 'ley', 'scope' => 'nacional', 'status' => 'vigente', 'tenant_id' => 1,
+      'title' => 'Norm 2',
+      'norm_type' => 'ley',
+      'scope' => 'nacional',
+      'status' => 'vigente',
+      'tenant_id' => 1,
     ]);
     $norm2->save();
 

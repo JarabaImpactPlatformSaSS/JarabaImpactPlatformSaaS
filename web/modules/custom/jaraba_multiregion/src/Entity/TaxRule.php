@@ -91,7 +91,6 @@ class TaxRule extends ContentEntityBase implements EntityChangedInterface {
     // BLOQUE 1: IDENTIFICACION DEL PAIS E IMPUESTO
     // Codigo de pais y nombre del impuesto que actua como etiqueta de la entidad.
     // =========================================================================
-
     $fields['country_code'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Codigo pais'))
       ->setDescription(new TranslatableMarkup('Codigo ISO 3166-1 alpha-2 del pais al que aplica la regla fiscal.'))
@@ -112,7 +111,6 @@ class TaxRule extends ContentEntityBase implements EntityChangedInterface {
     // BLOQUE 2: TIPOS IMPOSITIVOS
     // Tipo general, reducido, superreducido y especial para servicios digitales.
     // =========================================================================
-
     $fields['standard_rate'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Tipo general'))
       ->setDescription(new TranslatableMarkup('Tipo impositivo general en porcentaje (ej: 21.00 para 21%).'))
@@ -153,7 +151,6 @@ class TaxRule extends ContentEntityBase implements EntityChangedInterface {
     // BLOQUE 3: CONFIGURACION OSS Y REVERSE CHARGE
     // Umbral de ventana unica (OSS) e inversion de sujeto pasivo.
     // =========================================================================
-
     $fields['oss_threshold'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Umbral OSS'))
       ->setDescription(new TranslatableMarkup('Umbral en euros para el regimen de ventana unica OSS (One-Stop Shop).'))
@@ -176,7 +173,6 @@ class TaxRule extends ContentEntityBase implements EntityChangedInterface {
     // BLOQUE 4: PERTENENCIA UE Y VIGENCIA
     // Flag de miembro UE y rango temporal de vigencia de la regla fiscal.
     // =========================================================================
-
     $fields['eu_member'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Miembro UE'))
       ->setDescription(new TranslatableMarkup('Indica si el pais es miembro de la Union Europea.'))
@@ -205,7 +201,6 @@ class TaxRule extends ContentEntityBase implements EntityChangedInterface {
     // BLOQUE 5: METADATOS TEMPORALES
     // Timestamps de creacion y ultima modificacion.
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

@@ -64,7 +64,6 @@ class InvoiceLine extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIA A FACTURA
     // =========================================================================
-
     $fields['invoice_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Factura'))
       ->setDescription(new TranslatableMarkup('Factura a la que pertenece esta linea.'))
@@ -84,7 +83,6 @@ class InvoiceLine extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: DATOS DE LA LINEA
     // =========================================================================
-
     $fields['description'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Concepto'))
       ->setDescription(new TranslatableMarkup('Descripcion del servicio o concepto.'))
@@ -156,7 +154,6 @@ class InvoiceLine extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

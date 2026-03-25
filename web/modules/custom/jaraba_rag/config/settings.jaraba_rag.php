@@ -33,45 +33,46 @@ $_jaraba_rag_available = TRUE;
 // las features RAG/Qdrant se deshabilitan sin romper Drupal.
 // ═══════════════════════════════════════════════════════════════════
 if ($is_lando) {
-    // DESARROLLO LOCAL (Lando)
-    // IMPORTANTE: Usar keys anidadas ['vector_db']['host'], NO planas ['vector_db.host'].
-    // Drupal config overrides con dot-notation plana no se aplican a config YAML anidada.
-    $config['jaraba_rag.settings']['vector_db']['host'] = 'http://qdrant:6333';
-    $config['jaraba_rag.settings']['vector_db']['api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
-    $config['jaraba_rag.settings']['environment'] = 'development';
-} else {
-    // PRODUCCION (IONOS) - Variables de entorno recomendadas.
-    // NOTA: En IONOS shared hosting, las env vars no están disponibles.
-    // El CI/CD (deploy.yml) escribe $config overrides directamente en
-    // settings.local.php (que se incluye DESPUÉS de este archivo).
-    // Esos overrides prevalecen sobre los valores de aquí ("last write wins").
-    // Para actualizar credenciales: ejecutar deploy con force_regenerate_settings=true.
-    $qdrant_url = getenv('QDRANT_CLUSTER_URL');
-    $qdrant_key = getenv('QDRANT_API_KEY');
+  // DESARROLLO LOCAL (Lando)
+  // IMPORTANTE: Usar keys anidadas ['vector_db']['host'], NO planas ['vector_db.host'].
+  // Drupal config overrides con dot-notation plana no se aplican a config YAML anidada.
+  $config['jaraba_rag.settings']['vector_db']['host'] = 'http://qdrant:6333';
+  $config['jaraba_rag.settings']['vector_db']['api_key'] = getenv('QDRANT_DEV_API_KEY') ?: '';
+  $config['jaraba_rag.settings']['environment'] = 'development';
+}
+else {
+  // PRODUCCION (IONOS) - Variables de entorno recomendadas.
+  // NOTA: En IONOS shared hosting, las env vars no están disponibles.
+  // El CI/CD (deploy.yml) escribe $config overrides directamente en
+  // settings.local.php (que se incluye DESPUÉS de este archivo).
+  // Esos overrides prevalecen sobre los valores de aquí ("last write wins").
+  // Para actualizar credenciales: ejecutar deploy con force_regenerate_settings=true.
+  $qdrant_url = getenv('QDRANT_CLUSTER_URL');
+  $qdrant_key = getenv('QDRANT_API_KEY');
 
-    if (empty($qdrant_url) || empty($qdrant_key)) {
-        // Degradación graceful: RAG deshabilitado, Drupal sigue funcionando.
-        $_jaraba_rag_available = FALSE;
-        $config['jaraba_rag.settings']['vector_db']['host'] = '';
-        $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
-        $config['jaraba_rag.settings']['environment'] = 'production';
-        $config['jaraba_rag.settings']['disabled'] = TRUE;
-        error_log('JARABA RAG: QDRANT_CLUSTER_URL o QDRANT_API_KEY no configuradas. Features RAG/Qdrant deshabilitadas.');
-    }
-    elseif (!str_starts_with($qdrant_url, 'https://')) {
-        $_jaraba_rag_available = FALSE;
-        $config['jaraba_rag.settings']['vector_db']['host'] = '';
-        $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
-        $config['jaraba_rag.settings']['environment'] = 'production';
-        $config['jaraba_rag.settings']['disabled'] = TRUE;
-        error_log('JARABA RAG: QDRANT_CLUSTER_URL debe usar HTTPS en producción. Features RAG/Qdrant deshabilitadas.');
-    }
-    else {
-        $config['jaraba_rag.settings']['vector_db']['host'] = $qdrant_url;
-        $config['jaraba_rag.settings']['vector_db']['api_key'] = $qdrant_key;
-        $config['jaraba_rag.settings']['environment'] = 'production';
-        $config['jaraba_rag.settings']['disabled'] = FALSE;
-    }
+  if (empty($qdrant_url) || empty($qdrant_key)) {
+    // Degradación graceful: RAG deshabilitado, Drupal sigue funcionando.
+    $_jaraba_rag_available = FALSE;
+    $config['jaraba_rag.settings']['vector_db']['host'] = '';
+    $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
+    $config['jaraba_rag.settings']['environment'] = 'production';
+    $config['jaraba_rag.settings']['disabled'] = TRUE;
+    error_log('JARABA RAG: QDRANT_CLUSTER_URL o QDRANT_API_KEY no configuradas. Features RAG/Qdrant deshabilitadas.');
+  }
+  elseif (!str_starts_with($qdrant_url, 'https://')) {
+    $_jaraba_rag_available = FALSE;
+    $config['jaraba_rag.settings']['vector_db']['host'] = '';
+    $config['jaraba_rag.settings']['vector_db']['api_key'] = '';
+    $config['jaraba_rag.settings']['environment'] = 'production';
+    $config['jaraba_rag.settings']['disabled'] = TRUE;
+    error_log('JARABA RAG: QDRANT_CLUSTER_URL debe usar HTTPS en producción. Features RAG/Qdrant deshabilitadas.');
+  }
+  else {
+    $config['jaraba_rag.settings']['vector_db']['host'] = $qdrant_url;
+    $config['jaraba_rag.settings']['vector_db']['api_key'] = $qdrant_key;
+    $config['jaraba_rag.settings']['environment'] = 'production';
+    $config['jaraba_rag.settings']['disabled'] = FALSE;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -80,9 +81,9 @@ if ($is_lando) {
 $openai_key = getenv('OPENAI_API_KEY');
 
 if (empty($openai_key) && !$is_lando) {
-    $_jaraba_rag_available = FALSE;
-    $config['jaraba_rag.settings']['disabled'] = TRUE;
-    error_log('JARABA RAG: OPENAI_API_KEY no configurada. Features RAG/embeddings deshabilitadas.');
+  $_jaraba_rag_available = FALSE;
+  $config['jaraba_rag.settings']['disabled'] = TRUE;
+  error_log('JARABA RAG: OPENAI_API_KEY no configurada. Features RAG/embeddings deshabilitadas.');
 }
 
 // Common configuration for both environments.
@@ -97,26 +98,31 @@ $config['jaraba_rag.settings']['embeddings']['chunk_overlap'] = 100;
 // ═══════════════════════════════════════════════════════════════════
 $config['jaraba_rag.settings']['security'] = [
     // Rate limiting.
-    'rate_limit_window' => 60,      // Seconds.
-    'rate_limit_max_auth' => 100,   // Authenticated users.
-    'rate_limit_max_anon' => 10,    // Anonymous users.
+// Seconds.
+  'rate_limit_window' => 60,
+// Authenticated users.
+  'rate_limit_max_auth' => 100,
+// Anonymous users.
+  'rate_limit_max_anon' => 10,
 
     // Input validation.
-    'max_query_length' => 1000,     // Characters.
-    'max_embedding_text' => 8000,   // Characters.
+// Characters.
+  'max_query_length' => 1000,
+// Characters.
+  'max_embedding_text' => 8000,
 
     // FIX-027: Multi-tenancy whitelists using canonical vertical names.
-    'allowed_verticals' => [
-        'empleabilidad',
-        'emprendimiento',
-        'comercioconecta',
-        'agroconecta',
-        'jarabalex',
-        'serviciosconecta',
-        'andalucia_ei',
-        'jaraba_content_hub',
-        'formacion',
-        'demo',
-    ],
-    'allowed_plans' => ['starter', 'growth', 'pro', 'enterprise'],
+  'allowed_verticals' => [
+    'empleabilidad',
+    'emprendimiento',
+    'comercioconecta',
+    'agroconecta',
+    'jarabalex',
+    'serviciosconecta',
+    'andalucia_ei',
+    'jaraba_content_hub',
+    'formacion',
+    'demo',
+  ],
+  'allowed_plans' => ['starter', 'growth', 'pro', 'enterprise'],
 ];

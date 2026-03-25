@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Unit;
 
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -172,7 +174,7 @@ class VeriFactuRecordServiceTest extends UnitTestCase {
    * Creates a mock billing invoice entity.
    */
   protected function createMockInvoice(): object {
-    $invoice = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $invoice = $this->createMock(ContentEntityInterface::class);
     $invoice->method('id')->willReturn(1);
     $invoice->method('getEntityTypeId')->willReturn('billing_invoice');
 
@@ -219,8 +221,8 @@ class VeriFactuRecordServiceTest extends UnitTestCase {
    * Sets up entity storage mocks for tenant config lookup.
    */
   protected function setupEntityStorageMocks(): void {
-    $tenantConfig = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
-    $tenantConfig->method('get')->willReturnCallback(function($field) {
+    $tenantConfig = $this->createMock(ContentEntityInterface::class);
+    $tenantConfig->method('get')->willReturnCallback(function ($field) {
        return (object) ['value' => 'test-value'];
     });
 
@@ -230,8 +232,8 @@ class VeriFactuRecordServiceTest extends UnitTestCase {
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')->willReturn([$tenantConfig]);
     $storage->method('create')->willReturn($record);
-    
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+
+    $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();

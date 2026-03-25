@@ -257,7 +257,7 @@ class AvatarNavigationService {
       ],
       'producer' => [
         ['id' => 'company', 'label' => 'Mi empresa', 'route' => 'jaraba_job_board.my_company', 'icon_category' => 'business', 'icon_name' => 'company'],
-        // AUDIT-CONS-N05: canonical route prefix jaraba_agroconecta_core.*
+        // AUDIT-CONS-N05: canonical route prefix jaraba_agroconecta_core.*.
         ['id' => 'marketplace', 'label' => 'Marketplace', 'route' => 'jaraba_agroconecta_core.marketplace', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'producer_dashboard', 'label' => 'Mi Tienda', 'route' => 'jaraba_agroconecta_core.producer.dashboard', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'producer_orders', 'label' => 'Pedidos', 'route' => 'jaraba_agroconecta_core.producer.orders', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
@@ -266,7 +266,7 @@ class AvatarNavigationService {
         ['id' => 'training', 'label' => 'Formación', 'route' => 'jaraba_lms.my_learning', 'icon_category' => 'ui', 'icon_name' => 'book'],
       ],
       'buyer' => [
-        // AUDIT-CONS-N05: canonical route prefix jaraba_agroconecta_core.*
+        // AUDIT-CONS-N05: canonical route prefix jaraba_agroconecta_core.*.
         ['id' => 'marketplace', 'label' => 'Marketplace', 'route' => 'jaraba_agroconecta_core.marketplace', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'customer_dashboard', 'label' => 'Mis Pedidos', 'route' => 'jaraba_agroconecta_core.customer.dashboard', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
         ['id' => 'customer_favorites', 'label' => 'Favoritos', 'route' => 'jaraba_agroconecta_core.customer.favorites', 'icon_category' => 'ui', 'icon_name' => 'heart'],

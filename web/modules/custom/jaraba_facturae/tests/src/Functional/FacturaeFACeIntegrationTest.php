@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Functional;
 
+use Drupal\jaraba_facturae\ValueObject\FACeStatus;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -46,17 +47,17 @@ class FacturaeFACeIntegrationTest extends BrowserTestBase {
    * Tests FACeStatus value object lifecycle mapping completeness.
    */
   public function testFACeStatusLifecycleMapping(): void {
-    $status = new \Drupal\jaraba_facturae\ValueObject\FACeStatus(
+    $status = new FACeStatus(
       'REG-001', '1200', 'Registrada', '', '', '', ''
     );
     $this->assertEquals('registered', $status->toEntityStatus());
 
-    $status = new \Drupal\jaraba_facturae\ValueObject\FACeStatus(
+    $status = new FACeStatus(
       'REG-001', '2600', 'Pagada', '', '', '', ''
     );
     $this->assertEquals('paid', $status->toEntityStatus());
 
-    $status = new \Drupal\jaraba_facturae\ValueObject\FACeStatus(
+    $status = new FACeStatus(
       'REG-001', '2500', 'Reconocida obligacion pago', '', '', '', ''
     );
     $this->assertEquals('obligation_recognized', $status->toEntityStatus());
@@ -66,12 +67,12 @@ class FacturaeFACeIntegrationTest extends BrowserTestBase {
    * Tests FACeStatus cancellation detection.
    */
   public function testFACeStatusCancellationDetection(): void {
-    $noCancellation = new \Drupal\jaraba_facturae\ValueObject\FACeStatus(
+    $noCancellation = new FACeStatus(
       'REG-001', '1200', 'Registrada', '', '', '', ''
     );
     $this->assertFalse($noCancellation->hasCancellation());
 
-    $withCancellation = new \Drupal\jaraba_facturae\ValueObject\FACeStatus(
+    $withCancellation = new FACeStatus(
       'REG-001', '1200', 'Registrada', '', '3100', 'Solicitada', 'Error'
     );
     $this->assertTrue($withCancellation->hasCancellation());

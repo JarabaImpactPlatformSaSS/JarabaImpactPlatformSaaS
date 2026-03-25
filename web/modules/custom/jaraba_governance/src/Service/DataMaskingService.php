@@ -141,7 +141,8 @@ class DataMaskingService {
     }
 
     // Faker-based rules.
-    $seed = $id * 7919; // Deterministic prime-based seed.
+    // Deterministic prime-based seed.
+    $seed = $id * 7919;
     return match ($rule) {
       'faker_name' => $this->fakeName($seed),
       'faker_nif' => $this->fakeNif($seed),

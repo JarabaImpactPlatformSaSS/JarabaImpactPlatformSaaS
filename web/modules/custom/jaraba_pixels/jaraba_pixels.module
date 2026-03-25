@@ -31,7 +31,8 @@ function jaraba_pixels_analytics_event_insert(EntityInterface $entity) {
 
     // Intentar encolar en Redis (V2 async).
     if ($queue->isAvailable() && $queue->enqueue($event_data)) {
-      return; // Evento encolado, será procesado por cron.
+      // Evento encolado, será procesado por cron.
+      return;
     }
 
     // Fallback: dispatch síncrono (V1).
@@ -245,5 +246,3 @@ function jaraba_pixels_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'dashboard-page';
   }
 }
-
-

@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * REST Controller for the public contact form.
  *
- * Sprint 6 — POST /api/v1/public/contact
+ * Sprint 6 — POST /api/v1/public/contact.
  *
  * Receives contact form submissions, validates, stores in DB,
  * and sends notification email to the site admin.
@@ -128,7 +128,6 @@ class ContactApiController extends ControllerBase {
     // Integration: Create CRM contact if jaraba_crm module is available.
     $this->createCrmContact($name, $email, $subject, $message);
 
-
     // Send notification email to admin.
     $this->sendNotification($name, $email, $subject, $message);
 
@@ -241,4 +240,3 @@ class ContactApiController extends ControllerBase {
   }
 
 }
-

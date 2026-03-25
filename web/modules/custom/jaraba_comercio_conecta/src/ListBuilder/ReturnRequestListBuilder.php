@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class ReturnRequestListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['order'] = $this->t('Pedido');
     $header['reason'] = $this->t('Motivo');
@@ -18,6 +24,9 @@ class ReturnRequestListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $status_labels = [
       'requested' => $this->t('Solicitada'),

@@ -15,6 +15,9 @@ use Drupal\Core\Access\AccessResultInterface;
  */
 class IdentityWalletAccessControlHandler extends EntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     /** @var \Drupal\jaraba_identity\Entity\IdentityWallet $entity */
 
@@ -28,7 +31,7 @@ class IdentityWalletAccessControlHandler extends EntityAccessControlHandler {
 
     switch ($operation) {
       case 'view':
-        return $isOwner 
+        return $isOwner
           ? AccessResult::allowedIfHasPermission($account, 'view own identity wallet')
           : AccessResult::neutral();
 
@@ -42,6 +45,9 @@ class IdentityWalletAccessControlHandler extends EntityAccessControlHandler {
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
     return AccessResult::allowedIfHasPermission($account, 'manage own identity wallet');
   }

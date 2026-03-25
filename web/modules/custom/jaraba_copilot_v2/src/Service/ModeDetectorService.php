@@ -24,39 +24,38 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * - laboral: Seguridad Social (RAG)
  * - devil: Cuestionamiento de hipótesis
  */
-class ModeDetectorService
-{
+class ModeDetectorService {
 
-    /**
-     * Database connection.
-     */
-    protected ?Connection $database;
+  /**
+   * Database connection.
+   */
+  protected ?Connection $database;
 
-    /**
-     * Cache backend for triggers.
-     */
-    protected ?CacheBackendInterface $triggersCache;
+  /**
+   * Cache backend for triggers.
+   */
+  protected ?CacheBackendInterface $triggersCache;
 
-    /**
-     * Tenant context for cache key scoping (CACHE-KEY-TENANT-001).
-     */
-    protected ?TenantContextService $tenantContext;
+  /**
+   * Tenant context for cache key scoping (CACHE-KEY-TENANT-001).
+   */
+  protected ?TenantContextService $tenantContext;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(?Connection $database = NULL, ?CacheBackendInterface $triggersCache = NULL, ?TenantContextService $tenantContext = NULL) {
-        $this->database = $database;
-        $this->triggersCache = $triggersCache;
-        $this->tenantContext = $tenantContext;
-    }
+  /**
+   * Constructor.
+   */
+  public function __construct(?Connection $database = NULL, ?CacheBackendInterface $triggersCache = NULL, ?TenantContextService $tenantContext = NULL) {
+    $this->database = $database;
+    $this->triggersCache = $triggersCache;
+    $this->tenantContext = $tenantContext;
+  }
 
-    /**
-     * Triggers por modo con pesos asociados.
-     */
-    const MODE_TRIGGERS = [
-        'coach' => [
-            // Emocionales
+  /**
+   * Triggers por modo con pesos asociados.
+   */
+  const MODE_TRIGGERS = [
+    'coach' => [
+            // Emocionales.
             ['word' => 'miedo', 'weight' => 10],
             ['word' => 'no puedo', 'weight' => 10],
             ['word' => 'agobio', 'weight' => 9],
@@ -74,9 +73,9 @@ class ModeDetectorService
             ['word' => 'inseguro', 'weight' => 8],
             ['word' => 'me siento', 'weight' => 5],
             ['word' => 'no sé si puedo', 'weight' => 10],
-        ],
-        'consultor' => [
-            // Instrucciones
+    ],
+    'consultor' => [
+            // Instrucciones.
             ['word' => 'cómo hago', 'weight' => 8],
             ['word' => 'cómo puedo', 'weight' => 7],
             ['word' => 'paso a paso', 'weight' => 10],
@@ -91,9 +90,9 @@ class ModeDetectorService
             ['word' => 'qué necesito', 'weight' => 7],
             ['word' => 'checklist', 'weight' => 9],
             ['word' => 'pasos', 'weight' => 6],
-        ],
-        'sparring' => [
-            // Simulación
+    ],
+    'sparring' => [
+            // Simulación.
             ['word' => 'qué te parece', 'weight' => 8],
             ['word' => 'valídame', 'weight' => 9],
             ['word' => 'validame', 'weight' => 9],
@@ -110,9 +109,9 @@ class ModeDetectorService
             ['word' => 'presentación', 'weight' => 7],
             ['word' => 'objeción', 'weight' => 8],
             ['word' => 'convencer', 'weight' => 6],
-        ],
-        'cfo' => [
-            // Finanzas
+    ],
+    'cfo' => [
+            // Finanzas.
             ['word' => 'precio', 'weight' => 9],
             ['word' => 'cobrar', 'weight' => 9],
             ['word' => 'tarifa', 'weight' => 9],
@@ -130,9 +129,9 @@ class ModeDetectorService
             ['word' => 'break even', 'weight' => 12],
             ['word' => 'punto de equilibrio', 'weight' => 12],
             ['word' => 'unit economics', 'weight' => 12],
-        ],
-        'fiscal' => [
-            // Tributario
+    ],
+    'fiscal' => [
+            // Tributario.
             ['word' => 'hacienda', 'weight' => 12],
             ['word' => 'iva', 'weight' => 12],
             ['word' => 'irpf', 'weight' => 12],
@@ -149,9 +148,9 @@ class ModeDetectorService
             ['word' => 'retención', 'weight' => 10],
             ['word' => 'alta censal', 'weight' => 12],
             ['word' => 'trimestre', 'weight' => 7],
-        ],
-        'laboral' => [
-            // Seguridad Social
+    ],
+    'laboral' => [
+            // Seguridad Social.
             ['word' => 'autónomo', 'weight' => 10],
             ['word' => 'cuota', 'weight' => 10],
             ['word' => 'reta', 'weight' => 12],
@@ -168,9 +167,9 @@ class ModeDetectorService
             ['word' => 'paro', 'weight' => 8],
             ['word' => 'cese actividad', 'weight' => 12],
             ['word' => '80 euros', 'weight' => 15],
-        ],
-        'devil' => [
-            // Cuestionamiento
+    ],
+    'devil' => [
+            // Cuestionamiento.
             ['word' => 'estoy seguro', 'weight' => 9],
             ['word' => 'todos quieren', 'weight' => 10],
             ['word' => 'es obvio', 'weight' => 10],
@@ -184,10 +183,10 @@ class ModeDetectorService
             ['word' => 'desafía', 'weight' => 10],
             ['word' => 'ponme a prueba', 'weight' => 12],
             ['word' => 'crítica', 'weight' => 7],
-        ],
+    ],
         // === v3: Nuevos modos Osterwalder/Blank ===
-        'vpc_designer' => [
-            // Value Proposition Canvas
+    'vpc_designer' => [
+            // Value Proposition Canvas.
             ['word' => 'propuesta de valor', 'weight' => 15],
             ['word' => 'value proposition', 'weight' => 15],
             ['word' => 'vpc', 'weight' => 12],
@@ -207,9 +206,9 @@ class ModeDetectorService
             ['word' => 'encaje', 'weight' => 10],
             ['word' => 'fit', 'weight' => 8],
             ['word' => 'por qué elegirme', 'weight' => 10],
-        ],
-        'customer_discovery' => [
-            // Customer Development - Blank/Dorf
+    ],
+    'customer_discovery' => [
+            // Customer Development - Blank/Dorf.
             ['word' => 'entrevista', 'weight' => 9],
             ['word' => 'entrevistar', 'weight' => 9],
             ['word' => 'salir del edificio', 'weight' => 15],
@@ -226,9 +225,9 @@ class ModeDetectorService
             ['word' => 'guión entrevista', 'weight' => 12],
             ['word' => 'preguntas abiertas', 'weight' => 9],
             ['word' => 'mom test', 'weight' => 12],
-        ],
-        'pattern_expert' => [
-            // Business Model Patterns - Osterwalder
+    ],
+    'pattern_expert' => [
+            // Business Model Patterns - Osterwalder.
             ['word' => 'patrón de negocio', 'weight' => 12],
             ['word' => 'business pattern', 'weight' => 12],
             ['word' => 'modelo de negocio', 'weight' => 9],
@@ -244,9 +243,9 @@ class ModeDetectorService
             ['word' => 'lock-in', 'weight' => 10],
             ['word' => 'recurrente', 'weight' => 9],
             ['word' => 'estrategia de monetización', 'weight' => 11],
-        ],
-        'pivot_advisor' => [
-            // Pivots y Explore/Exploit - Osterwalder/Ries
+    ],
+    'pivot_advisor' => [
+            // Pivots y Explore/Exploit - Osterwalder/Ries.
             ['word' => 'pivotar', 'weight' => 15],
             ['word' => 'pivot', 'weight' => 15],
             ['word' => 'cambiar de dirección', 'weight' => 10],
@@ -263,229 +262,229 @@ class ModeDetectorService
             ['word' => 'channel pivot', 'weight' => 12],
             ['word' => 'señales de fracaso', 'weight' => 10],
             ['word' => 'métricas rojas', 'weight' => 11],
-        ],
+    ],
+  ];
+
+  /**
+   * Modificadores de contexto por carril del emprendedor.
+   */
+  const CARRIL_MODIFIERS = [
+    'IMPULSO' => ['coach' => 1.3, 'consultor' => 1.0],
+    'LANZADERA' => ['consultor' => 1.2, 'cfo' => 1.1],
+    'ACELERA' => ['cfo' => 1.3, 'sparring' => 1.2],
+  ];
+
+  /**
+   * Detecta el modo apropiado basado en el mensaje y contexto.
+   *
+   * @param string $message
+   *   Mensaje del usuario.
+   * @param array $context
+   *   Contexto del emprendedor (carril, fase, etc.).
+   *
+   * @return array
+   *   Array con:
+   *   - mode: string (el modo detectado)
+   *   - score: float (puntuación del modo ganador)
+   *   - confidence: string (high, medium, low)
+   *   - all_scores: array (puntuaciones de todos los modos)
+   */
+  public function detectMode(string $message, array $context = []): array {
+    $messageLower = mb_strtolower($message);
+    $scores = [];
+
+    // 1. Calcular puntuación base por triggers (BD con fallback a const)
+    $triggers = $this->loadTriggersFromDb();
+    foreach ($triggers as $mode => $modeTriggers) {
+      $scores[$mode] = 0;
+      foreach ($modeTriggers as $trigger) {
+        if (mb_strpos($messageLower, $trigger['word']) !== FALSE) {
+          $scores[$mode] += $trigger['weight'];
+        }
+      }
+    }
+
+    // 2. Aplicar modificadores de contexto (carril)
+    $carril = strtoupper($context['carril'] ?? '');
+    if (isset(self::CARRIL_MODIFIERS[$carril])) {
+      foreach (self::CARRIL_MODIFIERS[$carril] as $mode => $modifier) {
+        if (isset($scores[$mode])) {
+          $scores[$mode] *= $modifier;
+        }
+      }
+    }
+
+    // 3. Boost para modo coach si detectamos emoción fuerte
+    $emotionScore = $this->analyzeEmotion($message);
+    if ($emotionScore > 0.7) {
+      $scores['coach'] = ($scores['coach'] ?? 0) + 15;
+    }
+
+    // 4. Seleccionar modo con mayor puntuación
+    arsort($scores);
+    $modes = array_keys($scores);
+    $topMode = $modes[0] ?? 'consultor';
+    $topScore = $scores[$topMode] ?? 0;
+
+    // 5. Determinar confianza
+    $secondScore = $scores[$modes[1] ?? 'consultor'] ?? 0;
+    $scoreDiff = $topScore - $secondScore;
+
+    if ($topScore < 5) {
+      $confidence = 'low';
+      // Default si no hay señal clara.
+      $topMode = 'consultor';
+    }
+    elseif ($scoreDiff > 10) {
+      $confidence = 'high';
+    }
+    elseif ($scoreDiff > 5) {
+      $confidence = 'medium';
+    }
+    else {
+      $confidence = 'low';
+    }
+
+    return [
+      'mode' => $topMode,
+      'score' => round($topScore, 2),
+      'confidence' => $confidence,
+      'emotion_score' => round($emotionScore, 2),
+      'all_scores' => array_map(fn($s) => round($s, 2), $scores),
+    ];
+  }
+
+  /**
+   * Analiza el nivel de emoción en el mensaje.
+   *
+   * @param string $message
+   *   El mensaje a analizar.
+   *
+   * @return float
+   *   Score de emoción entre 0 y 1.
+   */
+  protected function analyzeEmotion(string $message): float {
+    $emotionIndicators = [
+          // Indicadores fuertes.
+      'no puedo más' => 0.9,
+      'estoy destrozado' => 0.95,
+      'me rindo' => 0.9,
+      'quiero dejarlo' => 0.85,
+      'no sé qué hacer' => 0.7,
+      'tengo miedo' => 0.8,
+      'me siento fatal' => 0.85,
+      'estoy agotado' => 0.75,
+      'no valgo' => 0.9,
+          // Indicadores moderados.
+      'preocupado' => 0.5,
+      'nervioso' => 0.5,
+      'ansioso' => 0.6,
+      'frustrado' => 0.6,
+      'cansado' => 0.4,
+      'dudas' => 0.4,
+      'confundido' => 0.4,
     ];
 
-    /**
-     * Modificadores de contexto por carril del emprendedor.
-     */
-    const CARRIL_MODIFIERS = [
-        'IMPULSO' => ['coach' => 1.3, 'consultor' => 1.0],
-        'LANZADERA' => ['consultor' => 1.2, 'cfo' => 1.1],
-        'ACELERA' => ['cfo' => 1.3, 'sparring' => 1.2],
-    ];
+    $messageLower = mb_strtolower($message);
+    $maxScore = 0;
 
-    /**
-     * Detecta el modo apropiado basado en el mensaje y contexto.
-     *
-     * @param string $message
-     *   Mensaje del usuario.
-     * @param array $context
-     *   Contexto del emprendedor (carril, fase, etc.).
-     *
-     * @return array
-     *   Array con:
-     *   - mode: string (el modo detectado)
-     *   - score: float (puntuación del modo ganador)
-     *   - confidence: string (high, medium, low)
-     *   - all_scores: array (puntuaciones de todos los modos)
-     */
-    public function detectMode(string $message, array $context = []): array
-    {
-        $messageLower = mb_strtolower($message);
-        $scores = [];
-
-        // 1. Calcular puntuación base por triggers (BD con fallback a const)
-        $triggers = $this->loadTriggersFromDb();
-        foreach ($triggers as $mode => $modeTriggers) {
-            $scores[$mode] = 0;
-            foreach ($modeTriggers as $trigger) {
-                if (mb_strpos($messageLower, $trigger['word']) !== FALSE) {
-                    $scores[$mode] += $trigger['weight'];
-                }
-            }
-        }
-
-        // 2. Aplicar modificadores de contexto (carril)
-        $carril = strtoupper($context['carril'] ?? '');
-        if (isset(self::CARRIL_MODIFIERS[$carril])) {
-            foreach (self::CARRIL_MODIFIERS[$carril] as $mode => $modifier) {
-                if (isset($scores[$mode])) {
-                    $scores[$mode] *= $modifier;
-                }
-            }
-        }
-
-        // 3. Boost para modo coach si detectamos emoción fuerte
-        $emotionScore = $this->analyzeEmotion($message);
-        if ($emotionScore > 0.7) {
-            $scores['coach'] = ($scores['coach'] ?? 0) + 15;
-        }
-
-        // 4. Seleccionar modo con mayor puntuación
-        arsort($scores);
-        $modes = array_keys($scores);
-        $topMode = $modes[0] ?? 'consultor';
-        $topScore = $scores[$topMode] ?? 0;
-
-        // 5. Determinar confianza
-        $secondScore = $scores[$modes[1] ?? 'consultor'] ?? 0;
-        $scoreDiff = $topScore - $secondScore;
-
-        if ($topScore < 5) {
-            $confidence = 'low';
-            $topMode = 'consultor'; // Default si no hay señal clara
-        } elseif ($scoreDiff > 10) {
-            $confidence = 'high';
-        } elseif ($scoreDiff > 5) {
-            $confidence = 'medium';
-        } else {
-            $confidence = 'low';
-        }
-
-        return [
-            'mode' => $topMode,
-            'score' => round($topScore, 2),
-            'confidence' => $confidence,
-            'emotion_score' => round($emotionScore, 2),
-            'all_scores' => array_map(fn($s) => round($s, 2), $scores),
-        ];
+    foreach ($emotionIndicators as $indicator => $score) {
+      if (mb_strpos($messageLower, $indicator) !== FALSE) {
+        $maxScore = max($maxScore, $score);
+      }
     }
 
-    /**
-     * Analiza el nivel de emoción en el mensaje.
-     *
-     * @param string $message
-     *   El mensaje a analizar.
-     *
-     * @return float
-     *   Score de emoción entre 0 y 1.
-     */
-    protected function analyzeEmotion(string $message): float
-    {
-        $emotionIndicators = [
-            // Indicadores fuertes
-            'no puedo más' => 0.9,
-            'estoy destrozado' => 0.95,
-            'me rindo' => 0.9,
-            'quiero dejarlo' => 0.85,
-            'no sé qué hacer' => 0.7,
-            'tengo miedo' => 0.8,
-            'me siento fatal' => 0.85,
-            'estoy agotado' => 0.75,
-            'no valgo' => 0.9,
-            // Indicadores moderados
-            'preocupado' => 0.5,
-            'nervioso' => 0.5,
-            'ansioso' => 0.6,
-            'frustrado' => 0.6,
-            'cansado' => 0.4,
-            'dudas' => 0.4,
-            'confundido' => 0.4,
-        ];
-
-        $messageLower = mb_strtolower($message);
-        $maxScore = 0;
-
-        foreach ($emotionIndicators as $indicator => $score) {
-            if (mb_strpos($messageLower, $indicator) !== FALSE) {
-                $maxScore = max($maxScore, $score);
-            }
-        }
-
-        // Boost adicional por signos de exclamación múltiples o mayúsculas extensas
-        if (preg_match('/[!¡]{2,}/', $message)) {
-            $maxScore = min(1, $maxScore + 0.1);
-        }
-        if (preg_match('/[A-Z]{4,}/', $message)) {
-            $maxScore = min(1, $maxScore + 0.1);
-        }
-
-        return $maxScore;
+    // Boost adicional por signos de exclamación múltiples o mayúsculas extensas.
+    if (preg_match('/[!¡]{2,}/', $message)) {
+      $maxScore = min(1, $maxScore + 0.1);
+    }
+    if (preg_match('/[A-Z]{4,}/', $message)) {
+      $maxScore = min(1, $maxScore + 0.1);
     }
 
-    /**
-     * Carga triggers desde BD con cache (TTL 1h). Fallback al const si BD vacia.
-     *
-     * @return array
-     *   Triggers agrupados por modo: ['mode' => [['word' => ..., 'weight' => ...], ...]].
-     */
-    public function loadTriggersFromDb(): array {
-        // CACHE-KEY-TENANT-001: Scope cache key by tenant to prevent cross-tenant leakage.
-        $tenantId = $this->tenantContext !== NULL ? ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-        $cacheKey = 'mode_triggers_tenant:' . $tenantId;
+    return $maxScore;
+  }
 
-        // Intentar cache primero.
-        if ($this->triggersCache) {
-            $cached = $this->triggersCache->get($cacheKey);
-            if ($cached) {
-                return $cached->data;
+  /**
+   * Carga triggers desde BD con cache (TTL 1h). Fallback al const si BD vacia.
+   *
+   * @return array
+   *   Triggers agrupados por modo: ['mode' => [['word' => ..., 'weight' => ...], ...]].
+   */
+  public function loadTriggersFromDb(): array {
+    // CACHE-KEY-TENANT-001: Scope cache key by tenant to prevent cross-tenant leakage.
+    $tenantId = $this->tenantContext !== NULL ? ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+    $cacheKey = 'mode_triggers_tenant:' . $tenantId;
+
+    // Intentar cache primero.
+    if ($this->triggersCache) {
+      $cached = $this->triggersCache->get($cacheKey);
+      if ($cached) {
+        return $cached->data;
+      }
+    }
+
+    // Intentar cargar desde BD.
+    if ($this->database) {
+      try {
+        if ($this->database->schema()->tableExists('copilot_mode_triggers')) {
+          $results = $this->database->select('copilot_mode_triggers', 't')
+            ->fields('t', ['mode', 'trigger_word', 'weight'])
+            ->condition('active', 1)
+            ->orderBy('mode')
+            ->orderBy('weight', 'DESC')
+            ->execute()
+            ->fetchAll();
+
+          if (!empty($results)) {
+            $triggers = [];
+            foreach ($results as $row) {
+              $triggers[$row->mode][] = [
+                'word' => $row->trigger_word,
+                'weight' => (int) $row->weight,
+              ];
             }
+
+            // Guardar en cache con TTL de 1 hora (scoped by tenant).
+            if ($this->triggersCache) {
+              $this->triggersCache->set($cacheKey, $triggers, time() + 3600);
+            }
+            return $triggers;
+          }
         }
-
-        // Intentar cargar desde BD.
-        if ($this->database) {
-            try {
-                if ($this->database->schema()->tableExists('copilot_mode_triggers')) {
-                    $results = $this->database->select('copilot_mode_triggers', 't')
-                        ->fields('t', ['mode', 'trigger_word', 'weight'])
-                        ->condition('active', 1)
-                        ->orderBy('mode')
-                        ->orderBy('weight', 'DESC')
-                        ->execute()
-                        ->fetchAll();
-
-                    if (!empty($results)) {
-                        $triggers = [];
-                        foreach ($results as $row) {
-                            $triggers[$row->mode][] = [
-                                'word' => $row->trigger_word,
-                                'weight' => (int) $row->weight,
-                            ];
-                        }
-
-                        // Guardar en cache con TTL de 1 hora (scoped by tenant).
-                        if ($this->triggersCache) {
-                            $this->triggersCache->set($cacheKey, $triggers, time() + 3600);
-                        }
-                        return $triggers;
-                    }
-                }
-            }
-            catch (\Exception $e) {
-                // Fallback silencioso al const.
-            }
-        }
-
-        // Fallback al const hardcodeado.
-        return self::MODE_TRIGGERS;
+      }
+      catch (\Exception $e) {
+        // Fallback silencioso al const.
+      }
     }
 
-    /**
-     * Obtiene los triggers disponibles para un modo.
-     *
-     * @param string $mode
-     *   El modo del copiloto.
-     *
-     * @return array
-     *   Lista de triggers del modo.
-     */
-    public function getTriggersForMode(string $mode): array
-    {
-        $triggers = $this->loadTriggersFromDb();
-        return $triggers[$mode] ?? [];
-    }
+    // Fallback al const hardcodeado.
+    return self::MODE_TRIGGERS;
+  }
 
-    /**
-     * Obtiene todos los modos disponibles.
-     *
-     * @return array
-     *   Lista de modos disponibles.
-     */
-    public function getAvailableModes(): array
-    {
-        $triggers = $this->loadTriggersFromDb();
-        return array_keys($triggers);
-    }
+  /**
+   * Obtiene los triggers disponibles para un modo.
+   *
+   * @param string $mode
+   *   El modo del copiloto.
+   *
+   * @return array
+   *   Lista de triggers del modo.
+   */
+  public function getTriggersForMode(string $mode): array {
+    $triggers = $this->loadTriggersFromDb();
+    return $triggers[$mode] ?? [];
+  }
+
+  /**
+   * Obtiene todos los modos disponibles.
+   *
+   * @return array
+   *   Lista de modos disponibles.
+   */
+  public function getAvailableModes(): array {
+    $triggers = $this->loadTriggersFromDb();
+    return array_keys($triggers);
+  }
 
 }

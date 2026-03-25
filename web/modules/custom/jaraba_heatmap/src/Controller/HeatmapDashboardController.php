@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_heatmap\Controller;
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\jaraba_heatmap\Service\HeatmapAggregatorService;
@@ -49,7 +50,8 @@ class HeatmapDashboardController extends ControllerBase {
   public function __construct(
     Connection $database,
     HeatmapAggregatorService $aggregator,
-    TenantContextService $tenantContext, // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+    // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+    TenantContextService $tenantContext,
   ) {
     $this->database = $database;
     $this->aggregator = $aggregator;
@@ -64,7 +66,8 @@ class HeatmapDashboardController extends ControllerBase {
     return new static(
       $container->get('database'),
       $container->get('jaraba_heatmap.aggregator'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+    // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -78,7 +81,7 @@ class HeatmapDashboardController extends ControllerBase {
     // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
     $tenantId = $this->getTenantId();
     if ($tenantId <= 0) {
-      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException('Tenant context required.');
+      throw new AccessDeniedHttpException('Tenant context required.');
     }
 
     // Load tracked pages with basic metrics.
@@ -97,7 +100,8 @@ class HeatmapDashboardController extends ControllerBase {
         'drupalSettings' => [
           'jarabaHeatmap' => [
             'tenantId' => $tenantId,
-            'apiBase' => '/api/v1/heatmap', // AUDIT-CONS-N07: Added API versioning prefix.
+    // AUDIT-CONS-N07: Added API versioning prefix.
+            'apiBase' => '/api/v1/heatmap',
           ],
         ],
       ],

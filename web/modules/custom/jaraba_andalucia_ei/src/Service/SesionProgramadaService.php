@@ -27,16 +27,26 @@ class SesionProgramadaService {
    * Day key → ISO-8601 numeric (1=Mon…7=Sun).
    */
   private const DAY_MAP = [
-    'mon' => 1, 'tue' => 2, 'wed' => 3, 'thu' => 4,
-    'fri' => 5, 'sat' => 6, 'sun' => 7,
+    'mon' => 1,
+    'tue' => 2,
+    'wed' => 3,
+    'thu' => 4,
+    'fri' => 5,
+    'sat' => 6,
+    'sun' => 7,
   ];
 
   /**
    * Reverse: ISO numeric → day key.
    */
   private const DAY_MAP_REVERSE = [
-    1 => 'mon', 2 => 'tue', 3 => 'wed', 4 => 'thu',
-    5 => 'fri', 6 => 'sat', 7 => 'sun',
+    1 => 'mon',
+    2 => 'tue',
+    3 => 'wed',
+    4 => 'thu',
+    5 => 'fri',
+    6 => 'sat',
+    7 => 'sun',
   ];
 
   /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
+use Drupal\jaraba_sepe_teleformacion\Service\SepeSoapService;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -84,7 +85,7 @@ class StoExportServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConTodosDeps(): void {
-    $sepeSoapService = $this->createMock(\Drupal\jaraba_sepe_teleformacion\Service\SepeSoapService::class);
+    $sepeSoapService = $this->createMock(SepeSoapService::class);
 
     $service = new StoExportService(
       $this->entityTypeManager,

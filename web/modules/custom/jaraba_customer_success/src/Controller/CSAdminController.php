@@ -43,14 +43,14 @@ class CSAdminController extends ControllerBase {
     $build['overview'] = [
       '#type' => 'markup',
       '#markup' => '<div class="cs-admin-overview">'
-        . '<h3>' . $this->t('Health Score Distribution') . '</h3>'
-        . '<ul>'
-        . '<li><strong style="color:#00A9A5;">' . $this->t('Healthy') . ':</strong> ' . $category_counts['healthy'] . '</li>'
-        . '<li><strong style="color:#FFB84D;">' . $this->t('Neutral') . ':</strong> ' . $category_counts['neutral'] . '</li>'
-        . '<li><strong style="color:#FF8C42;">' . $this->t('At Risk') . ':</strong> ' . $category_counts['at_risk'] . '</li>'
-        . '<li><strong style="color:#DC3545;">' . $this->t('Critical') . ':</strong> ' . $category_counts['critical'] . '</li>'
-        . '</ul>'
-        . '</div>',
+      . '<h3>' . $this->t('Health Score Distribution') . '</h3>'
+      . '<ul>'
+      . '<li><strong style="color:#00A9A5;">' . $this->t('Healthy') . ':</strong> ' . $category_counts['healthy'] . '</li>'
+      . '<li><strong style="color:#FFB84D;">' . $this->t('Neutral') . ':</strong> ' . $category_counts['neutral'] . '</li>'
+      . '<li><strong style="color:#FF8C42;">' . $this->t('At Risk') . ':</strong> ' . $category_counts['at_risk'] . '</li>'
+      . '<li><strong style="color:#DC3545;">' . $this->t('Critical') . ':</strong> ' . $category_counts['critical'] . '</li>'
+      . '</ul>'
+      . '</div>',
     ];
 
     // Lista de health scores (usa entity list builder).

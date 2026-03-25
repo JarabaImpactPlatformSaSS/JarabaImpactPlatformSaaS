@@ -18,6 +18,9 @@ class LegalConversationContextTest extends TestCase {
 
   protected LegalConversationContext $context;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->context = new LegalConversationContext(new NullLogger());
@@ -283,7 +286,7 @@ class LegalConversationContextTest extends TestCase {
 
     $assertions = $this->context->getAssertions();
     $this->assertNotEmpty($assertions);
-    // norm field should contain a detected norm reference.
+    // Norm field should contain a detected norm reference.
     $this->assertNotEmpty($assertions[0]['norm']);
   }
 

@@ -30,7 +30,7 @@ class MrwCarrierAdapter extends BaseCarrierAdapter {
    */
   public function createShipment(array $data): array {
     $config = $this->getCarrierConfig($data['tenant_id'], $data['producer_id'] ?? NULL);
-    
+
     if (!$config) {
       return ['success' => FALSE, 'error' => 'Credenciales de MRW no configuradas.'];
     }
@@ -71,7 +71,8 @@ class MrwCarrierAdapter extends BaseCarrierAdapter {
   protected function buildMrwPayload(array $data, array $config): array {
     return [
       'DatosServicio' => [
-        'CodigoServicio' => $data['is_refrigerated'] ? '0065' : '0010', // 0065 = MRW Frío
+    // 0065 = MRW Frío
+        'CodigoServicio' => $data['is_refrigerated'] ? '0065' : '0010',
         'Referencia' => 'ORDER-' . $data['shipment_id'],
         'Bultos' => 1,
         'Peso' => $data['weight'],
@@ -87,7 +88,7 @@ class MrwCarrierAdapter extends BaseCarrierAdapter {
    * Descarga la etiqueta PDF de MRW.
    */
   protected function fetchLabel(string $tracking, array $config): string {
-    // Lógica para descargar PDF y guardarlo en public://labels/mrw/
+    // Lógica para descargar PDF y guardarlo en public://labels/mrw/.
     return "/sites/default/files/labels/mrw/{$tracking}.pdf";
   }
 
@@ -103,7 +104,8 @@ class MrwCarrierAdapter extends BaseCarrierAdapter {
    * {@inheritdoc}
    */
   public function cancelShipment(string $trackingNumber): bool {
-    return FALSE; // MRW requiere llamada a central para cancelar.
+    // MRW requiere llamada a central para cancelar.
+    return FALSE;
   }
 
   /**
@@ -115,13 +117,15 @@ class MrwCarrierAdapter extends BaseCarrierAdapter {
       ->accessCheck(FALSE)
       ->condition('tenant_id', $tenantId)
       ->condition('carrier_id', 'mrw');
-    
+
     if ($producerId) {
       $query->condition('producer_id', $producerId);
     }
 
     $ids = $query->execute();
-    if (empty($ids)) return NULL;
+    if (empty($ids)) {
+      return NULL;
+    }
 
     $entity = $storage->load(reset($ids));
     return [

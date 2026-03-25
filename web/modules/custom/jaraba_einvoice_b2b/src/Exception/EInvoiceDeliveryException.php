@@ -25,6 +25,9 @@ class EInvoiceDeliveryException extends \RuntimeException {
     parent::__construct($message, $code, $previous);
   }
 
+  /**
+   *
+   */
   public function getChannel(): string {
     return $this->channel;
   }

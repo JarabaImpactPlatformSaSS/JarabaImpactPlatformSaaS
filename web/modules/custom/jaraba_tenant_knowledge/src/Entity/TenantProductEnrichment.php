@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
- * ENRIQUECIMIENTO DE PRODUCTOS - TenantProductEnrichment
+ * ENRIQUECIMIENTO DE PRODUCTOS - TenantProductEnrichment.
  *
  * PROPÓSITO:
  * Almacena información adicional sobre productos/servicios del tenant
@@ -66,260 +66,243 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.tenant_product_enrichment.settings",
  * )
  */
-class TenantProductEnrichment extends ContentEntityBase implements EntityChangedInterface
-{
+class TenantProductEnrichment extends ContentEntityBase implements EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Referencia al tenant propietario.
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('El tenant propietario.'))
-            ->setSetting('target_type', 'group')
-            ->setRequired(TRUE)
-            ->setCardinality(1);
+    // Referencia al tenant propietario.
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('El tenant propietario.'))
+      ->setSetting('target_type', 'group')
+      ->setRequired(TRUE)
+      ->setCardinality(1);
 
-        // === IDENTIFICACIÓN ===
+    // === IDENTIFICACIÓN ===
+    // ID o SKU del producto (opcional, para enlazar con Commerce).
+    $fields['product_sku'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('SKU/Referencia'))
+      ->setDescription(t('Código único del producto en el sistema.'))
+      ->setSetting('max_length', 100)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
 
-        // ID o SKU del producto (opcional, para enlazar con Commerce).
-        $fields['product_sku'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('SKU/Referencia'))
-            ->setDescription(t('Código único del producto en el sistema.'))
-            ->setSetting('max_length', 100)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ]);
+    // Nombre del producto.
+    $fields['product_name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre del Producto'))
+      ->setDescription(t('Nombre comercial del producto o servicio.'))
+      ->setRequired(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 1,
+      ]);
 
-        // Nombre del producto.
-        $fields['product_name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre del Producto'))
-            ->setDescription(t('Nombre comercial del producto o servicio.'))
-            ->setRequired(TRUE)
-            ->setTranslatable(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 1,
-            ]);
+    // Categoría.
+    $fields['category'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Categoría'))
+      ->setDescription(t('Categoría del producto.'))
+      ->setSetting('max_length', 100)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 2,
+      ]);
 
-        // Categoría.
-        $fields['category'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Categoría'))
-            ->setDescription(t('Categoría del producto.'))
-            ->setSetting('max_length', 100)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 2,
-            ]);
+    // === DESCRIPCIÓN EXTENDIDA ===
+    // Descripción larga para el copiloto.
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción Completa'))
+      ->setDescription(t('Descripción detallada para que el copiloto pueda explicar el producto.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 3,
+        'settings' => ['rows' => 8],
+      ]);
 
-        // === DESCRIPCIÓN EXTENDIDA ===
+    // Especificaciones técnicas.
+    $fields['specifications'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Especificaciones Técnicas'))
+      ->setDescription(t('Características técnicas, medidas, materiales, etc.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 4,
+      ]);
 
-        // Descripción larga para el copiloto.
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción Completa'))
-            ->setDescription(t('Descripción detallada para que el copiloto pueda explicar el producto.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 3,
-                'settings' => ['rows' => 8],
-            ]);
+    // Beneficios/Diferenciadores.
+    $fields['benefits'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Beneficios y Diferenciadores'))
+      ->setDescription(t('¿Por qué elegir este producto? Ventajas competitivas.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 5,
+      ]);
 
-        // Especificaciones técnicas.
-        $fields['specifications'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Especificaciones Técnicas'))
-            ->setDescription(t('Características técnicas, medidas, materiales, etc.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 4,
-            ]);
+    // Casos de uso.
+    $fields['use_cases'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Casos de Uso'))
+      ->setDescription(t('¿Para quién es ideal? Escenarios de uso.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 6,
+      ]);
 
-        // Beneficios/Diferenciadores.
-        $fields['benefits'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Beneficios y Diferenciadores'))
-            ->setDescription(t('¿Por qué elegir este producto? Ventajas competitivas.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 5,
-            ]);
+    // === PRICING ===
+    // Rango de precios (texto libre para flexibilidad).
+    $fields['price_info'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Información de Precios'))
+      ->setDescription(t('Precio o rango de precios, promociones, etc.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 7,
+      ]);
 
-        // Casos de uso.
-        $fields['use_cases'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Casos de Uso'))
-            ->setDescription(t('¿Para quién es ideal? Escenarios de uso.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 6,
-            ]);
+    // === FAQs DEL PRODUCTO ===
+    // Preguntas frecuentes específicas del producto.
+    $fields['product_faqs'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('FAQs del Producto'))
+      ->setDescription(t('Preguntas y respuestas frecuentes específicas.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 8,
+        'settings' => ['rows' => 10],
+      ]);
 
-        // === PRICING ===
+    // === ESTADO ===
+    // Publicado.
+    $fields['is_published'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Publicado'))
+      ->setDescription(t('El copiloto puede usar esta información.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 9,
+      ]);
 
-        // Rango de precios (texto libre para flexibilidad).
-        $fields['price_info'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Información de Precios'))
-            ->setDescription(t('Precio o rango de precios, promociones, etc.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 7,
-            ]);
+    // === RAG ===
+    // Hash para detectar cambios.
+    $fields['content_hash'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Hash del Contenido'))
+      ->setSetting('max_length', 32);
 
-        // === FAQs DEL PRODUCTO ===
+    // Point ID en Qdrant.
+    $fields['qdrant_point_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Qdrant Point ID'))
+      ->setSetting('max_length', 64);
 
-        // Preguntas frecuentes específicas del producto.
-        $fields['product_faqs'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('FAQs del Producto'))
-            ->setDescription(t('Preguntas y respuestas frecuentes específicas.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 8,
-                'settings' => ['rows' => 10],
-            ]);
+    // === TIMESTAMPS ===
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de Creación'));
 
-        // === ESTADO ===
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Fecha de Modificación'));
 
-        // Publicado.
-        $fields['is_published'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Publicado'))
-            ->setDescription(t('El copiloto puede usar esta información.'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 9,
-            ]);
+    return $fields;
+  }
 
-        // === RAG ===
+  /**
+   * Obtiene el nombre del producto.
+   */
+  public function getProductName(): string {
+    return $this->get('product_name')->value ?? '';
+  }
 
-        // Hash para detectar cambios.
-        $fields['content_hash'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Hash del Contenido'))
-            ->setSetting('max_length', 32);
+  /**
+   * Obtiene la categoría.
+   */
+  public function getCategory(): string {
+    return $this->get('category')->value ?? '';
+  }
 
-        // Point ID en Qdrant.
-        $fields['qdrant_point_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Qdrant Point ID'))
-            ->setSetting('max_length', 64);
+  /**
+   * Obtiene el tenant ID.
+   */
+  public function getTenantId(): ?int {
+    return $this->get('tenant_id')->target_id ? (int) $this->get('tenant_id')->target_id : NULL;
+  }
 
-        // === TIMESTAMPS ===
+  /**
+   * Verifica si está publicado.
+   */
+  public function isPublished(): bool {
+    return (bool) $this->get('is_published')->value;
+  }
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de Creación'));
+  /**
+   * Genera texto para embedding.
+   */
+  public function getEmbeddingText(): string {
+    $parts = [];
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Fecha de Modificación'));
+    $parts[] = "Producto: " . $this->getProductName();
 
-        return $fields;
+    $category = $this->getCategory();
+    if (!empty($category)) {
+      $parts[] = "Categoría: " . $category;
     }
 
-    /**
-     * Obtiene el nombre del producto.
-     */
-    public function getProductName(): string
-    {
-        return $this->get('product_name')->value ?? '';
+    $description = $this->get('description')->value;
+    if (!empty($description)) {
+      $parts[] = "Descripción: " . $description;
     }
 
-    /**
-     * Obtiene la categoría.
-     */
-    public function getCategory(): string
-    {
-        return $this->get('category')->value ?? '';
+    $specs = $this->get('specifications')->value;
+    if (!empty($specs)) {
+      $parts[] = "Especificaciones: " . $specs;
     }
 
-    /**
-     * Obtiene el tenant ID.
-     */
-    public function getTenantId(): ?int
-    {
-        return $this->get('tenant_id')->target_id ? (int) $this->get('tenant_id')->target_id : NULL;
+    $benefits = $this->get('benefits')->value;
+    if (!empty($benefits)) {
+      $parts[] = "Beneficios: " . $benefits;
     }
 
-    /**
-     * Verifica si está publicado.
-     */
-    public function isPublished(): bool
-    {
-        return (bool) $this->get('is_published')->value;
+    $useCases = $this->get('use_cases')->value;
+    if (!empty($useCases)) {
+      $parts[] = "Casos de uso: " . $useCases;
     }
 
-    /**
-     * Genera texto para embedding.
-     */
-    public function getEmbeddingText(): string
-    {
-        $parts = [];
-
-        $parts[] = "Producto: " . $this->getProductName();
-
-        $category = $this->getCategory();
-        if (!empty($category)) {
-            $parts[] = "Categoría: " . $category;
-        }
-
-        $description = $this->get('description')->value;
-        if (!empty($description)) {
-            $parts[] = "Descripción: " . $description;
-        }
-
-        $specs = $this->get('specifications')->value;
-        if (!empty($specs)) {
-            $parts[] = "Especificaciones: " . $specs;
-        }
-
-        $benefits = $this->get('benefits')->value;
-        if (!empty($benefits)) {
-            $parts[] = "Beneficios: " . $benefits;
-        }
-
-        $useCases = $this->get('use_cases')->value;
-        if (!empty($useCases)) {
-            $parts[] = "Casos de uso: " . $useCases;
-        }
-
-        $faqs = $this->get('product_faqs')->value;
-        if (!empty($faqs)) {
-            $parts[] = "FAQs: " . $faqs;
-        }
-
-        return implode("\n\n", $parts);
+    $faqs = $this->get('product_faqs')->value;
+    if (!empty($faqs)) {
+      $parts[] = "FAQs: " . $faqs;
     }
 
-    /**
-     * Genera hash del contenido.
-     */
-    public function generateContentHash(): string
-    {
-        return md5($this->getEmbeddingText());
-    }
+    return implode("\n\n", $parts);
+  }
 
-    /**
-     * Verifica si necesita regenerar embedding.
-     */
-    public function needsRegeneration(): bool
-    {
-        $storedHash = $this->get('content_hash')->value;
-        return $storedHash !== $this->generateContentHash();
-    }
+  /**
+   * Genera hash del contenido.
+   */
+  public function generateContentHash(): string {
+    return md5($this->getEmbeddingText());
+  }
 
-    /**
-     * Actualiza el hash del contenido.
-     */
-    public function updateContentHash(): void
-    {
-        $this->set('content_hash', $this->generateContentHash());
-    }
+  /**
+   * Verifica si necesita regenerar embedding.
+   */
+  public function needsRegeneration(): bool {
+    $storedHash = $this->get('content_hash')->value;
+    return $storedHash !== $this->generateContentHash();
+  }
+
+  /**
+   * Actualiza el hash del contenido.
+   */
+  public function updateContentHash(): void {
+    $this->set('content_hash', $this->generateContentHash());
+  }
 
 }

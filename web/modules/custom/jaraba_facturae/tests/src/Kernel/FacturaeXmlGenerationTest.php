@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Service\FacturaeXmlService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +25,7 @@ class FacturaeXmlGenerationTest extends KernelTestBase {
    */
   public function testXmlServiceClassExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FacturaeXmlService::class),
+      class_exists(FacturaeXmlService::class),
       'FacturaeXmlService class should exist.'
     );
   }
@@ -34,7 +35,7 @@ class FacturaeXmlGenerationTest extends KernelTestBase {
    */
   public function testXmlServiceHasBuildMethod(): void {
     $this->assertTrue(
-      method_exists(\Drupal\jaraba_facturae\Service\FacturaeXmlService::class, 'buildFacturaeXml'),
+      method_exists(FacturaeXmlService::class, 'buildFacturaeXml'),
       'FacturaeXmlService should have buildFacturaeXml method.'
     );
   }

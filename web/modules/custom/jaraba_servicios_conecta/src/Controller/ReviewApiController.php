@@ -19,8 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * REV-PHASE4: Endpoints de resenas de ServiciosConecta.
  */
-class ReviewApiController extends ControllerBase
-{
+class ReviewApiController extends ControllerBase {
 
   private const ALLOWED_CREATE_FIELDS = [
     'provider_id',
@@ -43,8 +42,7 @@ class ReviewApiController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('current_user'),
@@ -58,8 +56,7 @@ class ReviewApiController extends ControllerBase
   /**
    * GET: Lista resenas aprobadas de un proveedor.
    */
-  public function list(int $provider_id): JsonResponse
-  {
+  public function list(int $provider_id): JsonResponse {
     $storage = $this->entityTypeManager()->getStorage('review_servicios');
     $ids = $storage->getQuery()
       ->accessCheck(TRUE)
@@ -88,8 +85,7 @@ class ReviewApiController extends ControllerBase
   /**
    * GET: Estadisticas de rating de un proveedor.
    */
-  public function stats(int $provider_id): JsonResponse
-  {
+  public function stats(int $provider_id): JsonResponse {
     if ($this->aggregationService === NULL) {
       return new JsonResponse(['error' => 'Servicio no disponible.'], Response::HTTP_SERVICE_UNAVAILABLE);
     }
@@ -101,8 +97,7 @@ class ReviewApiController extends ControllerBase
   /**
    * POST: Crea una nueva resena de servicio.
    */
-  public function createReview(Request $request): JsonResponse
-  {
+  public function createReview(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE);
     if (!is_array($data)) {
       return new JsonResponse(['error' => 'JSON invalido.'], Response::HTTP_BAD_REQUEST);
@@ -145,7 +140,8 @@ class ReviewApiController extends ControllerBase
         'data' => ['id' => (int) $review->id()],
         'message' => 'Resena enviada. Pendiente de moderacion.',
       ], Response::HTTP_CREATED);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Error creating servicios review: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse(['error' => 'Error al crear la resena.'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }

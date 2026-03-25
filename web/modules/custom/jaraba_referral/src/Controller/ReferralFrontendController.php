@@ -39,6 +39,9 @@ class ReferralFrontendController extends ControllerBase {
     $this->currentUser = $current_user;
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_referral.manager'),

@@ -72,7 +72,6 @@ class BackupVerification extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TIPO DE BACKUP ---
-
     $fields['backup_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de backup'))
       ->setDescription(new TranslatableMarkup('Tipo de backup verificado.'))
@@ -88,7 +87,6 @@ class BackupVerification extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RUTA Y CHECKSUMS ---
-
     $fields['backup_path'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Ruta del backup'))
       ->setDescription(new TranslatableMarkup('Ruta completa al archivo de backup verificado.'))
@@ -115,7 +113,6 @@ class BackupVerification extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Resultado de la verificacion del backup.'))
@@ -132,7 +129,6 @@ class BackupVerification extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERIFICACION ---
-
     $fields['verified_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Verificado en'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de la verificacion.'))
@@ -158,7 +154,6 @@ class BackupVerification extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creacion del registro.'));

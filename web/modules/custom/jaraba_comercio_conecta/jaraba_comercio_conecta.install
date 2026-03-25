@@ -11,6 +11,8 @@
  *   La desinstalación limpia todas las entidades creadas por el módulo.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_install().
  *
@@ -19,7 +21,7 @@
  *   Los términos se crean solo si el vocabulario existe y está vacío.
  */
 function jaraba_comercio_conecta_install(): void {
-  // Crear términos iniciales de categorías de producto retail
+  // Crear términos iniciales de categorías de producto retail.
   _jaraba_comercio_conecta_create_initial_categories();
   // Crear atributos de variación iniciales (color, talla, material)
   _jaraba_comercio_conecta_create_initial_attributes();
@@ -36,7 +38,7 @@ function jaraba_comercio_conecta_install(): void {
 function _jaraba_comercio_conecta_create_initial_categories(): void {
   $vocabulary = 'comercio_category';
 
-  // Verificar que el vocabulario existe
+  // Verificar que el vocabulario existe.
   $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
   if (!$vocab_storage->load($vocabulary)) {
     \Drupal::logger('jaraba_comercio_conecta')->warning('Vocabulario @vocab no encontrado. Crear manualmente o importar config.', [
@@ -47,7 +49,7 @@ function _jaraba_comercio_conecta_create_initial_categories(): void {
 
   $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 
-  // Categorías raíz con sus subcategorías
+  // Categorías raíz con sus subcategorías.
   $categories = [
     'Moda y Complementos' => ['Ropa Mujer', 'Ropa Hombre', 'Calzado', 'Bolsos y Accesorios', 'Joyería y Bisutería'],
     'Hogar y Decoración' => ['Muebles', 'Textil Hogar', 'Iluminación', 'Decoración', 'Menaje'],
@@ -63,7 +65,7 @@ function _jaraba_comercio_conecta_create_initial_categories(): void {
 
   $weight = 0;
   foreach ($categories as $parent_name => $children) {
-    // Crear categoría padre
+    // Crear categoría padre.
     $parent = $term_storage->create([
       'vid' => $vocabulary,
       'name' => $parent_name,
@@ -71,7 +73,7 @@ function _jaraba_comercio_conecta_create_initial_categories(): void {
     ]);
     $parent->save();
 
-    // Crear subcategorías
+    // Crear subcategorías.
     $child_weight = 0;
     foreach ($children as $child_name) {
       $child = $term_storage->create([
@@ -155,7 +157,7 @@ function jaraba_comercio_conecta_update_10002(): void {
     'product_retail',
     'product_variation_retail',
     'stock_location',
-    // F6: Orders, Cart, Returns, Coupons
+    // F6: Orders, Cart, Returns, Coupons.
     'order_retail',
     'order_item_retail',
     'suborder_retail',
@@ -165,17 +167,17 @@ function jaraba_comercio_conecta_update_10002(): void {
     'coupon_retail',
     'coupon_redemption',
     'abandoned_cart',
-    // F7: Customer Profile, Wishlist
+    // F7: Customer Profile, Wishlist.
     'customer_profile_retail',
     'comercio_wishlist',
     'comercio_wishlist_item',
-    // F8: Search + Local SEO
+    // F8: Search + Local SEO.
     'comercio_search_index',
     'comercio_search_synonym',
     'comercio_search_log',
     'comercio_local_business',
     'comercio_nap_entry',
-    // F9: Flash Offers, QR, Reviews, Notifications
+    // F9: Flash Offers, QR, Reviews, Notifications.
     'comercio_flash_offer',
     'comercio_flash_claim',
     'comercio_qr_code',
@@ -187,16 +189,16 @@ function jaraba_comercio_conecta_update_10002(): void {
     'comercio_notification_log',
     'comercio_notification_pref',
     'comercio_push_subscription',
-    // F10a: Shipping & Logistics
+    // F10a: Shipping & Logistics.
     'comercio_shipment',
     'comercio_shipping_method',
     'comercio_shipping_zone',
     'comercio_carrier_config',
-    // F10b: POS Integration
+    // F10b: POS Integration.
     'comercio_pos_connection',
     'comercio_pos_sync',
     'comercio_pos_conflict',
-    // F10c: Admin Panel
+    // F10c: Admin Panel.
     'comercio_moderation_queue',
     'comercio_incident_ticket',
     'comercio_payout_record',
@@ -329,11 +331,11 @@ function jaraba_comercio_conecta_update_10004(): void {
   }
 
   $fields = [
-    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'ai_summary' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Resumen IA'))
       ->setDescription(t('Resumen generado automaticamente por IA.'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    'ai_summary_generated_at' => BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
   ];
@@ -403,7 +405,7 @@ function jaraba_comercio_conecta_update_10005(): void {
 
     // Now update the field definition target_type.
     try {
-      $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      $new_field = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Tenant'))
         ->setName('tenant_id')
         ->setRequired(TRUE)

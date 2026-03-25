@@ -154,7 +154,7 @@ class AddonCompatibilityServiceTest extends UnitTestCase {
    */
   public function testMatrixHasNineAddonsForMainVertical(): void {
     $compatible = $this->service->getCompatibleAddons('comercioconecta');
-    // comercioconecta should have all 9 addons as compatible (none not_applicable).
+    // Comercioconecta should have all 9 addons as compatible (none not_applicable).
     static::assertGreaterThanOrEqual(7, count($compatible));
   }
 

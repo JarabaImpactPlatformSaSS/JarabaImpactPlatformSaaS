@@ -84,8 +84,8 @@ class LegalLandingController extends ControllerBase {
       ]);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**

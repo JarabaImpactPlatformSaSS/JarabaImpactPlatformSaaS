@@ -43,7 +43,7 @@ class ExperimentApiController extends ControllerBase {
     FeatureUnlockService $featureUnlock,
     EntityTypeManagerInterface $entityTypeManager,
     LearningCardService $learningCard,
-    TestCardGeneratorService $testCardGenerator
+    TestCardGeneratorService $testCardGenerator,
   ) {
     $this->experimentLibrary = $experimentLibrary;
     $this->featureUnlock = $featureUnlock;
@@ -315,7 +315,7 @@ class ExperimentApiController extends ControllerBase {
         ], 400);
       }
 
-      // Actualizar Learning Card fields
+      // Actualizar Learning Card fields.
       $experiment->set('status', 'COMPLETED');
       $experiment->set('decision', $decision);
       $experiment->set('end_date', date('Y-m-d\TH:i:s'));
@@ -339,7 +339,7 @@ class ExperimentApiController extends ControllerBase {
         $experiment->set('next_steps', $data['next_steps']);
       }
 
-      // Determinar resultado basado en decision
+      // Determinar resultado basado en decision.
       $result = match ($decision) {
         'PERSEVERE' => 'VALIDATED',
         'KILL' => 'INVALIDATED',
@@ -347,18 +347,18 @@ class ExperimentApiController extends ControllerBase {
       };
       $experiment->set('result', $result);
 
-      // Award impact points
+      // Award impact points.
       $points = self::IMPACT_POINTS[$decision];
       $experiment->set('points_awarded', $points);
       $experiment->save();
 
-      // Actualizar puntos en perfil del emprendedor
+      // Actualizar puntos en perfil del emprendedor.
       $this->awardImpactPoints($experiment, $points);
 
-      // Registrar milestone
+      // Registrar milestone.
       $this->recordMilestone($experiment, $decision, $points);
 
-      // Actualizar estado de la hipotesis vinculada
+      // Actualizar estado de la hipotesis vinculada.
       $this->updateHypothesisStatus($experiment, $result);
 
       return new JsonResponse([
@@ -428,7 +428,7 @@ class ExperimentApiController extends ControllerBase {
       }
     }
     catch (\Exception $e) {
-      // Log but don't fail the request
+      // Log but don't fail the request.
     }
   }
 
@@ -455,7 +455,7 @@ class ExperimentApiController extends ControllerBase {
       }
     }
     catch (\Exception $e) {
-      // Log but don't fail the request
+      // Log but don't fail the request.
     }
   }
 
@@ -479,7 +479,7 @@ class ExperimentApiController extends ControllerBase {
     ];
 
     if ($full) {
-      // Test Card details
+      // Test Card details.
       $data['test_card'] = [
         'plan' => $experiment->get('plan')->value,
         'metrics' => $experiment->get('metrics')->value,
@@ -489,7 +489,7 @@ class ExperimentApiController extends ControllerBase {
         'end_date' => $experiment->get('end_date')->value,
       ];
 
-      // Learning Card details
+      // Learning Card details.
       $data['learning_card'] = [
         'observations' => $experiment->get('observations')->value,
         'metrics_results' => $experiment->get('metrics_results')->value,

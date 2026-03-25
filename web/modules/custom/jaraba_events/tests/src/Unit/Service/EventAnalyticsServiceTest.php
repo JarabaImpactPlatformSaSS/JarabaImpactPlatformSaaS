@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_events\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_events\Service\EventAnalyticsService;
 use Drupal\Tests\UnitTestCase;
@@ -268,7 +268,7 @@ class EventAnalyticsServiceTest extends UnitTestCase {
    *   Mock de la entidad de evento.
    */
   protected function createMockEvent(int $max_attendees, string $title, string $event_type, string $start_date, string $status): MockObject {
-    $event = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $event = $this->createMock(ContentEntityInterface::class);
     $event->method('id')->willReturn(1);
 
     $fields = [
@@ -307,7 +307,7 @@ class EventAnalyticsServiceTest extends UnitTestCase {
    *   Mock de la entidad de registro.
    */
   protected function createMockRegistration(string $status, string $payment_status, float $amount_paid, int $rating, string $source): MockObject {
-    $registration = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $registration = $this->createMock(ContentEntityInterface::class);
 
     $fields = [
       'registration_status' => $status,

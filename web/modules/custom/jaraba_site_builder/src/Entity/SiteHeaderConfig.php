@@ -61,7 +61,6 @@ class SiteHeaderConfig extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- Tenant ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('El tenant al que pertenece esta configuración de header.'))
@@ -74,7 +73,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ]);
 
     // --- Tipo y layout ---
-
     $fields['header_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Tipo de Header'))
       ->setDescription(t('Variante visual del header.'))
@@ -97,7 +95,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Logo ---
-
     $fields['logo_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Logo'))
       ->setDescription(t('Logo principal del header.'))
@@ -150,7 +147,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Comportamiento sticky/scroll ---
-
     $fields['is_sticky'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Header Sticky'))
       ->setDescription(t('El header permanece fijo al hacer scroll.'))
@@ -192,7 +188,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Menú principal ---
-
     $fields['main_menu_position'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Posición del menú'))
       ->setDescription(t('Posición del menú principal en el header.'))
@@ -221,7 +216,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- CTA Button ---
-
     $fields['show_cta'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Mostrar CTA'))
       ->setDescription(t('Mostrar botón de llamada a la acción en el header.'))
@@ -281,7 +275,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Elementos opcionales ---
-
     $fields['show_search'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Mostrar buscador'))
       ->setDefaultValue(FALSE)
@@ -328,7 +321,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Top Bar ---
-
     $fields['show_topbar'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Mostrar barra superior'))
       ->setDescription(t('Banner superior con texto personalizable.'))
@@ -370,7 +362,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Colores y dimensiones ---
-
     $fields['bg_color'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Color de fondo'))
       ->setDescription(t('Color de fondo del header.'))
@@ -430,7 +421,6 @@ class SiteHeaderConfig extends ContentEntityBase {
       ->setDisplayConfigurable('form', TRUE);
 
     // --- Sistema ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'))
       ->setDescription(t('Fecha de creación.'));

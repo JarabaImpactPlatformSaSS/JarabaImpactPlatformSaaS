@@ -11,139 +11,133 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 /**
  * Servicio para generación de Sitemap XML.
  */
-class SitemapGeneratorService
-{
+class SitemapGeneratorService {
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        protected SiteStructureService $structureService,
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected FileUrlGeneratorInterface $fileUrlGenerator,
-        protected TenantContextService $tenantContext,
-    ) {
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    protected SiteStructureService $structureService,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected FileUrlGeneratorInterface $fileUrlGenerator,
+    protected TenantContextService $tenantContext,
+  ) {
+  }
+
+  /**
+   * Genera el sitemap XML para un tenant.
+   *
+   * @param int|null $tenantId
+   *   ID del tenant.
+   * @param string $baseUrl
+   *   URL base del sitio.
+   *
+   * @return string
+   *   Contenido XML del sitemap.
+   */
+  public function generateXML(?int $tenantId = NULL, string $baseUrl = ''): string {
+    $tenant = $this->tenantContext->getCurrentTenant();
+    $tenantId = $tenantId ?? ($tenant ? (int) $tenant->id() : NULL);
+
+    if (empty($baseUrl)) {
+      $baseUrl = \Drupal::request()->getSchemeAndHttpHost();
     }
 
-    /**
-     * Genera el sitemap XML para un tenant.
-     *
-     * @param int|null $tenantId
-     *   ID del tenant.
-     * @param string $baseUrl
-     *   URL base del sitio.
-     *
-     * @return string
-     *   Contenido XML del sitemap.
-     */
-    public function generateXML(?int $tenantId = NULL, string $baseUrl = ''): string
-    {
-        $tenant = $this->tenantContext->getCurrentTenant();
-        $tenantId = $tenantId ?? ($tenant ? (int) $tenant->id() : null);
+    $pages = $this->structureService->getNavigation($tenantId, 'sitemap');
 
-        if (empty($baseUrl)) {
-            $baseUrl = \Drupal::request()->getSchemeAndHttpHost();
-        }
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
 
-        $pages = $this->structureService->getNavigation($tenantId, 'sitemap');
+    // Procesar páginas recursivamente.
+    $xml .= $this->processPages($pages, $baseUrl);
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+    $xml .= '</urlset>' . PHP_EOL;
 
-        // Procesar páginas recursivamente.
-        $xml .= $this->processPages($pages, $baseUrl);
+    return $xml;
+  }
 
-        $xml .= '</urlset>' . PHP_EOL;
+  /**
+   * Procesa páginas recursivamente generando URLs.
+   */
+  protected function processPages(array $pages, string $baseUrl): string {
+    $xml = '';
 
-        return $xml;
+    foreach ($pages as $page) {
+      if (empty($page['page_url']) && empty($page['external_url'])) {
+        continue;
+      }
+
+      // No incluir enlaces externos.
+      if ($page['is_external']) {
+        continue;
+      }
+
+      $url = $baseUrl . $page['page_url'];
+      $lastmod = date('Y-m-d');
+      $priority = $this->calculatePriority($page['depth']);
+
+      $xml .= '  <url>' . PHP_EOL;
+      $xml .= '    <loc>' . htmlspecialchars($url) . '</loc>' . PHP_EOL;
+      $xml .= '    <lastmod>' . $lastmod . '</lastmod>' . PHP_EOL;
+      $xml .= '    <changefreq>weekly</changefreq>' . PHP_EOL;
+      $xml .= '    <priority>' . $priority . '</priority>' . PHP_EOL;
+      $xml .= '  </url>' . PHP_EOL;
+
+      // Procesar hijos.
+      if (!empty($page['children'])) {
+        $xml .= $this->processPages($page['children'], $baseUrl);
+      }
     }
 
-    /**
-     * Procesa páginas recursivamente generando URLs.
-     */
-    protected function processPages(array $pages, string $baseUrl): string
-    {
-        $xml = '';
+    return $xml;
+  }
 
-        foreach ($pages as $page) {
-            if (empty($page['page_url']) && empty($page['external_url'])) {
-                continue;
-            }
+  /**
+   * Calcula la prioridad basada en profundidad.
+   */
+  protected function calculatePriority(int $depth): string {
+    $priorities = [
+      0 => '1.0',
+      1 => '0.8',
+      2 => '0.6',
+      3 => '0.4',
+    ];
 
-            // No incluir enlaces externos.
-            if ($page['is_external']) {
-                continue;
-            }
+    return $priorities[$depth] ?? '0.3';
+  }
 
-            $url = $baseUrl . $page['page_url'];
-            $lastmod = date('Y-m-d');
-            $priority = $this->calculatePriority($page['depth']);
+  /**
+   * Obtiene datos del sitemap para visualización en admin.
+   *
+   * @param int|null $tenantId
+   *   ID del tenant.
+   *
+   * @return array
+   *   Datos estructurados para la UI.
+   */
+  public function getVisualData(?int $tenantId = NULL): array {
+    $pages = $this->structureService->getNavigation($tenantId, 'sitemap');
 
-            $xml .= '  <url>' . PHP_EOL;
-            $xml .= '    <loc>' . htmlspecialchars($url) . '</loc>' . PHP_EOL;
-            $xml .= '    <lastmod>' . $lastmod . '</lastmod>' . PHP_EOL;
-            $xml .= '    <changefreq>weekly</changefreq>' . PHP_EOL;
-            $xml .= '    <priority>' . $priority . '</priority>' . PHP_EOL;
-            $xml .= '  </url>' . PHP_EOL;
+    return [
+      'pages' => $pages,
+      'total_pages' => $this->countPages($pages),
+      'last_generated' => date('Y-m-d H:i:s'),
+    ];
+  }
 
-            // Procesar hijos.
-            if (!empty($page['children'])) {
-                $xml .= $this->processPages($page['children'], $baseUrl);
-            }
-        }
+  /**
+   * Cuenta páginas en el árbol.
+   */
+  protected function countPages(array $pages): int {
+    $count = count($pages);
 
-        return $xml;
+    foreach ($pages as $page) {
+      if (!empty($page['children'])) {
+        $count += $this->countPages($page['children']);
+      }
     }
 
-    /**
-     * Calcula la prioridad basada en profundidad.
-     */
-    protected function calculatePriority(int $depth): string
-    {
-        $priorities = [
-            0 => '1.0',
-            1 => '0.8',
-            2 => '0.6',
-            3 => '0.4',
-        ];
-
-        return $priorities[$depth] ?? '0.3';
-    }
-
-    /**
-     * Obtiene datos del sitemap para visualización en admin.
-     *
-     * @param int|null $tenantId
-     *   ID del tenant.
-     *
-     * @return array
-     *   Datos estructurados para la UI.
-     */
-    public function getVisualData(?int $tenantId = NULL): array
-    {
-        $pages = $this->structureService->getNavigation($tenantId, 'sitemap');
-
-        return [
-            'pages' => $pages,
-            'total_pages' => $this->countPages($pages),
-            'last_generated' => date('Y-m-d H:i:s'),
-        ];
-    }
-
-    /**
-     * Cuenta páginas en el árbol.
-     */
-    protected function countPages(array $pages): int
-    {
-        $count = count($pages);
-
-        foreach ($pages as $page) {
-            if (!empty($page['children'])) {
-                $count += $this->countPages($page['children']);
-            }
-        }
-
-        return $count;
-    }
+    return $count;
+  }
 
 }

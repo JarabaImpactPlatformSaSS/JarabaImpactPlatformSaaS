@@ -5,6 +5,10 @@
  * Install, update, and uninstall functions for the Jaraba Candidate module.
  */
 
+use Drupal\jaraba_candidate\Entity\CandidateExperience;
+use Drupal\jaraba_candidate\Entity\CandidateEducation;
+use Drupal\jaraba_candidate\Entity\CandidateProfile;
+
 /**
  * Add database indexes to candidate_profile table.
  */
@@ -94,7 +98,7 @@ function jaraba_candidate_update_10004(): void {
 
   // 3. Install new image field from current code definition.
   $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_profile');
-  $fields = \Drupal\jaraba_candidate\Entity\CandidateProfile::baseFieldDefinitions($entity_type);
+  $fields = CandidateProfile::baseFieldDefinitions($entity_type);
   if (isset($fields['photo'])) {
     $update_manager->installFieldStorageDefinition('photo', 'candidate_profile', 'jaraba_candidate', $fields['photo']);
   }
@@ -151,8 +155,8 @@ function jaraba_candidate_update_10007(): string {
   $updated = [];
 
   $entity_classes = [
-    'candidate_education' => \Drupal\jaraba_candidate\Entity\CandidateEducation::class,
-    'candidate_experience' => \Drupal\jaraba_candidate\Entity\CandidateExperience::class,
+    'candidate_education' => CandidateEducation::class,
+    'candidate_experience' => CandidateExperience::class,
   ];
 
   foreach ($entity_classes as $entity_type_id => $class) {

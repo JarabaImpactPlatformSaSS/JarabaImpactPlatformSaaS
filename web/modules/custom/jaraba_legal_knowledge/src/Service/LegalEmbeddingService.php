@@ -6,7 +6,6 @@ namespace Drupal\jaraba_legal_knowledge\Service;
 
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 
 /**

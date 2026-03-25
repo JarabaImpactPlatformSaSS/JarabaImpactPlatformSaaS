@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_billing\Controller;
 
+use Dompdf\Dompdf;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_legal_billing\Service\InvoiceManagerService;
@@ -51,13 +52,13 @@ class BillingApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * POST /api/v1/legal/billing/time-entries
+   * POST /api/v1/legal/billing/time-entries.
    */
   public function storeTimeEntry(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['case_id']) || empty($data['description']) || empty($data['date']) || empty($data['duration_minutes'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: case_id, description, date, duration_minutes.']], 422);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: case_id, description, date, duration_minutes.']], 422);
     }
 
     $result = $this->timeTracker->logTime($data);
@@ -69,7 +70,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/billing/time-entries
+   * GET /api/v1/legal/billing/time-entries.
    */
   public function listTimeEntries(Request $request): JsonResponse {
     $caseId = (int) $request->query->get('case_id', 0);
@@ -84,7 +85,9 @@ class BillingApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $items, 'meta' => ['limit' => $limit, 'offset' => $offset]]);
+      'data' => $items,
+      'meta' => ['limit' => $limit, 'offset' => $offset],
+    ]);
   }
 
   /**
@@ -144,7 +147,7 @@ class BillingApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * POST /api/v1/legal/billing/invoices
+   * POST /api/v1/legal/billing/invoices.
    */
   public function storeInvoice(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
@@ -173,7 +176,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/billing/invoices
+   * GET /api/v1/legal/billing/invoices.
    */
   public function listInvoices(Request $request): JsonResponse {
     $filters = [];
@@ -190,7 +193,9 @@ class BillingApiController extends ControllerBase {
     $result = $this->invoiceManager->listInvoices($filters, $limit, $offset);
 
     return new JsonResponse([
-      'data' => $result['items'], 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
+      'data' => $result['items'],
+      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
+    ]);
   }
 
   /**
@@ -234,7 +239,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/invoices/{uuid}/issue
+   * POST /api/v1/legal/billing/invoices/{uuid}/issue.
    */
   public function issueInvoice(string $uuid): JsonResponse {
     $result = $this->invoiceManager->issue($uuid);
@@ -246,7 +251,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/invoices/{uuid}/send
+   * POST /api/v1/legal/billing/invoices/{uuid}/send.
    */
   public function sendInvoice(string $uuid): JsonResponse {
     $result = $this->invoiceManager->send($uuid);
@@ -258,7 +263,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/invoices/{uuid}/mark-paid
+   * POST /api/v1/legal/billing/invoices/{uuid}/mark-paid.
    */
   public function markPaid(string $uuid, Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
@@ -271,7 +276,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/billing/invoices/{uuid}/pdf
+   * GET /api/v1/legal/billing/invoices/{uuid}/pdf.
    *
    * Returns PDF (or HTML fallback) for the invoice.
    * Appends Facturae 3.2.2 XML as a data attribute for downstream e-invoice processing.
@@ -311,7 +316,7 @@ class BillingApiController extends ControllerBase {
 
       // Use DOMPDF if available, otherwise return HTML with print-friendly headers.
       if (class_exists('\Dompdf\Dompdf')) {
-        $dompdf = new \Dompdf\Dompdf(['isRemoteEnabled' => FALSE]);
+        $dompdf = new Dompdf(['isRemoteEnabled' => FALSE]);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
@@ -339,7 +344,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/invoices/{uuid}/credit-note
+   * POST /api/v1/legal/billing/invoices/{uuid}/credit-note.
    */
   public function createCreditNote(string $uuid, Request $request): JsonResponse {
     try {
@@ -362,12 +367,16 @@ class BillingApiController extends ControllerBase {
       ]);
       $creditNote->save();
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'id' => (int) $creditNote->id(),
-        'credit_note_number' => $creditNote->get('credit_note_number')->value,
-        'invoice_number' => $invoice->get('invoice_number')->value,
-        'total' => (float) $creditNote->get('total')->value,
-      ], 'meta' => ['timestamp' => time()]], 201);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $creditNote->id(),
+          'credit_note_number' => $creditNote->get('credit_note_number')->value,
+          'invoice_number' => $invoice->get('invoice_number')->value,
+          'total' => (float) $creditNote->get('total')->value,
+        ],
+        'meta' => ['timestamp' => time()],
+      ], 201);
     }
     catch (\Exception $e) {
       $this->logger->error('Credit note creation failed: @msg', ['@msg' => $e->getMessage()]);
@@ -376,7 +385,7 @@ class BillingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/billing/webhooks/stripe
+   * POST /api/v1/legal/billing/webhooks/stripe.
    */
   public function stripeWebhook(Request $request): JsonResponse {
     $payload = $request->getContent();

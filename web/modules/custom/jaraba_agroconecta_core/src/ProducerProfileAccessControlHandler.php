@@ -13,40 +13,37 @@ use Drupal\Core\Session\AccountInterface;
 /**
  * Access control handler para ProducerProfile.
  */
-class ProducerProfileAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class ProducerProfileAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        if ($account->hasPermission('administer agroconecta')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        if ($operation === 'view') {
-            return AccessResult::allowedIfHasPermission($account, 'view producer profiles');
-        }
-
-        return AccessResult::allowedIfHasPermission($account, 'manage producer profiles');
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermissions($account, [
-            'administer agroconecta',
-            'manage producer profiles',
-        ], 'OR');
+    if ($account->hasPermission('administer agroconecta')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+
+    if ($operation === 'view') {
+      return AccessResult::allowedIfHasPermission($account, 'view producer profiles');
+    }
+
+    return AccessResult::allowedIfHasPermission($account, 'manage producer profiles');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermissions($account, [
+      'administer agroconecta',
+      'manage producer profiles',
+    ], 'OR');
+  }
 
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\StateInterface;
@@ -277,8 +279,8 @@ class JarabaLexJourneyProgressionServiceTest extends UnitTestCase {
    * @covers ::evaluateBatch
    */
   public function testEvaluateBatchReturnsZeroOnException(): void {
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $query = $this->createMock(QueryInterface::class);
 
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();

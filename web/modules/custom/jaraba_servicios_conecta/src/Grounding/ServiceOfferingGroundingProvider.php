@@ -17,6 +17,9 @@ class ServiceOfferingGroundingProvider implements GroundingProviderInterface {
     protected EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
+  /**
+   *
+   */
   public function getVerticalKey(): string {
     return 'serviciosconecta';
   }
@@ -25,6 +28,7 @@ class ServiceOfferingGroundingProvider implements GroundingProviderInterface {
    * {@inheritdoc}
    *
    * @param array<string> $keywords
+   *
    * @return array<int, array<string, mixed>>
    */
   public function search(array $keywords, int $limit = 3): array {
@@ -80,6 +84,9 @@ class ServiceOfferingGroundingProvider implements GroundingProviderInterface {
     return $results;
   }
 
+  /**
+   *
+   */
   public function getPriority(): int {
     return 50;
   }

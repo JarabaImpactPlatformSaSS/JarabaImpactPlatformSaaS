@@ -132,11 +132,15 @@ class ServiceApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -148,8 +152,8 @@ class ServiceApiController extends ControllerBase {
       ->load($provider_profile);
 
     if (!$provider) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Provider not found']], 404);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Provider not found']], 404);
     }
 
     $services = $this->offeringService->getProviderOfferings((int) $provider->id());
@@ -166,7 +170,9 @@ class ServiceApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => [
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
         'id' => (int) $provider->id(),
         'display_name' => $provider->get('display_name')->value,
         'professional_title' => $provider->get('professional_title')->value ?? '',
@@ -207,7 +213,9 @@ class ServiceApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data, 'meta' => ['total' => count($data)]]);
+      'data' => $data,
+      'meta' => ['total' => count($data)],
+    ]);
   }
 
   /**

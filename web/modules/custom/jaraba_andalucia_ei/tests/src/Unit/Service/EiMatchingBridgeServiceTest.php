@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_andalucia_ei\Service\EiMatchingBridgeService;
@@ -55,23 +56,39 @@ class EiMatchingBridgeServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithAllNulls(): void {
     $service = $this->createService();
     $this->assertInstanceOf(EiMatchingBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithSomeServices(): void {
     $matching = new class {
+
+      /**
+       *
+       */
       public function match(): array {
         return [];
       }
+
     };
     $profile = new class {
+
+      /**
+       *
+       */
       public function getProfile(): ?array {
         return NULL;
       }
+
     };
 
     $service = $this->createService(
@@ -81,6 +98,9 @@ class EiMatchingBridgeServiceTest extends UnitTestCase {
     $this->assertInstanceOf(EiMatchingBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function sincronizarPerfilCandidatoReturnsFalseWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(999)->willReturn(NULL);
@@ -91,10 +111,13 @@ class EiMatchingBridgeServiceTest extends UnitTestCase {
     $this->assertFalse($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function sincronizarPerfilCandidatoReturnsFalseWhenNoProfileService(): void {
     // Create a minimal participante mock that passes the load check.
-    $participante = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $participante = $this->createMock(ContentEntityInterface::class);
     $this->storage->method('load')->with(1)->willReturn($participante);
 
     // No profileService injected — should return FALSE.
@@ -104,9 +127,12 @@ class EiMatchingBridgeServiceTest extends UnitTestCase {
     $this->assertFalse($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function sincronizarPerfilCandidatoLogsWhenNoProfileService(): void {
-    $participante = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $participante = $this->createMock(ContentEntityInterface::class);
     $this->storage->method('load')->with(1)->willReturn($participante);
 
     $this->logger->expects($this->once())

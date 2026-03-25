@@ -12,35 +12,31 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * Permite el acceso a Field UI para la entidad.
  */
-class IssuerProfileSettingsForm extends FormBase
-{
+class IssuerProfileSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'issuer_profile_settings_form';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'issuer_profile_settings_form';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['issuer_profile_settings'] = [
-            '#markup' => $this->t('Utiliza las pestañas superiores para administrar los campos de la entidad Perfil de Emisor.'),
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['issuer_profile_settings'] = [
+      '#markup' => $this->t('Utiliza las pestañas superiores para administrar los campos de la entidad Perfil de Emisor.'),
+    ];
 
-        return $form;
-    }
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-        // No hay configuración adicional que guardar.
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    // No hay configuración adicional que guardar.
+  }
 
 }

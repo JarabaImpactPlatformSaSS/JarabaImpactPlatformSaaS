@@ -11,7 +11,7 @@
 function jaraba_sepe_teleformacion_install(): void {
   // Mensaje de instalación.
   \Drupal::messenger()->addMessage(t('Módulo SEPE Teleformación instalado correctamente.'));
-  
+
   // Log de instalación.
   \Drupal::logger('sepe_teleformacion')->notice('Módulo SEPE Teleformación instalado.');
 }
@@ -22,7 +22,7 @@ function jaraba_sepe_teleformacion_install(): void {
 function jaraba_sepe_teleformacion_uninstall(): void {
   // Limpiar configuración.
   \Drupal::configFactory()->getEditable('jaraba_sepe_teleformacion.settings')->delete();
-  
+
   // Log de desinstalación.
   \Drupal::logger('sepe_teleformacion')->notice('Módulo SEPE Teleformación desinstalado.');
 }
@@ -32,7 +32,7 @@ function jaraba_sepe_teleformacion_uninstall(): void {
  */
 function jaraba_sepe_teleformacion_requirements(string $phase): array {
   $requirements = [];
-  
+
   if ($phase === 'runtime') {
     // Verificar que SOAP esté disponible.
     if (!extension_loaded('soap')) {
@@ -50,11 +50,11 @@ function jaraba_sepe_teleformacion_requirements(string $phase): array {
         'severity' => REQUIREMENT_OK,
       ];
     }
-    
+
     // Verificar configuración del centro.
     $config = \Drupal::config('jaraba_sepe_teleformacion.settings');
     $centro_id = $config->get('centro_activo_id');
-    
+
     if (empty($centro_id)) {
       $requirements['sepe_centro'] = [
         'title' => t('SEPE Centro Configurado'),
@@ -84,7 +84,7 @@ function jaraba_sepe_teleformacion_requirements(string $phase): array {
       }
     }
   }
-  
+
   return $requirements;
 }
 
@@ -162,7 +162,7 @@ function jaraba_sepe_teleformacion_schema(): array {
       'direction' => ['direction'],
     ],
   ];
-  
+
   return $schema;
 }
 
@@ -172,7 +172,7 @@ function jaraba_sepe_teleformacion_schema(): array {
 function jaraba_sepe_teleformacion_update_10001(): void {
   $schema = jaraba_sepe_teleformacion_schema();
   $database = \Drupal::database();
-  
+
   if (!$database->schema()->tableExists('sepe_soap_log')) {
     $database->schema()->createTable('sepe_soap_log', $schema['sepe_soap_log']);
   }

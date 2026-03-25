@@ -22,18 +22,30 @@ class ScreenCaptureTool extends BaseTool {
     parent::__construct($logger);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'screen_capture';
   }
 
+  /**
+   *
+   */
   public function getLabel(): string {
     return 'Screen Capture';
   }
 
+  /**
+   *
+   */
   public function getDescription(): string {
     return 'Captures a screenshot of a web page using headless browser. URL must be in the vertical allowlist.';
   }
 
+  /**
+   *
+   */
   public function getParameters(): array {
     return [
       'url' => [
@@ -62,6 +74,9 @@ class ScreenCaptureTool extends BaseTool {
     ];
   }
 
+  /**
+   *
+   */
   public function execute(array $params, array $context = []): array {
     $url = $params['url'] ?? '';
     if (empty($url)) {

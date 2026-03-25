@@ -120,6 +120,7 @@ class EmployabilityCopilotAgent extends BaseAgent {
   /**
    * {@inheritdoc}
    */
+
   /**
    * {@inheritdoc}
    *

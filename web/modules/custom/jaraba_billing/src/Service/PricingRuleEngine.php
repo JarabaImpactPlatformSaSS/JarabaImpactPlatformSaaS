@@ -31,8 +31,7 @@ use Psr\Log\LoggerInterface;
  * - Los precios se redondean a 6 decimales durante el cálculo
  * - El resultado final se redondea a 2 decimales
  */
-class PricingRuleEngine
-{
+class PricingRuleEngine {
 
   /**
    * Precios por defecto (fallback cuando no hay PricingRule).
@@ -72,8 +71,7 @@ class PricingRuleEngine
    *   Array con keys: cost, unit_price, included_quantity, billable_quantity,
    *   pricing_model, rule_id (NULL si es fallback).
    */
-  public function calculateCost(string $metricType, float $quantity, ?string $planId = NULL): array
-  {
+  public function calculateCost(string $metricType, float $quantity, ?string $planId = NULL): array {
     $rule = $this->resolveRule($metricType, $planId);
 
     if ($rule === NULL) {
@@ -133,8 +131,7 @@ class PricingRuleEngine
    * @return array
    *   Array indexado por metric_type con datos de la regla.
    */
-  public function getRulesForPlan(?string $planId = NULL): array
-  {
+  public function getRulesForPlan(?string $planId = NULL): array {
     $storage = $this->entityTypeManager->getStorage('pricing_rule');
     $rules = [];
 
@@ -182,8 +179,7 @@ class PricingRuleEngine
    * @return array
    *   Array con keys: line_items, subtotal, tax, total, currency.
    */
-  public function calculateBill(array $usageMetrics, ?string $planId = NULL): array
-  {
+  public function calculateBill(array $usageMetrics, ?string $planId = NULL): array {
     $lineItems = [];
     $subtotal = 0;
 
@@ -223,8 +219,7 @@ class PricingRuleEngine
   /**
    * Resuelve la PricingRule aplicable (plan > global > NULL).
    */
-  protected function resolveRule(string $metricType, ?string $planId): ?object
-  {
+  protected function resolveRule(string $metricType, ?string $planId): ?object {
     $storage = $this->entityTypeManager->getStorage('pricing_rule');
 
     // 1. Buscar regla específica del plan.
@@ -262,8 +257,7 @@ class PricingRuleEngine
   /**
    * Cálculo escalonado (graduated): cada tramo a su precio.
    */
-  protected function calculateTiered(float $quantity, array $tiers): float
-  {
+  protected function calculateTiered(float $quantity, array $tiers): float {
     $cost = 0;
     $remaining = $quantity;
 
@@ -292,8 +286,7 @@ class PricingRuleEngine
   /**
    * Cálculo por volumen (all-units): el tramo aplica a TODAS las unidades.
    */
-  protected function calculateVolume(float $quantity, array $tiers): float
-  {
+  protected function calculateVolume(float $quantity, array $tiers): float {
     $applicablePrice = 0;
 
     foreach ($tiers as $tier) {
@@ -313,8 +306,7 @@ class PricingRuleEngine
   /**
    * Cálculo por paquete: bloques de N unidades a precio fijo.
    */
-  protected function calculatePackage(float $quantity, array $tiers): float
-  {
+  protected function calculatePackage(float $quantity, array $tiers): float {
     if (empty($tiers)) {
       return 0;
     }
@@ -334,8 +326,7 @@ class PricingRuleEngine
   /**
    * Etiqueta traducible para una métrica.
    */
-  protected function getMetricLabel(string $metric): string
-  {
+  protected function getMetricLabel(string $metric): string {
     $labels = [
       'api_calls' => t('Llamadas API'),
       'ai_tokens' => t('Tokens IA'),

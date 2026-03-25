@@ -231,7 +231,8 @@ class ModelRouterHeuristicsTest extends TestCase {
    * @covers ::assessComplexity
    */
   public function testPromptLengthBoundaries(): void {
-    $taskType = 'email_promo'; // Base: 0.5.
+    // Base: 0.5.
+    $taskType = 'email_promo';
 
     // Exactly 200 chars should NOT get the short prompt reduction.
     $prompt200 = str_repeat('x', 200);

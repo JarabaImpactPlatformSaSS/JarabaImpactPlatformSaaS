@@ -66,13 +66,20 @@ class AccesoProgramaServiceTest extends UnitTestCase {
     $this->tenantContext = new class() {
       private ?int $tenantId = 5;
 
+      /**
+       *
+       */
       public function getCurrentTenantId(): ?int {
         return $this->tenantId;
       }
 
+      /**
+       *
+       */
       public function setTenantId(?int $id): void {
         $this->tenantId = $id;
       }
+
     };
 
     $this->entityTypeManager->method('getStorage')
@@ -291,59 +298,97 @@ class AccesoProgramaServiceTest extends UnitTestCase {
    */
   protected function createAccountMock(int $uid, array $permissions, array $roles): AccountInterface {
     return new class($uid, $permissions, $roles) implements AccountInterface {
+
       public function __construct(
         private readonly int $uid,
         private readonly array $permissions,
         private readonly array $roles,
       ) {}
 
+      /**
+       *
+       */
       public function id() {
         return $this->uid;
       }
 
+      /**
+       *
+       */
       public function getRoles($exclude_locked_roles = FALSE) {
         return $this->roles;
       }
 
+      /**
+       *
+       */
       public function hasPermission(string $permission) {
         return in_array($permission, $this->permissions, TRUE);
       }
 
+      /**
+       *
+       */
       public function isAuthenticated() {
         return TRUE;
       }
 
+      /**
+       *
+       */
       public function isAnonymous() {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function getPreferredLangcode($fallback_to_default = TRUE) {
         return 'es';
       }
 
+      /**
+       *
+       */
       public function getPreferredAdminLangcode($fallback_to_default = TRUE) {
         return 'es';
       }
 
+      /**
+       *
+       */
       public function getAccountName() {
         return "user_{$this->uid}";
       }
 
+      /**
+       *
+       */
       public function getDisplayName() {
         return "User {$this->uid}";
       }
 
+      /**
+       *
+       */
       public function getEmail() {
         return "user{$this->uid}@test.com";
       }
 
+      /**
+       *
+       */
       public function getTimeZone() {
         return 'Europe/Madrid';
       }
 
+      /**
+       *
+       */
       public function getLastAccessedTime() {
         return time();
       }
+
     };
   }
 
@@ -355,19 +400,29 @@ class AccesoProgramaServiceTest extends UnitTestCase {
    */
   protected function createParticipanteMock(int $id, array $fieldValues): object {
     return new class($id, $fieldValues) {
+
       public function __construct(
         private readonly int $id,
         private readonly array $fieldValues,
       ) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->id;
       }
 
+      /**
+       *
+       */
       public function label(): ?string {
         return "Test #{$this->id}";
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         if ($fieldName === 'tenant_id') {
           $targetId = $this->fieldValues['tenant_id_target'] ?? NULL;
@@ -377,37 +432,59 @@ class AccesoProgramaServiceTest extends UnitTestCase {
             public function __construct(mixed $t) {
               $this->target_id = $t;
             }
+
           };
         }
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function getOwner(): ?object {
         return NULL;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ["programa_participante_ei:{$this->id}"];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

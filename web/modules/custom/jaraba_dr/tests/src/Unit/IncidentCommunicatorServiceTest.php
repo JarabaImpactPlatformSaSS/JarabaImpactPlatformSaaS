@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_dr\Unit;
 
+use Drupal\jaraba_dr\Entity\DrIncident;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -64,7 +66,7 @@ class IncidentCommunicatorServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -212,7 +214,7 @@ class IncidentCommunicatorServiceTest extends UnitTestCase {
 
     // Crear mock de incidente con severidad P2 usando la entidad concreta
     // para disponer de get() (ContentEntityBase) y getCommunicationLogDecoded().
-    $incident = $this->createMock(\Drupal\jaraba_dr\Entity\DrIncident::class);
+    $incident = $this->createMock(DrIncident::class);
     $incident->method('id')->willReturn('5');
 
     // Mock de campos del incidente.

@@ -59,7 +59,7 @@ class AvatarWizardBridgeService {
    * como identidad para explicitez.
    */
   protected const JOURNEY_TO_CANONICAL = [
-    // JourneyState español → clave canónica
+    // JourneyState español → clave canónica.
     'job_seeker' => 'jobseeker',
     'employer' => 'recruiter',
     'orientador' => 'recruiter',

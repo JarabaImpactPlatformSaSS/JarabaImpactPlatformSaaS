@@ -64,7 +64,6 @@ function jaraba_self_discovery_theme(): array {
   ];
 }
 
-
 /**
  * Prepares variables for interest_profile templates.
  *

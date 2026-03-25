@@ -22,62 +22,60 @@ use Drupal\Core\Access\AccessResultInterface;
  *
  * FIX-034: AI Feedback entity and endpoint.
  */
-class AiFeedbackAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class AiFeedbackAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        /** @var \Drupal\jaraba_ai_agents\Entity\AiFeedback $entity */
-
-        // Admin bypass for all operations.
-        if ($account->hasPermission('administer ai agents')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // ACCESS-STRICT-001: Strict integer comparison for owner check.
-        $isOwner = (int) $entity->get('user_id')->target_id === (int) $account->id();
-
-        switch ($operation) {
-            case 'view':
-                // Users can view their own feedback only.
-                if ($isOwner) {
-                    return AccessResult::allowed()
-                        ->cachePerUser()
-                        ->addCacheableDependency($entity);
-                }
-                return AccessResult::neutral('AI feedback view restricted to owner')
-                    ->cachePerUser()
-                    ->addCacheableDependency($entity);
-
-            case 'update':
-            case 'delete':
-                // ENTITY-APPEND-001: Append-only — update and delete are denied.
-                return AccessResult::forbidden('AI feedback is append-only')
-                    ->cachePerPermissions();
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        // Any authenticated user can submit feedback.
-        if ($account->isAuthenticated()) {
-            return AccessResult::allowed()->cachePerUser();
-        }
+    /** @var \Drupal\jaraba_ai_agents\Entity\AiFeedback $entity */
 
-        return AccessResult::forbidden('Anonymous users cannot submit AI feedback');
+    // Admin bypass for all operations.
+    if ($account->hasPermission('administer ai agents')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+
+    // ACCESS-STRICT-001: Strict integer comparison for owner check.
+    $isOwner = (int) $entity->get('user_id')->target_id === (int) $account->id();
+
+    switch ($operation) {
+      case 'view':
+        // Users can view their own feedback only.
+        if ($isOwner) {
+          return AccessResult::allowed()
+            ->cachePerUser()
+            ->addCacheableDependency($entity);
+        }
+        return AccessResult::neutral('AI feedback view restricted to owner')
+          ->cachePerUser()
+          ->addCacheableDependency($entity);
+
+      case 'update':
+      case 'delete':
+        // ENTITY-APPEND-001: Append-only — update and delete are denied.
+        return AccessResult::forbidden('AI feedback is append-only')
+          ->cachePerPermissions();
+    }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    // Any authenticated user can submit feedback.
+    if ($account->isAuthenticated()) {
+      return AccessResult::allowed()->cachePerUser();
+    }
+
+    return AccessResult::forbidden('Anonymous users cannot submit AI feedback');
+  }
 
 }

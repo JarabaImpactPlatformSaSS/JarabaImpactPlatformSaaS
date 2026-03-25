@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class AnalyticsDailyAgroSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'analytics_daily_agro_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Métricas Diarias Agro.') . '</p>',
@@ -23,6 +29,9 @@ final class AnalyticsDailyAgroSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

@@ -15,6 +15,9 @@ class EntitySchemaTest extends KernelTestBase {
 
   protected static $modules = ['jaraba_pwa'];
 
+  /**
+   *
+   */
   public function testModuleInstalls(): void {
     $this->assertTrue(\Drupal::moduleHandler()->moduleExists('jaraba_pwa'));
   }

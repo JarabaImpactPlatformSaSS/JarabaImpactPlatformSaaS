@@ -11,119 +11,118 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Provides an interface for the ContentArticle entity.
  */
-interface ContentArticleInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface ContentArticleInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Gets the article title.
-     */
-    public function getTitle(): string;
+  /**
+   * Gets the article title.
+   */
+  public function getTitle(): string;
 
-    /**
-     * Gets the URL slug.
-     */
-    public function getSlug(): string;
+  /**
+   * Gets the URL slug.
+   */
+  public function getSlug(): string;
 
-    /**
-     * Sets the URL slug.
-     */
-    public function setSlug(string $slug): static;
+  /**
+   * Sets the URL slug.
+   */
+  public function setSlug(string $slug): static;
 
-    /**
-     * Gets the excerpt.
-     */
-    public function getExcerpt(): string;
+  /**
+   * Gets the excerpt.
+   */
+  public function getExcerpt(): string;
 
-    /**
-     * Gets the answer capsule for GEO optimization.
-     */
-    public function getAnswerCapsule(): string;
+  /**
+   * Gets the answer capsule for GEO optimization.
+   */
+  public function getAnswerCapsule(): string;
 
-    /**
-     * Gets the publication status.
-     */
-    public function getPublicationStatus(): string;
+  /**
+   * Gets the publication status.
+   */
+  public function getPublicationStatus(): string;
 
-    /**
-     * Checks if the article is published.
-     */
-    public function isPublished(): bool;
+  /**
+   * Checks if the article is published.
+   */
+  public function isPublished(): bool;
 
-    /**
-     * Gets the reading time in minutes.
-     */
-    public function getReadingTime(): int;
+  /**
+   * Gets the reading time in minutes.
+   */
+  public function getReadingTime(): int;
 
-    /**
-     * Checks if the article was AI-generated.
-     */
-    public function isAiGenerated(): bool;
+  /**
+   * Checks if the article was AI-generated.
+   */
+  public function isAiGenerated(): bool;
 
-    /**
-     * Gets the layout mode.
-     *
-     * @return string
-     *   'legacy' for classic textarea, 'canvas' for visual editor.
-     */
-    public function getLayoutMode(): string;
+  /**
+   * Gets the layout mode.
+   *
+   * @return string
+   *   'legacy' for classic textarea, 'canvas' for visual editor.
+   */
+  public function getLayoutMode(): string;
 
-    /**
-     * Checks if the article uses the Canvas Editor.
-     */
-    public function isCanvasMode(): bool;
+  /**
+   * Checks if the article uses the Canvas Editor.
+   */
+  public function isCanvasMode(): bool;
 
-    /**
-     * Gets the GrapesJS Canvas JSON data.
-     */
-    public function getCanvasData(): string;
+  /**
+   * Gets the GrapesJS Canvas JSON data.
+   */
+  public function getCanvasData(): string;
 
-    /**
-     * Gets the rendered HTML from the Canvas.
-     */
-    public function getRenderedHtml(): string;
+  /**
+   * Gets the rendered HTML from the Canvas.
+   */
+  public function getRenderedHtml(): string;
 
-    /**
-     * Gets the tenant ID (group entity) that owns this article.
-     *
-     * @return int|null
-     *   The group entity ID, or NULL if not set.
-     */
-    public function getTenantId(): ?int;
+  /**
+   * Gets the tenant ID (group entity) that owns this article.
+   *
+   * @return int|null
+   *   The group entity ID, or NULL if not set.
+   */
+  public function getTenantId(): ?int;
 
-    /**
-     * Sets the tenant ID (group entity) that owns this article.
-     */
-    public function setTenantId(?int $tenantId): static;
+  /**
+   * Sets the tenant ID (group entity) that owns this article.
+   */
+  public function setTenantId(?int $tenantId): static;
 
-    /**
-     * Checks if the article is featured.
-     */
-    public function isFeatured(): bool;
+  /**
+   * Checks if the article is featured.
+   */
+  public function isFeatured(): bool;
 
-    /**
-     * Gets the view count.
-     */
-    public function getViewsCount(): int;
+  /**
+   * Gets the view count.
+   */
+  public function getViewsCount(): int;
 
-    /**
-     * Gets comma-separated tags.
-     */
-    public function getTags(): string;
+  /**
+   * Gets comma-separated tags.
+   */
+  public function getTags(): string;
 
-    /**
-     * Gets the schema.org type for structured data.
-     *
-     * @return string
-     *   One of: BlogPosting, Article, NewsArticle.
-     */
-    public function getSchemaType(): string;
+  /**
+   * Gets the schema.org type for structured data.
+   *
+   * @return string
+   *   One of: BlogPosting, Article, NewsArticle.
+   */
+  public function getSchemaType(): string;
 
-    /**
-     * Gets the canonical vertical for this article.
-     *
-     * @return string
-     *   One of VERTICAL-CANONICAL-001 values or empty string.
-     */
-    public function getVertical(): string;
+  /**
+   * Gets the canonical vertical for this article.
+   *
+   * @return string
+   *   One of VERTICAL-CANONICAL-001 values or empty string.
+   */
+  public function getVertical(): string;
 
 }

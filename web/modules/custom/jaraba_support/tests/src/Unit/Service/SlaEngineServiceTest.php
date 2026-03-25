@@ -107,6 +107,9 @@ class SlaEngineServiceTest extends UnitTestCase {
             $this->empty = $value === NULL || $value === '' || $value === 0;
           }
 
+          /**
+           *
+           */
           public function isEmpty(): bool {
             return $this->empty;
           }
@@ -264,7 +267,8 @@ class SlaEngineServiceTest extends UnitTestCase {
   #[Test]
   public function testResumeSla(): void {
     $now = time();
-    $pausedAt = $now - 600; // Paused 10 minutes ago.
+    // Paused 10 minutes ago.
+    $pausedAt = $now - 600;
     $responseDue = $now + 3600;
     $resolutionDue = $now + 7200;
 

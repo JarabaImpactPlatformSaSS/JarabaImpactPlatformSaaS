@@ -315,7 +315,7 @@ class FaqBotService {
    *
    * Sigue el patrón estándar del SaaS (PublicCopilotController):
    * - action: identificador de acción (register, view_plans, etc.)
-   * - label: texto visible del botón
+   * - label: texto visible del botón.
    *
    * Acciones de redirección soportadas por el frontend:
    * - register → /user/register

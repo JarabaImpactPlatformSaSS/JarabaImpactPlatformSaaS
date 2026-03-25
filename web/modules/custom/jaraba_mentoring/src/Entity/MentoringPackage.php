@@ -60,222 +60,217 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.mentoring_package.settings",
  * )
  */
-class MentoringPackage extends ContentEntityBase
-{
+class MentoringPackage extends ContentEntityBase {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // === Referencia al Mentor ===
-        $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Mentor'))
-            ->setDescription(t('Mentor que ofrece este paquete.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'mentor_profile')
-            ->setDisplayOptions('view', ['weight' => -5])
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => -5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Referencia al Mentor ===
+    $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Mentor'))
+      ->setDescription(t('Mentor que ofrece este paquete.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'mentor_profile')
+      ->setDisplayOptions('view', ['weight' => -5])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Información del Paquete ===
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setDescription(t('Nombre del paquete de mentoría.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('view', ['weight' => 0])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Información del Paquete ===
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setDescription(t('Nombre del paquete de mentoría.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('view', ['weight' => 0])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDescription(t('Descripción detallada de lo que incluye el paquete.'))
-            ->setDisplayOptions('view', ['weight' => 1])
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDescription(t('Descripción detallada de lo que incluye el paquete.'))
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['package_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Paquete'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'single_session' => 'Sesión Individual',
-                'session_pack' => 'Pack de Sesiones',
-                'program' => 'Programa (Launch/Aceleración)',
-                'workshop' => 'Workshop Grupal',
-                'mastermind' => 'Mastermind Premium',
-                'bootcamp' => 'Bootcamp Intensivo',
-                'institutional' => 'Institucional',
-            ])
-            ->setDefaultValue('single_session')
-            ->setDisplayOptions('view', ['weight' => 2])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['package_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Paquete'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'single_session' => 'Sesión Individual',
+        'session_pack' => 'Pack de Sesiones',
+        'program' => 'Programa (Launch/Aceleración)',
+        'workshop' => 'Workshop Grupal',
+        'mastermind' => 'Mastermind Premium',
+        'bootcamp' => 'Bootcamp Intensivo',
+        'institutional' => 'Institucional',
+      ])
+      ->setDefaultValue('single_session')
+      ->setDisplayOptions('view', ['weight' => 2])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Configuración de Sesiones ===
-        $fields['sessions_included'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Sesiones Incluidas'))
-            ->setDescription(t('Número de sesiones incluidas en el paquete.'))
-            ->setRequired(TRUE)
-            ->setDefaultValue(1)
-            ->setSetting('min', 1)
-            ->setDisplayOptions('view', ['weight' => 5])
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Configuración de Sesiones ===
+    $fields['sessions_included'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Sesiones Incluidas'))
+      ->setDescription(t('Número de sesiones incluidas en el paquete.'))
+      ->setRequired(TRUE)
+      ->setDefaultValue(1)
+      ->setSetting('min', 1)
+      ->setDisplayOptions('view', ['weight' => 5])
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['session_duration_minutes'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Duración por Sesión (minutos)'))
-            ->setRequired(TRUE)
-            ->setDefaultValue(60)
-            ->setSetting('min', 30)
-            ->setDisplayOptions('view', ['weight' => 6])
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 6,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['session_duration_minutes'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Duración por Sesión (minutos)'))
+      ->setRequired(TRUE)
+      ->setDefaultValue(60)
+      ->setSetting('min', 30)
+      ->setDisplayOptions('view', ['weight' => 6])
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Precios ===
-        $fields['price'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Precio (€)'))
-            ->setRequired(TRUE)
-            ->setSetting('precision', 8)
-            ->setSetting('scale', 2)
-            ->setDisplayOptions('view', ['weight' => 10])
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Precios ===
+    $fields['price'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Precio (€)'))
+      ->setRequired(TRUE)
+      ->setSetting('precision', 8)
+      ->setSetting('scale', 2)
+      ->setDisplayOptions('view', ['weight' => 10])
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['discount_percent'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Descuento (%)'))
-            ->setDefaultValue(0)
-            ->setSetting('min', 0)
-            ->setSetting('max', 50)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 11,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['discount_percent'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Descuento (%)'))
+      ->setDefaultValue(0)
+      ->setSetting('min', 0)
+      ->setSetting('max', 50)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // === Soporte Asíncrono ===
-        $fields['includes_async_support'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Incluye Soporte Asíncrono'))
-            ->setDescription(t('Acceso a mensajería fuera de sesiones.'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 15,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    // === Soporte Asíncrono ===
+    $fields['includes_async_support'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Incluye Soporte Asíncrono'))
+      ->setDescription(t('Acceso a mensajería fuera de sesiones.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['async_response_hours'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tiempo de Respuesta (horas)'))
-            ->setDescription(t('Tiempo máximo de respuesta para mensajes.'))
-            ->setDefaultValue(48)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['async_response_hours'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Tiempo de Respuesta (horas)'))
+      ->setDescription(t('Tiempo máximo de respuesta para mensajes.'))
+      ->setDefaultValue(48)
+      ->setDisplayConfigurable('form', TRUE);
 
-        // === Estado ===
-        $fields['is_published'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Publicado'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    // === Estado ===
+    $fields['is_published'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Publicado'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['is_featured'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Destacado'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 21,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_featured'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Destacado'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 21,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        // === Estadísticas ===
-        $fields['total_sold'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Total Vendidos'))
-            ->setDefaultValue(0)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Estadísticas ===
+    $fields['total_sold'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Total Vendidos'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Stripe (Doc 181: servicios profesionales one-time) ===
-        $fields['stripe_product_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Stripe Product ID'))
-            ->setDescription(t('ID del producto en Stripe para pagos one-time.'))
-            ->setSetting('max_length', 255)
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Stripe (Doc 181: servicios profesionales one-time) ===
+    $fields['stripe_product_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Product ID'))
+      ->setDescription(t('ID del producto en Stripe para pagos one-time.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['vertical'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Vertical'))
-            ->setDescription(t('Vertical asociado (o "all" para transversal).'))
-            ->setSetting('max_length', 64)
-            ->setDefaultValue('all')
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['vertical'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Vertical'))
+      ->setDescription(t('Vertical asociado (o "all" para transversal).'))
+      ->setSetting('max_length', 64)
+      ->setDefaultValue('all')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Timestamps ===
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    // === Timestamps ===
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Gets the mentor profile.
-     */
-    public function getMentor(): ?MentorProfile
-    {
-        $mentor = $this->get('mentor_id')->entity;
-        return $mentor instanceof MentorProfile ? $mentor : NULL;
-    }
+  /**
+   * Gets the mentor profile.
+   */
+  public function getMentor(): ?MentorProfile {
+    $mentor = $this->get('mentor_id')->entity;
+    return $mentor instanceof MentorProfile ? $mentor : NULL;
+  }
 
-    /**
-     * Gets the package price.
-     */
-    public function getPrice(): float
-    {
-        return (float) ($this->get('price')->value ?? 0);
-    }
+  /**
+   * Gets the package price.
+   */
+  public function getPrice(): float {
+    return (float) ($this->get('price')->value ?? 0);
+  }
 
-    /**
-     * Gets the number of sessions included.
-     */
-    public function getSessionsIncluded(): int
-    {
-        return (int) ($this->get('sessions_included')->value ?? 1);
-    }
+  /**
+   * Gets the number of sessions included.
+   */
+  public function getSessionsIncluded(): int {
+    return (int) ($this->get('sessions_included')->value ?? 1);
+  }
 
 }

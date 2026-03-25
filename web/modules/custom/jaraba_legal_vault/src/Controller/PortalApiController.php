@@ -50,8 +50,8 @@ class PortalApiController extends ControllerBase {
   public function overview(string $token): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido o expediente no encontrado.']], 403);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido o expediente no encontrado.']], 403);
     }
 
     return new JsonResponse([

@@ -14,7 +14,6 @@ use Drupal\jaraba_crm\Service\PipelineStageService;
 use Drupal\jaraba_crm\Service\SalesPlaybookService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests para CrmApiController.

@@ -42,7 +42,7 @@ class WhatsAppCatalogSyncService {
   public function syncProducts(string $catalogId, int $tenantId): array {
     $result = ['synced' => 0, 'errors' => 0, 'skipped' => 0];
 
-    if ($this->whatsAppApi === null) {
+    if ($this->whatsAppApi === NULL) {
       $this->logger->warning('WhatsAppApiService no disponible para sync.');
       return $result;
     }
@@ -69,7 +69,7 @@ class WhatsAppCatalogSyncService {
         $imageUrl = '';
         if ($product->hasField('images') && !$product->get('images')->isEmpty()) {
           $imageEntity = $product->get('images')->entity;
-          if ($imageEntity !== null) {
+          if ($imageEntity !== NULL) {
             $imageUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($imageEntity->getFileUri());
           }
         }

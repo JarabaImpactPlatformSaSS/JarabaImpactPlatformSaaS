@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_tenant_export\Service;
 
-use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;

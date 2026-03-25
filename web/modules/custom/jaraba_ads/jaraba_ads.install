@@ -1,8 +1,16 @@
 <?php
 
+/**
+ * @file
+ * @file
+ * @file
+ * .*/
+
 declare(strict_types=1);
 
 /**
+ *
+ *
  * @file
  * Install, update, and uninstall functions for jaraba_ads.
  */
@@ -10,19 +18,14 @@ declare(strict_types=1);
 /**
  * Implements hook_install().
  */
-function jaraba_ads_install(): void {
-  $entity_type_ids = [
-    'ad_campaign',
-    'ads_account',
-    'ads_audience_sync',
-    'ads_campaign_sync',
-    'ads_conversion_event',
-    'ads_metrics_daily',
-  ];
 
+/**
+ *
+ */
+function jaraba_ads_install(): void {
+  $entity_type_ids = ['ad_campaign', 'ads_account', 'ads_audience_sync', 'ads_campaign_sync', 'ads_conversion_event', 'ads_metrics_daily'];
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $entity_type_manager = \Drupal::entityTypeManager();
-
   foreach ($entity_type_ids as $entity_type_id) {
     try {
       if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
@@ -31,10 +34,7 @@ function jaraba_ads_install(): void {
       }
     }
     catch (\Throwable $e) {
-      \Drupal::logger('jaraba_ads')->error(
-        'Failed to install entity type @type: @message',
-        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
-      );
+      \Drupal::logger('jaraba_ads')->error('Failed to install entity type @type: @message', ['@type' => $entity_type_id, '@message' => $e->getMessage()]);
     }
   }
 }
@@ -42,19 +42,14 @@ function jaraba_ads_install(): void {
 /**
  * Install all jaraba_ads entity types.
  */
-function jaraba_ads_update_10001(): void {
-  $entity_type_ids = [
-    'ad_campaign',
-    'ads_account',
-    'ads_audience_sync',
-    'ads_campaign_sync',
-    'ads_conversion_event',
-    'ads_metrics_daily',
-  ];
 
+/**
+ *
+ */
+function jaraba_ads_update_10001(): void {
+  $entity_type_ids = ['ad_campaign', 'ads_account', 'ads_audience_sync', 'ads_campaign_sync', 'ads_conversion_event', 'ads_metrics_daily'];
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $entity_type_manager = \Drupal::entityTypeManager();
-
   foreach ($entity_type_ids as $entity_type_id) {
     try {
       if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
@@ -63,50 +58,35 @@ function jaraba_ads_update_10001(): void {
       }
     }
     catch (\Throwable $e) {
-      \Drupal::logger('jaraba_ads')->error(
-        'Failed to install entity type @type: @message',
-        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
-      );
+      \Drupal::logger('jaraba_ads')->error('Failed to install entity type @type: @message', ['@type' => $entity_type_id, '@message' => $e->getMessage()]);
     }
   }
 }
-
 
 /**
  * Implements hook_requirements().
  */
 function jaraba_ads_requirements(string $phase): array {
-  $requirements = [];
-
-  if ($phase !== 'runtime') {
-    return $requirements;
-  }
-
-  $entityTypes = ['ad_campaign', 'ads_account', 'ads_audience_sync', 'ads_campaign_sync', 'ads_conversion_event', 'ads_metrics_daily'];
-  $updateManager = \Drupal::entityDefinitionUpdateManager();
-  $missing = [];
-
-  foreach ($entityTypes as $typeId) {
-    if (!$updateManager->getEntityType($typeId)) {
-      $missing[] = $typeId;
-    }
-  }
-
-  if (!empty($missing)) {
-    $requirements['jaraba_ads_entities'] = [
-      'title' => t('Jaraba ads: Entity Types'),
-      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
-      'description' => t('Run drush entity:updates to install missing entity types.'),
-      'severity' => REQUIREMENT_ERROR,
-    ];
-  }
-  else {
-    $requirements['jaraba_ads_entities'] = [
-      'title' => t('Jaraba ads: Entity Types'),
-      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
-      'severity' => REQUIREMENT_OK,
-    ];
-  }
-
+$requirements = [];
+if ($phase !== 'runtime') {
   return $requirements;
+}
+
+$entityTypes = ['ad_campaign', 'ads_account', 'ads_audience_sync', 'ads_campaign_sync', 'ads_conversion_event', 'ads_metrics_daily'];
+$updateManager = \Drupal::entityDefinitionUpdateManager();
+$missing = [];
+foreach ($entityTypes as $typeId) {
+  if (!$updateManager->getEntityType($typeId)) {
+    $missing[] = $typeId;
+  }
+}
+
+if (!empty($missing)) {
+  $requirements['jaraba_ads_entities'] = ['title' => t('Jaraba ads: Entity Types'), 'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]), 'description' => t('Run drush entity:updates to install missing entity types.'), 'severity' => REQUIREMENT_ERROR];
+}
+else {
+  $requirements['jaraba_ads_entities'] = ['title' => t('Jaraba ads: Entity Types'), 'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]), 'severity' => REQUIREMENT_OK];
+}
+
+return $requirements;
 }

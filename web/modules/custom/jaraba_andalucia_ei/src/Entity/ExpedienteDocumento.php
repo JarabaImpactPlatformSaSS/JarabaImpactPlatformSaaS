@@ -244,7 +244,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === RELACIONES ===
-
     $fields['participante_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Participante'))
       ->setDescription(t('Participante al que pertenece este documento.'))
@@ -265,7 +264,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === METADATOS DEL DOCUMENTO ===
-
     $fields['titulo'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Título'))
       ->setDescription(t('Nombre descriptivo del documento.'))
@@ -291,7 +289,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === REFERENCIA AL VAULT ===
-
     $fields['archivo_vault_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('ID Vault'))
       ->setDescription(t('Referencia al SecureDocument en jaraba_legal_vault.'))
@@ -317,7 +314,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === ESTADO DE REVISIÓN ===
-
     $fields['estado_revision'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado revisión'))
       ->setDescription(t('Estado del proceso de revisión.'))
@@ -338,7 +334,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === REVISIÓN IA ===
-
     $fields['revision_ia_score'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Puntuación IA'))
       ->setDescription(t('Puntuación de revisión automática (0-100).'))
@@ -352,7 +347,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === REVISIÓN HUMANA ===
-
     $fields['revision_humana_notas'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Notas del revisor'))
       ->setDescription(t('Notas de la revisión humana.'))
@@ -371,7 +365,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === FIRMA DIGITAL ===
-
     $fields['firmado'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Firmado digitalmente'))
       ->setDescription(t('Indica si el documento está firmado.'))
@@ -395,7 +388,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === WORKFLOW DE FIRMA (Sprint 1 — Plan Maestro Clase Mundial) ===
-
     $fields['estado_firma'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado de firma'))
       ->setDescription(t('Estado en la máquina de estados de firma electrónica.'))
@@ -488,7 +480,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === SINCRONIZACIÓN STO ===
-
     $fields['requerido_sto'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Requerido STO'))
       ->setDescription(t('Si es obligatorio para exportación STO.'))
@@ -507,7 +498,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === CADUCIDAD ===
-
     $fields['fecha_vencimiento'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha de vencimiento'))
       ->setDescription(t('Fecha de caducidad del documento (DNI, certificados).'))
@@ -520,7 +510,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === PUBLICACIÓN ===
-
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publicado'))
       ->setDescription(t('Estado de publicación del documento.'))
@@ -533,7 +522,6 @@ class ExpedienteDocumento extends ContentEntityBase implements ExpedienteDocumen
       ->setDisplayConfigurable('view', TRUE);
 
     // === CAMPOS DE SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

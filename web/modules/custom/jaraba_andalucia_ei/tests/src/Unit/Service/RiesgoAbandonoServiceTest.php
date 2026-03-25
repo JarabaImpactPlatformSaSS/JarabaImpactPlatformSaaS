@@ -295,19 +295,29 @@ class RiesgoAbandonoServiceTest extends UnitTestCase {
    */
   protected function createParticipanteMock(int $id, array $fieldValues): object {
     return new class($id, $fieldValues) {
+
       public function __construct(
         private readonly int $id,
         private readonly array $fieldValues,
       ) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->id;
       }
 
+      /**
+       *
+       */
       public function label(): ?string {
         return "Test #{$this->id}";
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         if ($fieldName === 'tenant_id') {
           $targetId = $this->fieldValues['tenant_id_target'] ?? NULL;
@@ -317,37 +327,59 @@ class RiesgoAbandonoServiceTest extends UnitTestCase {
             public function __construct(mixed $t) {
               $this->target_id = $t;
             }
+
           };
         }
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function getOwner(): ?object {
         return NULL;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ["programa_participante_ei:{$this->id}"];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

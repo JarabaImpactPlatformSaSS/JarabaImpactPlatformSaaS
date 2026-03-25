@@ -61,6 +61,9 @@ class CourseReviewAccessControlHandler extends EntityAccessControlHandler implem
     };
   }
 
+  /**
+   *
+   */
   protected function checkViewAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     $status = $entity->hasField('review_status') ? $entity->get('review_status')->value : NULL;
     if ($status === 'approved') {
@@ -72,6 +75,9 @@ class CourseReviewAccessControlHandler extends EntityAccessControlHandler implem
     return AccessResult::neutral()->cachePerUser()->addCacheableDependency($entity);
   }
 
+  /**
+   *
+   */
   protected function checkUpdateAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     if ((int) $entity->getOwnerId() === (int) $account->id()) {
       return AccessResult::allowedIfHasPermission($account, 'edit own reviews')
@@ -91,6 +97,9 @@ class CourseReviewAccessControlHandler extends EntityAccessControlHandler implem
     ], 'OR');
   }
 
+  /**
+   *
+   */
   protected function checkTenantIsolation(EntityInterface $entity): ?AccessResult {
     if (!$entity->hasField('tenant_id') || $entity->get('tenant_id')->isEmpty()) {
       return NULL;

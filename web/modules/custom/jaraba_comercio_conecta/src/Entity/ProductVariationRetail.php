@@ -87,7 +87,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Aislamiento multi-tenant obligatorio
+    // Aislamiento multi-tenant obligatorio.
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta variación para aislamiento multi-tenant.'))
@@ -100,7 +100,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // SKU único de la variación
+    // SKU único de la variación.
     $fields['sku'] = BaseFieldDefinition::create('string')
       ->setLabel(t('SKU'))
       ->setDescription(t('Código SKU único de la variación dentro del tenant.'))
@@ -113,7 +113,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Nombre descriptivo de la variación
+    // Nombre descriptivo de la variación.
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre'))
       ->setDescription(t('Nombre descriptivo de la variación (ej: "Camiseta Azul - Talla M").'))
@@ -153,7 +153,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Imagen específica de la variación
+    // Imagen específica de la variación.
     $fields['image'] = BaseFieldDefinition::create('image')
       ->setLabel(t('Imagen'))
       ->setDescription(t('Imagen específica de esta variación (ej: foto del color concreto).'))
@@ -169,7 +169,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Atributos de la variación como JSON flexible
+    // Atributos de la variación como JSON flexible.
     $fields['attributes'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Atributos'))
       ->setDescription(t('Pares clave-valor de atributos en formato JSON (ej: {"color": "Azul", "talla": "M"}).'))
@@ -181,7 +181,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Código de barras específico de la variación
+    // Código de barras específico de la variación.
     $fields['barcode_value'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Código de barras'))
       ->setDescription(t('Código de barras específico de esta variación (EAN, UPC, etc.).'))
@@ -193,7 +193,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Stock de la variación
+    // Stock de la variación.
     $fields['stock_quantity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Stock'))
       ->setDescription(t('Cantidad en stock de esta variación (suma de todas las ubicaciones).'))
@@ -206,7 +206,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Peso override si diferente al producto padre
+    // Peso override si diferente al producto padre.
     $fields['weight'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Peso (kg)'))
       ->setDescription(t('Peso en kilogramos si difiere del producto padre.'))
@@ -219,7 +219,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Estado de la variación
+    // Estado de la variación.
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado'))
       ->setDescription(t('Estado actual de la variación en el catálogo.'))
@@ -237,7 +237,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Orden de presentación
+    // Orden de presentación.
     $fields['sort_order'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Orden'))
       ->setDescription(t('Orden de presentación entre las variaciones del mismo producto.'))
@@ -249,7 +249,7 @@ class ProductVariationRetail extends ContentEntityBase implements EntityChangedI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // Timestamps
+    // Timestamps.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creación'))
       ->setDescription(t('Fecha en que se creó la variación.'));

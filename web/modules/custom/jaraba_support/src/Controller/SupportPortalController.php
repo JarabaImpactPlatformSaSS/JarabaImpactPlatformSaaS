@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_support\Controller;
 
+use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\jaraba_support\Form\SupportTicketForm;
 use Drupal\jaraba_support\Service\TicketDeflectionService;
 use Drupal\jaraba_support\Service\TicketService;
@@ -88,10 +88,10 @@ class SupportPortalController extends ControllerBase {
         ],
         'drupalSettings' => [
           'jarabaSupport' => [
-            'apiBaseUrl' => \Drupal\Core\Url::fromRoute('jaraba_support.api.tickets.create')->toString(),
-            'createUrl' => \Drupal\Core\Url::fromRoute('jaraba_support.portal.create')->toString(),
-            'portalUrl' => \Drupal\Core\Url::fromRoute('jaraba_support.portal')->toString(),
-            'deflectionUrl' => \Drupal\Core\Url::fromRoute('jaraba_support.api.deflection')->toString(),
+            'apiBaseUrl' => Url::fromRoute('jaraba_support.api.tickets.create')->toString(),
+            'createUrl' => Url::fromRoute('jaraba_support.portal.create')->toString(),
+            'portalUrl' => Url::fromRoute('jaraba_support.portal')->toString(),
+            'deflectionUrl' => Url::fromRoute('jaraba_support.api.deflection')->toString(),
           ],
         ],
       ],

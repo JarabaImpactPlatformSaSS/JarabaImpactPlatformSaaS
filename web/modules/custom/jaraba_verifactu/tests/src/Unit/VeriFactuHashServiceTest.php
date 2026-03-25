@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Unit;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
@@ -173,7 +174,7 @@ class VeriFactuHashServiceTest extends UnitTestCase {
   public function testVerifyChainIntegrityEmptyChain(): void {
     $this->lock->method('acquire')->willReturn(TRUE);
 
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
     $query->method('accessCheck')->willReturnSelf();

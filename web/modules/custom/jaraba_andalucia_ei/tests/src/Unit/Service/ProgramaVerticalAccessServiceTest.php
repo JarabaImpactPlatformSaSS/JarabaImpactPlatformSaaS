@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\jaraba_andalucia_ei\Service\ProgramaVerticalAccessService;
 use Drupal\Tests\UnitTestCase;
@@ -156,6 +155,9 @@ class ProgramaVerticalAccessServiceTest extends UnitTestCase {
         private readonly string $fase,
       ) {}
 
+      /**
+       *
+       */
       public function get(string $field): object {
         $value = match ($field) {
           'carril' => $this->carril,
@@ -176,6 +178,9 @@ class ProgramaVerticalAccessServiceTest extends UnitTestCase {
         };
       }
 
+      /**
+       *
+       */
       public function hasField(string $field): bool {
         return $field !== 'fecha_fase_seguimiento';
       }

@@ -37,7 +37,7 @@ class IsoRiskService {
    * - 1-4: Low
    * - 5-9: Medium
    * - 10-14: High
-   * - 15-25: Critical
+   * - 15-25: Critical.
    *
    * @param int $likelihood
    *   Likelihood score (1-5).

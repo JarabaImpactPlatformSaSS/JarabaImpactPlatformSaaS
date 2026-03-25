@@ -243,7 +243,6 @@ class CendojSpider implements SpiderInterface {
     foreach ($entries as $entry) {
       // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
       // Extraer datos de cada nodo DOM del resultado CENDOJ.
-
       // Titulo: enlace principal del resultado, contenido en <a> dentro
       // de h3, h4, o un enlace con clase 'titulo' o 'doctrina'.
       $titleNode = $xpath->query(

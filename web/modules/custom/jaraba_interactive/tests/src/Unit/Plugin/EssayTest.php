@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\Essay;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,7 +34,7 @@ class EssayTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -116,8 +117,10 @@ class EssayTest extends UnitTestCase {
 
   // ==========================================================================
   // SCHEMA TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArrayWithRequiredKeys(): void {
     $schema = $this->plugin->getSchema();
@@ -134,8 +137,10 @@ class EssayTest extends UnitTestCase {
 
   // ==========================================================================
   // CALCULATE SCORE TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePerfectRubricScores(): void {
     $rubric = [
@@ -173,6 +178,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(1.0, $result['details']['clarity']['weight']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePartialRubricScores(): void {
     $rubric = [
@@ -201,6 +209,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(30.0, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithWeightedCriteria(): void {
     $rubric = [
@@ -233,6 +244,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(1.0, $result['details']['grammar']['weight']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreFailsWhenWordCountBelowMinimum(): void {
     $rubric = [
@@ -258,6 +272,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(50, $result['word_count']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreFailsWhenWordCountAboveMaximum(): void {
     $rubric = [
@@ -282,6 +299,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(600, $result['word_count']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithValidWordCountPasses(): void {
     $rubric = [
@@ -313,6 +333,9 @@ class EssayTest extends UnitTestCase {
     $this->assertSame(250, $result['word_count']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithEmptyRubricReturnsZero(): void {
     $data = $this->buildEssayData([]);
@@ -331,6 +354,9 @@ class EssayTest extends UnitTestCase {
     $this->assertEmpty($result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreClampsEarnedToMaxPointsPerCriterion(): void {
     $rubric = [
@@ -364,8 +390,10 @@ class EssayTest extends UnitTestCase {
 
   // ==========================================================================
   // XAPI VERBS TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsFiveVerbsIncludingScored(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -381,8 +409,10 @@ class EssayTest extends UnitTestCase {
 
   // ==========================================================================
   // RENDER TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsThemeInteractiveEssay(): void {
     $data = [
@@ -406,8 +436,10 @@ class EssayTest extends UnitTestCase {
 
   // ==========================================================================
   // RESULT STRUCTURE TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreResultIncludesWordCountLengthValidAndEvaluationMode(): void {
     $rubric = [

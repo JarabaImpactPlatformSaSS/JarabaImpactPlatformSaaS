@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_events\Unit\Service;
 
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\jaraba_events\Exception\DuplicateRegistrationException;
+use Drupal\jaraba_events\Exception\EventNotOpenException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -118,7 +121,7 @@ class EventRegistrationServiceTest extends UnitTestCase {
       ->with(999)
       ->willReturn(NULL);
 
-    $this->expectException(\Drupal\jaraba_events\Exception\EventNotOpenException::class);
+    $this->expectException(EventNotOpenException::class);
     $this->expectExceptionMessage('El evento solicitado no existe.');
 
     $this->service->register(999, ['name' => 'Test', 'email' => 'test@test.com']);
@@ -138,7 +141,7 @@ class EventRegistrationServiceTest extends UnitTestCase {
       ->with(1)
       ->willReturn($event);
 
-    $this->expectException(\Drupal\jaraba_events\Exception\EventNotOpenException::class);
+    $this->expectException(EventNotOpenException::class);
     $this->expectExceptionMessage('no est');
 
     $this->service->register(1, ['name' => 'Test', 'email' => 'test@test.com']);
@@ -168,7 +171,7 @@ class EventRegistrationServiceTest extends UnitTestCase {
       ->method('getQuery')
       ->willReturn($duplicateQuery);
 
-    $this->expectException(\Drupal\jaraba_events\Exception\DuplicateRegistrationException::class);
+    $this->expectException(DuplicateRegistrationException::class);
 
     $this->service->register(1, ['name' => 'Duplicado', 'email' => 'dup@test.com']);
   }
@@ -340,7 +343,7 @@ class EventRegistrationServiceTest extends UnitTestCase {
           return $field;
         }
         if ($field_name === 'email_sequence_id') {
-          $field = $this->createMock(\Drupal\Core\Field\FieldItemListInterface::class);
+          $field = $this->createMock(FieldItemListInterface::class);
           $field->method('isEmpty')->willReturn(TRUE);
           return $field;
         }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Controller;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_analytics\Service\NpsSurveyService;
 use Drupal\jaraba_analytics\Service\ProductMetricsAggregatorService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -75,7 +75,7 @@ class PrePmfDashboardController extends ControllerBase {
 
         if ($ids !== []) {
           $snapshot = $storage->load(reset($ids));
-          if ($snapshot instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+          if ($snapshot instanceof ContentEntityInterface) {
             $snapshots[$vertical] = $snapshot;
           }
         }
@@ -88,7 +88,7 @@ class PrePmfDashboardController extends ControllerBase {
     $rows = [];
     foreach ($verticals as $vertical) {
       $snapshot = $snapshots[$vertical] ?? NULL;
-      if ($snapshot instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+      if ($snapshot instanceof ContentEntityInterface) {
         $rows[] = [
           'vertical' => $vertical,
           'date' => $snapshot->get('snapshot_date')->value ?? '-',

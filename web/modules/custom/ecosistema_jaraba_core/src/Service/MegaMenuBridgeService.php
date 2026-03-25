@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * Consumidores:
  * - Mega menú del header (_header-classic.html.twig)
  * - Email de bienvenida (user_welcome en hook_mail)
- * - Quiz de recomendación de vertical
+ * - Quiz de recomendación de vertical.
  *
  * Prioridad de datos:
  * 1. SiteMenuItems configurados en DB → datos dinámicos editables desde admin.
@@ -70,7 +70,7 @@ class MegaMenuBridgeService {
    * Cualquier cambio aquí se refleja automáticamente en:
    * - Mega menú del header (via getMegaMenuColumns())
    * - Email de bienvenida (via getVerticalCatalog())
-   * - Cualquier otro consumidor futuro
+   * - Cualquier otro consumidor futuro.
    *
    * @return array<int, array<string, mixed>>
    *   Array de columnas para el mega menú. Cada columna tiene:

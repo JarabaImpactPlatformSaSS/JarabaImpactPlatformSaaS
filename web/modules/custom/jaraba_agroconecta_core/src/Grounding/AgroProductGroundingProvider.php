@@ -17,6 +17,9 @@ class AgroProductGroundingProvider implements GroundingProviderInterface {
     protected EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
+  /**
+   *
+   */
   public function getVerticalKey(): string {
     return 'agroconecta';
   }
@@ -25,6 +28,7 @@ class AgroProductGroundingProvider implements GroundingProviderInterface {
    * {@inheritdoc}
    *
    * @param array<string> $keywords
+   *
    * @return array<int, array<string, mixed>>
    */
   public function search(array $keywords, int $limit = 3): array {
@@ -74,6 +78,9 @@ class AgroProductGroundingProvider implements GroundingProviderInterface {
     return $results;
   }
 
+  /**
+   *
+   */
   public function getPriority(): int {
     return 50;
   }

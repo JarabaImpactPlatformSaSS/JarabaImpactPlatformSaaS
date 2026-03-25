@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Unit;
 
+use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\jaraba_facturae\Service\FacturaeValidationService;
 use Drupal\jaraba_facturae\ValueObject\ValidationResult;
@@ -231,7 +232,7 @@ class FacturaeValidationServiceTest extends UnitTestCase {
    * @covers ::validateXsd
    */
   public function testValidateXsdPassesWithValidXmlWithoutXsdFile(): void {
-    $module = $this->createMock(\Drupal\Core\Extension\Extension::class);
+    $module = $this->createMock(Extension::class);
     $module->method('getPath')->willReturn('/nonexistent/path');
     $this->moduleHandler->method('getModule')
       ->with('jaraba_facturae')
@@ -281,7 +282,8 @@ class FacturaeValidationServiceTest extends UnitTestCase {
       'total_gross_amount_before_taxes' => 1000.00,
       'total_tax_outputs' => 210.00,
       'total_tax_withheld' => 150.00,
-      'total_invoice_amount' => 999.00, // Should be 1060.
+    // Should be 1060.
+      'total_invoice_amount' => 999.00,
       'total_outstanding' => 999.00,
       'total_executable' => 999.00,
     ];
@@ -302,7 +304,8 @@ class FacturaeValidationServiceTest extends UnitTestCase {
       'total_tax_outputs' => 210.00,
       'total_tax_withheld' => 0.00,
       'total_invoice_amount' => 1210.00,
-      'total_outstanding' => 1500.00, // Exceeds total.
+    // Exceeds total.
+      'total_outstanding' => 1500.00,
       'total_executable' => 1500.00,
     ];
 
@@ -323,7 +326,8 @@ class FacturaeValidationServiceTest extends UnitTestCase {
       'total_tax_withheld' => 0.00,
       'total_invoice_amount' => 1210.00,
       'total_outstanding' => 1000.00,
-      'total_executable' => 1100.00, // Exceeds outstanding.
+    // Exceeds outstanding.
+      'total_executable' => 1100.00,
     ];
 
     $result = $this->service->validateAmounts($data);
@@ -341,7 +345,8 @@ class FacturaeValidationServiceTest extends UnitTestCase {
       'total_gross_amount_before_taxes' => 100.00,
       'total_tax_outputs' => 21.00,
       'total_tax_withheld' => 0.00,
-      'total_invoice_amount' => 121.005, // Within 0.01 tolerance.
+    // Within 0.01 tolerance.
+      'total_invoice_amount' => 121.005,
       'total_outstanding' => 121.005,
       'total_executable' => 121.005,
     ];

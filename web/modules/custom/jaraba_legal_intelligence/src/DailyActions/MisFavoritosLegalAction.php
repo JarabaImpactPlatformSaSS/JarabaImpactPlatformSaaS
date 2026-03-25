@@ -17,58 +17,100 @@ class MisFavoritosLegalAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'legal_professional.favoritos_diarios';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'legal_professional';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Mis favoritos');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Accede a tus resoluciones guardadas');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'actions', 'name' => 'bookmark', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'verde-innovacion';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_legal.dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

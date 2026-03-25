@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ai_agents\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_ai_agents\Service\FederatedInsightService;
 use PHPUnit\Framework\TestCase;
@@ -134,6 +136,9 @@ class FederatedInsightServiceTest extends TestCase {
   public function testGenerateInsightsWithMockObservability(): void {
     $mockObservability = new class {
 
+      /**
+       *
+       */
       public function getStats(string $period, string $tenantId): array {
         return [
           'total_executions' => rand(50, 200),
@@ -156,8 +161,8 @@ class FederatedInsightServiceTest extends TestCase {
     );
 
     // Need to mock entity storage for persistence.
-    $mockStorage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
-    $mockEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $mockStorage = $this->createMock(EntityStorageInterface::class);
+    $mockEntity = $this->createMock(ContentEntityInterface::class);
     $mockStorage->method('create')->willReturn($mockEntity);
     $this->entityTypeManager->method('getStorage')
       ->with('aggregated_insight')
@@ -184,6 +189,9 @@ class FederatedInsightServiceTest extends TestCase {
   public function testGenerateInsightsContainExpectedTypes(): void {
     $mockObservability = new class {
 
+      /**
+       *
+       */
       public function getStats(string $period, string $tenantId): array {
         return [
           'total_executions' => 100,
@@ -199,8 +207,8 @@ class FederatedInsightServiceTest extends TestCase {
 
     };
 
-    $mockStorage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
-    $mockEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $mockStorage = $this->createMock(EntityStorageInterface::class);
+    $mockEntity = $this->createMock(ContentEntityInterface::class);
     $mockStorage->method('create')->willReturn($mockEntity);
     $this->entityTypeManager->method('getStorage')
       ->with('aggregated_insight')

@@ -59,7 +59,7 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * getResumenSync devuelve las 5 claves y los totales son aritméticament
+   * GetResumenSync devuelve las 5 claves y los totales son aritméticament
    * coherentes (sin_estado = total - pending - synced - error).
    *
    * @covers ::getResumenSync
@@ -100,7 +100,7 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * getResumenSync devuelve ceros cuando no hay participantes.
+   * GetResumenSync devuelve ceros cuando no hay participantes.
    *
    * @covers ::getResumenSync
    */
@@ -118,14 +118,15 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * reconciliar detecta participantes modificados después de la última sync
+   * Reconciliar detecta participantes modificados después de la última sync
    * y los marca 'pending'.
    *
    * @covers ::reconciliar
    */
   public function testReconciliarDetectaCambiosPostSync(): void {
     $lastSync = strtotime('2026-03-01 10:00:00');
-    $changed = strtotime('2026-03-05 12:00:00'); // Posterior a lastSync.
+    // Posterior a lastSync.
+    $changed = strtotime('2026-03-05 12:00:00');
 
     $participante = $this->createParticipanteMockConSync(
       id: 5,
@@ -156,13 +157,14 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * reconciliar no genera discrepancias si changed <= lastSync.
+   * Reconciliar no genera discrepancias si changed <= lastSync.
    *
    * @covers ::reconciliar
    */
   public function testReconciliarSinCambiosNoCreaDiscrepancias(): void {
     $lastSync = strtotime('2026-03-10 10:00:00');
-    $changed = strtotime('2026-03-08 09:00:00'); // Anterior a lastSync.
+    // Anterior a lastSync.
+    $changed = strtotime('2026-03-08 09:00:00');
 
     $participante = $this->createParticipanteMockConSync(
       id: 6,
@@ -188,7 +190,7 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * reconciliar con lista vacía retorna estructura vacía sin errores.
+   * Reconciliar con lista vacía retorna estructura vacía sin errores.
    *
    * @covers ::reconciliar
    */
@@ -204,7 +206,7 @@ class StoBidireccionalServiceTest extends UnitTestCase {
   }
 
   /**
-   * pushPendientes devuelve fallo cuando no hay StoExportService.
+   * PushPendientes devuelve fallo cuando no hay StoExportService.
    *
    * @covers ::pushPendientes
    */
@@ -247,9 +249,13 @@ class StoBidireccionalServiceTest extends UnitTestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return FALSE;
       }
+
     };
 
     $lastSyncField = new class($lastSync) {
@@ -259,9 +265,13 @@ class StoBidireccionalServiceTest extends UnitTestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->value === 0;
       }
+
     };
 
     $participante->method('hasField')

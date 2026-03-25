@@ -1,0 +1,29 @@
+{
+    "_hash": "cdd63327e73ac315c470ba79146813264ba9304b6b2eff594756aa4167428c7d",
+    "patches": {
+        "league/oauth2-linkedin": [
+            {
+                "package": "league/oauth2-linkedin",
+                "description": "Migrate to LinkedIn OpenID Connect API (deprecated v1/v2 REST endpoints)",
+                "url": "patches/league-oauth2-linkedin-openid-connect.patch",
+                "sha256": "c180770c6b7c01456b0871ce817c912dbb2f004f22a4e060c59a5bba5dbe982e",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "stevenmaguire/oauth2-microsoft": [
+            {
+                "package": "stevenmaguire/oauth2-microsoft",
+                "description": "Migrate to Microsoft Identity Platform v2.0 + Graph API (deprecated Live API)",
+                "url": "patches/stevenmaguire-oauth2-microsoft-identity-platform-v2.patch",
+                "sha256": "f3245cca572e15fc4039e611b14a746d1ce7747fdcfac67be23b22dcd16c3fbc",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}

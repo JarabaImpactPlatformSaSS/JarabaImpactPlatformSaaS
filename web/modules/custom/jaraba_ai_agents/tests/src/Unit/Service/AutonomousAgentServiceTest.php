@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ai_agents\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Queue\QueueInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\jaraba_ai_agents\Service\AutonomousAgentService;
 use PHPUnit\Framework\TestCase;
@@ -186,7 +186,7 @@ class AutonomousAgentServiceTest extends TestCase {
    * @covers ::getStats
    */
   public function testGetStatsReturnsStructuredData(): void {
-    $queryMock = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $queryMock = $this->createMock(QueryInterface::class);
     $queryMock->method('accessCheck')->willReturnSelf();
     $queryMock->method('sort')->willReturnSelf();
     $queryMock->method('condition')->willReturnSelf();

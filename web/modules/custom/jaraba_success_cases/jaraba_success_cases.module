@@ -227,7 +227,7 @@ function jaraba_success_cases_page_attachments_alter(array &$attachments): void 
 }
 
 /**
- * Implements template_preprocess_success_case().
+ * Implements hook_preprocess_success_case().
  *
  * ENTITY-PREPROCESS-001: Preprocess para la entidad SuccessCase cuando se
  * renderiza en modo vista estándar (entity view / Views). Extrae primitivos,

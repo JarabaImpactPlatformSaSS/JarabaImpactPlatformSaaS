@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
@@ -22,205 +24,206 @@ use Psr\Log\LoggerInterface;
  *
  * @see docs/planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md §11
  */
-class AiTemplateGeneratorService
-{
+class AiTemplateGeneratorService {
 
-    /**
-     * Logger del servicio.
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected LoggerInterface $logger;
+  /**
+   * Logger del servicio.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * Constructor.
-     *
-     * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerFactory
-     *   Factoría de loggers.
-     */
-    public function __construct(
-        LoggerChannelFactoryInterface $loggerFactory,
-    ) {
-        $this->logger = $loggerFactory->get('jaraba_page_builder.ai_template');
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerFactory
+   *   Factoría de loggers.
+   */
+  public function __construct(
+    LoggerChannelFactoryInterface $loggerFactory,
+  ) {
+    $this->logger = $loggerFactory->get('jaraba_page_builder.ai_template');
+  }
+
+  /**
+   * Genera un template completo de landing page con IA.
+   *
+   * @param string $prompt
+   *   Instrucciones del usuario sobre qué generar.
+   * @param string $vertical
+   *   Vertical de la plataforma (empleabilidad, emprendimiento, etc.).
+   * @param string $tone
+   *   Tono deseado (formal, cercano, tecnico, inspirador).
+   * @param array $sections
+   *   Secciones a generar (héroe, features, pricing, cta, etc.).
+   *
+   * @return array
+   *   Array con:
+   *   - html: string HTML del template generado.
+   *   - css: string CSS del template.
+   *   - sections: array de secciones individuales.
+   *   - provider: string nombre del proveedor usado.
+   */
+  public function generateTemplate(
+    string $prompt,
+    string $vertical = 'generica',
+    string $tone = 'profesional',
+    array $sections = ['hero', 'features', 'cta'],
+  ): array {
+    try {
+      return $this->generateWithAI($prompt, $vertical, $tone, $sections);
     }
-
-    /**
-     * Genera un template completo de landing page con IA.
-     *
-     * @param string $prompt
-     *   Instrucciones del usuario sobre qué generar.
-     * @param string $vertical
-     *   Vertical de la plataforma (empleabilidad, emprendimiento, etc.).
-     * @param string $tone
-     *   Tono deseado (formal, cercano, tecnico, inspirador).
-     * @param array $sections
-     *   Secciones a generar (héroe, features, pricing, cta, etc.).
-     *
-     * @return array
-     *   Array con:
-     *   - html: string HTML del template generado.
-     *   - css: string CSS del template.
-     *   - sections: array de secciones individuales.
-     *   - provider: string nombre del proveedor usado.
-     */
-    public function generateTemplate(
-        string $prompt,
-        string $vertical = 'generica',
-        string $tone = 'profesional',
-        array $sections = ['hero', 'features', 'cta'],
-    ): array {
-        try {
-            return $this->generateWithAI($prompt, $vertical, $tone, $sections);
-        } catch (\Exception $e) {
-            $this->logger->warning(
-                'Generación de template con IA falló: @error',
-                ['@error' => $e->getMessage()]
+    catch (\Exception $e) {
+      $this->logger->warning(
+            'Generación de template con IA falló: @error',
+            ['@error' => $e->getMessage()]
             );
-            return $this->generateFallbackTemplate($prompt, $vertical, $sections);
-        }
+      return $this->generateFallbackTemplate($prompt, $vertical, $sections);
+    }
+  }
+
+  /**
+   * Genera un template usando el LLM configurado.
+   *
+   * @param string $prompt
+   *   Instrucciones del usuario.
+   * @param string $vertical
+   *   Vertical activa.
+   * @param string $tone
+   *   Tono deseado.
+   * @param array $sections
+   *   Secciones solicitadas.
+   *
+   * @return array
+   *   Template generado.
+   */
+  protected function generateWithAI(
+    string $prompt,
+    string $vertical,
+    string $tone,
+    array $sections,
+  ): array {
+    /** @var \Drupal\ai\AiProviderPluginManager $aiProvider */
+    $aiProvider = \Drupal::service('ai.provider');
+
+    $defaults = $aiProvider->getDefaultProviderForOperationType('chat');
+    if (empty($defaults)) {
+      throw new \RuntimeException('Sin proveedor IA configurado para chat.');
     }
 
-    /**
-     * Genera un template usando el LLM configurado.
-     *
-     * @param string $prompt
-     *   Instrucciones del usuario.
-     * @param string $vertical
-     *   Vertical activa.
-     * @param string $tone
-     *   Tono deseado.
-     * @param array $sections
-     *   Secciones solicitadas.
-     *
-     * @return array
-     *   Template generado.
-     */
-    protected function generateWithAI(
-        string $prompt,
-        string $vertical,
-        string $tone,
-        array $sections,
-    ): array {
-        /** @var \Drupal\ai\AiProviderPluginManager $aiProvider */
-        $aiProvider = \Drupal::service('ai.provider');
+    $provider = $aiProvider->createInstance($defaults['provider_id']);
+    $modelId = $defaults['model_id'];
 
-        $defaults = $aiProvider->getDefaultProviderForOperationType('chat');
-        if (empty($defaults)) {
-            throw new \RuntimeException('Sin proveedor IA configurado para chat.');
-        }
+    // Obtener contexto de grounding si está disponible.
+    $groundingContext = $this->getGroundingContext($prompt, $vertical);
 
-        $provider = $aiProvider->createInstance($defaults['provider_id']);
-        $modelId = $defaults['model_id'];
+    // Obtener brand voice si está disponible.
+    $brandVoice = $this->getBrandVoice($vertical);
 
-        // Obtener contexto de grounding si está disponible.
-        $groundingContext = $this->getGroundingContext($prompt, $vertical);
+    $fullPrompt = $this->buildTemplatePrompt(
+          $prompt,
+          $vertical,
+          $tone,
+          $sections,
+          $groundingContext,
+          $brandVoice
+      );
 
-        // Obtener brand voice si está disponible.
-        $brandVoice = $this->getBrandVoice($vertical);
+    // FIX-014: AI-IDENTITY-001 universal.
+    $systemPrompt = AIIdentityRule::apply(
+          'Eres un diseñador web y desarrollador frontend experto. '
+          . 'Genera HTML y CSS de alta calidad para landing pages profesionales. '
+          . 'Responde SIEMPRE en formato JSON válido con la estructura indicada. '
+          . 'El HTML debe ser semántico, responsivo y accesible. '
+          . 'Los estilos CSS deben usar clases con prefijo "jaraba-" y variables CSS del sistema.'
+      );
 
-        $fullPrompt = $this->buildTemplatePrompt(
-            $prompt,
-            $vertical,
-            $tone,
-            $sections,
-            $groundingContext,
-            $brandVoice
-        );
+    $chatInput = new ChatInput([
+      new ChatMessage('system', $systemPrompt),
+      new ChatMessage('user', $fullPrompt),
+    ]);
 
-        // FIX-014: AI-IDENTITY-001 universal.
-        $systemPrompt = AIIdentityRule::apply(
-            'Eres un diseñador web y desarrollador frontend experto. '
-            . 'Genera HTML y CSS de alta calidad para landing pages profesionales. '
-            . 'Responde SIEMPRE en formato JSON válido con la estructura indicada. '
-            . 'El HTML debe ser semántico, responsivo y accesible. '
-            . 'Los estilos CSS deben usar clases con prefijo "jaraba-" y variables CSS del sistema.'
-        );
+    // Creatividad moderada.
+    $configuration = ['temperature' => 0.7];
+    $response = $provider->chat($chatInput, $modelId, $configuration);
+    $responseText = $response->getNormalized()->getText();
 
-        $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
-            new \Drupal\ai\OperationType\Chat\ChatMessage('system', $systemPrompt),
-            new \Drupal\ai\OperationType\Chat\ChatMessage('user', $fullPrompt),
-        ]);
+    // Log.
+    $this->logAIQuery('template_generation', $fullPrompt, $responseText);
 
-        $configuration = ['temperature' => 0.7]; // Creatividad moderada.
-        $response = $provider->chat($chatInput, $modelId, $configuration);
-        $responseText = $response->getNormalized()->getText();
+    return $this->parseTemplateResponse($responseText);
+  }
 
-        // Log.
-        $this->logAIQuery('template_generation', $fullPrompt, $responseText);
+  /**
+   * Construye el prompt para generación de template.
+   *
+   * @param string $prompt
+   *   Instrucciones del usuario.
+   * @param string $vertical
+   *   Vertical activa.
+   * @param string $tone
+   *   Tono deseado.
+   * @param array $sections
+   *   Secciones a generar.
+   * @param string $groundingContext
+   *   Contexto de contenido real.
+   * @param string $brandVoice
+   *   Directrices de brand voice.
+   *
+   * @return string
+   *   Prompt completo.
+   */
+  protected function buildTemplatePrompt(
+    string $prompt,
+    string $vertical,
+    string $tone,
+    array $sections,
+    string $groundingContext,
+    string $brandVoice,
+  ): string {
+    $sectionsStr = implode(', ', $sections);
+    $toneLabels = [
+      'formal' => 'Formal y profesional',
+      'cercano' => 'Cercano y amigable',
+      'tecnico' => 'Técnico y preciso',
+      'inspirador' => 'Inspirador y motivacional',
+      'profesional' => 'Profesional y claro',
+    ];
+    $toneLabel = $toneLabels[$tone] ?? $toneLabels['profesional'];
 
-        return $this->parseTemplateResponse($responseText);
+    $verticalLabels = [
+      'empleabilidad' => 'Empleo e inserción laboral',
+      'emprendimiento' => 'Emprendimiento e innovación',
+      'agroconecta' => 'Agricultura y comercio rural',
+      'formacion' => 'Formación y educación',
+      'generica' => 'General / corporativa',
+    ];
+    $verticalLabel = $verticalLabels[$vertical] ?? $verticalLabels['generica'];
+
+    $result = "Genera una landing page completa para la vertical \"{$verticalLabel}\".\n\n";
+    $result .= "INSTRUCCIONES DEL USUARIO:\n{$prompt}\n\n";
+    $result .= "TONO: {$toneLabel}\n";
+    $result .= "SECCIONES REQUERIDAS: {$sectionsStr}\n\n";
+
+    if ($brandVoice) {
+      $result .= "BRAND VOICE:\n{$brandVoice}\n\n";
     }
 
-    /**
-     * Construye el prompt para generación de template.
-     *
-     * @param string $prompt
-     *   Instrucciones del usuario.
-     * @param string $vertical
-     *   Vertical activa.
-     * @param string $tone
-     *   Tono deseado.
-     * @param array $sections
-     *   Secciones a generar.
-     * @param string $groundingContext
-     *   Contexto de contenido real.
-     * @param string $brandVoice
-     *   Directrices de brand voice.
-     *
-     * @return string
-     *   Prompt completo.
-     */
-    protected function buildTemplatePrompt(
-        string $prompt,
-        string $vertical,
-        string $tone,
-        array $sections,
-        string $groundingContext,
-        string $brandVoice,
-    ): string {
-        $sectionsStr = implode(', ', $sections);
-        $toneLabels = [
-            'formal' => 'Formal y profesional',
-            'cercano' => 'Cercano y amigable',
-            'tecnico' => 'Técnico y preciso',
-            'inspirador' => 'Inspirador y motivacional',
-            'profesional' => 'Profesional y claro',
-        ];
-        $toneLabel = $toneLabels[$tone] ?? $toneLabels['profesional'];
+    if ($groundingContext) {
+      $result .= "CONTEXTO REAL DE CONTENIDO (para personalizar):\n{$groundingContext}\n\n";
+    }
 
-        $verticalLabels = [
-            'empleabilidad' => 'Empleo e inserción laboral',
-            'emprendimiento' => 'Emprendimiento e innovación',
-            'agroconecta' => 'Agricultura y comercio rural',
-            'formacion' => 'Formación y educación',
-            'generica' => 'General / corporativa',
-        ];
-        $verticalLabel = $verticalLabels[$vertical] ?? $verticalLabels['generica'];
+    $result .= "REGLAS:\n";
+    $result .= "- Usa clases CSS con prefijo 'jaraba-' (ej: jaraba-hero, jaraba-features)\n";
+    $result .= "- Estructura semántica HTML5 (header, main, section, footer)\n";
+    $result .= "- Diseño responsivo (usar flexbox/grid, media queries)\n";
+    $result .= "- Accesible (alt text, ARIA labels, contraste)\n";
+    $result .= "- Colores corporativos: #233D63 (principal), #00A9A5 (acento), #F5A623 (highlight)\n";
+    $result .= "- Sin dependencias externas (no Bootstrap, no jQuery)\n";
+    $result .= "- Contenido realista, no lorem ipsum\n\n";
 
-        $result = "Genera una landing page completa para la vertical \"{$verticalLabel}\".\n\n";
-        $result .= "INSTRUCCIONES DEL USUARIO:\n{$prompt}\n\n";
-        $result .= "TONO: {$toneLabel}\n";
-        $result .= "SECCIONES REQUERIDAS: {$sectionsStr}\n\n";
-
-        if ($brandVoice) {
-            $result .= "BRAND VOICE:\n{$brandVoice}\n\n";
-        }
-
-        if ($groundingContext) {
-            $result .= "CONTEXTO REAL DE CONTENIDO (para personalizar):\n{$groundingContext}\n\n";
-        }
-
-        $result .= "REGLAS:\n";
-        $result .= "- Usa clases CSS con prefijo 'jaraba-' (ej: jaraba-hero, jaraba-features)\n";
-        $result .= "- Estructura semántica HTML5 (header, main, section, footer)\n";
-        $result .= "- Diseño responsivo (usar flexbox/grid, media queries)\n";
-        $result .= "- Accesible (alt text, ARIA labels, contraste)\n";
-        $result .= "- Colores corporativos: #233D63 (principal), #00A9A5 (acento), #F5A623 (highlight)\n";
-        $result .= "- Sin dependencias externas (no Bootstrap, no jQuery)\n";
-        $result .= "- Contenido realista, no lorem ipsum\n\n";
-
-        $result .= "FORMATO DE RESPUESTA (JSON estricto):\n";
-        $result .= <<<'JSON'
+    $result .= "FORMATO DE RESPUESTA (JSON estricto):\n";
+    $result .= <<<'JSON'
 {
   "html": "<section class='jaraba-hero'>...</section>...",
   "css": ".jaraba-hero { ... }",
@@ -234,116 +237,115 @@ class AiTemplateGeneratorService
 }
 JSON;
 
-        return $result;
+    return $result;
+  }
+
+  /**
+   * Parsea la respuesta del LLM.
+   *
+   * @param string $responseText
+   *   Texto de respuesta.
+   *
+   * @return array
+   *   Template parseado.
+   */
+  protected function parseTemplateResponse(string $responseText): array {
+    // Extraer JSON.
+    $json = $responseText;
+    if (preg_match('/```(?:json)?\s*(.*?)\s*```/s', $responseText, $matches)) {
+      $json = $matches[1];
     }
 
-    /**
-     * Parsea la respuesta del LLM.
-     *
-     * @param string $responseText
-     *   Texto de respuesta.
-     *
-     * @return array
-     *   Template parseado.
-     */
-    protected function parseTemplateResponse(string $responseText): array
-    {
-        // Extraer JSON.
-        $json = $responseText;
-        if (preg_match('/```(?:json)?\s*(.*?)\s*```/s', $responseText, $matches)) {
-            $json = $matches[1];
-        }
+    $parsed = json_decode(trim($json), TRUE);
 
-        $parsed = json_decode(trim($json), TRUE);
-
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($parsed)) {
-            $this->logger->warning(
-                'No se pudo parsear template IA: @error — raw: @raw',
-                [
-                    '@error' => json_last_error_msg(),
-                    '@raw' => mb_substr($responseText, 0, 500),
-                ]
-            );
-            return [
-                'html' => '',
-                'css' => '',
-                'sections' => [],
-                'provider' => 'ai_error',
-            ];
-        }
-
-        return [
-            'html' => $parsed['html'] ?? '',
-            'css' => $parsed['css'] ?? '',
-            'sections' => $parsed['sections'] ?? [],
-            'provider' => 'ai',
-        ];
+    if (json_last_error() !== JSON_ERROR_NONE || !is_array($parsed)) {
+      $this->logger->warning(
+            'No se pudo parsear template IA: @error — raw: @raw',
+            [
+              '@error' => json_last_error_msg(),
+              '@raw' => mb_substr($responseText, 0, 500),
+            ]
+        );
+      return [
+        'html' => '',
+        'css' => '',
+        'sections' => [],
+        'provider' => 'ai_error',
+      ];
     }
 
-    /**
-     * Genera un template placeholder cuando la IA no está disponible.
-     *
-     * @param string $prompt
-     *   Instrucciones del usuario.
-     * @param string $vertical
-     *   Vertical activa.
-     * @param array $sections
-     *   Secciones solicitadas.
-     *
-     * @return array
-     *   Template con estructura HTML básica.
-     */
-    protected function generateFallbackTemplate(
-        string $prompt,
-        string $vertical,
-        array $sections,
-    ): array {
-        $generatedSections = [];
-        $allHtml = '';
-        $allCss = '';
+    return [
+      'html' => $parsed['html'] ?? '',
+      'css' => $parsed['css'] ?? '',
+      'sections' => $parsed['sections'] ?? [],
+      'provider' => 'ai',
+    ];
+  }
 
-        foreach ($sections as $section) {
-            $sectionHtml = $this->generateFallbackSection($section, $prompt, $vertical);
-            $generatedSections[] = [
-                'id' => $section,
-                'html' => $sectionHtml,
-                'label' => ucfirst($section),
-            ];
-            $allHtml .= $sectionHtml . "\n";
-        }
+  /**
+   * Genera un template placeholder cuando la IA no está disponible.
+   *
+   * @param string $prompt
+   *   Instrucciones del usuario.
+   * @param string $vertical
+   *   Vertical activa.
+   * @param array $sections
+   *   Secciones solicitadas.
+   *
+   * @return array
+   *   Template con estructura HTML básica.
+   */
+  protected function generateFallbackTemplate(
+    string $prompt,
+    string $vertical,
+    array $sections,
+  ): array {
+    $generatedSections = [];
+    $allHtml = '';
+    $allCss = '';
 
-        $allCss = $this->generateFallbackCss();
-
-        return [
-            'html' => $allHtml,
-            'css' => $allCss,
-            'sections' => $generatedSections,
-            'provider' => 'fallback',
-        ];
+    foreach ($sections as $section) {
+      $sectionHtml = $this->generateFallbackSection($section, $prompt, $vertical);
+      $generatedSections[] = [
+        'id' => $section,
+        'html' => $sectionHtml,
+        'label' => ucfirst($section),
+      ];
+      $allHtml .= $sectionHtml . "\n";
     }
 
-    /**
-     * Genera HTML de una sección individual como fallback.
-     *
-     * @param string $sectionType
-     *   Tipo de sección.
-     * @param string $prompt
-     *   Instrucciones originales.
-     * @param string $vertical
-     *   Vertical activa.
-     *
-     * @return string
-     *   HTML de la sección.
-     */
-    protected function generateFallbackSection(
-        string $sectionType,
-        string $prompt,
-        string $vertical,
-    ): string {
-        $title = $prompt ? mb_substr($prompt, 0, 60) : 'Tu título aquí';
+    $allCss = $this->generateFallbackCss();
 
-        return match ($sectionType) {
-            'hero' => <<<HTML
+    return [
+      'html' => $allHtml,
+      'css' => $allCss,
+      'sections' => $generatedSections,
+      'provider' => 'fallback',
+    ];
+  }
+
+  /**
+   * Genera HTML de una sección individual como fallback.
+   *
+   * @param string $sectionType
+   *   Tipo de sección.
+   * @param string $prompt
+   *   Instrucciones originales.
+   * @param string $vertical
+   *   Vertical activa.
+   *
+   * @return string
+   *   HTML de la sección.
+   */
+  protected function generateFallbackSection(
+    string $sectionType,
+    string $prompt,
+    string $vertical,
+  ): string {
+    $title = $prompt ? mb_substr($prompt, 0, 60) : 'Tu título aquí';
+
+    return match ($sectionType) {
+      'hero' => <<<HTML
 <section class="jaraba-hero jaraba-section">
   <div class="jaraba-hero__content">
     <h1 class="jaraba-hero__title">{$title}</h1>
@@ -412,18 +414,17 @@ HTML,
   <p>Contenido de la sección {$sectionType}.</p>
 </section>
 HTML,
-        };
-    }
+    };
+  }
 
-    /**
-     * Genera CSS base para las secciones de fallback.
-     *
-     * @return string
-     *   CSS base.
-     */
-    protected function generateFallbackCss(): string
-    {
-        return <<<'CSS'
+  /**
+   * Genera CSS base para las secciones de fallback.
+   *
+   * @return string
+   *   CSS base.
+   */
+  protected function generateFallbackCss(): string {
+    return <<<'CSS'
 .jaraba-section {
   padding: 4rem 2rem;
   max-width: 1200px;
@@ -513,79 +514,79 @@ HTML,
   border-left: 4px solid #00A9A5;
 }
 CSS;
-    }
+  }
 
-    /**
-     * Obtiene contexto de grounding desde ContentGroundingService.
-     *
-     * @param string $prompt
-     *   Prompt del usuario.
-     * @param string $vertical
-     *   Vertical activa.
-     *
-     * @return string
-     *   Contexto de contenido real.
-     */
-    protected function getGroundingContext(string $prompt, string $vertical): string
-    {
-        try {
-            if (\Drupal::hasService('jaraba_copilot_v2.content_grounding')) {
-                /** @var \Drupal\jaraba_copilot_v2\Service\ContentGroundingService $grounding */
-                $grounding = \Drupal::service('jaraba_copilot_v2.content_grounding');
-                return $grounding->getContentContext($prompt, $vertical);
-            }
-        } catch (\Exception $e) {
-            // Grounding no disponible, no es crítico.
-        }
-        return '';
+  /**
+   * Obtiene contexto de grounding desde ContentGroundingService.
+   *
+   * @param string $prompt
+   *   Prompt del usuario.
+   * @param string $vertical
+   *   Vertical activa.
+   *
+   * @return string
+   *   Contexto de contenido real.
+   */
+  protected function getGroundingContext(string $prompt, string $vertical): string {
+    try {
+      if (\Drupal::hasService('jaraba_copilot_v2.content_grounding')) {
+        /** @var \Drupal\jaraba_copilot_v2\Service\ContentGroundingService $grounding */
+        $grounding = \Drupal::service('jaraba_copilot_v2.content_grounding');
+        return $grounding->getContentContext($prompt, $vertical);
+      }
     }
+    catch (\Exception $e) {
+      // Grounding no disponible, no es crítico.
+    }
+    return '';
+  }
 
-    /**
-     * Obtiene las directrices de Brand Voice del tenant.
-     *
-     * @param string $vertical
-     *   Vertical activa.
-     *
-     * @return string
-     *   Directrices de brand voice.
-     */
-    protected function getBrandVoice(string $vertical): string
-    {
-        try {
-            if (\Drupal::hasService('jaraba_ai_agents.brand_voice')) {
-                /** @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice */
-                $brandVoice = \Drupal::service('jaraba_ai_agents.brand_voice');
-                return $brandVoice->getBrandVoice($vertical);
-            }
-        } catch (\Exception $e) {
-            // Brand voice no disponible, no es crítico.
-        }
-        return '';
+  /**
+   * Obtiene las directrices de Brand Voice del tenant.
+   *
+   * @param string $vertical
+   *   Vertical activa.
+   *
+   * @return string
+   *   Directrices de brand voice.
+   */
+  protected function getBrandVoice(string $vertical): string {
+    try {
+      if (\Drupal::hasService('jaraba_ai_agents.brand_voice')) {
+        /** @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice */
+        $brandVoice = \Drupal::service('jaraba_ai_agents.brand_voice');
+        return $brandVoice->getBrandVoice($vertical);
+      }
     }
+    catch (\Exception $e) {
+      // Brand voice no disponible, no es crítico.
+    }
+    return '';
+  }
 
-    /**
-     * Registra una query IA en el log del copilot.
-     *
-     * @param string $type
-     *   Tipo de query.
-     * @param string $prompt
-     *   Prompt enviado.
-     * @param string $response
-     *   Respuesta recibida.
-     */
-    protected function logAIQuery(string $type, string $prompt, string $response): void
-    {
-        try {
-            if (\Drupal::hasService('jaraba_copilot_v2.query_logger')) {
-                /** @var \Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService $logger */
-                $logger = \Drupal::service('jaraba_copilot_v2.query_logger');
-                $logger->logQuery($type, $prompt, $response, [
-                    'source' => 'page_builder_template_gen',
-                ]);
-            }
-        } catch (\Exception $e) {
-            // No crítico.
-        }
+  /**
+   * Registra una query IA en el log del copilot.
+   *
+   * @param string $type
+   *   Tipo de query.
+   * @param string $prompt
+   *   Prompt enviado.
+   * @param string $response
+   *   Respuesta recibida.
+   */
+  protected function logAIQuery(string $type, string $prompt, string $response): void {
+    try {
+      if (\Drupal::hasService('jaraba_copilot_v2.query_logger')) {
+        /** @var \Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService $logger */
+        $logger = \Drupal::service('jaraba_copilot_v2.query_logger');
+        $logger->logQuery($type, $prompt, $response, [
+          'source' => 'page_builder_template_gen',
+        ]);
+      }
     }
+    catch (\Exception $e) {
+      // No crítico.
+    }
+  }
 
 }

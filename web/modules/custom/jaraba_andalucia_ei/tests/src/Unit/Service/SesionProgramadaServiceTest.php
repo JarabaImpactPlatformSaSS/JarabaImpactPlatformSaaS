@@ -198,7 +198,9 @@ class SesionProgramadaServiceTest extends UnitTestCase {
       return match ($field) {
         'recurrencia_patron' => $fieldRecurrencia,
         'fecha' => $fieldFecha,
-        default => new class { public mixed $value = NULL; public mixed $target_id = NULL; },
+        default => new class {public mixed $value = NULL;
+          public mixed $target_id = NULL;
+        },
       };
     });
 
@@ -226,7 +228,8 @@ class SesionProgramadaServiceTest extends UnitTestCase {
     $sesionPadre->method('get')->willReturnCallback(function (string $field) use ($fieldRecurrencia) {
       return match ($field) {
         'recurrencia_patron' => $fieldRecurrencia,
-        default => new class { public mixed $value = NULL; },
+        default => new class {public mixed $value = NULL;
+        },
       };
     });
 
@@ -255,7 +258,8 @@ class SesionProgramadaServiceTest extends UnitTestCase {
     $sesionPadre->method('get')->willReturnCallback(function (string $field) use ($fieldRecurrencia) {
       return match ($field) {
         'recurrencia_patron' => $fieldRecurrencia,
-        default => new class { public mixed $value = NULL; },
+        default => new class {public mixed $value = NULL;
+        },
       };
     });
 

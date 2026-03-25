@@ -18,7 +18,7 @@ function jaraba_diagnostic_entity_presave(EntityInterface $entity): void {
   }
 
   // Si el diagnóstico tiene respuestas actualizadas, recalcular
-  // Esta lógica se activa cuando se procesan respuestas via API
+  // Esta lógica se activa cuando se procesan respuestas via API.
 }
 
 /**
@@ -49,7 +49,7 @@ function jaraba_diagnostic_entity_insert(EntityInterface $entity): void {
  * 1. Asignar rol 'candidate' al usuario
  * 2. Actualizar JourneyState (avatar=job_seeker, state=activation)
  * 3. Invocar DiagnosticEnrollmentService para inscripcion LMS
- * 4. Otorgar +50 creditos via ImpactCreditService
+ * 4. Otorgar +50 creditos via ImpactCreditService.
  *
  * SPEC: 20260120a Fase 2
  */
@@ -166,7 +166,7 @@ function jaraba_diagnostic_entity_update(EntityInterface $entity): void {
   /** @var \Drupal\jaraba_diagnostic\Entity\BusinessDiagnosticInterface $entity */
   $original = $entity->original ?? NULL;
 
-  // Detectar transición a 'completed'
+  // Detectar transición a 'completed'.
   if ($original && $original->get('status')->value !== 'completed' && $entity->get('status')->value === 'completed') {
     jaraba_diagnostic_on_diagnostic_completed($entity);
   }
@@ -179,7 +179,7 @@ function jaraba_diagnostic_entity_update(EntityInterface $entity): void {
  */
 function jaraba_diagnostic_on_diagnostic_completed(EntityInterface $diagnostic): void {
   /** @var \Drupal\jaraba_diagnostic\Entity\BusinessDiagnosticInterface $diagnostic */
-  
+
   // 1. Log del evento
   \Drupal::logger('jaraba_diagnostic')->info('Diagnóstico completado: @name - Score: @score (@level)', [
     '@name' => $diagnostic->getBusinessName(),
@@ -199,7 +199,7 @@ function jaraba_diagnostic_on_diagnostic_completed(EntityInterface $diagnostic):
       );
     }
     catch (\Exception $e) {
-      // Log pero no bloquear
+      // Log pero no bloquear.
     }
   }
 
@@ -326,7 +326,6 @@ function jaraba_diagnostic_theme(): array {
     ],
   ];
 }
-
 
 /**
  * Prepares variables for business_diagnostic templates.

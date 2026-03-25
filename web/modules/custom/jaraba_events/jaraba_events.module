@@ -22,6 +22,7 @@
  * - jaraba_events.module <- Drupal core (invocado por)
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -56,7 +57,7 @@ function jaraba_events_help($route_name, RouteMatchInterface $route_match) {
  * - marketplace: listado/grid de eventos con filtros
  * - landing: landing page individual con Schema.org
  * - register: formulario de registro público
- * - confirmation: página de confirmación de double opt-in
+ * - confirmation: página de confirmación de double opt-in.
  */
 function jaraba_events_theme($existing, $type, $theme, $path) {
   return [
@@ -146,7 +147,7 @@ function jaraba_events_preprocess_html(array &$variables): void {
     return;
   }
 
-  // Mapeo de rutas a clases CSS del body
+  // Mapeo de rutas a clases CSS del body.
   $route_classes = [
     'jaraba_events.marketplace' => ['page--eventos', 'page--eventos-marketplace'],
     'jaraba_events.event_landing' => ['page--eventos', 'page--evento-landing'],
@@ -170,18 +171,18 @@ function jaraba_events_preprocess_html(array &$variables): void {
  * minúsculas, sin caracteres especiales, con guiones como separadores.
  * Se verifica unicidad añadiendo un sufijo numérico si es necesario.
  */
-function jaraba_events_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_events_entity_presave(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'marketing_event') {
     return;
   }
 
-  // Auto-generar slug si está vacío
+  // Auto-generar slug si está vacío.
   $slug = $entity->get('slug')->value;
   if (empty($slug)) {
     $title = $entity->get('title')->value ?? '';
     $slug = jaraba_events_generate_slug($title);
 
-    // Verificar unicidad del slug
+    // Verificar unicidad del slug.
     $slug = jaraba_events_ensure_unique_slug($slug, $entity->id());
     $entity->set('slug', $slug);
   }
@@ -197,19 +198,19 @@ function jaraba_events_entity_presave(\Drupal\Core\Entity\EntityInterface $entit
  *   Slug normalizado (minúsculas, sin acentos, guiones como separadores).
  */
 function jaraba_events_generate_slug(string $text): string {
-  // Transliterar caracteres especiales
+  // Transliterar caracteres especiales.
   $slug = \Drupal::transliteration()->transliterate($text, 'es');
 
-  // Convertir a minúsculas
+  // Convertir a minúsculas.
   $slug = mb_strtolower($slug);
 
-  // Reemplazar caracteres no alfanuméricos por guiones
+  // Reemplazar caracteres no alfanuméricos por guiones.
   $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
 
-  // Eliminar guiones al inicio y final
+  // Eliminar guiones al inicio y final.
   $slug = trim($slug, '-');
 
-  // Limitar longitud a 128 caracteres
+  // Limitar longitud a 128 caracteres.
   if (mb_strlen($slug) > 128) {
     $slug = mb_substr($slug, 0, 128);
     $slug = rtrim($slug, '-');

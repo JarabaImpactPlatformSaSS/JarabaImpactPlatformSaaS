@@ -13,38 +13,36 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for the JobApplication entity.
  */
-class JobApplicationAccessControlHandler extends EntityAccessControlHandler
-{
+class JobApplicationAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        switch ($operation) {
-            case 'view':
-                // Candidates can view their own applications
-                if ((int) $entity->get('candidate_id')->target_id === (int) $account->id()) {
-                    return AccessResult::allowed()->cachePerUser();
-                }
-                return AccessResult::allowedIfHasPermission($account, 'view job applications');
-
-            case 'update':
-                return AccessResult::allowedIfHasPermission($account, 'manage job applications');
-
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'delete job applications');
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    switch ($operation) {
+      case 'view':
+        // Candidates can view their own applications.
+        if ((int) $entity->get('candidate_id')->target_id === (int) $account->id()) {
+          return AccessResult::allowed()->cachePerUser();
         }
+        return AccessResult::allowedIfHasPermission($account, 'view job applications');
 
-        return AccessResult::neutral();
+      case 'update':
+        return AccessResult::allowedIfHasPermission($account, 'manage job applications');
+
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'delete job applications');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'apply to jobs')
-            ->orIf(AccessResult::allowedIfHasPermission($account, 'access administration pages'));
-    }
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'apply to jobs')
+      ->orIf(AccessResult::allowedIfHasPermission($account, 'access administration pages'));
+  }
 
 }

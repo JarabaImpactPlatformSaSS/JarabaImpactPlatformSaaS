@@ -117,7 +117,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/tenants
+   * GET /api/v1/admin/tenants.
    *
    * Parámetros query:
    *   - q: búsqueda por nombre (LIKE).
@@ -221,7 +221,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/tenants/{group}/panel
+   * GET /admin/jaraba/center/tenants/{group}/panel.
    *
    * Detalle 360 renderizado como HTML para slide-panel.
    */
@@ -253,7 +253,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/tenants/{group}/impersonate
+   * POST /api/v1/admin/tenants/{group}/impersonate.
    *
    * Inicia impersonación como admin del tenant.
    */
@@ -324,7 +324,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/tenants/export
+   * GET /api/v1/admin/tenants/export.
    *
    * Exporta tenants en formato CSV.
    */
@@ -368,7 +368,7 @@ class AdminCenterApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * GET /api/v1/admin/users
+   * GET /api/v1/admin/users.
    *
    * Parámetros query:
    *   - q: búsqueda por nombre o email (LIKE).
@@ -448,7 +448,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/users/{uid}/panel
+   * GET /admin/jaraba/center/users/{uid}/panel.
    *
    * Detalle de usuario renderizado como HTML para slide-panel.
    */
@@ -478,7 +478,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * DELETE /api/v1/admin/users/{uid}/sessions
+   * DELETE /api/v1/admin/users/{uid}/sessions.
    *
    * Fuerza cierre de sesiones del usuario.
    */
@@ -688,7 +688,7 @@ class AdminCenterApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * GET /api/v1/admin/finance/metrics
+   * GET /api/v1/admin/finance/metrics.
    *
    * Métricas financieras completas.
    */
@@ -705,7 +705,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/finance/tenants
+   * GET /api/v1/admin/finance/tenants.
    *
    * Analytics por tenant para DataTable financiero.
    */
@@ -726,7 +726,7 @@ class AdminCenterApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * GET /api/v1/admin/alerts
+   * GET /api/v1/admin/alerts.
    *
    * Parámetros query:
    *   - severity: critical|warning|info.
@@ -759,7 +759,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/alerts/summary
+   * GET /api/v1/admin/alerts/summary.
    *
    * Resumen de alertas para scorecards.
    */
@@ -777,7 +777,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/alerts/{foc_alert}/state
+   * POST /api/v1/admin/alerts/{foc_alert}/state.
    *
    * Actualiza el estado de una alerta.
    * Body JSON: { "state": "acknowledged|resolved|dismissed" }
@@ -814,7 +814,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /admin/jaraba/center/alerts/{foc_alert}/panel
+   * GET /admin/jaraba/center/alerts/{foc_alert}/panel.
    *
    * Detalle de alerta renderizado como HTML para slide-panel.
    */
@@ -844,7 +844,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/playbooks
+   * GET /api/v1/admin/playbooks.
    *
    * Lista todos los playbooks.
    */
@@ -862,7 +862,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/playbooks/{cs_playbook}/execute
+   * POST /api/v1/admin/playbooks/{cs_playbook}/execute.
    *
    * Ejecuta un playbook manualmente.
    * Body JSON: { "tenant_id": 123 }
@@ -892,7 +892,7 @@ class AdminCenterApiController extends ControllerBase {
   // =========================================================================
 
   /**
-   * GET /api/v1/admin/analytics/overview
+   * GET /api/v1/admin/analytics/overview.
    *
    * Datos generales de analytics: scorecards, tendencias para Chart.js.
    */
@@ -910,7 +910,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/analytics/ai
+   * GET /api/v1/admin/analytics/ai.
    *
    * Resumen de telemetría AI (costes, invocaciones, latencia).
    */
@@ -928,7 +928,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/logs
+   * GET /api/v1/admin/logs.
    *
    * Logs combinados (audit + system) con filtros y paginación.
    * Parámetros query: source (audit|system|all), severity, q, limit, offset.
@@ -1032,7 +1032,7 @@ class AdminCenterApiController extends ControllerBase {
   // ===========================================================================
 
   /**
-   * GET /api/v1/admin/settings
+   * GET /api/v1/admin/settings.
    *
    * Overview completo de configuración para la página Settings.
    */
@@ -1048,7 +1048,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/settings/general
+   * POST /api/v1/admin/settings/general.
    *
    * Guardar configuración general de plataforma.
    * Body JSON: { "platform_name": "...", "support_email": "...", ... }
@@ -1075,7 +1075,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/settings/plans
+   * GET /api/v1/admin/settings/plans.
    *
    * Lista de planes SaaS.
    */
@@ -1091,7 +1091,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/settings/integrations
+   * GET /api/v1/admin/settings/integrations.
    *
    * Estado de integraciones externas.
    */
@@ -1107,7 +1107,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/admin/settings/api-keys
+   * GET /api/v1/admin/settings/api-keys.
    *
    * Lista de API keys (sin hash expuesto).
    */
@@ -1131,7 +1131,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/settings/api-keys
+   * POST /api/v1/admin/settings/api-keys.
    *
    * Crear nueva API key.
    * Body JSON: { "label": "...", "scope": "read|write|admin" }
@@ -1158,7 +1158,7 @@ class AdminCenterApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/admin/settings/api-keys/{key_id}/revoke
+   * POST /api/v1/admin/settings/api-keys/{key_id}/revoke.
    *
    * Revocar una API key.
    */

@@ -55,108 +55,101 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.candidate_education.settings",
  * )
  */
-class CandidateEducation extends ContentEntityBase implements CandidateEducationInterface, EntityOwnerInterface, EntityChangedInterface
-{
+class CandidateEducation extends ContentEntityBase implements CandidateEducationInterface, EntityOwnerInterface, EntityChangedInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getInstitution(): string
-    {
-        return $this->get('institution')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getInstitution(): string {
+    return $this->get('institution')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDegree(): string
-    {
-        return $this->get('degree')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDegree(): string {
+    return $this->get('degree')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFieldOfStudy(): string
-    {
-        return $this->get('field_of_study')->value ?? '';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFieldOfStudy(): string {
+    return $this->get('field_of_study')->value ?? '';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getStartDate(): ?int
-    {
-        $value = $this->get('start_date')->value;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getStartDate(): ?int {
+    $value = $this->get('start_date')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEndDate(): ?int
-    {
-        $value = $this->get('end_date')->value;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getEndDate(): ?int {
+    $value = $this->get('end_date')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('User'))
-            ->setDescription(t('The candidate who has this education record.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'user')
-            ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -10]);
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('User'))
+      ->setDescription(t('The candidate who has this education record.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -10]);
 
-        $fields['institution'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Institution'))
-            ->setDescription(t('Name of the educational institution.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -9]);
+    $fields['institution'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Institution'))
+      ->setDescription(t('Name of the educational institution.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -9]);
 
-        $fields['degree'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Degree'))
-            ->setDescription(t('Degree or certification obtained.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -8]);
+    $fields['degree'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Degree'))
+      ->setDescription(t('Degree or certification obtained.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -8]);
 
-        $fields['field_of_study'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Field of Study'))
-            ->setDescription(t('Area of specialization or major.'))
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -7]);
+    $fields['field_of_study'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Field of Study'))
+      ->setDescription(t('Area of specialization or major.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -7]);
 
-        $fields['start_date'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Start Date'))
-            ->setRequired(TRUE)
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -6]);
+    $fields['start_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Start Date'))
+      ->setRequired(TRUE)
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -6]);
 
-        $fields['end_date'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('End Date'))
-            ->setDescription(t('Leave empty if currently studying.'))
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -5]);
+    $fields['end_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('End Date'))
+      ->setDescription(t('Leave empty if currently studying.'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -5]);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Created'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Changed'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

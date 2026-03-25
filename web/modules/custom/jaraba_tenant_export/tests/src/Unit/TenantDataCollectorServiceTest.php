@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_tenant_export\Unit;
 
+use Drupal\Core\Database\Schema;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\jaraba_tenant_export\Service\TenantDataCollectorService;
@@ -52,7 +53,7 @@ class TenantDataCollectorServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -135,7 +136,7 @@ class TenantDataCollectorServiceTest extends UnitTestCase {
     $this->entityTypeManager->method('hasDefinition')
       ->willReturn(FALSE);
 
-    $schema = $this->createMock(\Drupal\Core\Database\Schema::class);
+    $schema = $this->createMock(Schema::class);
     $schema->method('tableExists')->willReturn(FALSE);
     $this->database->method('schema')->willReturn($schema);
 

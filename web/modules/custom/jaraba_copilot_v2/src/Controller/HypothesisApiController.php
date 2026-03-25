@@ -26,7 +26,7 @@ class HypothesisApiController extends ControllerBase {
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
-    HypothesisPrioritizationService $prioritization
+    HypothesisPrioritizationService $prioritization,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->prioritization = $prioritization;
@@ -50,7 +50,7 @@ class HypothesisApiController extends ControllerBase {
       $storage = $this->entityTypeManager->getStorage('hypothesis');
       $query = $storage->getQuery()->accessCheck(TRUE);
 
-      // Filtros
+      // Filtros.
       $profileId = $request->query->get('profile');
       if ($profileId) {
         $query->condition('entrepreneur_profile', (int) $profileId);
@@ -71,7 +71,7 @@ class HypothesisApiController extends ControllerBase {
         $query->condition('bmc_block', $bmcBlock);
       }
 
-      // Filtrar por usuario actual si no es admin
+      // Filtrar por usuario actual si no es admin.
       if (!$this->currentUser()->hasPermission('administer hypotheses') && !$profileId) {
         $query->condition('user_id', $this->currentUser()->id());
       }
@@ -176,7 +176,7 @@ class HypothesisApiController extends ControllerBase {
 
       $data = $this->serializeHypothesis($hypothesis);
 
-      // Incluir experimentos asociados
+      // Incluir experimentos asociados.
       $experimentStorage = $this->entityTypeManager->getStorage('experiment');
       $experimentIds = $experimentStorage->getQuery()
         ->accessCheck(TRUE)

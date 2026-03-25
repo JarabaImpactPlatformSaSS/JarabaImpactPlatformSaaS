@@ -81,6 +81,9 @@ class SubscriptionContextAddonTest extends UnitTestCase {
 
     $tenant = new class {
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return FALSE;
       }
@@ -111,6 +114,9 @@ class SubscriptionContextAddonTest extends UnitTestCase {
 
     $tenant = new class {
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return FALSE;
       }

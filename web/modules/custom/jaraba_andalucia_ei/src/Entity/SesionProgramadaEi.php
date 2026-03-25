@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Entity;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -206,7 +207,7 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
   /**
    * {@inheritdoc}
    */
-  public function preSave(\Drupal\Core\Entity\EntityStorageInterface $storage): void {
+  public function preSave(EntityStorageInterface $storage): void {
     parent::preSave($storage);
 
     // Sprint 14: Auto-compute fase_piil from tipo_sesion.
@@ -278,7 +279,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS PRINCIPALES ===
-
     $fields['titulo'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Título'))
       ->setDescription(t('Nombre de la sesión. Ejemplo: "Sesión 3: Competencias Digitales".'))
@@ -375,7 +375,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === HORARIO ===
-
     $fields['fecha'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha'))
       ->setDescription(t('Fecha de la sesión.'))
@@ -447,7 +446,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === FACILITADOR ===
-
     $fields['facilitador_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Facilitador/a'))
       ->setDescription(t('Profesional que facilita la sesión.'))
@@ -471,7 +469,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === CAPACIDAD ===
-
     $fields['max_plazas'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Máximo de Plazas'))
       ->setDescription(t('Número máximo de participantes permitidos.'))
@@ -506,7 +503,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === RECURRENCIA ===
-
     $fields['es_recurrente'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('¿Es recurrente?'))
       ->setDescription(t('Indica si la sesión se repite según un patrón de recurrencia.'))
@@ -541,9 +537,7 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === TIMESTAMPS ===
-
     // === VIDEOCONFERENCIA ===
-
     $fields['enlace_videoconferencia'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Enlace videoconferencia'))
       ->setDescription(t('URL de la sala de videoconferencia para sesiones online sincrónicas.'))
@@ -552,7 +546,6 @@ class SesionProgramadaEi extends ContentEntityBase implements SesionProgramadaEi
       ->setDisplayConfigurable('view', TRUE);
 
     // === TIMESTAMPS ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creación'))
       ->setDisplayConfigurable('view', TRUE);

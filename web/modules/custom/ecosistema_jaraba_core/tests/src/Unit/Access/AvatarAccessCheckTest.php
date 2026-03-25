@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Access;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -51,13 +50,25 @@ class AvatarAccessCheckTest extends UnitTestCase {
   protected function mockJourneyState(string $avatarType): void {
     $state = new class ($avatarType) {
       private string $avatar;
-      public function __construct(string $a) { $this->avatar = $a; }
+
+      public function __construct(string $a) {
+        $this->avatar = $a;
+      }
+
+      /**
+       *
+       */
       public function get(string $f): object {
         return new class ($this->avatar) {
           public ?string $value;
-          public function __construct(string $v) { $this->value = $v; }
+
+          public function __construct(string $v) {
+            $this->value = $v;
+          }
+
         };
       }
+
     };
 
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -69,6 +80,9 @@ class AvatarAccessCheckTest extends UnitTestCase {
     $this->entityTypeManager->method('getStorage')->willReturn($storage);
   }
 
+  /**
+   *
+   */
   protected function createRoute(string $avatars): Route {
     $route = new Route('/test');
     $route->setRequirement('_avatar_access', $avatars);

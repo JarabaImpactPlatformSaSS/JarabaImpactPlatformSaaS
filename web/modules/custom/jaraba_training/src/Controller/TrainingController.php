@@ -11,50 +11,47 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Controlador para páginas frontend del módulo Training.
  */
-class TrainingController extends ControllerBase
-{
+class TrainingController extends ControllerBase {
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        protected LadderService $ladderService,
-    ) {
-    }
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    protected LadderService $ladderService,
+  ) {
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_training.ladder_service'),
-        );
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('jaraba_training.ladder_service'),
+      );
+  }
 
-    /**
-     * Muestra la Escalera de Valor.
-     *
-     * @return array
-     *   Render array.
-     */
-    public function ladder(): array
-    {
-        $products = $this->ladderService->getFullLadder();
-        $progress = $this->ladderService->getUserProgress();
+  /**
+   * Muestra la Escalera de Valor.
+   *
+   * @return array
+   *   Render array.
+   */
+  public function ladder(): array {
+    $products = $this->ladderService->getFullLadder();
+    $progress = $this->ladderService->getUserProgress();
 
-        return [
-            '#theme' => 'training_ladder',
-            '#products' => $products,
-            '#current_level' => $progress['current_level'],
-            '#attached' => [
-                'library' => ['jaraba_training/ladder'],
-            ],
-            '#cache' => [
-                'contexts' => ['user'],
-                'tags' => ['training_product_list'],
-            ],
-        ];
-    }
+    return [
+      '#theme' => 'training_ladder',
+      '#products' => $products,
+      '#current_level' => $progress['current_level'],
+      '#attached' => [
+        'library' => ['jaraba_training/ladder'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['training_product_list'],
+      ],
+    ];
+  }
 
 }

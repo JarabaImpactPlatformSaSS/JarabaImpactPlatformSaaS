@@ -296,7 +296,7 @@ class PackServicioEi extends ContentEntityBase implements EntityOwnerInterface, 
    */
   public function getParticipanteId(): ?int {
     $val = $this->get('participante_id')->target_id;
-    return $val !== null ? (int) $val : null;
+    return $val !== NULL ? (int) $val : NULL;
   }
 
   /**

@@ -51,137 +51,151 @@ use Drupal\ecosistema_jaraba_core\Trait\CopilotConversationTrait;
  *   field_ui_base_route = "entity.sales_conversation_agro.settings",
  * )
  */
-class SalesConversationAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotConversationInterface
-{
+class SalesConversationAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotConversationInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
-    use CopilotConversationTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
+  use CopilotConversationTrait;
 
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   *
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['customer_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Cliente'))
-            ->setDescription(t('Usuario consumidor (puede ser anónimo).'))
-            ->setSetting('target_type', 'user');
+    $fields['customer_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Cliente'))
+      ->setDescription(t('Usuario consumidor (puede ser anónimo).'))
+      ->setSetting('target_type', 'user');
 
-        $fields['session_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Session ID'))
-            ->setDescription(t('Identificador de sesión para usuarios anónimos.'))
-            ->setSetting('max_length', 128)
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['session_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Session ID'))
+      ->setDescription(t('Identificador de sesión para usuarios anónimos.'))
+      ->setSetting('max_length', 128)
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setSetting('target_type', 'tenant')
-            ->setRequired(TRUE);
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setSetting('target_type', 'tenant')
+      ->setRequired(TRUE);
 
-        $fields['channel'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Canal'))
-            ->setSetting('allowed_values', [
-                'web' => t('Web Widget'),
-                'whatsapp' => t('WhatsApp Business'),
-                'api' => t('API Directa'),
-            ])
-            ->setDefaultValue('web')
-            ->setRequired(TRUE);
+    $fields['channel'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Canal'))
+      ->setSetting('allowed_values', [
+        'web' => t('Web Widget'),
+        'whatsapp' => t('WhatsApp Business'),
+        'api' => t('API Directa'),
+      ])
+      ->setDefaultValue('web')
+      ->setRequired(TRUE);
 
-        $fields['state'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setSetting('allowed_values', [
-                'active' => t('Activa'),
-                'converted' => t('Convertida'),
-                'abandoned' => t('Abandonada'),
-                'closed' => t('Cerrada'),
-            ])
-            ->setDefaultValue('active')
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['state'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setSetting('allowed_values', [
+        'active' => t('Activa'),
+        'converted' => t('Convertida'),
+        'abandoned' => t('Abandonada'),
+        'closed' => t('Cerrada'),
+      ])
+      ->setDefaultValue('active')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['cart_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Carrito'))
-            ->setDescription(t('ID del carrito asociado.'));
+    $fields['cart_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Carrito'))
+      ->setDescription(t('ID del carrito asociado.'));
 
-        $fields['order_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Pedido'))
-            ->setDescription(t('Pedido generado si convirtió.'))
-            ->setSetting('target_type', 'order_agro');
+    $fields['order_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Pedido'))
+      ->setDescription(t('Pedido generado si convirtió.'))
+      ->setSetting('target_type', 'order_agro');
 
-        $fields['messages_count'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Total mensajes'))
-            ->setDefaultValue(0);
+    $fields['messages_count'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Total mensajes'))
+      ->setDefaultValue(0);
 
-        $fields['products_shown'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Productos mostrados'))
-            ->setDefaultValue(0);
+    $fields['products_shown'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Productos mostrados'))
+      ->setDefaultValue(0);
 
-        $fields['products_added'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Productos añadidos'))
-            ->setDefaultValue(0);
+    $fields['products_added'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Productos añadidos'))
+      ->setDefaultValue(0);
 
-        $fields['conversion_value'] = BaseFieldDefinition::create('decimal')
-            ->setLabel(t('Valor de conversión'))
-            ->setDescription(t('Importe total del pedido si convirtió (EUR).'))
-            ->setSetting('precision', 10)
-            ->setSetting('scale', 2);
+    $fields['conversion_value'] = BaseFieldDefinition::create('decimal')
+      ->setLabel(t('Valor de conversión'))
+      ->setDescription(t('Importe total del pedido si convirtió (EUR).'))
+      ->setSetting('precision', 10)
+      ->setSetting('scale', 2);
 
-        $fields['last_intent'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Último intent'))
-            ->setSetting('allowed_values', [
-                'browse' => t('Navegar catálogo'),
-                'search' => t('Buscar producto'),
-                'recommend' => t('Pedir recomendación'),
-                'cart' => t('Gestión de carrito'),
-                'order_status' => t('Estado de pedido'),
-                'faq' => t('Preguntas frecuentes'),
-                'complaint' => t('Queja/reclamación'),
-            ]);
+    $fields['last_intent'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Último intent'))
+      ->setSetting('allowed_values', [
+        'browse' => t('Navegar catálogo'),
+        'search' => t('Buscar producto'),
+        'recommend' => t('Pedir recomendación'),
+        'cart' => t('Gestión de carrito'),
+        'order_status' => t('Estado de pedido'),
+        'faq' => t('Preguntas frecuentes'),
+        'complaint' => t('Queja/reclamación'),
+      ]);
 
-        $fields['satisfaction_rating'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Valoración'))
-            ->setDescription(t('1-5 estrellas del consumidor.'));
+    $fields['satisfaction_rating'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Valoración'))
+      ->setDescription(t('1-5 estrellas del consumidor.'));
 
-        $fields['is_archived'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Archivada'))
-            ->setDefaultValue(FALSE);
+    $fields['is_archived'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Archivada'))
+      ->setDefaultValue(FALSE);
 
-        $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
-        $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
+    $fields['created'] = BaseFieldDefinition::create('created')->setLabel(t('Creado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    public function getSessionId(): string
-    {
-        return $this->get('session_id')->value ?? '';
-    }
+  /**
+   *
+   */
+  public function getSessionId(): string {
+    return $this->get('session_id')->value ?? '';
+  }
 
-    public function getState(): string
-    {
-        return $this->get('state')->value ?? 'active';
-    }
+  /**
+   *
+   */
+  public function getState(): string {
+    return $this->get('state')->value ?? 'active';
+  }
 
-    public function getChannel(): string
-    {
-        return $this->get('channel')->value ?? 'web';
-    }
+  /**
+   *
+   */
+  public function getChannel(): string {
+    return $this->get('channel')->value ?? 'web';
+  }
 
-    public function getMessagesCount(): int
-    {
-        return (int) ($this->get('messages_count')->value ?? 0);
-    }
+  /**
+   *
+   */
+  public function getMessagesCount(): int {
+    return (int) ($this->get('messages_count')->value ?? 0);
+  }
 
-    public function getConversionValue(): float
-    {
-        return (float) ($this->get('conversion_value')->value ?? 0);
-    }
+  /**
+   *
+   */
+  public function getConversionValue(): float {
+    return (float) ($this->get('conversion_value')->value ?? 0);
+  }
 
-    public function isConverted(): bool
-    {
-        return $this->getState() === 'converted';
-    }
+  /**
+   *
+   */
+  public function isConverted(): bool {
+    return $this->getState() === 'converted';
+  }
+
 }

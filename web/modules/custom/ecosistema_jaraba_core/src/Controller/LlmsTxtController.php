@@ -25,114 +25,109 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @see https://llmstxt.org
  */
-class LlmsTxtController extends ControllerBase
-{
+class LlmsTxtController extends ControllerBase {
 
-    /**
-     * Formateador de fechas para timestamps.
-     */
-    protected DateFormatterInterface $dateFormatter;
+  /**
+   * Formateador de fechas para timestamps.
+   */
+  protected DateFormatterInterface $dateFormatter;
 
-    /**
-     * Registro de herramientas IA (opcional).
-     */
-    protected ?ToolRegistry $toolRegistry;
+  /**
+   * Registro de herramientas IA (opcional).
+   */
+  protected ?ToolRegistry $toolRegistry;
 
-    /**
-     * Constructor del controlador.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entity_type_manager,
-        ConfigFactoryInterface $config_factory,
-        DateFormatterInterface $date_formatter,
-        ?ToolRegistry $tool_registry = NULL,
-    ) {
-        $this->entityTypeManager = $entity_type_manager;
-        $this->configFactory = $config_factory;
-        $this->dateFormatter = $date_formatter;
-        $this->toolRegistry = $tool_registry;
-    }
+  /**
+   * Constructor del controlador.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    ConfigFactoryInterface $config_factory,
+    DateFormatterInterface $date_formatter,
+    ?ToolRegistry $tool_registry = NULL,
+  ) {
+    $this->entityTypeManager = $entity_type_manager;
+    $this->configFactory = $config_factory;
+    $this->dateFormatter = $date_formatter;
+    $this->toolRegistry = $tool_registry;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('entity_type.manager'),
-            $container->get('config.factory'),
-            $container->get('date.formatter'),
-            $container->has('jaraba_ai_agents.tool_registry')
-                ? $container->get('jaraba_ai_agents.tool_registry')
-                : NULL,
-        );
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('entity_type.manager'),
+          $container->get('config.factory'),
+          $container->get('date.formatter'),
+          $container->has('jaraba_ai_agents.tool_registry')
+              ? $container->get('jaraba_ai_agents.tool_registry')
+              : NULL,
+      );
+  }
 
-    /**
-     * Genera el contenido del archivo llms.txt.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   La petición HTTP actual.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     *   Respuesta con el contenido llms.txt en formato texto plano.
-     */
-    public function generate(Request $request): Response
-    {
-        $site_config = $this->configFactory->get('system.site');
-        $site_name = $site_config->get('name') ?? 'Jaraba Impact Platform';
-        $site_slogan = $site_config->get('slogan') ?? 'La primera plataforma de comercio diseñada para que la IA venda tus productos';
+  /**
+   * Genera el contenido del archivo llms.txt.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   La petición HTTP actual.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   Respuesta con el contenido llms.txt en formato texto plano.
+   */
+  public function generate(Request $request): Response {
+    $site_config = $this->configFactory->get('system.site');
+    $site_name = $site_config->get('name') ?? 'Jaraba Impact Platform';
+    $site_slogan = $site_config->get('slogan') ?? 'La primera plataforma de comercio diseñada para que la IA venda tus productos';
 
-        // Obtener estadísticas de contenido.
-        $product_count = $this->getEntityCount('commerce_product');
-        $node_count = $this->getEntityCount('node');
-        $article_count = $this->getEntityCount('content_article');
+    // Obtener estadísticas de contenido.
+    $product_count = $this->getEntityCount('commerce_product');
+    $node_count = $this->getEntityCount('node');
+    $article_count = $this->getEntityCount('content_article');
 
-        $base_url = $request->getSchemeAndHttpHost();
+    $base_url = $request->getSchemeAndHttpHost();
 
-        // Build sections.
-        $sections = [];
-        $sections[] = $this->buildHeaderSection($site_name, $site_slogan);
-        $sections[] = $this->buildPlatformSection();
-        $sections[] = $this->buildContentSection($product_count, $node_count, $article_count);
-        $sections[] = $this->buildAiAgentsSection();
-        $sections[] = $this->buildMcpServerSection($base_url);
-        $sections[] = $this->buildAvailableToolsSection();
-        $sections[] = $this->buildStreamingSection($base_url);
-        $sections[] = $this->buildModelTiersSection();
-        $sections[] = $this->buildStructuredDataSection();
-        $sections[] = $this->buildApiSection($base_url);
-        $sections[] = $this->buildLlmNotesSection();
-        $sections[] = $this->buildFooterSection($base_url);
+    // Build sections.
+    $sections = [];
+    $sections[] = $this->buildHeaderSection($site_name, $site_slogan);
+    $sections[] = $this->buildPlatformSection();
+    $sections[] = $this->buildContentSection($product_count, $node_count, $article_count);
+    $sections[] = $this->buildAiAgentsSection();
+    $sections[] = $this->buildMcpServerSection($base_url);
+    $sections[] = $this->buildAvailableToolsSection();
+    $sections[] = $this->buildStreamingSection($base_url);
+    $sections[] = $this->buildModelTiersSection();
+    $sections[] = $this->buildStructuredDataSection();
+    $sections[] = $this->buildApiSection($base_url);
+    $sections[] = $this->buildLlmNotesSection();
+    $sections[] = $this->buildFooterSection($base_url);
 
-        $content = implode("\n", array_filter($sections));
+    $content = implode("\n", array_filter($sections));
 
-        $response = new Response($content);
-        $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
-        $response->headers->set('Cache-Control', 'public, max-age=86400');
-        $response->headers->set('X-Robots-Tag', 'noindex');
+    $response = new Response($content);
+    $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
+    $response->headers->set('Cache-Control', 'public, max-age=86400');
+    $response->headers->set('X-Robots-Tag', 'noindex');
 
-        return $response;
-    }
+    return $response;
+  }
 
-    /**
-     * Builds the header section.
-     */
-    protected function buildHeaderSection(string $site_name, string $site_slogan): string
-    {
-        return <<<SECTION
+  /**
+   * Builds the header section.
+   */
+  protected function buildHeaderSection(string $site_name, string $site_slogan): string {
+    return <<<SECTION
 # $site_name
 
 > $site_slogan
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the platform overview section.
-     */
-    protected function buildPlatformSection(): string
-    {
-        return <<<'SECTION'
+  /**
+   * Builds the platform overview section.
+   */
+  protected function buildPlatformSection(): string {
+    return <<<'SECTION'
 
 ## About This Platform
 
@@ -149,14 +144,13 @@ intelligent agents, MCP server, streaming SSE, and distributed tracing.
 - Secure payments with Stripe Connect
 - RAG system with Qdrant vector search
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the content statistics section.
-     */
-    protected function buildContentSection(int $product_count, int $node_count, int $article_count): string
-    {
-        return <<<SECTION
+  /**
+   * Builds the content statistics section.
+   */
+  protected function buildContentSection(int $product_count, int $node_count, int $article_count): string {
+    return <<<SECTION
 
 ## Content
 
@@ -173,14 +167,13 @@ Currently the platform manages:
 - /demo/ai-playground: Interactive AI demo (public, rate-limited)
 - /sobre-nosotros: Platform mission and team
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the AI Agents section with all Gen 2 agents.
-     */
-    protected function buildAiAgentsSection(): string
-    {
-        return <<<'SECTION'
+  /**
+   * Builds the AI Agents section with all Gen 2 agents.
+   */
+  protected function buildAiAgentsSection(): string {
+    return <<<'SECTION'
 
 ## AI Agents (Gen 2)
 
@@ -220,14 +213,13 @@ A/B experiment selection, observability, and distributed tracing.
 - Purpose: AI-assisted content creation for the blog
 - Capabilities: Outline generation, section expansion, headline optimization, SEO improvement
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the MCP Server discovery section.
-     */
-    protected function buildMcpServerSection(string $base_url): string
-    {
-        return <<<SECTION
+  /**
+   * Builds the MCP Server discovery section.
+   */
+  protected function buildMcpServerSection(string $base_url): string {
+    return <<<SECTION
 
 ## MCP Server (Model Context Protocol)
 
@@ -255,54 +247,52 @@ The platform exposes an MCP-compatible server for tool integration.
 }
 ```
 SECTION;
+  }
+
+  /**
+   * Builds the available tools section from ToolRegistry.
+   */
+  protected function buildAvailableToolsSection(): string {
+    if (!$this->toolRegistry) {
+      return '';
     }
 
-    /**
-     * Builds the available tools section from ToolRegistry.
-     */
-    protected function buildAvailableToolsSection(): string
-    {
-        if (!$this->toolRegistry) {
-            return '';
-        }
-
-        $tools = $this->toolRegistry->getAll();
-        if (empty($tools)) {
-            return '';
-        }
-
-        $section = "\n## Available Tools\n\n";
-        $section .= "Tools are callable via the MCP server or agent tool-use loop.\n";
-
-        foreach ($tools as $id => $tool) {
-            $label = $tool->getLabel();
-            $description = $tool->getDescription();
-            $approval = $tool->requiresApproval() ? ' (requires approval)' : '';
-            $section .= "\n### $label$approval\n";
-            $section .= "- ID: `$id`\n";
-            $section .= "- $description\n";
-
-            $params = $tool->getParameters();
-            if (!empty($params)) {
-                $section .= "- Parameters:\n";
-                foreach ($params as $name => $config) {
-                    $type = $config['type'] ?? 'string';
-                    $required = !empty($config['required']) ? 'required' : 'optional';
-                    $desc = $config['description'] ?? '';
-                    $section .= "  - `$name` ($type, $required): $desc\n";
-                }
-            }
-        }
-
-        return $section;
+    $tools = $this->toolRegistry->getAll();
+    if (empty($tools)) {
+      return '';
     }
 
-    /**
-     * Builds the streaming section.
-     */
-    protected function buildStreamingSection(string $base_url): string
-    {
-        return <<<SECTION
+    $section = "\n## Available Tools\n\n";
+    $section .= "Tools are callable via the MCP server or agent tool-use loop.\n";
+
+    foreach ($tools as $id => $tool) {
+      $label = $tool->getLabel();
+      $description = $tool->getDescription();
+      $approval = $tool->requiresApproval() ? ' (requires approval)' : '';
+      $section .= "\n### $label$approval\n";
+      $section .= "- ID: `$id`\n";
+      $section .= "- $description\n";
+
+      $params = $tool->getParameters();
+      if (!empty($params)) {
+        $section .= "- Parameters:\n";
+        foreach ($params as $name => $config) {
+          $type = $config['type'] ?? 'string';
+          $required = !empty($config['required']) ? 'required' : 'optional';
+          $desc = $config['description'] ?? '';
+          $section .= "  - `$name` ($type, $required): $desc\n";
+        }
+      }
+    }
+
+    return $section;
+  }
+
+  /**
+   * Builds the streaming section.
+   */
+  protected function buildStreamingSection(string $base_url): string {
+    return <<<SECTION
 
 ## Streaming (Server-Sent Events)
 
@@ -321,14 +311,13 @@ Real-time AI responses via SSE streaming.
 - `done`: Stream complete with metadata
 - `error`: Error with code and message
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the model tiers section.
-     */
-    protected function buildModelTiersSection(): string
-    {
-        return <<<'SECTION'
+  /**
+   * Builds the model tiers section.
+   */
+  protected function buildModelTiersSection(): string {
+    return <<<'SECTION'
 
 ## Model Tiers
 
@@ -344,14 +333,13 @@ complexity, required creativity, and cost constraints.
 Model routing factors: prompt length, keyword complexity, creativity
 requirement, structured output needs, and tenant plan limits.
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the structured data section.
-     */
-    protected function buildStructuredDataSection(): string
-    {
-        return <<<'SECTION'
+  /**
+   * Builds the structured data section.
+   */
+  protected function buildStructuredDataSection(): string {
+    return <<<'SECTION'
 
 ## Structured Data
 
@@ -366,14 +354,13 @@ All pages include Schema.org JSON-LD:
 Blog articles include Answer Capsules: concise 200-char responses
 optimized for AI citation and featured snippets.
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the API section.
-     */
-    protected function buildApiSection(string $base_url): string
-    {
-        return <<<SECTION
+  /**
+   * Builds the API section.
+   */
+  protected function buildApiSection(string $base_url): string {
+    return <<<SECTION
 
 ## APIs
 
@@ -396,14 +383,13 @@ SECTION;
 - Session cookie for authenticated users
 - API keys for external integrations
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the LLM notes section.
-     */
-    protected function buildLlmNotesSection(): string
-    {
-        return <<<'SECTION'
+  /**
+   * Builds the LLM notes section.
+   */
+  protected function buildLlmNotesSection(): string {
+    return <<<'SECTION'
 
 ## Notes for LLMs
 
@@ -425,20 +411,19 @@ SECTION;
 6. **Multilingual**: Content is available in Spanish (es) as
    the primary language with /es/ URL prefix.
 SECTION;
-    }
+  }
 
-    /**
-     * Builds the footer section.
-     */
-    protected function buildFooterSection(string $base_url): string
-    {
-        $current_date = $this->dateFormatter->format(
-            \Drupal::time()->getRequestTime(),
-            'custom',
-            'Y-m-d'
-        );
+  /**
+   * Builds the footer section.
+   */
+  protected function buildFooterSection(string $base_url): string {
+    $current_date = $this->dateFormatter->format(
+          \Drupal::time()->getRequestTime(),
+          'custom',
+          'Y-m-d'
+      );
 
-        return <<<SECTION
+    return <<<SECTION
 
 ## Contact
 
@@ -464,36 +449,36 @@ SECTION;
 Last updated: $current_date
 Dynamically generated by Jaraba Impact Platform v3.0 (AI Level 5)
 SECTION;
+  }
+
+  /**
+   * Obtiene el conteo de entidades de un tipo específico.
+   *
+   * @param string $entity_type
+   *   Tipo de entidad.
+   *
+   * @return int
+   *   Número de entidades publicadas.
+   */
+  protected function getEntityCount(string $entity_type): int {
+    try {
+      $storage = $this->entityTypeManager->getStorage($entity_type);
+
+      $query = $storage->getQuery()
+        ->accessCheck(TRUE);
+
+      if (in_array($entity_type, ['node', 'commerce_product'])) {
+        $query->condition('status', 1);
+      }
+      elseif ($entity_type === 'content_article') {
+        $query->condition('status', 'published');
+      }
+
+      return (int) $query->count()->execute();
     }
-
-    /**
-     * Obtiene el conteo de entidades de un tipo específico.
-     *
-     * @param string $entity_type
-     *   Tipo de entidad.
-     *
-     * @return int
-     *   Número de entidades publicadas.
-     */
-    protected function getEntityCount(string $entity_type): int
-    {
-        try {
-            $storage = $this->entityTypeManager->getStorage($entity_type);
-
-            $query = $storage->getQuery()
-                ->accessCheck(TRUE);
-
-            if (in_array($entity_type, ['node', 'commerce_product'])) {
-                $query->condition('status', 1);
-            }
-            elseif ($entity_type === 'content_article') {
-                $query->condition('status', 'published');
-            }
-
-            return (int) $query->count()->execute();
-        } catch (\Exception $e) {
-            return 0;
-        }
+    catch (\Exception $e) {
+      return 0;
     }
+  }
 
 }

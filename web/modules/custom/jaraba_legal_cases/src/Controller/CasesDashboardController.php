@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_cases\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller para el dashboard frontend de expedientes juridicos.

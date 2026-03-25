@@ -283,7 +283,7 @@ class PresenceService implements PresenceServiceInterface {
         do {
           [$cursor, $keys] = $this->redisClient->scan($cursor, ['MATCH' => $pattern, 'COUNT' => 100]);
           foreach ($keys as $key) {
-            // Extract userId from key: jaraba_msg:typing:{convId}:{userId}
+            // Extract userId from key: jaraba_msg:typing:{convId}:{userId}.
             $parts = explode(':', $key);
             $userId = (int) end($parts);
             if ($userId > 0) {

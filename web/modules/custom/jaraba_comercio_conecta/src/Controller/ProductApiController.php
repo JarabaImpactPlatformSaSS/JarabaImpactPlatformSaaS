@@ -10,7 +10,6 @@ use Drupal\jaraba_comercio_conecta\Service\ProductRetailService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
@@ -39,7 +38,8 @@ class ProductApiController extends ControllerBase {
   public function __construct(
     protected MarketplaceService $marketplaceService,
     protected ProductRetailService $productService,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -49,7 +49,8 @@ class ProductApiController extends ControllerBase {
     return new static(
       $container->get('jaraba_comercio_conecta.marketplace'),
       $container->get('jaraba_comercio_conecta.product_retail'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -83,13 +84,17 @@ class ProductApiController extends ControllerBase {
       $data[] = $this->serializeProduct($product);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'page' => $result['page'],
         'per_page' => $result['per_page'],
         'total_pages' => $result['total_pages'],
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -345,7 +350,7 @@ class ProductApiController extends ControllerBase {
     }
 
     // Búsqueda básica por rango de coordenadas (Fase 1)
-    // En Fase 4 se optimizará con índice espacial
+    // En Fase 4 se optimizará con índice espacial.
     $delta_lat = $radius / 111.0;
     $delta_lng = $radius / (111.0 * cos(deg2rad($lat)));
 
@@ -386,7 +391,7 @@ class ProductApiController extends ControllerBase {
         }
       }
 
-      // Ordenar por distancia
+      // Ordenar por distancia.
       usort($data, fn($a, $b) => $a['distance_km'] <=> $b['distance_km']);
     }
 

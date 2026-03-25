@@ -43,7 +43,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
   }
 
   /**
-   * notificar con participante inexistente devuelve todos los canales FALSE.
+   * Notificar con participante inexistente devuelve todos los canales FALSE.
    *
    * @covers ::notificar
    */
@@ -61,7 +61,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
   }
 
   /**
-   * notificar enruta 'sesion_recordatorio_24h' a push + wa según CHANNEL_ROUTING.
+   * Notificar enruta 'sesion_recordatorio_24h' a push + wa según CHANNEL_ROUTING.
    * Sin WhatsApp service, wa queda FALSE; con push service, push queda TRUE.
    *
    * @covers ::notificar
@@ -97,10 +97,14 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
     $whatsappService = new class {
       public int $callCount = 0;
 
+      /**
+       *
+       */
       public function sendTextMessage(string $phone, string $msg): array {
         $this->callCount++;
         return ['success' => TRUE];
       }
+
     };
 
     $service = $this->buildService(whatsappService: $whatsappService);
@@ -129,10 +133,14 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
     $whatsappService = new class {
       public int $callCount = 0;
 
+      /**
+       *
+       */
       public function sendTextMessage(string $phone, string $msg): array {
         $this->callCount++;
         return ['success' => TRUE];
       }
+
     };
 
     $service = $this->buildService(whatsappService: $whatsappService);
@@ -153,7 +161,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
   }
 
   /**
-   * notificarMasivo agrega los resultados de cada participante.
+   * NotificarMasivo agrega los resultados de cada participante.
    *
    * Con 3 participantes y push disponible, el resumen push debe ser 3.
    *
@@ -185,7 +193,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
   }
 
   /**
-   * notificarMasivo con lista vacía devuelve resumen con ceros y total 0.
+   * NotificarMasivo con lista vacía devuelve resumen con ceros y total 0.
    *
    * @covers ::notificarMasivo
    */
@@ -248,6 +256,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
       public function __construct(int $tid) {
         $this->target_id = $tid;
       }
+
     };
 
     // Campo acepta_whatsapp: el servicio lee ->value como bool.
@@ -257,6 +266,7 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
       public function __construct(bool $v) {
         $this->value = $v;
       }
+
     };
 
     // Campo telefono: el servicio lee ->value (string) e isEmpty().
@@ -267,9 +277,13 @@ class EiMultichannelNotificationServiceTest extends UnitTestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->value === '';
       }
+
     };
 
     $participante->method('hasField')

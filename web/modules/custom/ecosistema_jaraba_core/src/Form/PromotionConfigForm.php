@@ -225,7 +225,9 @@ class PromotionConfigForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state): int { // @phpstan-ignore missingType.iterableValue
+  // @phpstan-ignore missingType.iterableValue
+  public function save(array $form, FormStateInterface $form_state): int {
+
     /** @var \Drupal\ecosistema_jaraba_core\Entity\PromotionConfigInterface $entity */
     $entity = $this->entity;
 

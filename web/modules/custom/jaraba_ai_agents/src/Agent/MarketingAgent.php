@@ -32,115 +32,108 @@ namespace Drupal\jaraba_ai_agents\Agent;
  *
  * @see \Drupal\jaraba_ai_agents\Agent\SmartMarketingAgent
  */
-class MarketingAgent extends BaseAgent
-{
+class MarketingAgent extends BaseAgent {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'marketing_multi';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'marketing_multi';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Agente de Marketing';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Agente de Marketing';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Genera contenido de marketing: posts para redes sociales, emails promocionales y copy para anuncios.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Genera contenido de marketing: posts para redes sociales, emails promocionales y copy para anuncios.';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define las acciones disponibles con sus parámetros requeridos y opcionales.
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'social_post' => [
-                'label' => 'Crear Post para Redes Sociales',
-                'description' => 'Genera contenido optimizado para redes sociales.',
-                'requires' => ['product_name', 'platform', 'objective'],
-                'optional' => ['tone', 'hashtags_count', 'language'],
-            ],
-            'email_promo' => [
-                'label' => 'Email de Marketing',
-                'description' => 'Crea emails promocionales efectivos.',
-                'requires' => ['product_name', 'objective', 'offer_details'],
-                'optional' => ['urgency', 'personalization_fields'],
-            ],
-            'ad_copy' => [
-                'label' => 'Copy para Anuncios',
-                'description' => 'Genera textos para campañas publicitarias.',
-                'requires' => ['product_name', 'platform', 'audience'],
-                'optional' => ['budget', 'call_to_action'],
-            ],
-            'product_description' => [
-                'label' => 'Descripción de Producto',
-                'description' => 'Crea descripciones SEO-friendly para productos.',
-                'requires' => ['product_name', 'features'],
-                'optional' => ['benefits', 'target_audience', 'keywords'],
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * Define las acciones disponibles con sus parámetros requeridos y opcionales.
+   */
+  public function getAvailableActions(): array {
+    return [
+      'social_post' => [
+        'label' => 'Crear Post para Redes Sociales',
+        'description' => 'Genera contenido optimizado para redes sociales.',
+        'requires' => ['product_name', 'platform', 'objective'],
+        'optional' => ['tone', 'hashtags_count', 'language'],
+      ],
+      'email_promo' => [
+        'label' => 'Email de Marketing',
+        'description' => 'Crea emails promocionales efectivos.',
+        'requires' => ['product_name', 'objective', 'offer_details'],
+        'optional' => ['urgency', 'personalization_fields'],
+      ],
+      'ad_copy' => [
+        'label' => 'Copy para Anuncios',
+        'description' => 'Genera textos para campañas publicitarias.',
+        'requires' => ['product_name', 'platform', 'audience'],
+        'optional' => ['budget', 'call_to_action'],
+      ],
+      'product_description' => [
+        'label' => 'Descripción de Producto',
+        'description' => 'Crea descripciones SEO-friendly para productos.',
+        'requires' => ['product_name', 'features'],
+        'optional' => ['benefits', 'target_audience', 'keywords'],
+      ],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Enruta la ejecución al método específico según la acción solicitada.
-     */
-    public function execute(string $action, array $context): array
-    {
-        // Registrar la acción para logging de observabilidad.
-        $this->setCurrentAction($action);
+  /**
+   * {@inheritdoc}
+   *
+   * Enruta la ejecución al método específico según la acción solicitada.
+   */
+  public function execute(string $action, array $context): array {
+    // Registrar la acción para logging de observabilidad.
+    $this->setCurrentAction($action);
 
-        return match ($action) {
-            'social_post' => $this->generateSocialPost($context),
+    return match ($action) {
+      'social_post' => $this->generateSocialPost($context),
             'email_promo' => $this->generateEmailPromo($context),
             'ad_copy' => $this->generateAdCopy($context),
             'product_description' => $this->generateProductDescription($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
-    }
+    };
+  }
 
-    /**
-     * Genera un post para redes sociales.
-     *
-     * Crea contenido optimizado para la plataforma especificada,
-     * incluyendo texto principal, hashtags, CTA y sugerencias de
-     * visuales y timing.
-     *
-     * @param array $context
-     *   Contexto con 'product_name', 'platform', 'objective'.
-     *   Opcionales: 'tone', 'hashtags_count'.
-     *
-     * @return array
-     *   Resultado con 'content', 'hashtags', 'cta', 'visual_suggestion'.
-     */
-    protected function generateSocialPost(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $platform = $context['platform'] ?? 'Instagram';
-        $objective = $context['objective'] ?? 'Engagement';
-        $tone = $context['tone'] ?? 'profesional pero cercano';
-        $hashtagsCount = $context['hashtags_count'] ?? 5;
+  /**
+   * Genera un post para redes sociales.
+   *
+   * Crea contenido optimizado para la plataforma especificada,
+   * incluyendo texto principal, hashtags, CTA y sugerencias de
+   * visuales y timing.
+   *
+   * @param array $context
+   *   Contexto con 'product_name', 'platform', 'objective'.
+   *   Opcionales: 'tone', 'hashtags_count'.
+   *
+   * @return array
+   *   Resultado con 'content', 'hashtags', 'cta', 'visual_suggestion'.
+   */
+  protected function generateSocialPost(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $platform = $context['platform'] ?? 'Instagram';
+    $objective = $context['objective'] ?? 'Engagement';
+    $tone = $context['tone'] ?? 'profesional pero cercano';
+    $hashtagsCount = $context['hashtags_count'] ?? 5;
 
-        $verticalContext = $this->getVerticalContext();
+    $verticalContext = $this->getVerticalContext();
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear un post para {$platform}.
@@ -165,43 +158,42 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'social_post';
-                $response['data']['platform'] = $platform;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'social_post';
+        $response['data']['platform'] = $platform;
+      }
     }
 
-    /**
-     * Genera un email promocional.
-     *
-     * Crea todos los elementos de un email de marketing efectivo:
-     * asunto, preview text, saludo, cuerpo, CTA y línea PS opcional.
-     *
-     * @param array $context
-     *   Contexto con 'product_name', 'objective', 'offer_details'.
-     *   Opcionales: 'urgency', 'personalization_fields'.
-     *
-     * @return array
-     *   Resultado con 'subject', 'preview_text', 'body', 'cta_text'.
-     */
-    protected function generateEmailPromo(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $objective = $context['objective'] ?? 'Ventas';
-        $offerDetails = $context['offer_details'] ?? '';
-        $urgency = $context['urgency'] ?? 'media';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera un email promocional.
+   *
+   * Crea todos los elementos de un email de marketing efectivo:
+   * asunto, preview text, saludo, cuerpo, CTA y línea PS opcional.
+   *
+   * @param array $context
+   *   Contexto con 'product_name', 'objective', 'offer_details'.
+   *   Opcionales: 'urgency', 'personalization_fields'.
+   *
+   * @return array
+   *   Resultado con 'subject', 'preview_text', 'body', 'cta_text'.
+   */
+  protected function generateEmailPromo(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $objective = $context['objective'] ?? 'Ventas';
+    $offerDetails = $context['offer_details'] ?? '';
+    $urgency = $context['urgency'] ?? 'media';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear un email promocional efectivo.
@@ -230,42 +222,41 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'email_promo';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'email_promo';
+      }
     }
 
-    /**
-     * Genera copy para anuncios digitales.
-     *
-     * Crea múltiples variantes de headlines y descripciones
-     * para testing A/B, optimizados para la plataforma de ads.
-     *
-     * @param array $context
-     *   Contexto con 'product_name', 'platform', 'audience'.
-     *   Opcionales: 'budget', 'call_to_action'.
-     *
-     * @return array
-     *   Resultado con 'headlines', 'descriptions', 'primary_text'.
-     */
-    protected function generateAdCopy(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $platform = $context['platform'] ?? 'Meta Ads';
-        $audience = $context['audience'] ?? 'público general';
-        $cta = $context['call_to_action'] ?? 'Más información';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera copy para anuncios digitales.
+   *
+   * Crea múltiples variantes de headlines y descripciones
+   * para testing A/B, optimizados para la plataforma de ads.
+   *
+   * @param array $context
+   *   Contexto con 'product_name', 'platform', 'audience'.
+   *   Opcionales: 'budget', 'call_to_action'.
+   *
+   * @return array
+   *   Resultado con 'headlines', 'descriptions', 'primary_text'.
+   */
+  protected function generateAdCopy(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $platform = $context['platform'] ?? 'Meta Ads';
+    $audience = $context['audience'] ?? 'público general';
+    $cta = $context['call_to_action'] ?? 'Más información';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear copy para anuncio en {$platform}.
@@ -290,43 +281,42 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'ad_copy';
-                $response['data']['platform'] = $platform;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'ad_copy';
+        $response['data']['platform'] = $platform;
+      }
     }
 
-    /**
-     * Genera una descripción de producto SEO-optimizada.
-     *
-     * Crea descripciones cortas y completas, meta tags y
-     * bullets de características para fichas de producto.
-     *
-     * @param array $context
-     *   Contexto con 'product_name', 'features'.
-     *   Opcionales: 'benefits', 'target_audience', 'keywords'.
-     *
-     * @return array
-     *   Resultado con 'meta_title', 'meta_description', 'full_description'.
-     */
-    protected function generateProductDescription(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $features = $context['features'] ?? '';
-        $benefits = $context['benefits'] ?? '';
-        $keywords = $context['keywords'] ?? '';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera una descripción de producto SEO-optimizada.
+   *
+   * Crea descripciones cortas y completas, meta tags y
+   * bullets de características para fichas de producto.
+   *
+   * @param array $context
+   *   Contexto con 'product_name', 'features'.
+   *   Opcionales: 'benefits', 'target_audience', 'keywords'.
+   *
+   * @return array
+   *   Resultado con 'meta_title', 'meta_description', 'full_description'.
+   */
+  protected function generateProductDescription(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $features = $context['features'] ?? '';
+    $benefits = $context['benefits'] ?? '';
+    $keywords = $context['keywords'] ?? '';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear descripción de producto SEO-optimizada.
@@ -353,27 +343,26 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'product_description';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'product_description';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define el Brand Voice por defecto para marketing digital.
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return <<<EOT
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Define el Brand Voice por defecto para marketing digital.
+   */
+  protected function getDefaultBrandVoice(): string {
+    return <<<EOT
 Eres un experto en marketing digital con amplia experiencia en estrategias de contenido.
 
 ESTILO:
@@ -388,6 +377,6 @@ PRINCIPIOS:
 - Optimización para cada plataforma
 - Respeto por límites de caracteres
 EOT;
-    }
+  }
 
 }

@@ -33,7 +33,7 @@ class WinBackCampaignService {
    * Win-back phases with timing (days after cancellation).
    */
   protected const PHASES = [
-    'welcome_back_7d'  => ['days' => 7,  'subject' => 'Te echamos de menos — vuelve con 1 mes gratis'],
+    'welcome_back_7d'  => ['days' => 7, 'subject' => 'Te echamos de menos — vuelve con 1 mes gratis'],
     'feature_update_30d' => ['days' => 30, 'subject' => 'Novedades que no te puedes perder'],
     'discount_60d'     => ['days' => 60, 'subject' => '50% de descuento durante 3 meses'],
     'final_survey_90d' => ['days' => 90, 'subject' => '¿Nos ayudas con tu opinion?'],
@@ -100,7 +100,8 @@ class WinBackCampaignService {
               $this->markPhaseSent($tenantId, $phaseKey);
               $sent++;
             }
-            break; // One email per tenant per cron run.
+            // One email per tenant per cron run.
+            break;
           }
         }
       }

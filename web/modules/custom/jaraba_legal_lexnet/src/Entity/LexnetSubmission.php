@@ -86,7 +86,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 1: MULTI-TENANT Y VINCULACION
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece el envio.'))
@@ -107,7 +106,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 2: TIPO DE ESCRITO
     // =========================================================================
-
     $fields['submission_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de Escrito'))
       ->setRequired(TRUE)
@@ -127,7 +125,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 3: DATOS JUDICIALES
     // =========================================================================
-
     $fields['court'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Organo Judicial'))
       ->setDescription(new TranslatableMarkup('Juzgado o tribunal destino del escrito.'))
@@ -156,7 +153,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 4: DOCUMENTOS Y ENVIO
     // =========================================================================
-
     $fields['document_ids'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Documentos'))
       ->setDescription(new TranslatableMarkup('Mapa de documentos adjuntos al envio (filename => fid).'));
@@ -179,7 +175,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 5: ESTADO Y ERRORES
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -211,7 +206,6 @@ class LexnetSubmission extends ContentEntityBase implements EntityOwnerInterface
     // =========================================================================
     // BLOQUE 6: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

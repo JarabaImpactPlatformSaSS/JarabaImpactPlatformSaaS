@@ -188,7 +188,7 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
       }
     }
 
-    // Todos los providers fallaron.
+    // @todo s los providers fallaron.
     yield [
       'type' => 'error',
       'message' => 'Error al procesar la consulta. Por favor, inténtalo de nuevo.',

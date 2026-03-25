@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_institutional\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_institutional\Service\PiilMetricsService;
 use Drupal\jaraba_institutional\Service\StoSyncService;
 use Symfony\Component\DependencyInjection\ContainerInterface;

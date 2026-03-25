@@ -89,7 +89,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // BLOQUE 1: IDENTIFICACION
     // Campos que identifican la alerta y al profesional suscrito.
     // =========================================================================
-
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Label'))
       ->setDescription(t('Nombre descriptivo de la alerta configurada por el profesional.'))
@@ -110,7 +109,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // BLOQUE 2: CONFIGURACION DE LA ALERTA
     // Tipo de evento, severidad y filtros que determinan cuando se dispara.
     // =========================================================================
-
     $fields['alert_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Alert Type'))
       ->setDescription(t('Tipo de evento juridico que dispara la alerta.'))
@@ -147,7 +145,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // BLOQUE 3: FILTROS
     // JSON arrays que permiten acotar las resoluciones que disparan la alerta.
     // =========================================================================
-
     $fields['filter_sources'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Filter Sources'))
       ->setDescription(t('Filtro de fuentes como JSON array (ej: ["cendoj","boe"]). Vacio = todas las fuentes.'))
@@ -173,7 +170,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // BLOQUE 4: CANALES Y ESTADO
     // Configuracion de entrega y estado de activacion de la alerta.
     // =========================================================================
-
     $fields['channels'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Notification Channels'))
       ->setDescription(t('Canales de notificacion como JSON array (ej: ["in_app","email","push"]).'))
@@ -193,7 +189,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // BLOQUE 5: ESTADISTICAS
     // Campos de seguimiento: ultimo disparo y contador de activaciones.
     // =========================================================================
-
     $fields['last_triggered'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Last Triggered'))
       ->setDescription(t('Timestamp de la ultima vez que esta alerta se disparo.'))
@@ -208,7 +203,6 @@ class LegalAlert extends ContentEntityBase implements EntityOwnerInterface, Enti
     // =========================================================================
     // BLOQUE 6: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp de creacion del registro en el sistema.'));

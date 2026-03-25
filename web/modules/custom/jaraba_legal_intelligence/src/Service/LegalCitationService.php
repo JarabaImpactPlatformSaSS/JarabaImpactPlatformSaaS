@@ -7,7 +7,6 @@ namespace Drupal\jaraba_legal_intelligence\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
-use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Psr\Log\LoggerInterface;
 
 /**

@@ -58,7 +58,7 @@ class AccessibilityApiController extends ControllerBase {
    *
    * Request body (JSON):
    * - html: string (requerido) - HTML a validar
-   * - block_type: string (opcional) - Tipo de bloque para reglas especificas
+   * - block_type: string (opcional) - Tipo de bloque para reglas especificas.
    *
    * Response:
    * - violations: array de violations

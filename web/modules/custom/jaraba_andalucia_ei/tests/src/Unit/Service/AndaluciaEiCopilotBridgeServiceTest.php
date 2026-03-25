@@ -6,7 +6,6 @@ namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\jaraba_andalucia_ei\Service\AndaluciaEiCopilotBridgeService;
 use Drupal\Tests\UnitTestCase;

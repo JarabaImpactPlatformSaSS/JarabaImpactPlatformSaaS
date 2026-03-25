@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * un tenant activa un vertical addon, este servicio:
  * 1. Crea la AddonSubscription local
  * 2. (Futuro) Añade un Stripe Subscription Item a la suscripcion existente
- * 3. Invalida la cache de TenantVerticalService
+ * 3. Invalida la cache de TenantVerticalService.
  *
  * LOGICA:
  * La integracion con Stripe se hará via StripeConnectService cuando se

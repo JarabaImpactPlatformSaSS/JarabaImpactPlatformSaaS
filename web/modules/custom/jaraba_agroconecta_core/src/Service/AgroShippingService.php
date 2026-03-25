@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -23,8 +24,7 @@ use Psr\Log\LoggerInterface;
  *
  * F5 — Doc 51 §4.
  */
-class AgroShippingService
-{
+class AgroShippingService {
 
   use StringTranslationTrait;
 
@@ -40,8 +40,7 @@ class AgroShippingService
   /**
    * Crea un envío físico en el transportista seleccionado.
    */
-  public function createCarrierShipment(AgroShipmentInterface $shipment): array
-  {
+  public function createCarrierShipment(AgroShipmentInterface $shipment): array {
     $carrierId = $shipment->getCarrierId();
     $adapter = $this->carrierManager->getCarrier($carrierId);
 
@@ -76,21 +75,20 @@ class AgroShippingService
   /**
    * Sincroniza el estado del tracking desde el carrier.
    */
-  public function syncTracking(AgroShipmentInterface $shipment): array
-  {
+  public function syncTracking(AgroShipmentInterface $shipment): array {
     $trackingNumber = $shipment->getTrackingNumber();
     if (!$trackingNumber) {
       return ['success' => FALSE, 'message' => 'Sin número de seguimiento.'];
     }
 
     $adapter = $this->carrierManager->getCarrier($shipment->getCarrierId());
-    if (!$adapter)
+    if (!$adapter) {
       return ['success' => FALSE];
+    }
 
     $status = $adapter->getTrackingStatus($trackingNumber);
 
     // Aquí se actualizaría el estado del shipment basado en el status del adapter.
-
     return $status;
   }
 
@@ -113,18 +111,18 @@ class AgroShippingService
     parameters: [
       'items' => ['type' => 'array', 'description' => 'Lista de productos y cantidades'],
       'postalCode' => ['type' => 'string', 'description' => 'Código postal de destino'],
-      'tenantId' => ['type' => 'integer', 'description' => 'ID del tenant']
+      'tenantId' => ['type' => 'integer', 'description' => 'ID del tenant'],
     ]
   )]
-  public function calculateRates(array $items, string $postalCode, int $tenantId): array
-  {
+  public function calculateRates(array $items, string $postalCode, int $tenantId): array {
     $results = [];
     $producers_data = $this->groupItemsByProducer($items);
 
     foreach ($producers_data as $producer_id => $data) {
       $producer_profile = $this->entityTypeManager->getStorage('producer_profile')->load($producer_id);
-      if (!$producer_profile)
+      if (!$producer_profile) {
         continue;
+      }
 
       $origin_pc = $producer_profile->get('field_postal_code')->value;
       $zone = $this->resolveZone($origin_pc, $postalCode, $tenantId, (int) $producer_id);
@@ -164,13 +162,13 @@ class AgroShippingService
   /**
    * Agrupa los items por productor y calcula pesos/totales.
    */
-  protected function groupItemsByProducer(array $items): array
-  {
+  protected function groupItemsByProducer(array $items): array {
     $groups = [];
     foreach ($items as $item) {
       $product = $this->entityTypeManager->getStorage('product_agro')->load($item['product_id']);
-      if (!$product)
+      if (!$product) {
         continue;
+      }
 
       $producer_id = $product->get('producer_id')->target_id;
       if (!isset($groups[$producer_id])) {
@@ -193,8 +191,7 @@ class AgroShippingService
   /**
    * Resuelve la zona de envío según origen y destino.
    */
-  protected function resolveZone(string $originPc, string $destinationPc, int $tenantId, int $producerId): ?\Drupal\Core\Entity\EntityInterface
-  {
+  protected function resolveZone(string $originPc, string $destinationPc, int $tenantId, int $producerId): ?EntityInterface {
     $storage = $this->entityTypeManager->getStorage('agro_shipping_zone');
 
     // Buscar zonas específicas del productor primero, luego globales del tenant.
@@ -210,8 +207,9 @@ class AgroShippingService
     $query->condition($group);
 
     $ids = $query->execute();
-    if (empty($ids))
+    if (empty($ids)) {
       return NULL;
+    }
 
     $zones = $storage->loadMultiple($ids);
     foreach ($zones as $zone) {
@@ -226,8 +224,7 @@ class AgroShippingService
   /**
    * Verifica si un CP matchea con los datos de la zona.
    */
-  protected function matchZoneData($zone, $originPc, $destinationPc): bool
-  {
+  protected function matchZoneData($zone, $originPc, $destinationPc): bool {
     $data = array_map('trim', explode(',', $zone->get('zone_data')->value));
     $type = $zone->get('zone_type')->value;
 
@@ -235,8 +232,9 @@ class AgroShippingService
       case 'postal_codes':
         // Soporte básico: matchea los 2 primeros dígitos (provincia) o CP exacto.
         foreach ($data as $pattern) {
-          if (str_starts_with($destinationPc, $pattern))
+          if (str_starts_with($destinationPc, $pattern)) {
             return TRUE;
+          }
         }
         break;
 
@@ -251,8 +249,7 @@ class AgroShippingService
   /**
    * Busca la mejor tarifa (la más barata disponible) para una zona y peso.
    */
-  protected function findBestRate(int $zoneId, float $weight, bool $needsCold, int $producerId): ?\Drupal\Core\Entity\EntityInterface
-  {
+  protected function findBestRate(int $zoneId, float $weight, bool $needsCold, int $producerId): ?EntityInterface {
     $storage = $this->entityTypeManager->getStorage('agro_shipping_rate');
 
     $query = $storage->getQuery()
@@ -277,23 +274,25 @@ class AgroShippingService
   /**
    * Envía notificación push al cliente sobre su envío.
    */
-  protected function notifyCustomerOfShipment(AgroShipmentInterface $shipment): void
-  {
+  protected function notifyCustomerOfShipment(AgroShipmentInterface $shipment): void {
     if ($this->pushService === NULL) {
       return;
     }
     try {
       $suborder = $shipment->get('sub_order_id')->entity;
-      if (!$suborder)
+      if (!$suborder) {
         return;
+      }
 
       $order = $suborder->get('order_id')->entity;
-      if (!$order)
+      if (!$order) {
         return;
+      }
 
       $userId = (int) $order->get('uid')->target_id;
-      if (!$userId)
+      if (!$userId) {
         return;
+      }
 
       $this->pushService->sendToUser(
         $userId,
@@ -304,7 +303,8 @@ class AgroShippingService
         ]),
         ['url' => '/my-orders/' . $order->id()]
       );
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Failed to send shipment push: @error', ['@error' => $e->getMessage()]);
     }
   }

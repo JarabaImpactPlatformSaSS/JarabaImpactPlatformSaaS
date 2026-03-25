@@ -86,12 +86,16 @@ class InstitutionalApiController extends ControllerBase {
         $result['items'],
       );
 
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $programs, 'meta' => [
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $programs,
+        'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Throwable $e) {
       \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
@@ -131,7 +135,9 @@ class InstitutionalApiController extends ControllerBase {
     try {
       $program = $this->programManager->store($body);
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeProgram($program),
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeProgram($program),
       ], 201);
     }
     catch (\Throwable $e) {
@@ -267,11 +273,13 @@ class InstitutionalApiController extends ControllerBase {
       );
 
       return new JsonResponse([
-        'data' => $participants, 'meta' => [
+        'data' => $participants,
+        'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Throwable $e) {
       \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);

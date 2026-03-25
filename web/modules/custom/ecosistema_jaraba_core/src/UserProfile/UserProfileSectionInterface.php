@@ -73,7 +73,7 @@ interface UserProfileSectionInterface {
    * - 'description' (string) — Opcional
    * - 'slide_panel' (bool) — Opcional, default FALSE
    * - 'slide_panel_title' (string) — Opcional
-   * - 'cross_vertical' (bool) — Opcional, default FALSE
+   * - 'cross_vertical' (bool) — Opcional, default FALSE.
    *
    * @param int $uid
    *   ID del usuario cuyo perfil se visualiza.

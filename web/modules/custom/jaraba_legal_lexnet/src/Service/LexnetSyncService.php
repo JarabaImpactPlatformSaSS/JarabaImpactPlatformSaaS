@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_lexnet\Service;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
@@ -137,7 +138,7 @@ class LexnetSyncService {
       $destinationDir = 'private://lexnet/attachments/' . $externalId;
 
       // Ensure the destination directory exists.
-      $fileSystem->prepareDirectory($destinationDir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY | \Drupal\Core\File\FileSystemInterface::MODIFY_PERMISSIONS);
+      $fileSystem->prepareDirectory($destinationDir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
       foreach ($attachments as $attachment) {
         try {
@@ -182,7 +183,7 @@ class LexnetSyncService {
 
           // Save the file to the private file system.
           $destination = $destinationDir . '/' . $filename;
-          $savedPath = $fileSystem->saveData($fileContent, $destination, \Drupal\Core\File\FileSystemInterface::EXISTS_RENAME);
+          $savedPath = $fileSystem->saveData($fileContent, $destination, FileSystemInterface::EXISTS_RENAME);
 
           if ($savedPath) {
             $savedFiles[] = [

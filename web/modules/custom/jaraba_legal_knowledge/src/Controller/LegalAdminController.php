@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_knowledge\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -87,7 +86,7 @@ class LegalAdminController extends ControllerBase {
     $build['header'] = [
       '#type' => 'markup',
       '#markup' => '<h2>' . $this->t('Base de Conocimiento Legal') . '</h2><p>' .
-        $this->t('Vision general del modulo de conocimiento normativo, normas indexadas, alertas y estado de sincronizacion.') . '</p>',
+      $this->t('Vision general del modulo de conocimiento normativo, normas indexadas, alertas y estado de sincronizacion.') . '</p>',
     ];
 
     // Tabla de estadisticas.
@@ -151,7 +150,7 @@ class LegalAdminController extends ControllerBase {
   /**
    * Estado detallado de sincronizacion.
    *
-   * GET /admin/content/legal-norms/sync-status
+   * GET /admin/content/legal-norms/sync-status.
    *
    * Muestra informacion detallada del estado de la sincronizacion:
    * ultimo sync, total de normas, estado de embeddings (pendientes,

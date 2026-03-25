@@ -43,13 +43,13 @@ class AiContentGeneratorService {
     $vertical = $params['vertical'] ?? 'general';
 
     $prompt = $this->buildArticlePrompt($topic, $tone, $vertical);
-    
+
     try {
       // Usamos el proveedor configurado por defecto (Gemini/Claude)
       $provider_id = $this->configFactory->get('ai.settings')->get('default_provider') ?: 'google_gemini';
       $llm = $this->aiProvider->createInstance($provider_id);
-      
-      // Selección de modelo optimizado para escritura larga
+
+      // Selección de modelo optimizado para escritura larga.
       $model = ($provider_id === 'google_gemini') ? 'gemini-2.0-flash' : 'claude-3-5-sonnet';
 
       $response = $llm->chat([
@@ -98,10 +98,10 @@ class AiContentGeneratorService {
    * Parsea la respuesta de la IA.
    */
   protected function parseAiResponse(string $rawResponse): array {
-    // Limpieza de posibles bloques de código markdown
+    // Limpieza de posibles bloques de código markdown.
     $json = preg_replace('/^```json\s*|\s*```$/', '', trim($rawResponse));
     $data = json_decode($json, TRUE);
-    
+
     if (json_last_error() !== JSON_ERROR_NONE) {
       $this->logger->warning('Error parseando JSON de IA. Usando respuesta cruda.');
       return [
@@ -111,7 +111,7 @@ class AiContentGeneratorService {
         'answer_capsule' => '',
       ];
     }
-    
+
     return $data;
   }
 

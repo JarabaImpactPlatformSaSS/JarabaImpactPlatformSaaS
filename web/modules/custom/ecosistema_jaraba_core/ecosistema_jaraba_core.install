@@ -9,6 +9,13 @@
  * realiza las operaciones necesarias al activar el módulo.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\ecosistema_jaraba_core\Entity\SaasPlan;
+use Symfony\Component\Yaml\Yaml;
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Site\Settings;
+
 /**
  * Implements hook_install().
  *
@@ -16,12 +23,12 @@
  * Crea las configuraciones iniciales y los datos de ejemplo.
  */
 function ecosistema_jaraba_core_install() {
-  // Mostrar mensaje de bienvenida
+  // Mostrar mensaje de bienvenida.
   \Drupal::messenger()->addStatus(t('Ecosistema Jaraba Core instalado correctamente. Accede a <a href="@url">Estructura</a> para configurar verticales y planes.', [
     '@url' => '/admin/structure',
   ]));
 
-  // Log de instalación
+  // Log de instalación.
   \Drupal::logger('ecosistema_jaraba_core')->notice('Módulo instalado correctamente.');
 }
 
@@ -31,7 +38,7 @@ function ecosistema_jaraba_core_install() {
  * Limpia todos los datos del módulo al desinstalarlo.
  */
 function ecosistema_jaraba_core_uninstall() {
-  // Eliminar configuraciones del módulo
+  // Eliminar configuraciones del módulo.
   $config_factory = \Drupal::configFactory();
 
   $configs_to_delete = [
@@ -43,7 +50,7 @@ function ecosistema_jaraba_core_uninstall() {
     $config_factory->getEditable($config_name)->delete();
   }
 
-  // Log de desinstalación
+  // Log de desinstalación.
   \Drupal::logger('ecosistema_jaraba_core')->notice('Módulo desinstalado. Todas las configuraciones han sido eliminadas.');
 }
 
@@ -66,7 +73,7 @@ function ecosistema_jaraba_core_requirements($phase) {
   $requirements = [];
 
   if ($phase == 'runtime') {
-    // Verificar configuración de Stripe
+    // Verificar configuración de Stripe.
     $stripe_config = \Drupal::config('ecosistema_jaraba_core.stripe');
 
     if (empty($stripe_config->get('public_key')) || empty($stripe_config->get('secret_key'))) {
@@ -88,7 +95,7 @@ function ecosistema_jaraba_core_requirements($phase) {
       ];
     }
 
-    // Verificar que existe al menos una vertical
+    // Verificar que existe al menos una vertical.
     $vertical_storage = \Drupal::entityTypeManager()->getStorage('vertical');
     $vertical_count = $vertical_storage->getQuery()
       ->accessCheck(FALSE)
@@ -113,7 +120,7 @@ function ecosistema_jaraba_core_requirements($phase) {
       ];
     }
 
-    // Verificar que existe al menos un plan
+    // Verificar que existe al menos un plan.
     $plan_storage = \Drupal::entityTypeManager()->getStorage('saas_plan');
     $plan_count = $plan_storage->getQuery()
       ->accessCheck(FALSE)
@@ -315,7 +322,7 @@ function ecosistema_jaraba_core_requirements($phase) {
     // ─────────────────────────────────────────────────────────
     // DEPLOY-READY-001: jaraba_base_domain debe estar configurado.
     // ─────────────────────────────────────────────────────────
-    $base_domain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
+    $base_domain = Settings::get('jaraba_base_domain', 'jaraba-saas.lndo.site');
     if ($base_domain === 'jaraba-saas.lndo.site') {
       $requirements['ecosistema_jaraba_base_domain'] = [
         'title' => t('Ecosistema Jaraba - Base Domain'),
@@ -335,7 +342,7 @@ function ecosistema_jaraba_core_requirements($phase) {
     // ─────────────────────────────────────────────────────────
     // DEPLOY-READY-001: trusted_host_patterns debe cubrir todos los dominios.
     // ─────────────────────────────────────────────────────────
-    $trusted_patterns = \Drupal\Core\Site\Settings::get('trusted_host_patterns', []);
+    $trusted_patterns = Settings::get('trusted_host_patterns', []);
     if (empty($trusted_patterns)) {
       $requirements['ecosistema_jaraba_trusted_hosts'] = [
         'title' => t('Ecosistema Jaraba - Trusted Hosts'),
@@ -374,12 +381,12 @@ function ecosistema_jaraba_core_requirements($phase) {
 function ecosistema_jaraba_core_update_9001() {
   $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
 
-  // Verificar si el campo ya existe
+  // Verificar si el campo ya existe.
   $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('stripe_price_yearly_id', 'saas_plan');
 
   if (!$field_storage_definition) {
-    // Crear la definición del campo
-    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    // Crear la definición del campo.
+    $field_storage_definition = BaseFieldDefinition::create('string')
       ->setLabel(t('Stripe Price ID (Anual)'))
       ->setDescription(t('ID del precio anual en Stripe.'))
       ->setSettings([
@@ -408,7 +415,7 @@ function ecosistema_jaraba_core_update_9002() {
   $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('trial_reminder_sent', 'tenant');
 
   if (!$field_storage_definition) {
-    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+    $field_storage_definition = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Recordatorio de trial enviado'))
       ->setDescription(t('Indica si se ha enviado el recordatorio de fin de trial.'))
       ->setDefaultValue(FALSE);
@@ -435,7 +442,7 @@ function ecosistema_jaraba_core_update_9003() {
   $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('group_id', 'tenant');
 
   if (!$field_storage_definition) {
-    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $field_storage_definition = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Grupo de Aislamiento'))
       ->setDescription(t('Grupo asociado para aislamiento de contenido (Group Module).'))
       ->setSetting('target_type', 'group')
@@ -480,7 +487,7 @@ function ecosistema_jaraba_core_update_9004() {
   $field_storage_definition = $entity_definition_manager->getFieldStorageDefinition('domain_id', 'tenant');
 
   if (!$field_storage_definition) {
-    $field_storage_definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $field_storage_definition = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Dominio Asignado'))
       ->setDescription(t('Dominio de Domain Access asociado para acceso personalizado.'))
       ->setSetting('target_type', 'domain')
@@ -531,7 +538,7 @@ function ecosistema_jaraba_core_update_9005() {
     }
   }
   catch (\Exception $e) {
-    // La tabla ya no existe o la definición ya fue removida - continuar
+    // La tabla ya no existe o la definición ya fue removida - continuar.
     \Drupal::logger('ecosistema_jaraba_core')->notice('enabled_features ya eliminado o no existe: ' . $e->getMessage());
   }
 
@@ -543,7 +550,7 @@ function ecosistema_jaraba_core_update_9005() {
     }
   }
   catch (\Exception $e) {
-    // La tabla ya no existe o la definición ya fue removida - continuar
+    // La tabla ya no existe o la definición ya fue removida - continuar.
     \Drupal::logger('ecosistema_jaraba_core')->notice('ai_agents ya eliminado o no existe: ' . $e->getMessage());
   }
 
@@ -561,10 +568,10 @@ function ecosistema_jaraba_core_update_9005() {
   }
 
   // 3. Instalar nuevas definiciones (entity_reference)
-  $new_features_def = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+  $new_features_def = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Features Habilitadas'))
     ->setDescription(t('Funcionalidades activas para esta vertical.'))
-    ->setCardinality(\Drupal\Core\Field\BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
     ->setSetting('target_type', 'feature')
     ->setSetting('handler', 'default');
 
@@ -575,10 +582,10 @@ function ecosistema_jaraba_core_update_9005() {
     $new_features_def
   );
 
-  $new_agents_def = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+  $new_agents_def = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Agentes IA'))
     ->setDescription(t('Agentes de IA disponibles para esta vertical.'))
-    ->setCardinality(\Drupal\Core\Field\BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
     ->setSetting('target_type', 'ai_agent')
     ->setSetting('handler', 'default');
 
@@ -1510,7 +1517,7 @@ function ecosistema_jaraba_core_update_9011() {
   // 1. Instalar grace_period_ends si no existe.
   $grace_def = $entity_definition_manager->getFieldStorageDefinition('grace_period_ends', 'tenant');
   if (!$grace_def) {
-    $grace_def = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+    $grace_def = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fin Periodo de Gracia'))
       ->setDescription(t('Fecha de expiración del periodo de gracia tras fallo de pago.'))
       ->setSetting('datetime_type', 'datetime')
@@ -1529,7 +1536,7 @@ function ecosistema_jaraba_core_update_9011() {
   // 2. Instalar cancel_at si no existe.
   $cancel_def = $entity_definition_manager->getFieldStorageDefinition('cancel_at', 'tenant');
   if (!$cancel_def) {
-    $cancel_def = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+    $cancel_def = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Cancelación Programada'))
       ->setDescription(t('Fecha de cancelación diferida al final del periodo de facturación.'))
       ->setSetting('datetime_type', 'datetime')
@@ -1597,7 +1604,7 @@ function ecosistema_jaraba_core_update_9011() {
  */
 function ecosistema_jaraba_core_update_9012() {
   $config_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core') . '/config/install';
-  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $source = new FileStorage($config_path);
   $entity_type_manager = \Drupal::entityTypeManager();
 
   $created = 0;
@@ -1722,7 +1729,7 @@ function ecosistema_jaraba_core_update_9013() {
 
   // 2. Importar FreemiumVerticalLimit seed data.
   $config_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core') . '/config/install';
-  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $source = new FileStorage($config_path);
   $entity_type_manager = \Drupal::entityTypeManager();
 
   $created = 0;
@@ -1760,7 +1767,7 @@ function ecosistema_jaraba_core_update_9013() {
  *   - idx_tenant_id (tenant_id)
  *   - idx_tenant_created (tenant_id, created) — if 'created' exists
  *   - idx_tenant_status (tenant_id, status) — if 'status' exists
- *   - idx_tenant_user (tenant_id, user_id) — if 'user_id' exists
+ *   - idx_tenant_user (tenant_id, user_id) — if 'user_id' exists.
  *
  * Skips indexes that already exist. Safe to re-run.
  */
@@ -2095,7 +2102,7 @@ function ecosistema_jaraba_core_update_9018(): string {
   foreach ($newConfigs as $configName) {
     $yamlFile = $configPath . '/' . $configName . '.yml';
     if (file_exists($yamlFile) && $configFactory->get($configName)->isNew()) {
-      $data = \Symfony\Component\Yaml\Yaml::parseFile($yamlFile);
+      $data = Yaml::parseFile($yamlFile);
       $configFactory->getEditable($configName)->setData($data)->save();
       $imported++;
     }
@@ -2118,7 +2125,7 @@ function ecosistema_jaraba_core_update_9018(): string {
 function ecosistema_jaraba_core_update_9019(): string {
   $config_path = \Drupal::service('extension.list.module')
     ->getPath('ecosistema_jaraba_core') . '/config/install';
-  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $source = new FileStorage($config_path);
   $entity_type_manager = \Drupal::entityTypeManager();
   $messages = [];
 
@@ -2227,7 +2234,7 @@ function ecosistema_jaraba_core_update_9020(): string {
           continue;
         }
 
-        $field = \Drupal\Core\Field\BaseFieldDefinition::create($field_info['type'])
+        $field = BaseFieldDefinition::create($field_info['type'])
           ->setLabel($field_info['label'])
           ->setDisplayConfigurable('view', TRUE);
 
@@ -2280,7 +2287,8 @@ function ecosistema_jaraba_core_update_9021(): string {
       $gamification->getUserPoints(0);
       $tables_created += 2;
     }
-    catch (\Throwable) {}
+    catch (\Throwable) {
+    }
   }
 
   // B-15: A/B testing table.
@@ -2290,7 +2298,8 @@ function ecosistema_jaraba_core_update_9021(): string {
       $abTest->getResults();
       $tables_created++;
     }
-    catch (\Throwable) {}
+    catch (\Throwable) {
+    }
   }
 
   // B-18: Webhook tables.
@@ -2300,7 +2309,8 @@ function ecosistema_jaraba_core_update_9021(): string {
       $webhook->getWebhooks();
       $tables_created++;
     }
-    catch (\Throwable) {}
+    catch (\Throwable) {
+    }
   }
 
   return "B-13/B-15/B-18: {$tables_created} tables created (gamification, A/B testing, webhooks).";
@@ -2667,7 +2677,7 @@ function ecosistema_jaraba_core_update_9029(): string {
 
   // 1. Add currency field.
   try {
-    $currencyField = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    $currencyField = BaseFieldDefinition::create('list_string')
       ->setName('currency')
       ->setTargetEntityTypeId('tenant')
       ->setLabel(t('Moneda'))
@@ -2700,7 +2710,7 @@ function ecosistema_jaraba_core_update_9029(): string {
 
   // 2. Add timezone field.
   try {
-    $timezoneField = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $timezoneField = BaseFieldDefinition::create('string')
       ->setName('timezone')
       ->setTargetEntityTypeId('tenant')
       ->setLabel(t('Zona horaria'))
@@ -2784,7 +2794,7 @@ function ecosistema_jaraba_core_update_9031(): string {
         continue;
       }
 
-      $data = \Symfony\Component\Yaml\Yaml::parseFile($file);
+      $data = Yaml::parseFile($file);
       if (!is_array($data)) {
         continue;
       }
@@ -2887,7 +2897,7 @@ function ecosistema_jaraba_core_update_9033(): string {
       $file_path = $module_path . '/config/install/' . $config_name . '.yml';
 
       if (file_exists($file_path)) {
-        $data = \Symfony\Component\Yaml\Yaml::parseFile($file_path);
+        $data = Yaml::parseFile($file_path);
         if ($data) {
           $config = $config_factory->getEditable($config_name);
           foreach ($data as $key => $value) {
@@ -2980,7 +2990,7 @@ function ecosistema_jaraba_core_update_9035(): string {
     return 'saas_plan entity type not installed yet.';
   }
 
-  $fields = \Drupal\ecosistema_jaraba_core\Entity\SaasPlan::baseFieldDefinitions($entityType);
+  $fields = SaasPlan::baseFieldDefinitions($entityType);
   $installed = [];
   $targetFields = ['stripe_product_id', 'stripe_price_yearly_id'];
 
@@ -3042,7 +3052,7 @@ function ecosistema_jaraba_core_update_9036(): string {
     if (!str_starts_with($provider, 'jaraba_') && !str_starts_with($provider, 'ecosistema_jaraba')) {
       continue;
     }
-    if (!$entityType->entityClassImplements(\Drupal\Core\Entity\ContentEntityInterface::class)) {
+    if (!$entityType->entityClassImplements(ContentEntityInterface::class)) {
       continue;
     }
 
@@ -3367,8 +3377,9 @@ function ecosistema_jaraba_core_update_9040(): string {
 /**
  * Assign baseline permissions to tenant-member group role.
  *
- * El rol tenant-member tenía permissions: {} (vacío), causando que
- * TODOS los tenant users no pudieran acceder al Page Builder (/my-pages → 403),
+ * El rol tenant-member tenía permissions: {} (vacío), causando que.
+ *
+ * @todo S los tenant users no pudieran acceder al Page Builder (/my-pages → 403),
  * Content Hub, ni ver las cards de creación de contenido en su perfil.
  *
  * Este hook asigna los permisos básicos que todo miembro de tenant necesita
@@ -3616,23 +3627,23 @@ function ecosistema_jaraba_core_update_9044(): string {
   // Annual = monthly × 12 × 0.80 (20% discount, ANNUAL-DISCOUNT-001).
   $priceUpdates = [
     // Empleabilidad.
-    5  => ['monthly' => 19.00,  'yearly' => 182.00],
+    5  => ['monthly' => 19.00, 'yearly' => 182.00],
     6  => ['yearly' => 758.00],
     7  => ['monthly' => 199.00, 'yearly' => 1910.00],
     // Emprendimiento.
-    8  => ['monthly' => 19.00,  'yearly' => 182.00],
-    9  => ['monthly' => 49.00,  'yearly' => 470.00],
-    10 => ['monthly' => 99.00,  'yearly' => 950.00],
+    8  => ['monthly' => 19.00, 'yearly' => 182.00],
+    9  => ['monthly' => 49.00, 'yearly' => 470.00],
+    10 => ['monthly' => 99.00, 'yearly' => 950.00],
     // ComercioConecta.
-    11 => ['monthly' => 29.00,  'yearly' => 278.00],
-    12 => ['monthly' => 79.00,  'yearly' => 758.00, 'weight' => 20],
+    11 => ['monthly' => 29.00, 'yearly' => 278.00],
+    12 => ['monthly' => 79.00, 'yearly' => 758.00, 'weight' => 20],
     13 => ['yearly' => 1910.00, 'weight' => 30],
     // AgroConecta.
-    14 => ['monthly' => 39.00,  'yearly' => 374.00],
+    14 => ['monthly' => 39.00, 'yearly' => 374.00],
     15 => ['yearly' => 1238.00, 'weight' => 20],
     16 => ['yearly' => 2390.00, 'weight' => 30],
     // ServiciosConecta.
-    17 => ['monthly' => 19.00,  'yearly' => 182.00],
+    17 => ['monthly' => 19.00, 'yearly' => 182.00],
     18 => ['yearly' => 758.00, 'weight' => 20],
     19 => ['yearly' => 1430.00, 'weight' => 30],
     // Andalucia +ei.
@@ -3640,8 +3651,8 @@ function ecosistema_jaraba_core_update_9044(): string {
     21 => ['monthly' => 129.00, 'yearly' => 1238.00],
     22 => ['yearly' => 2390.00],
     // Formacion (existing entities with old prices).
-    23 => ['monthly' => 29.00,  'yearly' => 278.00],
-    24 => ['monthly' => 79.00,  'yearly' => 758.00],
+    23 => ['monthly' => 29.00, 'yearly' => 278.00],
+    24 => ['monthly' => 79.00, 'yearly' => 758.00],
     25 => ['monthly' => 149.00, 'yearly' => 1430.00],
     // JarabaLex.
     26 => ['yearly' => 470.00],
@@ -3699,15 +3710,24 @@ function ecosistema_jaraba_core_update_9044(): string {
 function ecosistema_jaraba_core_update_9045(): string {
   // addon_id => [monthly, yearly].
   $addonUpdates = [
-    1 => ['monthly' => 12.00, 'yearly' => 115.00],   // Empleabilidad: 60% de 19€
-    2 => ['monthly' => 12.00, 'yearly' => 115.00],   // Emprendimiento: 60% de 19€
-    3 => ['monthly' => 19.00, 'yearly' => 182.00],   // ComercioConecta: 60% de 29€
-    4 => ['monthly' => 25.00, 'yearly' => 240.00],   // AgroConecta: 60% de 39€
-    5 => ['monthly' => 29.00, 'yearly' => 278.00],   // JarabaLex: 60% de 49€
-    6 => ['monthly' => 12.00, 'yearly' => 115.00],   // ServiciosConecta: 60% de 19€
-    7 => ['monthly' => 29.00, 'yearly' => 278.00],   // Andalucia +ei: sin cambio (ya OK)
-    8 => ['monthly' => 12.00, 'yearly' => 115.00],   // Content Hub: alineado minimo
-    9 => ['monthly' => 19.00, 'yearly' => 182.00],   // Formacion: 60% de 29€
+  // Empleabilidad: 60% de 19€.
+    1 => ['monthly' => 12.00, 'yearly' => 115.00],
+  // Emprendimiento: 60% de 19€.
+    2 => ['monthly' => 12.00, 'yearly' => 115.00],
+  // ComercioConecta: 60% de 29€.
+    3 => ['monthly' => 19.00, 'yearly' => 182.00],
+  // AgroConecta: 60% de 39€.
+    4 => ['monthly' => 25.00, 'yearly' => 240.00],
+  // JarabaLex: 60% de 49€.
+    5 => ['monthly' => 29.00, 'yearly' => 278.00],
+  // ServiciosConecta: 60% de 19€.
+    6 => ['monthly' => 12.00, 'yearly' => 115.00],
+  // Andalucia +ei: sin cambio (ya OK)
+    7 => ['monthly' => 29.00, 'yearly' => 278.00],
+  // Content Hub: alineado minimo.
+    8 => ['monthly' => 12.00, 'yearly' => 115.00],
+  // Formacion: 60% de 29€.
+    9 => ['monthly' => 19.00, 'yearly' => 182.00],
   ];
 
   $storage = \Drupal::entityTypeManager()->getStorage('addon');

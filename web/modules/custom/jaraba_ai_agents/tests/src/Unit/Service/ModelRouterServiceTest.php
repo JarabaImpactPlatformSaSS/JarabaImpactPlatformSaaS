@@ -111,7 +111,7 @@ class ModelRouterServiceTest extends TestCase {
   /**
    * Tests that a simple task with short prompt routes to fast tier.
    *
-   * faq_answer has base complexity 0.2. With a short prompt (<200 chars)
+   * Faq_answer has base complexity 0.2. With a short prompt (<200 chars)
    * complexity is reduced by 0.1, giving 0.1 which falls in fast tier (<=0.3).
    *
    * @covers ::route
@@ -127,7 +127,7 @@ class ModelRouterServiceTest extends TestCase {
   /**
    * Tests that a complex task with analytical prompt routes to premium tier.
    *
-   * brand_story has base complexity 0.7. A long prompt (>2000 chars) adds 0.15,
+   * Brand_story has base complexity 0.7. A long prompt (>2000 chars) adds 0.15,
    * and "analyze" keyword adds 0.2, giving 1.05 clamped to 1.0 = premium.
    *
    * @covers ::route
@@ -224,7 +224,7 @@ class ModelRouterServiceTest extends TestCase {
     $this->assertSame('balanced', $reflection->invoke($this->service, 0.5));
     $this->assertSame('balanced', $reflection->invoke($this->service, 0.7));
 
-    // complexity > 0.7 should return premium.
+    // Complexity > 0.7 should return premium.
     $this->assertSame('premium', $reflection->invoke($this->service, 0.71));
     $this->assertSame('premium', $reflection->invoke($this->service, 0.9));
     $this->assertSame('premium', $reflection->invoke($this->service, 1.0));

@@ -67,13 +67,13 @@ class MarketplaceService {
   public function getMarketplaceProducts(int $tenant_id, array $filters = [], string $sort = 'newest', int $page = 0, int $per_page = 24): array {
     $storage = $this->entityTypeManager->getStorage('product_retail');
 
-    // Query base: productos activos del tenant
+    // Query base: productos activos del tenant.
     $query = $storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('tenant_id', $tenant_id)
       ->condition('status', 'active');
 
-    // Aplicar filtros opcionales
+    // Aplicar filtros opcionales.
     if (!empty($filters['category_id'])) {
       $query->condition('category_id', $filters['category_id']);
     }
@@ -93,11 +93,11 @@ class MarketplaceService {
       $query->condition('stock_quantity', 0, '>');
     }
 
-    // Contar total antes de paginar
+    // Contar total antes de paginar.
     $count_query = clone $query;
     $total = $count_query->count()->execute();
 
-    // Ordenación
+    // Ordenación.
     switch ($sort) {
       case 'price_asc':
         $query->sort('price', 'ASC');
@@ -108,7 +108,7 @@ class MarketplaceService {
         break;
 
       case 'rating':
-        // Ordenar por rating requeriría JOIN; usamos created como fallback
+        // Ordenar por rating requeriría JOIN; usamos created como fallback.
         $query->sort('created', 'DESC');
         break;
 
@@ -118,7 +118,7 @@ class MarketplaceService {
         break;
     }
 
-    // Paginación
+    // Paginación.
     $query->range($page * $per_page, $per_page);
 
     $ids = $query->execute();

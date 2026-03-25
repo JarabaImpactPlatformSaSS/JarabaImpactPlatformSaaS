@@ -10,8 +10,14 @@ use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class IncidentTicketAccessControlHandler extends DefaultEntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
     $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -37,6 +43,9 @@ class IncidentTicketAccessControlHandler extends DefaultEntityAccessControlHandl
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermissions($account, [
       'manage comercio incidents',
@@ -44,6 +53,9 @@ class IncidentTicketAccessControlHandler extends DefaultEntityAccessControlHandl
     ], 'OR');
   }
 
+  /**
+   *
+   */
   protected function checkOwnership(EntityInterface $entity, AccountInterface $account): AccessResult {
     $owner_id = $entity->get('uid')->target_id ?? NULL;
     if (!$owner_id) {

@@ -76,8 +76,14 @@ class LifeWheelServiceTest extends TestCase {
    */
   public function testAverageCalculation(): void {
     $scores = [
-      'career' => 8, 'finance' => 6, 'health' => 7, 'family' => 5,
-      'social' => 9, 'growth' => 4, 'leisure' => 3, 'environment' => 8,
+      'career' => 8,
+      'finance' => 6,
+      'health' => 7,
+      'family' => 5,
+      'social' => 9,
+      'growth' => 4,
+      'leisure' => 3,
+      'environment' => 8,
     ];
 
     $average = $this->calculateAverage($scores);
@@ -91,8 +97,14 @@ class LifeWheelServiceTest extends TestCase {
    */
   public function testLowestAreas(): void {
     $scores = [
-      'career' => 8, 'finance' => 6, 'health' => 7, 'family' => 5,
-      'social' => 9, 'growth' => 4, 'leisure' => 3, 'environment' => 8,
+      'career' => 8,
+      'finance' => 6,
+      'health' => 7,
+      'family' => 5,
+      'social' => 9,
+      'growth' => 4,
+      'leisure' => 3,
+      'environment' => 8,
     ];
 
     $lowest = $this->getLowestAreas($scores, 2);
@@ -108,8 +120,14 @@ class LifeWheelServiceTest extends TestCase {
    */
   public function testHighestAreas(): void {
     $scores = [
-      'career' => 8, 'finance' => 6, 'health' => 7, 'family' => 5,
-      'social' => 9, 'growth' => 4, 'leisure' => 3, 'environment' => 8,
+      'career' => 8,
+      'finance' => 6,
+      'health' => 7,
+      'family' => 5,
+      'social' => 9,
+      'growth' => 4,
+      'leisure' => 3,
+      'environment' => 8,
     ];
 
     $highest = $this->getHighestAreas($scores, 2);

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Provides REST endpoints for:
  * - Marketplace listing, detail, rating, install/uninstall, configure, status
  * - Developer submission and certification pipeline
- * - Rendered marketplace page
+ * - Rendered marketplace page.
  *
  * All JSON responses use the standard envelope: {success, data, error}.
  */

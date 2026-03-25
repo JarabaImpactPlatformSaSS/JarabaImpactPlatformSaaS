@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Unit;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -59,7 +60,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
     $this->storage = $this->createMock(EntityStorageInterface::class);
 
     // Mock the query for getting last event hash (empty chain).
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
     $query->method('range')->willReturnSelf();

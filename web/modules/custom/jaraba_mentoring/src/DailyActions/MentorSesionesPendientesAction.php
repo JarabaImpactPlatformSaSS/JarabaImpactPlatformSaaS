@@ -24,58 +24,100 @@ class MentorSesionesPendientesAction implements DailyActionInterface {
     protected readonly AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'mentor.sesiones_pendientes';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'mentor';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Sesiones pendientes');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Revisar solicitudes de sesión de mentoría');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'ui', 'name' => 'bell', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_mentoring.mentor_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $pending = 0;
     try {

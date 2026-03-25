@@ -102,7 +102,7 @@ class TaxCalculatorController extends ControllerBase {
   /**
    * Endpoint API: Calculo de IRPF.
    *
-   * POST /api/v1/legal/calculators/irpf
+   * POST /api/v1/legal/calculators/irpf.
    *
    * Calcula la cuota de IRPF en base a los ingresos brutos,
    * situacion personal, hijos a cargo, discapacidad y comunidad
@@ -188,7 +188,7 @@ class TaxCalculatorController extends ControllerBase {
   /**
    * Endpoint API: Calculo de IVA.
    *
-   * POST /api/v1/legal/calculators/iva
+   * POST /api/v1/legal/calculators/iva.
    *
    * Calcula el IVA aplicable a un importe base segun el tipo
    * de IVA seleccionado (general 21%, reducido 10%, superreducido 4%).

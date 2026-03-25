@@ -24,111 +24,104 @@ use Psr\Log\LoggerInterface;
  * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
  * model routing, tool use, provider fallback, and context window management.
  */
-class CustomerExperienceAgent extends SmartBaseAgent
-{
+class CustomerExperienceAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a CustomerExperienceAgent.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
-    }
+  /**
+   * Constructs a CustomerExperienceAgent.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ModelRouterService $modelRouter,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+    $this->setModelRouter($modelRouter);
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'customer_experience';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'customer_experience';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Agente de Experiencia del Cliente';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Agente de Experiencia del Cliente';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Gestiona experiencia del cliente: respuestas a reseñas, seguimientos y comunicación post-venta.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Gestiona experiencia del cliente: respuestas a reseñas, seguimientos y comunicación post-venta.';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'review_response' => [
-                'label' => 'Respuesta a Reseña',
-                'description' => 'Genera respuesta profesional a reseñas.',
-                'requires' => ['review_text', 'rating'],
-                'optional' => ['customer_name', 'order_id'],
-            ],
-            'followup_email' => [
-                'label' => 'Email de Seguimiento',
-                'description' => 'Crea emails de seguimiento post-compra.',
-                'requires' => ['purchase_type', 'days_since_purchase'],
-                'optional' => ['product_name', 'customer_name'],
-            ],
-            'complaint_response' => [
-                'label' => 'Respuesta a Queja',
-                'description' => 'Genera respuestas empáticas a quejas.',
-                'requires' => ['complaint_summary', 'severity'],
-                'optional' => ['compensation_offered', 'previous_interactions'],
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    return [
+      'review_response' => [
+        'label' => 'Respuesta a Reseña',
+        'description' => 'Genera respuesta profesional a reseñas.',
+        'requires' => ['review_text', 'rating'],
+        'optional' => ['customer_name', 'order_id'],
+      ],
+      'followup_email' => [
+        'label' => 'Email de Seguimiento',
+        'description' => 'Crea emails de seguimiento post-compra.',
+        'requires' => ['purchase_type', 'days_since_purchase'],
+        'optional' => ['product_name', 'customer_name'],
+      ],
+      'complaint_response' => [
+        'label' => 'Respuesta a Queja',
+        'description' => 'Genera respuestas empáticas a quejas.',
+        'requires' => ['complaint_summary', 'severity'],
+        'optional' => ['compensation_offered', 'previous_interactions'],
+      ],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        return match ($action) {
-            'review_response' => $this->generateReviewResponse($context),
+  /**
+   * {@inheritdoc}
+   */
+  protected function doExecute(string $action, array $context): array {
+    return match ($action) {
+      'review_response' => $this->generateReviewResponse($context),
             'followup_email' => $this->generateFollowupEmail($context),
             'complaint_response' => $this->generateComplaintResponse($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
-    }
+    };
+  }
 
-    /**
-     * Genera una respuesta a reseña.
-     */
-    protected function generateReviewResponse(array $context): array
-    {
-        $reviewText = $context['review_text'] ?? '';
-        $rating = $context['rating'] ?? 5;
-        $customerName = $context['customer_name'] ?? 'cliente';
+  /**
+   * Genera una respuesta a reseña.
+   */
+  protected function generateReviewResponse(array $context): array {
+    $reviewText = $context['review_text'] ?? '';
+    $rating = $context['rating'] ?? 5;
+    $customerName = $context['customer_name'] ?? 'cliente';
 
-        $sentiment = $rating >= 4 ? 'positiva' : ($rating >= 3 ? 'neutral' : 'negativa');
-        $verticalContext = $this->getVerticalContext();
+    $sentiment = $rating >= 4 ? 'positiva' : ($rating >= 3 ? 'neutral' : 'negativa');
+    $verticalContext = $this->getVerticalContext();
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Responder a reseña {$sentiment} de {$customerName}.
@@ -152,32 +145,31 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'review_response';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'review_response';
+      }
     }
 
-    /**
-     * Genera un email de seguimiento post-compra.
-     */
-    protected function generateFollowupEmail(array $context): array
-    {
-        $purchaseType = $context['purchase_type'] ?? 'producto';
-        $daysSince = $context['days_since_purchase'] ?? 7;
-        $productName = $context['product_name'] ?? '';
-        $customerName = $context['customer_name'] ?? 'cliente';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera un email de seguimiento post-compra.
+   */
+  protected function generateFollowupEmail(array $context): array {
+    $purchaseType = $context['purchase_type'] ?? 'producto';
+    $daysSince = $context['days_since_purchase'] ?? 7;
+    $productName = $context['product_name'] ?? '';
+    $customerName = $context['customer_name'] ?? 'cliente';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Email de seguimiento {$daysSince} días post-compra.
@@ -203,31 +195,30 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'followup_email';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'followup_email';
+      }
     }
 
-    /**
-     * Genera una respuesta a queja de cliente.
-     */
-    protected function generateComplaintResponse(array $context): array
-    {
-        $complaint = $context['complaint_summary'] ?? '';
-        $severity = $context['severity'] ?? 'media';
-        $compensation = $context['compensation_offered'] ?? '';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Genera una respuesta a queja de cliente.
+   */
+  protected function generateComplaintResponse(array $context): array {
+    $complaint = $context['complaint_summary'] ?? '';
+    $severity = $context['severity'] ?? 'media';
+    $compensation = $context['compensation_offered'] ?? '';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Responder a queja de cliente.
@@ -255,25 +246,24 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'complaint_response';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'complaint_response';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return <<<EOT
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultBrandVoice(): string {
+    return <<<EOT
 Eres un experto en experiencia del cliente con alta inteligencia emocional.
 
 ESTILO:
@@ -288,6 +278,6 @@ PRINCIPIOS:
 - Ofrecer soluciones concretas
 - Convertir quejas en oportunidades
 EOT;
-    }
+  }
 
 }

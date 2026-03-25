@@ -74,7 +74,6 @@ class DataRightsRequest extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que se dirige la solicitud.'))
@@ -85,7 +84,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SOLICITANTE ---
-
     $fields['requester_email'] = BaseFieldDefinition::create('email')
       ->setLabel(new TranslatableMarkup('Email del solicitante'))
       ->setDescription(new TranslatableMarkup('Dirección de correo electrónico del interesado.'))
@@ -104,7 +102,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIPO DE DERECHO ---
-
     $fields['right_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Tipo de derecho'))
       ->setDescription(new TranslatableMarkup('Derecho ARCO-POL que se ejerce.'))
@@ -122,7 +119,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DESCRIPCIÓN ---
-
     $fields['description'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripción'))
       ->setDescription(new TranslatableMarkup('Descripción detallada de la solicitud del interesado.'))
@@ -131,7 +127,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERIFICACIÓN DE IDENTIDAD ---
-
     $fields['identity_verified'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Identidad verificada'))
       ->setDescription(new TranslatableMarkup('Indica si la identidad del solicitante ha sido verificada.'))
@@ -154,7 +149,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PLAZOS ---
-
     $fields['received_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de recepción'))
       ->setDescription(new TranslatableMarkup('Timestamp de cuándo se recibió la solicitud.'))
@@ -166,7 +160,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado actual de la solicitud.'))
@@ -185,7 +178,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RESPUESTA ---
-
     $fields['response'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Respuesta'))
       ->setDescription(new TranslatableMarkup('Respuesta oficial a la solicitud del interesado.'))
@@ -199,7 +191,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RESPONSABLE ---
-
     $fields['handler_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Responsable'))
       ->setDescription(new TranslatableMarkup('Usuario responsable de procesar esta solicitud (DPO).'))
@@ -209,7 +200,6 @@ class DataRightsRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

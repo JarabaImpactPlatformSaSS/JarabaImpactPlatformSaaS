@@ -25,102 +25,100 @@ use Drupal\Core\Access\AccessResultInterface;
  * - Usuarios normales solo ven entidades de su tenant
  * - El tenant_id se verifica contra el grupo activo del usuario
  */
-class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler
-{
+class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler {
 
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext = NULL;
+  /**
+   * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+   */
+  protected ?TenantContextService $tenantContext = NULL;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-        $instance = parent::createInstance($container, $entity_type);
-        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
-            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-        }
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    $instance = parent::createInstance($container, $entity_type);
+    if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+      // AUDIT-CONS-N10: Proper DI for tenant context.
+      $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
+    }
+    return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // Admin global puede todo.
+    if ($account->hasPermission('administer tenant knowledge')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        // Admin global puede todo.
-        if ($account->hasPermission('administer tenant knowledge')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
+    // Obtener tenant del usuario actual.
+    $userTenantId = $this->getUserTenantId($account);
+    $entityTenantId = $entity->get('tenant_id')->target_id ?? NULL;
 
-        // Obtener tenant del usuario actual.
-        $userTenantId = $this->getUserTenantId($account);
-        $entityTenantId = $entity->get('tenant_id')->target_id ?? NULL;
-
-        // Si no hay tenant en la entidad, denegar.
-        if (!$entityTenantId) {
-            return AccessResult::forbidden('La entidad no tiene tenant asignado.');
-        }
-
-        // Verificar que el tenant coincida.
-        if ($userTenantId && $userTenantId === $entityTenantId) {
-            switch ($operation) {
-                case 'view':
-                    return AccessResult::allowedIfHasPermission($account, 'access tenant knowledge')
-                        ->addCacheContexts(['user']);
-
-                case 'update':
-                case 'delete':
-                    return AccessResult::allowedIfHasPermission($account, 'edit tenant knowledge')
-                        ->addCacheContexts(['user']);
-            }
-        }
-
-        return AccessResult::forbidden('No tienes acceso al conocimiento de este tenant.');
+    // Si no hay tenant en la entidad, denegar.
+    if (!$entityTenantId) {
+      return AccessResult::forbidden('La entidad no tiene tenant asignado.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        // Solo usuarios con permiso de edición pueden crear.
-        return AccessResult::allowedIfHasPermission($account, 'edit tenant knowledge');
+    // Verificar que el tenant coincida.
+    if ($userTenantId && $userTenantId === $entityTenantId) {
+      switch ($operation) {
+        case 'view':
+          return AccessResult::allowedIfHasPermission($account, 'access tenant knowledge')
+            ->addCacheContexts(['user']);
+
+        case 'update':
+        case 'delete':
+          return AccessResult::allowedIfHasPermission($account, 'edit tenant knowledge')
+            ->addCacheContexts(['user']);
+      }
     }
 
-    /**
-     * Obtiene el tenant ID del usuario actual.
-     *
-     * @param \Drupal\Core\Session\AccountInterface $account
-     *   La cuenta del usuario.
-     *
-     * @return int|null
-     *   El ID del tenant o NULL si no pertenece a ninguno.
-     */
-    protected function getUserTenantId(AccountInterface $account): ?int
-    {
-        // Usar el servicio de contexto de tenant si está disponible.
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
-        }
+    return AccessResult::forbidden('No tienes acceso al conocimiento de este tenant.');
+  }
 
-        // Fallback: buscar en grupos del usuario.
-        if (\Drupal::hasService('group.membership_loader')) {
-            /** @var \Drupal\group\GroupMembershipLoaderInterface $membershipLoader */
-            $membershipLoader = \Drupal::service('group.membership_loader');
-            $memberships = $membershipLoader->loadByUser($account);
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    // Solo usuarios con permiso de edición pueden crear.
+    return AccessResult::allowedIfHasPermission($account, 'edit tenant knowledge');
+  }
 
-            foreach ($memberships as $membership) {
-                $group = $membership->getGroup();
-                // Retornar el primer grupo (tenant) del usuario.
-                return (int) $group->id();
-            }
-        }
-
-        return NULL;
+  /**
+   * Obtiene el tenant ID del usuario actual.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   La cuenta del usuario.
+   *
+   * @return int|null
+   *   El ID del tenant o NULL si no pertenece a ninguno.
+   */
+  protected function getUserTenantId(AccountInterface $account): ?int {
+    // Usar el servicio de contexto de tenant si está disponible.
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
+      $tenant = $tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
     }
+
+    // Fallback: buscar en grupos del usuario.
+    if (\Drupal::hasService('group.membership_loader')) {
+      /** @var \Drupal\group\GroupMembershipLoaderInterface $membershipLoader */
+      $membershipLoader = \Drupal::service('group.membership_loader');
+      $memberships = $membershipLoader->loadByUser($account);
+
+      foreach ($memberships as $membership) {
+        $group = $membership->getGroup();
+        // Retornar el primer grupo (tenant) del usuario.
+        return (int) $group->id();
+      }
+    }
+
+    return NULL;
+  }
 
 }

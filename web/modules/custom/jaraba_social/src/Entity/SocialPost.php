@@ -56,192 +56,194 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   field_ui_base_route = "entity.social_post.settings",
  * )
  */
-class SocialPost extends ContentEntityBase
-{
+class SocialPost extends ContentEntityBase {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * Estados del post.
-     */
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_SCHEDULED = 'scheduled';
-    public const STATUS_PUBLISHED = 'published';
-    public const STATUS_FAILED = 'failed';
+  /**
+   * Estados del post.
+   */
+  public const STATUS_DRAFT = 'draft';
+  public const STATUS_SCHEDULED = 'scheduled';
+  public const STATUS_PUBLISHED = 'published';
+  public const STATUS_FAILED = 'failed';
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setDescription(t('Título interno del post.'))
-            ->setRequired(TRUE)
-            ->setSettings(['max_length' => 255])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setDescription(t('Título interno del post.'))
+      ->setRequired(TRUE)
+      ->setSettings(['max_length' => 255])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['content'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Contenido'))
-            ->setDescription(t('Texto del post.'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['content'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Contenido'))
+      ->setDescription(t('Texto del post.'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['accounts'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Cuentas'))
-            ->setDescription(t('Cuentas donde publicar.'))
-            ->setSetting('target_type', 'social_account')
-            ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['accounts'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Cuentas'))
+      ->setDescription(t('Cuentas donde publicar.'))
+      ->setSetting('target_type', 'social_account')
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['media'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Multimedia'))
-            ->setDescription(t('Imágenes o videos a incluir.'))
-            ->setSetting('target_type', 'media')
-            ->setCardinality(10)
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 3,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['media'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Multimedia'))
+      ->setDescription(t('Imágenes o videos a incluir.'))
+      ->setSetting('target_type', 'media')
+      ->setCardinality(10)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 3,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setDescription(t('Estado del post.'))
-            ->setDefaultValue(self::STATUS_DRAFT)
-            ->setSettings([
-                'allowed_values' => [
-                    self::STATUS_DRAFT => 'Borrador',
-                    self::STATUS_SCHEDULED => 'Programado',
-                    self::STATUS_PUBLISHED => 'Publicado',
-                    self::STATUS_FAILED => 'Error',
-                ],
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 4,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setDescription(t('Estado del post.'))
+      ->setDefaultValue(self::STATUS_DRAFT)
+      ->setSettings([
+        'allowed_values' => [
+          self::STATUS_DRAFT => 'Borrador',
+          self::STATUS_SCHEDULED => 'Programado',
+          self::STATUS_PUBLISHED => 'Publicado',
+          self::STATUS_FAILED => 'Error',
+        ],
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['scheduled_at'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha Programada'))
-            ->setDescription(t('Cuándo publicar el post.'))
-            ->setDisplayOptions('form', [
-                'type' => 'datetime_default',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['scheduled_at'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Programada'))
+      ->setDescription(t('Cuándo publicar el post.'))
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['published_at'] = BaseFieldDefinition::create('timestamp')
-            ->setLabel(t('Fecha Publicación'))
-            ->setDescription(t('Cuándo se publicó realmente.'));
+    $fields['published_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha Publicación'))
+      ->setDescription(t('Cuándo se publicó realmente.'));
 
-        $fields['external_ids'] = BaseFieldDefinition::create('map')
-            ->setLabel(t('IDs Externos'))
-            ->setDescription(t('IDs del post en cada plataforma.'));
+    $fields['external_ids'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('IDs Externos'))
+      ->setDescription(t('IDs del post en cada plataforma.'));
 
-        $fields['metrics'] = BaseFieldDefinition::create('map')
-            ->setLabel(t('Métricas'))
-            ->setDescription(t('Likes, shares, comments por plataforma.'));
+    $fields['metrics'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Métricas'))
+      ->setDescription(t('Likes, shares, comments por plataforma.'));
 
-        $fields['ai_generated'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Generado por IA'))
-            ->setDescription(t('Indica si el contenido fue generado por IA.'))
-            ->setDefaultValue(FALSE);
+    $fields['ai_generated'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Generado por IA'))
+      ->setDescription(t('Indica si el contenido fue generado por IA.'))
+      ->setDefaultValue(FALSE);
 
-        $fields['ai_prompt'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('AI Prompt'))
-            ->setDescription(t('Prompt usado para generar el contenido.'));
+    $fields['ai_prompt'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('AI Prompt'))
+      ->setDescription(t('Prompt usado para generar el contenido.'));
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('Tenant propietario.'))
-            ->setSetting('target_type', 'group');
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant propietario.'))
+      ->setSetting('target_type', 'group');
 
-        $fields['author'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Autor'))
-            ->setSetting('target_type', 'user')
-            ->setDefaultValueCallback(static::class . '::getCurrentUserId');
+    $fields['author'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Autor'))
+      ->setSetting('target_type', 'user')
+      ->setDefaultValueCallback(static::class . '::getCurrentUserId');
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Default value callback para author.
-     */
-    public static function getCurrentUserId(): array
-    {
-        return [\Drupal::currentUser()->id()];
-    }
+  /**
+   * Default value callback para author.
+   */
+  public static function getCurrentUserId(): array {
+    return [\Drupal::currentUser()->id()];
+  }
 
-    /**
-     * Getters.
-     */
-    public function getContent(): string
-    {
-        return $this->get('content')->value ?? '';
-    }
+  /**
+   * Getters.
+   */
+  public function getContent(): string {
+    return $this->get('content')->value ?? '';
+  }
 
-    public function getStatus(): string
-    {
-        return $this->get('status')->value ?? self::STATUS_DRAFT;
-    }
+  /**
+   *
+   */
+  public function getStatus(): string {
+    return $this->get('status')->value ?? self::STATUS_DRAFT;
+  }
 
-    public function isScheduled(): bool
-    {
-        return $this->getStatus() === self::STATUS_SCHEDULED;
-    }
+  /**
+   *
+   */
+  public function isScheduled(): bool {
+    return $this->getStatus() === self::STATUS_SCHEDULED;
+  }
 
-    public function isPublished(): bool
-    {
-        return $this->getStatus() === self::STATUS_PUBLISHED;
-    }
+  /**
+   *
+   */
+  public function isPublished(): bool {
+    return $this->getStatus() === self::STATUS_PUBLISHED;
+  }
 
-    public function getScheduledAt(): ?\DateTimeInterface
-    {
-        return $this->get('scheduled_at')->date;
-    }
+  /**
+   *
+   */
+  public function getScheduledAt(): ?\DateTimeInterface {
+    return $this->get('scheduled_at')->date;
+  }
 
-    /**
-     * Marcar como publicado.
-     */
-    public function markPublished(): self
-    {
-        $this->set('status', self::STATUS_PUBLISHED);
-        $this->set('published_at', time());
-        return $this;
-    }
+  /**
+   * Marcar como publicado.
+   */
+  public function markPublished(): self {
+    $this->set('status', self::STATUS_PUBLISHED);
+    $this->set('published_at', time());
+    return $this;
+  }
 
-    /**
-     * Marcar como fallido.
-     */
-    public function markFailed(): self
-    {
-        $this->set('status', self::STATUS_FAILED);
-        return $this;
-    }
+  /**
+   * Marcar como fallido.
+   */
+  public function markFailed(): self {
+    $this->set('status', self::STATUS_FAILED);
+    return $this;
+  }
 
 }

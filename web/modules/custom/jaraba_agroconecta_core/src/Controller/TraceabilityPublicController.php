@@ -8,7 +8,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_agroconecta_core\Entity\AgroBatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -64,6 +63,9 @@ class TraceabilityPublicController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   protected function loadBatchByCode(string $code): ?AgroBatch {
     $storage = $this->entityTypeManager->getStorage('agro_batch');
     $ids = $storage->getQuery()
@@ -75,6 +77,9 @@ class TraceabilityPublicController extends ControllerBase {
     return !empty($ids) ? $storage->load(reset($ids)) : NULL;
   }
 
+  /**
+   *
+   */
   protected function loadEvents(int $batch_id): array {
     return $this->entityTypeManager->getStorage('trace_event_agro')->loadByProperties([
       'batch_id' => $batch_id,

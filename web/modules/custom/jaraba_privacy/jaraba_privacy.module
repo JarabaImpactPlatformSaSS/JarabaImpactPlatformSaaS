@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Módulo Jaraba Privacy — Compliance RGPD/LOPD-GDD multi-tenant.
@@ -21,7 +23,9 @@
  * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md
  */
 
-declare(strict_types=1);
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
+
 
 /**
  * Implements hook_theme().
@@ -99,7 +103,7 @@ function jaraba_privacy_user_login($account): void {
  * - Solicitud ARCO-POL → verificación de plazo.
  * - Brecha reportada → notificación DPO (ya gestionada por el servicio).
  */
-function jaraba_privacy_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_privacy_entity_insert(EntityInterface $entity): void {
   $entityTypeId = $entity->getEntityTypeId();
 
   if ($entityTypeId === 'dpa_agreement') {
@@ -199,8 +203,8 @@ function jaraba_privacy_page_attachments(array &$attachments): void {
 
   $attachments['#attached']['library'][] = 'jaraba_privacy/cookie-banner';
   $attachments['#attached']['drupalSettings']['jarabaCookieBanner'] = [
-    'apiEndpoint' => \Drupal\Core\Url::fromRoute('jaraba_privacy.api.cookies.consent.post')->toString(),
-    'revokeEndpoint' => \Drupal\Core\Url::fromRoute('jaraba_privacy.api.cookies.consent.revoke')->toString(),
+    'apiEndpoint' => Url::fromRoute('jaraba_privacy.api.cookies.consent.post')->toString(),
+    'revokeEndpoint' => Url::fromRoute('jaraba_privacy.api.cookies.consent.revoke')->toString(),
   ];
 }
 

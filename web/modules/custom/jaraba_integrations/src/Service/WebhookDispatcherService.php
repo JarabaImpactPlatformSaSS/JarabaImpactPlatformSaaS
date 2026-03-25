@@ -137,7 +137,7 @@ class WebhookDispatcherService {
       }
     }
 
-    // Todos los intentos fallaron.
+    // @todo s los intentos fallaron.
     $this->recordFailure($subscription, $status_code ?? 0);
     return FALSE;
   }

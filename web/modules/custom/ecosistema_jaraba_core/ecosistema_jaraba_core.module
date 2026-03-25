@@ -7,11 +7,21 @@
  * Este archivo contiene los hooks de Drupal necesarios para:
  * - Registrar templates Twig personalizados
  * - Definir configuraciones de email
- * - Implementar los hooks del módulo
+ * - Implementar los hooks del módulo.
  *
  * @see https://www.drupal.org/docs/8/creating-custom-modules
  */
 
+use Drupal\Core\Entity\ContentEntityTypeInterface;
+use Drupal\ecosistema_jaraba_core\Service\MegaMenuBridgeService;
+use Drupal\user\UserInterface;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\DailyActions\QuizFollowUpCron;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -48,7 +58,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // API DOCUMENTATION (Q1 2027)
     // =========================================================================
-    
     // =========================================================================
     // REV-PHASE5: Reviews page render theme
     // =========================================================================
@@ -79,7 +88,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // B-05: Review Analytics Dashboard
+    // B-05: Review Analytics Dashboard.
     'review_analytics_dashboard' => [
       'variables' => [
         'metrics' => [],
@@ -90,7 +99,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // Item 18: Review Submission Form
+    // Item 18: Review Submission Form.
     'review_submit_form' => [
       'variables' => [
         'vertical' => '',
@@ -103,7 +112,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // B-08: SEO Review Pages
+    // B-08: SEO Review Pages.
     'review_seo_page' => [
       'variables' => [
         'vertical' => '',
@@ -120,7 +129,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // S2-04: Per-tenant analytics dashboard
-    // Ruta: /tenant/analytics
+    // Ruta: /tenant/analytics.
     'tenant_analytics_dashboard' => [
       'variables' => [
         'tenant_name' => '',
@@ -136,7 +145,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Swagger UI para documentación interactiva de la API
-    // Ruta: /api/docs
+    // Ruta: /api/docs.
     'api_docs' => [
       'variables' => [
         'title' => 'API Documentation',
@@ -146,7 +155,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Template del formulario de registro de nuevos tenants
-    // Ruta: /registro/{vertical}
+    // Ruta: /registro/{vertical}.
     'ecosistema_jaraba_register_form' => [
       'variables' => [
         'vertical' => NULL,
@@ -164,7 +173,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Template de selección de plan durante onboarding
-    // Ruta: /onboarding/seleccionar-plan
+    // Ruta: /onboarding/seleccionar-plan.
     'ecosistema_jaraba_select_plan' => [
       'variables' => [
         'tenant' => NULL,
@@ -177,7 +186,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Template de configuración de pago con Stripe
-    // Ruta: /onboarding/configurar-pago
+    // Ruta: /onboarding/configurar-pago.
     'ecosistema_jaraba_setup_payment' => [
       'variables' => [
         'tenant' => NULL,
@@ -191,7 +200,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Template de bienvenida post-onboarding
-    // Ruta: /onboarding/bienvenida
+    // Ruta: /onboarding/bienvenida.
     'ecosistema_jaraba_welcome' => [
       'variables' => [
         'tenant' => NULL,
@@ -209,7 +218,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Dashboard de administración para Tenant Admins
     // Ruta: /tenant/dashboard
-    // Muestra estado de suscripción, métricas de uso y acciones rápidas
+    // Muestra estado de suscripción, métricas de uso y acciones rápidas.
     'ecosistema_jaraba_tenant_dashboard' => [
       'variables' => [
         'tenant' => NULL,
@@ -252,7 +261,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Dashboard de Salud de la Plataforma
     // Ruta: /admin/health
-    // Muestra estado de servicios, métricas y health checks recientes
+    // Muestra estado de servicios, métricas y health checks recientes.
     'health_dashboard' => [
       'variables' => [
         'services' => [],
@@ -303,7 +312,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Dashboard FinOps (Cost Optimization)
     // Ruta: /admin/finops
-    // Muestra costes por tenant, proyecciones y recomendaciones de ahorro
+    // Muestra costes por tenant, proyecciones y recomendaciones de ahorro.
     'finops_dashboard' => [
       'variables' => [
         'tenants' => [],
@@ -326,7 +335,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Dashboard Self-Service para Tenants
     // Ruta: /my-dashboard
-    // Permite a los tenants ver sus propias métricas sin acceso admin
+    // Permite a los tenants ver sus propias métricas sin acceso admin.
     'tenant_self_service_dashboard' => [
       'variables' => [
         'tenant' => NULL,
@@ -340,7 +349,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Configuración Self-Service del Tenant
-    // Ruta: /my-settings
+    // Ruta: /my-settings.
     'tenant_self_service_settings' => [
       'variables' => [
         'tenant' => NULL,
@@ -353,9 +362,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // ---------------------------------------------------------------------------
     // MARKETPLACE - PHASE 13
     // ---------------------------------------------------------------------------
-
     // Landing page del Marketplace
-    // Ruta: /marketplace
+    // Ruta: /marketplace.
     'marketplace_landing' => [
       'variables' => [
         'featured_products' => [],
@@ -368,7 +376,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Página de búsqueda del Marketplace
-    // Ruta: /marketplace/search
+    // Ruta: /marketplace/search.
     'marketplace_search' => [
       'variables' => [
         'query' => '',
@@ -381,7 +389,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Vista de producto individual en Marketplace
-    // Ruta: /marketplace/product/{id}
+    // Ruta: /marketplace/product/{id}.
     'marketplace_product' => [
       'variables' => [
         'product' => [],
@@ -394,7 +402,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // ---------------------------------------------------------------------------
     // QUIZ DE RECOMENDACIÓN DE VERTICAL — /test-vertical
     // ---------------------------------------------------------------------------
-
     'quiz_vertical' => [
       'variables' => [
         'quiz_questions' => [],
@@ -414,9 +421,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // ---------------------------------------------------------------------------
     // Q1 2027: DEMO INTERACTIVA - TIME-TO-VALUE < 60s
     // ---------------------------------------------------------------------------
-
     // Landing de selección de demo
-    // Ruta: /demo
+    // Ruta: /demo.
     'demo_landing' => [
       'variables' => [
         'profiles' => [],
@@ -427,7 +433,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Dashboard de demo interactiva
-    // Ruta: /demo/start/{profileId}, /demo/dashboard/{sessionId}
+    // Ruta: /demo/start/{profileId}, /demo/dashboard/{sessionId}.
     'demo_dashboard' => [
       'variables' => [
         'session_id' => '',
@@ -473,7 +479,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Demo de storytelling con IA
-    // Ruta: /demo/ai/storytelling/{sessionId}
+    // Ruta: /demo/ai/storytelling/{sessionId}.
     'demo_ai_storytelling' => [
       'variables' => [
         'session' => [],
@@ -498,7 +504,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // HERO LANDING - HOMEPAGE (2026-01-24)
     // =========================================================================
-    
     // Hero Landing para homepage con Progressive Profiling
     // Ruta: / (homepage)
     'hero_landing' => [
@@ -518,9 +523,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // CONTEXTUAL COPILOT FAB (Q1 2027)
     // =========================================================================
-    
     // FAB de Copiloto contextual reutilizable para todos los avatares
-    // Se configura por avatar: jobseeker, recruiter, entrepreneur, producer, mentor
+    // Se configura por avatar: jobseeker, recruiter, entrepreneur, producer, mentor.
     'contextual_copilot_fab' => [
       'variables' => [
         'agent_context' => 'general_copilot',
@@ -537,9 +541,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // VERTICAL LANDING PAGES (Q1 2027)
     // =========================================================================
-    
     // Contenido de landing pages de verticales (empleo, talento, emprender, etc.)
-    // Usa jaraba_icon() para iconos SVG
+    // Usa jaraba_icon() para iconos SVG.
     'vertical_landing_content' => [
       'variables' => [
         'vertical_data' => [],
@@ -551,9 +554,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // ADMIN CENTER - RBAC MATRIX (D.2)
     // =========================================================================
-    
     // Matriz visual RBAC para gestión de permisos
-    // Ruta: /admin/people/rbac-matrix
+    // Ruta: /admin/people/rbac-matrix.
     'rbac_matrix' => [
       'variables' => [
         'roles' => [],
@@ -569,9 +571,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // USAGE DASHBOARD - G111 / f111
     // =========================================================================
-
     // Dashboard de uso y facturación para tenants
-    // Ruta: /mi-cuenta/uso
+    // Ruta: /mi-cuenta/uso.
     'usage_dashboard' => [
       'variables' => [
         'tenant' => NULL,
@@ -586,7 +587,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // Estado vacío del dashboard de uso
+    // Estado vacío del dashboard de uso.
     'usage_dashboard_empty' => [
       'variables' => [
         'message' => '',
@@ -598,7 +599,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // COMPLIANCE DASHBOARD (G115-1)
     // =========================================================================
-
     'compliance_dashboard' => [
       'variables' => [
         'controls' => [],
@@ -613,9 +613,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // RESELLER PORTAL (G117-4)
     // =========================================================================
-
     // Portal de partner/reseller con dashboard de comisiones y tenants
-    // Ruta: /partner-portal
+    // Ruta: /partner-portal.
     'reseller_portal' => [
       'variables' => [
         'reseller' => NULL,
@@ -630,9 +629,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // LEAD MAGNETS PUBLICOS (F3 Doc 178)
     // =========================================================================
-
     // Lead Magnet: Calculadora de Madurez Digital (Emprendimiento)
-    // Ruta publica: /emprendimiento/calculadora-madurez
+    // Ruta publica: /emprendimiento/calculadora-madurez.
     'lead_magnet_calculadora_madurez' => [
       'variables' => [
         'magnet_data' => [],
@@ -642,7 +640,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Lead Magnet: Guia Vende Online (AgroConecta)
-    // Ruta publica: /agroconecta/guia-vende-online
+    // Ruta publica: /agroconecta/guia-vende-online.
     'lead_magnet_guia_agro' => [
       'variables' => [
         'magnet_data' => [],
@@ -652,7 +650,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Lead Magnet: Auditoria SEO Local (ComercioConecta)
-    // Ruta publica: /comercioconecta/auditoria-seo
+    // Ruta publica: /comercioconecta/auditoria-seo.
     'lead_magnet_auditoria_seo' => [
       'variables' => [
         'magnet_data' => [],
@@ -662,7 +660,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Lead Magnet: Template Propuesta Profesional (ServiciosConecta)
-    // Ruta publica: /serviciosconecta/template-propuesta
+    // Ruta publica: /serviciosconecta/template-propuesta.
     'lead_magnet_template_propuesta' => [
       'variables' => [
         'magnet_data' => [],
@@ -672,7 +670,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Admin Center Dashboard (F6 Doc 181 / Spec f104)
-    // Ruta: /admin/jaraba/center
+    // Ruta: /admin/jaraba/center.
     'admin_center_dashboard' => [
       'variables' => [
         'kpis' => [],
@@ -686,7 +684,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Admin Center Tenants (F6 Doc 181 / Spec f104 §FASE 2)
-    // Ruta: /admin/jaraba/center/tenants
+    // Ruta: /admin/jaraba/center/tenants.
     'admin_center_tenants' => [
       'variables' => [],
       'template' => 'admin-center-tenants',
@@ -703,7 +701,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // Admin Center Users (F6 Doc 181 / Spec f104 §FASE 3)
-    // Ruta: /admin/jaraba/center/users
+    // Ruta: /admin/jaraba/center/users.
     'admin_center_users' => [
       'variables' => [],
       'template' => 'admin-center-users',
@@ -766,8 +764,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // ADMIN STRUCTURE ENHANCED (UX Improvement)
     // =========================================================================
-
-    // Página /admin/structure con secciones categorizadas y búsqueda
+    // Página /admin/structure con secciones categorizadas y búsqueda.
     'admin_structure_overview' => [
       'variables' => [
         'categories' => [],
@@ -777,7 +774,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // Página /admin/content con secciones categorizadas y búsqueda
+    // Página /admin/content con secciones categorizadas y búsqueda.
     'admin_content_overview' => [
       'variables' => [
         'categories' => [],
@@ -790,9 +787,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // COMPLIANCE PANEL UNIFICADO (Stack Compliance Legal N1 — FASE 12)
     // =========================================================================
-
     // Panel cross-modulo: agrega KPIs de jaraba_privacy, jaraba_legal, jaraba_dr
-    // Ruta: /admin/jaraba/compliance
+    // Ruta: /admin/jaraba/compliance.
     'compliance_panel' => [
       'variables' => [
         'score' => 0,
@@ -808,9 +804,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // FISCAL COMPLIANCE DASHBOARD (FASE 11)
     // =========================================================================
-
     // Dashboard fiscal unificado — zero-region page template.
-    // Ruta: /admin/jaraba/fiscal
+    // Ruta: /admin/jaraba/fiscal.
     'page__fiscal' => [
       'template' => 'page--fiscal',
       'path' => $path . '/templates',
@@ -828,7 +823,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // PRICING PAGES (178_MetaSite_Remediation + Verticalizacion)
     // =========================================================================
-
     // Hub /planes — Grid comparativo de verticales con enlace a /{vertical}/planes.
     'pricing_hub_page' => [
       'variables' => [
@@ -846,7 +840,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Página /{vertical}/planes — Pricing dinámico por vertical.
     // Datos desde SaasPlanTier/Features vía MetaSitePricingService cascade.
-    // DIRECTRIZ: PLAN-CASCADE-001, i18n
+    // DIRECTRIZ: PLAN-CASCADE-001, i18n.
     'pricing_page' => [
       'variables' => [
         'tiers' => [],
@@ -868,7 +862,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // =========================================================================
     // PÁGINAS LEGALES E INFORMATIVAS
     // =========================================================================
-
     // Template genérico reutilizable para páginas legales (privacidad, términos, cookies).
     // Contenido configurable desde theme settings.
     'legal_page' => [
@@ -933,7 +926,6 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
   ];
 
-
 }
 
 /**
@@ -960,7 +952,7 @@ function ecosistema_jaraba_core_page_attachments(array &$attachments): void {
  */
 function ecosistema_jaraba_core_mail($key, &$message, $params) {
   switch ($key) {
-    // Email de bienvenida para nuevos tenants
+    // Email de bienvenida para nuevos tenants.
     case 'tenant_welcome':
       $message['subject'] = t('¡Bienvenido a @vertical!', [
         '@vertical' => $params['vertical_name'],
@@ -989,7 +981,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = t('El equipo de Ecosistema Jaraba');
       break;
 
-    // Email de recordatorio de fin de trial
+    // Email de recordatorio de fin de trial.
     case 'trial_ending_reminder':
       $message['subject'] = t('Tu periodo de prueba en @vertical termina pronto', [
         '@vertical' => $params['vertical_name'],
@@ -1011,7 +1003,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       ]);
       break;
 
-    // Email de confirmación de pago
+    // Email de confirmación de pago.
     case 'payment_confirmation':
       $message['subject'] = t('Confirmación de pago - @tenant', [
         '@tenant' => $params['tenant_name'],
@@ -1033,7 +1025,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = t('Gracias por confiar en nosotros.');
       break;
 
-    // Email de alerta de pago fallido
+    // Email de alerta de pago fallido.
     case 'payment_failed':
       $message['subject'] = t('⚠️ Problema con tu pago - @tenant', [
         '@tenant' => $params['tenant_name'],
@@ -1055,7 +1047,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       ]);
       break;
 
-    // Email de alerta de límite de uso
+    // Email de alerta de límite de uso.
     case 'usage_limit_alert':
       $message['subject'] = t('📊 Alerta de uso (@percent%) - @tenant', [
         '@percent' => $params['percentage'],
@@ -1077,7 +1069,8 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
         $message['body'][] = t('Para continuar añadiendo más @type, necesitas actualizar tu plan.', [
           '@type' => $params['limit_type'],
         ]);
-      } else {
+      }
+      else {
         $message['body'][] = t('Has alcanzado el @percent% del límite de @type en tu plan.', [
           '@percent' => $params['percentage'],
           '@type' => $params['limit_type'],
@@ -1097,14 +1090,14 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
     // =========================================================================
     // REVERSE TRIAL EMAILS (Q1 2027)
     // =========================================================================
-
-    // Email de recordatorio de reverse trial expirando
+    // Email de recordatorio de reverse trial expirando.
     case 'reverse_trial_expiring':
       if ($params['days_remaining'] == 0) {
         $message['subject'] = t('⚠️ Tu acceso Pro termina HOY - @tenant', [
           '@tenant' => $params['tenant_name'],
         ]);
-      } else {
+      }
+      else {
         $message['subject'] = t('⏰ Te quedan @days días de acceso Pro - @tenant', [
           '@days' => $params['days_remaining'],
           '@tenant' => $params['tenant_name'],
@@ -1120,12 +1113,14 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
           '@tenant' => $params['tenant_name'],
         ]);
         $message['body'][] = t('Si no añades un método de pago, mañana tu cuenta cambiará automáticamente al plan Starter (gratuito).');
-      } elseif ($params['days_remaining'] == 1) {
+      }
+      elseif ($params['days_remaining'] == 1) {
         $message['body'][] = t('Tu período de prueba Pro en @tenant termina MAÑANA.', [
           '@tenant' => $params['tenant_name'],
         ]);
         $message['body'][] = t('Esta es tu última oportunidad para mantener todas las funcionalidades Pro.');
-      } else {
+      }
+      else {
         $message['body'][] = t('Tu período de prueba Pro en @tenant termina en @days días.', [
           '@tenant' => $params['tenant_name'],
           '@days' => $params['days_remaining'],
@@ -1177,10 +1172,10 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
         $account ? $account->getEmail() : ''
       );
 
-      $message['body'][] = \Drupal\Core\Render\Markup::create($html);
+      $message['body'][] = Markup::create($html);
       break;
 
-    // Email de confirmación de downgrade
+    // Email de confirmación de downgrade.
     case 'reverse_trial_downgraded':
       $message['subject'] = t('📋 Tu cuenta ha cambiado a @plan - @tenant', [
         '@plan' => $params['new_plan'],
@@ -1285,8 +1280,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
     // =========================================================================
     // LEAD MAGNET EMAILS (F3 Doc 178)
     // =========================================================================
-
-    // Email con resultados de la Calculadora de Madurez Digital
+    // Email con resultados de la Calculadora de Madurez Digital.
     case 'lead_magnet_calculadora':
       $message['subject'] = $params['subject'] ?? t('Tu resultado de Madurez Digital');
       if (!empty($params['body']) && is_array($params['body'])) {
@@ -1296,7 +1290,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       }
       break;
 
-    // Email con Guia "Vende Online sin Intermediarios"
+    // Email con Guia "Vende Online sin Intermediarios".
     case 'lead_magnet_guia':
       $message['subject'] = $params['subject'] ?? t('Tu Guia para Vender Online');
       if (!empty($params['body']) && is_array($params['body'])) {
@@ -1306,7 +1300,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       }
       break;
 
-    // Email con resultados de Auditoria SEO Local
+    // Email con resultados de Auditoria SEO Local.
     case 'lead_magnet_auditoria':
       $message['subject'] = $params['subject'] ?? t('Resultados de tu Auditoria SEO Local');
       if (!empty($params['body']) && is_array($params['body'])) {
@@ -1316,7 +1310,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       }
       break;
 
-    // Email con Template Propuesta Profesional
+    // Email con Template Propuesta Profesional.
     case 'lead_magnet_propuesta':
       $message['subject'] = $params['subject'] ?? t('Tu Template de Propuesta Profesional');
       if (!empty($params['body']) && is_array($params['body'])) {
@@ -1335,10 +1329,14 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $dripPhase = $params['drip_phase'] ?? 'reminder_24h';
 
       $verticalTitles = [
-        'empleabilidad' => 'Empleabilidad', 'emprendimiento' => 'Emprendimiento',
-        'comercioconecta' => 'ComercioConecta', 'agroconecta' => 'AgroConecta',
-        'jarabalex' => 'JarabaLex', 'serviciosconecta' => 'ServiciosConecta',
-        'formacion' => 'Formación', 'andalucia_ei' => 'Andalucía +ei',
+        'empleabilidad' => 'Empleabilidad',
+        'emprendimiento' => 'Emprendimiento',
+        'comercioconecta' => 'ComercioConecta',
+        'agroconecta' => 'AgroConecta',
+        'jarabalex' => 'JarabaLex',
+        'serviciosconecta' => 'ServiciosConecta',
+        'formacion' => 'Formación',
+        'andalucia_ei' => 'Andalucía +ei',
         'jaraba_content_hub' => 'Content Hub',
       ];
       $vTitle = $verticalTitles[$vertical] ?? $vertical;
@@ -1439,7 +1437,6 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
     // =========================================================================
     // REVIEW NOTIFICATION EMAILS (Reviews & Comments System)
     // =========================================================================
-
     // Email al propietario cuando se crea una nueva resena.
     case 'review_notification_review_created':
       $stars = $params['stars'] ?? '';
@@ -1561,7 +1558,7 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
  *   \Drupal\ecosistema_jaraba_core\Hook\NodePresaveHooks instead.
  */
 #[LegacyHook]
-function ecosistema_jaraba_core_node_presave(\Drupal\node\NodeInterface $node) {
+function ecosistema_jaraba_core_node_presave(NodeInterface $node) {
   // Solo para productos.
   if ($node->bundle() !== 'product') {
     return;
@@ -1569,29 +1566,30 @@ function ecosistema_jaraba_core_node_presave(\Drupal\node\NodeInterface $node) {
 
   // Solo si el producto es nuevo o no tiene tags.
   $hasTags = $node->hasField('field_tags') && !$node->get('field_tags')->isEmpty();
-  
+
   if ($node->isNew() || !$hasTags) {
     try {
       /** @var \Drupal\ecosistema_jaraba_core\Service\MicroAutomationService $microAutomation */
       $microAutomation = \Drupal::service('ecosistema_jaraba_core.micro_automation');
       $suggestedTags = $microAutomation->autoTagProduct($node);
-      
+
       // Guardar tags sugeridos en el campo (si existe y acepta strings).
       if ($node->hasField('field_auto_tags')) {
         $node->set('field_auto_tags', implode(', ', $suggestedTags));
       }
-      
+
       \Drupal::logger('micro_automation')->info(
         '🏷️ Auto-tagged product "@title" on save',
         ['@title' => $node->getTitle()]
       );
-      
-    } catch (\Exception $e) {
+
+    }
+    catch (\Exception $e) {
       // Silenciosamente ignorar errores para no bloquear guardado.
       \Drupal::logger('micro_automation')->warning(
         'Failed to auto-tag product: @error',
         ['@error' => $e->getMessage()]
-      );
+          );
     }
   }
 }
@@ -1663,21 +1661,23 @@ function ecosistema_jaraba_core_cron() {
         ['@count' => $notifications]
       );
     }
-  } catch (\Exception $e) {
+  }
+  catch (\Exception $e) {
     \Drupal::logger('ecosistema_jaraba_core')->error(
       'Error en Reverse Trials: @message',
       ['@message' => $e->getMessage()]
-    );
+      );
   }
 
   // 5. AI Cost Monitoring (ligero, con throttling interno de 1h).
   try {
     _ecosistema_jaraba_core_check_ai_costs();
-  } catch (\Exception $e) {
+  }
+  catch (\Exception $e) {
     \Drupal::logger('ecosistema_jaraba_core')->error(
       'Error en costes IA: @message',
       ['@message' => $e->getMessage()]
-    );
+      );
   }
 
   // 6b. Detección de anomalías de uso (G111-3).
@@ -1771,8 +1771,8 @@ function ecosistema_jaraba_core_cron() {
 
   // 8c. Quiz follow-up: Email drip sequence para leads del quiz no convertidos.
   // Fases: 24h, 72h, 7d. Evita duplicados via _drip_sent en answers map.
-  if (class_exists(\Drupal\ecosistema_jaraba_core\DailyActions\QuizFollowUpCron::class)) {
-    \Drupal\ecosistema_jaraba_core\DailyActions\QuizFollowUpCron::processUnconvertedLeads();
+  if (class_exists(QuizFollowUpCron::class)) {
+    QuizFollowUpCron::processUnconvertedLeads();
   }
 
   // 8. S1-05: Limpieza de sandboxes expirados — ELIMINADO.
@@ -1780,7 +1780,6 @@ function ecosistema_jaraba_core_cron() {
   // La limpieza de sesiones demo ahora se gestiona via demo_sessions table
   // en DemoInteractiveService. El servicio sandbox_tenant se mantiene
   // registrado para backwards-compat pero no se invoca en cron.
-
   // 9. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
   _ecosistema_jaraba_core_cron_extended();
 
@@ -1810,21 +1809,21 @@ function ecosistema_jaraba_core_cron() {
  *
  * Umbrales configurables:
  * - Warning: €3/día
- * - Critical: €5/día
+ * - Critical: €5/día.
  *
  * @internal
  */
 function _ecosistema_jaraba_core_check_ai_costs() {
   $state = \Drupal::state();
-  
-  // Throttling: solo verificar una vez por hora
+
+  // Throttling: solo verificar una vez por hora.
   $lastCheck = $state->get('ai_cost_last_check', 0);
   if (time() - $lastCheck < 3600) {
     return;
   }
   $state->set('ai_cost_last_check', time());
-  
-  // Obtener métricas del servicio AICostOptimizationService
+
+  // Obtener métricas del servicio AICostOptimizationService.
   try {
     /** @var \Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService $aiCostService */
     $aiCostService = \Drupal::service('ecosistema_jaraba_core.ai_cost_optimization');
@@ -1834,21 +1833,23 @@ function _ecosistema_jaraba_core_check_ai_costs() {
       'total_calls' => $stats['total_calls'] ?? 0,
       'by_model' => $stats['by_model'] ?? [],
     ];
-  } catch (\Throwable $e) {
-    // Servicio no disponible, usar State API directamente
+  }
+  catch (\Throwable $e) {
+    // Servicio no disponible, usar State API directamente.
     $metrics = _ecosistema_jaraba_core_get_ai_metrics_from_state();
   }
-  
+
   $dailyCost = $metrics['daily_cost'] ?? 0;
-  
+
   // Umbrales (configurables via settings.php)
   $config = \Drupal::config('ecosistema_jaraba_core.settings');
   $warningThreshold = $config->get('ai_cost.warning_threshold') ?? 3.0;
   $criticalThreshold = $config->get('ai_cost.critical_threshold') ?? 5.0;
-  
+
   if ($dailyCost >= $criticalThreshold) {
     _ecosistema_jaraba_core_send_ai_cost_alert('critical', $dailyCost, $criticalThreshold, $metrics);
-  } elseif ($dailyCost >= $warningThreshold) {
+  }
+  elseif ($dailyCost >= $warningThreshold) {
     _ecosistema_jaraba_core_send_ai_cost_alert('warning', $dailyCost, $warningThreshold, $metrics);
   }
 }
@@ -1862,11 +1863,11 @@ function _ecosistema_jaraba_core_get_ai_metrics_from_state(): array {
   $state = \Drupal::state();
   $key = 'ai_usage_' . date('Y-m');
   $monthlyData = $state->get($key, []);
-  
+
   $totalCost = 0;
   $totalTokens = 0;
   $breakdown = [];
-  
+
   foreach ($monthlyData as $provider => $data) {
     $cost = $data['cost'] ?? 0;
     $tokens = ($data['tokens_in'] ?? 0) + ($data['tokens_out'] ?? 0);
@@ -1878,11 +1879,11 @@ function _ecosistema_jaraba_core_get_ai_metrics_from_state(): array {
       'calls' => $data['calls'] ?? 0,
     ];
   }
-  
+
   // Estimar coste diario (dividir por día del mes)
   $dayOfMonth = (int) date('d');
   $dailyCost = $dayOfMonth > 0 ? $totalCost / $dayOfMonth : $totalCost;
-  
+
   return [
     'daily_cost' => $dailyCost,
     'monthly_cost' => $totalCost,
@@ -1907,32 +1908,33 @@ function _ecosistema_jaraba_core_get_ai_metrics_from_state(): array {
  */
 function _ecosistema_jaraba_core_send_ai_cost_alert(string $level, float $dailyCost, float $threshold, array $metrics) {
   $state = \Drupal::state();
-  
-  // Throttling: solo una alerta por nivel por día
+
+  // Throttling: solo una alerta por nivel por día.
   $alertKey = "ai_cost_alert_{$level}_" . date('Y-m-d');
   if ($state->get($alertKey, FALSE)) {
-    return; // Ya se envió hoy
+    // Ya se envió hoy.
+    return;
   }
-  
-  // Obtener email del admin
+
+  // Obtener email del admin.
   $config = \Drupal::config('system.site');
   $adminEmail = $config->get('mail');
-  
+
   if (empty($adminEmail)) {
     \Drupal::logger('ecosistema_jaraba_core')->warning(
       'No se pudo enviar alerta de costes IA: email de admin no configurado'
     );
     return;
   }
-  
+
   $params = [
     'level' => $level,
     'daily_cost' => $dailyCost,
     'threshold' => $threshold,
     'breakdown' => $metrics['breakdown'] ?? [],
-    'dashboard_url' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.finops_dashboard', [], ['absolute' => TRUE])->toString(),
+    'dashboard_url' => Url::fromRoute('ecosistema_jaraba_core.finops_dashboard', [], ['absolute' => TRUE])->toString(),
   ];
-  
+
   $mailManager = \Drupal::service('plugin.manager.mail');
   $result = $mailManager->mail(
     'ecosistema_jaraba_core',
@@ -1941,7 +1943,7 @@ function _ecosistema_jaraba_core_send_ai_cost_alert(string $level, float $dailyC
     'es',
     $params
   );
-  
+
   if ($result['result']) {
     $state->set($alertKey, TRUE);
     \Drupal::logger('ecosistema_jaraba_core')->info(
@@ -1967,7 +1969,7 @@ function _ecosistema_jaraba_core_check_expiring_trials() {
   $entityTypeManager = \Drupal::entityTypeManager();
   $tenantStorage = $entityTypeManager->getStorage('tenant');
 
-  // Buscar tenants en trial que expiran en 3 días o menos
+  // Buscar tenants en trial que expiran en 3 días o menos.
   $thresholdDate = (new \DateTime())->add(new \DateInterval('P3D'))->format('Y-m-d\TH:i:s');
   $now = (new \DateTime())->format('Y-m-d\TH:i:s');
 
@@ -2011,7 +2013,7 @@ function _ecosistema_jaraba_core_check_expiring_trials() {
         ['@tenant' => $tenant->getName()]
       );
 
-      // Marcar como enviado para no repetir
+      // Marcar como enviado para no repetir.
       $tenant->set('trial_reminder_sent', TRUE);
       $tenant->save();
     }
@@ -2029,7 +2031,7 @@ function _ecosistema_jaraba_core_check_past_due_subscriptions() {
   $entityTypeManager = \Drupal::entityTypeManager();
   $tenantStorage = $entityTypeManager->getStorage('tenant');
 
-  // Buscar tenants en past_due desde hace más de 7 días
+  // Buscar tenants en past_due desde hace más de 7 días.
   $thresholdDate = (new \DateTime())->sub(new \DateInterval('P7D'))->format('Y-m-d\TH:i:s');
 
   $query = $tenantStorage->getQuery()
@@ -2044,7 +2046,7 @@ function _ecosistema_jaraba_core_check_past_due_subscriptions() {
   foreach ($tenantIds as $tenantId) {
     $tenant = $tenantStorage->load($tenantId);
     if ($tenant) {
-      // Suspender el tenant
+      // Suspender el tenant.
       $tenantManager->suspendTenant($tenant, 'payment_overdue');
 
       \Drupal::logger('ecosistema_jaraba_core')->warning(
@@ -2060,7 +2062,7 @@ function _ecosistema_jaraba_core_check_past_due_subscriptions() {
  *
  * Envía alertas cuando un tenant alcanza el 80% o 100% de sus límites:
  * - Número de productores
- * - Almacenamiento utilizado
+ * - Almacenamiento utilizado.
  *
  * @internal
  */
@@ -2068,7 +2070,7 @@ function _ecosistema_jaraba_core_check_usage_limits() {
   $entityTypeManager = \Drupal::entityTypeManager();
   $tenantStorage = $entityTypeManager->getStorage('tenant');
 
-  // Solo tenants activos
+  // Solo tenants activos.
   $query = $tenantStorage->getQuery()
     ->accessCheck(FALSE)
     ->condition('subscription_status', ['active', 'trial'], 'IN');
@@ -2096,7 +2098,7 @@ function _ecosistema_jaraba_core_check_usage_limits() {
     $limits = $plan->getLimits();
     $metrics = $tenantContext->getUsageMetrics($tenant);
 
-    // Verificar límite de productores
+    // Verificar límite de productores.
     $maxProductores = $limits['productores'] ?? 0;
     if ($maxProductores > 0) {
       $currentProductores = $metrics['producers_count'] ?? 0;
@@ -2104,12 +2106,13 @@ function _ecosistema_jaraba_core_check_usage_limits() {
 
       if ($ratio >= $alertThreshold100) {
         _ecosistema_jaraba_core_send_usage_alert($tenant, 'producers', 100, $currentProductores, $maxProductores);
-      } elseif ($ratio >= $alertThreshold80) {
+      }
+      elseif ($ratio >= $alertThreshold80) {
         _ecosistema_jaraba_core_send_usage_alert($tenant, 'producers', 80, $currentProductores, $maxProductores);
       }
     }
 
-    // Verificar límite de almacenamiento
+    // Verificar límite de almacenamiento.
     $maxStorageMb = $limits['almacenamiento_mb'] ?? 0;
     if ($maxStorageMb > 0) {
       $currentStorageMb = $metrics['storage_mb'] ?? 0;
@@ -2117,7 +2120,8 @@ function _ecosistema_jaraba_core_check_usage_limits() {
 
       if ($ratio >= $alertThreshold100) {
         _ecosistema_jaraba_core_send_usage_alert($tenant, 'storage', 100, $currentStorageMb, $maxStorageMb);
-      } elseif ($ratio >= $alertThreshold80) {
+      }
+      elseif ($ratio >= $alertThreshold80) {
         _ecosistema_jaraba_core_send_usage_alert($tenant, 'storage', 80, $currentStorageMb, $maxStorageMb);
       }
     }
@@ -2151,7 +2155,7 @@ function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percenta
   $oneDayAgo = time() - 86400;
 
   if ($lastAlert > $oneDayAgo) {
-    // Ya se envió alerta hoy, no repetir
+    // Ya se envió alerta hoy, no repetir.
     return;
   }
 
@@ -2167,10 +2171,10 @@ function _ecosistema_jaraba_core_send_usage_alert($tenant, $limitType, $percenta
     'percentage' => $percentage,
     'current' => $current,
     'max' => $max,
-    'upgrade_url' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.tenant.change_plan', [], ['absolute' => TRUE])->toString(),
+    'upgrade_url' => Url::fromRoute('ecosistema_jaraba_core.tenant.change_plan', [], ['absolute' => TRUE])->toString(),
   ];
 
-  // Enviar email
+  // Enviar email.
   $mailManager = \Drupal::service('plugin.manager.mail');
   $result = $mailManager->mail(
     'ecosistema_jaraba_core',
@@ -2208,8 +2212,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   // ---------------------------------------------------------------------------
   // PWA META TAGS Y SERVICE WORKER
   // ---------------------------------------------------------------------------
-  
-  // Web App Manifest
+  // Web App Manifest.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2221,8 +2224,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_manifest',
   ];
-  
-  // Theme Color
+
+  // Theme Color.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2234,8 +2237,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_theme_color',
   ];
-  
-  // Apple Mobile Web App Capable
+
+  // Apple Mobile Web App Capable.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2247,8 +2250,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_apple_capable',
   ];
-  
-  // Apple Status Bar Style
+
+  // Apple Status Bar Style.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2260,8 +2263,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_apple_status_bar',
   ];
-  
-  // Apple Mobile Web App Title
+
+  // Apple Mobile Web App Title.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2273,8 +2276,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_apple_title',
   ];
-  
-  // Apple Touch Icon
+
+  // Apple Touch Icon.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2286,8 +2289,8 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_apple_touch_icon',
   ];
-  
-  // Service Worker Registration Script
+
+  // Service Worker Registration Script.
   $attachments['#attached']['html_head'][] = [
     [
       '#type' => 'html_tag',
@@ -2308,13 +2311,12 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     ],
     'pwa_service_worker',
   ];
-  
+
   // ---------------------------------------------------------------------------
   // VISITOR JOURNEY TRACKING (F3 Doc 178)
   // ---------------------------------------------------------------------------
   // Deteccion de vertical del visitante + tracking AIDA del funnel.
   // Solo en paginas frontend (no admin).
-
   $route_obj = \Drupal::routeMatch()->getRouteObject();
   $is_admin_route = $route_obj && $route_obj->getOption('_admin_route');
 
@@ -2341,11 +2343,10 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   // ---------------------------------------------------------------------------
   // ESTILOS PREMIUM PARA ESTRUCTURA ADMIN
   // ---------------------------------------------------------------------------
-
   // Obtener el path actual (sin el prefijo de idioma)
   $current_path = \Drupal::service('path.current')->getPath();
-  
-  // Paths de estructura que necesitan UX Premium
+
+  // Paths de estructura que necesitan UX Premium.
   $premium_paths = [
     '/admin/structure/tenants',
     '/admin/structure/verticales',
@@ -2353,7 +2354,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
     '/admin/structure/ai-agents',
     '/admin/structure/saas-plans',
   ];
-  
+
   $load_premium = FALSE;
   foreach ($premium_paths as $path) {
     if (strpos($current_path, $path) === 0) {
@@ -2361,7 +2362,7 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
       break;
     }
   }
-  
+
   // ---------------------------------------------------------------------------
   // FIX PARA PESTAÑAS ADMIN QUE TRUNCAN TEXTO EN ESPAÑOL
   // ---------------------------------------------------------------------------
@@ -2369,10 +2370,10 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
   if (strpos($current_path, '/admin/content') === 0 || strpos($current_path, '/es/admin/content') !== FALSE) {
     $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/admin-tabs-fix';
   }
-  
+
   if ($load_premium) {
     $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/global';
-    // CSS simplificado sin min-height que causa gaps
+    // CSS simplificado sin min-height que causa gaps.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -2699,7 +2700,7 @@ function _ecosistema_jaraba_core_inject_review_schema(array &$attachments): void
 
   // Obtener la entidad del route parameter.
   $entity = $routeMatch->getParameter($routeParam);
-  if (!$entity || !($entity instanceof \Drupal\Core\Entity\EntityInterface)) {
+  if (!$entity || !($entity instanceof EntityInterface)) {
     return;
   }
 
@@ -2940,7 +2941,7 @@ function _ecosistema_jaraba_core_cron_health_check() {
  * USR-003: Añade submit handler para mostrar un mensaje de confirmación
  * premium post-registro con instrucciones del proceso de verificación.
  */
-function ecosistema_jaraba_core_form_user_register_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+function ecosistema_jaraba_core_form_user_register_form_alter(array &$form, FormStateInterface $form_state): void {
   // Añadir nuestro submit handler DESPUÉS de los default de Drupal.
   $form['actions']['submit']['#submit'][] = '_ecosistema_jaraba_core_register_message_submit';
 }
@@ -2951,7 +2952,7 @@ function ecosistema_jaraba_core_form_user_register_form_alter(array &$form, \Dru
  * Reemplaza el mensaje genérico de Drupal con uno branded que explica
  * los pasos del proceso de creación de la cuenta.
  */
-function _ecosistema_jaraba_core_register_message_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+function _ecosistema_jaraba_core_register_message_submit(array &$form, FormStateInterface $form_state): void {
   $messenger = \Drupal::messenger();
 
   // Eliminar mensajes genéricos de Drupal para reemplazarlos.
@@ -2964,7 +2965,7 @@ function _ecosistema_jaraba_core_register_message_submit(array &$form, \Drupal\C
   $message = '<div style="max-width: 540px;">';
   $message .= '<h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1A1A2E;">📬 ¡Solicitud de cuenta recibida!</h3>';
   $message .= '<p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.5;">';
-  $message .= 'Hemos enviado un correo de verificación a <strong style="color: #233D63;">' . \Drupal\Component\Utility\Html::escape($email) . '</strong>. ';
+  $message .= 'Hemos enviado un correo de verificación a <strong style="color: #233D63;">' . Html::escape($email) . '</strong>. ';
   $message .= 'Sigue estos pasos para activar tu cuenta:</p>';
   $message .= '<div style="background: #F8FAFC; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px;">';
   $message .= '<div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">';
@@ -2983,7 +2984,7 @@ function _ecosistema_jaraba_core_register_message_submit(array &$form, \Drupal\C
   $message .= '<p style="margin: 0; font-size: 13px; color: #64748B;">El enlace de verificación es válido por 24 horas. Si no recibes el correo, <a href="/es/user/login" style="color: #FF8C42; text-decoration: underline;">contacta con nuestro equipo</a>.</p>';
   $message .= '</div>';
 
-  $messenger->addStatus(\Drupal\Core\Render\Markup::create($message));
+  $messenger->addStatus(Markup::create($message));
 
   // Redirigir a la página de login para que el mensaje se muestre
   // en el template de auth (que ahora renderiza clean_messages).
@@ -3005,7 +3006,7 @@ function _ecosistema_jaraba_core_register_message_submit(array &$form, \Drupal\C
  *
  * SPEC: 20260120a Fases 1-2
  */
-function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account): void {
+function ecosistema_jaraba_core_user_insert(UserInterface $account): void {
   $logger = \Drupal::logger('ecosistema_jaraba_core');
 
   try {
@@ -3128,7 +3129,7 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
  * If the user's email is modified, any previous verification is invalidated
  * and a new verification email is sent (PRESAVE-RESILIENCE-001).
  */
-function ecosistema_jaraba_core_user_presave(\Drupal\user\UserInterface $account): void {
+function ecosistema_jaraba_core_user_presave(UserInterface $account): void {
   // Only act on existing users (not new accounts — hook_user_insert handles that).
   if ($account->isNew()) {
     return;
@@ -3181,7 +3182,7 @@ function ecosistema_jaraba_core_user_presave(\Drupal\user\UserInterface $account
  * 1. Redirige al dashboard contextual según avatar detectado.
  * 2. Envía email de bienvenida con ventajas del SaaS.
  */
-function ecosistema_jaraba_core_user_login(\Drupal\user\UserInterface $account): void {
+function ecosistema_jaraba_core_user_login(UserInterface $account): void {
   // Solo actuar en primer login (post-registro).
   // getLastAccessedTime() === 0 indica que nunca ha accedido antes.
   if ($account->getLastAccessedTime() > 0) {
@@ -3349,11 +3350,11 @@ function _ecosistema_jaraba_core_build_welcome_email_html(
   string $displayName,
   array $config,
   string $ctaUrl,
-  string $email
+  string $email,
 ): string {
   // Escape user-provided values to prevent XSS in HTML email.
-  $displayName = \Drupal\Component\Utility\Html::escape($displayName);
-  $email = \Drupal\Component\Utility\Html::escape($email);
+  $displayName = Html::escape($displayName);
+  $email = Html::escape($email);
   $accentColor = $config['accent_color'];
 
   // ── Section 1: Avatar-specific benefits ──
@@ -3446,13 +3447,13 @@ function _ecosistema_jaraba_core_build_catalog_section_html(array $catalog, stri
 
   $columnsHtml = '';
   foreach ($catalog as $column) {
-    $columnTitle = \Drupal\Component\Utility\Html::escape($column['title']);
+    $columnTitle = Html::escape($column['title']);
     $itemsHtml = '';
 
     foreach ($column['items'] as $item) {
-      $title = \Drupal\Component\Utility\Html::escape($item['title']);
-      $subtitle = \Drupal\Component\Utility\Html::escape($item['subtitle']);
-      $colorHex = \Drupal\ecosistema_jaraba_core\Service\MegaMenuBridgeService::resolveColorHex($item['color']);
+      $title = Html::escape($item['title']);
+      $subtitle = Html::escape($item['subtitle']);
+      $colorHex = MegaMenuBridgeService::resolveColorHex($item['color']);
       $url = $baseUrl . $item['url'];
 
       $itemsHtml .= <<<ITEM
@@ -3527,7 +3528,7 @@ HTML;
  *
  * F2 — Doc 183 §4: first_sale trigger (42% expected conversion).
  */
-function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+function ecosistema_jaraba_core_entity_update(EntityInterface $entity) {
   // REV-PHASE3: Recalcular agregacion de ratings para entidades de resena.
   _ecosistema_jaraba_core_review_aggregation_trigger($entity);
   // B-13: Gamificacion + B-18: Webhook al cambiar status de resena.
@@ -3706,7 +3707,7 @@ function ecosistema_jaraba_core_entity_type_alter(array &$entity_types): void {
 
   foreach ($entity_types as $entityTypeId => $entityType) {
     // Only process content entity types from our custom modules.
-    if (!$entityType instanceof \Drupal\Core\Entity\ContentEntityTypeInterface) {
+    if (!$entityType instanceof ContentEntityTypeInterface) {
       continue;
     }
 
@@ -3782,14 +3783,14 @@ function ecosistema_jaraba_core_preprocess_html(&$variables) {
     $resolved_routes = [];
     foreach ($route_map as $key => $route_name) {
       try {
-        $resolved_routes[$key] = \Drupal\Core\Url::fromRoute($route_name)->toString();
+        $resolved_routes[$key] = Url::fromRoute($route_name)->toString();
       }
       catch (\Throwable $e) {
         $resolved_routes[$key] = '';
       }
     }
     try {
-      $search_url = \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString();
+      $search_url = Url::fromRoute('ecosistema_jaraba_core.admin.search_api')->toString();
     }
     catch (\Throwable $e) {
       $search_url = '';
@@ -3844,7 +3845,7 @@ function ecosistema_jaraba_core_theme_suggestions_page_alter(array &$suggestions
  * Redirige a /empleabilidad después de que un usuario nuevo establezca
  * su contraseña tras hacer clic en el enlace de uso único.
  */
-function ecosistema_jaraba_core_form_user_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id): void {
+function ecosistema_jaraba_core_form_user_form_alter(array &$form, FormStateInterface $form_state, $form_id): void {
   // USR-004: Redirect to user profile after saving account settings.
   // Drupal core ProfileForm::save() does NOT set a redirect,
   // so without this the form reloads on the same edit page.
@@ -3861,7 +3862,7 @@ function ecosistema_jaraba_core_form_user_form_alter(array &$form, \Drupal\Core\
 /**
  * Submit handler: redirects to user profile after saving account settings.
  */
-function _ecosistema_jaraba_core_user_profile_redirect(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+function _ecosistema_jaraba_core_user_profile_redirect(array &$form, FormStateInterface $form_state): void {
   $account = $form_state->getFormObject()->getEntity();
   if ($account && $account->id()) {
     $form_state->setRedirectUrl($account->toUrl('canonical'));
@@ -3871,8 +3872,8 @@ function _ecosistema_jaraba_core_user_profile_redirect(array &$form, \Drupal\Cor
 /**
  * Submit handler: redirige al dashboard tras establecer la contraseña.
  */
-function _ecosistema_jaraba_core_password_set_redirect(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
-  $form_state->setRedirectUrl(\Drupal\Core\Url::fromUserInput('/empleabilidad'));
+function _ecosistema_jaraba_core_password_set_redirect(array &$form, FormStateInterface $form_state): void {
+  $form_state->setRedirectUrl(Url::fromUserInput('/empleabilidad'));
 }
 
 /**
@@ -3979,7 +3980,7 @@ function _ecosistema_jaraba_core_inject_reviews_into_template(
   array &$variables,
   string $reviewEntityType,
   string $targetEntityType,
-  string $entityVarName
+  string $entityVarName,
 ): void {
   // Skip if reviews already populated by the controller.
   if (!empty($variables['reviews'])) {
@@ -3987,7 +3988,7 @@ function _ecosistema_jaraba_core_inject_reviews_into_template(
   }
 
   $entity = $variables[$entityVarName] ?? NULL;
-  if (!$entity || !($entity instanceof \Drupal\Core\Entity\EntityInterface)) {
+  if (!$entity || !($entity instanceof EntityInterface)) {
     return;
   }
 
@@ -4073,7 +4074,7 @@ function _ecosistema_jaraba_core_inject_reviews_into_template(
  * B-09: Sentiment analysis.
  * PRESAVE-RESILIENCE-001: hasService() + try-catch.
  */
-function ecosistema_jaraba_core_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function ecosistema_jaraba_core_entity_presave(EntityInterface $entity): void {
   _ecosistema_jaraba_core_review_presave_enrich($entity);
 }
 
@@ -4084,7 +4085,7 @@ function ecosistema_jaraba_core_entity_presave(\Drupal\Core\Entity\EntityInterfa
  * B-11: Notificaciones al crear resena.
  * PRESAVE-RESILIENCE-001 — nunca falla el guardado por servicios opcionales.
  */
-function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+function ecosistema_jaraba_core_entity_insert(EntityInterface $entity): void {
   _ecosistema_jaraba_core_review_aggregation_trigger($entity);
   _ecosistema_jaraba_core_review_notification_trigger($entity, 'created');
   _ecosistema_jaraba_core_review_gamification_trigger($entity, 'submitted');
@@ -4098,7 +4099,7 @@ function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterfac
       && str_contains($entity->bundle(), 'group_membership')) {
     try {
       $user = $entity->getEntity();
-      if ($user instanceof \Drupal\user\UserInterface && !$user->hasRole('tenant_user')) {
+      if ($user instanceof UserInterface && !$user->hasRole('tenant_user')) {
         $user->addRole('tenant_user');
         $user->save();
       }
@@ -4118,7 +4119,7 @@ function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterfac
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_presave_enrich(\Drupal\Core\Entity\EntityInterface $entity): void {
+function _ecosistema_jaraba_core_review_presave_enrich(EntityInterface $entity): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4185,7 +4186,7 @@ function _ecosistema_jaraba_core_review_presave_enrich(\Drupal\Core\Entity\Entit
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_aggregation_trigger(\Drupal\Core\Entity\EntityInterface $entity): void {
+function _ecosistema_jaraba_core_review_aggregation_trigger(EntityInterface $entity): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4227,7 +4228,7 @@ function _ecosistema_jaraba_core_review_aggregation_trigger(\Drupal\Core\Entity\
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_notification_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $event): void {
+function _ecosistema_jaraba_core_review_notification_trigger(EntityInterface $entity, string $event): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4267,7 +4268,7 @@ function _ecosistema_jaraba_core_review_notification_trigger(\Drupal\Core\Entity
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_status_change_trigger(\Drupal\Core\Entity\EntityInterface $entity): void {
+function _ecosistema_jaraba_core_review_status_change_trigger(EntityInterface $entity): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4313,7 +4314,7 @@ function _ecosistema_jaraba_core_review_status_change_trigger(\Drupal\Core\Entit
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_gamification_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $action): void {
+function _ecosistema_jaraba_core_review_gamification_trigger(EntityInterface $entity, string $action): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4359,7 +4360,7 @@ function _ecosistema_jaraba_core_review_gamification_trigger(\Drupal\Core\Entity
  *
  * @internal
  */
-function _ecosistema_jaraba_core_review_webhook_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $event): void {
+function _ecosistema_jaraba_core_review_webhook_trigger(EntityInterface $entity, string $event): void {
   $reviewEntityTypes = [
     'comercio_review',
     'review_agro',
@@ -4388,7 +4389,6 @@ function _ecosistema_jaraba_core_review_webhook_trigger(\Drupal\Core\Entity\Enti
     );
   }
 }
-
 
 /**
  * Prepares variables for alert_rule templates.

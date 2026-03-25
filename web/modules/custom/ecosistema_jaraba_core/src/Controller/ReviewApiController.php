@@ -25,8 +25,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * - GET  /api/v1/reviews/analytics — Dashboard metricas (B-05)
  * - GET  /api/v1/reviews/analytics/export — CSV export (B-05)
  */
-class ReviewApiController extends ControllerBase
-{
+class ReviewApiController extends ControllerBase {
 
   /**
    * Campo de estado por tipo de entidad.
@@ -94,8 +93,7 @@ class ReviewApiController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('ecosistema_jaraba_core.review_helpfulness'),
       $container->get('ecosistema_jaraba_core.review_analytics'),
@@ -110,8 +108,7 @@ class ReviewApiController extends ControllerBase
    * POST /api/v1/reviews/{review_type}/{review_id}/vote
    * Body: { "helpful": true|false }
    */
-  public function vote(string $review_type, int $review_id, Request $request): JsonResponse
-  {
+  public function vote(string $review_type, int $review_id, Request $request): JsonResponse {
     if (!isset(self::STATUS_FIELD_MAP[$review_type])) {
       return new JsonResponse(['error' => 'Unsupported review type.'], 400);
     }
@@ -144,8 +141,7 @@ class ReviewApiController extends ControllerBase
    *
    * GET /api/v1/reviews/{review_type}/list?target_id=X&stars=4&sort=helpful&has_photos=1&verified=1&page=0&limit=10
    */
-  public function listFiltered(string $review_type, Request $request): JsonResponse
-  {
+  public function listFiltered(string $review_type, Request $request): JsonResponse {
     if (!isset(self::STATUS_FIELD_MAP[$review_type])) {
       return new JsonResponse(['error' => 'Unsupported review type.'], 400);
     }
@@ -277,7 +273,8 @@ class ReviewApiController extends ControllerBase
           'star_counts' => $starCounts,
         ],
       ]);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return new JsonResponse(['error' => 'Error fetching reviews.'], 500);
     }
   }
@@ -288,8 +285,7 @@ class ReviewApiController extends ControllerBase
    * POST /api/v1/reviews/{review_type}/{review_id}/response
    * Body: { "response": "Gracias por tu resena..." }
    */
-  public function ownerResponse(string $review_type, int $review_id, Request $request): JsonResponse
-  {
+  public function ownerResponse(string $review_type, int $review_id, Request $request): JsonResponse {
     $responseField = self::RESPONSE_FIELD_MAP[$review_type] ?? NULL;
     if ($responseField === NULL) {
       return new JsonResponse(['error' => 'Response not supported for this review type.'], 400);
@@ -355,7 +351,8 @@ class ReviewApiController extends ControllerBase
           'response_date' => time(),
         ],
       ]);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return new JsonResponse(['error' => 'Error saving response.'], 500);
     }
   }
@@ -368,8 +365,7 @@ class ReviewApiController extends ControllerBase
    * @return int|null
    *   Owner UID, or NULL if not resolvable.
    */
-  protected function resolveTargetOwner(string $reviewType, int $targetId): ?int
-  {
+  protected function resolveTargetOwner(string $reviewType, int $targetId): ?int {
     $targetEntityTypes = [
       'comercio_review' => 'merchant_profile',
       'review_agro' => 'producer_profile',
@@ -390,7 +386,8 @@ class ReviewApiController extends ControllerBase
       if ($target->hasField('uid') && !$target->get('uid')->isEmpty()) {
         return (int) ($target->get('uid')->target_id ?? 0);
       }
-    } catch (\Exception) {
+    }
+    catch (\Exception) {
     }
 
     return NULL;
@@ -401,8 +398,7 @@ class ReviewApiController extends ControllerBase
    *
    * GET /api/v1/reviews/analytics?vertical=comercio_review&tenant_id=1&days=30
    */
-  public function analytics(Request $request): JsonResponse
-  {
+  public function analytics(Request $request): JsonResponse {
     $vertical = $request->query->get('vertical');
     $tenantGroupId = $request->query->get('tenant_id') ? (int) $request->query->get('tenant_id') : NULL;
     $days = min(365, max(7, (int) $request->query->get('days', 30)));
@@ -424,8 +420,7 @@ class ReviewApiController extends ControllerBase
    *
    * GET /api/v1/reviews/analytics/export?vertical=comercio_review&tenant_id=1
    */
-  public function analyticsExport(Request $request): Response
-  {
+  public function analyticsExport(Request $request): Response {
     $vertical = $request->query->get('vertical');
     $tenantGroupId = $request->query->get('tenant_id') ? (int) $request->query->get('tenant_id') : NULL;
 
@@ -460,8 +455,7 @@ class ReviewApiController extends ControllerBase
    * POST /api/v1/reviews/{review_type}/{review_id}/report
    * Body: { "reason": "spam|offensive|fake|other", "details": "..." }
    */
-  public function reportAbuse(string $review_type, int $review_id, Request $request): JsonResponse
-  {
+  public function reportAbuse(string $review_type, int $review_id, Request $request): JsonResponse {
     if (!isset(self::STATUS_FIELD_MAP[$review_type])) {
       return new JsonResponse(['error' => 'Unsupported review type.'], 400);
     }
@@ -505,8 +499,7 @@ class ReviewApiController extends ControllerBase
    * PATCH /api/v1/reviews/{review_type}/{review_id}
    * Body: { "rating": 4, "body": "Updated text..." }
    */
-  public function editReview(string $review_type, int $review_id, Request $request): JsonResponse
-  {
+  public function editReview(string $review_type, int $review_id, Request $request): JsonResponse {
     if (!isset(self::STATUS_FIELD_MAP[$review_type])) {
       return new JsonResponse(['error' => 'Unsupported review type.'], 400);
     }
@@ -556,17 +549,18 @@ class ReviewApiController extends ControllerBase
         'data' => ['review_id' => $review_id, 'status' => 'updated'],
         'meta' => ['timestamp' => time()],
       ]);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return new JsonResponse(['error' => 'Error updating review.'], 500);
     }
   }
+
   /**
    * Delete a review by its author or admin.
    *
    * DELETE /api/v1/reviews/{review_type}/{review_id}
    */
-  public function deleteReview(string $review_type, int $review_id, Request $request): JsonResponse
-  {
+  public function deleteReview(string $review_type, int $review_id, Request $request): JsonResponse {
     if (!isset(self::STATUS_FIELD_MAP[$review_type])) {
       return new JsonResponse(['error' => 'Unsupported review type.'], 400);
     }
@@ -593,7 +587,8 @@ class ReviewApiController extends ControllerBase
         'data' => ['review_id' => $review_id, 'status' => 'deleted'],
         'meta' => ['timestamp' => time()],
       ]);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       return new JsonResponse(['error' => 'Error deleting review.'], 500);
     }
   }

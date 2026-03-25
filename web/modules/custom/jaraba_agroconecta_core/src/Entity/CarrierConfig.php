@@ -44,6 +44,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  */
 class CarrierConfig extends ContentEntityBase {
 
+  /**
+   *
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 

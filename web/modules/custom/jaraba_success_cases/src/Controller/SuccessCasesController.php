@@ -24,368 +24,359 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Following the Content Hub Blog Pattern:
  * Controller → #theme render array → Template → page--success-cases.html.twig
  */
-class SuccessCasesController extends ControllerBase
-{
+class SuccessCasesController extends ControllerBase {
 
-    /**
-     * The renderer service.
-     *
-     * @var \Drupal\Core\Render\RendererInterface
-     */
-    protected RendererInterface $renderer;
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected RendererInterface $renderer;
 
-    /**
-     * Constructs a SuccessCasesController.
-     *
-     * Note: PHP 8.4 / DRUPAL11-002 — entityTypeManager and currentUser
-     * are NOT promoted (no `protected` keyword) because they are inherited
-     * from ControllerBase without explicit type declarations.
-     *
-     * @param \Drupal\Core\Render\RendererInterface $renderer
-     *   The renderer service.
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-     *   The entity type manager.
-     */
-    public function __construct(
-        RendererInterface $renderer,
-        EntityTypeManagerInterface $entityTypeManager,
-    ) {
-        $this->renderer = $renderer;
-        // DRUPAL11-002: Assign manually, not via constructor promotion.
-        $this->entityTypeManager = $entityTypeManager;
+  /**
+   * Constructs a SuccessCasesController.
+   *
+   * Note: PHP 8.4 / DRUPAL11-002 — entityTypeManager and currentUser
+   * are NOT promoted (no `protected` keyword) because they are inherited
+   * from ControllerBase without explicit type declarations.
+   *
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   */
+  public function __construct(
+    RendererInterface $renderer,
+    EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    $this->renderer = $renderer;
+    // DRUPAL11-002: Assign manually, not via constructor promotion.
+    $this->entityTypeManager = $entityTypeManager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('renderer'),
+          $container->get('entity_type.manager'),
+      );
+  }
+
+  /**
+   * Renders the success cases list page.
+   *
+   * Route: /casos-de-exito
+   * Supports ?vertical=emprendimiento query parameter for filtering.
+   * Pagination via ?page=N (Drupal's standard pager).
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   *
+   * @return array
+   *   Render array with #theme = success_cases_list.
+   */
+  public function list(Request $request): array {
+    $storage = $this->entityTypeManager->getStorage('success_case');
+
+    $query = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->sort('weight', 'ASC')
+      ->sort('created', 'DESC');
+
+    // Optional vertical filter.
+    $vertical_filter = $request->query->get('vertical');
+    if ($vertical_filter && is_string($vertical_filter)) {
+      $query->condition('vertical', $vertical_filter);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('renderer'),
-            $container->get('entity_type.manager'),
-        );
+    // Pager: 12 items per page (4x3 grid).
+    $query->pager(12);
+    $ids = $query->execute();
+    $cases = $storage->loadMultiple($ids);
+
+    // Build card data for the template.
+    $cards = [];
+    foreach ($cases as $case) {
+      $cards[] = $this->buildCardData($case);
     }
 
-    /**
-     * Renders the success cases list page.
-     *
-     * Route: /casos-de-exito
-     * Supports ?vertical=emprendimiento query parameter for filtering.
-     * Pagination via ?page=N (Drupal's standard pager).
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The current request.
-     *
-     * @return array
-     *   Render array with #theme = success_cases_list.
-     */
-    public function list(Request $request): array
-    {
-        $storage = $this->entityTypeManager->getStorage('success_case');
+    // Get available verticals for filter.
+    $verticals = $this->getAvailableVerticals();
 
-        $query = $storage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('status', 1)
-            ->sort('weight', 'ASC')
-            ->sort('created', 'DESC');
+    return [
+      '#theme' => 'success_cases_list',
+      '#cases' => $cards,
+      '#verticals' => $verticals,
+      '#current_vertical' => $vertical_filter,
+      '#pager' => ['#type' => 'pager'],
+      '#cache' => [
+        'tags' => ['success_case_list'],
+        'contexts' => ['url.query_args:vertical', 'url.query_args:page'],
+      ],
+      '#attached' => [
+        'library' => ['jaraba_success_cases/success-cases'],
+      ],
+    ];
+  }
 
-        // Optional vertical filter.
-        $vertical_filter = $request->query->get('vertical');
-        if ($vertical_filter && is_string($vertical_filter)) {
-            $query->condition('vertical', $vertical_filter);
-        }
+  /**
+   * Renders a single success case detail page.
+   *
+   * Route: /caso-de-exito/{slug}
+   *
+   * @param string $slug
+   *   The URL slug of the success case.
+   *
+   * @return array
+   *   Render array with #theme = success_case_detail.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+   *   If no published success case matches the slug.
+   */
+  public function detail(string $slug): array {
+    $storage = $this->entityTypeManager->getStorage('success_case');
 
-        // Pager: 12 items per page (4x3 grid).
-        $query->pager(12);
-        $ids = $query->execute();
-        $cases = $storage->loadMultiple($ids);
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('slug', $slug)
+      ->condition('status', 1)
+      ->range(0, 1)
+      ->execute();
 
-        // Build card data for the template.
-        $cards = [];
-        foreach ($cases as $case) {
-            $cards[] = $this->buildCardData($case);
-        }
-
-        // Get available verticals for filter.
-        $verticals = $this->getAvailableVerticals();
-
-        return [
-            '#theme' => 'success_cases_list',
-            '#cases' => $cards,
-            '#verticals' => $verticals,
-            '#current_vertical' => $vertical_filter,
-            '#pager' => ['#type' => 'pager'],
-            '#cache' => [
-                'tags' => ['success_case_list'],
-                'contexts' => ['url.query_args:vertical', 'url.query_args:page'],
-            ],
-            '#attached' => [
-                'library' => ['jaraba_success_cases/success-cases'],
-            ],
-        ];
+    if (empty($ids)) {
+      throw new NotFoundHttpException();
     }
 
-    /**
-     * Renders a single success case detail page.
-     *
-     * Route: /caso-de-exito/{slug}
-     *
-     * @param string $slug
-     *   The URL slug of the success case.
-     *
-     * @return array
-     *   Render array with #theme = success_case_detail.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     *   If no published success case matches the slug.
-     */
-    public function detail(string $slug): array
-    {
-        $storage = $this->entityTypeManager->getStorage('success_case');
+    $case = $storage->load(reset($ids));
+    $data = $this->buildDetailData($case);
 
-        $ids = $storage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('slug', $slug)
-            ->condition('status', 1)
-            ->range(0, 1)
-            ->execute();
+    // Load related cases (same vertical, max 3, excluding current).
+    $relatedCards = $this->loadRelatedCases($case);
 
-        if (empty($ids)) {
-            throw new NotFoundHttpException();
-        }
+    return [
+      '#theme' => 'success_case_detail',
+      '#case' => $data,
+      '#related_cases' => $relatedCards,
+      '#cache' => [
+        'tags' => ['success_case:' . $case->id(), 'success_case_list'],
+      ],
+      '#attached' => [
+        'library' => ['jaraba_success_cases/success-cases'],
+      ],
+    ];
+  }
 
-        $case = $storage->load(reset($ids));
-        $data = $this->buildDetailData($case);
+  /**
+   * Returns JSON list of published success cases for PB integration.
+   *
+   * Route: /api/success-cases.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   JSON array of success case objects.
+   */
+  public function apiList(): JsonResponse {
+    $storage = $this->entityTypeManager->getStorage('success_case');
 
-        // Load related cases (same vertical, max 3, excluding current).
-        $relatedCards = $this->loadRelatedCases($case);
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->sort('weight', 'ASC')
+      ->sort('created', 'DESC')
+      ->execute();
 
-        return [
-            '#theme' => 'success_case_detail',
-            '#case' => $data,
-            '#related_cases' => $relatedCards,
-            '#cache' => [
-                'tags' => ['success_case:' . $case->id(), 'success_case_list'],
-            ],
-            '#attached' => [
-                'library' => ['jaraba_success_cases/success-cases'],
-            ],
-        ];
+    $cases = $storage->loadMultiple($ids);
+    $data = [];
+
+    foreach ($cases as $case) {
+      $data[] = $this->buildCardData($case);
     }
 
-    /**
-     * Returns JSON list of published success cases for PB integration.
-     *
-     * Route: /api/success-cases
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   JSON array of success case objects.
-     */
-    public function apiList(): JsonResponse
-    {
-        $storage = $this->entityTypeManager->getStorage('success_case');
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
+        'total' => count($data),
+      ],
+    ]);
+  }
 
-        $ids = $storage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('status', 1)
-            ->sort('weight', 'ASC')
-            ->sort('created', 'DESC')
-            ->execute();
-
-        $cases = $storage->loadMultiple($ids);
-        $data = [];
-
-        foreach ($cases as $case) {
-            $data[] = $this->buildCardData($case);
+  /**
+   * Builds card-level data from a SuccessCase entity.
+   *
+   * Used for list view and API response.
+   *
+   * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
+   *   The success case entity.
+   *
+   * @return array
+   *   Flat array of primitive values for template rendering.
+   */
+  protected function buildCardData($case): array {
+    $metrics = [];
+    $metrics_raw = $case->get('metrics_json')->value;
+    if ($metrics_raw) {
+      $decoded = json_decode($metrics_raw, TRUE);
+      if (is_array($decoded)) {
+        // Flatten array-of-objects format [{label,change}] to key-value
+        // for card template compatibility (sc-card__metric-value/label).
+        foreach ($decoded as $item) {
+          if (is_array($item) && isset($item['label'])) {
+            $metrics[$item['label']] = $item['change'] ?? $item['after'] ?? '';
+          }
+          else {
+            // Already key-value format.
+            $metrics = $decoded;
+            break;
+          }
         }
-
-        return new JsonResponse([
-            'success' => TRUE,
-            'data' => $data,
-            'meta' => [
-                'total' => count($data),
-            ],
-        ]);
+      }
     }
 
-    /**
-     * Builds card-level data from a SuccessCase entity.
-     *
-     * Used for list view and API response.
-     *
-     * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
-     *   The success case entity.
-     *
-     * @return array
-     *   Flat array of primitive values for template rendering.
-     */
-    protected function buildCardData($case): array
-    {
-        $metrics = [];
-        $metrics_raw = $case->get('metrics_json')->value;
-        if ($metrics_raw) {
-            $decoded = json_decode($metrics_raw, TRUE);
-            if (is_array($decoded)) {
-                // Flatten array-of-objects format [{label,change}] to key-value
-                // for card template compatibility (sc-card__metric-value/label).
-                foreach ($decoded as $item) {
-                    if (is_array($item) && isset($item['label'])) {
-                        $metrics[$item['label']] = $item['change'] ?? $item['after'] ?? '';
-                    }
-                    else {
-                        // Already key-value format.
-                        $metrics = $decoded;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Resolve hero image URL.
-        $imageUrl = NULL;
-        $imageUrlCard = NULL;
-        if ($case->hasField('hero_image') && !$case->get('hero_image')->isEmpty()) {
-            /** @var \Drupal\file\FileInterface $file */
-            $file = $case->get('hero_image')->entity;
-            if ($file) {
-                $uri = $file->getFileUri();
-                $imageUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
-                // Card thumbnail: use medium style if available.
-                $cardStyle = ImageStyle::load('medium');
-                $imageUrlCard = $cardStyle ? $cardStyle->buildUrl($uri) : $imageUrl;
-            }
-        }
-
-        return [
-            'id' => (int) $case->id(),
-            'name' => $case->get('name')->value,
-            'slug' => $case->get('slug')->value,
-            'profession' => $case->get('profession')->value,
-            'company' => $case->get('company')->value,
-            'sector' => $case->get('sector')->value,
-            'location' => $case->get('location')->value,
-            'vertical' => $case->get('vertical')->value,
-            'quote_short' => $case->get('quote_short')->value,
-            'rating' => (int) $case->get('rating')->value,
-            'featured' => (bool) $case->get('featured')->value,
-            'program_name' => $case->get('program_name')->value,
-            'metrics' => $metrics,
-            'url' => '/caso-de-exito/' . $case->get('slug')->value,
-            'image_url' => $imageUrl,
-            'image_url_card' => $imageUrlCard,
-        ];
+    // Resolve hero image URL.
+    $imageUrl = NULL;
+    $imageUrlCard = NULL;
+    if ($case->hasField('hero_image') && !$case->get('hero_image')->isEmpty()) {
+      /** @var \Drupal\file\FileInterface $file */
+      $file = $case->get('hero_image')->entity;
+      if ($file) {
+        $uri = $file->getFileUri();
+        $imageUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+        // Card thumbnail: use medium style if available.
+        $cardStyle = ImageStyle::load('medium');
+        $imageUrlCard = $cardStyle ? $cardStyle->buildUrl($uri) : $imageUrl;
+      }
     }
 
-    /**
-     * Builds full detail data from a SuccessCase entity.
-     *
-     * Used for the detail page.
-     *
-     * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
-     *   The success case entity.
-     *
-     * @return array
-     *   Full data array for the detail template.
-     */
-    protected function buildDetailData($case): array
-    {
-        $data = $this->buildCardData($case);
+    return [
+      'id' => (int) $case->id(),
+      'name' => $case->get('name')->value,
+      'slug' => $case->get('slug')->value,
+      'profession' => $case->get('profession')->value,
+      'company' => $case->get('company')->value,
+      'sector' => $case->get('sector')->value,
+      'location' => $case->get('location')->value,
+      'vertical' => $case->get('vertical')->value,
+      'quote_short' => $case->get('quote_short')->value,
+      'rating' => (int) $case->get('rating')->value,
+      'featured' => (bool) $case->get('featured')->value,
+      'program_name' => $case->get('program_name')->value,
+      'metrics' => $metrics,
+      'url' => '/caso-de-exito/' . $case->get('slug')->value,
+      'image_url' => $imageUrl,
+      'image_url_card' => $imageUrlCard,
+    ];
+  }
 
-        // Add narrative fields.
-        $data['challenge_before'] = $case->get('challenge_before')->value;
-        $data['challenge_before_format'] = $case->get('challenge_before')->format ?? 'basic_html';
-        $data['solution_during'] = $case->get('solution_during')->value;
-        $data['solution_during_format'] = $case->get('solution_during')->format ?? 'basic_html';
-        $data['result_after'] = $case->get('result_after')->value;
-        $data['result_after_format'] = $case->get('result_after')->format ?? 'basic_html';
+  /**
+   * Builds full detail data from a SuccessCase entity.
+   *
+   * Used for the detail page.
+   *
+   * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
+   *   The success case entity.
+   *
+   * @return array
+   *   Full data array for the detail template.
+   */
+  protected function buildDetailData($case): array {
+    $data = $this->buildCardData($case);
 
-        // Add long quote.
-        $data['quote_long'] = $case->get('quote_long')->value;
+    // Add narrative fields.
+    $data['challenge_before'] = $case->get('challenge_before')->value;
+    $data['challenge_before_format'] = $case->get('challenge_before')->format ?? 'basic_html';
+    $data['solution_during'] = $case->get('solution_during')->value;
+    $data['solution_during_format'] = $case->get('solution_during')->format ?? 'basic_html';
+    $data['result_after'] = $case->get('result_after')->value;
+    $data['result_after_format'] = $case->get('result_after')->format ?? 'basic_html';
 
-        // Add SEO.
-        $data['meta_description'] = $case->get('meta_description')->value;
+    // Add long quote.
+    $data['quote_long'] = $case->get('quote_long')->value;
 
-        // Add links.
-        $data['website'] = $case->get('website')->value;
-        $data['linkedin'] = $case->get('linkedin')->value;
+    // Add SEO.
+    $data['meta_description'] = $case->get('meta_description')->value;
 
-        // Add program context.
-        $data['program_funder'] = $case->get('program_funder')->value;
-        $data['program_year'] = $case->get('program_year')->value;
+    // Add links.
+    $data['website'] = $case->get('website')->value;
+    $data['linkedin'] = $case->get('linkedin')->value;
 
-        return $data;
+    // Add program context.
+    $data['program_funder'] = $case->get('program_funder')->value;
+    $data['program_year'] = $case->get('program_year')->value;
+
+    return $data;
+  }
+
+  /**
+   * Retrieves the list of verticals that have published success cases.
+   *
+   * @return array
+   *   Array of ['value' => 'machine_name', 'label' => 'Display Name'] items.
+   */
+  protected function getAvailableVerticals(): array {
+    $storage = $this->entityTypeManager->getStorage('success_case');
+
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->execute();
+
+    $verticals = [];
+    if (!empty($ids)) {
+      $cases = $storage->loadMultiple($ids);
+      foreach ($cases as $case) {
+        $v = $case->get('vertical')->value;
+        if ($v && !isset($verticals[$v])) {
+          $verticals[$v] = [
+            'value' => $v,
+            'name' => ucfirst(str_replace('_', ' ', $v)),
+          ];
+        }
+      }
     }
 
-    /**
-     * Retrieves the list of verticals that have published success cases.
-     *
-     * @return array
-     *   Array of ['value' => 'machine_name', 'label' => 'Display Name'] items.
-     */
-    protected function getAvailableVerticals(): array
-    {
-        $storage = $this->entityTypeManager->getStorage('success_case');
+    return array_values($verticals);
+  }
 
-        $ids = $storage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('status', 1)
-            ->execute();
-
-        $verticals = [];
-        if (!empty($ids)) {
-            $cases = $storage->loadMultiple($ids);
-            foreach ($cases as $case) {
-                $v = $case->get('vertical')->value;
-                if ($v && !isset($verticals[$v])) {
-                    $verticals[$v] = [
-                        'value' => $v,
-                        'name' => ucfirst(str_replace('_', ' ', $v)),
-                    ];
-                }
-            }
-        }
-
-        return array_values($verticals);
+  /**
+   * Loads related success cases (same vertical, excluding current).
+   *
+   * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
+   *   The current success case entity.
+   *
+   * @return array
+   *   Array of card data for related cases (max 3).
+   */
+  protected function loadRelatedCases($case): array {
+    $vertical = $case->get('vertical')->value;
+    if (!$vertical) {
+      return [];
     }
 
-    /**
-     * Loads related success cases (same vertical, excluding current).
-     *
-     * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
-     *   The current success case entity.
-     *
-     * @return array
-     *   Array of card data for related cases (max 3).
-     */
-    protected function loadRelatedCases($case): array
-    {
-        $vertical = $case->get('vertical')->value;
-        if (!$vertical) {
-            return [];
-        }
+    $storage = $this->entityTypeManager->getStorage('success_case');
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->condition('vertical', $vertical)
+      ->condition('id', $case->id(), '<>')
+      ->sort('featured', 'DESC')
+      ->sort('weight', 'ASC')
+      ->range(0, 3)
+      ->execute();
 
-        $storage = $this->entityTypeManager->getStorage('success_case');
-        $ids = $storage->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('status', 1)
-            ->condition('vertical', $vertical)
-            ->condition('id', $case->id(), '<>')
-            ->sort('featured', 'DESC')
-            ->sort('weight', 'ASC')
-            ->range(0, 3)
-            ->execute();
-
-        if (empty($ids)) {
-            return [];
-        }
-
-        $related = $storage->loadMultiple($ids);
-        $cards = [];
-        foreach ($related as $relatedCase) {
-            $cards[] = $this->buildCardData($relatedCase);
-        }
-
-        return $cards;
+    if (empty($ids)) {
+      return [];
     }
+
+    $related = $storage->loadMultiple($ids);
+    $cards = [];
+    foreach ($related as $relatedCase) {
+      $cards[] = $this->buildCardData($relatedCase);
+    }
+
+    return $cards;
+  }
 
 }

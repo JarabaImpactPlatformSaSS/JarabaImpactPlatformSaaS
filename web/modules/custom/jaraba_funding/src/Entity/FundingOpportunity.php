@@ -85,7 +85,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     // --- BLOQUE 1: Identificacion ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant propietario de esta convocatoria.'))
@@ -103,7 +102,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 2: Datos del organismo ---
-
     $fields['funding_body'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Organismo convocante'))
       ->setDescription(new TranslatableMarkup('Entidad que convoca (Red.es, SEPE, Junta de Andalucia, UE).'))
@@ -120,7 +118,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 3: Importes ---
-
     $fields['max_amount'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Importe maximo'))
       ->setDescription(new TranslatableMarkup('Importe maximo de la convocatoria en euros.'))
@@ -130,7 +127,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 4: Plazos ---
-
     $fields['deadline'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha limite'))
       ->setDescription(new TranslatableMarkup('Plazo limite de solicitud.'))
@@ -146,7 +142,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 5: Requisitos ---
-
     $fields['requirements'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Requisitos'))
       ->setDescription(new TranslatableMarkup('Requisitos de elegibilidad en formato estructurado.'))
@@ -160,7 +155,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 6: Estado y clasificacion ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado actual de la convocatoria.'))
@@ -183,7 +177,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 7: Notas ---
-
     $fields['notes'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Notas internas'))
       ->setDescription(new TranslatableMarkup('Notas internas del equipo sobre esta convocatoria.'))
@@ -191,7 +184,6 @@ class FundingOpportunity extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- BLOQUE 8: Metadatos ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

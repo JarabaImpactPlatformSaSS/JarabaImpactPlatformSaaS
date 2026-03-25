@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\Service\PlatformPushService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

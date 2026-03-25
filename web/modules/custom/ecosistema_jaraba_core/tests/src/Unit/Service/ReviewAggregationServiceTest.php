@@ -35,6 +35,9 @@ class ReviewAggregationServiceTest extends TestCase {
   private LoggerInterface&MockObject $logger;
   private MockObject $cache;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
@@ -154,10 +157,13 @@ class ReviewAggregationServiceTest extends TestCase {
     $this->cache->method('get')->willReturn(FALSE);
 
     $rows = [
-      (object) ['rating_value' => 0],   // Ignorado.
+    // Ignorado.
+      (object) ['rating_value' => 0],
       (object) ['rating_value' => 5],
-      (object) ['rating_value' => -1],   // Ignorado.
-      (object) ['rating_value' => 6],    // Ignorado.
+    // Ignorado.
+      (object) ['rating_value' => -1],
+    // Ignorado.
+      (object) ['rating_value' => 6],
       (object) ['rating_value' => 3],
     ];
 
@@ -174,7 +180,7 @@ class ReviewAggregationServiceTest extends TestCase {
 
     $result = $this->service->getRatingStats('comercio_review', 'merchant_profile', 1);
 
-    // Solo 5 y 3 son validos: (5+3)/2 = 4.0
+    // Solo 5 y 3 son validos: (5+3)/2 = 4.0.
     $this->assertSame(4.0, $result['average']);
     $this->assertSame(2, $result['count']);
   }
@@ -423,9 +429,13 @@ class ReviewAggregationServiceTest extends TestCase {
           $this->value = $value;
         }
 
+        /**
+         *
+         */
         public function isEmpty(): bool {
           return $this->target_id === NULL && $this->value === NULL;
         }
+
       };
 
       $getFieldMap[] = [$fieldName, $fieldItem];

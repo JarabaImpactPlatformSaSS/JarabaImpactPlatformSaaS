@@ -125,7 +125,7 @@ class CuriaSpider implements SpiderInterface {
     //   - language: idioma de la interfaz (es, en, fr, de, etc.)
     //   - jur: jurisdiccion (C=Tribunal de Justicia, T=Tribunal General, F=TFP)
     //   - page: numero de pagina para paginacion
-    //   - anchor: ancla de navegacion en la pagina de resultados
+    //   - anchor: ancla de navegacion en la pagina de resultados.
     // @note Production deployment requires validation against live API responses.
     $searchUrl = $baseUrl . 'liste.jsf?' . http_build_query([
       'td' => 'ALL',
@@ -468,7 +468,7 @@ class CuriaSpider implements SpiderInterface {
   /**
    * Mapea el tipo de procedimiento de CURIA a la jurisdiccion del sistema.
    *
-   * Todos los procedimientos del TJUE (prejudicial, incumplimiento,
+   * @todo s los procedimientos del TJUE (prejudicial, incumplimiento,
    * anulacion) se clasifican bajo jurisdiccion 'eu_general'.
    */
   protected function mapProcedureType(string $type): string {

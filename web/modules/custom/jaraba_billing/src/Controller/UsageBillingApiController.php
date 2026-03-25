@@ -88,11 +88,14 @@ class UsageBillingApiController extends ControllerBase implements ContainerInjec
       ]);
       $record->save();
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'record_id' => (int) $record->id(),
-        'metric' => $metric,
-        'value' => $value,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'record_id' => (int) $record->id(),
+          'metric' => $metric,
+          'value' => $value,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error recording usage: @error', ['@error' => $e->getMessage()]);
@@ -133,11 +136,14 @@ class UsageBillingApiController extends ControllerBase implements ContainerInjec
 
     try {
       $history = $this->metering->getHistoricalUsage((string) $tenantId, $months);
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'tenant_id' => $tenantId,
-        'months' => $months,
-        'history' => $history,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'tenant_id' => $tenantId,
+          'months' => $months,
+          'history' => $history,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error getting usage history: @error', ['@error' => $e->getMessage()]);
@@ -247,10 +253,13 @@ class UsageBillingApiController extends ControllerBase implements ContainerInjec
       $bill = $this->metering->calculateBill((string) $tenantId);
       $forecast = $this->metering->getForecast((string) $tenantId);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'current_bill' => $bill,
-        'forecast' => $forecast,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'current_bill' => $bill,
+          'forecast' => $forecast,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error estimating cost: @error', ['@error' => $e->getMessage()]);

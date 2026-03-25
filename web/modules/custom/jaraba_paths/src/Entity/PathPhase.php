@@ -51,69 +51,67 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.path_phase.settings",
  * )
  */
-class PathPhase extends ContentEntityBase
-{
+class PathPhase extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Referencia al path padre
-        $fields['path_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Itinerario'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'digitalization_path')
-            ->setDisplayOptions('form', ['weight' => 0])
-            ->setDisplayConfigurable('form', TRUE);
+    // Referencia al path padre.
+    $fields['path_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Itinerario'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'digitalization_path')
+      ->setDisplayOptions('form', ['weight' => 0])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre de la Fase'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('view', ['weight' => 1])
-            ->setDisplayOptions('form', ['weight' => 1])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre de la Fase'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayOptions('form', ['weight' => 1])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['phase_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Fase'))
-            ->setDescription(t('Fase del Método Jaraba.'))
-            ->setSetting('allowed_values', [
-                'diagnostico' => 'Fase 1: Diagnóstico',
-                'accion' => 'Fase 2: Acción',
-                'optimizacion' => 'Fase 3: Optimización',
-            ])
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', ['weight' => 2])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['phase_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Fase'))
+      ->setDescription(t('Fase del Método Jaraba.'))
+      ->setSetting('allowed_values', [
+        'diagnostico' => 'Fase 1: Diagnóstico',
+        'accion' => 'Fase 2: Acción',
+        'optimizacion' => 'Fase 3: Optimización',
+      ])
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', ['weight' => 2])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDisplayOptions('form', ['weight' => 3])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDisplayOptions('form', ['weight' => 3])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['icon'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Icono'))
-            ->setSetting('max_length', 64)
-            ->setDisplayOptions('form', ['weight' => 4])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['icon'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Icono'))
+      ->setSetting('max_length', 64)
+      ->setDisplayOptions('form', ['weight' => 4])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['order'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Orden'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', ['weight' => 5])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['order'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Orden'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', ['weight' => 5])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['estimated_days'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Duración Estimada (días)'))
-            ->setDefaultValue(14)
-            ->setDisplayOptions('form', ['weight' => 6])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['estimated_days'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Duración Estimada (días)'))
+      ->setDefaultValue(14)
+      ->setDisplayOptions('form', ['weight' => 6])
+      ->setDisplayConfigurable('form', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

@@ -9,7 +9,7 @@
  * - URLs jerárquicas automáticas
  * - Redirects 301/302 con tracking
  * - Sitemap XML dinámico
- * - Configuración global del sitio por tenant
+ * - Configuración global del sitio por tenant.
  */
 
 declare(strict_types=1);
@@ -177,7 +177,7 @@ function jaraba_site_builder_theme(): array {
       ],
       'template' => 'partials/jaraba-header-minimal',
     ],
-    // Footer variants: minimal, standard, mega, split
+    // Footer variants: minimal, standard, mega, split.
     'jaraba_footer_minimal' => [
       'variables' => [
         'config' => NULL,
@@ -335,13 +335,12 @@ function jaraba_site_builder_theme(): array {
   ];
 }
 
-
 /**
  * Implements hook_entity_update() para detectar cambios de URL.
  *
  * Cuando una página cambia su path_alias:
  * 1. Creamos un redirect automático 301
- * 2. Registramos el cambio en el historial para auditoría
+ * 2. Registramos el cambio en el historial para auditoría.
  */
 function jaraba_site_builder_entity_update(EntityInterface $entity): void {
   // Solo procesar entidades page_content.
@@ -415,7 +414,6 @@ function jaraba_site_builder_cron(): void {
     );
   }
 }
-
 
 /**
  * Prepares variables for seo_page_config templates.

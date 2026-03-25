@@ -743,64 +743,64 @@ HTML;
       [
         'title' => (string) $this->t('Por que Vender Online sin Intermediarios'),
         'content' => '<p>' . $this->t('Los productores rurales pierden entre un 40% y un 60% de sus margenes a traves de intermediarios. Vendiendo directamente al consumidor final, no solo mejoras tus ingresos, sino que estableces una relacion de confianza con tu cliente.') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('Aumenta tus margenes hasta un 300%') . '</li>'
-          . '<li>' . $this->t('Controla tu marca y la presentacion de tus productos') . '</li>'
-          . '<li>' . $this->t('Recibe feedback directo de tus clientes') . '</li>'
-          . '<li>' . $this->t('Genera fidelidad y ventas recurrentes') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li>' . $this->t('Aumenta tus margenes hasta un 300%') . '</li>'
+        . '<li>' . $this->t('Controla tu marca y la presentacion de tus productos') . '</li>'
+        . '<li>' . $this->t('Recibe feedback directo de tus clientes') . '</li>'
+        . '<li>' . $this->t('Genera fidelidad y ventas recurrentes') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Prepara tus Productos para la Venta Online'),
         'content' => '<p>' . $this->t('Antes de abrir tu tienda online, asegurate de tener estos elementos listos:') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('<strong>Fotografias de calidad:</strong> Toma fotos con luz natural, fondo limpio y multiples angulos.') . '</li>'
-          . '<li>' . $this->t('<strong>Descripciones detalladas:</strong> Incluye origen, metodo de produccion, peso y conservacion.') . '</li>'
-          . '<li>' . $this->t('<strong>Precios competitivos:</strong> Investiga el mercado y calcula tus costes reales.') . '</li>'
-          . '<li>' . $this->t('<strong>Embalaje adecuado:</strong> Asegura que el producto llegue en perfectas condiciones.') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li>' . $this->t('<strong>Fotografias de calidad:</strong> Toma fotos con luz natural, fondo limpio y multiples angulos.') . '</li>'
+        . '<li>' . $this->t('<strong>Descripciones detalladas:</strong> Incluye origen, metodo de produccion, peso y conservacion.') . '</li>'
+        . '<li>' . $this->t('<strong>Precios competitivos:</strong> Investiga el mercado y calcula tus costes reales.') . '</li>'
+        . '<li>' . $this->t('<strong>Embalaje adecuado:</strong> Asegura que el producto llegue en perfectas condiciones.') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Monta tu Tienda Online en 10 Minutos'),
         'content' => '<p>' . $this->t('Con AgroConecta, crear tu tienda online es mas facil que nunca:') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('<strong>Paso 1:</strong> Registrate gratis con tu email.') . '</li>'
-          . '<li>' . $this->t('<strong>Paso 2:</strong> Completa el perfil de tu finca o negocio.') . '</li>'
-          . '<li>' . $this->t('<strong>Paso 3:</strong> Sube tus productos con fotos y descripciones.') . '</li>'
-          . '<li>' . $this->t('<strong>Paso 4:</strong> Configura precios y opciones de envio.') . '</li>'
-          . '<li>' . $this->t('<strong>Paso 5:</strong> Publica y comparte con tus primeros clientes.') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li>' . $this->t('<strong>Paso 1:</strong> Registrate gratis con tu email.') . '</li>'
+        . '<li>' . $this->t('<strong>Paso 2:</strong> Completa el perfil de tu finca o negocio.') . '</li>'
+        . '<li>' . $this->t('<strong>Paso 3:</strong> Sube tus productos con fotos y descripciones.') . '</li>'
+        . '<li>' . $this->t('<strong>Paso 4:</strong> Configura precios y opciones de envio.') . '</li>'
+        . '<li>' . $this->t('<strong>Paso 5:</strong> Publica y comparte con tus primeros clientes.') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Estrategias de Marketing para Productores'),
         'content' => '<p>' . $this->t('No basta con tener una tienda online, necesitas atraer clientes:') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('<strong>Redes sociales:</strong> Comparte el dia a dia de tu produccion en Instagram y Facebook.') . '</li>'
-          . '<li>' . $this->t('<strong>WhatsApp Business:</strong> Crea un catalogo y usa listas de difusion.') . '</li>'
-          . '<li>' . $this->t('<strong>Mercados locales:</strong> Usa tarjetas con QR a tu tienda online.') . '</li>'
-          . '<li>' . $this->t('<strong>Trazabilidad:</strong> Muestra el origen de tus productos como valor diferencial.') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li>' . $this->t('<strong>Redes sociales:</strong> Comparte el dia a dia de tu produccion en Instagram y Facebook.') . '</li>'
+        . '<li>' . $this->t('<strong>WhatsApp Business:</strong> Crea un catalogo y usa listas de difusion.') . '</li>'
+        . '<li>' . $this->t('<strong>Mercados locales:</strong> Usa tarjetas con QR a tu tienda online.') . '</li>'
+        . '<li>' . $this->t('<strong>Trazabilidad:</strong> Muestra el origen de tus productos como valor diferencial.') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Logistica y Envios sin Complicaciones'),
         'content' => '<p>' . $this->t('La logistica es el mayor reto para productores rurales. Estas son las opciones mas efectivas:') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('<strong>Envio refrigerado:</strong> Para productos perecederos, usa servicios especializados.') . '</li>'
-          . '<li>' . $this->t('<strong>Puntos de recogida:</strong> Ofrece recogida en mercados locales o cooperativas.') . '</li>'
-          . '<li>' . $this->t('<strong>Suscripciones:</strong> Cestas semanales con envio programado reducen costes.') . '</li>'
-          . '<li>' . $this->t('<strong>Grupos de compra:</strong> Coordina pedidos por zona para optimizar rutas.') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li>' . $this->t('<strong>Envio refrigerado:</strong> Para productos perecederos, usa servicios especializados.') . '</li>'
+        . '<li>' . $this->t('<strong>Puntos de recogida:</strong> Ofrece recogida en mercados locales o cooperativas.') . '</li>'
+        . '<li>' . $this->t('<strong>Suscripciones:</strong> Cestas semanales con envio programado reducen costes.') . '</li>'
+        . '<li>' . $this->t('<strong>Grupos de compra:</strong> Coordina pedidos por zona para optimizar rutas.') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Aspectos Legales Basicos'),
         'content' => '<p>' . $this->t('Para vender alimentos online en Espana necesitas:') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('Registro sanitario (numero RGSEAA) si aplica a tu producto.') . '</li>'
-          . '<li>' . $this->t('Etiquetado conforme al Reglamento (UE) 1169/2011.') . '</li>'
-          . '<li>' . $this->t('Inscripcion en el RERA (Registro de Explotaciones Agrarias).') . '</li>'
-          . '<li>' . $this->t('Condiciones de venta y politica de devolucion en tu web.') . '</li>'
-          . '</ul>'
-          . '<p>' . $this->t('<em>AgroConecta te guia paso a paso en cada requisito legal.</em>') . '</p>',
+        . '<ul>'
+        . '<li>' . $this->t('Registro sanitario (numero RGSEAA) si aplica a tu producto.') . '</li>'
+        . '<li>' . $this->t('Etiquetado conforme al Reglamento (UE) 1169/2011.') . '</li>'
+        . '<li>' . $this->t('Inscripcion en el RERA (Registro de Explotaciones Agrarias).') . '</li>'
+        . '<li>' . $this->t('Condiciones de venta y politica de devolucion en tu web.') . '</li>'
+        . '</ul>'
+        . '<p>' . $this->t('<em>AgroConecta te guia paso a paso en cada requisito legal.</em>') . '</p>',
       ],
     ];
   }
@@ -870,48 +870,48 @@ HTML;
       [
         'title' => (string) $this->t('Alcance del Servicio'),
         'content' => '<p>' . $this->t('El servicio propuesto incluye:') . '</p>'
-          . '<ul>'
-          . '<li class="fillable">' . $this->t('[Entregable 1: Descripcion detallada]') . '</li>'
-          . '<li class="fillable">' . $this->t('[Entregable 2: Descripcion detallada]') . '</li>'
-          . '<li class="fillable">' . $this->t('[Entregable 3: Descripcion detallada]') . '</li>'
-          . '</ul>'
-          . '<p>' . $this->t('<strong>No incluido:</strong>') . '</p>'
-          . '<ul>'
-          . '<li class="fillable">' . $this->t('[Elemento excluido 1]') . '</li>'
-          . '<li class="fillable">' . $this->t('[Elemento excluido 2]') . '</li>'
-          . '</ul>',
+        . '<ul>'
+        . '<li class="fillable">' . $this->t('[Entregable 1: Descripcion detallada]') . '</li>'
+        . '<li class="fillable">' . $this->t('[Entregable 2: Descripcion detallada]') . '</li>'
+        . '<li class="fillable">' . $this->t('[Entregable 3: Descripcion detallada]') . '</li>'
+        . '</ul>'
+        . '<p>' . $this->t('<strong>No incluido:</strong>') . '</p>'
+        . '<ul>'
+        . '<li class="fillable">' . $this->t('[Elemento excluido 1]') . '</li>'
+        . '<li class="fillable">' . $this->t('[Elemento excluido 2]') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Metodologia y Plazos'),
         'content' => '<p>' . $this->t('El proyecto se desarrollara en las siguientes fases:') . '</p>'
-          . '<ul>'
-          . '<li class="fillable">' . $this->t('<strong>Fase 1 - Diagnostico:</strong> [X dias] - Analisis de la situacion actual.') . '</li>'
-          . '<li class="fillable">' . $this->t('<strong>Fase 2 - Desarrollo:</strong> [X dias] - Implementacion del servicio.') . '</li>'
-          . '<li class="fillable">' . $this->t('<strong>Fase 3 - Entrega:</strong> [X dias] - Revision y entrega final.') . '</li>'
-          . '</ul>'
-          . '<p>' . $this->t('<strong>Plazo total estimado:</strong> <span class="fillable">[X semanas/meses]</span>') . '</p>',
+        . '<ul>'
+        . '<li class="fillable">' . $this->t('<strong>Fase 1 - Diagnostico:</strong> [X dias] - Analisis de la situacion actual.') . '</li>'
+        . '<li class="fillable">' . $this->t('<strong>Fase 2 - Desarrollo:</strong> [X dias] - Implementacion del servicio.') . '</li>'
+        . '<li class="fillable">' . $this->t('<strong>Fase 3 - Entrega:</strong> [X dias] - Revision y entrega final.') . '</li>'
+        . '</ul>'
+        . '<p>' . $this->t('<strong>Plazo total estimado:</strong> <span class="fillable">[X semanas/meses]</span>') . '</p>',
       ],
       [
         'title' => (string) $this->t('Inversion y Condiciones de Pago'),
         'content' => '<table style="width:100%; border-collapse: collapse; margin: 10px 0;">'
-          . '<tr style="background: #f5f5f5;"><th style="padding: 8px; border: 1px solid #ddd; text-align: left;">' . $this->t('Concepto') . '</th><th style="padding: 8px; border: 1px solid #ddd; text-align: right;">' . $this->t('Importe') . '</th></tr>'
-          . '<tr><td style="padding: 8px; border: 1px solid #ddd;" class="fillable">' . $this->t('[Servicio principal]') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
-          . '<tr><td style="padding: 8px; border: 1px solid #ddd;" class="fillable">' . $this->t('[Servicio adicional]') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
-          . '<tr style="background: #f5f5f5; font-weight: bold;"><td style="padding: 8px; border: 1px solid #ddd;">' . $this->t('TOTAL (IVA no incluido)') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
-          . '</table>'
-          . '<p>' . $this->t('<strong>Condiciones de pago:</strong>') . '</p>'
-          . '<ul>'
-          . '<li>' . $this->t('50% a la aceptacion de la propuesta.') . '</li>'
-          . '<li>' . $this->t('50% a la entrega final del proyecto.') . '</li>'
-          . '</ul>',
+        . '<tr style="background: #f5f5f5;"><th style="padding: 8px; border: 1px solid #ddd; text-align: left;">' . $this->t('Concepto') . '</th><th style="padding: 8px; border: 1px solid #ddd; text-align: right;">' . $this->t('Importe') . '</th></tr>'
+        . '<tr><td style="padding: 8px; border: 1px solid #ddd;" class="fillable">' . $this->t('[Servicio principal]') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
+        . '<tr><td style="padding: 8px; border: 1px solid #ddd;" class="fillable">' . $this->t('[Servicio adicional]') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
+        . '<tr style="background: #f5f5f5; font-weight: bold;"><td style="padding: 8px; border: 1px solid #ddd;">' . $this->t('TOTAL (IVA no incluido)') . '</td><td style="padding: 8px; border: 1px solid #ddd; text-align: right;" class="fillable">' . $this->t('[0,00 EUR]') . '</td></tr>'
+        . '</table>'
+        . '<p>' . $this->t('<strong>Condiciones de pago:</strong>') . '</p>'
+        . '<ul>'
+        . '<li>' . $this->t('50% a la aceptacion de la propuesta.') . '</li>'
+        . '<li>' . $this->t('50% a la entrega final del proyecto.') . '</li>'
+        . '</ul>',
       ],
       [
         'title' => (string) $this->t('Garantias y Soporte'),
         'content' => '<ul>'
-          . '<li class="fillable">' . $this->t('[Garantia: p.ej. 30 dias de soporte post-entrega]') . '</li>'
-          . '<li class="fillable">' . $this->t('[Revisiones incluidas: p.ej. 2 rondas de revision]') . '</li>'
-          . '<li class="fillable">' . $this->t('[Canal de soporte: email, telefono, etc.]') . '</li>'
-          . '</ul>',
+        . '<li class="fillable">' . $this->t('[Garantia: p.ej. 30 dias de soporte post-entrega]') . '</li>'
+        . '<li class="fillable">' . $this->t('[Revisiones incluidas: p.ej. 2 rondas de revision]') . '</li>'
+        . '<li class="fillable">' . $this->t('[Canal de soporte: email, telefono, etc.]') . '</li>'
+        . '</ul>',
       ],
     ];
   }

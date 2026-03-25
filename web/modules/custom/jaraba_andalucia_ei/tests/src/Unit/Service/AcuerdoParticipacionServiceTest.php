@@ -79,9 +79,13 @@ class AcuerdoParticipacionServiceTest extends UnitTestCase {
         $this->returnDocId = $returnDocId;
       }
 
+      /**
+       *
+       */
       public function createDocument(int $participanteId, string $tipo, string $titulo, ?string $content = NULL, ?int $tenantId = NULL): ?int {
         return $this->returnDocId;
       }
+
     };
   }
 
@@ -232,10 +236,14 @@ class AcuerdoParticipacionServiceTest extends UnitTestCase {
     $pdfService = new class {
       public bool $called = FALSE;
 
+      /**
+       *
+       */
       public function generateReport(string $template, array $data, array $options): string {
         $this->called = TRUE;
         return 'PDF_CONTENT';
       }
+
     };
 
     $participante = $this->createParticipanteMock(1, [
@@ -279,18 +287,30 @@ class AcuerdoParticipacionServiceTest extends UnitTestCase {
         private readonly array $options,
       ) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->id;
       }
 
+      /**
+       *
+       */
       public function isAcuerdoParticipacionFirmado(): bool {
         return $this->options['isAcuerdoParticipacionFirmado'] ?? FALSE;
       }
 
+      /**
+       *
+       */
       public function getOwner(): ?AccountInterface {
         return NULL;
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         if ($fieldName === 'tenant_id') {
           $targetId = $this->options['tenant_id_target'] ?? NULL;
@@ -300,44 +320,69 @@ class AcuerdoParticipacionServiceTest extends UnitTestCase {
             public function __construct(mixed $targetId) {
               $this->target_id = $targetId;
             }
+
           };
         }
 
         $value = $this->options[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         $this->setValues[$fieldName] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         $this->saved = TRUE;
         return 1;
       }
 
+      /**
+       *
+       */
       public function wasSaved(): bool {
         return $this->saved;
       }
 
+      /**
+       *
+       */
       public function getSetValue(string $fieldName): mixed {
         return $this->setValues[$fieldName] ?? NULL;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ["programa_participante_ei:{$this->id}"];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

@@ -11,42 +11,41 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Provides an interface for CandidateExperience entities.
  */
-interface CandidateExperienceInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface CandidateExperienceInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Gets the company name.
-     */
-    public function getCompanyName(): string;
+  /**
+   * Gets the company name.
+   */
+  public function getCompanyName(): string;
 
-    /**
-     * Gets the job title.
-     */
-    public function getJobTitle(): string;
+  /**
+   * Gets the job title.
+   */
+  public function getJobTitle(): string;
 
-    /**
-     * Gets the start date timestamp.
-     */
-    public function getStartDate(): ?int;
+  /**
+   * Gets the start date timestamp.
+   */
+  public function getStartDate(): ?int;
 
-    /**
-     * Gets the end date timestamp (NULL if current).
-     */
-    public function getEndDate(): ?int;
+  /**
+   * Gets the end date timestamp (NULL if current).
+   */
+  public function getEndDate(): ?int;
 
-    /**
-     * Checks if this is the current position.
-     */
-    public function isCurrent(): bool;
+  /**
+   * Checks if this is the current position.
+   */
+  public function isCurrent(): bool;
 
-    /**
-     * Gets the description.
-     */
-    public function getDescription(): string;
+  /**
+   * Gets the description.
+   */
+  public function getDescription(): string;
 
-    /**
-     * Gets the location.
-     */
-    public function getLocation(): string;
+  /**
+   * Gets the location.
+   */
+  public function getLocation(): string;
 
 }

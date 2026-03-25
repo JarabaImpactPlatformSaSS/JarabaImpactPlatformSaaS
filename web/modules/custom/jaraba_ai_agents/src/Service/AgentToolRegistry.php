@@ -116,7 +116,8 @@ class AgentToolRegistry {
 
     try {
       $result = call_user_func_array([$service, $tool['method']], [$params]);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Tool @name execution failed: @error', [
         '@name' => $name,
         '@error' => $e->getMessage(),

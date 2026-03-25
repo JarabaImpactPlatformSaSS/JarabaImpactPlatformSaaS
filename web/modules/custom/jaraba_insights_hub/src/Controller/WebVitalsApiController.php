@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_insights_hub\Controller;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -75,7 +74,7 @@ class WebVitalsApiController extends ControllerBase {
   /**
    * Recopila datos de Core Web Vitals desde el navegador.
    *
-   * POST /api/v1/insights/web-vitals
+   * POST /api/v1/insights/web-vitals.
    *
    * Endpoint anonimo que recibe metricas individuales de RUM.
    * Valida la peticion mediante API key en header X-Insights-Key
@@ -192,7 +191,7 @@ class WebVitalsApiController extends ControllerBase {
   /**
    * Devuelve un resumen agregado de Core Web Vitals.
    *
-   * GET /api/v1/insights/web-vitals/summary
+   * GET /api/v1/insights/web-vitals/summary.
    *
    * Query params:
    * - date_range: 7d|30d|90d (default: 30d)

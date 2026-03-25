@@ -37,7 +37,7 @@ class OauthClientListBuilder extends EntityListBuilder {
     $is_active = $entity->isActive();
     $row['is_active'] = [
       '#markup' => '<span class="badge ' . ($is_active ? 'badge--success' : 'badge--warning') . '">' .
-        ($is_active ? $this->t('Activo') : $this->t('Inactivo')) . '</span>',
+      ($is_active ? $this->t('Activo') : $this->t('Inactivo')) . '</span>',
     ];
 
     return $row + parent::buildRow($entity);

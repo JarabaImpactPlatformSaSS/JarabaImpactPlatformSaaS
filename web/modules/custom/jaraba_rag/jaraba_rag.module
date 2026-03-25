@@ -88,16 +88,16 @@ function _jaraba_rag_index_entity(EntityInterface $entity): void {
     return;
   }
 
-  // Solo indexar entidades publicadas
+  // Solo indexar entidades publicadas.
   if (method_exists($entity, 'isPublished') && !$entity->isPublished()) {
-    // Eliminar de KB si se despublica
+    // Eliminar de KB si se despublica.
     try {
       /** @var \Drupal\jaraba_rag\Service\KbIndexerService $indexer */
       $indexer = \Drupal::service('jaraba_rag.indexer');
       $indexer->deleteEntity($entity);
     }
     catch (\Exception $e) {
-      // Silenciar errores si no existe
+      // Silenciar errores si no existe.
     }
     return;
   }
@@ -134,7 +134,7 @@ function _jaraba_rag_is_indexable(EntityInterface $entity): bool {
     return FALSE;
   }
 
-  // Para nodos, verificar bundle específico
+  // Para nodos, verificar bundle específico.
   if ($entity_type === 'node') {
     $bundle = $entity->bundle();
     return isset($indexable_types['node'][$bundle]);

@@ -16,48 +16,45 @@ use Drupal\Core\Access\AccessResultInterface;
  * Los usuarios pueden ver y editar SUS PROPIAS preferencias.
  * Administradores pueden ver y editar todas.
  */
-class NotificationPreferenceAgroAccessControlHandler extends EntityAccessControlHandler
-{
+class NotificationPreferenceAgroAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationPreferenceAgro $entity */
-        $admin_permission = $this->entityType->getAdminPermission();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationPreferenceAgro $entity */
+    $admin_permission = $this->entityType->getAdminPermission();
 
-        if ($account->hasPermission($admin_permission)) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // Los usuarios pueden gestionar sus propias preferencias.
-        switch ($operation) {
-            case 'view':
-            case 'update':
-                if ($entity->getOwnerId() === (int) $account->id()) {
-                    return AccessResult::allowed()
-                        ->cachePerUser()
-                        ->addCacheableDependency($entity);
-                }
-                return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
-
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
-
-            default:
-                return AccessResult::neutral();
-        }
+    if ($account->hasPermission($admin_permission)) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        // Cualquier usuario autenticado puede crear sus preferencias.
-        return AccessResult::allowedIf($account->isAuthenticated())
-            ->cachePerUser();
+    // Los usuarios pueden gestionar sus propias preferencias.
+    switch ($operation) {
+      case 'view':
+      case 'update':
+        if ($entity->getOwnerId() === (int) $account->id()) {
+          return AccessResult::allowed()
+            ->cachePerUser()
+            ->addCacheableDependency($entity);
+        }
+        return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
+
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
+
+      default:
+        return AccessResult::neutral();
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    // Cualquier usuario autenticado puede crear sus preferencias.
+    return AccessResult::allowedIf($account->isAuthenticated())
+      ->cachePerUser();
+  }
 
 }

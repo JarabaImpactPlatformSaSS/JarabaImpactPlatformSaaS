@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 /**
  * @file
+ */
+
+use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+
+/**
+ * @file
  * Install, update and uninstall functions for jaraba_andalucia_ei.
  */
 
@@ -376,7 +384,7 @@ function jaraba_andalucia_ei_uninstall(): void {
  * Install tenant_id field on solicitud_ei entity (Regla de Oro #4).
  */
 function jaraba_andalucia_ei_update_10001(): void {
-  $fieldDefinition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+  $fieldDefinition = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Tenant'))
     ->setDescription(t('Tenant al que pertenece esta solicitud.'))
     ->setSetting('target_type', 'tenant')
@@ -394,7 +402,7 @@ function jaraba_andalucia_ei_update_10001(): void {
  * in ProgramaParticipanteEiAccessControlHandler.
  */
 function jaraba_andalucia_ei_update_10003(): void {
-  $fieldDefinition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+  $fieldDefinition = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Tenant'))
     ->setDescription(t('Tenant al que pertenece este participante.'))
     ->setSetting('target_type', 'group')
@@ -467,7 +475,7 @@ function jaraba_andalucia_ei_update_10005(): string {
     // Update the categoria field storage definition with new allowed_values.
     $existing = $update_manager->getFieldStorageDefinition('categoria', $entity_type_id);
     if ($existing) {
-      $new_allowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+      $new_allowed = array_map('t', ExpedienteDocumento::CATEGORIAS);
       $existing->setSetting('allowed_values', $new_allowed);
       $update_manager->updateFieldStorageDefinition($existing);
       return 'Updated categoria allowed_values with 5 new categories.';
@@ -487,7 +495,7 @@ function jaraba_andalucia_ei_update_10005(): string {
  * - colectivo: corrected allowed_values for CV 2025 edition
  * - New fields: daci_firmado, daci_fecha_firma, fse_entrada_completado,
  *   fse_salida_completado, fecha_inicio_programa, fecha_fin_programa,
- *   semana_actual, motivo_baja
+ *   semana_actual, motivo_baja.
  *
  * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() on each definition.
  * UPDATE-HOOK-CATCH-001: \Throwable (not \Exception).
@@ -529,7 +537,7 @@ function jaraba_andalucia_ei_update_10006(): string {
 
     // 3. Install new fields.
     $newFields = [
-      'daci_firmado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'daci_firmado' => BaseFieldDefinition::create('boolean')
         ->setName('daci_firmado')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('DACI Firmado'))
@@ -538,7 +546,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'daci_fecha_firma' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'daci_fecha_firma' => BaseFieldDefinition::create('datetime')
         ->setName('daci_fecha_firma')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Firma DACI'))
@@ -546,7 +554,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'fse_entrada_completado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'fse_entrada_completado' => BaseFieldDefinition::create('boolean')
         ->setName('fse_entrada_completado')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('FSE+ Entrada Completado'))
@@ -554,7 +562,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'fse_salida_completado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'fse_salida_completado' => BaseFieldDefinition::create('boolean')
         ->setName('fse_salida_completado')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('FSE+ Salida Completado'))
@@ -562,7 +570,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'fecha_inicio_programa' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'fecha_inicio_programa' => BaseFieldDefinition::create('datetime')
         ->setName('fecha_inicio_programa')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Inicio Programa'))
@@ -570,7 +578,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'fecha_fin_programa' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'fecha_fin_programa' => BaseFieldDefinition::create('datetime')
         ->setName('fecha_fin_programa')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Fin Programa'))
@@ -578,7 +586,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'semana_actual' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      'semana_actual' => BaseFieldDefinition::create('integer')
         ->setName('semana_actual')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Semana Actual'))
@@ -587,7 +595,7 @@ function jaraba_andalucia_ei_update_10006(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'motivo_baja' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      'motivo_baja' => BaseFieldDefinition::create('list_string')
         ->setName('motivo_baja')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Motivo de Baja'))
@@ -617,7 +625,6 @@ function jaraba_andalucia_ei_update_10006(): string {
     // 4. Migrate existing participants with fase_actual='atencion' who have no prior phase
     // to keep them in 'atencion' (they already completed acogida/diagnostico implicitly).
     // No data migration needed — existing values remain valid as 'atencion' is still in allowed_values.
-
     return 'PIIL CV 2025 Phase 1 complete: ' . implode(' ', $messages);
   }
   catch (\Throwable $e) {
@@ -725,9 +732,8 @@ function jaraba_andalucia_ei_update_10010(): string {
 
   try {
     // === 1. Install new fields on programa_participante_ei ===
-
     $newFields = [
-      'dime_score' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      'dime_score' => BaseFieldDefinition::create('integer')
         ->setName('dime_score')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Score DIME'))
@@ -736,7 +742,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'dime_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'dime_fecha' => BaseFieldDefinition::create('datetime')
         ->setName('dime_fecha')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Diagnóstico DIME'))
@@ -745,7 +751,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'horas_orientacion_insercion' => \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+      'horas_orientacion_insercion' => BaseFieldDefinition::create('decimal')
         ->setName('horas_orientacion_insercion')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Horas Orientación Inserción'))
@@ -756,7 +762,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'asistencia_porcentaje' => \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+      'asistencia_porcentaje' => BaseFieldDefinition::create('decimal')
         ->setName('asistencia_porcentaje')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Porcentaje de Asistencia'))
@@ -767,7 +773,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'es_persona_atendida' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'es_persona_atendida' => BaseFieldDefinition::create('boolean')
         ->setName('es_persona_atendida')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('¿Persona Atendida?'))
@@ -775,7 +781,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDefaultValue(FALSE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'es_persona_insertada' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'es_persona_insertada' => BaseFieldDefinition::create('boolean')
         ->setName('es_persona_insertada')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('¿Persona Insertada?'))
@@ -783,7 +789,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDefaultValue(FALSE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'candidate_profile_id' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      'candidate_profile_id' => BaseFieldDefinition::create('integer')
         ->setName('candidate_profile_id')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Perfil de Candidato'))
@@ -791,7 +797,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setSetting('unsigned', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'canvas_id' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      'canvas_id' => BaseFieldDefinition::create('integer')
         ->setName('canvas_id')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Business Model Canvas'))
@@ -799,7 +805,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setSetting('unsigned', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'is_alumni' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'is_alumni' => BaseFieldDefinition::create('boolean')
         ->setName('is_alumni')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('¿Alumni?'))
@@ -807,7 +813,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setDefaultValue(FALSE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'alumni_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'alumni_fecha' => BaseFieldDefinition::create('datetime')
         ->setName('alumni_fecha')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Alumni'))
@@ -815,7 +821,7 @@ function jaraba_andalucia_ei_update_10010(): string {
         ->setSetting('datetime_type', 'date')
         ->setDisplayConfigurable('view', TRUE),
 
-      'alumni_disponible_mentoria' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'alumni_disponible_mentoria' => BaseFieldDefinition::create('boolean')
         ->setName('alumni_disponible_mentoria')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Disponible para Mentoría Alumni'))
@@ -837,12 +843,11 @@ function jaraba_andalucia_ei_update_10010(): string {
     }
 
     // === 2. Update expediente_documento categoria allowed_values ===
-
     $expedienteEntityTypeId = 'expediente_documento';
     if ($updateManager->getEntityType($expedienteEntityTypeId)) {
       $existingCategoria = $updateManager->getFieldStorageDefinition('categoria', $expedienteEntityTypeId);
       if ($existingCategoria) {
-        $newAllowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+        $newAllowed = array_map('t', ExpedienteDocumento::CATEGORIAS);
         $existingCategoria->setSetting('allowed_values', $newAllowed);
         $updateManager->updateFieldStorageDefinition($existingCategoria);
         $messages[] = 'expediente_documento.categoria: updated with 11 new categories.';
@@ -906,9 +911,8 @@ function jaraba_andalucia_ei_update_10012(): string {
 
   try {
     // === 1. Install new Acuerdo de Participación fields ===
-
     $acuerdoFields = [
-      'acuerdo_participacion_firmado' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'acuerdo_participacion_firmado' => BaseFieldDefinition::create('boolean')
         ->setName('acuerdo_participacion_firmado')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Acuerdo de Participación Firmado'))
@@ -917,7 +921,7 @@ function jaraba_andalucia_ei_update_10012(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'acuerdo_participacion_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'acuerdo_participacion_fecha' => BaseFieldDefinition::create('datetime')
         ->setName('acuerdo_participacion_fecha')
         ->setTargetEntityTypeId($entityTypeId)
         ->setLabel(t('Fecha Firma Acuerdo de Participación'))
@@ -940,7 +944,6 @@ function jaraba_andalucia_ei_update_10012(): string {
 
     // === 2. Data migration: daci_firmado → acuerdo_participacion_firmado ===
     // Historical data in daci_firmado actually tracked Acuerdo de Participación signatures.
-
     $database = \Drupal::database();
     $table = $entityTypeId;
 
@@ -963,7 +966,6 @@ function jaraba_andalucia_ei_update_10012(): string {
       }
 
       // === 3. Reset DACI fields (clean slate for real DACI tracking) ===
-
       $database->update($table)
         ->fields([
           'daci_firmado' => 0,
@@ -977,12 +979,11 @@ function jaraba_andalucia_ei_update_10012(): string {
     }
 
     // === 4. Update expediente_documento categoria with sto_acuerdo_participacion ===
-
     $expedienteEntityTypeId = 'expediente_documento';
     if ($updateManager->getEntityType($expedienteEntityTypeId)) {
       $existingCategoria = $updateManager->getFieldStorageDefinition('categoria', $expedienteEntityTypeId);
       if ($existingCategoria) {
-        $newAllowed = array_map('t', \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS);
+        $newAllowed = array_map('t', ExpedienteDocumento::CATEGORIAS);
         $existingCategoria->setSetting('allowed_values', $newAllowed);
         $updateManager->updateFieldStorageDefinition($existingCategoria);
         $messages[] = 'expediente_documento.categoria: updated with sto_acuerdo_participacion.';
@@ -1037,7 +1038,7 @@ function jaraba_andalucia_ei_update_10014(): string {
     $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
 
     $newFields = [
-      'incentivo_fecha_pago' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'incentivo_fecha_pago' => BaseFieldDefinition::create('datetime')
         ->setName('incentivo_fecha_pago')
         ->setTargetEntityTypeId('programa_participante_ei')
         ->setLabel(t('Fecha Pago Incentivo'))
@@ -1046,7 +1047,7 @@ function jaraba_andalucia_ei_update_10014(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'incentivo_renuncia' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      'incentivo_renuncia' => BaseFieldDefinition::create('boolean')
         ->setName('incentivo_renuncia')
         ->setTargetEntityTypeId('programa_participante_ei')
         ->setLabel(t('Renuncia al Incentivo'))
@@ -1055,7 +1056,7 @@ function jaraba_andalucia_ei_update_10014(): string {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
 
-      'incentivo_renuncia_fecha' => \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+      'incentivo_renuncia_fecha' => BaseFieldDefinition::create('datetime')
         ->setName('incentivo_renuncia_fecha')
         ->setTargetEntityTypeId('programa_participante_ei')
         ->setLabel(t('Fecha Renuncia Incentivo'))
@@ -1117,7 +1118,7 @@ function jaraba_andalucia_ei_update_10015(): string {
     // === Nuevos campos de firma en expediente_documento ===
     $newFields = [];
 
-    $newFields['estado_firma'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    $newFields['estado_firma'] = BaseFieldDefinition::create('list_string')
       ->setName('estado_firma')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Estado de firma'))
@@ -1136,35 +1137,35 @@ function jaraba_andalucia_ei_update_10015(): string {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_solicitada_fecha'] = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+    $newFields['firma_solicitada_fecha'] = BaseFieldDefinition::create('datetime')
       ->setName('firma_solicitada_fecha')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Fecha solicitud de firma'))
       ->setSetting('datetime_type', 'datetime')
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_solicitante_uid'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $newFields['firma_solicitante_uid'] = BaseFieldDefinition::create('entity_reference')
       ->setName('firma_solicitante_uid')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Firmante principal'))
       ->setSetting('target_type', 'user')
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_ip'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $newFields['firma_ip'] = BaseFieldDefinition::create('string')
       ->setName('firma_ip')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('IP del firmante'))
       ->setSetting('max_length', 45)
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_user_agent'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $newFields['firma_user_agent'] = BaseFieldDefinition::create('string')
       ->setName('firma_user_agent')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('User-Agent'))
       ->setSetting('max_length', 512)
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_metodo'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    $newFields['firma_metodo'] = BaseFieldDefinition::create('list_string')
       ->setName('firma_metodo')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Método de firma'))
@@ -1175,28 +1176,28 @@ function jaraba_andalucia_ei_update_10015(): string {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['firma_hash_documento'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $newFields['firma_hash_documento'] = BaseFieldDefinition::create('string')
       ->setName('firma_hash_documento')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Hash del documento'))
       ->setSetting('max_length', 64)
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['co_firmante_uid'] = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $newFields['co_firmante_uid'] = BaseFieldDefinition::create('entity_reference')
       ->setName('co_firmante_uid')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Co-firmante'))
       ->setSetting('target_type', 'user')
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['co_firma_fecha'] = \Drupal\Core\Field\BaseFieldDefinition::create('datetime')
+    $newFields['co_firma_fecha'] = BaseFieldDefinition::create('datetime')
       ->setName('co_firma_fecha')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Fecha de co-firma'))
       ->setSetting('datetime_type', 'datetime')
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['co_firma_metodo'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    $newFields['co_firma_metodo'] = BaseFieldDefinition::create('list_string')
       ->setName('co_firma_metodo')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Método de co-firma'))
@@ -1207,14 +1208,14 @@ function jaraba_andalucia_ei_update_10015(): string {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['verificacion_hash'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $newFields['verificacion_hash'] = BaseFieldDefinition::create('string')
       ->setName('verificacion_hash')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('Hash de verificación'))
       ->setSetting('max_length', 64)
       ->setDisplayConfigurable('view', TRUE);
 
-    $newFields['verificacion_qr_uri'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    $newFields['verificacion_qr_uri'] = BaseFieldDefinition::create('string')
       ->setName('verificacion_qr_uri')
       ->setTargetEntityTypeId('expediente_documento')
       ->setLabel(t('URI del QR'))
@@ -1312,7 +1313,7 @@ function jaraba_andalucia_ei_update_10017(): string {
     );
 
     if (!$existing) {
-      $field = \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+      $field = BaseFieldDefinition::create('text_long')
         ->setName('barreras_acceso')
         ->setTargetEntityTypeId('programa_participante_ei')
         ->setLabel(t('Barreras de acceso'))
@@ -2271,7 +2272,7 @@ function jaraba_andalucia_ei_update_10034(): string {
     foreach ($entityTypes as $entityTypeId) {
       if (!$updateManager->getEntityType($entityTypeId)) {
         $entityType = $entityTypeManager->getDefinition($entityTypeId, FALSE);
-        if ($entityType !== null) {
+        if ($entityType !== NULL) {
           $updateManager->installEntityType($entityType);
           $results[] = "$entityTypeId: installed";
         }

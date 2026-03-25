@@ -7,9 +7,10 @@
  * Este módulo proporciona:
  * - Auto-creación de Commerce Store por Tenant
  * - Campos GEO (field_ai_summary) para productos
- * - Integración con el sistema de multi-tenancy
+ * - Integración con el sistema de multi-tenancy.
  */
 
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 
@@ -27,12 +28,12 @@ function jaraba_commerce_entity_insert(EntityInterface $entity) {
     return;
   }
 
-  // Verificar que Commerce está instalado
+  // Verificar que Commerce está instalado.
   if (!\Drupal::moduleHandler()->moduleExists('commerce_store')) {
     return;
   }
 
-  // Crear la Store para el nuevo Tenant
+  // Crear la Store para el nuevo Tenant.
   try {
     /** @var \Drupal\jaraba_commerce\EventSubscriber\TenantStoreSubscriber $storeSubscriber */
     $storeSubscriber = \Drupal::service('jaraba_commerce.tenant_store_subscriber');
@@ -58,17 +59,16 @@ function jaraba_commerce_entity_insert(EntityInterface $entity) {
  *
  * Añade el campo field_ai_summary a los productos Commerce para Answer Capsules.
  */
-function jaraba_commerce_entity_bundle_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+function jaraba_commerce_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
   $fields = [];
 
-  // Solo para commerce_product
+  // Solo para commerce_product.
   if ($entity_type->id() !== 'commerce_product') {
     return $fields;
   }
 
   // Campo field_ai_summary ya se añade vía config - este hook es para campos base
-  // Lo dejamos preparado por si se necesita en el futuro
-  
+  // Lo dejamos preparado por si se necesita en el futuro.
   return $fields;
 }
 
@@ -103,7 +103,8 @@ function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
     if ($image && $image->entity) {
       $productData['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->entity->getFileUri());
     }
-  } elseif ($product->hasField('field_image') && !$product->get('field_image')->isEmpty()) {
+  }
+  elseif ($product->hasField('field_image') && !$product->get('field_image')->isEmpty()) {
     $image = $product->get('field_image')->first();
     if ($image && $image->entity) {
       $productData['image'] = \Drupal::service('file_url_generator')->generateAbsoluteString($image->entity->getFileUri());
@@ -116,7 +117,7 @@ function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
     $firstVariation = reset($variations);
     if ($firstVariation) {
       $productData['sku'] = $firstVariation->getSku();
-      
+
       // Precio.
       $price = $firstVariation->getPrice();
       if ($price) {
@@ -169,10 +170,10 @@ function jaraba_commerce_preprocess_commerce_product(array &$variables): void {
     if (\Drupal::hasService('jaraba_page_builder.schema_org')) {
       $schemaService = \Drupal::service('jaraba_page_builder.schema_org');
       $jsonLd = $schemaService->generateProductSchema($productData, $tenant);
-      
+
       if (!empty($jsonLd)) {
         $variables['schema_org_json_ld'] = $schemaService->wrapInScriptTag($jsonLd);
-        
+
         // Añadir al head de la página via #attached.
         $variables['#attached']['html_head'][] = [
           [
@@ -257,4 +258,3 @@ function _jaraba_commerce_resolve_stock($product, array $variations): bool {
   // 4. Sin gestión de stock: asumir disponible si el producto está publicado.
   return $product->isPublished();
 }
-

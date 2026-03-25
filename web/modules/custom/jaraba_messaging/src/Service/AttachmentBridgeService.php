@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_messaging\Service;
 
+use Drupal\Core\File\FileSystemInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -88,7 +89,7 @@ class AttachmentBridgeService {
 
     // Fallback: store in managed file system.
     $directory = 'private://messaging/attachments/' . $tenantId;
-    \Drupal::service('file_system')->prepareDirectory($directory, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
     $safeFilename = preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
     $destination = $directory . '/' . time() . '_' . $safeFilename;

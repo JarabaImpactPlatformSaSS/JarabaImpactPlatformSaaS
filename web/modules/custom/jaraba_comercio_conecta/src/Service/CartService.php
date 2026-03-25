@@ -9,15 +9,22 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
+/**
+ *
+ */
 class CartService {
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
+  /**
+   *
+   */
   public function getOrCreateCart(?string $session_id = NULL, ?int $tenant_id = NULL): object {
     $uid = (int) $this->currentUser->id();
     $storage = $this->entityTypeManager->getStorage('comercio_cart');
@@ -60,6 +67,9 @@ class CartService {
     return $cart;
   }
 
+  /**
+   *
+   */
   public function addItem(object $cart, int $product_id, int $quantity = 1, ?int $variation_id = NULL): ?object {
     $item_storage = $this->entityTypeManager->getStorage('comercio_cart_item');
 
@@ -99,6 +109,9 @@ class CartService {
     return $item;
   }
 
+  /**
+   *
+   */
   public function removeItem(object $cart, int $item_id): bool {
     $item_storage = $this->entityTypeManager->getStorage('comercio_cart_item');
     $item = $item_storage->load($item_id);
@@ -111,6 +124,9 @@ class CartService {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function updateItemQuantity(object $cart, int $item_id, int $quantity): bool {
     if ($quantity <= 0) {
       return $this->removeItem($cart, $item_id);
@@ -128,6 +144,9 @@ class CartService {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getCartItems(object $cart): array {
     $item_storage = $this->entityTypeManager->getStorage('comercio_cart_item');
     $ids = $item_storage->getQuery()
@@ -139,6 +158,9 @@ class CartService {
     return $ids ? array_values($item_storage->loadMultiple($ids)) : [];
   }
 
+  /**
+   *
+   */
   public function getCartItemCount(object $cart): int {
     $items = $this->getCartItems($cart);
     $count = 0;
@@ -148,6 +170,9 @@ class CartService {
     return $count;
   }
 
+  /**
+   *
+   */
   public function recalculateCart(object $cart): void {
     $items = $this->getCartItems($cart);
     $subtotal = 0.0;
@@ -167,6 +192,9 @@ class CartService {
     $cart->save();
   }
 
+  /**
+   *
+   */
   public function applyCoupon(object $cart, string $coupon_code): array {
     $coupon_storage = $this->entityTypeManager->getStorage('coupon_retail');
     $ids = $coupon_storage->getQuery()
@@ -214,6 +242,9 @@ class CartService {
     return ['success' => TRUE, 'message' => t('Cupon aplicado correctamente.'), 'discount' => $discount];
   }
 
+  /**
+   *
+   */
   public function clearCart(object $cart): void {
     $items = $this->getCartItems($cart);
     foreach ($items as $item) {
@@ -228,6 +259,9 @@ class CartService {
     $cart->save();
   }
 
+  /**
+   *
+   */
   protected function getTenantId(): int {
     if ($this->tenantContext !== NULL) {
       $tenant_context = $this->tenantContext;

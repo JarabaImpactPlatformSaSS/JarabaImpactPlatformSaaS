@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Database\Transaction;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -37,7 +36,7 @@ class WalletService {
    */
   public function getBalance(int $tenantId): float {
     $this->ensureTablesExist();
-    
+
     $balance = $this->database->select(self::TABLE_WALLET, 'w')
       ->fields('w', ['balance'])
       ->condition('tenant_id', $tenantId)
@@ -50,11 +49,16 @@ class WalletService {
   /**
    * Añade fondos al wallet (Deposit/Credit).
    *
-   * @param int $tenantId ID del tenant.
-   * @param float $amount Cantidad a añadir (positiva).
-   * @param string $source Origen (ej: 'stripe_payment', 'admin_grant').
-   * @param string $reference ID de referencia (ej: 'inv_123').
-   * @param string $description Descripción humana.
+   * @param int $tenantId
+   *   ID del tenant.
+   * @param float $amount
+   *   Cantidad a añadir (positiva).
+   * @param string $source
+   *   Origen (ej: 'stripe_payment', 'admin_grant').
+   * @param string $reference
+   *   ID de referencia (ej: 'inv_123').
+   * @param string $description
+   *   Descripción humana.
    */
   public function credit(int $tenantId, float $amount, string $source, string $reference, string $description): bool {
     if ($amount <= 0) {
@@ -66,16 +70,20 @@ class WalletService {
   /**
    * Descuenta fondos del wallet (Usage/Debit).
    *
-   * @param int $tenantId ID del tenant.
-   * @param float $amount Cantidad a restar (positiva).
-   * @param string $source Origen (ej: 'usage_metering').
-   * @param string $reference ID de referencia (ej: 'usage_123').
+   * @param int $tenantId
+   *   ID del tenant.
+   * @param float $amount
+   *   Cantidad a restar (positiva).
+   * @param string $source
+   *   Origen (ej: 'usage_metering').
+   * @param string $reference
+   *   ID de referencia (ej: 'usage_123').
    */
   public function debit(int $tenantId, float $amount, string $source, string $reference, string $description): bool {
     if ($amount <= 0) {
       throw new \InvalidArgumentException("Debit amount must be positive.");
     }
-    
+
     // Verificar saldo suficiente en una transacción atómica.
     $transaction = $this->database->startTransaction();
     try {
@@ -83,16 +91,17 @@ class WalletService {
       if ($currentBalance < $amount) {
         $this->logger->warning('Intento de débito sin fondos suficientes. Tenant: @id, Amount: @amt', [
           '@id' => $tenantId,
-          '@amt' => $amount
+          '@amt' => $amount,
         ]);
         return FALSE;
       }
 
       $success = $this->recordTransaction($tenantId, -$amount, 'debit', $source, $reference, $description);
-      
+
       // Commit implícito al salir del scope si no hay excepción.
       return $success;
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $transaction->rollBack();
       $this->logger->error('Error en transacción de débito: @error', ['@error' => $e->getMessage()]);
       throw $e;
@@ -108,7 +117,6 @@ class WalletService {
       // 1. Obtener hash anterior (Locking row para evitar race conditions).
       // En MySQL, SELECT ... FOR UPDATE es necesario aqui si hay alta concurrencia.
       // Simplificado para este ejemplo, pero crítico en producción high-scale.
-      
       $lastEntry = $this->database->select(self::TABLE_LEDGER, 'l')
         ->fields('l', ['hash', 'balance_after'])
         ->condition('tenant_id', $tenantId)
@@ -119,10 +127,11 @@ class WalletService {
 
       $previousHash = $lastEntry ? $lastEntry->hash : 'GENESIS_BLOCK_' . $tenantId;
       $previousBalance = $lastEntry ? (float) $lastEntry->balance_after : 0.00;
-      
+
       $newBalance = $previousBalance + $amount;
       $timestamp = time();
-      $nonce = random_bytes(8); // Sal para evitar ataques de diccionario.
+      // Sal para evitar ataques de diccionario.
+      $nonce = random_bytes(8);
 
       // 2. Calcular Hash de Integridad (SHA-256).
       // Hash = sha256(prev_hash + tenant_id + amount + type + ref + timestamp + nonce)
@@ -163,13 +172,14 @@ class WalletService {
           'tenant_id' => $tenantId,
           'balance' => $newBalance,
           'last_updated' => $timestamp,
-          'last_hash' => $hash
+          'last_hash' => $hash,
         ])
         ->execute();
 
       return TRUE;
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $transaction->rollBack();
       $this->logger->critical('FALLO CRÍTICO DE INTEGRIDAD WALLET: @error', ['@error' => $e->getMessage()]);
       throw $e;
@@ -199,7 +209,8 @@ class WalletService {
         'fields' => [
           'id' => ['type' => 'serial', 'not null' => TRUE],
           'tenant_id' => ['type' => 'int', 'not null' => TRUE],
-          'type' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE], // credit, debit
+      // credit, debit.
+          'type' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
           'amount' => ['type' => 'numeric', 'precision' => 19, 'scale' => 4, 'not null' => TRUE],
           'balance_after' => ['type' => 'numeric', 'precision' => 19, 'scale' => 4, 'not null' => TRUE],
           'source' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
@@ -216,7 +227,8 @@ class WalletService {
         'indexes' => [
           'tenant_idx' => ['tenant_id'],
           'ref_idx' => ['reference_id'],
-          'hash_idx' => ['hash'], // Para verificaciones rápidas
+        // Para verificaciones rápidas.
+          'hash_idx' => ['hash'],
         ],
       ]);
     }

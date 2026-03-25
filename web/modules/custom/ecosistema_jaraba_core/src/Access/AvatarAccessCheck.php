@@ -58,7 +58,7 @@ class AvatarAccessCheck implements AccessCheckInterface {
    * a la misma clave canónica para comparación.
    */
   protected const AVATAR_ALIASES = [
-    // JourneyState español → canónico
+    // JourneyState español → canónico.
     'job_seeker' => 'jobseeker',
     'emprendedor' => 'entrepreneur',
     'productor' => 'producer',
@@ -76,7 +76,7 @@ class AvatarAccessCheck implements AccessCheckInterface {
     'comprador_local' => 'buyer_local',
     'cliente_servicios' => 'cliente_servicios',
     'admin_lms' => 'admin_lms',
-    // AvatarDetection inglés → identidad
+    // AvatarDetection inglés → identidad.
     'jobseeker' => 'jobseeker',
     'recruiter' => 'recruiter',
     'entrepreneur' => 'entrepreneur',

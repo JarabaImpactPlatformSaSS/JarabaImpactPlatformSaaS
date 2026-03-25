@@ -46,7 +46,7 @@ class PushApiController extends ControllerBase {
   /**
    * Sends a push notification to a single user.
    *
-   * POST /api/v1/mobile/push/send
+   * POST /api/v1/mobile/push/send.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -103,7 +103,7 @@ class PushApiController extends ControllerBase {
   /**
    * Sends batch push notifications.
    *
-   * POST /api/v1/mobile/push/batch
+   * POST /api/v1/mobile/push/batch.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
@@ -174,7 +174,7 @@ class PushApiController extends ControllerBase {
   /**
    * Returns push notification history.
    *
-   * GET /api/v1/mobile/push/history
+   * GET /api/v1/mobile/push/history.
    *
    * Supports pagination (page, limit) and channel filter.
    *

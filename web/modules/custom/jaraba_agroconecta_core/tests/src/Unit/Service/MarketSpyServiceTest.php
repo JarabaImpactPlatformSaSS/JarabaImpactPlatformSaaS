@@ -137,8 +137,10 @@ class MarketSpyServiceTest extends TestCase {
 
   // =========================================================================
   // MEDIAN TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetMedianOddCount(): void {
     $method = new \ReflectionMethod(MarketSpyService::class, 'getMedian');
@@ -149,6 +151,9 @@ class MarketSpyServiceTest extends TestCase {
     $this->assertSame(3.0, $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetMedianEvenCount(): void {
     $method = new \ReflectionMethod(MarketSpyService::class, 'getMedian');
@@ -159,6 +164,9 @@ class MarketSpyServiceTest extends TestCase {
     $this->assertSame(2.5, $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetMedianSingleValue(): void {
     $method = new \ReflectionMethod(MarketSpyService::class, 'getMedian');
@@ -169,6 +177,9 @@ class MarketSpyServiceTest extends TestCase {
     $this->assertSame(42.0, $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetMedianEmpty(): void {
     $method = new \ReflectionMethod(MarketSpyService::class, 'getMedian');
@@ -181,8 +192,10 @@ class MarketSpyServiceTest extends TestCase {
 
   // =========================================================================
   // CATEGORY PRICE ANALYSIS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetCategoryPriceAnalysisEmptyCategory(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -205,8 +218,10 @@ class MarketSpyServiceTest extends TestCase {
 
   // =========================================================================
   // TRENDING PRODUCTS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetTrendingProductsReturnsLimited(): void {
     // Mock order item query that returns some items.
@@ -291,8 +306,10 @@ class MarketSpyServiceTest extends TestCase {
 
   // =========================================================================
   // COMPETITIVE POSITION TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetCompetitivePositionNoProducts(): void {
     // Producer with 0 products.
@@ -347,8 +364,10 @@ class MarketSpyServiceTest extends TestCase {
 
   // =========================================================================
   // PRICE ALERTS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetPriceAlertsNoAlerts(): void {
     // Producer has one product, price is within range of category average.
@@ -402,6 +421,9 @@ class MarketSpyServiceTest extends TestCase {
     $this->assertSame([], $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testPriceDeviationDetectsOverpriced(): void {
     // Producer product at 15.0 EUR, competitors at avg 10.0 EUR (50% above).
@@ -455,6 +477,9 @@ class MarketSpyServiceTest extends TestCase {
     $this->assertSame(15.0, $result[0]['current_price']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testPriceDeviationDetectsUnderpriced(): void {
     // Producer product at 5.0 EUR, competitors at avg 10.0 EUR (50% below).

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_agroconecta_core\Unit\Service;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -74,7 +75,7 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
     // Set up Drupal container for TranslatableMarkup::__toString()
     // and \Drupal::currentUser() / \Drupal::service() calls.
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
 
     $currentUser = $this->createMock(AccountProxyInterface::class);
@@ -162,8 +163,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // DETECT INTENT TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDetectIntentDescription(): void {
     $method = new \ReflectionMethod(ProducerCopilotService::class, 'detectIntent');
@@ -174,6 +177,9 @@ class ProducerCopilotServiceTest extends UnitTestCase {
     $this->assertSame('description', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDetectIntentPricing(): void {
     $method = new \ReflectionMethod(ProducerCopilotService::class, 'detectIntent');
@@ -184,6 +190,9 @@ class ProducerCopilotServiceTest extends UnitTestCase {
     $this->assertSame('pricing', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDetectIntentReviewResponse(): void {
     $method = new \ReflectionMethod(ProducerCopilotService::class, 'detectIntent');
@@ -194,6 +203,9 @@ class ProducerCopilotServiceTest extends UnitTestCase {
     $this->assertSame('review_response', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDetectIntentSeo(): void {
     $method = new \ReflectionMethod(ProducerCopilotService::class, 'detectIntent');
@@ -204,6 +216,9 @@ class ProducerCopilotServiceTest extends UnitTestCase {
     $this->assertSame('seo', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDetectIntentGeneral(): void {
     $method = new \ReflectionMethod(ProducerCopilotService::class, 'detectIntent');
@@ -216,8 +231,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // GENERATE DESCRIPTION TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGenerateDescriptionProductNotFound(): void {
     $this->productStorage->method('load')
@@ -230,6 +247,9 @@ class ProducerCopilotServiceTest extends UnitTestCase {
     $this->assertSame('Producto no encontrado', $result['error']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGenerateDescriptionSuccess(): void {
     $product = $this->createEntityMock(
@@ -269,8 +289,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // SUGGEST PRICE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSuggestPriceSuccess(): void {
     $product = $this->createEntityMock(
@@ -326,8 +348,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // RESPOND TO REVIEW TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRespondToReviewNotFound(): void {
     $this->reviewStorage->method('load')
@@ -342,8 +366,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // CHAT TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testChatCreatesNewConversation(): void {
     // Mock the conversation entity.
@@ -399,8 +425,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // GET CONVERSATIONS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetConversationsEmpty(): void {
     $query = $this->createMock(QueryInterface::class);
@@ -420,8 +448,10 @@ class ProducerCopilotServiceTest extends UnitTestCase {
 
   // =========================================================================
   // GET MESSAGES TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetMessagesReturnsOrdered(): void {
     $query = $this->createMock(QueryInterface::class);

@@ -34,14 +34,14 @@ function jaraba_matching_entity_update(EntityInterface $entity): void {
  */
 function jaraba_matching_entity_delete(EntityInterface $entity): void {
   $entity_type = $entity->getEntityTypeId();
-  
+
   if (!in_array($entity_type, ['job_posting', 'candidate_profile'])) {
     return;
   }
 
   try {
     $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
-    
+
     if ($entity_type === 'job_posting') {
       $qdrantClient->deleteJob((int) $entity->id());
     }
@@ -66,14 +66,14 @@ function jaraba_matching_entity_delete(EntityInterface $entity): void {
  */
 function jaraba_matching_handle_entity_change(EntityInterface $entity): void {
   $entity_type = $entity->getEntityTypeId();
-  
+
   if (!in_array($entity_type, ['job_posting', 'candidate_profile'])) {
     return;
   }
 
   try {
     $indexingService = \Drupal::service('jaraba_matching.indexing_service');
-    
+
     if ($entity_type === 'job_posting') {
       $indexingService->reindexJob((int) $entity->id());
     }
@@ -82,7 +82,7 @@ function jaraba_matching_handle_entity_change(EntityInterface $entity): void {
     }
   }
   catch (\Exception $e) {
-    // Log pero no bloquear - la indexación puede fallar sin romper la operación principal
+    // Log pero no bloquear - la indexación puede fallar sin romper la operación principal.
     \Drupal::logger('jaraba_matching')->warning(
       'Failed to index @type @id: @error',
       [
@@ -93,7 +93,6 @@ function jaraba_matching_handle_entity_change(EntityInterface $entity): void {
     );
   }
 }
-
 
 /**
  * Prepares variables for match_feedback templates.

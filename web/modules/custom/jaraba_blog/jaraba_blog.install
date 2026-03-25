@@ -44,7 +44,6 @@ function jaraba_blog_uninstall(): void {
   }
 }
 
-
 /**
  * Implements hook_requirements().
  */

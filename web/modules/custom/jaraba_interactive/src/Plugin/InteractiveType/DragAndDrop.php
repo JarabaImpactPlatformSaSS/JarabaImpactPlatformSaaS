@@ -28,179 +28,173 @@ use Drupal\jaraba_interactive\Plugin\InteractiveTypeBase;
  *   weight = 40
  * )
  */
-class DragAndDrop extends InteractiveTypeBase
-{
+class DragAndDrop extends InteractiveTypeBase {
 
-    /**
-     * {@inheritdoc}
-     *
-     * Esquema del contenido drag-and-drop.
-     * Define zonas de destino, items arrastrables y reglas de matching.
-     */
-    public function getSchema(): array
-    {
-        return [
-            'background_image' => [
-                'type' => 'string',
-                'description' => 'URL de imagen de fondo opcional',
+  /**
+   * {@inheritdoc}
+   *
+   * Esquema del contenido drag-and-drop.
+   * Define zonas de destino, items arrastrables y reglas de matching.
+   */
+  public function getSchema(): array {
+    return [
+      'background_image' => [
+        'type' => 'string',
+        'description' => 'URL de imagen de fondo opcional',
+      ],
+      'drop_zones' => [
+        'type' => 'array',
+        'required' => TRUE,
+        'items' => [
+          'id' => ['type' => 'string', 'required' => TRUE],
+          'label' => ['type' => 'string', 'required' => TRUE],
+          'position' => [
+            'type' => 'object',
+            'properties' => [
+              'x' => ['type' => 'number'],
+              'y' => ['type' => 'number'],
+              'width' => ['type' => 'number'],
+              'height' => ['type' => 'number'],
             ],
-            'drop_zones' => [
-                'type' => 'array',
-                'required' => TRUE,
-                'items' => [
-                    'id' => ['type' => 'string', 'required' => TRUE],
-                    'label' => ['type' => 'string', 'required' => TRUE],
-                    'position' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'x' => ['type' => 'number'],
-                            'y' => ['type' => 'number'],
-                            'width' => ['type' => 'number'],
-                            'height' => ['type' => 'number'],
-                        ],
-                    ],
-                    'accepts_multiple' => ['type' => 'boolean', 'default' => FALSE],
-                    'hint' => ['type' => 'string'],
-                ],
-            ],
-            'draggables' => [
-                'type' => 'array',
-                'required' => TRUE,
-                'items' => [
-                    'id' => ['type' => 'string', 'required' => TRUE],
-                    'text' => ['type' => 'string'],
-                    'image_url' => ['type' => 'string'],
-                    'correct_zones' => [
-                        'type' => 'array',
-                        'items' => ['type' => 'string'],
-                        'required' => TRUE,
-                    ],
-                    'feedback_correct' => ['type' => 'string'],
-                    'feedback_incorrect' => ['type' => 'string'],
-                ],
-            ],
-            'settings' => [
-                'type' => 'object',
-                'properties' => [
-                    'passing_score' => ['type' => 'integer', 'default' => 70],
-                    'max_attempts' => ['type' => 'integer', 'default' => 3],
-                    'show_feedback' => [
-                        'type' => 'string',
-                        'enum' => ['immediate', 'end', 'never'],
-                        'default' => 'end',
-                    ],
-                    'randomize_draggables' => ['type' => 'boolean', 'default' => TRUE],
-                    'snap_to_zone' => ['type' => 'boolean', 'default' => TRUE],
-                    'highlight_zones' => ['type' => 'boolean', 'default' => TRUE],
-                ],
-            ],
-        ];
+          ],
+          'accepts_multiple' => ['type' => 'boolean', 'default' => FALSE],
+          'hint' => ['type' => 'string'],
+        ],
+      ],
+      'draggables' => [
+        'type' => 'array',
+        'required' => TRUE,
+        'items' => [
+          'id' => ['type' => 'string', 'required' => TRUE],
+          'text' => ['type' => 'string'],
+          'image_url' => ['type' => 'string'],
+          'correct_zones' => [
+            'type' => 'array',
+            'items' => ['type' => 'string'],
+            'required' => TRUE,
+          ],
+          'feedback_correct' => ['type' => 'string'],
+          'feedback_incorrect' => ['type' => 'string'],
+        ],
+      ],
+      'settings' => [
+        'type' => 'object',
+        'properties' => [
+          'passing_score' => ['type' => 'integer', 'default' => 70],
+          'max_attempts' => ['type' => 'integer', 'default' => 3],
+          'show_feedback' => [
+            'type' => 'string',
+            'enum' => ['immediate', 'end', 'never'],
+            'default' => 'end',
+          ],
+          'randomize_draggables' => ['type' => 'boolean', 'default' => TRUE],
+          'snap_to_zone' => ['type' => 'boolean', 'default' => TRUE],
+          'highlight_zones' => ['type' => 'boolean', 'default' => TRUE],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Valida que existan zonas y items arrastrables.
+   */
+  public function validate(array $data): array {
+    $errors = parent::validate($data);
+
+    if (empty($data['drop_zones'])) {
+      $errors['drop_zones'] = $this->t('Se requiere al menos una zona de destino.');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Valida que existan zonas y items arrastrables.
-     */
-    public function validate(array $data): array
-    {
-        $errors = parent::validate($data);
+    if (empty($data['draggables'])) {
+      $errors['draggables'] = $this->t('Se requiere al menos un elemento arrastrable.');
+    }
 
-        if (empty($data['drop_zones'])) {
-            $errors['drop_zones'] = $this->t('Se requiere al menos una zona de destino.');
+    // Verificar que las zonas correctas existan.
+    $zoneIds = array_column($data['drop_zones'] ?? [], 'id');
+    foreach ($data['draggables'] ?? [] as $index => $item) {
+      foreach ($item['correct_zones'] ?? [] as $zoneId) {
+        if (!in_array($zoneId, $zoneIds, TRUE)) {
+          $errors["draggables.$index.correct_zones"] = $this->t(
+                'El item "@text" referencia una zona inexistente: @zone.',
+                ['@text' => $item['text'] ?? $index, '@zone' => $zoneId]
+            );
         }
-
-        if (empty($data['draggables'])) {
-            $errors['draggables'] = $this->t('Se requiere al menos un elemento arrastrable.');
-        }
-
-        // Verificar que las zonas correctas existan.
-        $zoneIds = array_column($data['drop_zones'] ?? [], 'id');
-        foreach ($data['draggables'] ?? [] as $index => $item) {
-            foreach ($item['correct_zones'] ?? [] as $zoneId) {
-                if (!in_array($zoneId, $zoneIds, TRUE)) {
-                    $errors["draggables.$index.correct_zones"] = $this->t(
-                        'El item "@text" referencia una zona inexistente: @zone.',
-                        ['@text' => $item['text'] ?? $index, '@zone' => $zoneId]
-                    );
-                }
-            }
-        }
-
-        return $errors;
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Renderiza el ejercicio de arrastrar y soltar.
-     */
-    public function render(array $data, array $settings = []): array
-    {
-        return [
-            '#theme' => 'interactive_drag_and_drop',
-            '#drop_zones' => $data['drop_zones'] ?? [],
-            '#draggables' => $data['draggables'] ?? [],
-            '#background_image' => $data['background_image'] ?? '',
-            '#settings' => array_merge($settings, $data['settings'] ?? []),
-        ];
+    return $errors;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Renderiza el ejercicio de arrastrar y soltar.
+   */
+  public function render(array $data, array $settings = []): array {
+    return [
+      '#theme' => 'interactive_drag_and_drop',
+      '#drop_zones' => $data['drop_zones'] ?? [],
+      '#draggables' => $data['draggables'] ?? [],
+      '#background_image' => $data['background_image'] ?? '',
+      '#settings' => array_merge($settings, $data['settings'] ?? []),
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Calcula la puntuacion verificando colocacion de items en zonas.
+   * Las respuestas son un mapa: {draggable_id: zone_id}.
+   */
+  public function calculateScore(array $data, array $responses): array {
+    $draggables = $data['draggables'] ?? [];
+    $totalItems = count($draggables);
+    $correctItems = 0;
+    $details = [];
+
+    foreach ($draggables as $item) {
+      $itemId = $item['id'];
+      $correctZones = $item['correct_zones'] ?? [];
+      $userZone = $responses[$itemId] ?? NULL;
+
+      $isCorrect = $userZone !== NULL && in_array($userZone, $correctZones, TRUE);
+
+      if ($isCorrect) {
+        $correctItems++;
+      }
+
+      $details[$itemId] = [
+        'correct' => $isCorrect,
+        'user_zone' => $userZone,
+        'correct_zones' => $correctZones,
+        'feedback' => $isCorrect
+          ? ($item['feedback_correct'] ?? (string) $this->t('¡Correcto!'))
+          : ($item['feedback_incorrect'] ?? (string) $this->t('Incorrecto.')),
+      ];
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Calcula la puntuacion verificando colocacion de items en zonas.
-     * Las respuestas son un mapa: {draggable_id: zone_id}.
-     */
-    public function calculateScore(array $data, array $responses): array
-    {
-        $draggables = $data['draggables'] ?? [];
-        $totalItems = count($draggables);
-        $correctItems = 0;
-        $details = [];
+    $percentage = $this->calculatePercentage((float) $correctItems, (float) $totalItems);
+    $passingScore = (float) ($data['settings']['passing_score'] ?? 70);
 
-        foreach ($draggables as $item) {
-            $itemId = $item['id'];
-            $correctZones = $item['correct_zones'] ?? [];
-            $userZone = $responses[$itemId] ?? NULL;
+    return [
+      'score' => $percentage,
+      'max_score' => 100,
+      'passed' => $this->determinePassed($percentage, $passingScore),
+      'raw_score' => $correctItems,
+      'raw_max' => $totalItems,
+      'details' => $details,
+    ];
+  }
 
-            $isCorrect = $userZone !== NULL && in_array($userZone, $correctZones, TRUE);
-
-            if ($isCorrect) {
-                $correctItems++;
-            }
-
-            $details[$itemId] = [
-                'correct' => $isCorrect,
-                'user_zone' => $userZone,
-                'correct_zones' => $correctZones,
-                'feedback' => $isCorrect
-                    ? ($item['feedback_correct'] ?? (string) $this->t('¡Correcto!'))
-                    : ($item['feedback_incorrect'] ?? (string) $this->t('Incorrecto.')),
-            ];
-        }
-
-        $percentage = $this->calculatePercentage((float) $correctItems, (float) $totalItems);
-        $passingScore = (float) ($data['settings']['passing_score'] ?? 70);
-
-        return [
-            'score' => $percentage,
-            'max_score' => 100,
-            'passed' => $this->determinePassed($percentage, $passingScore),
-            'raw_score' => $correctItems,
-            'raw_max' => $totalItems,
-            'details' => $details,
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * Verbos xAPI para drag-and-drop.
-     */
-    public function getXapiVerbs(): array
-    {
-        return ['attempted', 'interacted', 'completed', 'passed', 'failed'];
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * Verbos xAPI para drag-and-drop.
+   */
+  public function getXapiVerbs(): array {
+    return ['attempted', 'interacted', 'completed', 'passed', 'failed'];
+  }
 
 }

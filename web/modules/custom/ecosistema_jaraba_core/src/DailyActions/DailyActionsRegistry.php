@@ -85,6 +85,9 @@ class DailyActionsRegistry {
    */
   public const GLOBAL_DASHBOARD_ID = '__global__';
 
+  /**
+   *
+   */
   public function getActionsForDashboard(string $dashboardId, int $tenantId): array {
     $dashboardActions = $this->actions[$dashboardId] ?? [];
 

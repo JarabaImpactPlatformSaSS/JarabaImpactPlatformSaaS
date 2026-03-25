@@ -20,95 +20,93 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   cron = {"time" = 30}
  * )
  */
-class ExpiringTrialsWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface
-{
+class ExpiringTrialsWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
-    public function __construct(
-        array $configuration,
-        $plugin_id,
-        $plugin_definition,
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected LoggerInterface $logger,
-        protected MailManagerInterface $mailManager,
-    ) {
-        parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LoggerInterface $logger,
+    protected MailManagerInterface $mailManager,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    return new static(
+          $configuration,
+          $plugin_id,
+          $plugin_definition,
+          $container->get('entity_type.manager'),
+          $container->get('logger.channel.ecosistema_jaraba_core'),
+          $container->get('plugin.manager.mail'),
+      );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processItem($data): void {
+    $tenantId = $data['tenant_id'] ?? NULL;
+    if (!$tenantId) {
+      return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static
-    {
-        return new static(
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $container->get('entity_type.manager'),
-            $container->get('logger.channel.ecosistema_jaraba_core'),
-            $container->get('plugin.manager.mail'),
-        );
+    $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+    if (!$tenant || $tenant->get('trial_reminder_sent')->value) {
+      return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function processItem($data): void
-    {
-        $tenantId = $data['tenant_id'] ?? NULL;
-        if (!$tenantId) {
-            return;
-        }
-
-        $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
-        if (!$tenant || $tenant->get('trial_reminder_sent')->value) {
-            return;
-        }
-
-        // LOW-10: Send trial expiring email to tenant admin.
-        $adminUser = $tenant->getAdminUser();
-        if ($adminUser && $adminUser->getEmail()) {
-            $trialEnds = $tenant->getTrialEndsAt();
-            $daysLeft = $trialEnds
+    // LOW-10: Send trial expiring email to tenant admin.
+    $adminUser = $tenant->getAdminUser();
+    if ($adminUser && $adminUser->getEmail()) {
+      $trialEnds = $tenant->getTrialEndsAt();
+      $daysLeft = $trialEnds
                 ? max(0, (int) ((strtotime($trialEnds) - time()) / 86400))
                 : 0;
 
-            $params = [
-                'tenant_name' => $tenant->getName(),
-                'admin_name' => $adminUser->getDisplayName(),
-                'days_left' => $daysLeft,
-                'trial_ends' => $trialEnds,
-            ];
+      $params = [
+        'tenant_name' => $tenant->getName(),
+        'admin_name' => $adminUser->getDisplayName(),
+        'days_left' => $daysLeft,
+        'trial_ends' => $trialEnds,
+      ];
 
-            $result = $this->mailManager->mail(
-                'ecosistema_jaraba_core',
-                'trial_expiring',
-                $adminUser->getEmail(),
-                $adminUser->getPreferredLangcode(),
-                $params,
+      $result = $this->mailManager->mail(
+            'ecosistema_jaraba_core',
+            'trial_expiring',
+            $adminUser->getEmail(),
+            $adminUser->getPreferredLangcode(),
+            $params,
+        );
+
+      if ($result['result']) {
+        $this->logger->info(
+          'Recordatorio de trial enviado a tenant @tenant (@email), @days días restantes.',
+          [
+            '@tenant' => $tenant->getName(),
+            '@email' => $adminUser->getEmail(),
+            '@days' => $daysLeft,
+          ]
+          );
+      }
+      else {
+        $this->logger->warning(
+          'Fallo al enviar email de trial a tenant @tenant (@email).',
+          [
+            '@tenant' => $tenant->getName(),
+            '@email' => $adminUser->getEmail(),
+          ]
             );
-
-            if ($result['result']) {
-                $this->logger->info(
-                    'Recordatorio de trial enviado a tenant @tenant (@email), @days días restantes.',
-                    [
-                        '@tenant' => $tenant->getName(),
-                        '@email' => $adminUser->getEmail(),
-                        '@days' => $daysLeft,
-                    ]
-                );
-            } else {
-                $this->logger->warning(
-                    'Fallo al enviar email de trial a tenant @tenant (@email).',
-                    [
-                        '@tenant' => $tenant->getName(),
-                        '@email' => $adminUser->getEmail(),
-                    ]
-                );
-            }
-        }
-
-        $tenant->set('trial_reminder_sent', TRUE);
-        $tenant->save();
+      }
     }
+
+    $tenant->set('trial_reminder_sent', TRUE);
+    $tenant->save();
+  }
 
 }

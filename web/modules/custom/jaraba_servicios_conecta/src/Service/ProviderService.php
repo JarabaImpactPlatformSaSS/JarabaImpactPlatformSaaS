@@ -96,11 +96,11 @@ class ProviderService {
       $query->condition($group);
     }
 
-    // Contar total antes de aplicar paginación
+    // Contar total antes de aplicar paginación.
     $count_query = clone $query;
     $total = $count_query->count()->execute();
 
-    // Aplicar paginación y ordenar por rating
+    // Aplicar paginación y ordenar por rating.
     $ids = $query
       ->sort('average_rating', 'DESC')
       ->sort('display_name', 'ASC')

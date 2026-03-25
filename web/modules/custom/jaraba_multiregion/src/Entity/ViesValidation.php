@@ -84,7 +84,6 @@ class ViesValidation extends ContentEntityBase {
     // BLOQUE 1: VINCULO CON TENANT
     // Referencia al tenant que solicito la validacion VIES.
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant que solicito la validacion VIES.'))
@@ -97,7 +96,6 @@ class ViesValidation extends ContentEntityBase {
     // BLOQUE 2: DATOS DE LA CONSULTA VIES
     // Numero IVA, codigo de pais y resultado de la validacion.
     // =========================================================================
-
     $fields['vat_number'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Numero VAT'))
       ->setDescription(new TranslatableMarkup('Numero de identificacion fiscal consultado en VIES.'))
@@ -125,7 +123,6 @@ class ViesValidation extends ContentEntityBase {
     // BLOQUE 3: DATOS DEVUELTOS POR VIES
     // Nombre y direccion de la empresa segun registro VIES.
     // =========================================================================
-
     $fields['company_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre empresa'))
       ->setDescription(new TranslatableMarkup('Nombre o razon social de la empresa devuelto por VIES.'))
@@ -145,7 +142,6 @@ class ViesValidation extends ContentEntityBase {
     // BLOQUE 4: TRAZABILIDAD
     // Identificador de consulta VIES y fecha de la validacion.
     // =========================================================================
-
     $fields['request_identifier'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('ID consulta VIES'))
       ->setDescription(new TranslatableMarkup('Identificador unico de la consulta VIES para trazabilidad tributaria.'))
@@ -166,7 +162,6 @@ class ViesValidation extends ContentEntityBase {
     // BLOQUE 5: METADATOS TEMPORALES
     // Solo timestamp de creacion (entidad de registro inmutable).
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

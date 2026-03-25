@@ -66,7 +66,6 @@ class AiDraftingService {
       // $aiModel = $config->get('default_ai_model') ?? 'gemini-2.0-flash';
       // $response = $aiProvider->generate($prompt, ['model' => $aiModel, 'temperature' => 0.3]);
       // $generatedHtml = $response['content'];
-
       $generatedHtml = sprintf(
         '<!-- AI Draft Placeholder --><p>Documento generado por IA para el expediente #%d usando plantilla "%s".</p><p>Pendiente de integracion con AI Provider.</p>',
         $caseId,

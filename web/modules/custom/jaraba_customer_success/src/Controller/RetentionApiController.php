@@ -350,9 +350,12 @@ class RetentionApiController extends ControllerBase {
     if (!in_array($action, $allowedActions, TRUE)) {
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('Action must be one of: @actions.', [
-          '@actions' => implode(', ', $allowedActions),
-        ])],
+        'error' => [
+          'code' => 'VALIDATION_ERROR',
+          'message' => (string) $this->t('Action must be one of: @actions.', [
+            '@actions' => implode(', ', $allowedActions),
+          ]),
+        ],
       ], 422);
     }
 
@@ -372,10 +375,13 @@ class RetentionApiController extends ControllerBase {
     if (!isset($validTransitions[$currentStatus]) || !in_array($newStatus, $validTransitions[$currentStatus], TRUE)) {
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'INVALID_TRANSITION', 'message' => (string) $this->t('Cannot @action an execution with status @status.', [
-          '@action' => $action,
-          '@status' => $currentStatus,
-        ])],
+        'error' => [
+          'code' => 'INVALID_TRANSITION',
+          'message' => (string) $this->t('Cannot @action an execution with status @status.', [
+            '@action' => $action,
+            '@status' => $currentStatus,
+          ]),
+        ],
       ], 409);
     }
 

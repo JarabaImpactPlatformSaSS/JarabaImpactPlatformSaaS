@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
  * - Posts relacionados por categoria/tags
  * - Calculo de reading time
  * - Tracking de vistas
- * - Estadisticas del blog
+ * - Estadisticas del blog.
  */
 class BlogService {
 

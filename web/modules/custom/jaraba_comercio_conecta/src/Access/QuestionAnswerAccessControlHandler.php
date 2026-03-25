@@ -10,8 +10,14 @@ use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class QuestionAnswerAccessControlHandler extends DefaultEntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
     $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -41,6 +47,9 @@ class QuestionAnswerAccessControlHandler extends DefaultEntityAccessControlHandl
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermissions($account, [
       'manage comercio reviews',
@@ -48,6 +57,9 @@ class QuestionAnswerAccessControlHandler extends DefaultEntityAccessControlHandl
     ], 'OR');
   }
 
+  /**
+   *
+   */
   protected function checkMerchantCanAnswer(EntityInterface $entity, AccountInterface $account): AccessResult {
     $merchant_id = $entity->get('merchant_id')->target_id;
     if (!$merchant_id) {

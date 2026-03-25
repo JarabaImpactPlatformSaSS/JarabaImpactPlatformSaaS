@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_verifactu\Service;
 
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QROptions;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\jaraba_verifactu\Entity\VeriFactuInvoiceRecord;
 use Psr\Log\LoggerInterface;
@@ -115,14 +119,14 @@ class VeriFactuQrService {
    *   Base64-encoded PNG image data.
    */
   protected function generateWithChillerlan(string $url, int $size): string {
-    $options = new \chillerlan\QRCode\QROptions([
-      'outputType' => \chillerlan\QRCode\Output\QROutputInterface::GDIMAGE_PNG,
+    $options = new QROptions([
+      'outputType' => QROutputInterface::GDIMAGE_PNG,
       'scale' => max(1, (int) ($size / 33)),
       'imageBase64' => FALSE,
-      'eccLevel' => \chillerlan\QRCode\Common\EccLevel::M,
+      'eccLevel' => EccLevel::M,
     ]);
 
-    $qrCode = new \chillerlan\QRCode\QRCode($options);
+    $qrCode = new QRCode($options);
     $imageData = $qrCode->render($url);
 
     return base64_encode($imageData);

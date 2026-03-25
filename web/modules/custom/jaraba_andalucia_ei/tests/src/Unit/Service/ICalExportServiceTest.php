@@ -7,8 +7,6 @@ namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface;
 use Drupal\jaraba_andalucia_ei\Service\ICalExportService;
 use Drupal\Tests\UnitTestCase;

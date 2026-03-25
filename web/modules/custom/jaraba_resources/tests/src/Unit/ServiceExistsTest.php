@@ -13,6 +13,9 @@ use PHPUnit\Framework\TestCase;
  */
 class ServiceExistsTest extends TestCase {
 
+  /**
+   *
+   */
   public function testServiceFileExists(): void {
     $servicesFile = dirname(__DIR__, 3) . '/jaraba_resources.services.yml';
     $this->assertFileExists($servicesFile);

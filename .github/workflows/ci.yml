@@ -46,12 +46,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: PHP CodeSniffer (Drupal Standard)
-        run: |
-          vendor/bin/phpcs --standard=Drupal,DrupalPractice \
-            --extensions=php,module,inc,install,theme \
-            --ignore=*/vendor/*,*/node_modules/* \
-            web/modules/custom
+      - name: PHP CodeSniffer (Drupal Standard) — baseline mode
+        run: bash scripts/ci/phpcs-with-baseline.sh
 
       # AUDIT-SEC-N11: SAST enhancement — PHPStan with security rules.
       # Uses phpstan.neon (level 6 + phpstan-security.neon) for full

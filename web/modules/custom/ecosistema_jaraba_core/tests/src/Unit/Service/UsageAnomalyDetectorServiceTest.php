@@ -255,7 +255,7 @@ class UsageAnomalyDetectorServiceTest extends TestCase {
     // Values with some variance: mean ~= 100, stddev ~= 10
     // [90, 95, 100, 105, 110, 90, 95, 100, 105, 110]
     // Mean = 100, stddev ~ 7.07
-    // Today = 105 -> deviation = 5 / 7.07 ~ 0.71 < threshold 2.0
+    // Today = 105 -> deviation = 5 / 7.07 ~ 0.71 < threshold 2.0.
     $service->method('getDailyAggregatedValues')
       ->willReturn([90.0, 95.0, 100.0, 105.0, 110.0, 90.0, 95.0, 100.0, 105.0, 110.0]);
 

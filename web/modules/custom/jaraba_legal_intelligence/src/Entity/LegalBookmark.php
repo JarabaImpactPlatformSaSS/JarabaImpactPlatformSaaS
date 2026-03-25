@@ -84,7 +84,6 @@ class LegalBookmark extends ContentEntityBase implements EntityOwnerInterface, E
     // Profesional que guardo el favorito y resolucion guardada.
     // La combinacion user_id + resolution_id deberia ser unica.
     // =========================================================================
-
     $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('User'))
       ->setDescription(t('Profesional que guardo la resolucion como favorito.'))
@@ -105,7 +104,6 @@ class LegalBookmark extends ContentEntityBase implements EntityOwnerInterface, E
     // BLOQUE 2: DATOS DEL FAVORITO
     // Notas personales y carpeta organizativa del profesional.
     // =========================================================================
-
     $fields['notes'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Notes'))
       ->setDescription(t('Notas personales del profesional sobre la resolucion.'))
@@ -122,7 +120,6 @@ class LegalBookmark extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 3: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp de creacion del registro en el sistema.'));

@@ -474,9 +474,15 @@ class ComplianceAggregatorService {
     $totalKpis = 0;
     $installedModules = 0;
 
-    if ($this->dpaManager !== NULL) $installedModules++;
-    if ($this->tosManager !== NULL) $installedModules++;
-    if ($this->backupVerifier !== NULL) $installedModules++;
+    if ($this->dpaManager !== NULL) {
+      $installedModules++;
+    }
+    if ($this->tosManager !== NULL) {
+      $installedModules++;
+    }
+    if ($this->backupVerifier !== NULL) {
+      $installedModules++;
+    }
 
     if ($installedModules === 0) {
       return 0;

@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * - Canal con titulo, descripcion, link
  * - Items con titulo, link, descripcion, pubDate, dc:creator, category, guid
  * - Atom self-link para autodescubrimiento
- * - CDATA para descripciones con HTML
+ * - CDATA para descripciones con HTML.
  *
  * Backportea la funcionalidad de BlogRssService con mejoras:
  * - Soporte para ContentAuthor (no solo usuario Drupal)

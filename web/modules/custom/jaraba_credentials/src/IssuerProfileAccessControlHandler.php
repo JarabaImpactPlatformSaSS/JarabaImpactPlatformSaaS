@@ -13,23 +13,20 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para IssuerProfile.
  */
-class IssuerProfileAccessControlHandler extends EntityAccessControlHandler
-{
+class IssuerProfileAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage issuer profiles');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'manage issuer profiles');
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage issuer profiles');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'manage issuer profiles');
+  }
 
 }

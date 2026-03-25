@@ -125,7 +125,7 @@ class LegalIngestionService {
    *   - updated: (int) Normas actualizadas.
    *   - errors: (int) Errores de ingestion.
    */
-  public function syncFromBoe(string $dateFrom, ?string $dateTo = null): array {
+  public function syncFromBoe(string $dateFrom, ?string $dateTo = NULL): array {
     $summary = ['ingested' => 0, 'updated' => 0, 'errors' => 0];
 
     $filters = [

@@ -259,14 +259,22 @@ class SupportAnalyticsServiceTest extends UnitTestCase {
     // Track which conditions are requested to return different counts.
     $callIndex = 0;
     $returnValues = [
-      '10', // total tickets
-      '3',  // open tickets
-      '1',  // pending tickets
-      '5',  // resolved tickets
-      '2',  // sla breached
-      '1',  // today resolved
-      '4.2', // avg csat
-      '1800', // avg response seconds
+    // Total tickets.
+      '10',
+    // Open tickets.
+      '3',
+    // Pending tickets.
+      '1',
+    // Resolved tickets.
+      '5',
+    // Sla breached.
+      '2',
+    // Today resolved.
+      '1',
+    // Avg csat.
+      '4.2',
+    // Avg response seconds.
+      '1800',
     ];
 
     $statement = $this->createMock(StatementInterface::class);
@@ -287,7 +295,7 @@ class SupportAnalyticsServiceTest extends UnitTestCase {
 
     $result = $this->service->getOverviewStats();
 
-    // SLA compliance: ((10 - 2) / 10) * 100 = 80.0
+    // SLA compliance: ((10 - 2) / 10) * 100 = 80.0.
     $this->assertSame(80.0, $result['sla_compliance']);
     $this->assertSame(10, $result['total_tickets']);
   }

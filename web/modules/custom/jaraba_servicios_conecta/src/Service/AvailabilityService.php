@@ -133,26 +133,26 @@ class AvailabilityService {
     // Determinar día de la semana (1=lunes...7=domingo)
     $day_of_week = (int) date('N', strtotime($date));
 
-    // Obtener slots recurrentes para ese día
+    // Obtener slots recurrentes para ese día.
     $slots_by_day = $this->getProviderSlots($provider_id);
     if (empty($slots_by_day[$day_of_week])) {
       return [];
     }
 
-    // Obtener reservas existentes para ese día
+    // Obtener reservas existentes para ese día.
     $bookings = $this->getProviderBookingsForDate($provider_id, $date);
 
-    // Obtener buffer del profesional
+    // Obtener buffer del profesional.
     $provider = $this->entityTypeManager->getStorage('provider_profile')->load($provider_id);
     $buffer = $provider ? (int) $provider->get('buffer_time')->value : 15;
 
-    // Calcular huecos disponibles
+    // Calcular huecos disponibles.
     $available = [];
     foreach ($slots_by_day[$day_of_week] as $slot) {
       $slot_start = strtotime($date . ' ' . $slot->get('start_time')->value);
       $slot_end = strtotime($date . ' ' . $slot->get('end_time')->value);
 
-      // Generar huecos cada 30 minutos dentro del slot
+      // Generar huecos cada 30 minutos dentro del slot.
       $current = $slot_start;
       while (($current + ($duration_minutes * 60)) <= $slot_end) {
         $candidate_end = $current + ($duration_minutes * 60);
@@ -161,7 +161,8 @@ class AvailabilityService {
           $available[] = date('H:i', $current);
         }
 
-        $current += 1800; // Avanzar 30 minutos
+        // Avanzar 30 minutos.
+        $current += 1800;
       }
     }
 

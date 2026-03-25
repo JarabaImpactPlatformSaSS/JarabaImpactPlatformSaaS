@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_foc\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -304,7 +305,7 @@ class EtlServiceTest extends UnitTestCase {
 
     // Mock transaction storage for Quick Ratio and Revenue per Employee.
     $txnStorage = $this->createMock(EntityStorageInterface::class);
-    $txnQuery = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $txnQuery = $this->createMock(QueryInterface::class);
     $txnQuery->method('accessCheck')->willReturnSelf();
     $txnQuery->method('condition')->willReturnSelf();
     $txnQuery->method('execute')->willReturn([]);
@@ -349,7 +350,7 @@ class EtlServiceTest extends UnitTestCase {
       ->willReturn($snapshotEntity);
 
     $txnStorage = $this->createMock(EntityStorageInterface::class);
-    $txnQuery = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $txnQuery = $this->createMock(QueryInterface::class);
     $txnQuery->method('accessCheck')->willReturnSelf();
     $txnQuery->method('condition')->willReturnSelf();
     $txnQuery->method('execute')->willReturn([]);

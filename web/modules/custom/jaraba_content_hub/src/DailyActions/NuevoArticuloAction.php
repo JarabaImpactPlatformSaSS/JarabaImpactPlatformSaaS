@@ -17,58 +17,100 @@ class NuevoArticuloAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'editor_content_hub.articulo_nuevo';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'editor_content_hub';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Nuevo articulo');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Escribe y publica contenido');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'content', 'name' => 'edit', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'verde-innovacion';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'entity.content_article.add_form';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'large';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_lexnet.install — Instalacion del modulo Legal LexNET.
+ * Jaraba_legal_lexnet.install — Instalacion del modulo Legal LexNET.
  *
  * Estructura: hook_install para inicializar estado.
  */
@@ -84,7 +84,6 @@ function jaraba_legal_lexnet_update_10001(): void {
     }
   }
 }
-
 
 /**
  * Implements hook_requirements().

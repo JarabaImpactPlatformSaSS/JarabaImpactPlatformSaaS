@@ -159,7 +159,7 @@ class PwaManifestService {
 
       $tokenStorage = $this->entityTypeManager->getStorage('design_token_config');
       $tokenConfigs = $tokenStorage->loadByProperties(['vertical' => $verticalId]);
-      
+
       if (!empty($tokenConfigs)) {
         $tokenConfig = reset($tokenConfigs);
         $manifest['theme_color'] = $tokenConfig->get('colors')['primary'] ?? $manifest['theme_color'];

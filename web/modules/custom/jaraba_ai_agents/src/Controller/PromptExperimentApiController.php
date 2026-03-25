@@ -47,7 +47,7 @@ class PromptExperimentApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/ai/prompt-experiments
+   * GET /api/v1/ai/prompt-experiments.
    */
   public function listExperiments(): JsonResponse {
     $tenantId = $this->getTenantId();
@@ -60,7 +60,7 @@ class PromptExperimentApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/ai/prompt-experiments
+   * POST /api/v1/ai/prompt-experiments.
    */
   public function createExperiment(Request $request): JsonResponse {
     $tenantId = $this->getTenantId();
@@ -85,7 +85,7 @@ class PromptExperimentApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/ai/prompt-experiments/{experiment_id}/results
+   * GET /api/v1/ai/prompt-experiments/{experiment_id}/results.
    */
   public function getResults(string $experiment_id): JsonResponse {
     $result = $this->promptExperiment->getExperimentResults((int) $experiment_id);

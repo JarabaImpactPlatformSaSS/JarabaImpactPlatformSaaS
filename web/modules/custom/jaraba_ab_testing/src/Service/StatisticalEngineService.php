@@ -58,7 +58,7 @@ class StatisticalEngineService {
    * La fórmula es:
    *   p_pool = (x1 + x2) / (n1 + n2)
    *   SE = sqrt(p_pool * (1 - p_pool) * (1/n1 + 1/n2))
-   *   Z = (p2 - p1) / SE
+   *   Z = (p2 - p1) / SE.
    *
    * Un Z-score positivo indica que la variante supera al control.
    * Un Z-score > 1.96 corresponde a confianza > 95%.
@@ -129,7 +129,7 @@ class StatisticalEngineService {
     // Phi(z) = 0.5 * (1 + erf(z / sqrt(2)))
     $phi = 0.5 * (1.0 + $this->erf($z / M_SQRT2));
 
-    // Confianza bilateral: 2 * Phi(z) - 1
+    // Confianza bilateral: 2 * Phi(z) - 1.
     $confidence = (2.0 * $phi - 1.0) * 100.0;
 
     return round(min(100.0, max(0.0, $confidence)), 2);
@@ -540,18 +540,18 @@ class StatisticalEngineService {
     // Coeficientes de la aproximación racional de Acklam.
     $a = [
       -3.969683028665376e+01,
-       2.209460984245205e+02,
+      2.209460984245205e+02,
       -2.759285104469687e+02,
-       1.383577518672690e+02,
+      1.383577518672690e+02,
       -3.066479806614716e+01,
-       2.506628277459239e+00,
+      2.506628277459239e+00,
     ];
 
     $b = [
       -5.447609879822406e+01,
-       1.615858368580409e+02,
+      1.615858368580409e+02,
       -1.556989798598866e+02,
-       6.680131188771972e+01,
+      6.680131188771972e+01,
       -1.328068155288572e+01,
     ];
 
@@ -560,15 +560,15 @@ class StatisticalEngineService {
       -3.223964580411365e-01,
       -2.400758277161838e+00,
       -2.549732539343734e+00,
-       4.374664141464968e+00,
-       2.938163982698783e+00,
+      4.374664141464968e+00,
+      2.938163982698783e+00,
     ];
 
     $d = [
-       7.784695709041462e-03,
-       3.224671290700398e-01,
-       2.445134137142996e+00,
-       3.754408661907416e+00,
+      7.784695709041462e-03,
+      3.224671290700398e-01,
+      2.445134137142996e+00,
+      3.754408661907416e+00,
     ];
 
     // Punto de corte bajo.

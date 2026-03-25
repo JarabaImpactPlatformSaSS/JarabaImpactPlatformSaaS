@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ModerationService {
 
   protected LoggerInterface $logger;
@@ -19,6 +22,9 @@ class ModerationService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.moderation');
   }
 
+  /**
+   *
+   */
   public function addToQueue(string $entityType, int $entityId, string $moderationType, string $priority = 'normal'): bool {
     try {
       $valid_priorities = ['low', 'normal', 'high', 'urgent'];
@@ -68,6 +74,9 @@ class ModerationService {
     }
   }
 
+  /**
+   *
+   */
   public function processModeration(int $queueId, string $decision, string $notes = ''): bool {
     try {
       $storage = $this->entityTypeManager->getStorage('moderation_queue');
@@ -104,6 +113,9 @@ class ModerationService {
     }
   }
 
+  /**
+   *
+   */
   public function getQueueStats(): array {
     try {
       $storage = $this->entityTypeManager->getStorage('moderation_queue');
@@ -144,6 +156,9 @@ class ModerationService {
     }
   }
 
+  /**
+   *
+   */
   public function assignModerator(int $queueId, int $userId): bool {
     try {
       $storage = $this->entityTypeManager->getStorage('moderation_queue');

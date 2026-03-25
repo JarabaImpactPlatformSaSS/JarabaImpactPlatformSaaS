@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento;
 use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface;
-use Drupal\jaraba_andalucia_ei\Entity\ProgramaParticipanteEiInterface;
 use Psr\Log\LoggerInterface;
 
 /**

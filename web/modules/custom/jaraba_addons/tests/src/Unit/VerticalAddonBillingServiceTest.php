@@ -205,6 +205,9 @@ class VerticalAddonBillingServiceTest extends TestCase {
         $this->verticalRef = $vr;
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         $value = match ($name) {
           'addon_type' => $this->addonType,
@@ -222,6 +225,9 @@ class VerticalAddonBillingServiceTest extends TestCase {
         };
       }
 
+      /**
+       *
+       */
       public function label(): string {
         return 'Test Addon';
       }
@@ -241,6 +247,9 @@ class VerticalAddonBillingServiceTest extends TestCase {
         $this->tenantId = $tid;
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         return new class ($this->tenantId) {
 

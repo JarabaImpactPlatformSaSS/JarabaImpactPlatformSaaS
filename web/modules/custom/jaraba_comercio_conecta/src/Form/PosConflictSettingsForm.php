@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class PosConflictSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'comercio_pos_conflict_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Conflicto POS.') . '</p>',
@@ -23,6 +29,9 @@ final class PosConflictSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

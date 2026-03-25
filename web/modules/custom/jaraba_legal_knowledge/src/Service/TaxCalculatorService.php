@@ -198,7 +198,6 @@ class TaxCalculatorService {
     // The total IRPF = state scale + autonomous scale. This method returns the
     // combined (effective) brackets when a community is specified, or just the
     // state scale when community = 'estatal'.
-
     $stateScale = [
       ['from' => 0, 'to' => 12450, 'rate' => 9.50],
       ['from' => 12450, 'to' => 20200, 'rate' => 12.00],
@@ -422,7 +421,7 @@ class TaxCalculatorService {
     $combined = [];
     for ($i = 0; $i < count($boundaries); $i++) {
       $from = $boundaries[$i];
-      $to = isset($boundaries[$i + 1]) ? $boundaries[$i + 1] : PHP_INT_MAX;
+      $to = $boundaries[$i + 1] ?? PHP_INT_MAX;
 
       // Find applicable state rate for this range.
       $stateRate = 0.0;

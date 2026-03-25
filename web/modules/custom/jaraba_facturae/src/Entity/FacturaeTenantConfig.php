@@ -69,7 +69,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('The tenant (Group) this config belongs to.'))
@@ -80,7 +79,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS FISCALES ---
-
     $fields['nif_emisor'] = BaseFieldDefinition::create('string')
       ->setLabel(t('NIF/CIF'))
       ->setDescription(t('Tax identification number of the issuing entity.'))
@@ -139,7 +137,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- NUMERACION ---
-
     $fields['default_series'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Default Series'))
       ->setDescription(t('Default invoicing series code (e.g., FA, FB).'))
@@ -166,7 +163,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CERTIFICADO ---
-
     $fields['certificate_file_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Certificate File'))
       ->setDescription(t('PKCS#12 (.p12) certificate file for XAdES signing.'))
@@ -205,7 +201,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- FACe ---
-
     $fields['face_enabled'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('FACe Enabled'))
       ->setDescription(t('Enable automatic submission to FACe portal.'))
@@ -233,7 +228,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PAGO ---
-
     $fields['default_payment_method'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Default Payment Method'))
       ->setDescription(t('Facturae payment method code.'))
@@ -256,7 +250,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- FISCAL ---
-
     $fields['tax_regime'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Tax Regime'))
       ->setDescription(t('Default fiscal regime code.'))
@@ -286,7 +279,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DIR3 POR DEFECTO ---
-
     $fields['default_dir3_oficina_contable'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Default DIR3 Oficina Contable'))
       ->setDescription(t('Default DIR3 code for Oficina Contable (role 01).'))
@@ -309,7 +301,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO ---
-
     $fields['active'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Active'))
       ->setDescription(t('Whether this tenant config is active.'))
@@ -319,7 +310,6 @@ class FacturaeTenantConfig extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('view', TRUE);
 
     // --- METADATOS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp of config creation.'))

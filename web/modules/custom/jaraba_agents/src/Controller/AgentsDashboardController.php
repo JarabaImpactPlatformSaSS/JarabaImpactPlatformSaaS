@@ -22,7 +22,8 @@ class AgentsDashboardController extends ControllerBase {
    *
    * Estructura: Metodo principal del controller que retorna render array.
    * Logica: Retorna markup vacio siguiendo el patron zero-region.
-   *   Todo el contenido se inyecta via preprocess en el template.
+   *
+   *   @todo el contenido se inyecta via preprocess en el template.
    */
   public function dashboard(): array {
     return [

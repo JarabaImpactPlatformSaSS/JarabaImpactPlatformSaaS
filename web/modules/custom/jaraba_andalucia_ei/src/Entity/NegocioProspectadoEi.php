@@ -182,7 +182,6 @@ class NegocioProspectadoEi extends ContentEntityBase implements EntityOwnerInter
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS DEL NEGOCIO ===
-
     $fields['nombre_negocio'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre del Negocio'))
       ->setDescription(t('Nombre comercial del negocio prospectado.'))
@@ -273,7 +272,6 @@ class NegocioProspectadoEi extends ContentEntityBase implements EntityOwnerInter
       ->setDisplayConfigurable('view', TRUE);
 
     // === EVALUACIÓN ===
-
     $fields['url_google_maps'] = BaseFieldDefinition::create('string')
       ->setLabel(t('URL Google Maps'))
       ->setDescription(t('Enlace a la ficha del negocio en Google Maps.'))
@@ -343,7 +341,6 @@ class NegocioProspectadoEi extends ContentEntityBase implements EntityOwnerInter
       ->setDisplayConfigurable('view', TRUE);
 
     // === PROGRAMA ===
-
     // ENTITY-FK-001: entity_reference para entidad del mismo módulo.
     $fields['participante_asignado'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Participante Asignado'))
@@ -430,7 +427,6 @@ class NegocioProspectadoEi extends ContentEntityBase implements EntityOwnerInter
       ->setDisplayConfigurable('view', TRUE);
 
     // === CAMPOS DE SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

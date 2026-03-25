@@ -24,20 +24,32 @@ class StubArticle {
     protected string $url,
   ) {}
 
+  /**
+   *
+   */
   public function getTitle(): string {
     return $this->title;
   }
 
+  /**
+   *
+   */
   public function getSlug(): string {
     return $this->slug;
   }
 
+  /**
+   *
+   */
   public function toUrl(): object {
     $url = $this->url;
     return new class($url) {
 
       public function __construct(protected string $url) {}
 
+      /**
+       *
+       */
       public function toString(): string {
         return $this->url;
       }

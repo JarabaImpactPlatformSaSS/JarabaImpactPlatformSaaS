@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_messaging\Commands;
 
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use Drupal\jaraba_messaging\WebSocket\MessagingWebSocketServer;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Drush\Commands\DrushCommands;
@@ -71,16 +75,16 @@ class JarabaMessagingCommands extends DrushCommands {
       $connectionManager = \Drupal::service('jaraba_messaging.connection_manager');
 
       // Create the Ratchet application stack.
-      $webSocketApp = new \Drupal\jaraba_messaging\WebSocket\MessagingWebSocketServer(
+      $webSocketApp = new MessagingWebSocketServer(
         $messagingService,
         $presenceService,
         $connectionManager,
         $this->logger,
       );
 
-      $wsServer = new \Ratchet\WebSocket\WsServer($webSocketApp);
-      $httpServer = new \Ratchet\Http\HttpServer($wsServer);
-      $server = \Ratchet\Server\IoServer::factory($httpServer, $port, $host);
+      $wsServer = new WsServer($webSocketApp);
+      $httpServer = new HttpServer($wsServer);
+      $server = IoServer::factory($httpServer, $port, $host);
 
       $this->io()->success("WebSocket server running on ws://{$host}:{$port}");
       $this->io()->note('Press Ctrl+C to stop the server.');

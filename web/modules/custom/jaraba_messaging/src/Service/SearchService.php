@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_messaging\Service;
 
+use Drupal\jaraba_messaging\Model\EncryptedPayload;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Psr\Log\LoggerInterface;
@@ -40,7 +41,8 @@ class SearchService implements SearchServiceInterface {
       ->condition('m.tenant_id', $tenantId)
       ->condition('m.is_deleted', 0)
       ->orderBy('m.created_at', 'DESC')
-      ->range($offset, $limit * 3); // Fetch more to account for non-matches.
+    // Fetch more to account for non-matches.
+      ->range($offset, $limit * 3);
 
     if (!empty($conversationIds)) {
       $dbQuery->condition('m.conversation_id', $conversationIds, 'IN');
@@ -57,7 +59,7 @@ class SearchService implements SearchServiceInterface {
       }
 
       try {
-        $payload = new \Drupal\jaraba_messaging\Model\EncryptedPayload(
+        $payload = new EncryptedPayload(
           ciphertext: $row['body_encrypted'],
           iv: $row['encryption_iv'],
           tag: $row['encryption_tag'],

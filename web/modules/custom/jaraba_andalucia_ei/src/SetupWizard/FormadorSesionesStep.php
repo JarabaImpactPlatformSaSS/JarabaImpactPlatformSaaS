@@ -24,26 +24,44 @@ class FormadorSesionesStep implements SetupWizardStepInterface {
     protected AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'formador_ei.sesiones';
   }
 
+  /**
+   *
+   */
   public function getWizardId(): string {
     return 'formador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Revisar sesiones asignadas');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Verifica las sesiones que tienes asignadas');
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 20;
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return [
       'category' => 'education',
@@ -52,22 +70,37 @@ class FormadorSesionesStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.formador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function isComplete(int $tenantId): bool {
     try {
       if (!$this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
@@ -86,6 +119,9 @@ class FormadorSesionesStep implements SetupWizardStepInterface {
     }
   }
 
+  /**
+   *
+   */
   public function getCompletionData(int $tenantId): array {
     $count = 0;
     try {
@@ -110,6 +146,9 @@ class FormadorSesionesStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function isOptional(): bool {
     return FALSE;
   }

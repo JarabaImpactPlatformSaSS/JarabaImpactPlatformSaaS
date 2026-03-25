@@ -103,12 +103,15 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // WEBHOOK SIGNATURE VERIFICATION TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testVerifyWebhookSignatureValid(): void {
     $payload = '{"entry":[{"changes":[]}]}';
-    $secret = 'test_app_secret_xyz789'; // test fixture, not a real credential
+    // Test fixture, not a real credential.
+    $secret = 'test_app_secret_xyz789';
     $expectedHash = hash_hmac('sha256', $payload, $secret);
     $signature = 'sha256=' . $expectedHash;
 
@@ -117,6 +120,9 @@ class WhatsAppApiServiceTest extends TestCase {
     $this->assertTrue($result, 'Valid HMAC signature should return TRUE');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testVerifyWebhookSignatureInvalid(): void {
     $payload = '{"entry":[{"changes":[]}]}';
@@ -129,8 +135,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // PHONE NUMBER FORMATTING TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testFormatPhoneNumberAddsCountryCode(): void {
     $result = $this->service->formatPhoneNumber('612345678');
@@ -138,6 +146,9 @@ class WhatsAppApiServiceTest extends TestCase {
     $this->assertSame('+34612345678', $result, 'Local number should get +34 country code prepended');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testFormatPhoneNumberAlreadyFormatted(): void {
     $result = $this->service->formatPhoneNumber('+34612345678');
@@ -147,8 +158,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // SUPPORTED TEMPLATES TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSupportedTemplatesContainsCartReminder(): void {
     $reflection = new \ReflectionClass(WhatsAppApiService::class);
@@ -158,6 +171,9 @@ class WhatsAppApiServiceTest extends TestCase {
     $this->assertContains('cart_reminder', $constant, 'SUPPORTED_TEMPLATES should include cart_reminder');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSupportedTemplatesContainsOrderConfirmation(): void {
     $reflection = new \ReflectionClass(WhatsAppApiService::class);
@@ -169,8 +185,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // HANDLE INCOMING MESSAGE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testHandleIncomingMessageEmptyPayload(): void {
     $result = $this->service->handleIncomingMessage([]);
@@ -181,8 +199,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // SEND TEXT MESSAGE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSendTextMessageReturnsStructure(): void {
     // Mock HTTP response from WhatsApp Cloud API.
@@ -206,8 +226,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // SEND TEMPLATE MESSAGE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSendTemplateMessageInvalidTemplate(): void {
     $result = $this->service->sendTemplateMessage(
@@ -224,8 +246,10 @@ class WhatsAppApiServiceTest extends TestCase {
 
   // =========================================================================
   // API CONSTANT TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testApiBaseUrlConstant(): void {
     $reflection = new \ReflectionClass(WhatsAppApiService::class);

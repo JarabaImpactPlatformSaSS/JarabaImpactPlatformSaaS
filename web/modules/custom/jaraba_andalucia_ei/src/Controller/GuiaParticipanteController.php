@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
  * 3. Persistencia en email_subscriber (SubscriberService)
  * 4. Enrolamiento en secuencia SEQ_AEI_006 (AndaluciaEiEmailSequenceService)
  * 5. Creación de contacto CRM con dedup por email (ContactService)
- * 6. Log estructurado para trazabilidad
+ * 6. Log estructurado para trazabilidad.
  *
  * Cada paso posterior al envío es non-blocking (try-catch con
  * \Throwable). El email al usuario es la operación crítica; las

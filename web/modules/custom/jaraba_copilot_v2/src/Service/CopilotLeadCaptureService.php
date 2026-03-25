@@ -124,7 +124,7 @@ class CopilotLeadCaptureService {
    *   vertical: ?string,
    *   confidence: float,
    *   keywords_matched: array<string>,
-   * }
+   *   }
    */
   public function detectPurchaseIntent(string $message): array {
     $result = [

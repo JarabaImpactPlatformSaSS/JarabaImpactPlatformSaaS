@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Módulo de internacionalización avanzada para Jaraba Platform.
@@ -17,7 +19,9 @@
  * @see docs/planificacion/20260202-Gap_E_i18n_UI_v1.md
  */
 
-declare(strict_types=1);
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+
 
 /**
  * Implements hook_theme().
@@ -56,9 +60,9 @@ function jaraba_i18n_theme(): array {
  * texto de SiteConfig, y encola traduccion asincrona via queue.
  * PRESAVE-RESILIENCE-001: hasService() + try-catch.
  */
-function jaraba_i18n_entity_update(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_i18n_entity_update(EntityInterface $entity): void {
   // Solo entidades de contenido.
-  if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+  if (!$entity instanceof ContentEntityInterface) {
     return;
   }
 

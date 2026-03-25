@@ -53,8 +53,8 @@ class StacksApiController extends ControllerBase {
   public function getStack(string $id): JsonResponse {
     $stack = $this->entityTypeManager()->getStorage('credential_stack')->load($id);
     if (!$stack) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Stack not found']], 404);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Stack not found']], 404);
     }
 
     $data = $this->serializeStack($stack);

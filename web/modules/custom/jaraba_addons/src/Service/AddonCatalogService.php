@@ -3,7 +3,6 @@
 namespace Drupal\jaraba_addons\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\jaraba_addons\Entity\Addon;
 use Psr\Log\LoggerInterface;
 
 /**

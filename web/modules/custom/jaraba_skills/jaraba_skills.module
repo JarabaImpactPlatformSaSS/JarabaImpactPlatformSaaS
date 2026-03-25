@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -13,6 +17,7 @@ declare(strict_types=1);
  * @see jaraba_ai_agents_architecture KI
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -63,7 +68,6 @@ function jaraba_skills_theme(): array {
   ];
 }
 
-
 /**
  * Implements hook_preprocess_html().
  *
@@ -88,12 +92,12 @@ function jaraba_skills_form_alter(array &$form, FormStateInterface $form_state, 
   if (str_contains($form_id, 'ai_skill')) {
     // Ocultar guías de formato recursivamente.
     _jaraba_skills_hide_format_guidelines($form);
-    
+
     // Ocultar el formato del campo content directamente.
     if (isset($form['content']['widget'][0]['format'])) {
       $form['content']['widget'][0]['format']['#access'] = FALSE;
     }
-    
+
     // Añadir clase al submit para estilos premium.
     if (isset($form['actions']['submit'])) {
       $form['actions']['submit']['#attributes']['class'][] = 'btn--premium';
@@ -109,7 +113,7 @@ function _jaraba_skills_hide_format_guidelines(array &$element): void {
   if (isset($element['format'])) {
     $element['format']['#access'] = FALSE;
   }
-  
+
   // Ocultar tips de filtro.
   if (isset($element['format']['format'])) {
     $element['format']['format']['#access'] = FALSE;
@@ -142,7 +146,7 @@ function _jaraba_skills_hide_format_guidelines(array &$element): void {
  * - Crea revisión si la skill ya existe (no en creación)
  * - El servicio de embeddings detecta cambios vía hash MD5
  */
-function jaraba_skills_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_skills_entity_presave(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'ai_skill') {
     return;
   }
@@ -178,7 +182,6 @@ function jaraba_skills_entity_presave(\Drupal\Core\Entity\EntityInterface $entit
   );
 }
 
-
 /**
  * Implements hook_entity_delete().
  *
@@ -186,7 +189,7 @@ function jaraba_skills_entity_presave(\Drupal\Core\Entity\EntityInterface $entit
  * Elimina el embedding de Qdrant cuando se borra una skill.
  * Mantiene el índice vectorial consistente con la base de datos.
  */
-function jaraba_skills_entity_delete(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_skills_entity_delete(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'ai_skill') {
     return;
   }
@@ -233,7 +236,6 @@ function _jaraba_skills_regenerate_embedding(int $skillId): void {
     ]);
   }
 }
-
 
 /**
  * Prepares variables for ai_skill templates.

@@ -84,8 +84,10 @@ class DemandForecasterServiceTest extends TestCase {
 
   // =========================================================================
   // FORECAST TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testForecastProductNotFound(): void {
     $this->productStorage->method('load')
@@ -103,8 +105,10 @@ class DemandForecasterServiceTest extends TestCase {
 
   // =========================================================================
   // LINEAR REGRESSION TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateLinearRegressionPositive(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'calculateLinearRegression');
@@ -127,6 +131,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertGreaterThan(0.0, $result['slope'], 'Slope should be positive for increasing data');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateLinearRegressionNegative(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'calculateLinearRegression');
@@ -146,6 +153,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertLessThan(0.0, $result['slope'], 'Slope should be negative for decreasing data');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateLinearRegressionStable(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'calculateLinearRegression');
@@ -167,8 +177,10 @@ class DemandForecasterServiceTest extends TestCase {
 
   // =========================================================================
   // SEASONAL INDEX TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSeasonalIndexDecember(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'getSeasonalIndex');
@@ -179,6 +191,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertSame(1.30, $result, 'December (Christmas) should have highest seasonal weight of 1.30');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSeasonalIndexJuly(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'getSeasonalIndex');
@@ -189,6 +204,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertSame(1.20, $result, 'July (summer) should have seasonal weight of 1.20');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSeasonalIndexJanuary(): void {
     $method = new \ReflectionMethod(DemandForecasterService::class, 'getSeasonalIndex');
@@ -201,8 +219,10 @@ class DemandForecasterServiceTest extends TestCase {
 
   // =========================================================================
   // TREND DETERMINATION TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDeterminesTrendIncreasing(): void {
     // The forecast method uses slope > 0.05 => 'increasing'.
@@ -256,6 +276,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertSame('increasing', $result['trend']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDeterminesTrendDecreasing(): void {
     $product = $this->getMockBuilder(\stdClass::class)
@@ -304,6 +327,9 @@ class DemandForecasterServiceTest extends TestCase {
     $this->assertSame('decreasing', $result['trend']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testDeterminesTrendStable(): void {
     $product = $this->getMockBuilder(\stdClass::class)
@@ -354,8 +380,10 @@ class DemandForecasterServiceTest extends TestCase {
 
   // =========================================================================
   // PRICE ELASTICITY TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetPriceElasticityReturnsStructure(): void {
     $product = $this->getMockBuilder(\stdClass::class)

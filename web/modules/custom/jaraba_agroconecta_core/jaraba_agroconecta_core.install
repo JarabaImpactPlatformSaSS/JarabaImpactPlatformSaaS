@@ -5,97 +5,97 @@
  * Install, update y uninstall hooks para jaraba_agroconecta_core.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_schema().
  *
  * Define tablas auxiliares que no son entidades content entity.
  */
-function jaraba_agroconecta_core_schema(): array
-{
-    $schema['coupon_agro_usage'] = [
-        'description' => 'Registro de canjes de cupones por usuario.',
-        'fields' => [
-            'id' => [
-                'description' => 'ID autoincremental.',
-                'type' => 'serial',
-                'unsigned' => TRUE,
-                'not null' => TRUE,
-            ],
-            'coupon_id' => [
-                'description' => 'ID del cupón canjeado.',
-                'type' => 'int',
-                'unsigned' => TRUE,
-                'not null' => TRUE,
-                'default' => 0,
-            ],
-            'uid' => [
-                'description' => 'ID del usuario que canjeó.',
-                'type' => 'int',
-                'unsigned' => TRUE,
-                'not null' => TRUE,
-                'default' => 0,
-            ],
-            'used_at' => [
-                'description' => 'Timestamp del canje.',
-                'type' => 'int',
-                'not null' => TRUE,
-                'default' => 0,
-            ],
-        ],
-        'primary key' => ['id'],
-        'indexes' => [
-            'coupon_user' => ['coupon_id', 'uid'],
-            'uid' => ['uid'],
-        ],
-    ];
+function jaraba_agroconecta_core_schema(): array {
+  $schema['coupon_agro_usage'] = [
+    'description' => 'Registro de canjes de cupones por usuario.',
+    'fields' => [
+      'id' => [
+        'description' => 'ID autoincremental.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'coupon_id' => [
+        'description' => 'ID del cupón canjeado.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'uid' => [
+        'description' => 'ID del usuario que canjeó.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'used_at' => [
+        'description' => 'Timestamp del canje.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'coupon_user' => ['coupon_id', 'uid'],
+      'uid' => ['uid'],
+    ],
+  ];
 
-    return $schema;
+  return $schema;
 }
 
 /**
  * Add performance indexes to AgroConecta entity tables.
  */
-function jaraba_agroconecta_core_update_10001(): void
-{
-    $schema = \Drupal::database()->schema();
+function jaraba_agroconecta_core_update_10001(): void {
+  $schema = \Drupal::database()->schema();
 
-    $indexes = [
-        'order_agro' => [
-            'idx_customer_state' => ['customer_id', 'state'],
-            'idx_tenant_created' => ['tenant_id', 'created'],
-        ],
-        'product_agro' => [
-            'idx_uid_status' => ['uid', 'status'],
-            'idx_tenant_created' => ['tenant_id', 'created'],
-        ],
-        'producer_profile' => [
-            'idx_uid_status' => ['uid', 'status'],
-            'idx_tenant_id' => ['tenant_id'],
-        ],
-        'suborder_agro' => [
-            'idx_order_producer' => ['order_id', 'producer_id'],
-            'idx_state_created' => ['state', 'created'],
-        ],
-        'order_item_agro' => [
-            'idx_suborder_product' => ['suborder_id', 'product_id'],
-        ],
-        'analytics_daily_agro' => [
-            'idx_tenant_date' => ['tenant_id', 'date'],
-        ],
-    ];
+  $indexes = [
+    'order_agro' => [
+      'idx_customer_state' => ['customer_id', 'state'],
+      'idx_tenant_created' => ['tenant_id', 'created'],
+    ],
+    'product_agro' => [
+      'idx_uid_status' => ['uid', 'status'],
+      'idx_tenant_created' => ['tenant_id', 'created'],
+    ],
+    'producer_profile' => [
+      'idx_uid_status' => ['uid', 'status'],
+      'idx_tenant_id' => ['tenant_id'],
+    ],
+    'suborder_agro' => [
+      'idx_order_producer' => ['order_id', 'producer_id'],
+      'idx_state_created' => ['state', 'created'],
+    ],
+    'order_item_agro' => [
+      'idx_suborder_product' => ['suborder_id', 'product_id'],
+    ],
+    'analytics_daily_agro' => [
+      'idx_tenant_date' => ['tenant_id', 'date'],
+    ],
+  ];
 
-    foreach ($indexes as $table => $tableIndexes) {
-        if (!$schema->tableExists($table)) {
-            continue;
-        }
-        foreach ($tableIndexes as $name => $fields) {
-            if (!$schema->indexExists($table, $name)) {
-                $schema->addIndex($table, $name, $fields, [
-                    'fields' => array_fill_keys($fields, ['type' => 'int', 'not null' => TRUE]),
-                ]);
-            }
-        }
+  foreach ($indexes as $table => $tableIndexes) {
+    if (!$schema->tableExists($table)) {
+      continue;
     }
+    foreach ($tableIndexes as $name => $fields) {
+      if (!$schema->indexExists($table, $name)) {
+        $schema->addIndex($table, $name, $fields, [
+          'fields' => array_fill_keys($fields, ['type' => 'int', 'not null' => TRUE]),
+        ]);
+      }
+    }
+  }
 }
 
 /**
@@ -110,17 +110,17 @@ function jaraba_agroconecta_core_update_10002(): void {
   }
 
   $fields = [
-    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'helpful_count' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Votos de utilidad'))
       ->setDefaultValue(0)
       ->setTargetEntityTypeId($entity_type_id),
-    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'photos' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Fotos'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'ai_summary' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    'ai_summary_generated_at' => BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
   ];
@@ -187,7 +187,7 @@ function jaraba_agroconecta_core_update_10003(): void {
     }
 
     try {
-      $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      $new_field = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Tenant'))
         ->setName('tenant_id')
         ->setRequired(TRUE)
@@ -239,7 +239,7 @@ function jaraba_agroconecta_core_update_10005(): string {
   $fields = [];
 
   // Galería multi-imagen (hasta 5).
-  $fields['images'] = \Drupal\Core\Field\BaseFieldDefinition::create('image')
+  $fields['images'] = BaseFieldDefinition::create('image')
     ->setLabel(t('Galería de imágenes'))
     ->setCardinality(5)
     ->setSetting('file_extensions', 'png jpg jpeg webp')
@@ -248,14 +248,14 @@ function jaraba_agroconecta_core_update_10005(): string {
     ->setTargetEntityTypeId($entity_type_id);
 
   // Número de lote.
-  $fields['lot_number'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+  $fields['lot_number'] = BaseFieldDefinition::create('string')
     ->setLabel(t('Número de lote'))
     ->setSetting('max_length', 64)
     ->setName('lot_number')
     ->setTargetEntityTypeId($entity_type_id);
 
   // Certificación.
-  $fields['certification'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+  $fields['certification'] = BaseFieldDefinition::create('list_string')
     ->setLabel(t('Certificación'))
     ->setSetting('allowed_values', [
       'ecologico' => 'Ecológico',
@@ -269,14 +269,14 @@ function jaraba_agroconecta_core_update_10005(): string {
     ->setTargetEntityTypeId($entity_type_id);
 
   // Origen geográfico.
-  $fields['geographic_origin'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+  $fields['geographic_origin'] = BaseFieldDefinition::create('string')
     ->setLabel(t('Origen geográfico'))
     ->setSetting('max_length', 255)
     ->setName('geographic_origin')
     ->setTargetEntityTypeId($entity_type_id);
 
   // Temporada de cosecha.
-  $fields['harvest_season'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+  $fields['harvest_season'] = BaseFieldDefinition::create('list_string')
     ->setLabel(t('Temporada de cosecha'))
     ->setSetting('allowed_values', [
       'primavera' => 'Primavera',
@@ -289,7 +289,7 @@ function jaraba_agroconecta_core_update_10005(): string {
     ->setTargetEntityTypeId($entity_type_id);
 
   // Unidad de peso.
-  $fields['weight_unit'] = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+  $fields['weight_unit'] = BaseFieldDefinition::create('list_string')
     ->setLabel(t('Unidad de peso'))
     ->setSetting('allowed_values', [
       'kg' => 'kg',
@@ -304,7 +304,7 @@ function jaraba_agroconecta_core_update_10005(): string {
     ->setTargetEntityTypeId($entity_type_id);
 
   // Peso por unidad.
-  $fields['weight_value'] = \Drupal\Core\Field\BaseFieldDefinition::create('decimal')
+  $fields['weight_value'] = BaseFieldDefinition::create('decimal')
     ->setLabel(t('Peso por unidad'))
     ->setSetting('precision', 8)
     ->setSetting('scale', 2)
@@ -312,7 +312,7 @@ function jaraba_agroconecta_core_update_10005(): string {
     ->setTargetEntityTypeId($entity_type_id);
 
   // QR de trazabilidad.
-  $fields['qr_code_url'] = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+  $fields['qr_code_url'] = BaseFieldDefinition::create('string')
     ->setLabel(t('QR de trazabilidad'))
     ->setSetting('max_length', 512)
     ->setName('qr_code_url')

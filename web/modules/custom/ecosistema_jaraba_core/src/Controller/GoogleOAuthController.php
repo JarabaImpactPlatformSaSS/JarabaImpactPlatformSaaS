@@ -6,7 +6,6 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Routing\TrustedRedirectResponse;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\EmailVerificationService;
 use Drupal\ecosistema_jaraba_core\Service\GoogleOAuthService;
@@ -23,8 +22,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * CONTROLLER-READONLY-001: No readonly on inherited $entityTypeManager.
  * ROUTE-LANGPREFIX-001: All URLs via Url::fromRoute().
  */
-class GoogleOAuthController extends ControllerBase
-{
+class GoogleOAuthController extends ControllerBase {
 
   protected LoggerInterface $logger;
 
@@ -39,8 +37,7 @@ class GoogleOAuthController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('ecosistema_jaraba_core.google_oauth'),
       $container->has('ecosistema_jaraba_core.email_verification')
@@ -53,10 +50,9 @@ class GoogleOAuthController extends ControllerBase
   /**
    * Redirects user to Google OAuth consent screen.
    *
-   * GET /user/login/google
+   * GET /user/login/google.
    */
-  public function redirectToGoogle(Request $request): TrustedRedirectResponse|RedirectResponse
-  {
+  public function redirectToGoogle(Request $request): TrustedRedirectResponse|RedirectResponse {
     if (!$this->googleOAuth->isConfigured()) {
       $this->messenger()->addError($this->t('El inicio de sesión con Google no está disponible en este momento.'));
       return new RedirectResponse(Url::fromRoute('user.login', [], ['absolute' => TRUE])->toString());
@@ -80,15 +76,14 @@ class GoogleOAuthController extends ControllerBase
   /**
    * Handles Google OAuth callback.
    *
-   * GET /user/login/google/callback
+   * GET /user/login/google/callback.
    *
    * Scenarios:
    * 1. User exists with same email → log in
    * 2. User doesn't exist → create account and log in
    * 3. Error from Google → show message and redirect
    */
-  public function callback(Request $request): RedirectResponse
-  {
+  public function callback(Request $request): RedirectResponse {
     // Validate state (CSRF protection).
     $state = $request->query->get('state', '');
     $sessionState = $request->getSession()->get('google_oauth_state', '');
@@ -145,7 +140,8 @@ class GoogleOAuthController extends ControllerBase
       ]);
 
       $this->messenger()->addStatus($this->t('¡Bienvenido de nuevo, @name!', ['@name' => $account->getDisplayName()]));
-    } else {
+    }
+    else {
       // Scenario 2: New user — create account.
       $username = $this->generateUniqueUsername($name, $email);
 
@@ -190,8 +186,7 @@ class GoogleOAuthController extends ControllerBase
   /**
    * Generates a unique Drupal username from Google name/email.
    */
-  protected function generateUniqueUsername(string $name, string $email): string
-  {
+  protected function generateUniqueUsername(string $name, string $email): string {
     // Start with Google display name.
     $base = !empty($name) ? $name : strtok($email, '@');
     // Sanitize.

@@ -216,9 +216,12 @@ class PredictionBridgeService {
     }
 
     $descriptors = [
-      0 => ['pipe', 'r'],  // stdin
-      1 => ['pipe', 'w'],  // stdout
-      2 => ['pipe', 'w'],  // stderr
+    // Stdin.
+      0 => ['pipe', 'r'],
+    // Stdout.
+      1 => ['pipe', 'w'],
+    // Stderr.
+      2 => ['pipe', 'w'],
     ];
 
     $process = proc_open(

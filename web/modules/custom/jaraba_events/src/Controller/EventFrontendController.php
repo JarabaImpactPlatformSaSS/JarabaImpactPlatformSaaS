@@ -111,7 +111,7 @@ class EventFrontendController extends ControllerBase {
   public function marketplace(Request $request): array {
     $storage = $this->entityTypeManager()->getStorage('marketing_event');
 
-    // Consulta base: eventos publicados y futuros
+    // Consulta base: eventos publicados y futuros.
     $query = $storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('status_event', 'published')
@@ -119,7 +119,7 @@ class EventFrontendController extends ControllerBase {
       ->sort('featured', 'DESC')
       ->sort('start_date', 'ASC');
 
-    // Filtro por tipo de evento
+    // Filtro por tipo de evento.
     $type_filter = $request->query->get('type');
     if ($type_filter && in_array($type_filter, [
       'webinar', 'workshop', 'conference', 'meetup', 'demo', 'networking',
@@ -127,7 +127,7 @@ class EventFrontendController extends ControllerBase {
       $query->condition('event_type', $type_filter);
     }
 
-    // Filtro por formato
+    // Filtro por formato.
     $format_filter = $request->query->get('format');
     if ($format_filter && in_array($format_filter, [
       'online', 'presencial', 'hibrido',
@@ -135,12 +135,12 @@ class EventFrontendController extends ControllerBase {
       $query->condition('format', $format_filter);
     }
 
-    // Paginación
+    // Paginación.
     $page = max(0, (int) $request->query->get('page', 0));
     $limit = 12;
     $query->range($page * $limit, $limit);
 
-    // Contar total para paginación
+    // Contar total para paginación.
     $count_query = $storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('status_event', 'published')
@@ -156,11 +156,11 @@ class EventFrontendController extends ControllerBase {
     $total = (int) $count_query->count()->execute();
     $total_pages = (int) ceil($total / $limit);
 
-    // Cargar eventos
+    // Cargar eventos.
     $ids = $query->execute();
     $events = !empty($ids) ? $storage->loadMultiple($ids) : [];
 
-    // Construir datos de tarjetas
+    // Construir datos de tarjetas.
     $event_cards = [];
     foreach ($events as $event) {
       $event_cards[] = [
@@ -185,7 +185,7 @@ class EventFrontendController extends ControllerBase {
     $featured = array_filter($event_cards, fn($e) => $e['featured']);
     $featured = array_slice($featured, 0, 3);
 
-    // Tipos disponibles para filtro
+    // Tipos disponibles para filtro.
     $event_types = [
       'webinar' => $this->t('Webinar'),
       'workshop' => $this->t('Taller'),
@@ -251,12 +251,12 @@ class EventFrontendController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    // Construir datos de landing completos
+    // Construir datos de landing completos.
     $landing_data = $this->landingService
       ? $this->landingService->buildLandingData($event)
       : ['event' => [], 'schema_org' => [], 'meta_tags' => [], 'related_events' => [], 'countdown' => NULL, 'registration_open' => FALSE, 'spots_remaining' => 0];
 
-    // Inyectar JSON-LD de Schema.org en <head> para GEO
+    // Inyectar JSON-LD de Schema.org en <head> para GEO.
     $schema_json = json_encode($landing_data['schema_org'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
     $build = [
@@ -290,7 +290,7 @@ class EventFrontendController extends ControllerBase {
       ],
     ];
 
-    // Meta tags en <head>
+    // Meta tags en <head>.
     if (!empty($landing_data['meta_tags'])) {
       $meta = $landing_data['meta_tags'];
       $head_tags = [];
@@ -356,7 +356,7 @@ class EventFrontendController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    // Verificar que el evento acepta registros
+    // Verificar que el evento acepta registros.
     $is_published = $event->get('status_event')->value === 'published';
     $start_date = $event->get('start_date')->value;
     $is_future = $start_date && strtotime($start_date) > time();
@@ -365,7 +365,7 @@ class EventFrontendController extends ControllerBase {
       $this->messenger()->addWarning($this->t('This event is not currently accepting registrations.'));
     }
 
-    // Datos del evento para el formulario
+    // Datos del evento para el formulario.
     $event_data = [
       'id' => $event->id(),
       'title' => $event->get('title')->value,
@@ -382,7 +382,7 @@ class EventFrontendController extends ControllerBase {
       'location' => $event->get('location')->value,
     ];
 
-    // Determinar precio actual
+    // Determinar precio actual.
     $early_bird_active = FALSE;
     if ($event_data['early_bird_price'] > 0 && $event_data['early_bird_deadline']) {
       $early_bird_active = strtotime($event_data['early_bird_deadline']) > time();
@@ -392,12 +392,12 @@ class EventFrontendController extends ControllerBase {
       ? $event_data['early_bird_price']
       : $event_data['price'];
 
-    // Variables para manejar errores y éxito
+    // Variables para manejar errores y éxito.
     $form_errors = [];
     $registration_success = FALSE;
     $submitted_data = [];
 
-    // Procesar POST si hay datos
+    // Procesar POST si hay datos.
     if ($request->isMethod('POST') && $this->registrationService) {
       $submitted_data = [
         'name' => trim($request->request->get('name', '')),
@@ -407,7 +407,7 @@ class EventFrontendController extends ControllerBase {
         'utm_source' => $request->query->get('utm_source', ''),
       ];
 
-      // Validación básica
+      // Validación básica.
       if (empty($submitted_data['name'])) {
         $form_errors['name'] = $this->t('Name is required.');
       }

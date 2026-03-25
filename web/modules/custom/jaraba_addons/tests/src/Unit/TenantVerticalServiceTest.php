@@ -210,10 +210,16 @@ class TenantVerticalServiceTest extends TestCase {
         $this->label = $l;
       }
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return $name === 'vertical';
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         $mn = $this->machineName;
         $l = $this->label;
@@ -227,10 +233,16 @@ class TenantVerticalServiceTest extends TestCase {
             $this->label = $l;
           }
 
+          /**
+           *
+           */
           public function isEmpty(): bool {
             return FALSE;
           }
 
+          /**
+           *
+           */
           public function __get(string $name): ?object {
             if ($name === 'entity') {
               $mn = $this->machineName;
@@ -245,10 +257,16 @@ class TenantVerticalServiceTest extends TestCase {
                   $this->label = $l;
                 }
 
+                /**
+                 *
+                 */
                 public function getMachineName(): string {
                   return $this->machineName;
                 }
 
+                /**
+                 *
+                 */
                 public function label(): string {
                   return $this->label;
                 }
@@ -278,6 +296,9 @@ class TenantVerticalServiceTest extends TestCase {
         $this->label = $l;
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         $vr = $this->verticalRef;
         $l = $this->label;
@@ -291,6 +312,9 @@ class TenantVerticalServiceTest extends TestCase {
             $this->label = $l;
           }
 
+          /**
+           *
+           */
           public function __get(string $name): ?object {
             if ($name === 'entity') {
               $vr = $this->verticalRef;
@@ -305,6 +329,9 @@ class TenantVerticalServiceTest extends TestCase {
                   $this->label = $l;
                 }
 
+                /**
+                 *
+                 */
                 public function get(string $name): object {
                   $value = match ($name) {
                     'addon_type' => 'vertical',
@@ -322,6 +349,9 @@ class TenantVerticalServiceTest extends TestCase {
                   };
                 }
 
+                /**
+                 *
+                 */
                 public function label(): string {
                   return $this->label;
                 }

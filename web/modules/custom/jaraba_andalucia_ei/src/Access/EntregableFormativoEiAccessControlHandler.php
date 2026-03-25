@@ -85,7 +85,7 @@ class EntregableFormativoEiAccessControlHandler extends EntityAccessControlHandl
     if ($entity->hasField('tenant_id') && !$entity->get('tenant_id')->isEmpty()) {
       $userTenantId = $this->resolveUserTenant($account);
       $entityTenantId = (int) $entity->get('tenant_id')->target_id;
-      if ($userTenantId !== null && $userTenantId !== $entityTenantId) {
+      if ($userTenantId !== NULL && $userTenantId !== $entityTenantId) {
         return AccessResult::forbidden('Tenant mismatch.')
           ->addCacheableDependency($entity)
           ->cachePerUser();

@@ -81,8 +81,8 @@ class LeadScoreListBuilder extends EntityListBuilder {
     $row['qualification'] = [
       'data' => [
         '#markup' => '<span class="badge ' . ($qualification_classes[$qualification] ?? '') . '">'
-          . ($qualification_labels[$qualification] ?? $qualification)
-          . '</span>',
+        . ($qualification_labels[$qualification] ?? $qualification)
+        . '</span>',
       ],
     ];
     $row['model_version'] = $entity->get('model_version')->value ?? '';

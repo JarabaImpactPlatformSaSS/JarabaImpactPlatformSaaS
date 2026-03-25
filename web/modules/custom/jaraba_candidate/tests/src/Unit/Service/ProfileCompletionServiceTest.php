@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_candidate\Unit\Service;
 
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_candidate\Service\CandidateProfileService;
 use Drupal\jaraba_candidate\Service\ProfileCompletionService;
 use PHPUnit\Framework\TestCase;

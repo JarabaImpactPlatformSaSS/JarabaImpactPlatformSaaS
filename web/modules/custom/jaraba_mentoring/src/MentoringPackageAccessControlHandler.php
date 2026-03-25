@@ -13,32 +13,30 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler for Mentoring Package entity.
  */
-class MentoringPackageAccessControlHandler extends EntityAccessControlHandler
-{
+class MentoringPackageAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        // Admin bypasses all.
-        if ($account->hasPermission('administer mentoring packages')) {
-            return AccessResult::allowed();
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // Admin bypasses all.
+    if ($account->hasPermission('administer mentoring packages')) {
+      return AccessResult::allowed();
+    }
 
-        return match ($operation) {
-            'view' => AccessResult::allowedIfHasPermission($account, 'view mentoring packages'),
+    return match ($operation) {
+      'view' => AccessResult::allowedIfHasPermission($account, 'view mentoring packages'),
             'update', 'delete' => AccessResult::allowedIfHasPermission($account, 'manage own packages')
-                ->andIf(AccessResult::allowedIf($entity->get('mentor_id')->entity?->getOwnerId() === $account->id())),
+              ->andIf(AccessResult::allowedIf($entity->get('mentor_id')->entity?->getOwnerId() === $account->id())),
             default => AccessResult::neutral(),
-        };
-    }
+    };
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermissions($account, ['administer mentoring packages', 'manage own packages'], 'OR');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermissions($account, ['administer mentoring packages', 'manage own packages'], 'OR');
+  }
 
 }

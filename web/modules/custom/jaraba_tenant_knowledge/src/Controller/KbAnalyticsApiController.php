@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * PROPÓSITO:
  * Endpoint REST para obtener estadísticas y métricas de la KB.
- * GET /api/v1/kb/analytics
+ * GET /api/v1/kb/analytics.
  *
  * DIRECTRICES:
  * - Respuesta JSON estandarizada con success, data

@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class CustomerProfileService {
 
   public function __construct(
@@ -16,6 +19,9 @@ class CustomerProfileService {
     protected CurrentRouteMatch $currentRouteMatch,
   ) {}
 
+  /**
+   *
+   */
   public function getOrCreateProfile(AccountInterface $account): ?ContentEntityInterface {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
 
@@ -45,6 +51,9 @@ class CustomerProfileService {
     }
   }
 
+  /**
+   *
+   */
   public function updateProfile(int $profileId, array $data): bool {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);
@@ -67,6 +76,9 @@ class CustomerProfileService {
     }
   }
 
+  /**
+   *
+   */
   public function getProfile(int $userId): ?ContentEntityInterface {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
 
@@ -83,6 +95,9 @@ class CustomerProfileService {
     return $storage->load(reset($ids));
   }
 
+  /**
+   *
+   */
   public function addFavoriteMerchant(int $profileId, int $merchantId): bool {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);
@@ -108,6 +123,9 @@ class CustomerProfileService {
     }
   }
 
+  /**
+   *
+   */
   public function removeFavoriteMerchant(int $profileId, int $merchantId): bool {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);
@@ -128,6 +146,9 @@ class CustomerProfileService {
     }
   }
 
+  /**
+   *
+   */
   public function getFavoriteMerchants(int $profileId): array {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);
@@ -141,6 +162,9 @@ class CustomerProfileService {
     return is_array($decoded) ? array_map('intval', $decoded) : [];
   }
 
+  /**
+   *
+   */
   public function addLoyaltyPoints(int $profileId, int $points): int {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);
@@ -156,6 +180,9 @@ class CustomerProfileService {
     return $new_total;
   }
 
+  /**
+   *
+   */
   public function getProfileStats(int $profileId): array {
     $storage = $this->entityTypeManager->getStorage('customer_profile_retail');
     $profile = $storage->load($profileId);

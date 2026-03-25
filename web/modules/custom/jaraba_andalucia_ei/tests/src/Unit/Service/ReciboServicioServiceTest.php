@@ -51,23 +51,37 @@ class ReciboServicioServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithAllDependencies(): void {
     $service = $this->createService();
     $this->assertInstanceOf(ReciboServicioService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithBrandedPdfService(): void {
     $brandedPdf = new class {
+
+      /**
+       *
+       */
       public function generateReport(): string {
         return 'pdf-content';
       }
+
     };
     $service = $this->createService($brandedPdf);
     $this->assertInstanceOf(ReciboServicioService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarReciboReturnsNullWhenEntityTypeNotDefined(): void {
     $this->entityTypeManager->method('hasDefinition')
@@ -80,6 +94,9 @@ class ReciboServicioServiceTest extends UnitTestCase {
     $this->assertNull($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarReciboReturnsNullWhenActuacionNotFound(): void {
     $this->entityTypeManager->method('hasDefinition')
@@ -93,6 +110,9 @@ class ReciboServicioServiceTest extends UnitTestCase {
     $this->assertNull($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function categoriaMapKeysAreStoTypes(): void {
     $service = $this->createService();

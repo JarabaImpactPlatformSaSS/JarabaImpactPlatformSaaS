@@ -335,7 +335,7 @@ class TenantOnboardingWizardController extends ControllerBase {
   // =========================================================================
 
   /**
-   * POST /api/v1/onboarding/wizard/advance
+   * POST /api/v1/onboarding/wizard/advance.
    *
    * Avanza al siguiente paso del wizard.
    */
@@ -385,7 +385,7 @@ class TenantOnboardingWizardController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/onboarding/wizard/skip
+   * POST /api/v1/onboarding/wizard/skip.
    *
    * Omite el paso actual del wizard.
    */
@@ -431,7 +431,7 @@ class TenantOnboardingWizardController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/onboarding/wizard/logo-colors
+   * POST /api/v1/onboarding/wizard/logo-colors.
    *
    * Extrae colores de un logo subido.
    */

@@ -58,112 +58,107 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class StrengthAssessment extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
-{
+class StrengthAssessment extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Campo owner (usuario propietario).
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+    // Campo owner (usuario propietario).
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Usuario'))
-            ->setDescription(t('Usuario al que pertenece esta evaluacion.'))
-            ->setSetting('target_type', 'user')
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Usuario'))
+      ->setDescription(t('Usuario al que pertenece esta evaluacion.'))
+      ->setSetting('target_type', 'user')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Top 5 fortalezas (JSON array).
-        $fields['top_strengths'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Top 5 Fortalezas'))
-            ->setDescription(t('JSON array con las 5 fortalezas principales.'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
+    // Top 5 fortalezas (JSON array).
+    $fields['top_strengths'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Top 5 Fortalezas'))
+      ->setDescription(t('JSON array con las 5 fortalezas principales.'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Todas las puntuaciones (JSON con scores de 24 fortalezas).
-        $fields['all_scores'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Todas las puntuaciones'))
-            ->setDescription(t('JSON con scores de las 24 fortalezas.'))
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
+    // Todas las puntuaciones (JSON con scores de 24 fortalezas).
+    $fields['all_scores'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Todas las puntuaciones'))
+      ->setDescription(t('JSON con scores de las 24 fortalezas.'))
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Respuestas (JSON de las 20 selecciones).
-        $fields['answers'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Respuestas'))
-            ->setDescription(t('JSON con las 20 selecciones de pares.'))
-            ->setDisplayConfigurable('view', TRUE);
+    // Respuestas (JSON de las 20 selecciones).
+    $fields['answers'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Respuestas'))
+      ->setDescription(t('JSON con las 20 selecciones de pares.'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Timestamp de creacion.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de creacion'))
-            ->setDescription(t('Fecha en que se completo el test.'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
+    // Timestamp de creacion.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de creacion'))
+      ->setDescription(t('Fecha en que se completo el test.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Timestamp de actualizacion.
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Ultima actualizacion'))
-            ->setDescription(t('Fecha de ultima modificacion.'))
-            ->setDisplayConfigurable('view', TRUE);
+    // Timestamp de actualizacion.
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Ultima actualizacion'))
+      ->setDescription(t('Fecha de ultima modificacion.'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene el top 5 de fortalezas.
-     */
-    public function getTopStrengths(): array
-    {
-        $raw = $this->get('top_strengths')->value;
-        return $raw ? (json_decode($raw, TRUE) ?? []) : [];
-    }
+  /**
+   * Obtiene el top 5 de fortalezas.
+   */
+  public function getTopStrengths(): array {
+    $raw = $this->get('top_strengths')->value;
+    return $raw ? (json_decode($raw, TRUE) ?? []) : [];
+  }
 
-    /**
-     * Obtiene todas las puntuaciones.
-     */
-    public function getAllScores(): array
-    {
-        $raw = $this->get('all_scores')->value;
-        return $raw ? (json_decode($raw, TRUE) ?? []) : [];
-    }
+  /**
+   * Obtiene todas las puntuaciones.
+   */
+  public function getAllScores(): array {
+    $raw = $this->get('all_scores')->value;
+    return $raw ? (json_decode($raw, TRUE) ?? []) : [];
+  }
 
-    /**
-     * Obtiene la fortaleza principal (primera del top 5).
-     */
-    public function getTopStrength(): ?array
-    {
-        $top = $this->getTopStrengths();
-        return !empty($top) ? reset($top) : NULL;
-    }
+  /**
+   * Obtiene la fortaleza principal (primera del top 5).
+   */
+  public function getTopStrength(): ?array {
+    $top = $this->getTopStrengths();
+    return !empty($top) ? reset($top) : NULL;
+  }
 
 }

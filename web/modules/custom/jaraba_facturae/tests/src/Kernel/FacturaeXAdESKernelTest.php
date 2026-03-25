@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Service\FacturaeXAdESService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +25,7 @@ class FacturaeXAdESKernelTest extends KernelTestBase {
    */
   public function testXAdESServiceClassExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FacturaeXAdESService::class),
+      class_exists(FacturaeXAdESService::class),
       'FacturaeXAdESService class should exist.'
     );
   }
@@ -36,7 +37,7 @@ class FacturaeXAdESKernelTest extends KernelTestBase {
     $methods = ['signDocument', 'verifySignature', 'getCertificateInfo'];
     foreach ($methods as $method) {
       $this->assertTrue(
-        method_exists(\Drupal\jaraba_facturae\Service\FacturaeXAdESService::class, $method),
+        method_exists(FacturaeXAdESService::class, $method),
         "FacturaeXAdESService should have $method method."
       );
     }

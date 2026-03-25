@@ -13,154 +13,150 @@ use Psr\Log\LoggerInterface;
  *
  * Reutiliza patrón de ProgressTrackingService de jaraba_lms.
  */
-class PathProgressService
-{
+class PathProgressService {
 
-    protected EntityTypeManagerInterface $entityTypeManager;
-    protected Connection $database;
-    protected LoggerInterface $logger;
+  protected EntityTypeManagerInterface $entityTypeManager;
+  protected Connection $database;
+  protected LoggerInterface $logger;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entityTypeManager,
-        Connection $database,
-        LoggerInterface $loggerFactory
-    ) {
-        $this->entityTypeManager = $entityTypeManager;
-        $this->database = $database;
-        $this->logger = $loggerFactory;
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entityTypeManager,
+    Connection $database,
+    LoggerInterface $loggerFactory,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->database = $database;
+    $this->logger = $loggerFactory;
+  }
+
+  /**
+   * Marca un paso como completado.
+   */
+  public function completeStep(int $enrollmentId, int $stepId): array {
+    $enrollmentStorage = $this->entityTypeManager->getStorage('path_enrollment');
+    $stepStorage = $this->entityTypeManager->getStorage('path_step');
+
+    /** @var \Drupal\jaraba_paths\Entity\PathEnrollment $enrollment */
+    $enrollment = $enrollmentStorage->load($enrollmentId);
+    /** @var \Drupal\jaraba_paths\Entity\PathStep $step */
+    $step = $stepStorage->load($stepId);
+
+    if (!$enrollment || !$step) {
+      return ['success' => FALSE, 'message' => 'Inscripción o paso no encontrado.'];
     }
 
-    /**
-     * Marca un paso como completado.
-     */
-    public function completeStep(int $enrollmentId, int $stepId): array
-    {
-        $enrollmentStorage = $this->entityTypeManager->getStorage('path_enrollment');
-        $stepStorage = $this->entityTypeManager->getStorage('path_step');
+    // Registrar completado.
+    $xpReward = (int) ($step->get('xp_reward')->value ?? 10);
+    $enrollment->recordStepCompletion($stepId, $xpReward);
 
-        /** @var \Drupal\jaraba_paths\Entity\PathEnrollment $enrollment */
-        $enrollment = $enrollmentStorage->load($enrollmentId);
-        /** @var \Drupal\jaraba_paths\Entity\PathStep $step */
-        $step = $stepStorage->load($stepId);
+    // Recalcular progreso.
+    $progress = $this->calculateProgress($enrollment);
+    $enrollment->set('progress_percent', $progress);
 
-        if (!$enrollment || !$step) {
-            return ['success' => FALSE, 'message' => 'Inscripción o paso no encontrado.'];
-        }
-
-        // Registrar completado
-        $xpReward = (int) ($step->get('xp_reward')->value ?? 10);
-        $enrollment->recordStepCompletion($stepId, $xpReward);
-
-        // Recalcular progreso
-        $progress = $this->calculateProgress($enrollment);
-        $enrollment->set('progress_percent', $progress);
-
-        // Verificar si completó todo
-        if ($progress >= 100) {
-            $enrollment->set('status', 'completed');
-            $enrollment->set('completed_at', time());
-        }
-
-        $enrollment->save();
-
-        $this->logger->info('Step @step completed for enrollment @enrollment. Progress: @progress%', [
-            '@step' => $stepId,
-            '@enrollment' => $enrollmentId,
-            '@progress' => $progress,
-        ]);
-
-        return [
-            'success' => TRUE,
-            'xp_earned' => $xpReward,
-            'progress_percent' => $progress,
-            'is_completed' => $progress >= 100,
-        ];
+    // Verificar si completó todo.
+    if ($progress >= 100) {
+      $enrollment->set('status', 'completed');
+      $enrollment->set('completed_at', time());
     }
 
-    /**
-     * Calcula el progreso de una inscripción.
-     */
-    public function calculateProgress($enrollment): float
-    {
-        $pathId = $enrollment->get('path_id')->target_id;
-        $stepsCompleted = (int) ($enrollment->get('steps_completed')->value ?? 0);
+    $enrollment->save();
 
-        // Contar total de pasos obligatorios del path
-        $totalSteps = $this->countPathSteps($pathId, TRUE);
+    $this->logger->info('Step @step completed for enrollment @enrollment. Progress: @progress%', [
+      '@step' => $stepId,
+      '@enrollment' => $enrollmentId,
+      '@progress' => $progress,
+    ]);
 
-        if ($totalSteps === 0) {
-            return 0;
-        }
+    return [
+      'success' => TRUE,
+      'xp_earned' => $xpReward,
+      'progress_percent' => $progress,
+      'is_completed' => $progress >= 100,
+    ];
+  }
 
-        return min(100, round(($stepsCompleted / $totalSteps) * 100, 2));
+  /**
+   * Calcula el progreso de una inscripción.
+   */
+  public function calculateProgress($enrollment): float {
+    $pathId = $enrollment->get('path_id')->target_id;
+    $stepsCompleted = (int) ($enrollment->get('steps_completed')->value ?? 0);
+
+    // Contar total de pasos obligatorios del path.
+    $totalSteps = $this->countPathSteps($pathId, TRUE);
+
+    if ($totalSteps === 0) {
+      return 0;
     }
 
-    /**
-     * Cuenta los pasos de un itinerario.
-     */
-    public function countPathSteps(int $pathId, bool $requiredOnly = FALSE): int
-    {
-        // Obtener fases del path
-        $phases = $this->entityTypeManager->getStorage('path_phase')
-            ->loadByProperties(['path_id' => $pathId]);
+    return min(100, round(($stepsCompleted / $totalSteps) * 100, 2));
+  }
 
-        $totalSteps = 0;
+  /**
+   * Cuenta los pasos de un itinerario.
+   */
+  public function countPathSteps(int $pathId, bool $requiredOnly = FALSE): int {
+    // Obtener fases del path.
+    $phases = $this->entityTypeManager->getStorage('path_phase')
+      ->loadByProperties(['path_id' => $pathId]);
 
-        foreach ($phases as $phase) {
-            // Obtener módulos de la fase
-            $modules = $this->entityTypeManager->getStorage('path_module')
-                ->loadByProperties(['phase_id' => $phase->id()]);
+    $totalSteps = 0;
 
-            foreach ($modules as $module) {
-                // Contar pasos del módulo
-                $query = $this->entityTypeManager->getStorage('path_step')
-                    ->getQuery()
-                    ->condition('module_id', $module->id())
-                    ->accessCheck(FALSE);
+    foreach ($phases as $phase) {
+      // Obtener módulos de la fase.
+      $modules = $this->entityTypeManager->getStorage('path_module')
+        ->loadByProperties(['phase_id' => $phase->id()]);
 
-                if ($requiredOnly) {
-                    $query->condition('is_required', TRUE);
-                }
+      foreach ($modules as $module) {
+        // Contar pasos del módulo.
+        $query = $this->entityTypeManager->getStorage('path_step')
+          ->getQuery()
+          ->condition('module_id', $module->id())
+          ->accessCheck(FALSE);
 
-                $totalSteps += $query->count()->execute();
-            }
+        if ($requiredOnly) {
+          $query->condition('is_required', TRUE);
         }
 
-        return $totalSteps;
+        $totalSteps += $query->count()->execute();
+      }
     }
 
-    /**
-     * Obtiene el resumen de progreso de un usuario.
-     */
-    public function getProgressSummary(int $userId): array
-    {
-        $enrollments = $this->entityTypeManager->getStorage('path_enrollment')
-            ->loadByProperties(['user_id' => $userId]);
+    return $totalSteps;
+  }
 
-        $summary = [
-            'total_enrollments' => count($enrollments),
-            'active' => 0,
-            'completed' => 0,
-            'total_steps_completed' => 0,
-            'total_xp_earned' => 0,
-        ];
+  /**
+   * Obtiene el resumen de progreso de un usuario.
+   */
+  public function getProgressSummary(int $userId): array {
+    $enrollments = $this->entityTypeManager->getStorage('path_enrollment')
+      ->loadByProperties(['user_id' => $userId]);
 
-        foreach ($enrollments as $enrollment) {
-            $status = $enrollment->get('status')->value;
-            if ($status === 'active') {
-                $summary['active']++;
-            } elseif ($status === 'completed') {
-                $summary['completed']++;
-            }
+    $summary = [
+      'total_enrollments' => count($enrollments),
+      'active' => 0,
+      'completed' => 0,
+      'total_steps_completed' => 0,
+      'total_xp_earned' => 0,
+    ];
 
-            $summary['total_steps_completed'] += (int) $enrollment->get('steps_completed')->value;
-            $summary['total_xp_earned'] += (int) $enrollment->get('xp_earned')->value;
-        }
+    foreach ($enrollments as $enrollment) {
+      $status = $enrollment->get('status')->value;
+      if ($status === 'active') {
+        $summary['active']++;
+      }
+      elseif ($status === 'completed') {
+        $summary['completed']++;
+      }
 
-        return $summary;
+      $summary['total_steps_completed'] += (int) $enrollment->get('steps_completed')->value;
+      $summary['total_xp_earned'] += (int) $enrollment->get('xp_earned')->value;
     }
+
+    return $summary;
+  }
 
 }

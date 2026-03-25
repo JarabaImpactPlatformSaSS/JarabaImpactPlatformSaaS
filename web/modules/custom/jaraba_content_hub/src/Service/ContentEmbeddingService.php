@@ -20,137 +20,135 @@ use Psr\Log\LoggerInterface;
  * - Optimizado para contenido de blog (título, resumen, body)
  * - Incluye categoría y tags para mejor semántica
  */
-class ContentEmbeddingService
-{
+class ContentEmbeddingService {
 
-    /**
-     * Modelo de embedding (fallback si no hay default configurado).
-     */
-    const EMBEDDING_MODEL = 'text-embedding-3-small';
+  /**
+   * Modelo de embedding (fallback si no hay default configurado).
+   */
+  const EMBEDDING_MODEL = 'text-embedding-3-small';
 
-    /**
-     * Dimensiones del vector.
-     */
-    const VECTOR_DIMENSIONS = 1536;
+  /**
+   * Dimensiones del vector.
+   */
+  const VECTOR_DIMENSIONS = 1536;
 
-    /**
-     * Cache de embeddings en memoria.
-     */
-    protected array $cache = [];
+  /**
+   * Cache de embeddings en memoria.
+   */
+  protected array $cache = [];
 
-    /**
-     * Constructor.
-     *
-     * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
-     *   Gestor de proveedores AI (NULL si drupal/ai no disponible).
-     * @param \Psr\Log\LoggerInterface $logger
-     *   Logger del módulo.
-     */
-    public function __construct(
-        protected ?AiProviderPluginManager $aiProvider,
-        protected LoggerInterface $logger,
-    ) {
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
+   *   Gestor de proveedores AI (NULL si drupal/ai no disponible).
+   * @param \Psr\Log\LoggerInterface $logger
+   *   Logger del módulo.
+   */
+  public function __construct(
+    protected ?AiProviderPluginManager $aiProvider,
+    protected LoggerInterface $logger,
+  ) {
+  }
+
+  /**
+   * Genera embedding para un texto.
+   *
+   * Usa el módulo AI de Drupal para abstracción de proveedores.
+   * Esto permite failover automático y gestión centralizada de claves.
+   *
+   * @param string $text
+   *   Texto a embedear.
+   *
+   * @return array
+   *   Vector de 1536 dimensiones o array vacío si falla.
+   */
+  public function generate(string $text): array {
+    if ($this->aiProvider === NULL || empty(trim($text))) {
+      return [];
     }
 
-    /**
-     * Genera embedding para un texto.
-     *
-     * Usa el módulo AI de Drupal para abstracción de proveedores.
-     * Esto permite failover automático y gestión centralizada de claves.
-     *
-     * @param string $text
-     *   Texto a embedear.
-     *
-     * @return array
-     *   Vector de 1536 dimensiones o array vacío si falla.
-     */
-    public function generate(string $text): array
-    {
-        if ($this->aiProvider === NULL || empty(trim($text))) {
-            return [];
-        }
-
-        // Check cache.
-        $cacheKey = md5($text);
-        if (isset($this->cache[$cacheKey])) {
-            return $this->cache[$cacheKey];
-        }
-
-        try {
-            $defaults = $this->aiProvider->getDefaultProviderForOperationType('embeddings');
-            if (!$defaults) {
-                $this->logger->error('No hay proveedor de embeddings configurado en AI module.');
-                return [];
-            }
-
-            /** @var \Drupal\ai\OperationType\Embeddings\EmbeddingsInterface $provider */
-            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
-            $result = $provider->embeddings($text, $defaults['model_id'] ?? self::EMBEDDING_MODEL);
-            $vector = $result->getNormalized();
-
-            if (!empty($vector) && is_array($vector)) {
-                $this->cache[$cacheKey] = $vector;
-                return $vector;
-            }
-
-            $this->logger->warning('Invalid embedding response structure from AI provider.');
-            return [];
-        } catch (\Exception $e) {
-            $this->logger->error('Article embedding generation failed: @error', [
-                '@error' => $e->getMessage(),
-            ]);
-            return [];
-        }
+    // Check cache.
+    $cacheKey = md5($text);
+    if (isset($this->cache[$cacheKey])) {
+      return $this->cache[$cacheKey];
     }
 
-    /**
-     * Genera texto para embedding de un artículo.
-     *
-     * @param \Drupal\jaraba_content_hub\Entity\ContentArticle $article
-     *   Entidad ContentArticle.
-     *
-     * @return string
-     *   Texto concatenado optimizado para embedding.
-     */
-    public function getArticleEmbeddingText($article): string
-    {
-        $parts = [];
+    try {
+      $defaults = $this->aiProvider->getDefaultProviderForOperationType('embeddings');
+      if (!$defaults) {
+        $this->logger->error('No hay proveedor de embeddings configurado en AI module.');
+        return [];
+      }
 
-        // Título es lo más importante.
-        $parts[] = 'Title: ' . ($article->label() ?? '');
+      /** @var \Drupal\ai\OperationType\Embeddings\EmbeddingsInterface $provider */
+      $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+      $result = $provider->embeddings($text, $defaults['model_id'] ?? self::EMBEDDING_MODEL);
+      $vector = $result->getNormalized();
 
-        // Answer capsule (resumen optimizado).
-        if ($article->hasField('answer_capsule') && $article->get('answer_capsule')->value) {
-            $parts[] = 'Summary: ' . strip_tags($article->get('answer_capsule')->value);
-        }
+      if (!empty($vector) && is_array($vector)) {
+        $this->cache[$cacheKey] = $vector;
+        return $vector;
+      }
 
-        // Excerpt.
-        if ($article->hasField('excerpt') && $article->get('excerpt')->value) {
-            $parts[] = 'Excerpt: ' . strip_tags($article->get('excerpt')->value);
-        }
-
-        // Body (primeros 1500 caracteres para no exceder límites).
-        if ($article->hasField('body') && $article->get('body')->value) {
-            $bodyText = strip_tags($article->get('body')->value);
-            $parts[] = 'Content: ' . mb_substr($bodyText, 0, 1500);
-        }
-
-        // Categoría.
-        if ($article->hasField('category') && $article->get('category')->entity) {
-            $parts[] = 'Category: ' . $article->get('category')->entity->label();
-        }
-
-        // Tags/Keywords si existen.
-        if ($article->hasField('seo_keywords') && $article->get('seo_keywords')->value) {
-            $parts[] = 'Keywords: ' . $article->get('seo_keywords')->value;
-        }
-
-        // Vertical.
-        if ($article->hasField('vertical') && $article->get('vertical')->value) {
-            $parts[] = 'Topic: ' . $article->get('vertical')->value;
-        }
-
-        return implode("\n", $parts);
+      $this->logger->warning('Invalid embedding response structure from AI provider.');
+      return [];
     }
+    catch (\Exception $e) {
+      $this->logger->error('Article embedding generation failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return [];
+    }
+  }
+
+  /**
+   * Genera texto para embedding de un artículo.
+   *
+   * @param \Drupal\jaraba_content_hub\Entity\ContentArticle $article
+   *   Entidad ContentArticle.
+   *
+   * @return string
+   *   Texto concatenado optimizado para embedding.
+   */
+  public function getArticleEmbeddingText($article): string {
+    $parts = [];
+
+    // Título es lo más importante.
+    $parts[] = 'Title: ' . ($article->label() ?? '');
+
+    // Answer capsule (resumen optimizado).
+    if ($article->hasField('answer_capsule') && $article->get('answer_capsule')->value) {
+      $parts[] = 'Summary: ' . strip_tags($article->get('answer_capsule')->value);
+    }
+
+    // Excerpt.
+    if ($article->hasField('excerpt') && $article->get('excerpt')->value) {
+      $parts[] = 'Excerpt: ' . strip_tags($article->get('excerpt')->value);
+    }
+
+    // Body (primeros 1500 caracteres para no exceder límites).
+    if ($article->hasField('body') && $article->get('body')->value) {
+      $bodyText = strip_tags($article->get('body')->value);
+      $parts[] = 'Content: ' . mb_substr($bodyText, 0, 1500);
+    }
+
+    // Categoría.
+    if ($article->hasField('category') && $article->get('category')->entity) {
+      $parts[] = 'Category: ' . $article->get('category')->entity->label();
+    }
+
+    // Tags/Keywords si existen.
+    if ($article->hasField('seo_keywords') && $article->get('seo_keywords')->value) {
+      $parts[] = 'Keywords: ' . $article->get('seo_keywords')->value;
+    }
+
+    // Vertical.
+    if ($article->hasField('vertical') && $article->get('vertical')->value) {
+      $parts[] = 'Topic: ' . $article->get('vertical')->value;
+    }
+
+    return implode("\n", $parts);
+  }
 
 }

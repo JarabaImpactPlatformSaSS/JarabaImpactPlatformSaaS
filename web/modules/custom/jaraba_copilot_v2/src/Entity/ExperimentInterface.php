@@ -11,39 +11,38 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Interface para la entidad Experiment.
  */
-interface ExperimentInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface ExperimentInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Obtiene el tipo de experimento (del catálogo de 44).
-     *
-     * @return string
-     *   ID del tipo de experimento.
-     */
-    public function getExperimentType(): string;
+  /**
+   * Obtiene el tipo de experimento (del catálogo de 44).
+   *
+   * @return string
+   *   ID del tipo de experimento.
+   */
+  public function getExperimentType(): string;
 
-    /**
-     * Obtiene la hipótesis asociada.
-     *
-     * @return int|null
-     *   ID de la hipótesis o NULL.
-     */
-    public function getHypothesisId(): ?int;
+  /**
+   * Obtiene la hipótesis asociada.
+   *
+   * @return int|null
+   *   ID de la hipótesis o NULL.
+   */
+  public function getHypothesisId(): ?int;
 
-    /**
-     * Obtiene el estado del experimento.
-     *
-     * @return string
-     *   Estado (PLANNED, IN_PROGRESS, COMPLETED).
-     */
-    public function getStatus(): string;
+  /**
+   * Obtiene el estado del experimento.
+   *
+   * @return string
+   *   Estado (PLANNED, IN_PROGRESS, COMPLETED).
+   */
+  public function getStatus(): string;
 
-    /**
-     * Obtiene la decisión tomada tras el experimento.
-     *
-     * @return string|null
-     *   Decisión (PERSEVERE, PIVOT, ZOOM_IN, ZOOM_OUT, KILL) o NULL.
-     */
-    public function getDecision(): ?string;
+  /**
+   * Obtiene la decisión tomada tras el experimento.
+   *
+   * @return string|null
+   *   Decisión (PERSEVERE, PIVOT, ZOOM_IN, ZOOM_OUT, KILL) o NULL.
+   */
+  public function getDecision(): ?string;
 
 }

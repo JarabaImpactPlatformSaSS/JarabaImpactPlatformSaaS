@@ -197,7 +197,8 @@ class FundaeReporterService {
    *
    * Logica: Calcula horas totales de formacion, participantes,
    *   tasa de finalizacion, tasa de insercion y coste por participante.
-   *   Todos los datos se extraen de las entidades del programa
+   *
+   *   @todo s los datos se extraen de las entidades del programa
    *   y sus participantes.
    *
    * @param int $programId

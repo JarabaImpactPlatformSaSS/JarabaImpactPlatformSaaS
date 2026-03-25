@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Service;
 
+use Drupal\Core\Url;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface;
@@ -932,7 +933,7 @@ class FirmaWorkflowService {
     }
 
     try {
-      $url = \Drupal\Core\Url::fromRoute('jaraba_andalucia_ei.verificar_documento', [
+      $url = Url::fromRoute('jaraba_andalucia_ei.verificar_documento', [
         'hash' => $hash,
       ], ['absolute' => TRUE]);
       return $url->toString();

@@ -34,7 +34,7 @@ class BookingAccessControlHandler extends EntityAccessControlHandler {
 
     switch ($operation) {
       case 'view':
-        // El cliente (owner) o el profesional pueden ver la reserva
+        // El cliente (owner) o el profesional pueden ver la reserva.
         if ($is_owner && $account->hasPermission('view own servicios bookings')) {
           return AccessResult::allowed()->addCacheableDependency($entity)->cachePerUser();
         }

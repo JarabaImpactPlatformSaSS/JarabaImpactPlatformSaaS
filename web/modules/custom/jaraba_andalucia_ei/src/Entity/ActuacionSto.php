@@ -187,7 +187,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS DE LA ACTUACIÓN ===
-
     $fields['participante_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Participante'))
       ->setDescription(t('Participante al que se dirige la actuación.'))
@@ -303,7 +302,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === SPRINT 14: FASE PIIL Y ALINEAMIENTO STO ===
-
     $fields['fase_piil'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Fase PIIL'))
       ->setDescription(t('Fase del itinerario PIIL a la que pertenece esta actuación. Calculado desde tipo_actuacion.'))
@@ -338,7 +336,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === FASE Y FIRMA ===
-
     $fields['fase_participante'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Fase al momento'))
       ->setDescription(t('Fase PIIL del participante cuando se realizó la actuación.'))
@@ -370,7 +367,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === VOBO SAE (solo formación) ===
-
     $fields['vobo_sae_status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('VoBo SAE'))
       ->setDescription(t('Estado del Visto Bueno del SAE para formación.'))
@@ -396,7 +392,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === GRUPAL ===
-
     $fields['grupo_participantes_ids'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Participantes (grupal)'))
       ->setDescription(t('IDs de participantes separados por coma para actuaciones grupales.'))
@@ -404,7 +399,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === STO ===
-
     $fields['sto_exportado'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Exportado a STO'))
       ->setDescription(t('Si esta actuación fue incluida en una exportación STO.'))
@@ -412,7 +406,6 @@ class ActuacionSto extends ContentEntityBase implements EntityOwnerInterface, En
       ->setDisplayConfigurable('view', TRUE);
 
     // === SISTEMA ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));
 

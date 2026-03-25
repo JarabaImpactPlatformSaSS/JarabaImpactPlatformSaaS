@@ -18,7 +18,8 @@ class ShippingApiController extends ControllerBase {
 
   public function __construct(
     protected AgroShippingService $shippingService,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -27,7 +28,8 @@ class ShippingApiController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_agroconecta_core.shipping_service'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -36,8 +38,9 @@ class ShippingApiController extends ControllerBase {
    *
    * Devuelve las tarifas de envío para los items proporcionados.
    */
+
   /**
-   * GET /api/v1/agro/shipping/zones
+   * GET /api/v1/agro/shipping/zones.
    */
   public function zones(): JsonResponse {
     try {
@@ -69,7 +72,7 @@ class ShippingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/agro/shipping/methods
+   * GET /api/v1/agro/shipping/methods.
    */
   public function methods(): JsonResponse {
     return new JsonResponse([
@@ -83,14 +86,14 @@ class ShippingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/agro/shipping/calculate
+   * POST /api/v1/agro/shipping/calculate.
    */
   public function calculate(Request $request): JsonResponse {
     return $this->getRates($request);
   }
 
   /**
-   * GET /api/v1/agro/shipping/detect-zone
+   * GET /api/v1/agro/shipping/detect-zone.
    */
   public function detectZone(Request $request): JsonResponse {
     $postalCode = $request->query->get('postal_code', '');
@@ -103,18 +106,22 @@ class ShippingApiController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function getRates(Request $request): JsonResponse {
     $items_json = $request->query->get('items', '[]');
     $postal_code = $request->query->get('postal_code', '');
-    
+
     if (empty($postal_code)) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Código postal requerido.'], 400);
     }
 
     try {
       $items = json_decode($items_json, TRUE);
-      $tenant_id = $this->tenantContext->getCurrentTenantId(); // AUDIT-CONS-N10: Proper DI for tenant context.
-      
+      // AUDIT-CONS-N10: Proper DI for tenant context.
+      $tenant_id = $this->tenantContext->getCurrentTenantId();
+
       $rates = $this->shippingService->calculateRates($items, $postal_code, (int) $tenant_id);
 
       return new JsonResponse([

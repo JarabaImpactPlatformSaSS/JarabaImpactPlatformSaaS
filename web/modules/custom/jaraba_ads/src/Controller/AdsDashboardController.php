@@ -3,7 +3,6 @@
 namespace Drupal\jaraba_ads\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_ads\Service\AdsAnalyticsService;
 use Drupal\jaraba_ads\Service\CampaignManagerService;
 use Psr\Log\LoggerInterface;

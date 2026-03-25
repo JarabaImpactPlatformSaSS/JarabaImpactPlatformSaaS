@@ -83,7 +83,7 @@ class TaxCalculatorServiceTest extends TestCase {
 
     // First bracket: 19% of 12450 = 2365.50
     // Second bracket: 24% of (20000 - 12450) = 24% of 7550 = 1812.00
-    // Total: 2365.50 + 1812.00 = 4177.50
+    // Total: 2365.50 + 1812.00 = 4177.50.
     $this->assertEqualsWithDelta(4177.50, $result['gross_tax'], 0.01);
   }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_agroconecta_core\Unit\Service;
 
+use Drupal\Core\Database\StatementInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -123,8 +124,10 @@ class CrossSellEngineTest extends TestCase {
 
   // =========================================================================
   // CROSS-SELL CATEGORIES TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetCrossSellCategoriesForVino(): void {
     $result = $this->service->getCrossSellCategories('vino');
@@ -132,6 +135,9 @@ class CrossSellEngineTest extends TestCase {
     $this->assertSame(['queso', 'embutido', 'conservas', 'aceitunas', 'pan'], $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetCrossSellCategoriesForAceite(): void {
     $result = $this->service->getCrossSellCategories('aceite');
@@ -139,6 +145,9 @@ class CrossSellEngineTest extends TestCase {
     $this->assertSame(['pan', 'vinagre', 'especias', 'aceitunas', 'tomate'], $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetCrossSellCategoriesForUnknown(): void {
     $result = $this->service->getCrossSellCategories('unknown');
@@ -148,8 +157,10 @@ class CrossSellEngineTest extends TestCase {
 
   // =========================================================================
   // NORMALIZE CATEGORY TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testNormalizeCategoryRemovesAccents(): void {
     $method = new \ReflectionMethod(CrossSellEngine::class, 'normalizeCategory');
@@ -161,6 +172,9 @@ class CrossSellEngineTest extends TestCase {
     $this->assertSame('jamón', $result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testNormalizeCategoryLowercase(): void {
     $method = new \ReflectionMethod(CrossSellEngine::class, 'normalizeCategory');
@@ -173,8 +187,10 @@ class CrossSellEngineTest extends TestCase {
 
   // =========================================================================
   // PRICE COMPATIBILITY TESTS (via reflection)
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetPriceCompatibilitySamePrice(): void {
     $method = new \ReflectionMethod(CrossSellEngine::class, 'getPriceCompatibility');
@@ -185,13 +201,16 @@ class CrossSellEngineTest extends TestCase {
     $this->assertSame(1.0, $result, 'Same price should give perfect compatibility of 1.0');
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetPriceCompatibilityDifferentPrice(): void {
     $method = new \ReflectionMethod(CrossSellEngine::class, 'getPriceCompatibility');
     $method->setAccessible(TRUE);
 
     // Very different prices: 5.0 vs 50.0 => relative diff = 45/27.5 = 1.636
-    // Gaussian: exp(-(1.636^2)/(2*0.6^2)) = exp(-3.716) ~ 0.024
+    // Gaussian: exp(-(1.636^2)/(2*0.6^2)) = exp(-3.716) ~ 0.024.
     $result = $method->invoke($this->service, 5.0, 50.0);
 
     $this->assertLessThan(0.5, $result, 'Very different prices should have compatibility below 0.5');
@@ -199,8 +218,10 @@ class CrossSellEngineTest extends TestCase {
 
   // =========================================================================
   // GENERATE CROSS-SELL SUGGESTIONS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGenerateCrossSellSuggestionsEmptyCart(): void {
     // Setup product that triggers cross-sell.
@@ -252,7 +273,7 @@ class CrossSellEngineTest extends TestCase {
       ->willReturn($orderItemQuery);
 
     // Mock database for max popularity.
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
+    $statement = $this->createMock(StatementInterface::class);
     $statement->method('fetchField')->willReturn('10');
     $this->database->method('query')->willReturn($statement);
 
@@ -267,8 +288,10 @@ class CrossSellEngineTest extends TestCase {
 
   // =========================================================================
   // UPSELL SUGGESTIONS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testUpsellSuggestionsLowCart(): void {
     // Cart total < 20 => should suggest products to reach free shipping threshold.
@@ -319,6 +342,9 @@ class CrossSellEngineTest extends TestCase {
     }
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testUpsellSuggestionsReturnsMaxThree(): void {
     // Cart with many items to potentially trigger multiple suggestion types.

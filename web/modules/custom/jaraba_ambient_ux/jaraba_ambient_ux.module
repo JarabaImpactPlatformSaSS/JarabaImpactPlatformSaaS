@@ -20,14 +20,14 @@ function jaraba_ambient_ux_preprocess_html(array &$variables): void {
   if ($tenant) {
     /** @var \Drupal\jaraba_ambient_ux\Service\IntentToLayoutService $intentEngine */
     $intentEngine = \Drupal::service('jaraba_ambient_ux.intent_engine');
-    
+
     // Calcular modo basado en datos predictivos.
     $uiConfig = $intentEngine->determineUiMode((int) $tenant->id());
 
     // Inyectar clases CSS líquidas.
     $variables['attributes']['class'][] = $uiConfig['css_class'];
     $variables['attributes']['class'][] = 'liquid-ui-active';
-    
+
     // Pasar configuración a drupalSettings para el frontend JS.
     $variables['#attached']['drupalSettings']['jarabaAmbientUx'] = $uiConfig;
   }

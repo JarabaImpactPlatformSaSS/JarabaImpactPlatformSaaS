@@ -73,12 +73,12 @@ class SaasPlanForm extends PremiumEntityFormBase {
     $form[$section]['help'] = [
       '#type' => 'markup',
       '#markup' => '<div class="description">' .
-        '<strong>' . $this->t('Claves disponibles:') . '</strong><br>' .
-        '<code>productores</code> - ' . $this->t('Máximo de productores') . '<br>' .
-        '<code>storage_gb</code> - ' . $this->t('Almacenamiento en GB') . '<br>' .
-        '<code>ai_queries</code> - ' . $this->t('Queries de IA por mes (0 = no incluido)') . '<br>' .
-        '<code>webhooks</code> - ' . $this->t('Número de webhooks') . '<br>' .
-        '</div>',
+      '<strong>' . $this->t('Claves disponibles:') . '</strong><br>' .
+      '<code>productores</code> - ' . $this->t('Máximo de productores') . '<br>' .
+      '<code>storage_gb</code> - ' . $this->t('Almacenamiento en GB') . '<br>' .
+      '<code>ai_queries</code> - ' . $this->t('Queries de IA por mes (0 = no incluido)') . '<br>' .
+      '<code>webhooks</code> - ' . $this->t('Número de webhooks') . '<br>' .
+      '</div>',
       '#weight' => 100,
     ];
 

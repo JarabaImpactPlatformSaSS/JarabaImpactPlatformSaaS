@@ -59,7 +59,7 @@ class ErrorTrackingApiController extends ControllerBase {
   /**
    * Recopila un error reportado desde el frontend o backend.
    *
-   * POST /api/v1/insights/errors
+   * POST /api/v1/insights/errors.
    *
    * Endpoint anonimo para captura de errores JS. Los errores se
    * deduplican por hash (message + file + line) e incrementan
@@ -154,7 +154,7 @@ class ErrorTrackingApiController extends ControllerBase {
   /**
    * Lista los errores registrados con filtros opcionales.
    *
-   * GET /api/v1/insights/errors/list
+   * GET /api/v1/insights/errors/list.
    *
    * Query params:
    * - status: open|acknowledged|resolved|ignored (default: open)
@@ -241,7 +241,7 @@ class ErrorTrackingApiController extends ControllerBase {
   /**
    * Marca un error como resuelto.
    *
-   * POST /api/v1/insights/errors/{id}/resolve
+   * POST /api/v1/insights/errors/{id}/resolve.
    *
    * Body JSON opcional:
    * {

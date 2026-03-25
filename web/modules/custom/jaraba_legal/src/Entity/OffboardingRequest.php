@@ -76,7 +76,6 @@ class OffboardingRequest extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant que solicita la baja.'))
@@ -96,7 +95,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SOLICITANTE ---
-
     $fields['requested_by'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Solicitado por'))
       ->setDescription(new TranslatableMarkup('Usuario que inició la solicitud de baja.'))
@@ -106,7 +104,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- MOTIVO ---
-
     $fields['reason'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Motivo'))
       ->setDescription(new TranslatableMarkup('Razón de la solicitud de baja.'))
@@ -130,7 +127,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado actual del proceso de offboarding.'))
@@ -150,7 +146,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PERIODO DE GRACIA ---
-
     $fields['grace_period_end'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fin del periodo de gracia'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC del fin del periodo de gracia.'))
@@ -159,7 +154,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- EXPORTACIÓN ---
-
     $fields['export_file_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Archivo de exportación'))
       ->setDescription(new TranslatableMarkup('Archivo generado con los datos exportados del tenant.'))
@@ -167,7 +161,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- FACTURACIÓN ---
-
     $fields['final_invoice_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Factura final'))
       ->setDescription(new TranslatableMarkup('Factura final generada para el tenant.'))
@@ -175,7 +168,6 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CERTIFICADO DE ELIMINACIÓN ---
-
     $fields['deletion_certificate_hash'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Hash certificado de eliminación'))
       ->setDescription(new TranslatableMarkup('Hash SHA-256 del certificado de eliminación de datos.'))
@@ -183,14 +175,12 @@ class OffboardingRequest extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- COMPLETADO ---
-
     $fields['completed_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de completado'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de finalización del proceso de offboarding.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

@@ -23,111 +23,104 @@ use Psr\Log\LoggerInterface;
  * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
  * model routing, tool use, provider fallback, and context window management.
  */
-class StorytellingAgent extends SmartBaseAgent
-{
+class StorytellingAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a StorytellingAgent.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
-    }
+  /**
+   * Constructs a StorytellingAgent.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ModelRouterService $modelRouter,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+    $this->setModelRouter($modelRouter);
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'storytelling';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'storytelling';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Storytelling Agent';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Storytelling Agent';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Crea narrativas de marca, historias de producto y contenido sobre la empresa.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Crea narrativas de marca, historias de producto y contenido sobre la empresa.';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'brand_story' => [
-                'label' => 'Historia de Marca',
-                'description' => 'Genera la narrativa fundacional de la marca.',
-                'requires' => ['brand_name', 'founding_context'],
-                'optional' => ['values', 'mission', 'vision'],
-            ],
-            'product_story' => [
-                'label' => 'Historia de Producto',
-                'description' => 'Crea la narrativa detrás de un producto.',
-                'requires' => ['product_name', 'origin'],
-                'optional' => ['craftsmanship', 'uniqueness'],
-            ],
-            'about_page' => [
-                'label' => 'Página Sobre Nosotros',
-                'description' => 'Genera contenido para página About.',
-                'requires' => ['company_name', 'team_info'],
-                'optional' => ['milestones', 'culture'],
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    return [
+      'brand_story' => [
+        'label' => 'Historia de Marca',
+        'description' => 'Genera la narrativa fundacional de la marca.',
+        'requires' => ['brand_name', 'founding_context'],
+        'optional' => ['values', 'mission', 'vision'],
+      ],
+      'product_story' => [
+        'label' => 'Historia de Producto',
+        'description' => 'Crea la narrativa detrás de un producto.',
+        'requires' => ['product_name', 'origin'],
+        'optional' => ['craftsmanship', 'uniqueness'],
+      ],
+      'about_page' => [
+        'label' => 'Página Sobre Nosotros',
+        'description' => 'Genera contenido para página About.',
+        'requires' => ['company_name', 'team_info'],
+        'optional' => ['milestones', 'culture'],
+      ],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        return match ($action) {
-            'brand_story' => $this->generateBrandStory($context),
+  /**
+   * {@inheritdoc}
+   */
+  protected function doExecute(string $action, array $context): array {
+    return match ($action) {
+      'brand_story' => $this->generateBrandStory($context),
             'product_story' => $this->generateProductStory($context),
             'about_page' => $this->generateAboutPage($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
-    }
+    };
+  }
 
-    /**
-     * Generates a brand story.
-     */
-    protected function generateBrandStory(array $context): array
-    {
-        $brandName = $context['brand_name'] ?? 'marca';
-        $foundingContext = $context['founding_context'] ?? '';
-        $values = $context['values'] ?? '';
-        $mission = $context['mission'] ?? '';
+  /**
+   * Generates a brand story.
+   */
+  protected function generateBrandStory(array $context): array {
+    $brandName = $context['brand_name'] ?? 'marca';
+    $foundingContext = $context['founding_context'] ?? '';
+    $values = $context['values'] ?? '';
+    $mission = $context['mission'] ?? '';
 
-        $verticalContext = $this->getVerticalContext();
+    $verticalContext = $this->getVerticalContext();
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear la historia de marca para {$brandName}.
@@ -153,31 +146,30 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'brand_story';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'brand_story';
+      }
     }
 
-    /**
-     * Generates a product story.
-     */
-    protected function generateProductStory(array $context): array
-    {
-        $productName = $context['product_name'] ?? 'producto';
-        $origin = $context['origin'] ?? '';
-        $craftsmanship = $context['craftsmanship'] ?? '';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Generates a product story.
+   */
+  protected function generateProductStory(array $context): array {
+    $productName = $context['product_name'] ?? 'producto';
+    $origin = $context['origin'] ?? '';
+    $craftsmanship = $context['craftsmanship'] ?? '';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear la historia del producto {$productName}.
@@ -202,31 +194,30 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'product_story';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'product_story';
+      }
     }
 
-    /**
-     * Generates an about page.
-     */
-    protected function generateAboutPage(array $context): array
-    {
-        $companyName = $context['company_name'] ?? 'empresa';
-        $teamInfo = $context['team_info'] ?? '';
-        $milestones = $context['milestones'] ?? '';
+    return $response;
+  }
 
-        $verticalContext = $this->getVerticalContext();
+  /**
+   * Generates an about page.
+   */
+  protected function generateAboutPage(array $context): array {
+    $companyName = $context['company_name'] ?? 'empresa';
+    $teamInfo = $context['team_info'] ?? '';
+    $milestones = $context['milestones'] ?? '';
 
-        $prompt = <<<EOT
+    $verticalContext = $this->getVerticalContext();
+
+    $prompt = <<<EOT
 CONTEXTO VERTICAL: {$verticalContext}
 
 TAREA: Crear contenido para página "Sobre Nosotros" de {$companyName}.
@@ -254,25 +245,24 @@ FORMATO DE RESPUESTA (JSON):
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'about_page';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'about_page';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return <<<EOT
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultBrandVoice(): string {
+    return <<<EOT
 Eres un storyteller experto especializado en narrativas de marca.
 
 ESTILO:
@@ -287,6 +277,6 @@ PRINCIPIOS:
 - Resolución inspiradora
 - Voz única y diferenciada
 EOT;
-    }
+  }
 
 }

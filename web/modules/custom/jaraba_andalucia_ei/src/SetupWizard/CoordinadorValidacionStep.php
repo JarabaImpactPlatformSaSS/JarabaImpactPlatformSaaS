@@ -15,7 +15,7 @@ use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardStepInterface;
  * Checks PIIL CV 2025 normative requirements:
  * - At least 50h of formación previstas
  * - At least 10h of orientación previstas
- * - No VoBo pending
+ * - No VoBo pending.
  *
  * This is an optional step: the program can operate without
  * full normative compliance, but the wizard warns about gaps.

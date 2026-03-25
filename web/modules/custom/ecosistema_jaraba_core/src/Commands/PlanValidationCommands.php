@@ -43,7 +43,7 @@ class PlanValidationCommands extends DrushCommands {
    * - Default features exist for each tier
    * - Vertical-specific features are properly configured
    * - Stripe Price IDs are not empty (warning)
-   * - Limits have reasonable values
+   * - Limits have reasonable values.
    *
    * @command jaraba:validate-plans
    * @aliases jvp

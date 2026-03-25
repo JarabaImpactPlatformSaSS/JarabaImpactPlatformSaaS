@@ -98,8 +98,8 @@ class AgentApprovalListBuilder extends EntityListBuilder {
     $row['risk_assessment'] = [
       'data' => [
         '#markup' => '<span class="badge badge--' . htmlspecialchars($risk_color, ENT_QUOTES, 'UTF-8') . '">'
-          . ($risk_labels[$risk] ?? $risk)
-          . '</span>',
+        . ($risk_labels[$risk] ?? $risk)
+        . '</span>',
       ],
     ];
     $row['status'] = $status_labels[$status] ?? $status;

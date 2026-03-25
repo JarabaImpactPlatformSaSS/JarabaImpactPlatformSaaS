@@ -13,7 +13,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *
  * Aparece condicionalmente cuando:
  * - El usuario NO es Enterprise (ya tiene todo)
- * - Uso > 60% de algún límite O 30+ días sin revisión
+ * - Uso > 60% de algún límite O 30+ días sin revisión.
  *
  * SETUP-WIZARD-DAILY-001, PLG-UPGRADE-UI-001.
  */

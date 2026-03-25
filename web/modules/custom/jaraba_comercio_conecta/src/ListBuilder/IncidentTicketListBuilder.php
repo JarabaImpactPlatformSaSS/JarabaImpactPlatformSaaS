@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class IncidentTicketListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['subject'] = $this->t('Asunto');
     $header['category'] = $this->t('Categoria');
@@ -18,6 +24,9 @@ class IncidentTicketListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $status_labels = [
       'open' => $this->t('Abierta'),

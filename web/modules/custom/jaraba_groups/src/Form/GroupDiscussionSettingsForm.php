@@ -10,33 +10,29 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Settings form for Group Discussion Field UI.
  */
-class GroupDiscussionSettingsForm extends FormBase
-{
+class GroupDiscussionSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'group_discussion_settings';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'group_discussion_settings';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['info'] = [
-            '#markup' => '<p>' . $this->t('Configuración de campos para Discusiones de Grupo.') . '</p>',
-        ];
-        return $form;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['info'] = [
+      '#markup' => '<p>' . $this->t('Configuración de campos para Discusiones de Grupo.') . '</p>',
+    ];
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  }
 
 }

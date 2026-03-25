@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\DragAndDrop;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,7 +34,7 @@ class DragAndDropTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -112,8 +113,10 @@ class DragAndDropTest extends UnitTestCase {
 
   // ==========================================================================
   // SCHEMA TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArrayWithRequiredKeys(): void {
     $schema = $this->plugin->getSchema();
@@ -130,8 +133,10 @@ class DragAndDropTest extends UnitTestCase {
 
   // ==========================================================================
   // CALCULATE SCORE TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreAllCorrectPlacements(): void {
     $draggables = [
@@ -169,6 +174,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertTrue($result['details']['item_3']['correct']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreAllIncorrectPlacements(): void {
     $draggables = [
@@ -200,6 +208,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertFalse($result['details']['item_2']['correct']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePartialPlacement(): void {
     $draggables = [
@@ -238,6 +249,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertFalse($result['details']['item_4']['correct']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithUnplacedItemsNullResponses(): void {
     $draggables = [
@@ -274,6 +288,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertNull($result['details']['item_3']['user_zone']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithItemHavingMultipleCorrectZones(): void {
     $draggables = [
@@ -304,6 +321,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertSame(['zone_a', 'zone_b'], $result['details']['item_1']['correct_zones']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreEmptyDraggablesReturnsZero(): void {
     $data = $this->buildExerciseData([], [
@@ -321,6 +341,9 @@ class DragAndDropTest extends UnitTestCase {
     $this->assertEmpty($result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePassingThresholdFromSettings(): void {
     $draggables = [
@@ -354,8 +377,10 @@ class DragAndDropTest extends UnitTestCase {
 
   // ==========================================================================
   // XAPI VERBS TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsFiveVerbsIncludingInteracted(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -371,8 +396,10 @@ class DragAndDropTest extends UnitTestCase {
 
   // ==========================================================================
   // RENDER TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsThemeDragAndDrop(): void {
     $data = [

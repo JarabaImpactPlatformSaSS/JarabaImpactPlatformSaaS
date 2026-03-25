@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\CoursePresentation;
 use Drupal\Tests\UnitTestCase;
 
@@ -30,7 +31,7 @@ class CoursePresentationTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -42,8 +43,10 @@ class CoursePresentationTest extends UnitTestCase {
 
   // =========================================================================
   // GET SCHEMA TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArray(): void {
     $schema = $this->plugin->getSchema();
@@ -53,6 +56,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertArrayHasKey('settings', $schema);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaSlidesRequired(): void {
     $schema = $this->plugin->getSchema();
@@ -61,6 +67,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertSame('array', $schema['slides']['type']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaSlideLayoutEnum(): void {
     $schema = $this->plugin->getSchema();
@@ -75,6 +84,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertCount(6, $layoutEnum);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testSchemaSettingsDefaults(): void {
     $schema = $this->plugin->getSchema();
@@ -91,8 +103,10 @@ class CoursePresentationTest extends UnitTestCase {
 
   // =========================================================================
   // CALCULATE SCORE TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreNoQuizzesReturns100Passed(): void {
     $data = [
@@ -124,6 +138,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertEmpty($result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePerfectWithQuizzes(): void {
     $data = [
@@ -169,6 +186,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertSame(3, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScorePartialWithQuizzes(): void {
     $data = [
@@ -226,6 +246,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertArrayNotHasKey('s1', $result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreOnlySlidesWithQuizCount(): void {
     $data = [
@@ -271,6 +294,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertCount(1, $result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreDetailsStructure(): void {
     $data = [
@@ -307,6 +333,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertSame(1, $detail['points_earned']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreNoResponseToQuiz(): void {
     $data = [
@@ -341,8 +370,10 @@ class CoursePresentationTest extends UnitTestCase {
 
   // =========================================================================
   // XAPI VERBS TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsExpected(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -358,8 +389,10 @@ class CoursePresentationTest extends UnitTestCase {
 
   // =========================================================================
   // RENDER TESTS
-  // =========================================================================
 
+  /**
+ * =========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsTheme(): void {
     $data = [
@@ -377,6 +410,9 @@ class CoursePresentationTest extends UnitTestCase {
     $this->assertCount(1, $result['#slides']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderMergesSettings(): void {
     $data = [

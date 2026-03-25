@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
  * Controller API REST para el blog.
  *
  * Endpoints para CRUD de posts, categorias y autores.
- * Todos los endpoints requieren autenticacion.
+ *
+ * @todo s los endpoints requieren autenticacion.
  */
 class BlogApiController extends ControllerBase {
 
@@ -571,8 +572,14 @@ class BlogApiController extends ControllerBase {
   protected function generateSlug(string $text): string {
     $text = mb_strtolower($text);
     $replacements = [
-      'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-      'ñ' => 'n', 'ü' => 'u', 'ç' => 'c',
+      'á' => 'a',
+      'é' => 'e',
+      'í' => 'i',
+      'ó' => 'o',
+      'ú' => 'u',
+      'ñ' => 'n',
+      'ü' => 'u',
+      'ç' => 'c',
     ];
     $text = strtr($text, $replacements);
     $text = preg_replace('/[^a-z0-9]+/', '-', $text);

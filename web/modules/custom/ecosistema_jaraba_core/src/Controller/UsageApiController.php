@@ -28,8 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
  * - Respuestas JSON estándar con keys: success, data, meta
  * - Códigos HTTP: 200 (ok), 403 (sin permiso), 404 (no tenant)
  */
-class UsageApiController extends ControllerBase
-{
+class UsageApiController extends ControllerBase {
 
   /**
    * Constructor con inyección de dependencias.
@@ -44,8 +43,7 @@ class UsageApiController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('ecosistema_jaraba_core.tenant_context'),
       $container->get('ecosistema_jaraba_core.tenant_metering'),
@@ -56,8 +54,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/current — Uso del período actual.
    */
-  public function currentUsage(): JsonResponse
-  {
+  public function currentUsage(): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -75,8 +72,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/history — Uso histórico por meses.
    */
-  public function historicalUsage(Request $request): JsonResponse
-  {
+  public function historicalUsage(Request $request): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -96,8 +92,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/bill — Factura estimada del período actual.
    */
-  public function currentBill(): JsonResponse
-  {
+  public function currentBill(): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -127,8 +122,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/forecast — Proyección de costes fin de mes.
    */
-  public function forecast(): JsonResponse
-  {
+  public function forecast(): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -146,8 +140,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/alerts — Alertas de presupuesto activas.
    */
-  public function budgetAlerts(): JsonResponse
-  {
+  public function budgetAlerts(): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -167,8 +160,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/metrics/{metric} — Detalle de una métrica.
    */
-  public function metricDetail(string $metric): JsonResponse
-  {
+  public function metricDetail(string $metric): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);
@@ -207,8 +199,7 @@ class UsageApiController extends ControllerBase
   /**
    * GET /api/v1/usage/pricing-rules — Reglas de precios del plan actual.
    */
-  public function pricingRules(): JsonResponse
-  {
+  public function pricingRules(): JsonResponse {
     $tenant = $this->tenantContext->getCurrentTenant();
     if (!$tenant) {
       return new JsonResponse(['success' => FALSE, 'error' => 'Tenant no encontrado'], 404);

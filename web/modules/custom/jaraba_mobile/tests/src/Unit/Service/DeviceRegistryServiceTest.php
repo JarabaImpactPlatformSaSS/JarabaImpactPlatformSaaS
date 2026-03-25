@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_mobile\Unit\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -53,8 +55,8 @@ class DeviceRegistryServiceTest extends TestCase {
     parent::setUp();
 
     // Set up Drupal container for \Drupal::time().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
-    $timeMock = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $container = new ContainerBuilder();
+    $timeMock = $this->createMock(TimeInterface::class);
     $timeMock->method('getRequestTime')->willReturn(time());
     $container->set('datetime.time', $timeMock);
     \Drupal::setContainer($container);

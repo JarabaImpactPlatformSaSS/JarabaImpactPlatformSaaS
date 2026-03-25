@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_privacy\Unit;
 
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Queue\QueueInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_privacy\Service\BreachNotificationService;
 use Drupal\Tests\UnitTestCase;
@@ -41,9 +42,9 @@ class BreachNotificationServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
-    $stateMock = $this->createMock(\Drupal\Core\State\StateInterface::class);
+    $stateMock = $this->createMock(StateInterface::class);
     $stateMock->method('get')->willReturn([]);
     $container->set('state', $stateMock);
     \Drupal::setContainer($container);

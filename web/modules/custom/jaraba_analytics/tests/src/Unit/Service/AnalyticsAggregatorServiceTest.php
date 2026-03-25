@@ -82,6 +82,9 @@ class AnalyticsAggregatorServiceTest extends TestCase {
         $this->logger = $logger;
       }
 
+      /**
+       *
+       */
       public function get(string $channel): LoggerInterface {
         return $this->logger;
       }
@@ -184,12 +187,18 @@ class AnalyticsAggregatorServiceTest extends TestCase {
     // Map the database->select() calls in order.
     $this->database->method('select')
       ->willReturnOnConsecutiveCalls(
-        $pvSelect,        // page_views countQuery
-        $uvSelect,        // unique_visitors distinct countQuery
-        $sessSelect,      // sessions distinct countQuery
-        $bounceGroupSelect, // bounce inner query
-        $bounceOuterSelect, // bounce outer count
-        $durationSelect   // avg session duration
+    // page_views countQuery.
+        $pvSelect,
+    // unique_visitors distinct countQuery.
+        $uvSelect,
+    // Sessions distinct countQuery.
+        $sessSelect,
+    // Bounce inner query.
+        $bounceGroupSelect,
+    // Bounce outer count.
+        $bounceOuterSelect,
+    // Avg session duration.
+        $durationSelect
       );
 
     $reflection = new \ReflectionMethod($this->service, 'calculateBasicMetrics');
@@ -221,7 +230,7 @@ class AnalyticsAggregatorServiceTest extends TestCase {
    */
   public function testBounceRateCalculation(): void {
     // The formula from the service is:
-    // bounce_rate = $sessions > 0 ? round($bounceSessions / $sessions, 4) : 0
+    // bounce_rate = $sessions > 0 ? round($bounceSessions / $sessions, 4) : 0.
     $sessions = 100;
     $bounceSessions = 35;
 
@@ -237,7 +246,7 @@ class AnalyticsAggregatorServiceTest extends TestCase {
    */
   public function testBounceRateZeroWhenNoSessions(): void {
     // The formula from the service:
-    // bounce_rate = $sessions > 0 ? round($bounceSessions / $sessions, 4) : 0
+    // bounce_rate = $sessions > 0 ? round($bounceSessions / $sessions, 4) : 0.
     $sessions = 0;
     $bounceSessions = 0;
 
@@ -293,9 +302,12 @@ class AnalyticsAggregatorServiceTest extends TestCase {
 
     $this->database->method('select')
       ->willReturnOnConsecutiveCalls(
-        $purchaseSelect,  // purchase base query
-        $newUsersSelect,  // new users (signup) query
-        $uvSelect         // unique visitors query
+    // Purchase base query.
+        $purchaseSelect,
+    // New users (signup) query.
+        $newUsersSelect,
+    // Unique visitors query.
+        $uvSelect
       );
 
     // Since calculateEcommerceMetrics uses clone on the purchase query,
@@ -325,7 +337,7 @@ class AnalyticsAggregatorServiceTest extends TestCase {
   public function testConversionRateCalculation(): void {
     // The formula from the service:
     // $conversionRate = $uniqueVisitors > 0
-    //   ? round((int) $ordersCount / $uniqueVisitors, 4) : 0
+    //   ? round((int) $ordersCount / $uniqueVisitors, 4) : 0.
     $ordersCount = 5;
     $uniqueVisitors = 100;
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_events\Unit\Service;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -74,15 +77,15 @@ class EventLandingServiceTest extends UnitTestCase {
     // Set up mock Drupal container for static calls in EventLandingService.
     // Line 219: \Drupal::request()->getSchemeAndHttpHost()
     // Line 343: \Drupal::service('file_url_generator')
-    $request = $this->getMockBuilder(\Symfony\Component\HttpFoundation\Request::class)
+    $request = $this->getMockBuilder(Request::class)
       ->disableOriginalConstructor()
       ->getMock();
     $request->method('getSchemeAndHttpHost')->willReturn('https://example.com');
 
-    $requestStack = $this->createMock(\Symfony\Component\HttpFoundation\RequestStack::class);
+    $requestStack = $this->createMock(RequestStack::class);
     $requestStack->method('getCurrentRequest')->willReturn($request);
 
-    $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('request_stack', $requestStack);
     \Drupal::setContainer($container);
 

@@ -120,6 +120,9 @@ class FeatureGateServiceTest extends UnitTestCase {
         protected string $upgradeMessage,
       ) {}
 
+      /**
+       *
+       */
       public function get(string $field): int|string {
         return match ($field) {
           'limit_value' => $this->limitValue,
@@ -224,7 +227,7 @@ class FeatureGateServiceTest extends UnitTestCase {
   /**
    * Verifica que check() devuelve denied cuando feature no incluida en plan.
    *
-   * limit_value = 0 significa que la feature no esta disponible en este plan.
+   * Limit_value = 0 significa que la feature no esta disponible en este plan.
    *
    * @covers ::check
    */

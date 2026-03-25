@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
  * - enviarFactura: envio de factura firmada
  * - consultarFactura: consulta de estado
  * - consultarListadoFacturas: listado con filtros
- * - anularFactura: solicitud de anulacion
+ * - anularFactura: solicitud de anulacion.
  *
  * Autenticacion: Mutual TLS con certificado PKCS#12 del tenant.
  *

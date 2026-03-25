@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Database\Query\Insert;
 use Drupal\Core\Database\Query\Select;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\Database\StatementInterface;

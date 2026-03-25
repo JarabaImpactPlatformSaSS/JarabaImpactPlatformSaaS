@@ -70,7 +70,7 @@ class EventCertificateService {
    * 2. Verifica que el registro tiene estado 'attended'
    * 3. Obtiene los datos del certificado (asistente + evento)
    * 4. Genera la URL del certificado y los datos para el PDF
-   * 5. Registra la operación en el log
+   * 5. Registra la operación en el log.
    *
    * REGLAS DE NEGOCIO:
    * - Solo se generan certificados para registros con estado 'attended'

@@ -25,58 +25,100 @@ class FormadorMaterialesAction implements DailyActionInterface {
     protected readonly ?object $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'formador_ei.materiales';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'formador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Materiales didácticos');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Gestiona los materiales de tus sesiones');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'content', 'name' => 'book-open', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'azul-corporativo';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.formador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $count = 0;
     try {

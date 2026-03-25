@@ -28,279 +28,272 @@ use Psr\Log\LoggerInterface;
  * | expansion_opp     | LTV:CAC > 5          | INFO      | Upsell Campaign   |
  * ═══════════════════════════════════════════════════════════════════════════
  */
-class AlertService
-{
+class AlertService {
 
-    /**
-     * Constructor del servicio.
-     *
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-     *   El gestor de tipos de entidad.
-     * @param \Drupal\jaraba_foc\Service\MetricsCalculatorService $metricsCalculator
-     *   El servicio de cálculo de métricas.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   El factory de configuración.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El logger del módulo.
-     */
-    public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected MetricsCalculatorService $metricsCalculator,
-        protected ConfigFactoryInterface $configFactory,
-        protected LoggerInterface $logger
-    ) {
+  /**
+   * Constructor del servicio.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   El gestor de tipos de entidad.
+   * @param \Drupal\jaraba_foc\Service\MetricsCalculatorService $metricsCalculator
+   *   El servicio de cálculo de métricas.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   El factory de configuración.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El logger del módulo.
+   */
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected MetricsCalculatorService $metricsCalculator,
+    protected ConfigFactoryInterface $configFactory,
+    protected LoggerInterface $logger,
+  ) {
+  }
+
+  /**
+   * Obtiene la configuración de umbrales.
+   */
+  protected function getConfig() {
+    return $this->configFactory->get('jaraba_foc.settings');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EVALUACIÓN DE ALERTAS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Evalúa todas las condiciones de alerta para la plataforma.
+   *
+   * Este método debe ejecutarse periódicamente via cron.
+   *
+   * @return array
+   *   Array de alertas generadas.
+   */
+  public function evaluateAllAlerts(): array {
+    $alerts = [];
+
+    // Evaluar alertas a nivel de plataforma.
+    $alerts = array_merge($alerts, $this->evaluatePlatformAlerts());
+
+    // Evaluar alertas por tenant.
+    $tenantsMetrics = $this->metricsCalculator->getTenantAnalytics();
+    foreach ($tenantsMetrics as $tenantMetrics) {
+      $tenantAlerts = $this->evaluateTenantAlerts($tenantMetrics);
+      $alerts = array_merge($alerts, $tenantAlerts);
     }
 
-    /**
-     * Obtiene la configuración de umbrales.
-     */
-    protected function getConfig()
-    {
-        return $this->configFactory->get('jaraba_foc.settings');
-    }
+    $this->logger->info('Evaluación de alertas completada: @count alertas generadas', [
+      '@count' => count($alerts),
+    ]);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // EVALUACIÓN DE ALERTAS
-    // ═══════════════════════════════════════════════════════════════════════════
+    return $alerts;
+  }
 
-    /**
-     * Evalúa todas las condiciones de alerta para la plataforma.
-     *
-     * Este método debe ejecutarse periódicamente via cron.
-     *
-     * @return array
-     *   Array de alertas generadas.
-     */
-    public function evaluateAllAlerts(): array
-    {
-        $alerts = [];
+  /**
+   * Evalúa alertas a nivel de plataforma.
+   *
+   * @return array
+   *   Alertas de plataforma.
+   */
+  protected function evaluatePlatformAlerts(): array {
+    $alerts = [];
+    $config = $this->getConfig();
 
-        // Evaluar alertas a nivel de plataforma
-        $alerts = array_merge($alerts, $this->evaluatePlatformAlerts());
+    // MRR Drop detection.
+    $mrrDropThreshold = (float) ($config->get('alert_mrr_drop_threshold') ?? 10);
+    try {
+      $currentMrr = (float) $this->metricsCalculator->calculateMRR();
 
-        // Evaluar alertas por tenant
-        $tenantsMetrics = $this->metricsCalculator->getTenantAnalytics();
-        foreach ($tenantsMetrics as $tenantMetrics) {
-            $tenantAlerts = $this->evaluateTenantAlerts($tenantMetrics);
-            $alerts = array_merge($alerts, $tenantAlerts);
-        }
+      // Calculate previous period MRR by querying the last snapshot
+      // or by computing MRR for the previous month.
+      $previousMrr = $this->getPreviousPeriodMRR();
 
-        $this->logger->info('Evaluación de alertas completada: @count alertas generadas', [
-            '@count' => count($alerts),
-        ]);
+      if ($previousMrr > 0) {
+        $mrrChangePercent = (($currentMrr - $previousMrr) / $previousMrr) * 100;
 
-        return $alerts;
-    }
-
-    /**
-     * Evalúa alertas a nivel de plataforma.
-     *
-     * @return array
-     *   Alertas de plataforma.
-     */
-    protected function evaluatePlatformAlerts(): array
-    {
-        $alerts = [];
-        $config = $this->getConfig();
-
-        // MRR Drop detection.
-        $mrrDropThreshold = (float) ($config->get('alert_mrr_drop_threshold') ?? 10);
-        try {
-            $currentMrr = (float) $this->metricsCalculator->calculateMRR();
-
-            // Calculate previous period MRR by querying the last snapshot
-            // or by computing MRR for the previous month.
-            $previousMrr = $this->getPreviousPeriodMRR();
-
-            if ($previousMrr > 0) {
-                $mrrChangePercent = (($currentMrr - $previousMrr) / $previousMrr) * 100;
-
-                if ($mrrChangePercent < -$mrrDropThreshold) {
-                    $dropPercent = round(abs($mrrChangePercent), 1);
-                    $severity = $dropPercent > 20
+        if ($mrrChangePercent < -$mrrDropThreshold) {
+          $dropPercent = round(abs($mrrChangePercent), 1);
+          $severity = $dropPercent > 20
                         ? FocAlert::SEVERITY_CRITICAL
                         : FocAlert::SEVERITY_WARNING;
 
-                    $alerts[] = $this->createAlert([
-                        'title' => "Caída de MRR detectada: -{$dropPercent}%",
-                        'alert_type' => 'mrr_drop',
-                        'severity' => $severity,
-                        'message' => "El MRR ha caído un {$dropPercent}% respecto al período anterior "
-                            . "(de €" . number_format($previousMrr, 2, ',', '.') . " a €"
-                            . number_format($currentMrr, 2, ',', '.') . "). "
-                            . "Umbral configurado: {$mrrDropThreshold}%.",
-                        'metric_value' => "-{$dropPercent}%",
-                        'threshold' => "{$mrrDropThreshold}%",
-                        'playbook' => $this->getPlaybook('churn_prevention'),
-                    ]);
-                }
-            }
+          $alerts[] = $this->createAlert([
+            'title' => "Caída de MRR detectada: -{$dropPercent}%",
+            'alert_type' => 'mrr_drop',
+            'severity' => $severity,
+            'message' => "El MRR ha caído un {$dropPercent}% respecto al período anterior "
+            . "(de €" . number_format($previousMrr, 2, ',', '.') . " a €"
+            . number_format($currentMrr, 2, ',', '.') . "). "
+            . "Umbral configurado: {$mrrDropThreshold}%.",
+            'metric_value' => "-{$dropPercent}%",
+            'threshold' => "{$mrrDropThreshold}%",
+            'playbook' => $this->getPlaybook('churn_prevention'),
+          ]);
         }
-        catch (\Exception $e) {
-            $this->logger->debug('Error evaluating MRR drop alert: @error', [
-                '@error' => $e->getMessage(),
-            ]);
-        }
-
-        // Gross Margin
-        $grossMargin = (float) $this->metricsCalculator->calculateGrossMargin();
-        if ($grossMargin < 70) {
-            $alerts[] = $this->createAlert([
-                'title' => 'Margen Bruto por debajo del benchmark',
-                'alert_type' => 'margin_alert',
-                'severity' => $grossMargin < 60 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING,
-                'message' => "El margen bruto de la plataforma ({$grossMargin}%) está por debajo del benchmark de 70%.",
-                'metric_value' => $grossMargin . '%',
-                'threshold' => '70%',
-                'playbook' => $this->getPlaybook('margin_review'),
-            ]);
-        }
-
-        return $alerts;
+      }
+    }
+    catch (\Exception $e) {
+      $this->logger->debug('Error evaluating MRR drop alert: @error', [
+        '@error' => $e->getMessage(),
+      ]);
     }
 
-    /**
-     * Evalúa alertas para un tenant específico.
-     *
-     * @param array $tenantMetrics
-     *   Métricas del tenant.
-     *
-     * @return array
-     *   Alertas del tenant.
-     */
-    protected function evaluateTenantAlerts(array $tenantMetrics): array
-    {
-        $alerts = [];
-        $config = $this->getConfig();
-
-        $tenantId = $tenantMetrics['id'] ?? NULL;
-        $tenantName = $tenantMetrics['name'] ?? 'Tenant';
-        $ltvCacRatio = (float) ($tenantMetrics['ltv_cac_ratio'] ?? 0);
-        $paybackMonths = (float) ($tenantMetrics['payback_months'] ?? 0);
-
-        $ltvCacMin = $config->get('alert_ltv_cac_min') ?? 3;
-
-        // LTV:CAC Warning (< 3)
-        if ($ltvCacRatio > 0 && $ltvCacRatio < $ltvCacMin) {
-            $severity = $ltvCacRatio < 1 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING;
-            $alertType = $ltvCacRatio < 1 ? 'ltv_cac_warning' : 'churn_risk';
-
-            $alerts[] = $this->createAlert([
-                'title' => "Tenant '$tenantName' con ratio LTV:CAC bajo",
-                'alert_type' => $alertType,
-                'severity' => $severity,
-                'message' => "El tenant '$tenantName' tiene un ratio LTV:CAC de {$ltvCacRatio}:1, por debajo del umbral de {$ltvCacMin}:1.",
-                'related_tenant' => $tenantId,
-                'metric_value' => $ltvCacRatio . ':1',
-                'threshold' => $ltvCacMin . ':1',
-                'playbook' => $this->getPlaybook($severity === FocAlert::SEVERITY_CRITICAL ? 'customer_success' : 'churn_prevention'),
-            ]);
-        }
-
-        // Payback Exceeded (> 12 meses)
-        if ($paybackMonths > 12) {
-            $alerts[] = $this->createAlert([
-                'title' => "Tenant '$tenantName' con payback excesivo",
-                'alert_type' => 'payback_exceeded',
-                'severity' => $paybackMonths > 18 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING,
-                'message' => "El tenant '$tenantName' tiene un CAC payback de {$paybackMonths} meses, superior al benchmark de 12 meses.",
-                'related_tenant' => $tenantId,
-                'metric_value' => $paybackMonths . ' meses',
-                'threshold' => '12 meses',
-                'playbook' => $this->getPlaybook('cac_optimization'),
-            ]);
-        }
-
-        // Expansion Opportunity (LTV:CAC > 5 = VIP)
-        if ($ltvCacRatio >= 5) {
-            $alerts[] = $this->createAlert([
-                'title' => "Oportunidad de expansión: '$tenantName'",
-                'alert_type' => 'expansion_opportunity',
-                'severity' => FocAlert::SEVERITY_INFO,
-                'message' => "El tenant '$tenantName' es VIP con ratio LTV:CAC de {$ltvCacRatio}:1. Candidato para upsell.",
-                'related_tenant' => $tenantId,
-                'metric_value' => $ltvCacRatio . ':1',
-                'threshold' => '5:1',
-                'playbook' => $this->getPlaybook('upsell_campaign'),
-            ]);
-        }
-
-        return $alerts;
+    // Gross Margin.
+    $grossMargin = (float) $this->metricsCalculator->calculateGrossMargin();
+    if ($grossMargin < 70) {
+      $alerts[] = $this->createAlert([
+        'title' => 'Margen Bruto por debajo del benchmark',
+        'alert_type' => 'margin_alert',
+        'severity' => $grossMargin < 60 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING,
+        'message' => "El margen bruto de la plataforma ({$grossMargin}%) está por debajo del benchmark de 70%.",
+        'metric_value' => $grossMargin . '%',
+        'threshold' => '70%',
+        'playbook' => $this->getPlaybook('margin_review'),
+      ]);
     }
 
-    /**
-     * Obtiene el MRR del período anterior (mes pasado).
-     *
-     * Intenta obtener el MRR del snapshot más reciente del mes anterior.
-     * Si no hay snapshot, calcula directamente desde transacciones.
-     *
-     * @return float
-     *   MRR del período anterior, o 0.0 si no hay datos.
-     */
-    protected function getPreviousPeriodMRR(): float
-    {
-        try {
-            // First try: query the latest metric snapshot from the previous month.
-            $storage = $this->entityTypeManager->getStorage('foc_metric_snapshot');
-            $previousMonthStart = date('Y-m-d', strtotime('first day of last month'));
-            $previousMonthEnd = date('Y-m-d', strtotime('last day of last month'));
+    return $alerts;
+  }
 
-            $snapshotIds = $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('scope_type', 'platform')
-                ->condition('snapshot_date', $previousMonthStart, '>=')
-                ->condition('snapshot_date', $previousMonthEnd, '<=')
-                ->sort('snapshot_date', 'DESC')
-                ->range(0, 1)
-                ->execute();
+  /**
+   * Evalúa alertas para un tenant específico.
+   *
+   * @param array $tenantMetrics
+   *   Métricas del tenant.
+   *
+   * @return array
+   *   Alertas del tenant.
+   */
+  protected function evaluateTenantAlerts(array $tenantMetrics): array {
+    $alerts = [];
+    $config = $this->getConfig();
 
-            if (!empty($snapshotIds)) {
-                $snapshot = $storage->load(reset($snapshotIds));
-                if ($snapshot && $snapshot->hasField('mrr')) {
-                    $mrr = (float) ($snapshot->get('mrr')->value ?? 0);
-                    if ($mrr > 0) {
-                        return $mrr;
-                    }
-                }
-            }
+    $tenantId = $tenantMetrics['id'] ?? NULL;
+    $tenantName = $tenantMetrics['name'] ?? 'Tenant';
+    $ltvCacRatio = (float) ($tenantMetrics['ltv_cac_ratio'] ?? 0);
+    $paybackMonths = (float) ($tenantMetrics['payback_months'] ?? 0);
 
-            // Fallback: calculate previous month MRR directly from transactions.
-            // Use the MetricsCalculatorService pattern but with previous month dates.
-            $db = \Drupal::database();
-            $query = $db->select('financial_transaction', 'ft')
-                ->condition('ft.is_recurring', 1)
-                ->condition('ft.transaction_timestamp', strtotime('first day of last month'), '>=')
-                ->condition('ft.transaction_timestamp', strtotime('last day of last month 23:59:59'), '<=');
-            $query->addExpression('SUM(ft.amount)', 'total_mrr');
-            $result = $query->execute()->fetchField();
+    $ltvCacMin = $config->get('alert_ltv_cac_min') ?? 3;
 
-            return (float) ($result ?: 0);
-        }
-        catch (\Exception $e) {
-            $this->logger->debug('Error getting previous period MRR: @error', [
-                '@error' => $e->getMessage(),
-            ]);
-            return 0.0;
-        }
+    // LTV:CAC Warning (< 3)
+    if ($ltvCacRatio > 0 && $ltvCacRatio < $ltvCacMin) {
+      $severity = $ltvCacRatio < 1 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING;
+      $alertType = $ltvCacRatio < 1 ? 'ltv_cac_warning' : 'churn_risk';
+
+      $alerts[] = $this->createAlert([
+        'title' => "Tenant '$tenantName' con ratio LTV:CAC bajo",
+        'alert_type' => $alertType,
+        'severity' => $severity,
+        'message' => "El tenant '$tenantName' tiene un ratio LTV:CAC de {$ltvCacRatio}:1, por debajo del umbral de {$ltvCacMin}:1.",
+        'related_tenant' => $tenantId,
+        'metric_value' => $ltvCacRatio . ':1',
+        'threshold' => $ltvCacMin . ':1',
+        'playbook' => $this->getPlaybook($severity === FocAlert::SEVERITY_CRITICAL ? 'customer_success' : 'churn_prevention'),
+      ]);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // PLAYBOOKS PRESCRIPTIVOS
-    // ═══════════════════════════════════════════════════════════════════════════
+    // Payback Exceeded (> 12 meses)
+    if ($paybackMonths > 12) {
+      $alerts[] = $this->createAlert([
+        'title' => "Tenant '$tenantName' con payback excesivo",
+        'alert_type' => 'payback_exceeded',
+        'severity' => $paybackMonths > 18 ? FocAlert::SEVERITY_CRITICAL : FocAlert::SEVERITY_WARNING,
+        'message' => "El tenant '$tenantName' tiene un CAC payback de {$paybackMonths} meses, superior al benchmark de 12 meses.",
+        'related_tenant' => $tenantId,
+        'metric_value' => $paybackMonths . ' meses',
+        'threshold' => '12 meses',
+        'playbook' => $this->getPlaybook('cac_optimization'),
+      ]);
+    }
 
-    /**
-     * Obtiene el playbook para un tipo de alerta.
-     *
-     * @param string $playbookType
-     *   Tipo de playbook: churn_prevention, customer_success, etc.
-     *
-     * @return string
-     *   Texto del playbook con acciones recomendadas.
-     */
-    protected function getPlaybook(string $playbookType): string
-    {
-        $playbooks = [
-            'churn_prevention' => <<<PLAYBOOK
+    // Expansion Opportunity (LTV:CAC > 5 = VIP)
+    if ($ltvCacRatio >= 5) {
+      $alerts[] = $this->createAlert([
+        'title' => "Oportunidad de expansión: '$tenantName'",
+        'alert_type' => 'expansion_opportunity',
+        'severity' => FocAlert::SEVERITY_INFO,
+        'message' => "El tenant '$tenantName' es VIP con ratio LTV:CAC de {$ltvCacRatio}:1. Candidato para upsell.",
+        'related_tenant' => $tenantId,
+        'metric_value' => $ltvCacRatio . ':1',
+        'threshold' => '5:1',
+        'playbook' => $this->getPlaybook('upsell_campaign'),
+      ]);
+    }
+
+    return $alerts;
+  }
+
+  /**
+   * Obtiene el MRR del período anterior (mes pasado).
+   *
+   * Intenta obtener el MRR del snapshot más reciente del mes anterior.
+   * Si no hay snapshot, calcula directamente desde transacciones.
+   *
+   * @return float
+   *   MRR del período anterior, o 0.0 si no hay datos.
+   */
+  protected function getPreviousPeriodMRR(): float {
+    try {
+      // First try: query the latest metric snapshot from the previous month.
+      $storage = $this->entityTypeManager->getStorage('foc_metric_snapshot');
+      $previousMonthStart = date('Y-m-d', strtotime('first day of last month'));
+      $previousMonthEnd = date('Y-m-d', strtotime('last day of last month'));
+
+      $snapshotIds = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('scope_type', 'platform')
+        ->condition('snapshot_date', $previousMonthStart, '>=')
+        ->condition('snapshot_date', $previousMonthEnd, '<=')
+        ->sort('snapshot_date', 'DESC')
+        ->range(0, 1)
+        ->execute();
+
+      if (!empty($snapshotIds)) {
+        $snapshot = $storage->load(reset($snapshotIds));
+        if ($snapshot && $snapshot->hasField('mrr')) {
+          $mrr = (float) ($snapshot->get('mrr')->value ?? 0);
+          if ($mrr > 0) {
+            return $mrr;
+          }
+        }
+      }
+
+      // Fallback: calculate previous month MRR directly from transactions.
+      // Use the MetricsCalculatorService pattern but with previous month dates.
+      $db = \Drupal::database();
+      $query = $db->select('financial_transaction', 'ft')
+        ->condition('ft.is_recurring', 1)
+        ->condition('ft.transaction_timestamp', strtotime('first day of last month'), '>=')
+        ->condition('ft.transaction_timestamp', strtotime('last day of last month 23:59:59'), '<=');
+      $query->addExpression('SUM(ft.amount)', 'total_mrr');
+      $result = $query->execute()->fetchField();
+
+      return (float) ($result ?: 0);
+    }
+    catch (\Exception $e) {
+      $this->logger->debug('Error getting previous period MRR: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return 0.0;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PLAYBOOKS PRESCRIPTIVOS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Obtiene el playbook para un tipo de alerta.
+   *
+   * @param string $playbookType
+   *   Tipo de playbook: churn_prevention, customer_success, etc.
+   *
+   * @return string
+   *   Texto del playbook con acciones recomendadas.
+   */
+  protected function getPlaybook(string $playbookType): string {
+    $playbooks = [
+      'churn_prevention' => <<<PLAYBOOK
 ## Playbook: Prevención de Churn
 
 ### Acciones Inmediatas (24-48h)
@@ -319,7 +312,7 @@ class AlertService
 - Email 2: "Nuevas funcionalidades que podrían interesarte"
 PLAYBOOK,
 
-            'customer_success' => <<<PLAYBOOK
+      'customer_success' => <<<PLAYBOOK
 ## Playbook: Intervención Customer Success (CRÍTICO)
 
 ### Acciones Inmediatas (24h)
@@ -338,7 +331,7 @@ PLAYBOOK,
 - Extensión de contrato con condiciones mejoradas
 PLAYBOOK,
 
-            'cac_optimization' => <<<PLAYBOOK
+      'cac_optimization' => <<<PLAYBOOK
 ## Playbook: Optimización de CAC
 
 ### Análisis del Coste de Adquisición
@@ -357,7 +350,7 @@ PLAYBOOK,
 - Tiempo medio de cierre
 PLAYBOOK,
 
-            'margin_review' => <<<PLAYBOOK
+      'margin_review' => <<<PLAYBOOK
 ## Playbook: Revisión de Margen
 
 ### Análisis de COGS
@@ -375,7 +368,7 @@ PLAYBOOK,
 - Identificar "noisy neighbors" que consumen más recursos
 PLAYBOOK,
 
-            'upsell_campaign' => <<<PLAYBOOK
+      'upsell_campaign' => <<<PLAYBOOK
 ## Playbook: Campaña de Upsell (VIP)
 
 ### Identificación de Oportunidades
@@ -392,140 +385,136 @@ PLAYBOOK,
 - Trigger: Automation "VIP Upsell"
 - Email: "Has desbloqueado beneficios exclusivos VIP"
 PLAYBOOK,
-        ];
+    ];
 
-        return $playbooks[$playbookType] ?? 'Consultar con el equipo de Customer Success.';
+    return $playbooks[$playbookType] ?? 'Consultar con el equipo de Customer Success.';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GESTIÓN DE ALERTAS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Crea una alerta en el sistema.
+   *
+   * @param array $data
+   *   Datos de la alerta.
+   *
+   * @return int
+   *   ID de la alerta creada.
+   */
+  public function createAlert(array $data): int {
+    // Verificar si ya existe alerta abierta del mismo tipo para el mismo tenant.
+    if ($this->hasDuplicateAlert($data)) {
+      $this->logger->debug('Alerta duplicada ignorada: @type para tenant @tenant', [
+        '@type' => $data['alert_type'],
+        '@tenant' => $data['related_tenant'] ?? 'platform',
+      ]);
+      return 0;
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // GESTIÓN DE ALERTAS
-    // ═══════════════════════════════════════════════════════════════════════════
+    $storage = $this->entityTypeManager->getStorage('foc_alert');
 
-    /**
-     * Crea una alerta en el sistema.
-     *
-     * @param array $data
-     *   Datos de la alerta.
-     *
-     * @return int
-     *   ID de la alerta creada.
-     */
-    public function createAlert(array $data): int
-    {
-        // Verificar si ya existe alerta abierta del mismo tipo para el mismo tenant
-        if ($this->hasDuplicateAlert($data)) {
-            $this->logger->debug('Alerta duplicada ignorada: @type para tenant @tenant', [
-                '@type' => $data['alert_type'],
-                '@tenant' => $data['related_tenant'] ?? 'platform',
-            ]);
-            return 0;
-        }
+    $alert = $storage->create([
+      'title' => $data['title'],
+      'alert_type' => $data['alert_type'],
+      'severity' => $data['severity'] ?? FocAlert::SEVERITY_WARNING,
+      'status' => FocAlert::STATUS_OPEN,
+      'message' => $data['message'] ?? '',
+      'related_tenant' => $data['related_tenant'] ?? NULL,
+      'metric_value' => $data['metric_value'] ?? '',
+      'threshold' => $data['threshold'] ?? '',
+      'playbook' => $data['playbook'] ?? '',
+      'playbook_executed' => FALSE,
+    ]);
 
-        $storage = $this->entityTypeManager->getStorage('foc_alert');
+    $alert->save();
 
-        $alert = $storage->create([
-            'title' => $data['title'],
-            'alert_type' => $data['alert_type'],
-            'severity' => $data['severity'] ?? FocAlert::SEVERITY_WARNING,
-            'status' => FocAlert::STATUS_OPEN,
-            'message' => $data['message'] ?? '',
-            'related_tenant' => $data['related_tenant'] ?? NULL,
-            'metric_value' => $data['metric_value'] ?? '',
-            'threshold' => $data['threshold'] ?? '',
-            'playbook' => $data['playbook'] ?? '',
-            'playbook_executed' => FALSE,
-        ]);
+    $this->logger->info('Alerta creada: @id - @title', [
+      '@id' => $alert->id(),
+      '@title' => $data['title'],
+    ]);
 
-        $alert->save();
+    return (int) $alert->id();
+  }
 
-        $this->logger->info('Alerta creada: @id - @title', [
-            '@id' => $alert->id(),
-            '@title' => $data['title'],
-        ]);
+  /**
+   * Verifica si existe una alerta duplicada abierta.
+   *
+   * @param array $data
+   *   Datos de la nueva alerta.
+   *
+   * @return bool
+   *   TRUE si ya existe una alerta similar abierta.
+   */
+  protected function hasDuplicateAlert(array $data): bool {
+    $storage = $this->entityTypeManager->getStorage('foc_alert');
 
-        return (int) $alert->id();
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('alert_type', $data['alert_type'])
+      ->condition('status', [FocAlert::STATUS_OPEN, FocAlert::STATUS_ACKNOWLEDGED], 'IN');
+
+    if (!empty($data['related_tenant'])) {
+      $query->condition('related_tenant', $data['related_tenant']);
     }
 
-    /**
-     * Verifica si existe una alerta duplicada abierta.
-     *
-     * @param array $data
-     *   Datos de la nueva alerta.
-     *
-     * @return bool
-     *   TRUE si ya existe una alerta similar abierta.
-     */
-    protected function hasDuplicateAlert(array $data): bool
-    {
-        $storage = $this->entityTypeManager->getStorage('foc_alert');
+    $existing = $query->execute();
 
-        $query = $storage->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('alert_type', $data['alert_type'])
-            ->condition('status', [FocAlert::STATUS_OPEN, FocAlert::STATUS_ACKNOWLEDGED], 'IN');
+    return !empty($existing);
+  }
 
-        if (!empty($data['related_tenant'])) {
-            $query->condition('related_tenant', $data['related_tenant']);
-        }
+  /**
+   * Obtiene alertas abiertas.
+   *
+   * @param string|null $severity
+   *   Filtrar por severidad (opcional).
+   *
+   * @return array
+   *   Array de entidades FocAlert.
+   */
+  public function getOpenAlerts(?string $severity = NULL): array {
+    $storage = $this->entityTypeManager->getStorage('foc_alert');
 
-        $existing = $query->execute();
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', FocAlert::STATUS_OPEN)
+      ->sort('created', 'DESC');
 
-        return !empty($existing);
+    if ($severity) {
+      $query->condition('severity', $severity);
     }
 
-    /**
-     * Obtiene alertas abiertas.
-     *
-     * @param string|null $severity
-     *   Filtrar por severidad (opcional).
-     *
-     * @return array
-     *   Array de entidades FocAlert.
-     */
-    public function getOpenAlerts(?string $severity = NULL): array
-    {
-        $storage = $this->entityTypeManager->getStorage('foc_alert');
+    $ids = $query->execute();
 
-        $query = $storage->getQuery()
-            ->accessCheck(FALSE)
-            ->condition('status', FocAlert::STATUS_OPEN)
-            ->sort('created', 'DESC');
+    return $ids ? $storage->loadMultiple($ids) : [];
+  }
 
-        if ($severity) {
-            $query->condition('severity', $severity);
-        }
+  /**
+   * Resuelve una alerta.
+   *
+   * @param int $alertId
+   *   ID de la alerta.
+   *
+   * @return bool
+   *   TRUE si se resolvió correctamente.
+   */
+  public function resolveAlert(int $alertId): bool {
+    $storage = $this->entityTypeManager->getStorage('foc_alert');
+    /** @var \Drupal\jaraba_foc\Entity\FocAlert|null $alert */
+    $alert = $storage->load($alertId);
 
-        $ids = $query->execute();
-
-        return $ids ? $storage->loadMultiple($ids) : [];
+    if (!$alert) {
+      return FALSE;
     }
 
-    /**
-     * Resuelve una alerta.
-     *
-     * @param int $alertId
-     *   ID de la alerta.
-     *
-     * @return bool
-     *   TRUE si se resolvió correctamente.
-     */
-    public function resolveAlert(int $alertId): bool
-    {
-        $storage = $this->entityTypeManager->getStorage('foc_alert');
-        /** @var \Drupal\jaraba_foc\Entity\FocAlert|null $alert */
-        $alert = $storage->load($alertId);
+    $alert->set('status', FocAlert::STATUS_RESOLVED);
+    $alert->set('resolved_at', \Drupal::time()->getRequestTime());
+    $alert->save();
 
-        if (!$alert) {
-            return FALSE;
-        }
+    $this->logger->info('Alerta @id resuelta', ['@id' => $alertId]);
 
-        $alert->set('status', FocAlert::STATUS_RESOLVED);
-        $alert->set('resolved_at', \Drupal::time()->getRequestTime());
-        $alert->save();
-
-        $this->logger->info('Alerta @id resuelta', ['@id' => $alertId]);
-
-        return TRUE;
-    }
+    return TRUE;
+  }
 
 }

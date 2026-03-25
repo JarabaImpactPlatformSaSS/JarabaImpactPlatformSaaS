@@ -74,7 +74,6 @@ class DrIncident extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- IDENTIFICACION ---
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Titulo'))
       ->setDescription(new TranslatableMarkup('Titulo descriptivo del incidente.'))
@@ -85,7 +84,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- SEVERIDAD Y ESTADO ---
-
     $fields['severity'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Severidad'))
       ->setDescription(new TranslatableMarkup('Nivel de severidad del incidente.'))
@@ -117,7 +115,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DESCRIPCION Y ANALISIS ---
-
     $fields['description'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Descripcion'))
       ->setDescription(new TranslatableMarkup('Descripcion detallada del incidente.'))
@@ -154,7 +151,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIEMPOS ---
-
     $fields['started_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Inicio'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de inicio del incidente.'))
@@ -170,7 +166,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- COMUNICACION ---
-
     $fields['communication_log'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Log de comunicaciones'))
       ->setDescription(new TranslatableMarkup('JSON con el historial de notificaciones enviadas durante el incidente.'))
@@ -187,7 +182,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RESPONSABLE ---
-
     $fields['assigned_to'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Asignado a'))
       ->setDescription(new TranslatableMarkup('Usuario responsable del incidente.'))
@@ -197,7 +191,6 @@ class DrIncident extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creacion del registro.'));

@@ -16,6 +16,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 trait RetryableHttpClientTrait {
 
+  /**
+   *
+   */
   protected function requestWithRetry(
     string $method,
     string $url,
@@ -24,7 +27,7 @@ trait RetryableHttpClientTrait {
     float $baseDelay = 1.0,
   ): ResponseInterface {
     $attempt = 0;
-    $lastException = null;
+    $lastException = NULL;
 
     while ($attempt <= $maxRetries) {
       try {
@@ -39,12 +42,14 @@ trait RetryableHttpClientTrait {
         }
 
         return $response;
-      } catch (ServerException $e) {
+      }
+      catch (ServerException $e) {
         $lastException = $e;
         if ($attempt >= $maxRetries) {
           throw $e;
         }
-      } catch (ConnectException $e) {
+      }
+      catch (ConnectException $e) {
         $lastException = $e;
         if ($attempt >= $maxRetries) {
           throw $e;

@@ -20,6 +20,8 @@
  * es mejor dejar que los templates usen sus fallbacks.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+use Symfony\Component\Yaml\Yaml;
 use Drupal\jaraba_page_builder\Entity\FeatureCard;
 use Drupal\jaraba_page_builder\Entity\StatItem;
 use Drupal\jaraba_page_builder\Entity\IntentionCard;
@@ -236,7 +238,7 @@ function jaraba_page_builder_update_9003(&$sandbox) {
   if (!$workflow_storage->load('editorial_i18n')) {
     $yaml = file_get_contents(\Drupal::service('extension.list.module')->getPath('jaraba_page_builder') . '/../../../config/sync/workflows.workflow.editorial_i18n.yml');
     if ($yaml) {
-      $data = \Symfony\Component\Yaml\Yaml::parse($yaml);
+      $data = Yaml::parse($yaml);
       unset($data['uuid']);
       $config = \Drupal::configFactory()->getEditable('workflows.workflow.editorial_i18n');
       $config->setData($data);
@@ -282,7 +284,7 @@ function jaraba_page_builder_update_9004(&$sandbox) {
         continue;
       }
 
-      $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+      $data = Yaml::parse($yaml_content);
       if (empty($data['id'])) {
         continue;
       }
@@ -341,7 +343,7 @@ function jaraba_page_builder_update_9005(&$sandbox) {
         continue;
       }
 
-      $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+      $data = Yaml::parse($yaml_content);
       if (empty($data['id'])) {
         continue;
       }
@@ -382,7 +384,7 @@ function jaraba_page_builder_update_9005(&$sandbox) {
  * - "Seccion seccion" typo fixed in 15 descriptions
  * - Tildes added to all 59 vertical descriptions
  * - Duplicate label fixed on serviciosconecta_testimonials
- * - Rich preview_data with domain-specific content for 55 vertical templates
+ * - Rich preview_data with domain-specific content for 55 vertical templates.
  */
 function jaraba_page_builder_update_9006(&$sandbox) {
   $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
@@ -401,7 +403,7 @@ function jaraba_page_builder_update_9006(&$sandbox) {
       continue;
     }
 
-    $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+    $data = Yaml::parse($yaml_content);
     if (empty($data['id'])) {
       $errors++;
       continue;
@@ -457,7 +459,7 @@ function jaraba_page_builder_update_9007(&$sandbox) {
       continue;
     }
 
-    $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+    $data = Yaml::parse($yaml_content);
     if (empty($data['id'])) {
       continue;
     }
@@ -499,7 +501,7 @@ function jaraba_page_builder_update_9008(&$sandbox) {
   $definition_manager = \Drupal::entityDefinitionUpdateManager();
 
   // edit_lock_uid — entity_reference to user.
-  $edit_lock_uid = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+  $edit_lock_uid = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Editor actual'))
     ->setDescription(t('Usuario que está editando actualmente esta página.'))
     ->setSetting('target_type', 'user')
@@ -516,7 +518,7 @@ function jaraba_page_builder_update_9008(&$sandbox) {
   );
 
   // edit_lock_expires — timestamp.
-  $edit_lock_expires = \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+  $edit_lock_expires = BaseFieldDefinition::create('timestamp')
     ->setLabel(t('Expiración del bloqueo'))
     ->setDescription(t('Timestamp de expiración del bloqueo de edición.'))
     ->setRevisionable(FALSE)
@@ -603,7 +605,7 @@ function jaraba_page_builder_update_9010(): string {
 /**
  * Complete meta_title varchar(70)->255 expansion + entity type resync.
  *
- * update_9010 expanded meta_title via updateFieldStorageDefinition() but only
+ * Update_9010 expanded meta_title via updateFieldStorageDefinition() but only
  * altered _field_data table. This hook fixes:
  * 1) _field_revision column (still varchar(70)).
  * 2) entity.storage_schema.sql KV store (cached old length).

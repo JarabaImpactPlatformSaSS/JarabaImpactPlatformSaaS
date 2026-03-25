@@ -73,7 +73,6 @@ class ProcessingActivity extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece esta actividad de tratamiento.'))
@@ -84,7 +83,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- IDENTIFICACIÓN ---
-
     $fields['activity_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre de la actividad'))
       ->setDescription(new TranslatableMarkup('Nombre descriptivo de la actividad de tratamiento.'))
@@ -119,7 +117,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS TRATADOS ---
-
     $fields['data_categories'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Categorías de datos'))
       ->setDescription(new TranslatableMarkup('JSON con las categorías de datos personales tratados.'))
@@ -142,7 +139,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TRANSFERENCIAS ---
-
     $fields['international_transfers'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Transferencias internacionales'))
       ->setDescription(new TranslatableMarkup('JSON con detalles de transferencias internacionales de datos.'))
@@ -150,7 +146,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RETENCIÓN Y SEGURIDAD ---
-
     $fields['retention_period'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Plazo de conservación'))
       ->setDescription(new TranslatableMarkup('Período de retención de los datos (ej: "5 años", "mientras dure la relación contractual").'))
@@ -166,7 +161,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DPIA ---
-
     $fields['dpia_required'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Requiere DPIA'))
       ->setDescription(new TranslatableMarkup('Indica si esta actividad requiere Evaluación de Impacto (DPIA).'))
@@ -184,7 +178,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERTICAL Y ESTADO ---
-
     $fields['vertical'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Vertical'))
       ->setDescription(new TranslatableMarkup('Vertical del ecosistema asociada a esta actividad.'))
@@ -202,7 +195,6 @@ class ProcessingActivity extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

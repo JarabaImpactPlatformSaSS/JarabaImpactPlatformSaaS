@@ -23,8 +23,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  *
  * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
  */
-class VerticalLandingController extends ControllerBase
-{
+class VerticalLandingController extends ControllerBase {
 
   /**
    * The MetaSite pricing service.
@@ -37,8 +36,7 @@ class VerticalLandingController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
     // Optional injection: doesn't break if service not registered.
     if ($container->has('ecosistema_jaraba_core.metasite_pricing')) {
@@ -54,10 +52,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing AgroConecta — Productores rurales.
    *
-   * Ruta: /agroconecta
+   * Ruta: /agroconecta.
    */
-  public function agroconecta(): array
-  {
+  public function agroconecta(): array {
     return $this->buildLanding([
       'key' => 'agroconecta',
       'color' => 'agro',
@@ -267,10 +264,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing ComercioConecta — Comercios de proximidad.
    *
-   * Ruta: /comercioconecta
+   * Ruta: /comercioconecta.
    */
-  public function comercioconecta(): array
-  {
+  public function comercioconecta(): array {
     return $this->buildLanding([
       'key' => 'comercioconecta',
       'color' => 'success',
@@ -480,10 +476,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing ServiciosConecta — Profesionales liberales.
    *
-   * Ruta: /serviciosconecta
+   * Ruta: /serviciosconecta.
    */
-  public function serviciosconecta(): array
-  {
+  public function serviciosconecta(): array {
     return $this->buildLanding([
       'key' => 'serviciosconecta',
       'color' => 'servicios',
@@ -689,10 +684,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing Empleabilidad — Buscadores de empleo.
    *
-   * Ruta: /empleabilidad
+   * Ruta: /empleabilidad.
    */
-  public function empleabilidad(): array
-  {
+  public function empleabilidad(): array {
     return $this->buildLanding([
       'key' => 'empleabilidad',
       'color' => 'innovation',
@@ -908,10 +902,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing Emprendimiento — Emprendedores y startups.
    *
-   * Ruta: /emprendimiento
+   * Ruta: /emprendimiento.
    */
-  public function emprendimientoLanding(): array
-  {
+  public function emprendimientoLanding(): array {
     return $this->buildLanding([
       'key' => 'emprendimiento',
       'color' => 'impulse',
@@ -1130,8 +1123,7 @@ class VerticalLandingController extends ControllerBase
    * Ruta: /jarabalex
    * Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
    */
-  public function jarabalex(): array
-  {
+  public function jarabalex(): array {
     return $this->buildLanding([
       'key' => 'jarabalex',
       'color' => 'legal',
@@ -1340,6 +1332,7 @@ class VerticalLandingController extends ControllerBase
       ],
     ]);
   }
+
   /**
    * Redirect /despachos → /jarabalex (301 permanent).
    *
@@ -1350,8 +1343,7 @@ class VerticalLandingController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   301 Moved Permanently redirect.
    */
-  public function despachos(): RedirectResponse
-  {
+  public function despachos(): RedirectResponse {
     return new RedirectResponse(Url::fromRoute('ecosistema_jaraba_core.landing.jarabalex')->toString(), 301);
   }
 
@@ -1368,8 +1360,7 @@ class VerticalLandingController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   301 Moved Permanently redirect.
    */
-  public function empleo(): RedirectResponse
-  {
+  public function empleo(): RedirectResponse {
     return new RedirectResponse('/empleabilidad', 301);
   }
 
@@ -1380,8 +1371,7 @@ class VerticalLandingController extends ControllerBase
    * F4 full landing: 9 secciones completas.
    * Sprint 3 — Growth Infrastructure (VERT-02).
    */
-  public function talento(): array
-  {
+  public function talento(): array {
     return $this->buildLanding([
       'key' => 'talento',
       'color' => 'innovation',
@@ -1548,8 +1538,7 @@ class VerticalLandingController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   301 Moved Permanently redirect.
    */
-  public function emprender(): RedirectResponse
-  {
+  public function emprender(): RedirectResponse {
     return new RedirectResponse('/emprendimiento', 301);
   }
 
@@ -1562,8 +1551,7 @@ class VerticalLandingController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   301 Moved Permanently redirect.
    */
-  public function comercio(): RedirectResponse
-  {
+  public function comercio(): RedirectResponse {
     return new RedirectResponse('/comercioconecta', 301);
   }
 
@@ -1576,8 +1564,7 @@ class VerticalLandingController extends ControllerBase
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   301 Moved Permanently redirect.
    */
-  public function legalRedirect(): RedirectResponse
-  {
+  public function legalRedirect(): RedirectResponse {
     return new RedirectResponse(Url::fromRoute('ecosistema_jaraba_core.landing.jarabalex')->toString(), 301);
   }
 
@@ -1588,8 +1575,7 @@ class VerticalLandingController extends ControllerBase
    * F4 full landing: 9 secciones completas.
    * Sprint 3 — Growth Infrastructure (VERT-01).
    */
-  public function instituciones(): array
-  {
+  public function instituciones(): array {
     return $this->buildLanding([
       'key' => 'instituciones',
       'color' => 'corporate',
@@ -1722,10 +1708,9 @@ class VerticalLandingController extends ControllerBase
   /**
    * Landing Formación — Academia online con IA y gamificación.
    *
-   * Ruta: /formacion
+   * Ruta: /formacion.
    */
-  public function formacion(): array
-  {
+  public function formacion(): array {
     return $this->buildLanding([
       'key' => 'formacion',
       'color' => 'innovation',
@@ -2013,8 +1998,7 @@ class VerticalLandingController extends ControllerBase
    * @return array
    *   Render array con template vertical_landing_content.
    */
-  protected function buildLanding(array $data): array
-  {
+  protected function buildLanding(array $data): array {
     // Enrich pricing data from ConfigEntities if available.
     // Uses MetaSitePricingService cascade resolution:
     //   specific {vertical}_{tier} → _default_{tier} → fallback.

@@ -68,7 +68,7 @@ class HypothesisPrioritizationServiceTest extends UnitTestCase {
    */
   public function testCalculateIceScore(): void {
     // importance=5, confidence=1 -> urgency = 6-1 = 5, evidence=3
-    // ICE = 5 * 5 * 3 = 75
+    // ICE = 5 * 5 * 3 = 75.
     $result = $this->service->calculateIceScore(5, 1, 3);
     $this->assertSame(75.0, $result);
   }
@@ -82,7 +82,7 @@ class HypothesisPrioritizationServiceTest extends UnitTestCase {
   public function testCalculateIceScoreWithZeros(): void {
     // Values are clamped: max(1, min(5, value))
     // importance=1 (clamped from 0), confidence=1 (urgency=5), evidence=1 (clamped from 0)
-    // ICE = 1 * 5 * 1 = 5
+    // ICE = 1 * 5 * 1 = 5.
     $result = $this->service->calculateIceScore(0, 0, 0);
     $this->assertSame(5.0, $result);
   }
@@ -95,12 +95,12 @@ class HypothesisPrioritizationServiceTest extends UnitTestCase {
    */
   public function testCalculateIceScoreWithMaxValues(): void {
     // All at max: importance=5, confidence=5 (urgency=6-5=1), evidence=5
-    // ICE = 5 * 1 * 5 = 25
+    // ICE = 5 * 1 * 5 = 25.
     $result = $this->service->calculateIceScore(5, 5, 5);
     $this->assertSame(25.0, $result);
 
     // Maximum urgency scenario: confidence=1 (urgency=5)
-    // ICE = 5 * 5 * 5 = 125
+    // ICE = 5 * 5 * 5 = 125.
     $maxUrgency = $this->service->calculateIceScore(5, 1, 5);
     $this->assertSame(125.0, $maxUrgency);
   }
@@ -113,13 +113,13 @@ class HypothesisPrioritizationServiceTest extends UnitTestCase {
   public function testCalculateIceScoreClampsBoundaries(): void {
     // Values above 5 are clamped to 5
     // importance=5 (clamped from 10), confidence=5 (urgency=1), evidence=5 (clamped from 10)
-    // ICE = 5 * 1 * 5 = 25
+    // ICE = 5 * 1 * 5 = 25.
     $result = $this->service->calculateIceScore(10, 10, 10);
     $this->assertSame(25.0, $result);
 
     // Negative values are clamped to 1
     // importance=1, confidence=1 (urgency=5), evidence=1
-    // ICE = 1 * 5 * 1 = 5
+    // ICE = 1 * 5 * 1 = 5.
     $negativeResult = $this->service->calculateIceScore(-1, -5, -3);
     $this->assertSame(5.0, $negativeResult);
   }

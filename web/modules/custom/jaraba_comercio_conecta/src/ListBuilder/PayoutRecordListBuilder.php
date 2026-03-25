@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class PayoutRecordListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['merchant'] = $this->t('Comerciante');
     $header['payout_amount'] = $this->t('Importe Bruto');
@@ -19,6 +25,9 @@ class PayoutRecordListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $status_labels = [
       'pending' => $this->t('Pendiente'),

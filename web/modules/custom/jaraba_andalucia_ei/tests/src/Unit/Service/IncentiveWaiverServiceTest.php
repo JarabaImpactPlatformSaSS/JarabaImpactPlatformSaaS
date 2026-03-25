@@ -51,23 +51,37 @@ class IncentiveWaiverServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionSucceeds(): void {
     $service = $this->createService();
     $this->assertInstanceOf(IncentiveWaiverService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithBrandedPdfSucceeds(): void {
     $brandedPdf = new class {
+
+      /**
+       *
+       */
       public function generateReport(): string {
         return 'pdf-content';
       }
+
     };
     $service = $this->createService($brandedPdf);
     $this->assertInstanceOf(IncentiveWaiverService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarRenunciaReturnsNullWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(999)->willReturn(NULL);
@@ -78,6 +92,9 @@ class IncentiveWaiverServiceTest extends UnitTestCase {
     $this->assertNull($result);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function generarRenunciaLogsWarningWhenParticipanteNotFound(): void {
     $this->storage->method('load')->with(55)->willReturn(NULL);

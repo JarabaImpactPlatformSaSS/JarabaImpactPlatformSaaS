@@ -91,7 +91,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 1: PROPIETARIO Y TENANT
     // =========================================================================
-
     $fields['owner_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Propietario'))
       ->setDescription(new TranslatableMarkup('Usuario propietario del documento.'))
@@ -119,7 +118,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 2: IDENTIFICACION DEL DOCUMENTO
     // =========================================================================
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Titulo'))
       ->setDescription(new TranslatableMarkup('Titulo descriptivo del documento.'))
@@ -139,7 +137,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 3: METADATOS DEL ARCHIVO
     // =========================================================================
-
     $fields['original_filename'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre Original'))
       ->setDescription(new TranslatableMarkup('Nombre original del archivo subido.'))
@@ -168,7 +165,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 4: INTEGRIDAD Y CIFRADO
     // =========================================================================
-
     $fields['content_hash'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Hash del Contenido'))
       ->setDescription(new TranslatableMarkup('SHA-256 del contenido original para verificacion de integridad.'))
@@ -192,7 +188,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 5: CLASIFICACION Y VERSIONADO
     // =========================================================================
-
     $fields['category_tid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Categoria'))
       ->setDescription(new TranslatableMarkup('Categoria documental del documento.'))
@@ -216,7 +211,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 6: FIRMA Y EXPIRACION
     // =========================================================================
-
     $fields['is_signed'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Firmado'))
       ->setDescription(new TranslatableMarkup('Indica si el documento ha sido firmado digitalmente.'))
@@ -236,7 +230,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 7: ESTADO
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -254,7 +247,6 @@ class SecureDocument extends ContentEntityBase implements EntityOwnerInterface, 
     // =========================================================================
     // BLOQUE 8: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

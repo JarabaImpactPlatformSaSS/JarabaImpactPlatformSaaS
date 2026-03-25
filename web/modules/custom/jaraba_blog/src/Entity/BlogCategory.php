@@ -213,7 +213,6 @@ class BlogCategory extends ContentEntityBase implements EntityChangedInterface {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- Campos SEO ---
-
     $fields['meta_title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Meta Title'))
       ->setDescription(t('Titulo SEO de la categoria (max 70 caracteres).'))

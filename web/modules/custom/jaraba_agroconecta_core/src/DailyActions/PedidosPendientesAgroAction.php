@@ -24,58 +24,100 @@ class PedidosPendientesAgroAction implements DailyActionInterface {
     protected readonly ?TenantContextService $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'producer_agro.pedidos';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'producer_agro';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Pedidos pendientes');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Procesar pedidos de productores');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'commerce', 'name' => 'shopping-bag', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'naranja-impulso';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_agroconecta_core.producer.orders';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $pending = 0;
     try {

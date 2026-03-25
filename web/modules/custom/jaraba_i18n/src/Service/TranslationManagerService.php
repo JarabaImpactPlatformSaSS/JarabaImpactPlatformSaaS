@@ -48,315 +48,308 @@ use Psr\Log\LoggerInterface;
  *
  * @see docs/planificacion/20260129-Plan_Elevacion_Clase_Mundial_v1.md
  */
-class TranslationManagerService
-{
+class TranslationManagerService {
 
-    /**
-     * Constructor del servicio.
-     *
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-     *   Gestor de tipos de entidad para cargar/guardar traducciones.
-     * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
-     *   Gestor de idiomas para obtener idiomas configurados en el sitio.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   Fábrica de configuración para opciones del módulo.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   Logger para registro de operaciones y errores.
-     */
-    public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected LanguageManagerInterface $languageManager,
-        protected ConfigFactoryInterface $configFactory,
-        protected LoggerInterface $logger,
-    ) {
+  /**
+   * Constructor del servicio.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   Gestor de tipos de entidad para cargar/guardar traducciones.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   Gestor de idiomas para obtener idiomas configurados en el sitio.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   Fábrica de configuración para opciones del módulo.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   Logger para registro de operaciones y errores.
+   */
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LanguageManagerInterface $languageManager,
+    protected ConfigFactoryInterface $configFactory,
+    protected LoggerInterface $logger,
+  ) {
+  }
+
+  /**
+   * Obtiene el estado de traducción de una entidad.
+   *
+   * Analiza la entidad y retorna un array con el estado de cada idioma
+   * disponible en el sitio, indicando si existe traducción y si está
+   * actualizada respecto al contenido original.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   La entidad a analizar.
+   *
+   * @return array<string, array{exists: bool, outdated: bool, label: string}>
+   *   Estado por idioma con las claves:
+   *   - exists: TRUE si hay traducción para ese idioma
+   *   - outdated: TRUE si la traducción necesita actualización
+   *   - label: Nombre del idioma para mostrar en UI
+   */
+  public function getTranslationStatus(ContentEntityInterface $entity): array {
+    // Verificar que la entidad soporta traducciones.
+    if (!$entity->isTranslatable()) {
+      return [];
     }
 
-    /**
-     * Obtiene el estado de traducción de una entidad.
-     *
-     * Analiza la entidad y retorna un array con el estado de cada idioma
-     * disponible en el sitio, indicando si existe traducción y si está
-     * actualizada respecto al contenido original.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-     *   La entidad a analizar.
-     *
-     * @return array<string, array{exists: bool, outdated: bool, label: string}>
-     *   Estado por idioma con las claves:
-     *   - exists: TRUE si hay traducción para ese idioma
-     *   - outdated: TRUE si la traducción necesita actualización
-     *   - label: Nombre del idioma para mostrar en UI
-     */
-    public function getTranslationStatus(ContentEntityInterface $entity): array
-    {
-        // Verificar que la entidad soporta traducciones.
-        if (!$entity->isTranslatable()) {
-            return [];
-        }
+    $status = [];
+    $original = $entity->getUntranslated();
+    $originalLangcode = $original->language()->getId();
 
-        $status = [];
-        $original = $entity->getUntranslated();
-        $originalLangcode = $original->language()->getId();
-
-        // Obtener timestamp del original si la entidad soporta EntityChangedInterface.
-        $originalChanged = 0;
-        if ($original instanceof EntityChangedInterface) {
-            $originalChanged = $original->getChangedTime();
-        }
-
-        $languages = $this->getAvailableLanguages();
-
-        foreach ($languages as $langcode => $language) {
-            $hasTranslation = $entity->hasTranslation($langcode);
-
-            // Determinar si la traducción está desactualizada.
-            // Una traducción está desactualizada si el original se modificó después.
-            $isOutdated = FALSE;
-            if ($hasTranslation && $langcode !== $originalLangcode) {
-                $translation = $entity->getTranslation($langcode);
-                $translationChanged = 0;
-                if ($translation instanceof EntityChangedInterface) {
-                    $translationChanged = $translation->getChangedTime();
-                }
-                $isOutdated = $originalChanged > $translationChanged;
-            }
-
-            $status[$langcode] = [
-                'exists' => $hasTranslation,
-                'outdated' => $isOutdated,
-                'label' => $language->getName(),
-                'is_original' => $langcode === $originalLangcode,
-            ];
-        }
-
-        return $status;
+    // Obtener timestamp del original si la entidad soporta EntityChangedInterface.
+    $originalChanged = 0;
+    if ($original instanceof EntityChangedInterface) {
+      $originalChanged = $original->getChangedTime();
     }
 
-    /**
-     * Obtiene idiomas con traducciones pendientes para una entidad.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-     *   La entidad a analizar.
-     *
-     * @return array<string, string>
-     *   Array de [langcode => nombre] para idiomas sin traducción.
-     */
-    public function getMissingTranslations(ContentEntityInterface $entity): array
-    {
-        $status = $this->getTranslationStatus($entity);
-        $missing = [];
+    $languages = $this->getAvailableLanguages();
 
-        foreach ($status as $langcode => $info) {
-            if (!$info['exists'] && !$info['is_original']) {
-                $missing[$langcode] = $info['label'];
-            }
+    foreach ($languages as $langcode => $language) {
+      $hasTranslation = $entity->hasTranslation($langcode);
+
+      // Determinar si la traducción está desactualizada.
+      // Una traducción está desactualizada si el original se modificó después.
+      $isOutdated = FALSE;
+      if ($hasTranslation && $langcode !== $originalLangcode) {
+        $translation = $entity->getTranslation($langcode);
+        $translationChanged = 0;
+        if ($translation instanceof EntityChangedInterface) {
+          $translationChanged = $translation->getChangedTime();
         }
+        $isOutdated = $originalChanged > $translationChanged;
+      }
 
-        return $missing;
+      $status[$langcode] = [
+        'exists' => $hasTranslation,
+        'outdated' => $isOutdated,
+        'label' => $language->getName(),
+        'is_original' => $langcode === $originalLangcode,
+      ];
     }
 
-    /**
-     * Obtiene idiomas con traducciones desactualizadas para una entidad.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-     *   La entidad a analizar.
-     *
-     * @return array<string, string>
-     *   Array de [langcode => nombre] para idiomas desactualizados.
-     */
-    public function getOutdatedTranslations(ContentEntityInterface $entity): array
-    {
-        $status = $this->getTranslationStatus($entity);
-        $outdated = [];
+    return $status;
+  }
 
-        foreach ($status as $langcode => $info) {
-            if ($info['exists'] && $info['outdated']) {
-                $outdated[$langcode] = $info['label'];
-            }
-        }
+  /**
+   * Obtiene idiomas con traducciones pendientes para una entidad.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   La entidad a analizar.
+   *
+   * @return array<string, string>
+   *   Array de [langcode => nombre] para idiomas sin traducción.
+   */
+  public function getMissingTranslations(ContentEntityInterface $entity): array {
+    $status = $this->getTranslationStatus($entity);
+    $missing = [];
 
-        return $outdated;
+    foreach ($status as $langcode => $info) {
+      if (!$info['exists'] && !$info['is_original']) {
+        $missing[$langcode] = $info['label'];
+      }
     }
 
-    /**
-     * Crea una traducción vacía de una entidad.
-     *
-     * Duplica la estructura de la entidad (campos, referencias) pero marca
-     * los campos de texto como pendientes de traducción.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-     *   La entidad original.
-     * @param string $langcode
-     *   Código del idioma destino.
-     *
-     * @return \Drupal\Core\Entity\ContentEntityInterface
-     *   La nueva traducción (sin guardar).
-     *
-     * @throws \InvalidArgumentException
-     *   Si la entidad no soporta traducciones o ya existe la traducción.
-     */
-    public function createTranslation(
-        ContentEntityInterface $entity,
-        string $langcode
-    ): ContentEntityInterface {
-        // Validaciones.
-        if (!$entity->isTranslatable()) {
-            throw new \InvalidArgumentException(
-                sprintf('La entidad %s no soporta traducciones.', $entity->getEntityTypeId())
-            );
-        }
+    return $missing;
+  }
 
-        if ($entity->hasTranslation($langcode)) {
-            throw new \InvalidArgumentException(
-                sprintf('Ya existe traducción para el idioma %s.', $langcode)
-            );
-        }
+  /**
+   * Obtiene idiomas con traducciones desactualizadas para una entidad.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   La entidad a analizar.
+   *
+   * @return array<string, string>
+   *   Array de [langcode => nombre] para idiomas desactualizados.
+   */
+  public function getOutdatedTranslations(ContentEntityInterface $entity): array {
+    $status = $this->getTranslationStatus($entity);
+    $outdated = [];
 
-        // Crear la traducción base.
-        $translation = $entity->addTranslation($langcode, $entity->toArray());
-
-        $this->logger->info('Traducción creada para @type:@id en idioma @lang', [
-            '@type' => $entity->getEntityTypeId(),
-            '@id' => $entity->id(),
-            '@lang' => $langcode,
-        ]);
-
-        return $translation;
+    foreach ($status as $langcode => $info) {
+      if ($info['exists'] && $info['outdated']) {
+        $outdated[$langcode] = $info['label'];
+      }
     }
 
-    /**
-     * Obtiene idiomas disponibles en el sitio.
-     *
-     * @return \Drupal\Core\Language\LanguageInterface[]
-     *   Array de idiomas configurados.
-     */
-    public function getAvailableLanguages(): array
-    {
-        return $this->languageManager->getLanguages();
+    return $outdated;
+  }
+
+  /**
+   * Crea una traducción vacía de una entidad.
+   *
+   * Duplica la estructura de la entidad (campos, referencias) pero marca
+   * los campos de texto como pendientes de traducción.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   La entidad original.
+   * @param string $langcode
+   *   Código del idioma destino.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   La nueva traducción (sin guardar).
+   *
+   * @throws \InvalidArgumentException
+   *   Si la entidad no soporta traducciones o ya existe la traducción.
+   */
+  public function createTranslation(
+    ContentEntityInterface $entity,
+    string $langcode,
+  ): ContentEntityInterface {
+    // Validaciones.
+    if (!$entity->isTranslatable()) {
+      throw new \InvalidArgumentException(
+            sprintf('La entidad %s no soporta traducciones.', $entity->getEntityTypeId())
+        );
     }
 
-    /**
-     * Obtiene estadísticas de traducción para un tipo de entidad.
-     *
-     * Útil para el dashboard de traducciones.
-     *
-     * @param string $entityTypeId
-     *   ID del tipo de entidad (ej: 'page_content', 'blog_post').
-     *
-     * @return array{total: int, translated: array<string, int>, missing: array<string, int>}
-     *   Estadísticas de traducción.
-     */
-    public function getTranslationStats(string $entityTypeId): array
-    {
-        // AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
-        // Uses count queries per language instead of loading all entities into
-        // memory and iterating E*L times. This reduces the operation to O(L)
-        // database count queries with no entity instantiation.
-        $storage = $this->entityTypeManager->getStorage($entityTypeId);
+    if ($entity->hasTranslation($langcode)) {
+      throw new \InvalidArgumentException(
+            sprintf('Ya existe traducción para el idioma %s.', $langcode)
+        );
+    }
 
-        $total = (int) $storage->getQuery()
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
+    // Crear la traducción base.
+    $translation = $entity->addTranslation($langcode, $entity->toArray());
 
-        $stats = [
-            'total' => $total,
-            'translated' => [],
-            'missing' => [],
-        ];
+    $this->logger->info('Traducción creada para @type:@id en idioma @lang', [
+      '@type' => $entity->getEntityTypeId(),
+      '@id' => $entity->id(),
+      '@lang' => $langcode,
+    ]);
 
-        $languages = $this->getAvailableLanguages();
-        $defaultLang = $this->languageManager->getDefaultLanguage()->getId();
+    return $translation;
+  }
 
-        foreach ($languages as $langcode => $language) {
-            // Count entities with a translation in this language via a single
-            // count query. For translatable entity types with a data table,
-            // the langcode condition matches rows in the data table which
-            // includes one row per translation — so this correctly counts
-            // entities that have been translated to $langcode.
-            $count = (int) $storage->getQuery()
-                ->accessCheck(FALSE)
-                ->condition('langcode', $langcode)
-                ->count()
-                ->execute();
+  /**
+   * Obtiene idiomas disponibles en el sitio.
+   *
+   * @return \Drupal\Core\Language\LanguageInterface[]
+   *   Array de idiomas configurados.
+   */
+  public function getAvailableLanguages(): array {
+    return $this->languageManager->getLanguages();
+  }
 
-            $stats['translated'][$langcode] = $count;
-            $stats['missing'][$langcode] = ($langcode !== $defaultLang)
+  /**
+   * Obtiene estadísticas de traducción para un tipo de entidad.
+   *
+   * Útil para el dashboard de traducciones.
+   *
+   * @param string $entityTypeId
+   *   ID del tipo de entidad (ej: 'page_content', 'blog_post').
+   *
+   * @return array{total: int, translated: array<string, int>, missing: array<string, int>}
+   *   Estadísticas de traducción.
+   */
+  public function getTranslationStats(string $entityTypeId): array {
+    // AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
+    // Uses count queries per language instead of loading all entities into
+    // memory and iterating E*L times. This reduces the operation to O(L)
+    // database count queries with no entity instantiation.
+    $storage = $this->entityTypeManager->getStorage($entityTypeId);
+
+    $total = (int) $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    $stats = [
+      'total' => $total,
+      'translated' => [],
+      'missing' => [],
+    ];
+
+    $languages = $this->getAvailableLanguages();
+    $defaultLang = $this->languageManager->getDefaultLanguage()->getId();
+
+    foreach ($languages as $langcode => $language) {
+      // Count entities with a translation in this language via a single
+      // count query. For translatable entity types with a data table,
+      // the langcode condition matches rows in the data table which
+      // includes one row per translation — so this correctly counts
+      // entities that have been translated to $langcode.
+      $count = (int) $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('langcode', $langcode)
+        ->count()
+        ->execute();
+
+      $stats['translated'][$langcode] = $count;
+      $stats['missing'][$langcode] = ($langcode !== $defaultLang)
                 ? max(0, $total - $count)
                 : 0;
-        }
-
-        return $stats;
     }
 
-    /**
-     * Obtiene estadísticas de traducción para múltiples entidades a la vez.
-     *
-     * AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
-     * Instead of calling getTranslationStatus() per entity (which would result
-     * in O(E*L) work), this method batch-loads all entities at once and
-     * processes them in a single pass.
-     *
-     * @param string $entityTypeId
-     *   ID del tipo de entidad (ej: 'page_content', 'blog_post').
-     * @param int[] $entityIds
-     *   Array de IDs de entidades a consultar.
-     *
-     * @return array<int|string, array<string, array{exists: bool, outdated: bool, label: string, is_original: bool}>>
-     *   Estado de traducción indexado por entity ID y langcode.
-     */
-    public function getBatchTranslationStatus(string $entityTypeId, array $entityIds): array
-    {
-        if (empty($entityIds)) {
-            return [];
-        }
+    return $stats;
+  }
 
-        // AUDIT-PERF-N09: Batch-load all entities in one query instead of
-        // loading them one-by-one inside a loop.
-        $storage = $this->entityTypeManager->getStorage($entityTypeId);
-        $entities = $storage->loadMultiple($entityIds);
-        $languages = $this->getAvailableLanguages();
-
-        $results = [];
-        foreach ($entities as $id => $entity) {
-            if (!$entity instanceof ContentEntityInterface || !$entity->isTranslatable()) {
-                continue;
-            }
-
-            $original = $entity->getUntranslated();
-            $originalLangcode = $original->language()->getId();
-
-            $originalChanged = 0;
-            if ($original instanceof EntityChangedInterface) {
-                $originalChanged = $original->getChangedTime();
-            }
-
-            $status = [];
-            foreach ($languages as $langcode => $language) {
-                $hasTranslation = $entity->hasTranslation($langcode);
-
-                $isOutdated = FALSE;
-                if ($hasTranslation && $langcode !== $originalLangcode) {
-                    $translation = $entity->getTranslation($langcode);
-                    $translationChanged = 0;
-                    if ($translation instanceof EntityChangedInterface) {
-                        $translationChanged = $translation->getChangedTime();
-                    }
-                    $isOutdated = $originalChanged > $translationChanged;
-                }
-
-                $status[$langcode] = [
-                    'exists' => $hasTranslation,
-                    'outdated' => $isOutdated,
-                    'label' => $language->getName(),
-                    'is_original' => $langcode === $originalLangcode,
-                ];
-            }
-
-            $results[$id] = $status;
-        }
-
-        return $results;
+  /**
+   * Obtiene estadísticas de traducción para múltiples entidades a la vez.
+   *
+   * AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
+   * Instead of calling getTranslationStatus() per entity (which would result
+   * in O(E*L) work), this method batch-loads all entities at once and
+   * processes them in a single pass.
+   *
+   * @param string $entityTypeId
+   *   ID del tipo de entidad (ej: 'page_content', 'blog_post').
+   * @param int[] $entityIds
+   *   Array de IDs de entidades a consultar.
+   *
+   * @return array<int|string, array<string, array{exists: bool, outdated: bool, label: string, is_original: bool}>>
+   *   Estado de traducción indexado por entity ID y langcode.
+   */
+  public function getBatchTranslationStatus(string $entityTypeId, array $entityIds): array {
+    if (empty($entityIds)) {
+      return [];
     }
+
+    // AUDIT-PERF-N09: Batch-load all entities in one query instead of
+    // loading them one-by-one inside a loop.
+    $storage = $this->entityTypeManager->getStorage($entityTypeId);
+    $entities = $storage->loadMultiple($entityIds);
+    $languages = $this->getAvailableLanguages();
+
+    $results = [];
+    foreach ($entities as $id => $entity) {
+      if (!$entity instanceof ContentEntityInterface || !$entity->isTranslatable()) {
+        continue;
+      }
+
+      $original = $entity->getUntranslated();
+      $originalLangcode = $original->language()->getId();
+
+      $originalChanged = 0;
+      if ($original instanceof EntityChangedInterface) {
+        $originalChanged = $original->getChangedTime();
+      }
+
+      $status = [];
+      foreach ($languages as $langcode => $language) {
+        $hasTranslation = $entity->hasTranslation($langcode);
+
+        $isOutdated = FALSE;
+        if ($hasTranslation && $langcode !== $originalLangcode) {
+          $translation = $entity->getTranslation($langcode);
+          $translationChanged = 0;
+          if ($translation instanceof EntityChangedInterface) {
+            $translationChanged = $translation->getChangedTime();
+          }
+          $isOutdated = $originalChanged > $translationChanged;
+        }
+
+        $status[$langcode] = [
+          'exists' => $hasTranslation,
+          'outdated' => $isOutdated,
+          'label' => $language->getName(),
+          'is_original' => $langcode === $originalLangcode,
+        ];
+      }
+
+      $results[$id] = $status;
+    }
+
+    return $results;
+  }
 
 }

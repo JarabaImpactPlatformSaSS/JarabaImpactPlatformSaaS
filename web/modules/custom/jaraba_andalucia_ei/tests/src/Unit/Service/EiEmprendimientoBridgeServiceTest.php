@@ -57,23 +57,39 @@ class EiEmprendimientoBridgeServiceTest extends UnitTestCase {
     );
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithAllNulls(): void {
     $service = $this->createService();
     $this->assertInstanceOf(EiEmprendimientoBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithSomeServices(): void {
     $canvasService = new class {
+
+      /**
+       *
+       */
       public function getCanvas(): array {
         return [];
       }
+
     };
     $sroiCalculator = new class {
+
+      /**
+       *
+       */
       public function calculate(): float {
         return 1.5;
       }
+
     };
 
     $service = $this->createService(
@@ -83,6 +99,9 @@ class EiEmprendimientoBridgeServiceTest extends UnitTestCase {
     $this->assertInstanceOf(EiEmprendimientoBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constructionWithAllServices(): void {
     $canvas = new class {};
@@ -95,6 +114,9 @@ class EiEmprendimientoBridgeServiceTest extends UnitTestCase {
     $this->assertInstanceOf(EiEmprendimientoBridgeService::class, $service);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function crearPlanDesdeParticipanteReturnsErrorWhenNotFound(): void {
     $this->storage->method('load')->with(999)->willReturn(NULL);

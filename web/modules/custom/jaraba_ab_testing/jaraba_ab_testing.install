@@ -1,8 +1,16 @@
 <?php
 
+/**
+ * @file
+ * @file
+ * @file
+ * .*/
+
 declare(strict_types=1);
 
 /**
+ *
+ *
  * @file
  * Install, update, and uninstall functions for jaraba_ab_testing.
  */
@@ -10,17 +18,14 @@ declare(strict_types=1);
 /**
  * Implements hook_install().
  */
-function jaraba_ab_testing_install(): void {
-  $entity_type_ids = [
-    'ab_experiment',
-    'ab_variant',
-    'experiment_exposure',
-    'experiment_result',
-  ];
 
+/**
+ *
+ */
+function jaraba_ab_testing_install(): void {
+  $entity_type_ids = ['ab_experiment', 'ab_variant', 'experiment_exposure', 'experiment_result'];
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $entity_type_manager = \Drupal::entityTypeManager();
-
   foreach ($entity_type_ids as $entity_type_id) {
     try {
       if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
@@ -29,10 +34,7 @@ function jaraba_ab_testing_install(): void {
       }
     }
     catch (\Throwable $e) {
-      \Drupal::logger('jaraba_ab_testing')->error(
-        'Failed to install entity type @type: @message',
-        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
-      );
+      \Drupal::logger('jaraba_ab_testing')->error('Failed to install entity type @type: @message', ['@type' => $entity_type_id, '@message' => $e->getMessage()]);
     }
   }
 }
@@ -40,17 +42,14 @@ function jaraba_ab_testing_install(): void {
 /**
  * Install all jaraba_ab_testing entity types.
  */
-function jaraba_ab_testing_update_10001(): void {
-  $entity_type_ids = [
-    'ab_experiment',
-    'ab_variant',
-    'experiment_exposure',
-    'experiment_result',
-  ];
 
+/**
+ *
+ */
+function jaraba_ab_testing_update_10001(): void {
+  $entity_type_ids = ['ab_experiment', 'ab_variant', 'experiment_exposure', 'experiment_result'];
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $entity_type_manager = \Drupal::entityTypeManager();
-
   foreach ($entity_type_ids as $entity_type_id) {
     try {
       if (!$entity_definition_update_manager->getEntityType($entity_type_id)) {
@@ -59,50 +58,35 @@ function jaraba_ab_testing_update_10001(): void {
       }
     }
     catch (\Throwable $e) {
-      \Drupal::logger('jaraba_ab_testing')->error(
-        'Failed to install entity type @type: @message',
-        ['@type' => $entity_type_id, '@message' => $e->getMessage()]
-      );
+      \Drupal::logger('jaraba_ab_testing')->error('Failed to install entity type @type: @message', ['@type' => $entity_type_id, '@message' => $e->getMessage()]);
     }
   }
 }
-
 
 /**
  * Implements hook_requirements().
  */
 function jaraba_ab_testing_requirements(string $phase): array {
-  $requirements = [];
-
-  if ($phase !== 'runtime') {
-    return $requirements;
-  }
-
-  $entityTypes = ['ab_experiment', 'ab_variant', 'experiment_exposure', 'experiment_result'];
-  $updateManager = \Drupal::entityDefinitionUpdateManager();
-  $missing = [];
-
-  foreach ($entityTypes as $typeId) {
-    if (!$updateManager->getEntityType($typeId)) {
-      $missing[] = $typeId;
-    }
-  }
-
-  if (!empty($missing)) {
-    $requirements['jaraba_ab_testing_entities'] = [
-      'title' => t('Jaraba ab testing: Entity Types'),
-      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
-      'description' => t('Run drush entity:updates to install missing entity types.'),
-      'severity' => REQUIREMENT_ERROR,
-    ];
-  }
-  else {
-    $requirements['jaraba_ab_testing_entities'] = [
-      'title' => t('Jaraba ab testing: Entity Types'),
-      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
-      'severity' => REQUIREMENT_OK,
-    ];
-  }
-
+$requirements = [];
+if ($phase !== 'runtime') {
   return $requirements;
+}
+
+$entityTypes = ['ab_experiment', 'ab_variant', 'experiment_exposure', 'experiment_result'];
+$updateManager = \Drupal::entityDefinitionUpdateManager();
+$missing = [];
+foreach ($entityTypes as $typeId) {
+  if (!$updateManager->getEntityType($typeId)) {
+    $missing[] = $typeId;
+  }
+}
+
+if (!empty($missing)) {
+  $requirements['jaraba_ab_testing_entities'] = ['title' => t('Jaraba ab testing: Entity Types'), 'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]), 'description' => t('Run drush entity:updates to install missing entity types.'), 'severity' => REQUIREMENT_ERROR];
+}
+else {
+  $requirements['jaraba_ab_testing_entities'] = ['title' => t('Jaraba ab testing: Entity Types'), 'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]), 'severity' => REQUIREMENT_OK];
+}
+
+return $requirements;
 }

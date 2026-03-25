@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei;
 
+use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
@@ -42,7 +43,7 @@ class ExpedienteDocumentoListBuilder extends EntityListBuilder {
       'requiere_cambios' => $this->t('Requiere cambios'),
     ];
 
-    $categoriaLabels = \Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumento::CATEGORIAS;
+    $categoriaLabels = ExpedienteDocumento::CATEGORIAS;
 
     $participanteLabel = '';
     if (!$entity->get('participante_id')->isEmpty()) {

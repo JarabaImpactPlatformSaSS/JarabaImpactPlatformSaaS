@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_agent_flows\Unit\Service;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_agent_flows\Service\AgentFlowExecutionService;
 use Drupal\jaraba_ai_agents\Service\WorkflowExecutorService;
 use Drupal\Tests\UnitTestCase;

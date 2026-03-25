@@ -41,7 +41,7 @@ class PostmortemService {
    *   Postmortem data with optional keys:
    *   - root_cause: string
    *   - timeline: array (will be JSON-encoded)
-   *   - preventive_actions: string
+   *   - preventive_actions: string.
    *
    * @return \Drupal\jaraba_sla\Entity\SlaIncidentInterface|null
    *   The updated incident, or NULL on failure.

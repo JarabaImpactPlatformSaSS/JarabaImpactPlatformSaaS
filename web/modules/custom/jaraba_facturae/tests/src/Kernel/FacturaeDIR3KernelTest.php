@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\ValueObject\DIR3Unit;
+use Drupal\jaraba_facturae\Service\FacturaeDIR3Service;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +26,7 @@ class FacturaeDIR3KernelTest extends KernelTestBase {
    */
   public function testDIR3ServiceClassExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FacturaeDIR3Service::class),
+      class_exists(FacturaeDIR3Service::class),
       'FacturaeDIR3Service class should exist.'
     );
   }
@@ -33,7 +35,7 @@ class FacturaeDIR3KernelTest extends KernelTestBase {
    * Tests that DIR3Unit value object has correct structure.
    */
   public function testDIR3UnitValueObjectStructure(): void {
-    $unit = new \Drupal\jaraba_facturae\ValueObject\DIR3Unit(
+    $unit = new DIR3Unit(
       code: 'L01234567',
       name: 'Test Unit',
       type: '01',
@@ -59,7 +61,7 @@ class FacturaeDIR3KernelTest extends KernelTestBase {
       'active' => TRUE,
     ];
 
-    $unit = \Drupal\jaraba_facturae\ValueObject\DIR3Unit::fromArray($data);
+    $unit = DIR3Unit::fromArray($data);
 
     $this->assertEquals('EA0012345', $unit->code);
     $this->assertEquals('02', $unit->type);

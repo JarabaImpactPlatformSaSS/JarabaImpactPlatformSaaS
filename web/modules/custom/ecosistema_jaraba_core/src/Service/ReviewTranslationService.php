@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -163,8 +165,8 @@ class ReviewTranslationService {
       $modelConfig = $this->modelRouter->route('translation', $prompt, ['force_tier' => 'fast']);
       $modelId = $modelConfig['model_id'] ?? 'claude-haiku-4-5-20251001';
 
-      $input = new \Drupal\ai\OperationType\Chat\ChatInput([
-        new \Drupal\ai\OperationType\Chat\ChatMessage('user', $prompt),
+      $input = new ChatInput([
+        new ChatMessage('user', $prompt),
       ]);
 
       $response = $this->aiProvider->chat($input, $modelId);

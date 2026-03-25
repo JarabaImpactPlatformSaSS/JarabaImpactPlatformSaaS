@@ -269,7 +269,8 @@ class ReviewGamificationService {
           ->fetchField();
       }
     }
-    catch (\Exception) {}
+    catch (\Exception) {
+    }
 
     // Photo reviews and verified purchases.
     $photoReviews = 0;

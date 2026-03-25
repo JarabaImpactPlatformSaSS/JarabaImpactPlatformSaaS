@@ -182,10 +182,16 @@ class ReviewableEntityTraitTest extends TestCase {
         $this->fieldValues = $fields;
       }
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return array_key_exists($name, $this->fieldValues);
       }
 
+      /**
+       *
+       */
       public function get(string $name): object {
         $value = $this->fieldValues[$name] ?? NULL;
         return new class($value) {
@@ -195,11 +201,16 @@ class ReviewableEntityTraitTest extends TestCase {
             $this->value = $v;
           }
 
+          /**
+           *
+           */
           public function isEmpty(): bool {
             return $this->value === NULL || $this->value === '';
           }
+
         };
       }
+
     };
   }
 

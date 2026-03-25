@@ -16,10 +16,10 @@ declare(strict_types=1);
  *
  * Configura elementos iniciales al instalar el módulo:
  * - Crear vocabulario de tipos de transacción
- * - Crear términos iniciales de clasificación
+ * - Crear términos iniciales de clasificación.
  */
 function jaraba_foc_install(): void {
-  // Crear vocabulario de tipos de transacción si no existe
+  // Crear vocabulario de tipos de transacción si no existe.
   _jaraba_foc_create_transaction_types_vocabulary();
 }
 
@@ -32,17 +32,17 @@ function jaraba_foc_install(): void {
  * - Subvención: PERTE, Kit Digital, fondos públicos
  * - Coste Directo: COGS, hosting, procesamiento
  * - Coste Indirecto: Overhead, marketing, admin
- * - Reembolso: Devoluciones, ajustes
+ * - Reembolso: Devoluciones, ajustes.
  */
 function _jaraba_foc_create_transaction_types_vocabulary(): void {
   $vocabulary_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
-  
-  // Verificar si ya existe
+
+  // Verificar si ya existe.
   if ($vocabulary_storage->load('transaction_types')) {
     return;
   }
 
-  // Crear vocabulario
+  // Crear vocabulario.
   $vocabulary = $vocabulary_storage->create([
     'vid' => 'transaction_types',
     'name' => 'Tipos de Transacción Financiera',
@@ -50,9 +50,9 @@ function _jaraba_foc_create_transaction_types_vocabulary(): void {
   ]);
   $vocabulary->save();
 
-  // Crear términos iniciales
+  // Crear términos iniciales.
   $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
-  
+
   $terms = [
     'recurring_revenue' => [
       'name' => 'Ingreso Recurrente',
@@ -112,7 +112,7 @@ function _jaraba_foc_create_transaction_types_vocabulary(): void {
  * automáticamente para preservar la auditoría.
  */
 function jaraba_foc_uninstall(): void {
-  // Advertir sobre datos persistentes
+  // Advertir sobre datos persistentes.
   \Drupal::messenger()->addWarning(t('Las transacciones financieras no han sido eliminadas para preservar el registro de auditoría.'));
 }
 
@@ -132,7 +132,7 @@ function jaraba_foc_schema(): array {
  * Update 10001: Añadir campo de metadatos a transacciones existentes.
  */
 function jaraba_foc_update_10001(): void {
-  // Placeholder para futuras actualizaciones de esquema
+  // Placeholder para futuras actualizaciones de esquema.
 }
 
 /**
@@ -141,9 +141,9 @@ function jaraba_foc_update_10001(): void {
 function jaraba_foc_update_10002(): void {
   $entity_type_manager = \Drupal::entityTypeManager();
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  
+
   $entity_types = ['financial_transaction', 'cost_allocation', 'foc_metric_snapshot', 'foc_alert'];
-  
+
   foreach ($entity_types as $entity_type_id) {
     $entity_type = $entity_type_manager->getDefinition($entity_type_id, FALSE);
     if ($entity_type) {
@@ -165,43 +165,43 @@ function jaraba_foc_update_10003(): void {
 function _jaraba_foc_create_sample_transactions(): void {
   try {
     $storage = \Drupal::entityTypeManager()->getStorage('financial_transaction');
-    
-    // Verificar que la tabla existe
+
+    // Verificar que la tabla existe.
     if (!\Drupal::database()->schema()->tableExists('financial_transaction')) {
       \Drupal::messenger()->addWarning(t('Tabla financial_transaction no existe. Ejecuta entup primero.'));
       return;
     }
-    
-    // Verificar si ya hay transacciones
+
+    // Verificar si ya hay transacciones.
     $count = $storage->getQuery()->accessCheck(FALSE)->count()->execute();
     if ($count > 0) {
       \Drupal::messenger()->addStatus(t('Ya existen @count transacciones. No se crean datos de prueba.', ['@count' => $count]));
       return;
     }
-    
-    // Datos de prueba representativos de un mes típico SaaS
+
+    // Datos de prueba representativos de un mes típico SaaS.
     $sampleData = [
       // Ingresos recurrentes (MRR)
       ['amount' => '1500.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'stripe_connect', 'description' => 'Cuota Plan Pro - Tenant Alpha'],
       ['amount' => '2500.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'stripe_connect', 'description' => 'Cuota Plan Enterprise - Tenant Beta'],
       ['amount' => '500.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'stripe_connect', 'description' => 'Cuota Plan Starter - Tenant Gamma'],
       ['amount' => '1000.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'stripe_connect', 'description' => 'Cuota Plan Pro - Tenant Delta'],
-      
-      // Ventas únicas
+
+      // Ventas únicas.
       ['amount' => '350.00', 'currency' => 'EUR', 'is_recurring' => FALSE, 'source_system' => 'stripe_connect', 'description' => 'Curso Online - Gestión Agroalimentaria'],
       ['amount' => '150.00', 'currency' => 'EUR', 'is_recurring' => FALSE, 'source_system' => 'manual', 'description' => 'Consultoría 2h'],
-      
-      // Comisiones plataforma
+
+      // Comisiones plataforma.
       ['amount' => '275.00', 'currency' => 'EUR', 'is_recurring' => FALSE, 'source_system' => 'stripe_connect', 'description' => 'Application fee - marketplace'],
-      
+
       // Costes (negativos)
       ['amount' => '-120.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'manual', 'description' => 'Hosting Digital Ocean'],
       ['amount' => '-50.00', 'currency' => 'EUR', 'is_recurring' => TRUE, 'source_system' => 'manual', 'description' => 'APIs externas (OpenAI, Anthropic)'],
       ['amount' => '-165.00', 'currency' => 'EUR', 'is_recurring' => FALSE, 'source_system' => 'stripe_connect', 'description' => 'Fees Stripe (aprox 2.9%)'],
     ];
-    
+
     $timestamp = strtotime('first day of this month');
-    
+
     foreach ($sampleData as $index => $data) {
       $transaction = $storage->create([
         'amount' => $data['amount'],
@@ -209,15 +209,16 @@ function _jaraba_foc_create_sample_transactions(): void {
         'is_recurring' => $data['is_recurring'],
         'source_system' => $data['source_system'],
         'description' => $data['description'],
-        'transaction_timestamp' => $timestamp + ($index * 86400), // Un día de diferencia cada uno
+      // Un día de diferencia cada uno.
+        'transaction_timestamp' => $timestamp + ($index * 86400),
       ]);
       $transaction->save();
     }
-    
+
     \Drupal::messenger()->addStatus(t('Creadas @count transacciones de prueba para el dashboard FOC.', [
       '@count' => count($sampleData),
     ]));
-    
+
   }
   catch (\Exception $e) {
     \Drupal::messenger()->addError(t('Error creando datos de prueba: @error', [
@@ -225,7 +226,6 @@ function _jaraba_foc_create_sample_transactions(): void {
     ]));
   }
 }
-
 
 /**
  * Implements hook_requirements().

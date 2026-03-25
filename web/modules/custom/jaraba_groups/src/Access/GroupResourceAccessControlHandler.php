@@ -13,39 +13,37 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for Group Resource entities.
  */
-class GroupResourceAccessControlHandler extends EntityAccessControlHandler
-{
+class GroupResourceAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        if ($account->hasPermission('administer collaboration groups')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        /** @var \Drupal\jaraba_groups\Entity\GroupResource $entity */
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'access group resources');
-
-            case 'update':
-            case 'delete':
-                if ((int) $entity->get('uploader_id')->target_id === (int) $account->id()) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                return AccessResult::allowedIfHasPermission($account, 'moderate group content');
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    if ($account->hasPermission('administer collaboration groups')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'upload group resources');
+    /** @var \Drupal\jaraba_groups\Entity\GroupResource $entity */
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'access group resources');
+
+      case 'update':
+      case 'delete':
+        if ((int) $entity->get('uploader_id')->target_id === (int) $account->id()) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::allowedIfHasPermission($account, 'moderate group content');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'upload group resources');
+  }
 
 }

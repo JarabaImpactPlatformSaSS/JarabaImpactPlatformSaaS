@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal_intelligence\Unit\Service;
 
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -65,7 +66,7 @@ class LegalSearchServiceTest extends UnitTestCase {
    */
   public function testSearchWithEmptyQueryReturnsFalse(): void {
     // Mock config.
-    $config = $this->createMock(\Drupal\Core\Config\ImmutableConfig::class);
+    $config = $this->createMock(ImmutableConfig::class);
     $this->configFactory->method('get')->willReturn($config);
 
     // Mock current user.
@@ -86,7 +87,7 @@ class LegalSearchServiceTest extends UnitTestCase {
    */
   public function testSearchReturnsExpectedStructure(): void {
     // Mock config.
-    $config = $this->createMock(\Drupal\Core\Config\ImmutableConfig::class);
+    $config = $this->createMock(ImmutableConfig::class);
     $this->configFactory->method('get')->willReturn($config);
 
     // Mock current user.
@@ -110,7 +111,7 @@ class LegalSearchServiceTest extends UnitTestCase {
    */
   public function testSearchValidatesQueryNotEmpty(): void {
     // Mock config.
-    $config = $this->createMock(\Drupal\Core\Config\ImmutableConfig::class);
+    $config = $this->createMock(ImmutableConfig::class);
     $this->configFactory->method('get')->willReturn($config);
 
     // Mock current user.
@@ -154,7 +155,16 @@ if (!interface_exists('Drupal\Tests\jaraba_legal_intelligence\Unit\Service\AiPro
    * Temporary interface for mocking AiProviderPluginManager.
    */
   interface AiProviderPluginManagerInterface {
+
+    /**
+     *
+     */
     public function getDefaultProviderForOperationType(string $type);
+
+    /**
+     *
+     */
     public function createInstance(string $pluginId, array $configuration = []);
+
   }
 }

@@ -22,63 +22,61 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   cron = {"time" = 30}
  * )
  */
-class QualityEvaluationWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface
-{
+class QualityEvaluationWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        array $configuration,
-        $plugin_id,
-        $plugin_definition,
-        protected QualityEvaluatorService $qualityEvaluator,
-        protected LoggerInterface $logger,
-    ) {
-        parent::__construct($configuration, $plugin_id, $plugin_definition);
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected QualityEvaluatorService $qualityEvaluator,
+    protected LoggerInterface $logger,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    return new static(
+          $configuration,
+          $plugin_id,
+          $plugin_definition,
+          $container->get('jaraba_ai_agents.quality_evaluator'),
+          $container->get('logger.channel.jaraba_ai_agents'),
+      );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processItem($data): void {
+    if (!isset($data['log_id'], $data['prompt'], $data['response'])) {
+      $this->logger->warning('Quality evaluation queue item missing required fields.');
+      return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static
-    {
-        return new static(
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $container->get('jaraba_ai_agents.quality_evaluator'),
-            $container->get('logger.channel.jaraba_ai_agents'),
+    try {
+      $result = $this->qualityEvaluator->evaluateAndLog(
+            (int) $data['log_id'],
+            $data['prompt'],
+            $data['response'],
         );
+
+      $this->logger->info('Quality evaluation completed for log @id: score=@score', [
+        '@id' => $data['log_id'],
+        '@score' => $result['overall_score'] ?? 'N/A',
+      ]);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function processItem($data): void
-    {
-        if (!isset($data['log_id'], $data['prompt'], $data['response'])) {
-            $this->logger->warning('Quality evaluation queue item missing required fields.');
-            return;
-        }
-
-        try {
-            $result = $this->qualityEvaluator->evaluateAndLog(
-                (int) $data['log_id'],
-                $data['prompt'],
-                $data['response'],
-            );
-
-            $this->logger->info('Quality evaluation completed for log @id: score=@score', [
-                '@id' => $data['log_id'],
-                '@score' => $result['overall_score'] ?? 'N/A',
-            ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Quality evaluation failed for log @id: @msg', [
-                '@id' => $data['log_id'],
-                '@msg' => $e->getMessage(),
-            ]);
-        }
+    catch (\Exception $e) {
+      $this->logger->error('Quality evaluation failed for log @id: @msg', [
+        '@id' => $data['log_id'],
+        '@msg' => $e->getMessage(),
+      ]);
     }
+  }
 
 }

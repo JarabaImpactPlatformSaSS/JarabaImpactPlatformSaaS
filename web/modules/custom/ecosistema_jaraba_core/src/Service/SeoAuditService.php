@@ -792,7 +792,7 @@ class SeoAuditService {
    * The score is calculated as a weighted average:
    * - 'pass' = 100% of weight
    * - 'warning' = 50% of weight
-   * - 'fail' = 0% of weight
+   * - 'fail' = 0% of weight.
    *
    * @param array $checks
    *   Array of individual check results.

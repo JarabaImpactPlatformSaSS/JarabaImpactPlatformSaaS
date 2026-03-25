@@ -153,7 +153,7 @@ class PersonalizationEngineService {
    * Uses heuristic scoring:
    * - Boost items from sources the user has interacted with recently
    * - Boost items matching user's active vertical
-   * - Penalize items the user has already seen/dismissed
+   * - Penalize items the user has already seen/dismissed.
    */
   protected function reRankByEngagement(array $recommendations, AccountInterface $user): array {
     // Get user's active vertical from tenant context for boosting.

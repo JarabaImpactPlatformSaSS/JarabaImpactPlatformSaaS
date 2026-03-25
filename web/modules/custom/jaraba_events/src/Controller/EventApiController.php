@@ -28,7 +28,8 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * 'success', 'data' y 'error'.
  *
  * LÓGICA:
- * Todos los endpoints validan permisos mediante las anotaciones de routing.
+ *
+ * @todo s los endpoints validan permisos mediante las anotaciones de routing.
  * Los datos se serializan a JSON con las claves mínimas necesarias.
  * Los errores devuelven códigos HTTP apropiados (400, 404, 409, 422, 503).
  * El tenant_id se obtiene del grupo activo del usuario actual.
@@ -111,8 +112,8 @@ class EventApiController extends ControllerBase {
       // Canal de log puede no estar disponible todavía.
     }
 
-    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
 
     return $instance;
   }

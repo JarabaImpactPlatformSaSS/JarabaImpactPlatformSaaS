@@ -84,9 +84,9 @@ class TenantPlanSettingsForm extends FormBase {
 
     $form['current_plan']['plan_info'] = [
       '#markup' => '<div class="tenant-plan__current">'
-        . '<div class="tenant-plan__name">' . $planName . '</div>'
-        . $statusBadge
-        . '</div>',
+      . '<div class="tenant-plan__name">' . $planName . '</div>'
+      . $statusBadge
+      . '</div>',
     ];
 
     // Trial info.
@@ -101,11 +101,11 @@ class TenantPlanSettingsForm extends FormBase {
 
           $form['current_plan']['trial_info'] = [
             '#markup' => '<div class="tenant-form__alert tenant-form__alert--warning">'
-              . $this->t('Tu periodo de prueba termina en @days dias (@date).', [
-                '@days' => $daysLeft,
-                '@date' => $trialDate->format('d/m/Y'),
-              ])
-              . '</div>',
+            . $this->t('Tu periodo de prueba termina en @days dias (@date).', [
+              '@days' => $daysLeft,
+              '@date' => $trialDate->format('d/m/Y'),
+            ])
+            . '</div>',
           ];
         }
         catch (\Throwable) {
@@ -128,11 +128,11 @@ class TenantPlanSettingsForm extends FormBase {
 
     $form['upgrade']['info'] = [
       '#markup' => '<p class="tenant-form__hint">'
-        . $this->t('Compara planes y elige el que mejor se adapte a las necesidades de tu organizacion.')
-        . '</p>'
-        . '<a href="' . $pricingUrl . '" class="tenant-form__btn tenant-form__btn--primary">'
-        . $this->t('Ver planes disponibles')
-        . '</a>',
+      . $this->t('Compara planes y elige el que mejor se adapte a las necesidades de tu organizacion.')
+      . '</p>'
+      . '<a href="' . $pricingUrl . '" class="tenant-form__btn tenant-form__btn--primary">'
+      . $this->t('Ver planes disponibles')
+      . '</a>',
     ];
 
     // Billing management section.
@@ -147,8 +147,8 @@ class TenantPlanSettingsForm extends FormBase {
 
     $form['billing']['info'] = [
       '#markup' => '<p class="tenant-form__hint">'
-        . $this->t('Gestiona tus metodos de pago, consulta facturas y actualiza tus datos de facturacion desde el portal seguro de Stripe.')
-        . '</p>',
+      . $this->t('Gestiona tus metodos de pago, consulta facturas y actualiza tus datos de facturacion desde el portal seguro de Stripe.')
+      . '</p>',
     ];
 
     // Boton del portal de Stripe via JS (data-portal-trigger).
@@ -157,8 +157,8 @@ class TenantPlanSettingsForm extends FormBase {
     $returnUrl = Url::fromRoute('ecosistema_jaraba_core.tenant_self_service.plan')->toString();
     $form['billing']['portal_button'] = [
       '#markup' => '<button type="button" class="tenant-form__btn tenant-form__btn--secondary" data-portal-trigger data-portal-return-url="' . $returnUrl . '">'
-        . $this->t('Abrir portal de facturacion')
-        . '</button>',
+      . $this->t('Abrir portal de facturacion')
+      . '</button>',
     ];
 
     // Adjuntar JS del portal de Stripe.
@@ -170,6 +170,7 @@ class TenantPlanSettingsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+
   /**
    * {@inheritdoc}
    *

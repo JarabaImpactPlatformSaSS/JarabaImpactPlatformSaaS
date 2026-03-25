@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_governance\Unit\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Database\Connection;
@@ -79,7 +80,7 @@ class RetentionPolicyServiceTest extends UnitTestCase {
     $container->set('config.factory', $configFactory);
 
     // Mock time service.
-    $time = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $time = $this->createMock(TimeInterface::class);
     $time->method('getRequestTime')->willReturn(time());
     $container->set('datetime.time', $time);
 

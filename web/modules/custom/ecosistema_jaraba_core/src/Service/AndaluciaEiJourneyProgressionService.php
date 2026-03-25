@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  * - Ready-for-insertion guidance
  * - Insertion preparation (tipo_insercion selection)
  * - Insertion stalled re-engagement
- * - Post-insertion cross-vertical expansion
+ * - Post-insertion cross-vertical expansion.
  *
  * Plan Elevación Andalucía +ei v1 — Fase 7.
  *

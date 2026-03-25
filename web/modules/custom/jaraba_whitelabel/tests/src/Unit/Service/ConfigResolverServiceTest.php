@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_whitelabel\Unit\Service;
 
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -176,7 +178,7 @@ class ConfigResolverServiceTest extends TestCase {
     $tenantIdField = new \stdClass();
     $tenantIdField->target_id = 7;
 
-    $domainEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $domainEntity = $this->createMock(ContentEntityInterface::class);
     $domainEntity->method('get')->willReturnMap([
       ['tenant_id', $tenantIdField],
     ]);
@@ -248,7 +250,7 @@ class ConfigResolverServiceTest extends TestCase {
    * @covers ::isWhitelabeled
    */
   public function testIsWhitelabeled(): void {
-    $attributes = new \Symfony\Component\HttpFoundation\ParameterBag([
+    $attributes = new ParameterBag([
       'whitelabel_config' => ['tenant_id' => 5, 'company_name' => 'Test'],
     ]);
 
@@ -263,7 +265,7 @@ class ConfigResolverServiceTest extends TestCase {
    * @covers ::isWhitelabeled
    */
   public function testIsWhitelabeledFalse(): void {
-    $attributes = new \Symfony\Component\HttpFoundation\ParameterBag([]);
+    $attributes = new ParameterBag([]);
     $this->request->attributes = $attributes;
 
     $this->assertFalse($this->service->isWhitelabeled());

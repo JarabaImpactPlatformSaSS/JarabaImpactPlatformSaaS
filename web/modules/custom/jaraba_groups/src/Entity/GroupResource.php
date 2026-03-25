@@ -59,199 +59,191 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.group_resource.settings",
  * )
  */
-class GroupResource extends ContentEntityBase implements EntityChangedInterface
-{
+class GroupResource extends ContentEntityBase implements EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * Resource types.
-     */
-    public const TYPE_DOCUMENT = 'document';
-    public const TYPE_TEMPLATE = 'template';
-    public const TYPE_PRESENTATION = 'presentation';
-    public const TYPE_SPREADSHEET = 'spreadsheet';
-    public const TYPE_VIDEO = 'video';
-    public const TYPE_LINK = 'link';
+  /**
+   * Resource types.
+   */
+  public const TYPE_DOCUMENT = 'document';
+  public const TYPE_TEMPLATE = 'template';
+  public const TYPE_PRESENTATION = 'presentation';
+  public const TYPE_SPREADSHEET = 'spreadsheet';
+  public const TYPE_VIDEO = 'video';
+  public const TYPE_LINK = 'link';
 
-    /**
-     * Gets the group ID.
-     */
-    public function getGroupId(): int
-    {
-        return (int) $this->get('group_id')->target_id;
-    }
+  /**
+   * Gets the group ID.
+   */
+  public function getGroupId(): int {
+    return (int) $this->get('group_id')->target_id;
+  }
 
-    /**
-     * Gets the title.
-     */
-    public function getTitle(): string
-    {
-        return $this->get('title')->value ?? '';
-    }
+  /**
+   * Gets the title.
+   */
+  public function getTitle(): string {
+    return $this->get('title')->value ?? '';
+  }
 
-    /**
-     * Gets the resource type.
-     */
-    public function getResourceType(): string
-    {
-        return $this->get('resource_type')->value ?? self::TYPE_DOCUMENT;
-    }
+  /**
+   * Gets the resource type.
+   */
+  public function getResourceType(): string {
+    return $this->get('resource_type')->value ?? self::TYPE_DOCUMENT;
+  }
 
-    /**
-     * Gets the download count.
-     */
-    public function getDownloadCount(): int
-    {
-        return (int) $this->get('download_count')->value;
-    }
+  /**
+   * Gets the download count.
+   */
+  public function getDownloadCount(): int {
+    return (int) $this->get('download_count')->value;
+  }
 
-    /**
-     * Increments download count.
-     */
-    public function incrementDownloadCount(): self
-    {
-        $this->set('download_count', $this->getDownloadCount() + 1);
-        return $this;
-    }
+  /**
+   * Increments download count.
+   */
+  public function incrementDownloadCount(): self {
+    $this->set('download_count', $this->getDownloadCount() + 1);
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Grupo'))
-            ->setDescription(t('Grupo donde se comparte el recurso.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'collaboration_group')
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Grupo'))
+      ->setDescription(t('Grupo donde se comparte el recurso.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'collaboration_group')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['uploader_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Subido por'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'user')
-            ->setDefaultValueCallback(static::class . '::getDefaultUploaderId')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['uploader_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Subido por'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setDefaultValueCallback(static::class . '::getDefaultUploaderId')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('view', ['weight' => 0])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('view', ['weight' => 0])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['resource_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Recurso'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                self::TYPE_DOCUMENT => t('Documento'),
-                self::TYPE_TEMPLATE => t('Plantilla'),
-                self::TYPE_PRESENTATION => t('Presentación'),
-                self::TYPE_SPREADSHEET => t('Hoja de cálculo'),
-                self::TYPE_VIDEO => t('Vídeo'),
-                self::TYPE_LINK => t('Enlace externo'),
-            ])
-            ->setDefaultValue(self::TYPE_DOCUMENT)
-            ->setDisplayOptions('view', ['weight' => 2])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 3,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['resource_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Recurso'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        self::TYPE_DOCUMENT => t('Documento'),
+        self::TYPE_TEMPLATE => t('Plantilla'),
+        self::TYPE_PRESENTATION => t('Presentación'),
+        self::TYPE_SPREADSHEET => t('Hoja de cálculo'),
+        self::TYPE_VIDEO => t('Vídeo'),
+        self::TYPE_LINK => t('Enlace externo'),
+      ])
+      ->setDefaultValue(self::TYPE_DOCUMENT)
+      ->setDisplayOptions('view', ['weight' => 2])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['file'] = BaseFieldDefinition::create('file')
-            ->setLabel(t('Archivo'))
-            ->setDescription(t('Archivo a compartir.'))
-            ->setSetting('file_extensions', 'pdf doc docx xls xlsx ppt pptx zip txt csv jpg png gif mp4 webm')
-            ->setSetting('max_filesize', '50 MB')
-            ->setDisplayOptions('view', ['weight' => 3])
-            ->setDisplayOptions('form', [
-                'type' => 'file_generic',
-                'weight' => 4,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['file'] = BaseFieldDefinition::create('file')
+      ->setLabel(t('Archivo'))
+      ->setDescription(t('Archivo a compartir.'))
+      ->setSetting('file_extensions', 'pdf doc docx xls xlsx ppt pptx zip txt csv jpg png gif mp4 webm')
+      ->setSetting('max_filesize', '50 MB')
+      ->setDisplayOptions('view', ['weight' => 3])
+      ->setDisplayOptions('form', [
+        'type' => 'file_generic',
+        'weight' => 4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['external_url'] = BaseFieldDefinition::create('link')
-            ->setLabel(t('URL Externa'))
-            ->setDescription(t('Para recursos tipo enlace.'))
-            ->setDisplayOptions('form', [
-                'type' => 'link_default',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['external_url'] = BaseFieldDefinition::create('link')
+      ->setLabel(t('URL Externa'))
+      ->setDescription(t('Para recursos tipo enlace.'))
+      ->setDisplayOptions('form', [
+        'type' => 'link_default',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['tags'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Etiquetas'))
-            ->setDescription(t('Etiquetas separadas por comas.'))
-            ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-            ->setSetting('max_length', 64)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 6,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['tags'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Etiquetas'))
+      ->setDescription(t('Etiquetas separadas por comas.'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('max_length', 64)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 6,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['download_count'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Descargas'))
-            ->setDefaultValue(0)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['download_count'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Descargas'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['is_pinned'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Fijado'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_pinned'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Fijado'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setSetting('allowed_values', [
-                'active' => t('Activo'),
-                'archived' => t('Archivado'),
-            ])
-            ->setDefaultValue('active')
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setSetting('allowed_values', [
+        'active' => t('Activo'),
+        'archived' => t('Archivado'),
+      ])
+      ->setDefaultValue('active')
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Default value callback for uploader_id.
-     */
-    public static function getDefaultUploaderId(): array
-    {
-        return [\Drupal::currentUser()->id()];
-    }
+  /**
+   * Default value callback for uploader_id.
+   */
+  public static function getDefaultUploaderId(): array {
+    return [\Drupal::currentUser()->id()];
+  }
 
 }

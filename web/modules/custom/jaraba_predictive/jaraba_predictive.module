@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -12,7 +16,6 @@ declare(strict_types=1);
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Implements hook_theme().
@@ -116,10 +119,10 @@ function jaraba_predictive_preprocess_page(array &$variables): void {
 
   // 2. Obtener tendencias para gráficos (últimos 6 meses).
   $revenue_forecast = $forecast_service->getForecastHistory('revenue', 6);
-  
+
   // 3. Obtener alertas de fraude recientes (F192).
   // Simulamos carga de alertas para el dashboard.
-  $recent_fraud_count = 0; 
+  $recent_fraud_count = 0;
 
   // 4. Estadísticas de Mando.
   $stats = [

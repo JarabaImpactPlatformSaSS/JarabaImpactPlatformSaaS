@@ -257,8 +257,25 @@ class TimeTrackingServiceTest extends UnitTestCase {
  * Temporary interface for mocking time entry.
  */
 interface TimeEntryMockInterface {
+
+  /**
+   *
+   */
   public function id();
+
+  /**
+   *
+   */
   public function uuid();
+
+  /**
+   *
+   */
   public function save();
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }

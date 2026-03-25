@@ -65,7 +65,6 @@ class DocumentAuditLog extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIA AL DOCUMENTO
     // =========================================================================
-
     $fields['document_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Documento'))
       ->setDescription(new TranslatableMarkup('Documento seguro sobre el que se registra la accion.'))
@@ -76,7 +75,6 @@ class DocumentAuditLog extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: DATOS DE LA ACCION
     // =========================================================================
-
     $fields['action'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Accion'))
       ->setRequired(TRUE)
@@ -105,7 +103,6 @@ class DocumentAuditLog extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: METADATOS Y HASH CHAIN
     // =========================================================================
-
     $fields['details'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Detalles'))
       ->setDescription(new TranslatableMarkup('Metadatos adicionales de la accion en formato clave-valor.'));
@@ -118,7 +115,6 @@ class DocumentAuditLog extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 4: TIMESTAMP
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 

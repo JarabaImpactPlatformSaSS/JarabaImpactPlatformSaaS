@@ -35,1036 +35,1021 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * Q1 2027 - Gap P0: Instant Value
  */
-class DemoController extends ControllerBase
-{
+class DemoController extends ControllerBase {
 
-    /**
-     * Rate limits por defecto (fallback si config no disponible).
-     *
-     * HAL-DEMO-V3-BACK-003: Los valores efectivos se leen desde
-     * ecosistema_jaraba_core.demo_settings.rate_limits.
-     */
-    protected const RATE_LIMIT_START = 10;
-    protected const RATE_LIMIT_TRACK = 30;
-    protected const RATE_LIMIT_SESSION = 20;
-    protected const RATE_LIMIT_CONVERT = 5;
+  /**
+   * Rate limits por defecto (fallback si config no disponible).
+   *
+   * HAL-DEMO-V3-BACK-003: Los valores efectivos se leen desde
+   * ecosistema_jaraba_core.demo_settings.rate_limits.
+   */
+  protected const RATE_LIMIT_START = 10;
+  protected const RATE_LIMIT_TRACK = 30;
+  protected const RATE_LIMIT_SESSION = 20;
+  protected const RATE_LIMIT_CONVERT = 5;
 
-    /**
-     * Acciones permitidas para tracking (whitelist S1-02).
-     */
-    protected const ALLOWED_ACTIONS = [
-        'view_dashboard',
-        'generate_story',
-        'browse_marketplace',
-        'view_categories',
-        'view_products',
-        'click_cta',
-        'scroll_section',
-        'page_view',
+  /**
+   * Acciones permitidas para tracking (whitelist S1-02).
+   */
+  protected const ALLOWED_ACTIONS = [
+    'view_dashboard',
+    'generate_story',
+    'browse_marketplace',
+    'view_categories',
+    'view_products',
+    'click_cta',
+    'scroll_section',
+    'page_view',
+  ];
+
+  /**
+   * Constructor.
+   */
+  /**
+   * Límites de rate limiting efectivos (leídos desde config).
+   *
+   * @var array{start: int, track: int, session: int, convert: int}
+   */
+  protected array $rateLimits;
+
+  public function __construct(
+    protected DemoInteractiveService $demoService,
+    protected GuidedTourService $tourService,
+    protected FloodInterface $flood,
+    protected DemoFeatureGateService $featureGate,
+    protected DemoJourneyProgressionService $journeyProgression,
+    protected ?AbTestService $abTestService = NULL,
+    protected ?StorytellingAgent $storytellingAgent = NULL,
+    ?ConfigFactoryInterface $configFactory = NULL,
+  ) {
+    // HAL-DEMO-V3-BACK-003: Leer rate limits desde config con fallback.
+    $defaults = [
+      'start' => self::RATE_LIMIT_START,
+      'track' => self::RATE_LIMIT_TRACK,
+      'session' => self::RATE_LIMIT_SESSION,
+      'convert' => self::RATE_LIMIT_CONVERT,
     ];
+    if ($configFactory) {
+      $configLimits = $configFactory->get('ecosistema_jaraba_core.demo_settings')->get('rate_limits');
+      $this->rateLimits = is_array($configLimits) ? $configLimits + $defaults : $defaults;
+    }
+    else {
+      $this->rateLimits = $defaults;
+    }
+  }
 
-    /**
-     * Constructor.
-     */
-    /**
-     * Límites de rate limiting efectivos (leídos desde config).
-     *
-     * @var array{start: int, track: int, session: int, convert: int}
-     */
-    protected array $rateLimits;
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('ecosistema_jaraba_core.demo_interactive'),
+          $container->get('ecosistema_jaraba_core.guided_tours'),
+          $container->get('flood'),
+          $container->get('ecosistema_jaraba_core.demo_feature_gate'),
+          $container->get('ecosistema_jaraba_core.demo_journey_progression'),
+          $container->has('ecosistema_jaraba_core.ab_test') ? $container->get('ecosistema_jaraba_core.ab_test') : NULL,
+          $container->has('jaraba_ai_agents.storytelling_agent') ? $container->get('jaraba_ai_agents.storytelling_agent') : NULL,
+          $container->get('config.factory'),
+      );
+  }
 
-    public function __construct(
-        protected DemoInteractiveService $demoService,
-        protected GuidedTourService $tourService,
-        protected FloodInterface $flood,
-        protected DemoFeatureGateService $featureGate,
-        protected DemoJourneyProgressionService $journeyProgression,
-        protected ?AbTestService $abTestService = NULL,
-        protected ?StorytellingAgent $storytellingAgent = NULL,
-        ?ConfigFactoryInterface $configFactory = NULL,
-    ) {
-        // HAL-DEMO-V3-BACK-003: Leer rate limits desde config con fallback.
-        $defaults = [
-            'start' => self::RATE_LIMIT_START,
-            'track' => self::RATE_LIMIT_TRACK,
-            'session' => self::RATE_LIMIT_SESSION,
-            'convert' => self::RATE_LIMIT_CONVERT,
-        ];
-        if ($configFactory) {
-            $configLimits = $configFactory->get('ecosistema_jaraba_core.demo_settings')->get('rate_limits');
-            $this->rateLimits = is_array($configLimits) ? $configLimits + $defaults : $defaults;
-        }
-        else {
-            $this->rateLimits = $defaults;
-        }
+  /**
+   * Comprueba rate limiting y devuelve 429 si se excede.
+   *
+   * Patrón canónico: PublicCopilotController (RATE-LIMIT-001).
+   *
+   * @param string $floodName
+   *   Identificador del flood event.
+   * @param int $threshold
+   *   Máximo de peticiones por ventana.
+   * @param string $clientIp
+   *   IP del cliente.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse|null
+   *   JsonResponse 429 si se excede el límite, NULL si OK.
+   */
+  protected function checkRateLimit(string $floodName, int $threshold, string $clientIp): ?JsonResponse {
+    if (!$this->flood->isAllowed($floodName, $threshold, 60, $clientIp)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Has alcanzado el límite de peticiones. Inténtalo de nuevo en un minuto.'),
+        'rate_limited' => TRUE,
+      ], 429);
+    }
+    $this->flood->register($floodName, 60, $clientIp);
+    return NULL;
+  }
+
+  /**
+   * Valida que un session_id tenga el formato esperado.
+   *
+   * Formato: demo_ + 16 hex chars (bin2hex de 8 bytes).
+   */
+  protected function isValidSessionId(string $sessionId): bool {
+    return (bool) preg_match('/^demo_[a-f0-9]{16}$/', $sessionId);
+  }
+
+  /**
+   * Página principal de selección de demo.
+   */
+  public function demoLanding(): array {
+    $profiles = $this->demoService->getDemoProfiles();
+
+    // S7-05: Social proof — cuántas personas están explorando.
+    $activeDemoCount = $this->demoService->getActiveDemoCount();
+
+    // S10-03: Dispatch landing view event.
+    $this->demoService->dispatchFunnelEvent(DemoSessionEvent::LANDING_VIEW);
+
+    // S10-01: Soft gate deshabilitado para usuarios autenticados.
+    // Si ya están logados, sus datos están en el CRM por el registro.
+    $isAuthenticated = $this->currentUser()->isAuthenticated();
+    $gateEnabled = !$isAuthenticated;
+
+    // A/B test: soft gate habilitado/deshabilitado (solo para anónimos).
+    if ($gateEnabled && $this->abTestService !== NULL) {
+      $gateVariant = $this->abTestService->getVariant('demo_soft_gate');
+      $gateEnabled = ($gateVariant !== 'control');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('ecosistema_jaraba_core.demo_interactive'),
-            $container->get('ecosistema_jaraba_core.guided_tours'),
-            $container->get('flood'),
-            $container->get('ecosistema_jaraba_core.demo_feature_gate'),
-            $container->get('ecosistema_jaraba_core.demo_journey_progression'),
-            $container->has('ecosistema_jaraba_core.ab_test') ? $container->get('ecosistema_jaraba_core.ab_test') : NULL,
-            $container->has('jaraba_ai_agents.storytelling_agent') ? $container->get('jaraba_ai_agents.storytelling_agent') : NULL,
-            $container->get('config.factory'),
-        );
-    }
+    return [
+      '#theme' => 'demo_landing',
+      '#profiles' => $profiles,
+      '#active_demo_count' => $activeDemoCount,
+      '#attached' => [
+        'library' => ['ecosistema_jaraba_core/demo-landing'],
+        'drupalSettings' => [
+          'demoLeadGate' => [
+                      // S10-01: ROUTE-LANGPREFIX-001 — endpoint via Url::fromRoute().
+            'endpoint' => Url::fromRoute('ecosistema_jaraba_core.demo_api_lead_gate')->toString(),
+                      // A/B test: deshabilitar gate para variante 'control'.
+            'enabled' => $gateEnabled,
+          ],
+        ],
+      ],
+      '#cache' => [
+              // Varía por estado de autenticación (gate habilitado/deshabilitado).
+        'max-age' => 60,
+        'contexts' => ['user.roles:authenticated'],
+      ],
+    ];
+  }
 
-    /**
-     * Comprueba rate limiting y devuelve 429 si se excede.
-     *
-     * Patrón canónico: PublicCopilotController (RATE-LIMIT-001).
-     *
-     * @param string $floodName
-     *   Identificador del flood event.
-     * @param int $threshold
-     *   Máximo de peticiones por ventana.
-     * @param string $clientIp
-     *   IP del cliente.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|null
-     *   JsonResponse 429 si se excede el límite, NULL si OK.
-     */
-    protected function checkRateLimit(string $floodName, int $threshold, string $clientIp): ?JsonResponse
-    {
-        if (!$this->flood->isAllowed($floodName, $threshold, 60, $clientIp)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Has alcanzado el límite de peticiones. Inténtalo de nuevo en un minuto.'),
-                'rate_limited' => TRUE,
-            ], 429);
-        }
-        $this->flood->register($floodName, 60, $clientIp);
-        return NULL;
-    }
-
-    /**
-     * Valida que un session_id tenga el formato esperado.
-     *
-     * Formato: demo_ + 16 hex chars (bin2hex de 8 bytes).
-     */
-    protected function isValidSessionId(string $sessionId): bool
-    {
-        return (bool) preg_match('/^demo_[a-f0-9]{16}$/', $sessionId);
-    }
-
-    /**
-     * Página principal de selección de demo.
-     */
-    public function demoLanding(): array
-    {
-        $profiles = $this->demoService->getDemoProfiles();
-
-        // S7-05: Social proof — cuántas personas están explorando.
-        $activeDemoCount = $this->demoService->getActiveDemoCount();
-
-        // S10-03: Dispatch landing view event.
-        $this->demoService->dispatchFunnelEvent(DemoSessionEvent::LANDING_VIEW);
-
-        // S10-01: Soft gate deshabilitado para usuarios autenticados.
-        // Si ya están logados, sus datos están en el CRM por el registro.
-        $isAuthenticated = $this->currentUser()->isAuthenticated();
-        $gateEnabled = !$isAuthenticated;
-
-        // A/B test: soft gate habilitado/deshabilitado (solo para anónimos).
-        if ($gateEnabled && $this->abTestService !== NULL) {
-            $gateVariant = $this->abTestService->getVariant('demo_soft_gate');
-            $gateEnabled = ($gateVariant !== 'control');
-        }
-
-        return [
-            '#theme' => 'demo_landing',
-            '#profiles' => $profiles,
-            '#active_demo_count' => $activeDemoCount,
-            '#attached' => [
-                'library' => ['ecosistema_jaraba_core/demo-landing'],
-                'drupalSettings' => [
-                    'demoLeadGate' => [
-                        // S10-01: ROUTE-LANGPREFIX-001 — endpoint via Url::fromRoute().
-                        'endpoint' => Url::fromRoute('ecosistema_jaraba_core.demo_api_lead_gate')->toString(),
-                        // A/B test: deshabilitar gate para variante 'control'.
-                        'enabled' => $gateEnabled,
-                    ],
-                ],
-            ],
-            '#cache' => [
-                // Varía por estado de autenticación (gate habilitado/deshabilitado).
-                'max-age' => 60,
-                'contexts' => ['user.roles:authenticated'],
-            ],
-        ];
-    }
-
-    /**
-     * Inicia una sesión de demo.
-     *
-     * Rate limit: 10 req/min por IP (S1-01).
-     * Validación: profileId ya validado por regex en routing.yml.
-     */
-    public function startDemo(Request $request, string $profileId): array|RedirectResponse
-    {
-        // S10-03: Si no hay lead_id, el usuario saltó el soft gate.
-        if (!$request->query->has('lead_id')) {
-            $this->demoService->dispatchFunnelEvent(
-                DemoSessionEvent::LEAD_SKIPPED,
-                $profileId,
-            );
-        }
-
-        // S1-01: Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_start',
-            $this->rateLimits['start'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return [
-                '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
-            ];
-        }
-
-        // S13-05: Redirect 301 buyer → gourmet (perfil reemplazado 2026-03-20).
-        if ($profileId === 'buyer') {
-            return new RedirectResponse(
-                Url::fromRoute('ecosistema_jaraba_core.demo_start', ['profileId' => 'gourmet'])->toString(),
-                301
-            );
-        }
-
-        // S1-02: Validar que el profileId existe en los perfiles registrados.
-        $profile = $this->demoService->getDemoProfile($profileId);
-        if (!$profile) {
-            return [
-                '#markup' => '<div class="demo-error">' . (string) $this->t('Perfil de demo no válido.') . '</div>',
-            ];
-        }
-
-        // Generar ID de sesión único.
-        $sessionId = 'demo_' . bin2hex(random_bytes(8));
-
-        // S7-03: A/B testing — asignar variantes para la sesión.
-        $abVariants = [];
-        if ($this->abTestService) {
-            $abVariants = [
-                'demo_landing_cta' => $this->abTestService->getVariant('demo_landing_cta'),
-                'demo_profile_order' => $this->abTestService->getVariant('demo_profile_order'),
-                'demo_conversion_modal_timing' => $this->abTestService->getVariant('demo_conversion_modal_timing'),
-            ];
-        }
-
-        // Generar datos de demo (S1-04: incluir IP para tracking en tabla).
-        $demoData = $this->demoService->generateDemoSession(
+  /**
+   * Inicia una sesión de demo.
+   *
+   * Rate limit: 10 req/min por IP (S1-01).
+   * Validación: profileId ya validado por regex en routing.yml.
+   */
+  public function startDemo(Request $request, string $profileId): array|RedirectResponse {
+    // S10-03: Si no hay lead_id, el usuario saltó el soft gate.
+    if (!$request->query->has('lead_id')) {
+      $this->demoService->dispatchFunnelEvent(
+            DemoSessionEvent::LEAD_SKIPPED,
             $profileId,
-            $sessionId,
-            $request->getClientIp() ?? '',
-            $abVariants,
         );
-
-        if (isset($demoData['error'])) {
-            return [
-                '#markup' => '<div class="demo-error">' . (string) $this->t('Error al crear la demo.') . '</div>',
-            ];
-        }
-
-        // Obtener tour recomendado.
-        $tour = $this->tourService->getTour('demo_welcome');
-
-        // S11-07: Setup Wizard + Daily Actions para demo.
-        $wizardData = $this->getDemoWizardAndActions();
-
-        // Métricas formateadas + contexto vertical personalizado.
-        $formattedMetrics = [];
-        $verticalContext = [];
-        if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
-            /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
-            $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
-            $formattedMetrics = $formatter->prepareForRender($demoData['metrics']);
-        }
-        $verticalContext = $this->demoService->getVerticalContext($profileId);
-
-        return [
-            '#theme' => 'demo_dashboard',
-            '#session_id' => $sessionId,
-            '#profile' => $demoData['profile'],
-            '#tenant_name' => $demoData['tenant_name'],
-            '#metrics' => $demoData['metrics'],
-            '#formatted_metrics' => $formattedMetrics,
-            '#vertical_context' => $verticalContext,
-            '#products' => $demoData['products'],
-            '#sales_history' => $demoData['sales_history'],
-            '#magic_actions' => $demoData['magic_moment_actions'],
-            '#ai_scenarios' => $this->demoService->getAiScenarios(),
-            '#copilot_chat' => $this->demoService->getCopilotDemoChat($profileId),
-            '#wizard' => $wizardData['wizard'],
-            '#daily_actions' => $wizardData['daily_actions'],
-            '#attached' => [
-                'library' => [
-                    'ecosistema_jaraba_core/demo-dashboard',
-                    'ecosistema_jaraba_core/demo-guided-tour',
-                ],
-                'drupalSettings' => [
-                    'demo' => [
-                        'sessionId' => $sessionId,
-                        'salesHistory' => $demoData['sales_history'],
-                    ],
-                    'demoTour' => $tour ? json_decode($this->tourService->getTourDriverJS($tour), TRUE) : NULL,
-                ],
-            ],
-            '#cache' => [
-                'max-age' => 0,
-            ],
-        ];
     }
 
-    /**
-     * API: Registra una acción en la demo.
-     *
-     * Rate limit: 30 req/min por IP (S1-01).
-     * Validación: session_id formato + action whitelist (S1-02).
-     * CSRF: obligatorio via routing.yml (S1-03).
-     */
-    public function trackAction(Request $request): JsonResponse
-    {
-        // S1-01: Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_track',
-            $this->rateLimits['track'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return $rateLimited;
-        }
-
-        $data = json_decode($request->getContent(), TRUE);
-        if (!is_array($data)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Formato de datos inválido.'),
-            ], 400);
-        }
-
-        $sessionId = $data['session_id'] ?? '';
-        $action = $data['action'] ?? '';
-        $metadata = $data['metadata'] ?? [];
-
-        // S1-02: Validar formato de session_id.
-        if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de sesión inválido.'),
-            ], 400);
-        }
-
-        // S1-02: Validar acción contra whitelist.
-        if (!is_string($action) || !in_array($action, self::ALLOWED_ACTIONS, TRUE)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Acción no permitida.'),
-            ], 400);
-        }
-
-        // S1-02: Sanitizar metadata (solo strings y números, max 10 keys).
-        if (!is_array($metadata)) {
-            $metadata = [];
-        }
-        $metadata = array_slice($metadata, 0, 10);
-        $metadata = array_filter($metadata, fn($v) => is_string($v) || is_numeric($v));
-
-        // S5-01: Feature gate — limitar funcionalidades demo.
-        $featureMap = [
-            'generate_story' => 'story_generations_per_session',
-            'view_products' => 'products_viewed_per_session',
-        ];
-        if (isset($featureMap[$action])) {
-            $gate = $this->featureGate->check($sessionId, $featureMap[$action]);
-            if (!$gate['allowed']) {
-                return new JsonResponse([
-                    'success' => FALSE,
-                    'error' => (string) $this->t('Has alcanzado el límite de esta funcionalidad en la demo.'),
-                    'feature_limited' => TRUE,
-                    'remaining' => 0,
-                ], 429);
-            }
-            $this->featureGate->recordUsage($sessionId, $featureMap[$action]);
-        }
-
-        $this->demoService->trackDemoAction($sessionId, $action, $metadata);
-
-        // Calcular TTFV si es una acción de valor.
-        $ttfv = $this->demoService->calculateTTFV($sessionId);
-
-        return new JsonResponse([
-            'success' => TRUE,
-            'ttfv_seconds' => $ttfv,
-        ]);
+    // S1-01: Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_start',
+          $this->rateLimits['start'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return [
+        '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
+      ];
     }
 
-    /**
-     * API: Obtiene datos de sesión.
-     *
-     * Rate limit: 20 req/min por IP (S1-01).
-     */
-    public function getSessionData(Request $request, string $sessionId): JsonResponse
-    {
-        // S1-01: Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_session',
-            $this->rateLimits['session'],
-            $request->getClientIp() ?? 'unknown',
+    // S13-05: Redirect 301 buyer → gourmet (perfil reemplazado 2026-03-20).
+    if ($profileId === 'buyer') {
+      return new RedirectResponse(
+            Url::fromRoute('ecosistema_jaraba_core.demo_start', ['profileId' => 'gourmet'])->toString(),
+            301
         );
-        if ($rateLimited) {
-            return $rateLimited;
-        }
+    }
 
-        // S5-11: Validar formato de session_id.
-        if (!$this->isValidSessionId($sessionId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de sesión inválido.'),
-            ], 400);
-        }
+    // S1-02: Validar que el profileId existe en los perfiles registrados.
+    $profile = $this->demoService->getDemoProfile($profileId);
+    if (!$profile) {
+      return [
+        '#markup' => '<div class="demo-error">' . (string) $this->t('Perfil de demo no válido.') . '</div>',
+      ];
+    }
 
-        $session = $this->demoService->getDemoSession($sessionId);
+    // Generar ID de sesión único.
+    $sessionId = 'demo_' . bin2hex(random_bytes(8));
 
-        if (!$session) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Sesión no encontrada.'),
-            ], 404);
-        }
+    // S7-03: A/B testing — asignar variantes para la sesión.
+    $abVariants = [];
+    if ($this->abTestService) {
+      $abVariants = [
+        'demo_landing_cta' => $this->abTestService->getVariant('demo_landing_cta'),
+        'demo_profile_order' => $this->abTestService->getVariant('demo_profile_order'),
+        'demo_conversion_modal_timing' => $this->abTestService->getVariant('demo_conversion_modal_timing'),
+      ];
+    }
 
-        // S5-02: Incluir nudges de conversión proactivos.
-        $nudges = $this->journeyProgression->evaluateNudges($sessionId);
+    // Generar datos de demo (S1-04: incluir IP para tracking en tabla).
+    $demoData = $this->demoService->generateDemoSession(
+          $profileId,
+          $sessionId,
+          $request->getClientIp() ?? '',
+          $abVariants,
+      );
 
+    if (isset($demoData['error'])) {
+      return [
+        '#markup' => '<div class="demo-error">' . (string) $this->t('Error al crear la demo.') . '</div>',
+      ];
+    }
+
+    // Obtener tour recomendado.
+    $tour = $this->tourService->getTour('demo_welcome');
+
+    // S11-07: Setup Wizard + Daily Actions para demo.
+    $wizardData = $this->getDemoWizardAndActions();
+
+    // Métricas formateadas + contexto vertical personalizado.
+    $formattedMetrics = [];
+    $verticalContext = [];
+    if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
+      $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
+      $formattedMetrics = $formatter->prepareForRender($demoData['metrics']);
+    }
+    $verticalContext = $this->demoService->getVerticalContext($profileId);
+
+    return [
+      '#theme' => 'demo_dashboard',
+      '#session_id' => $sessionId,
+      '#profile' => $demoData['profile'],
+      '#tenant_name' => $demoData['tenant_name'],
+      '#metrics' => $demoData['metrics'],
+      '#formatted_metrics' => $formattedMetrics,
+      '#vertical_context' => $verticalContext,
+      '#products' => $demoData['products'],
+      '#sales_history' => $demoData['sales_history'],
+      '#magic_actions' => $demoData['magic_moment_actions'],
+      '#ai_scenarios' => $this->demoService->getAiScenarios(),
+      '#copilot_chat' => $this->demoService->getCopilotDemoChat($profileId),
+      '#wizard' => $wizardData['wizard'],
+      '#daily_actions' => $wizardData['daily_actions'],
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/demo-dashboard',
+          'ecosistema_jaraba_core/demo-guided-tour',
+        ],
+        'drupalSettings' => [
+          'demo' => [
+            'sessionId' => $sessionId,
+            'salesHistory' => $demoData['sales_history'],
+          ],
+          'demoTour' => $tour ? json_decode($this->tourService->getTourDriverJS($tour), TRUE) : NULL,
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+  }
+
+  /**
+   * API: Registra una acción en la demo.
+   *
+   * Rate limit: 30 req/min por IP (S1-01).
+   * Validación: session_id formato + action whitelist (S1-02).
+   * CSRF: obligatorio via routing.yml (S1-03).
+   */
+  public function trackAction(Request $request): JsonResponse {
+    // S1-01: Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_track',
+          $this->rateLimits['track'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return $rateLimited;
+    }
+
+    $data = json_decode($request->getContent(), TRUE);
+    if (!is_array($data)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Formato de datos inválido.'),
+      ], 400);
+    }
+
+    $sessionId = $data['session_id'] ?? '';
+    $action = $data['action'] ?? '';
+    $metadata = $data['metadata'] ?? [];
+
+    // S1-02: Validar formato de session_id.
+    if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de sesión inválido.'),
+      ], 400);
+    }
+
+    // S1-02: Validar acción contra whitelist.
+    if (!is_string($action) || !in_array($action, self::ALLOWED_ACTIONS, TRUE)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Acción no permitida.'),
+      ], 400);
+    }
+
+    // S1-02: Sanitizar metadata (solo strings y números, max 10 keys).
+    if (!is_array($metadata)) {
+      $metadata = [];
+    }
+    $metadata = array_slice($metadata, 0, 10);
+    $metadata = array_filter($metadata, fn($v) => is_string($v) || is_numeric($v));
+
+    // S5-01: Feature gate — limitar funcionalidades demo.
+    $featureMap = [
+      'generate_story' => 'story_generations_per_session',
+      'view_products' => 'products_viewed_per_session',
+    ];
+    if (isset($featureMap[$action])) {
+      $gate = $this->featureGate->check($sessionId, $featureMap[$action]);
+      if (!$gate['allowed']) {
         return new JsonResponse([
-            'success' => TRUE,
-            'session' => $session,
+          'success' => FALSE,
+          'error' => (string) $this->t('Has alcanzado el límite de esta funcionalidad en la demo.'),
+          'feature_limited' => TRUE,
+          'remaining' => 0,
+        ], 429);
+      }
+      $this->featureGate->recordUsage($sessionId, $featureMap[$action]);
+    }
+
+    $this->demoService->trackDemoAction($sessionId, $action, $metadata);
+
+    // Calcular TTFV si es una acción de valor.
+    $ttfv = $this->demoService->calculateTTFV($sessionId);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'ttfv_seconds' => $ttfv,
+    ]);
+  }
+
+  /**
+   * API: Obtiene datos de sesión.
+   *
+   * Rate limit: 20 req/min por IP (S1-01).
+   */
+  public function getSessionData(Request $request, string $sessionId): JsonResponse {
+    // S1-01: Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_session',
+          $this->rateLimits['session'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return $rateLimited;
+    }
+
+    // S5-11: Validar formato de session_id.
+    if (!$this->isValidSessionId($sessionId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de sesión inválido.'),
+      ], 400);
+    }
+
+    $session = $this->demoService->getDemoSession($sessionId);
+
+    if (!$session) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Sesión no encontrada.'),
+      ], 404);
+    }
+
+    // S5-02: Incluir nudges de conversión proactivos.
+    $nudges = $this->journeyProgression->evaluateNudges($sessionId);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'session' => $session,
+      'nudges' => $nudges,
+    ]);
+  }
+
+  /**
+   * Convierte demo a registro real.
+   *
+   * Rate limit: 5 req/min por IP — endpoint más restrictivo (S1-01).
+   * Validación: session_id formato + email formato (S1-02).
+   * CSRF: obligatorio via routing.yml (S1-03).
+   *
+   * NOTA: NO crea usuarios directamente. Genera un token HMAC temporal
+   * que redirige al flujo de onboarding real (/registro/{vertical}).
+   */
+  public function convertToReal(Request $request): JsonResponse {
+    // S1-01: Rate limiting estricto (endpoint sensible).
+    $rateLimited = $this->checkRateLimit(
+          'demo_convert',
+          $this->rateLimits['convert'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return $rateLimited;
+    }
+
+    $data = json_decode($request->getContent(), TRUE);
+    if (!is_array($data)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Formato de datos inválido.'),
+      ], 400);
+    }
+
+    $sessionId = $data['session_id'] ?? '';
+    $email = $data['email'] ?? '';
+
+    // S1-02: Validar formato session_id.
+    if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de sesión inválido.'),
+      ], 400);
+    }
+
+    // S1-02: Validar formato email.
+    if (!is_string($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Dirección de email inválida.'),
+      ], 400);
+    }
+
+    $result = $this->demoService->convertToRealAccount($sessionId, $email);
+
+    // S5-13: Código HTTP apropiado según resultado.
+    $statusCode = !empty($result['success']) ? 200 : 422;
+    return new JsonResponse($result, $statusCode);
+  }
+
+  /**
+   * Dashboard de demo interactivo.
+   *
+   * Rate limit: 20 req/min por IP (S1-01).
+   * S1-06: URL generada via Url::fromRoute() (ROUTE-LANGPREFIX-001).
+   */
+  public function demoDashboard(Request $request, string $sessionId): array {
+    // S1-01: Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_dashboard',
+          $this->rateLimits['session'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return [
+        '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
+      ];
+    }
+
+    // S5-11: Validar formato de session_id.
+    if (!$this->isValidSessionId($sessionId)) {
+      $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+      return [
+        '#markup' => '<div class="demo-error">'
+        . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+        . '</div>',
+      ];
+    }
+
+    $session = $this->demoService->getDemoSession($sessionId);
+
+    if (!$session) {
+      // S1-06: URL via Url::fromRoute() en lugar de hardcoded (ROUTE-LANGPREFIX-001).
+      $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+      return [
+        '#markup' => '<div class="demo-expired">'
+        . (string) $this->t('La sesión de demo ha expirado. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+        . '</div>',
+      ];
+    }
+
+    // Registrar acción.
+    $this->demoService->trackDemoAction($sessionId, 'view_dashboard');
+
+    // S5-02: Evaluar nudges de conversión proactivos.
+    $nudges = $this->journeyProgression->evaluateNudges($sessionId);
+
+    // S7-07: Progressive disclosure level.
+    $disclosure = $this->journeyProgression->getDisclosureLevel($sessionId);
+
+    // S11-07: Setup Wizard + Daily Actions para demo.
+    $wizardData = $this->getDemoWizardAndActions();
+
+    // Métricas formateadas + contexto vertical.
+    $formattedMetrics = [];
+    $verticalContext = [];
+    $profileId = $session['profile_id'] ?? $session['profile']['id'] ?? '';
+    if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
+      $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
+      $formattedMetrics = $formatter->prepareForRender($session['metrics'] ?? []);
+    }
+    $verticalContext = $this->demoService->getVerticalContext($profileId);
+
+    // Inyectar AI scenarios + copilot chat adaptativo en session para template.
+    $session['ai_scenarios'] = $this->demoService->getAiScenarios();
+    $session['copilot_chat'] = $this->demoService->getCopilotDemoChat($profileId);
+
+    return [
+      '#theme' => 'demo_dashboard_view',
+      '#session' => $session,
+      '#nudges' => $nudges,
+      '#disclosure' => $disclosure,
+      '#formatted_metrics' => $formattedMetrics,
+      '#vertical_context' => $verticalContext,
+      '#wizard' => $wizardData['wizard'],
+      '#daily_actions' => $wizardData['daily_actions'],
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/demo-dashboard',
+        ],
+        'drupalSettings' => [
+          'demo' => [
+            'sessionId' => $sessionId,
+            'salesHistory' => $session['sales_history'],
+            'metrics' => $session['metrics'],
             'nudges' => $nudges,
+            'expires' => $session['expires'] ?? 0,
+            'disclosure' => $disclosure,
+          ],
+        ],
+      ],
+          // S5-12: Cache metadata explícita.
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+  }
+
+  /**
+   * AI Playground — demo pública interactiva de capacidades IA.
+   *
+   * Muestra un widget de copiloto con escenarios preconfigurados
+   * para usuarios anónimos. Rate-limited via PublicCopilotController.
+   *
+   * S1-06: Endpoint copilot generado via Url::fromRoute() (ROUTE-LANGPREFIX-001).
+   */
+  public function aiPlayground(): array {
+    // S6-12: Escenarios delegados al servicio.
+    $scenarios = $this->demoService->getAiScenarios();
+
+    // S1-06: Generar URL via Url::fromRoute() (ROUTE-LANGPREFIX-001).
+    $copilotEndpoint = Url::fromRoute('jaraba_copilot_v2.api.public_chat')->toString();
+
+    return [
+      '#theme' => 'demo_ai_playground',
+      '#scenarios' => $scenarios,
+      '#copilot_endpoint' => $copilotEndpoint,
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_core/demo-ai-playground',
+        ],
+        'drupalSettings' => [
+          'demoPlayground' => [
+            'scenarios' => $scenarios,
+            'copilotEndpoint' => $copilotEndpoint,
+            'maxMessages' => 10,
+          ],
+        ],
+      ],
+      '#cache' => [
+        'max-age' => 3600,
+      ],
+    ];
+  }
+
+  /**
+   * Generación de historia con IA (demo).
+   *
+   * Rate limit: 10 req/min por IP (S1-01).
+   */
+  public function demoAiStorytelling(Request $request, string $sessionId): array {
+    // S1-01: Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_storytelling',
+          $this->rateLimits['start'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return [
+        '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
+      ];
+    }
+
+    // S5-11: Validar formato de session_id.
+    if (!$this->isValidSessionId($sessionId)) {
+      $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+      return [
+        '#markup' => '<div class="demo-error">'
+        . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+        . '</div>',
+      ];
+    }
+
+    $session = $this->demoService->getDemoSession($sessionId);
+
+    if (!$session) {
+      // S1-06: URL via Url::fromRoute() (ROUTE-LANGPREFIX-001).
+      $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+      return [
+        '#markup' => '<div class="demo-expired">'
+        . (string) $this->t('La sesión de demo ha expirado. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+        . '</div>',
+      ];
+    }
+
+    // S5-01: Feature gate — limitar generaciones de historias.
+    $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
+    if (!$storyGate['allowed']) {
+      return [
+        '#theme' => 'demo_ai_storytelling',
+        '#session' => $session,
+        '#generated_story' => (string) $this->t('Has alcanzado el límite de generaciones de historia en esta demo. Crea tu cuenta para acceso ilimitado.'),
+        '#story_limited' => TRUE,
+        '#attached' => [
+          'library' => ['ecosistema_jaraba_core/demo-storytelling'],
+        ],
+      ];
+    }
+    $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
+
+    // Registrar acción de valor.
+    $this->demoService->trackDemoAction($sessionId, 'generate_story');
+
+    // S7-04: Intentar storytelling con IA real, fallback a hardcoded.
+    $profile = $session['profile'];
+    $tenantName = $session['tenant_name'];
+    $story = NULL;
+    $isAiGenerated = FALSE;
+
+    if ($this->storytellingAgent) {
+      try {
+        $result = $this->storytellingAgent->execute('brand_story', [
+          'brand_name' => $tenantName,
+          'vertical' => $profile['vertical'] ?? 'agroconecta',
+          'founding_context' => $profile['description'] ?? '',
+          'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
         ]);
+
+        if (!empty($result['success']) && !empty($result['content'])) {
+          $story = Xss::filter($result['content']);
+          $isAiGenerated = TRUE;
+        }
+      }
+      catch (\Exception $e) {
+        $this->getLogger('demo_controller')->warning(
+              'Storytelling agent failed for session @session: @error',
+              ['@session' => $sessionId, '@error' => $e->getMessage()]
+          );
+      }
     }
 
-    /**
-     * Convierte demo a registro real.
-     *
-     * Rate limit: 5 req/min por IP — endpoint más restrictivo (S1-01).
-     * Validación: session_id formato + email formato (S1-02).
-     * CSRF: obligatorio via routing.yml (S1-03).
-     *
-     * NOTA: NO crea usuarios directamente. Genera un token HMAC temporal
-     * que redirige al flujo de onboarding real (/registro/{vertical}).
-     */
-    public function convertToReal(Request $request): JsonResponse
-    {
-        // S1-01: Rate limiting estricto (endpoint sensible).
-        $rateLimited = $this->checkRateLimit(
-            'demo_convert',
-            $this->rateLimits['convert'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return $rateLimited;
-        }
-
-        $data = json_decode($request->getContent(), TRUE);
-        if (!is_array($data)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Formato de datos inválido.'),
-            ], 400);
-        }
-
-        $sessionId = $data['session_id'] ?? '';
-        $email = $data['email'] ?? '';
-
-        // S1-02: Validar formato session_id.
-        if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de sesión inválido.'),
-            ], 400);
-        }
-
-        // S1-02: Validar formato email.
-        if (!is_string($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Dirección de email inválida.'),
-            ], 400);
-        }
-
-        $result = $this->demoService->convertToRealAccount($sessionId, $email);
-
-        // S5-13: Código HTTP apropiado según resultado.
-        $statusCode = !empty($result['success']) ? 200 : 422;
-        return new JsonResponse($result, $statusCode);
+    // S6-12: Fallback a historias hardcoded.
+    if (!$story) {
+      $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
     }
 
-    /**
-     * Dashboard de demo interactivo.
-     *
-     * Rate limit: 20 req/min por IP (S1-01).
-     * S1-06: URL generada via Url::fromRoute() (ROUTE-LANGPREFIX-001).
-     */
-    public function demoDashboard(Request $request, string $sessionId): array
-    {
-        // S1-01: Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_dashboard',
-            $this->rateLimits['session'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return [
-                '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
-            ];
-        }
+    return [
+      '#theme' => 'demo_ai_storytelling',
+      '#session' => $session,
+      '#generated_story' => $story,
+      '#ai_generated' => $isAiGenerated,
+      '#attached' => [
+        'library' => ['ecosistema_jaraba_core/demo-storytelling'],
+        'drupalSettings' => [
+          'demoStorytelling' => [
+            'regenerateUrl' => Url::fromRoute(
+                          'ecosistema_jaraba_core.demo_api_regenerate_story',
+                          ['sessionId' => $sessionId],
+            )->toString(),
+          ],
+        ],
+      ],
+    ];
+  }
 
-        // S5-11: Validar formato de session_id.
-        if (!$this->isValidSessionId($sessionId)) {
-            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
-            return [
-                '#markup' => '<div class="demo-error">'
-                    . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
-                    . '</div>',
-            ];
-        }
-
-        $session = $this->demoService->getDemoSession($sessionId);
-
-        if (!$session) {
-            // S1-06: URL via Url::fromRoute() en lugar de hardcoded (ROUTE-LANGPREFIX-001).
-            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
-            return [
-                '#markup' => '<div class="demo-expired">'
-                    . (string) $this->t('La sesión de demo ha expirado. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
-                    . '</div>',
-            ];
-        }
-
-        // Registrar acción.
-        $this->demoService->trackDemoAction($sessionId, 'view_dashboard');
-
-        // S5-02: Evaluar nudges de conversión proactivos.
-        $nudges = $this->journeyProgression->evaluateNudges($sessionId);
-
-        // S7-07: Progressive disclosure level.
-        $disclosure = $this->journeyProgression->getDisclosureLevel($sessionId);
-
-        // S11-07: Setup Wizard + Daily Actions para demo.
-        $wizardData = $this->getDemoWizardAndActions();
-
-        // Métricas formateadas + contexto vertical.
-        $formattedMetrics = [];
-        $verticalContext = [];
-        $profileId = $session['profile_id'] ?? $session['profile']['id'] ?? '';
-        if (\Drupal::hasService('ecosistema_jaraba_core.demo_metrics_formatter')) {
-            /** @var \Drupal\ecosistema_jaraba_core\Service\DemoMetricsFormatter $formatter */
-            $formatter = \Drupal::service('ecosistema_jaraba_core.demo_metrics_formatter');
-            $formattedMetrics = $formatter->prepareForRender($session['metrics'] ?? []);
-        }
-        $verticalContext = $this->demoService->getVerticalContext($profileId);
-
-        // Inyectar AI scenarios + copilot chat adaptativo en session para template.
-        $session['ai_scenarios'] = $this->demoService->getAiScenarios();
-        $session['copilot_chat'] = $this->demoService->getCopilotDemoChat($profileId);
-
-        return [
-            '#theme' => 'demo_dashboard_view',
-            '#session' => $session,
-            '#nudges' => $nudges,
-            '#disclosure' => $disclosure,
-            '#formatted_metrics' => $formattedMetrics,
-            '#vertical_context' => $verticalContext,
-            '#wizard' => $wizardData['wizard'],
-            '#daily_actions' => $wizardData['daily_actions'],
-            '#attached' => [
-                'library' => [
-                    'ecosistema_jaraba_core/demo-dashboard',
-                ],
-                'drupalSettings' => [
-                    'demo' => [
-                        'sessionId' => $sessionId,
-                        'salesHistory' => $session['sales_history'],
-                        'metrics' => $session['metrics'],
-                        'nudges' => $nudges,
-                        'expires' => $session['expires'] ?? 0,
-                        'disclosure' => $disclosure,
-                    ],
-                ],
-            ],
-            // S5-12: Cache metadata explícita.
-            '#cache' => [
-                'max-age' => 0,
-            ],
-        ];
+  /**
+   * API: Regenerar historia de storytelling (POST → JSON).
+   *
+   * Reutiliza la lógica de generación de demoAiStorytelling() pero
+   * devuelve JSON para el fetch del frontend.
+   *
+   * Rate limit: 10 req/min por IP.
+   * Feature gate: story_generations_per_session.
+   * CSRF: obligatorio via routing.yml.
+   */
+  public function regenerateStory(Request $request, string $sessionId): JsonResponse {
+    // Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_storytelling',
+          $this->rateLimits['start'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return $rateLimited;
     }
 
-    /**
-     * AI Playground — demo pública interactiva de capacidades IA.
-     *
-     * Muestra un widget de copiloto con escenarios preconfigurados
-     * para usuarios anónimos. Rate-limited via PublicCopilotController.
-     *
-     * S1-06: Endpoint copilot generado via Url::fromRoute() (ROUTE-LANGPREFIX-001).
-     */
-    public function aiPlayground(): array
-    {
-        // S6-12: Escenarios delegados al servicio.
-        $scenarios = $this->demoService->getAiScenarios();
-
-        // S1-06: Generar URL via Url::fromRoute() (ROUTE-LANGPREFIX-001).
-        $copilotEndpoint = Url::fromRoute('jaraba_copilot_v2.api.public_chat')->toString();
-
-        return [
-            '#theme' => 'demo_ai_playground',
-            '#scenarios' => $scenarios,
-            '#copilot_endpoint' => $copilotEndpoint,
-            '#attached' => [
-                'library' => [
-                    'ecosistema_jaraba_core/demo-ai-playground',
-                ],
-                'drupalSettings' => [
-                    'demoPlayground' => [
-                        'scenarios' => $scenarios,
-                        'copilotEndpoint' => $copilotEndpoint,
-                        'maxMessages' => 10,
-                    ],
-                ],
-            ],
-            '#cache' => [
-                'max-age' => 3600,
-            ],
-        ];
+    // Validar session_id.
+    if (!$this->isValidSessionId($sessionId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de sesión inválido.'),
+      ], 400);
     }
 
-    /**
-     * Generación de historia con IA (demo).
-     *
-     * Rate limit: 10 req/min por IP (S1-01).
-     */
-    public function demoAiStorytelling(Request $request, string $sessionId): array
-    {
-        // S1-01: Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_storytelling',
-            $this->rateLimits['start'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return [
-                '#markup' => '<div class="demo-error">' . (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.') . '</div>',
-            ];
-        }
-
-        // S5-11: Validar formato de session_id.
-        if (!$this->isValidSessionId($sessionId)) {
-            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
-            return [
-                '#markup' => '<div class="demo-error">'
-                    . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
-                    . '</div>',
-            ];
-        }
-
-        $session = $this->demoService->getDemoSession($sessionId);
-
-        if (!$session) {
-            // S1-06: URL via Url::fromRoute() (ROUTE-LANGPREFIX-001).
-            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
-            return [
-                '#markup' => '<div class="demo-expired">'
-                    . (string) $this->t('La sesión de demo ha expirado. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
-                    . '</div>',
-            ];
-        }
-
-        // S5-01: Feature gate — limitar generaciones de historias.
-        $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
-        if (!$storyGate['allowed']) {
-            return [
-                '#theme' => 'demo_ai_storytelling',
-                '#session' => $session,
-                '#generated_story' => (string) $this->t('Has alcanzado el límite de generaciones de historia en esta demo. Crea tu cuenta para acceso ilimitado.'),
-                '#story_limited' => TRUE,
-                '#attached' => [
-                    'library' => ['ecosistema_jaraba_core/demo-storytelling'],
-                ],
-            ];
-        }
-        $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
-
-        // Registrar acción de valor.
-        $this->demoService->trackDemoAction($sessionId, 'generate_story');
-
-        // S7-04: Intentar storytelling con IA real, fallback a hardcoded.
-        $profile = $session['profile'];
-        $tenantName = $session['tenant_name'];
-        $story = NULL;
-        $isAiGenerated = FALSE;
-
-        if ($this->storytellingAgent) {
-            try {
-                $result = $this->storytellingAgent->execute('brand_story', [
-                    'brand_name' => $tenantName,
-                    'vertical' => $profile['vertical'] ?? 'agroconecta',
-                    'founding_context' => $profile['description'] ?? '',
-                    'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
-                ]);
-
-                if (!empty($result['success']) && !empty($result['content'])) {
-                    $story = Xss::filter($result['content']);
-                    $isAiGenerated = TRUE;
-                }
-            }
-            catch (\Exception $e) {
-                $this->getLogger('demo_controller')->warning(
-                    'Storytelling agent failed for session @session: @error',
-                    ['@session' => $sessionId, '@error' => $e->getMessage()]
-                );
-            }
-        }
-
-        // S6-12: Fallback a historias hardcoded.
-        if (!$story) {
-            $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
-        }
-
-        return [
-            '#theme' => 'demo_ai_storytelling',
-            '#session' => $session,
-            '#generated_story' => $story,
-            '#ai_generated' => $isAiGenerated,
-            '#attached' => [
-                'library' => ['ecosistema_jaraba_core/demo-storytelling'],
-                'drupalSettings' => [
-                    'demoStorytelling' => [
-                        'regenerateUrl' => Url::fromRoute(
-                            'ecosistema_jaraba_core.demo_api_regenerate_story',
-                            ['sessionId' => $sessionId],
-                        )->toString(),
-                    ],
-                ],
-            ],
-        ];
+    $session = $this->demoService->getDemoSession($sessionId);
+    if (!$session) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('La sesión de demo ha expirado.'),
+      ], 410);
     }
 
-    /**
-     * API: Regenerar historia de storytelling (POST → JSON).
-     *
-     * Reutiliza la lógica de generación de demoAiStorytelling() pero
-     * devuelve JSON para el fetch del frontend.
-     *
-     * Rate limit: 10 req/min por IP.
-     * Feature gate: story_generations_per_session.
-     * CSRF: obligatorio via routing.yml.
-     */
-    public function regenerateStory(Request $request, string $sessionId): JsonResponse
-    {
-        // Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_storytelling',
-            $this->rateLimits['start'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return $rateLimited;
-        }
+    // Feature gate.
+    $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
+    if (!$storyGate['allowed']) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Has alcanzado el límite de generaciones. Crea tu cuenta para acceso ilimitado.'),
+        'limit_reached' => TRUE,
+        'remaining' => 0,
+      ], 429);
+    }
+    $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
 
-        // Validar session_id.
-        if (!$this->isValidSessionId($sessionId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de sesión inválido.'),
-            ], 400);
-        }
+    // Registrar acción de valor.
+    $this->demoService->trackDemoAction($sessionId, 'generate_story');
 
-        $session = $this->demoService->getDemoSession($sessionId);
-        if (!$session) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('La sesión de demo ha expirado.'),
-            ], 410);
-        }
+    // Generar historia — IA real con fallback a hardcoded.
+    $profile = $session['profile'];
+    $tenantName = $session['tenant_name'];
+    $story = NULL;
+    $isAiGenerated = FALSE;
 
-        // Feature gate.
-        $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
-        if (!$storyGate['allowed']) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Has alcanzado el límite de generaciones. Crea tu cuenta para acceso ilimitado.'),
-                'limit_reached' => TRUE,
-                'remaining' => 0,
-            ], 429);
-        }
-        $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
-
-        // Registrar acción de valor.
-        $this->demoService->trackDemoAction($sessionId, 'generate_story');
-
-        // Generar historia — IA real con fallback a hardcoded.
-        $profile = $session['profile'];
-        $tenantName = $session['tenant_name'];
-        $story = NULL;
-        $isAiGenerated = FALSE;
-
-        if ($this->storytellingAgent) {
-            try {
-                $result = $this->storytellingAgent->execute('brand_story', [
-                    'brand_name' => $tenantName,
-                    'vertical' => $profile['vertical'] ?? 'agroconecta',
-                    'founding_context' => $profile['description'] ?? '',
-                    'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
-                ]);
-
-                if (!empty($result['success']) && !empty($result['content'])) {
-                    $story = Xss::filter($result['content']);
-                    $isAiGenerated = TRUE;
-                }
-            }
-            catch (\Exception $e) {
-                $this->getLogger('demo_controller')->warning(
-                    'Storytelling regeneration failed for session @session: @error',
-                    ['@session' => $sessionId, '@error' => $e->getMessage()]
-                );
-            }
-        }
-
-        if (!$story) {
-            $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
-        }
-
-        return new JsonResponse([
-            'success' => TRUE,
-            'story' => $story,
-            'ai_generated' => $isAiGenerated,
-            'remaining' => max(0, $storyGate['remaining'] - 1),
+    if ($this->storytellingAgent) {
+      try {
+        $result = $this->storytellingAgent->execute('brand_story', [
+          'brand_name' => $tenantName,
+          'vertical' => $profile['vertical'] ?? 'agroconecta',
+          'founding_context' => $profile['description'] ?? '',
+          'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
         ]);
+
+        if (!empty($result['success']) && !empty($result['content'])) {
+          $story = Xss::filter($result['content']);
+          $isAiGenerated = TRUE;
+        }
+      }
+      catch (\Exception $e) {
+        $this->getLogger('demo_controller')->warning(
+              'Storytelling regeneration failed for session @session: @error',
+              ['@session' => $sessionId, '@error' => $e->getMessage()]
+          );
+      }
     }
 
-    /**
-     * API: Descarta un nudge de conversión.
-     *
-     * S5-02: Endpoint para que el frontend descarte nudges proactivos.
-     * Rate limit: 30 req/min por IP (reutiliza demo_track).
-     * CSRF: obligatorio via routing.yml.
-     */
-    public function dismissNudge(Request $request): JsonResponse
-    {
-        // Rate limiting.
-        $rateLimited = $this->checkRateLimit(
-            'demo_track',
-            $this->rateLimits['track'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited) {
-            return $rateLimited;
-        }
-
-        $data = json_decode($request->getContent(), TRUE);
-        if (!is_array($data)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Formato de datos inválido.'),
-            ], 400);
-        }
-
-        $sessionId = $data['session_id'] ?? '';
-        $nudgeId = $data['nudge_id'] ?? '';
-
-        // Validar session_id.
-        if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de sesión inválido.'),
-            ], 400);
-        }
-
-        // Validar nudge_id (solo letras minúsculas y guiones bajos).
-        if (!is_string($nudgeId) || !preg_match('/^[a-z_]+$/', $nudgeId)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('ID de nudge inválido.'),
-            ], 400);
-        }
-
-        $this->journeyProgression->dismissNudge($sessionId, $nudgeId);
-
-        return new JsonResponse(['success' => TRUE]);
+    if (!$story) {
+      $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
     }
 
-    /**
-     * Resuelve datos del wizard y daily actions para el dashboard demo.
-     *
-     * S11-07: Lazy-load de registries (CONTAINER-DEPS-002).
-     * Usa tenantId=0 porque demo es session-scoped, no tenant-scoped.
-     *
-     * @return array{wizard: array<string, mixed>|null, daily_actions: array<int, array<string, mixed>>}
-     */
-    protected function getDemoWizardAndActions(): array {
-        $wizard = NULL;
-        $dailyActions = [];
+    return new JsonResponse([
+      'success' => TRUE,
+      'story' => $story,
+      'ai_generated' => $isAiGenerated,
+      'remaining' => max(0, $storyGate['remaining'] - 1),
+    ]);
+  }
 
-        if (\Drupal::hasService('ecosistema_jaraba_core.setup_wizard_registry')) {
-            /** @var \Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry $registry */
-            $registry = \Drupal::service('ecosistema_jaraba_core.setup_wizard_registry');
-            if ($registry->hasWizard('demo_visitor')) {
-                $wizard = $registry->getStepsForWizard('demo_visitor', 0);
-            }
-        }
-
-        if (\Drupal::hasService('ecosistema_jaraba_core.daily_actions_registry')) {
-            /** @var \Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry $actionsRegistry */
-            $actionsRegistry = \Drupal::service('ecosistema_jaraba_core.daily_actions_registry');
-            if ($actionsRegistry->hasDashboard('demo_visitor')) {
-                $dailyActions = $actionsRegistry->getActionsForDashboard('demo_visitor', 0);
-            }
-        }
-
-        return ['wizard' => $wizard, 'daily_actions' => $dailyActions];
+  /**
+   * API: Descarta un nudge de conversión.
+   *
+   * S5-02: Endpoint para que el frontend descarte nudges proactivos.
+   * Rate limit: 30 req/min por IP (reutiliza demo_track).
+   * CSRF: obligatorio via routing.yml.
+   */
+  public function dismissNudge(Request $request): JsonResponse {
+    // Rate limiting.
+    $rateLimited = $this->checkRateLimit(
+          'demo_track',
+          $this->rateLimits['track'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited) {
+      return $rateLimited;
     }
 
-    /**
-     * API: Captura lead pre-demo (soft gate).
-     *
-     * S10-01: Crea Contact + Opportunity en jaraba_crm si disponible.
-     * Rate limit: 5 req/min (endpoint sensible con email — RATE_LIMIT_CONVERT).
-     * CSRF: obligatorio via routing.yml.
-     * AI-GUARDRAILS-PII-001: email es PII, no se almacena en demo_sessions.
-     * OPTIONAL-CROSSMODULE-001: jaraba_crm es opcional.
-     */
-    public function leadGate(Request $request): JsonResponse
-    {
-        // S1-01: Rate limiting estricto.
-        $rateLimited = $this->checkRateLimit(
-            'demo_lead_gate',
-            $this->rateLimits['convert'],
-            $request->getClientIp() ?? 'unknown',
-        );
-        if ($rateLimited !== NULL) {
-            return $rateLimited;
-        }
+    $data = json_decode($request->getContent(), TRUE);
+    if (!is_array($data)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Formato de datos inválido.'),
+      ], 400);
+    }
 
-        $data = json_decode($request->getContent(), TRUE);
-        if (!is_array($data)) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Formato de datos inválido.'),
-            ], 400);
-        }
+    $sessionId = $data['session_id'] ?? '';
+    $nudgeId = $data['nudge_id'] ?? '';
 
-        $name = is_string($data['name'] ?? NULL) ? $data['name'] : '';
-        $email = is_string($data['email'] ?? NULL) ? $data['email'] : '';
-        $profileId = is_string($data['profile_id'] ?? NULL) ? $data['profile_id'] : '';
+    // Validar session_id.
+    if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de sesión inválido.'),
+      ], 400);
+    }
 
-        // S1-02: Validar inputs.
-        if (mb_strlen(trim($name)) < 2 || mb_strlen($name) > 100) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Nombre inválido (mínimo 2 caracteres).'),
-            ], 400);
-        }
-        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Dirección de email inválida.'),
-            ], 400);
-        }
-        if ($profileId === '' || preg_match('/^[a-z_]+$/', $profileId) !== 1) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Perfil de demo inválido.'),
-            ], 400);
-        }
+    // Validar nudge_id (solo letras minúsculas y guiones bajos).
+    if (!is_string($nudgeId) || !preg_match('/^[a-z_]+$/', $nudgeId)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('ID de nudge inválido.'),
+      ], 400);
+    }
 
-        // Verificar perfil existe.
-        $profile = $this->demoService->getDemoProfile($profileId);
-        if ($profile === NULL) {
-            return new JsonResponse([
-                'success' => FALSE,
-                'error' => (string) $this->t('Perfil de demo no válido.'),
-            ], 400);
-        }
+    $this->journeyProgression->dismissNudge($sessionId, $nudgeId);
 
-        $name = trim($name);
-        $vertical = $profile['vertical'] ?? 'demo';
-        $leadId = NULL;
+    return new JsonResponse(['success' => TRUE]);
+  }
 
-        // S10-02: Crear lead en CRM si disponible (OPTIONAL-CROSSMODULE-001).
-        // Lazy-load via \Drupal::service() (CONTAINER-DEPS-002).
-        if (\Drupal::hasService('jaraba_crm.contact')) {
-            try {
-                /** @var \Drupal\jaraba_crm\Service\ContactService $crmContactService */
-                $crmContactService = \Drupal::service('jaraba_crm.contact');
-                $nameParts = explode(' ', $name, 2);
-                $firstName = $nameParts[0];
-                $lastName = $nameParts[1] ?? '';
+  /**
+   * Resuelve datos del wizard y daily actions para el dashboard demo.
+   *
+   * S11-07: Lazy-load de registries (CONTAINER-DEPS-002).
+   * Usa tenantId=0 porque demo es session-scoped, no tenant-scoped.
+   *
+   * @return array{wizard: array<string, mixed>|null, daily_actions: array<int, array<string, mixed>>}
+   */
+  protected function getDemoWizardAndActions(): array {
+    $wizard = NULL;
+    $dailyActions = [];
 
-                $contact = $crmContactService->create([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName !== '' ? $lastName : $firstName,
-                    'email' => $email,
-                    'source' => 'demo_interactive',
-                    'notes' => (string) $this->t('Lead capturado desde demo interactiva. Perfil: @profile, Vertical: @vertical', [
-                        '@profile' => $profileId,
-                        '@vertical' => $vertical,
-                    ]),
-                ]);
+    if (\Drupal::hasService('ecosistema_jaraba_core.setup_wizard_registry')) {
+      /** @var \Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry $registry */
+      $registry = \Drupal::service('ecosistema_jaraba_core.setup_wizard_registry');
+      if ($registry->hasWizard('demo_visitor')) {
+        $wizard = $registry->getStepsForWizard('demo_visitor', 0);
+      }
+    }
 
-                $leadId = (int) $contact->id();
+    if (\Drupal::hasService('ecosistema_jaraba_core.daily_actions_registry')) {
+      /** @var \Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry $actionsRegistry */
+      $actionsRegistry = \Drupal::service('ecosistema_jaraba_core.daily_actions_registry');
+      if ($actionsRegistry->hasDashboard('demo_visitor')) {
+        $dailyActions = $actionsRegistry->getActionsForDashboard('demo_visitor', 0);
+      }
+    }
 
-                // Crear oportunidad vinculada al contacto.
-                if (\Drupal::hasService('jaraba_crm.opportunity')) {
-                    /** @var \Drupal\jaraba_crm\Service\OpportunityService $crmOpportunityService */
-                    $crmOpportunityService = \Drupal::service('jaraba_crm.opportunity');
-                    $crmOpportunityService->create([
-                        'title' => (string) $this->t('Demo @vertical — @name', [
-                            '@vertical' => $vertical,
-                            '@name' => $name,
-                        ]),
-                        'contact_id' => $leadId,
-                        'stage' => 'demo',
-                        'probability' => 20,
-                        'notes' => (string) $this->t('Oportunidad creada automáticamente desde demo interactiva.'),
-                    ]);
-                }
+    return ['wizard' => $wizard, 'daily_actions' => $dailyActions];
+  }
 
-                $this->getLogger('demo_controller')->info(
-                    'Demo lead captured: @email for profile @profile (CRM contact @id)',
-                    ['@email' => $email, '@profile' => $profileId, '@id' => $leadId]
-                );
-            }
-            catch (\Throwable $e) {
-                // PRESAVE-RESILIENCE-001: CRM fallo no bloquea la demo.
-                $this->getLogger('demo_controller')->warning(
-                    'CRM lead creation failed for demo: @error',
-                    ['@error' => $e->getMessage()]
-                );
-            }
-        }
+  /**
+   * API: Captura lead pre-demo (soft gate).
+   *
+   * S10-01: Crea Contact + Opportunity en jaraba_crm si disponible.
+   * Rate limit: 5 req/min (endpoint sensible con email — RATE_LIMIT_CONVERT).
+   * CSRF: obligatorio via routing.yml.
+   * AI-GUARDRAILS-PII-001: email es PII, no se almacena en demo_sessions.
+   * OPTIONAL-CROSSMODULE-001: jaraba_crm es opcional.
+   */
+  public function leadGate(Request $request): JsonResponse {
+    // S1-01: Rate limiting estricto.
+    $rateLimited = $this->checkRateLimit(
+          'demo_lead_gate',
+          $this->rateLimits['convert'],
+          $request->getClientIp() ?? 'unknown',
+      );
+    if ($rateLimited !== NULL) {
+      return $rateLimited;
+    }
 
-        // S10-03: Dispatch LEAD_CAPTURED event.
-        $this->demoService->dispatchFunnelEvent(
-            DemoSessionEvent::LEAD_CAPTURED,
-            $profileId,
-            ['vertical' => $vertical, 'crm_contact_id' => $leadId],
-        );
+    $data = json_decode($request->getContent(), TRUE);
+    if (!is_array($data)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Formato de datos inválido.'),
+      ], 400);
+    }
 
-        // Generar URL de inicio de demo.
-        $startUrl = Url::fromRoute('ecosistema_jaraba_core.demo_start', [
-            'profileId' => $profileId,
-        ])->toString();
+    $name = is_string($data['name'] ?? NULL) ? $data['name'] : '';
+    $email = is_string($data['email'] ?? NULL) ? $data['email'] : '';
+    $profileId = is_string($data['profile_id'] ?? NULL) ? $data['profile_id'] : '';
 
-        return new JsonResponse([
-            'success' => TRUE,
-            'redirect_url' => $startUrl,
-            'lead_id' => $leadId,
+    // S1-02: Validar inputs.
+    if (mb_strlen(trim($name)) < 2 || mb_strlen($name) > 100) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Nombre inválido (mínimo 2 caracteres).'),
+      ], 400);
+    }
+    if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Dirección de email inválida.'),
+      ], 400);
+    }
+    if ($profileId === '' || preg_match('/^[a-z_]+$/', $profileId) !== 1) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Perfil de demo inválido.'),
+      ], 400);
+    }
+
+    // Verificar perfil existe.
+    $profile = $this->demoService->getDemoProfile($profileId);
+    if ($profile === NULL) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Perfil de demo no válido.'),
+      ], 400);
+    }
+
+    $name = trim($name);
+    $vertical = $profile['vertical'] ?? 'demo';
+    $leadId = NULL;
+
+    // S10-02: Crear lead en CRM si disponible (OPTIONAL-CROSSMODULE-001).
+    // Lazy-load via \Drupal::service() (CONTAINER-DEPS-002).
+    if (\Drupal::hasService('jaraba_crm.contact')) {
+      try {
+        /** @var \Drupal\jaraba_crm\Service\ContactService $crmContactService */
+        $crmContactService = \Drupal::service('jaraba_crm.contact');
+        $nameParts = explode(' ', $name, 2);
+        $firstName = $nameParts[0];
+        $lastName = $nameParts[1] ?? '';
+
+        $contact = $crmContactService->create([
+          'first_name' => $firstName,
+          'last_name' => $lastName !== '' ? $lastName : $firstName,
+          'email' => $email,
+          'source' => 'demo_interactive',
+          'notes' => (string) $this->t('Lead capturado desde demo interactiva. Perfil: @profile, Vertical: @vertical', [
+            '@profile' => $profileId,
+            '@vertical' => $vertical,
+          ]),
         ]);
+
+        $leadId = (int) $contact->id();
+
+        // Crear oportunidad vinculada al contacto.
+        if (\Drupal::hasService('jaraba_crm.opportunity')) {
+          /** @var \Drupal\jaraba_crm\Service\OpportunityService $crmOpportunityService */
+          $crmOpportunityService = \Drupal::service('jaraba_crm.opportunity');
+          $crmOpportunityService->create([
+            'title' => (string) $this->t('Demo @vertical — @name', [
+              '@vertical' => $vertical,
+              '@name' => $name,
+            ]),
+            'contact_id' => $leadId,
+            'stage' => 'demo',
+            'probability' => 20,
+            'notes' => (string) $this->t('Oportunidad creada automáticamente desde demo interactiva.'),
+          ]);
+        }
+
+        $this->getLogger('demo_controller')->info(
+              'Demo lead captured: @email for profile @profile (CRM contact @id)',
+              ['@email' => $email, '@profile' => $profileId, '@id' => $leadId]
+          );
+      }
+      catch (\Throwable $e) {
+        // PRESAVE-RESILIENCE-001: CRM fallo no bloquea la demo.
+        $this->getLogger('demo_controller')->warning(
+              'CRM lead creation failed for demo: @error',
+              ['@error' => $e->getMessage()]
+          );
+      }
     }
+
+    // S10-03: Dispatch LEAD_CAPTURED event.
+    $this->demoService->dispatchFunnelEvent(
+          DemoSessionEvent::LEAD_CAPTURED,
+          $profileId,
+          ['vertical' => $vertical, 'crm_contact_id' => $leadId],
+      );
+
+    // Generar URL de inicio de demo.
+    $startUrl = Url::fromRoute('ecosistema_jaraba_core.demo_start', [
+      'profileId' => $profileId,
+    ])->toString();
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'redirect_url' => $startUrl,
+      'lead_id' => $leadId,
+    ]);
+  }
 
 }

@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
- * LIST BUILDER PARA FAQs DEL TENANT
+ * LIST BUILDER PARA FAQs DEL TENANT.
  *
  * PROPÓSITO:
  * Muestra la lista de FAQs del tenant actual con filtros y acciones.
@@ -20,108 +20,104 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * MULTI-TENANCY:
  * Filtra automáticamente por tenant actual.
  */
-class TenantFaqListBuilder extends EntityListBuilder
-{
+class TenantFaqListBuilder extends EntityListBuilder {
 
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext = NULL;
+  /**
+   * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+   */
+  protected ?TenantContextService $tenantContext = NULL;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-        $instance = parent::createInstance($container, $entity_type);
-        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
-            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-        }
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    $instance = parent::createInstance($container, $entity_type);
+    if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+      // AUDIT-CONS-N10: Proper DI for tenant context.
+      $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
     }
+    return $instance;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildHeader(): array
-    {
-        $header = [];
-        $header['question'] = $this->t('Pregunta');
-        $header['category'] = $this->t('Categoría');
-        $header['status'] = $this->t('Estado');
-        $header['priority'] = $this->t('Prioridad');
-        return $header + parent::buildHeader();
+  /**
+   * {@inheritdoc}
+   */
+  public function buildHeader(): array {
+    $header = [];
+    $header['question'] = $this->t('Pregunta');
+    $header['category'] = $this->t('Categoría');
+    $header['status'] = $this->t('Estado');
+    $header['priority'] = $this->t('Prioridad');
+    return $header + parent::buildHeader();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildRow(EntityInterface $entity): array {
+    /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantFaq $entity */
+    $row = [];
+
+    // Pregunta (truncada).
+    $question = $entity->getQuestion();
+    if (strlen($question) > 60) {
+      $question = substr($question, 0, 57) . '...';
     }
+    $row['question'] = $question;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildRow(EntityInterface $entity): array
-    {
-        /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantFaq $entity */
-        $row = [];
+    // Categoría con badge.
+    $category = $entity->getCategory();
+    $allowedValues = $entity->getFieldDefinition('category')->getSetting('allowed_values');
+    $categoryLabel = $allowedValues[$category] ?? $category;
+    $row['category'] = $categoryLabel;
 
-        // Pregunta (truncada).
-        $question = $entity->getQuestion();
-        if (strlen($question) > 60) {
-            $question = substr($question, 0, 57) . '...';
-        }
-        $row['question'] = $question;
-
-        // Categoría con badge.
-        $category = $entity->getCategory();
-        $allowedValues = $entity->getFieldDefinition('category')->getSetting('allowed_values');
-        $categoryLabel = $allowedValues[$category] ?? $category;
-        $row['category'] = $categoryLabel;
-
-        // Estado.
-        $row['status'] = $entity->isPublished()
+    // Estado.
+    $row['status'] = $entity->isPublished()
             ? $this->t('Publicada')
             : $this->t('Borrador');
 
-        // Prioridad.
-        $row['priority'] = $entity->get('priority')->value ?? 0;
+    // Prioridad.
+    $row['priority'] = $entity->get('priority')->value ?? 0;
 
-        return $row + parent::buildRow($entity);
+    return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityIds(): array {
+    // Obtener tenant actual.
+    $tenantId = $this->getCurrentTenantId();
+
+    if (!$tenantId) {
+      return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getEntityIds(): array
-    {
-        // Obtener tenant actual.
-        $tenantId = $this->getCurrentTenantId();
+    $query = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('tenant_id', $tenantId)
+      ->sort('priority', 'DESC')
+      ->sort('created', 'DESC');
 
-        if (!$tenantId) {
-            return [];
-        }
-
-        $query = $this->getStorage()->getQuery()
-            ->accessCheck(TRUE)
-            ->condition('tenant_id', $tenantId)
-            ->sort('priority', 'DESC')
-            ->sort('created', 'DESC');
-
-        // Aplicar paginación.
-        if ($this->limit) {
-            $query->pager($this->limit);
-        }
-
-        return $query->execute();
+    // Aplicar paginación.
+    if ($this->limit) {
+      $query->pager($this->limit);
     }
 
-    /**
-     * Obtiene el tenant ID actual.
-     */
-    protected function getCurrentTenantId(): ?int
-    {
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
-        }
-        return NULL;
+    return $query->execute();
+  }
+
+  /**
+   * Obtiene el tenant ID actual.
+   */
+  protected function getCurrentTenantId(): ?int {
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
+      $tenant = $tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
     }
+    return NULL;
+  }
 
 }

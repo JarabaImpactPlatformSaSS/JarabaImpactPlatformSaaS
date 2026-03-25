@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Psr\Log\LoggerInterface;
@@ -243,7 +244,7 @@ class InsercionValidatorService {
     try {
       $storage = $this->entityTypeManager->getStorage('programa_participante_ei');
       $entity = $storage->load($participanteId);
-      if (!$entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+      if (!$entity instanceof ContentEntityInterface) {
         $result['reason'] = (string) $this->t('Participante no encontrado.');
         return $result;
       }

@@ -55,192 +55,181 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.group_membership.settings",
  * )
  */
-class GroupMembership extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface
-{
+class GroupMembership extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {
 
-    use EntityChangedTrait;
-    use EntityOwnerTrait;
+  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
-    /**
-     * Membership roles within a group.
-     */
-    public const ROLE_ADMIN = 'group_admin';
-    public const ROLE_MODERATOR = 'group_moderator';
-    public const ROLE_FACILITATOR = 'group_facilitator';
-    public const ROLE_MENTOR = 'group_mentor';
-    public const ROLE_MEMBER = 'group_member';
-    public const ROLE_GUEST = 'group_guest';
+  /**
+   * Membership roles within a group.
+   */
+  public const ROLE_ADMIN = 'group_admin';
+  public const ROLE_MODERATOR = 'group_moderator';
+  public const ROLE_FACILITATOR = 'group_facilitator';
+  public const ROLE_MENTOR = 'group_mentor';
+  public const ROLE_MEMBER = 'group_member';
+  public const ROLE_GUEST = 'group_guest';
 
-    /**
-     * Membership statuses.
-     */
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_SUSPENDED = 'suspended';
-    public const STATUS_LEFT = 'left';
+  /**
+   * Membership statuses.
+   */
+  public const STATUS_PENDING = 'pending';
+  public const STATUS_ACTIVE = 'active';
+  public const STATUS_SUSPENDED = 'suspended';
+  public const STATUS_LEFT = 'left';
 
-    /**
-     * Gets the group ID.
-     */
-    public function getGroupId(): int
-    {
-        return (int) $this->get('group_id')->target_id;
-    }
+  /**
+   * Gets the group ID.
+   */
+  public function getGroupId(): int {
+    return (int) $this->get('group_id')->target_id;
+  }
 
-    /**
-     * Gets the group entity.
-     */
-    public function getGroup(): ?CollaborationGroup
-    {
-        return $this->get('group_id')->entity;
-    }
+  /**
+   * Gets the group entity.
+   */
+  public function getGroup(): ?CollaborationGroup {
+    return $this->get('group_id')->entity;
+  }
 
-    /**
-     * Gets the membership role.
-     */
-    public function getRole(): string
-    {
-        return $this->get('role')->value ?? self::ROLE_MEMBER;
-    }
+  /**
+   * Gets the membership role.
+   */
+  public function getRole(): string {
+    return $this->get('role')->value ?? self::ROLE_MEMBER;
+  }
 
-    /**
-     * Sets the membership role.
-     */
-    public function setRole(string $role): self
-    {
-        $this->set('role', $role);
-        return $this;
-    }
+  /**
+   * Sets the membership role.
+   */
+  public function setRole(string $role): self {
+    $this->set('role', $role);
+    return $this;
+  }
 
-    /**
-     * Gets the membership status.
-     */
-    public function getStatus(): string
-    {
-        return $this->get('status')->value ?? self::STATUS_PENDING;
-    }
+  /**
+   * Gets the membership status.
+   */
+  public function getStatus(): string {
+    return $this->get('status')->value ?? self::STATUS_PENDING;
+  }
 
-    /**
-     * Sets the membership status.
-     */
-    public function setStatus(string $status): self
-    {
-        $this->set('status', $status);
-        return $this;
-    }
+  /**
+   * Sets the membership status.
+   */
+  public function setStatus(string $status): self {
+    $this->set('status', $status);
+    return $this;
+  }
 
-    /**
-     * Checks if membership is active.
-     */
-    public function isActive(): bool
-    {
-        return $this->getStatus() === self::STATUS_ACTIVE;
-    }
+  /**
+   * Checks if membership is active.
+   */
+  public function isActive(): bool {
+    return $this->getStatus() === self::STATUS_ACTIVE;
+  }
 
-    /**
-     * Checks if user has admin role.
-     */
-    public function isAdmin(): bool
-    {
-        return $this->getRole() === self::ROLE_ADMIN;
-    }
+  /**
+   * Checks if user has admin role.
+   */
+  public function isAdmin(): bool {
+    return $this->getRole() === self::ROLE_ADMIN;
+  }
 
-    /**
-     * Checks if user can moderate content.
-     */
-    public function canModerate(): bool
-    {
-        return in_array($this->getRole(), [
-            self::ROLE_ADMIN,
-            self::ROLE_MODERATOR,
-            self::ROLE_FACILITATOR,
-        ]);
-    }
+  /**
+   * Checks if user can moderate content.
+   */
+  public function canModerate(): bool {
+    return in_array($this->getRole(), [
+      self::ROLE_ADMIN,
+      self::ROLE_MODERATOR,
+      self::ROLE_FACILITATOR,
+    ]);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Grupo'))
-            ->setDescription(t('Grupo al que pertenece esta membresía.'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'collaboration_group')
-            ->setDisplayOptions('view', ['weight' => 0])
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Grupo'))
+      ->setDescription(t('Grupo al que pertenece esta membresía.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'collaboration_group')
+      ->setDisplayOptions('view', ['weight' => 0])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['role'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Rol'))
-            ->setDescription(t('Rol del usuario dentro del grupo.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                self::ROLE_ADMIN => t('Administrador'),
-                self::ROLE_MODERATOR => t('Moderador'),
-                self::ROLE_FACILITATOR => t('Facilitador'),
-                self::ROLE_MENTOR => t('Mentor'),
-                self::ROLE_MEMBER => t('Miembro'),
-                self::ROLE_GUEST => t('Invitado'),
-            ])
-            ->setDefaultValue(self::ROLE_MEMBER)
-            ->setDisplayOptions('view', ['weight' => 1])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['role'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Rol'))
+      ->setDescription(t('Rol del usuario dentro del grupo.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        self::ROLE_ADMIN => t('Administrador'),
+        self::ROLE_MODERATOR => t('Moderador'),
+        self::ROLE_FACILITATOR => t('Facilitador'),
+        self::ROLE_MENTOR => t('Mentor'),
+        self::ROLE_MEMBER => t('Miembro'),
+        self::ROLE_GUEST => t('Invitado'),
+      ])
+      ->setDefaultValue(self::ROLE_MEMBER)
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setDescription(t('Estado de la membresía.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                self::STATUS_PENDING => t('Pendiente'),
-                self::STATUS_ACTIVE => t('Activo'),
-                self::STATUS_SUSPENDED => t('Suspendido'),
-                self::STATUS_LEFT => t('Dejó el grupo'),
-            ])
-            ->setDefaultValue(self::STATUS_PENDING)
-            ->setDisplayOptions('view', ['weight' => 2])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setDescription(t('Estado de la membresía.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        self::STATUS_PENDING => t('Pendiente'),
+        self::STATUS_ACTIVE => t('Activo'),
+        self::STATUS_SUSPENDED => t('Suspendido'),
+        self::STATUS_LEFT => t('Dejó el grupo'),
+      ])
+      ->setDefaultValue(self::STATUS_PENDING)
+      ->setDisplayOptions('view', ['weight' => 2])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['joined_at'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha de Ingreso'))
-            ->setDescription(t('Cuándo se unió al grupo.'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['joined_at'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha de Ingreso'))
+      ->setDescription(t('Cuándo se unió al grupo.'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['invited_by'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Invitado por'))
-            ->setDescription(t('Usuario que invitó a este miembro.'))
-            ->setSetting('target_type', 'user')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['invited_by'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Invitado por'))
+      ->setDescription(t('Usuario que invitó a este miembro.'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['notes'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Notas'))
-            ->setDescription(t('Notas internas sobre el miembro.'))
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['notes'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Notas'))
+      ->setDescription(t('Notas internas sobre el miembro.'))
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

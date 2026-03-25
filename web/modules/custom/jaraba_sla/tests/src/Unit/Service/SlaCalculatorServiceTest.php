@@ -311,5 +311,10 @@ class SlaCalculatorServiceTest extends UnitTestCase {
  * Temporary interface for mocking SLA entities.
  */
 interface SlaEntityMockInterface {
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }

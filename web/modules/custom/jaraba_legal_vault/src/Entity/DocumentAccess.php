@@ -70,7 +70,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIA AL DOCUMENTO
     // =========================================================================
-
     $fields['document_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Documento'))
       ->setDescription(new TranslatableMarkup('Documento seguro al que se otorga acceso.'))
@@ -82,7 +81,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: DESTINATARIO
     // =========================================================================
-
     $fields['grantee_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Destinatario'))
       ->setDescription(new TranslatableMarkup('Usuario al que se otorga acceso.'))
@@ -100,7 +98,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: TOKEN Y CIFRADO
     // =========================================================================
-
     $fields['access_token'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Token de Acceso'))
       ->setDescription(new TranslatableMarkup('Token unico para acceso al documento compartido.'))
@@ -114,7 +111,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 4: PERMISOS Y LIMITES
     // =========================================================================
-
     $fields['permissions'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Permisos'))
       ->setDescription(new TranslatableMarkup('Permisos granulares: view, download, print, etc.'));
@@ -134,7 +130,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 5: EXPIRACION Y REVOCACION
     // =========================================================================
-
     $fields['expires_at'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha de Expiracion'))
       ->setDescription(new TranslatableMarkup('Fecha en que expira el acceso compartido.'))
@@ -158,7 +153,6 @@ class DocumentAccess extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 6: QUIEN COMPARTE Y TIMESTAMPS
     // =========================================================================
-
     $fields['granted_by'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Compartido por'))
       ->setDescription(new TranslatableMarkup('Usuario que otorgo el acceso.'))

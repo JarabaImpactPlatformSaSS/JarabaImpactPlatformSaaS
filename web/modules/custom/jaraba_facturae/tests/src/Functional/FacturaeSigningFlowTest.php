@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Functional;
 
+use Drupal\jaraba_facturae\ValueObject\FACeResponse;
+use Drupal\jaraba_facturae\Service\FacturaeXAdESService;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -50,7 +52,7 @@ class FacturaeSigningFlowTest extends BrowserTestBase {
    * Tests that the XAdES service class is properly structured.
    */
   public function testXAdESServiceStructure(): void {
-    $reflection = new \ReflectionClass(\Drupal\jaraba_facturae\Service\FacturaeXAdESService::class);
+    $reflection = new \ReflectionClass(FacturaeXAdESService::class);
 
     // Should have the three public methods.
     $this->assertTrue($reflection->hasMethod('signDocument'));
@@ -68,11 +70,11 @@ class FacturaeSigningFlowTest extends BrowserTestBase {
    * Tests that FACeResponse has correct factories.
    */
   public function testFACeResponseFactories(): void {
-    $success = \Drupal\jaraba_facturae\ValueObject\FACeResponse::success('0', 'OK', 'REG-1', 'CSV-1');
+    $success = FACeResponse::success('0', 'OK', 'REG-1', 'CSV-1');
     $this->assertTrue($success->success);
     $this->assertEquals('REG-1', $success->registryNumber);
 
-    $error = \Drupal\jaraba_facturae\ValueObject\FACeResponse::error('500', 'Failed');
+    $error = FACeResponse::error('500', 'Failed');
     $this->assertFalse($error->success);
     $this->assertEmpty($error->registryNumber);
   }

@@ -112,7 +112,7 @@ class InsightsDashboardController extends ControllerBase {
   /**
    * Endpoint API: Resumen de todas las metricas de Insights Hub.
    *
-   * GET /api/v1/insights/summary?date_range=7d|30d|90d
+   * GET /api/v1/insights/summary?date_range=7d|30d|90d.
    *
    * Devuelve un resumen agregado de todas las metricas del tenant actual
    * incluyendo Search Console, Web Vitals, Errors y Uptime.

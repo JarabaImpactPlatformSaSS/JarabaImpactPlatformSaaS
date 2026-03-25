@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class MerchantPayoutService {
 
   protected LoggerInterface $logger;
@@ -19,7 +22,10 @@ class MerchantPayoutService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta');
   }
 
-  public function getMerchantSuborders(int $merchantId, string $status = NULL, int $limit = 50): array {
+  /**
+   *
+   */
+  public function getMerchantSuborders(int $merchantId, ?string $status = NULL, int $limit = 50): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
 
     try {
@@ -46,6 +52,9 @@ class MerchantPayoutService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantPayoutSummary(int $merchantId): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
 
@@ -105,6 +114,9 @@ class MerchantPayoutService {
     }
   }
 
+  /**
+   *
+   */
   public function getMerchantRecentPayouts(int $merchantId, int $limit = 20): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
 
@@ -128,6 +140,9 @@ class MerchantPayoutService {
     }
   }
 
+  /**
+   *
+   */
   public function getMonthlyRevenue(int $merchantId, int $months = 6): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
     $result = [];
@@ -159,6 +174,9 @@ class MerchantPayoutService {
     return $result;
   }
 
+  /**
+   *
+   */
   public function getPendingPayoutAmount(int $merchantId): float {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
 

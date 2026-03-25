@@ -16,8 +16,7 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * Replaces \Drupal::service('path.current') service locator pattern.
  * Adds PWA meta tags and premium admin styles.
  */
-class PageAttachmentsHooks
-{
+class PageAttachmentsHooks {
 
   public function __construct(
     protected readonly CurrentPathStack $currentPath,
@@ -31,8 +30,7 @@ class PageAttachmentsHooks
    * Adds PWA meta tags and premium admin styles.
    */
   #[Hook('page_attachments_alter')]
-  public function alterPageAttachments(array &$attachments): void
-  {
+  public function alterPageAttachments(array &$attachments): void {
     $this->addPwaMetaTags($attachments);
     $this->addDesignTokenCss($attachments);
     $this->addPremiumAdminStyles($attachments);
@@ -42,9 +40,8 @@ class PageAttachmentsHooks
   /**
    * Adds PWA meta tags and service worker registration.
    */
-  protected function addPwaMetaTags(array &$attachments): void
-  {
-    // Web App Manifest
+  protected function addPwaMetaTags(array &$attachments): void {
+    // Web App Manifest.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -57,7 +54,7 @@ class PageAttachmentsHooks
       'pwa_manifest',
     ];
 
-    // Theme Color
+    // Theme Color.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -96,7 +93,7 @@ class PageAttachmentsHooks
       'pwa_mobile_capable',
     ];
 
-    // Apple Status Bar Style
+    // Apple Status Bar Style.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -109,7 +106,7 @@ class PageAttachmentsHooks
       'pwa_apple_status_bar',
     ];
 
-    // Apple Mobile Web App Title
+    // Apple Mobile Web App Title.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -122,7 +119,7 @@ class PageAttachmentsHooks
       'pwa_apple_title',
     ];
 
-    // Apple Touch Icon
+    // Apple Touch Icon.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -135,7 +132,7 @@ class PageAttachmentsHooks
       'pwa_apple_touch_icon',
     ];
 
-    // Service Worker Registration Script
+    // Service Worker Registration Script.
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -164,8 +161,7 @@ class PageAttachmentsHooks
    * Resuelve la cascada Platform → Vertical → Plan → Tenant
    * y genera un bloque <style> con --ej-* custom properties.
    */
-  protected function addDesignTokenCss(array &$attachments): void
-  {
+  protected function addDesignTokenCss(array &$attachments): void {
     $tenant = $this->tenantContext->getCurrentTenant();
     $tokens = $this->stylePreset->resolveTokensForTenant($tenant);
     $css = $this->stylePreset->generateInlineCss($tokens);
@@ -190,16 +186,15 @@ class PageAttachmentsHooks
   /**
    * Adds premium admin styles for structure pages.
    */
-  protected function addPremiumAdminStyles(array &$attachments): void
-  {
+  protected function addPremiumAdminStyles(array &$attachments): void {
     $current_path = $this->currentPath->getPath();
 
-    // Admin tabs fix for Spanish text truncation
+    // Admin tabs fix for Spanish text truncation.
     if (str_starts_with($current_path, '/admin/content') || str_contains($current_path, '/es/admin/content')) {
       $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/admin-tabs-fix';
     }
 
-    // Premium paths that need UX Premium styles
+    // Premium paths that need UX Premium styles.
     $premium_paths = [
       '/admin/structure/tenants',
       '/admin/structure/verticales',
@@ -235,8 +230,7 @@ class PageAttachmentsHooks
    *
    * Plan Unificacion JarabaLex + Despachos v1 — Fase 4.
    */
-  protected function addLandingSeo(array &$attachments): void
-  {
+  protected function addLandingSeo(array &$attachments): void {
     $route = (string) $this->routeMatch->getRouteName();
     // SEO-METASITE-001: URL absoluta para og:url en TODAS las landing pages.
     $request = \Drupal::request();
@@ -661,7 +655,6 @@ class PageAttachmentsHooks
 
     // --- Andalucia +ei: jaraba_andalucia_ei.landing now returns 301 → /andaluciamasei.html ---
     // OG/Schema/Twitter meta removed — redirect never renders HTML.
-
     // --- Emprendimiento ---
     if ($route === 'ecosistema_jaraba_core.landing.emprendimiento') {
       $description = 'Plataforma de emprendimiento con IA: calculadora de madurez digital, Business Model Canvas con IA, validación de MVP con Lean Startup, Mastermind grupal, health score emprendedor, 15 insignias digitales, copilot proactivo, motor de experimentos A/B y acceso a financiación ICO/ENISA.';
@@ -969,8 +962,7 @@ class PageAttachmentsHooks
   /**
    * Returns the premium admin inline CSS.
    */
-  protected function getPremiumAdminCss(): string
-  {
+  protected function getPremiumAdminCss(): string {
     return '
       /* UX Premium para páginas de estructura - v2 sin gaps */
       body.path-admin { background: #0f172a !important; }

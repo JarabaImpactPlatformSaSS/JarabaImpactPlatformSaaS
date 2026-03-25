@@ -13,75 +13,73 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler for Business Model Canvas entities.
  */
-class BusinessModelCanvasAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class BusinessModelCanvasAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        /** @var \Drupal\jaraba_business_tools\Entity\BusinessModelCanvasInterface $entity */
-
-        // Admin permission grants full access.
-        if ($account->hasPermission('administer business model canvas')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        $isOwner = (int) $entity->getOwnerId() === (int) $account->id();
-        $isCollaborator = in_array($account->id(), $entity->getSharedWith());
-        $isTemplate = $entity->isTemplate();
-
-        switch ($operation) {
-            case 'view':
-                // Owner, collaborators, and anyone for templates.
-                if ($isOwner || $isCollaborator) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                if ($isTemplate && $account->hasPermission('view any business model canvas')) {
-                    return AccessResult::allowed()->cachePerPermissions()->addCacheableDependency($entity);
-                }
-                if ($account->hasPermission('view any business model canvas')) {
-                    return AccessResult::allowed()->cachePerPermissions();
-                }
-                break;
-
-            case 'update':
-                if ($isOwner && $account->hasPermission('edit own business model canvas')) {
-                    return AccessResult::allowed()->cachePerUser()->cachePerPermissions();
-                }
-                if ($isCollaborator && $account->hasPermission('edit own business model canvas')) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                if ($account->hasPermission('edit any business model canvas')) {
-                    return AccessResult::allowed()->cachePerPermissions();
-                }
-                break;
-
-            case 'delete':
-                if ($isOwner && $account->hasPermission('delete own business model canvas')) {
-                    return AccessResult::allowed()->cachePerUser()->cachePerPermissions();
-                }
-                if ($account->hasPermission('delete any business model canvas')) {
-                    return AccessResult::allowed()->cachePerPermissions();
-                }
-                break;
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'create business model canvas');
+    /** @var \Drupal\jaraba_business_tools\Entity\BusinessModelCanvasInterface $entity */
+
+    // Admin permission grants full access.
+    if ($account->hasPermission('administer business model canvas')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
+
+    $isOwner = (int) $entity->getOwnerId() === (int) $account->id();
+    $isCollaborator = in_array($account->id(), $entity->getSharedWith());
+    $isTemplate = $entity->isTemplate();
+
+    switch ($operation) {
+      case 'view':
+        // Owner, collaborators, and anyone for templates.
+        if ($isOwner || $isCollaborator) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        if ($isTemplate && $account->hasPermission('view any business model canvas')) {
+          return AccessResult::allowed()->cachePerPermissions()->addCacheableDependency($entity);
+        }
+        if ($account->hasPermission('view any business model canvas')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        break;
+
+      case 'update':
+        if ($isOwner && $account->hasPermission('edit own business model canvas')) {
+          return AccessResult::allowed()->cachePerUser()->cachePerPermissions();
+        }
+        if ($isCollaborator && $account->hasPermission('edit own business model canvas')) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        if ($account->hasPermission('edit any business model canvas')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        break;
+
+      case 'delete':
+        if ($isOwner && $account->hasPermission('delete own business model canvas')) {
+          return AccessResult::allowed()->cachePerUser()->cachePerPermissions();
+        }
+        if ($account->hasPermission('delete any business model canvas')) {
+          return AccessResult::allowed()->cachePerPermissions();
+        }
+        break;
+    }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'create business model canvas');
+  }
 
 }

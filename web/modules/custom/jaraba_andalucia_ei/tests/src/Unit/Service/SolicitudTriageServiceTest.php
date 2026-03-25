@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\jaraba_andalucia_ei\Entity\SolicitudEiInterface;
 use Drupal\jaraba_andalucia_ei\Service\SolicitudTriageService;
 use Drupal\Tests\UnitTestCase;

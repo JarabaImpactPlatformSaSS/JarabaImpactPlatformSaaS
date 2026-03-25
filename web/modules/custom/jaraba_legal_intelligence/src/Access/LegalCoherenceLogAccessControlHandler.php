@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_intelligence\Access;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
@@ -51,7 +52,7 @@ class LegalCoherenceLogAccessControlHandler extends EntityAccessControlHandler i
     switch ($operation) {
       case 'view':
         $hasPermission = AccessResult::allowedIfHasPermission($account, 'view legal coherence logs');
-        if ($hasPermission->isAllowed() && $this->tenantContext !== NULL && $entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+        if ($hasPermission->isAllowed() && $this->tenantContext !== NULL && $entity instanceof ContentEntityInterface) {
           $entityTenantId = (int) $entity->get('tenant_id')->target_id;
           $currentTenantId = $this->tenantContext->getCurrentTenantId();
           if ($entityTenantId > 0 && $currentTenantId !== NULL && $entityTenantId !== (int) $currentTenantId) {

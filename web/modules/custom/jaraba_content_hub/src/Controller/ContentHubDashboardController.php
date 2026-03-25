@@ -16,345 +16,333 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a visual interface for content editors to manage
  * articles, categories, and view content performance.
  */
-class ContentHubDashboardController extends ControllerBase
-{
+class ContentHubDashboardController extends ControllerBase {
 
-    /**
-     * Constructs a ContentHubDashboardController.
-     */
-    public function __construct(
-        protected ?SetupWizardRegistry $wizardRegistry = NULL,
-        protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
-    ) {}
+  /**
+   * Constructs a ContentHubDashboardController.
+   */
+  public function __construct(
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
+  ) {}
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static {
-        return new static(
-            $container->has('ecosistema_jaraba_core.setup_wizard_registry')
-                ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
-            $container->has('ecosistema_jaraba_core.daily_actions_registry')
-                ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
-        );
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+              ? $container->get('ecosistema_jaraba_core.setup_wizard_registry') : NULL,
+          $container->has('ecosistema_jaraba_core.daily_actions_registry')
+              ? $container->get('ecosistema_jaraba_core.daily_actions_registry') : NULL,
+      );
+  }
 
-    /**
-     * Renders the Content Hub Editor Dashboard.
-     */
-    public function dashboard(): array
-    {
-        $stats = $this->getContentStats();
-        $recentArticles = $this->getRecentArticles(5);
-        $topCategories = $this->getTopCategories(5);
-        $drafts = $this->getDraftArticles(5);
+  /**
+   * Renders the Content Hub Editor Dashboard.
+   */
+  public function dashboard(): array {
+    $stats = $this->getContentStats();
+    $recentArticles = $this->getRecentArticles(5);
+    $topCategories = $this->getTopCategories(5);
+    $drafts = $this->getDraftArticles(5);
 
-        return [
-            '#theme' => 'content_hub_dashboard',
-            '#stats' => $stats,
-            '#recent_articles' => $recentArticles,
-            '#top_categories' => $topCategories,
-            '#drafts' => $drafts,
-            '#quick_actions' => $this->getQuickActions(),
-            '#attached' => [
-                'library' => ['ecosistema_jaraba_theme/content-hub'],
-            ],
-            '#cache' => [
-                'tags' => ['content_article_list', 'content_category_list'],
-                'max-age' => 300,
-            ],
-        ];
-    }
+    return [
+      '#theme' => 'content_hub_dashboard',
+      '#stats' => $stats,
+      '#recent_articles' => $recentArticles,
+      '#top_categories' => $topCategories,
+      '#drafts' => $drafts,
+      '#quick_actions' => $this->getQuickActions(),
+      '#attached' => [
+        'library' => ['ecosistema_jaraba_theme/content-hub'],
+      ],
+      '#cache' => [
+        'tags' => ['content_article_list', 'content_category_list'],
+        'max-age' => 300,
+      ],
+    ];
+  }
 
-    /**
-     * Renders the Content Hub Dashboard for frontend (tenant editors).
-     *
-     * Uses a clean page template with header/footer, no admin theme.
-     * All variables (logo, site_name, theme_settings) are injected via 
-     * jaraba_content_hub_preprocess_page().
-     */
-    public function dashboardFrontend(): array
-    {
-        $stats = $this->getContentStats();
-        $recentArticles = $this->getRecentArticles(5);
-        $topCategories = $this->getTopCategories(5);
-        $drafts = $this->getDraftArticles(5);
+  /**
+   * Renders the Content Hub Dashboard for frontend (tenant editors).
+   *
+   * Uses a clean page template with header/footer, no admin theme.
+   * All variables (logo, site_name, theme_settings) are injected via
+   * jaraba_content_hub_preprocess_page().
+   */
+  public function dashboardFrontend(): array {
+    $stats = $this->getContentStats();
+    $recentArticles = $this->getRecentArticles(5);
+    $topCategories = $this->getTopCategories(5);
+    $drafts = $this->getDraftArticles(5);
 
-        // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
-        // Resolve tenant context — content_hub steps use tenantId for queries.
-        $wizardContextId = (int) (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')
-            ? \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId() ?? $this->currentUser()->id()
-            : $this->currentUser()->id());
-        $setupWizard = $this->wizardRegistry?->hasWizard('editor_content_hub')
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions data.
+    // Resolve tenant context — content_hub steps use tenantId for queries.
+    $wizardContextId = (int) (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')
+          ? \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId() ?? $this->currentUser()->id()
+          : $this->currentUser()->id());
+    $setupWizard = $this->wizardRegistry?->hasWizard('editor_content_hub')
             ? $this->wizardRegistry->getStepsForWizard('editor_content_hub', $wizardContextId)
             : NULL;
-        $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('editor_content_hub', $wizardContextId) ?? [];
+    $dailyActions = $this->dailyActionsRegistry?->getActionsForDashboard('editor_content_hub', $wizardContextId) ?? [];
 
-        return [
-            '#theme' => 'content_hub_dashboard_frontend',
-            '#stats' => $stats,
-            '#recent_articles' => $recentArticles,
-            '#top_categories' => $topCategories,
-            '#drafts' => $drafts,
-            '#quick_actions' => $this->getQuickActionsFrontend(),
-            '#setup_wizard' => $setupWizard,
-            '#daily_actions' => $dailyActions,
-            '#attached' => [
-                'library' => [
-                    'ecosistema_jaraba_theme/content-hub',
-                ],
-            ],
-            '#cache' => [
-                'tags' => ['content_article_list', 'content_category_list', 'config:system.site'],
-                'max-age' => 300,
-            ],
-        ];
+    return [
+      '#theme' => 'content_hub_dashboard_frontend',
+      '#stats' => $stats,
+      '#recent_articles' => $recentArticles,
+      '#top_categories' => $topCategories,
+      '#drafts' => $drafts,
+      '#quick_actions' => $this->getQuickActionsFrontend(),
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_theme/content-hub',
+        ],
+      ],
+      '#cache' => [
+        'tags' => ['content_article_list', 'content_category_list', 'config:system.site'],
+        'max-age' => 300,
+      ],
+    ];
+  }
+
+  /**
+   * Gets content statistics.
+   */
+  protected function getContentStats(): array {
+    $articleStorage = $this->entityTypeManager()->getStorage('content_article');
+    $categoryStorage = $this->entityTypeManager()->getStorage('content_category');
+
+    // Total articles.
+    $totalArticles = $articleStorage->getQuery()
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    // Published articles.
+    $publishedArticles = $articleStorage->getQuery()
+      ->condition('status', 'published')
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    // Draft articles.
+    $draftArticles = $articleStorage->getQuery()
+      ->condition('status', 'draft')
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    // Total categories.
+    $totalCategories = $categoryStorage->getQuery()
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    // Articles this month.
+    $startOfMonth = strtotime('first day of this month midnight');
+    $articlesThisMonth = $articleStorage->getQuery()
+      ->condition('created', $startOfMonth, '>=')
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    // AI-assisted articles.
+    $aiArticles = $articleStorage->getQuery()
+      ->condition('ai_generated', TRUE)
+      ->accessCheck(FALSE)
+      ->count()
+      ->execute();
+
+    return [
+      'total_articles' => (int) $totalArticles,
+      'published' => (int) $publishedArticles,
+      'drafts' => (int) $draftArticles,
+      'categories' => (int) $totalCategories,
+      'this_month' => (int) $articlesThisMonth,
+      'ai_assisted' => (int) $aiArticles,
+      'publish_rate' => $totalArticles > 0
+        ? round(($publishedArticles / $totalArticles) * 100)
+        : 0,
+    ];
+  }
+
+  /**
+   * Gets recent articles.
+   */
+  protected function getRecentArticles(int $limit): array {
+    $storage = $this->entityTypeManager()->getStorage('content_article');
+    $ids = $storage->getQuery()
+      ->sort('changed', 'DESC')
+      ->range(0, $limit)
+      ->accessCheck(FALSE)
+      ->execute();
+
+    $articles = $storage->loadMultiple($ids);
+    $result = [];
+
+    foreach ($articles as $article) {
+      $result[] = [
+        'id' => $article->id(),
+        'title' => $article->label(),
+        'status' => $article->get('status')->value ?? 'draft',
+        'changed' => $article->get('changed')->value,
+        'author' => $article->getOwner() ? $article->getOwner()->getDisplayName() : 'Unknown',
+        'edit_url' => Url::fromRoute('entity.content_article.edit_form', ['content_article' => $article->id()])->toString(),
+        'view_url' => $article->hasField('slug') && $article->get('slug')->value
+          ? '/blog/' . $article->get('slug')->value
+          : '/blog/article/' . $article->id(),
+      ];
     }
 
+    return $result;
+  }
 
+  /**
+   * Gets draft articles awaiting publication.
+   */
+  protected function getDraftArticles(int $limit): array {
+    $storage = $this->entityTypeManager()->getStorage('content_article');
+    $ids = $storage->getQuery()
+      ->condition('status', 'draft')
+      ->sort('changed', 'DESC')
+      ->range(0, $limit)
+      ->accessCheck(FALSE)
+      ->execute();
 
-    /**
-     * Gets content statistics.
-     */
-    protected function getContentStats(): array
-    {
-        $articleStorage = $this->entityTypeManager()->getStorage('content_article');
-        $categoryStorage = $this->entityTypeManager()->getStorage('content_category');
+    $articles = $storage->loadMultiple($ids);
+    $result = [];
 
-        // Total articles.
-        $totalArticles = $articleStorage->getQuery()
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        // Published articles.
-        $publishedArticles = $articleStorage->getQuery()
-            ->condition('status', 'published')
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        // Draft articles.
-        $draftArticles = $articleStorage->getQuery()
-            ->condition('status', 'draft')
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        // Total categories.
-        $totalCategories = $categoryStorage->getQuery()
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        // Articles this month.
-        $startOfMonth = strtotime('first day of this month midnight');
-        $articlesThisMonth = $articleStorage->getQuery()
-            ->condition('created', $startOfMonth, '>=')
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        // AI-assisted articles.
-        $aiArticles = $articleStorage->getQuery()
-            ->condition('ai_generated', TRUE)
-            ->accessCheck(FALSE)
-            ->count()
-            ->execute();
-
-        return [
-            'total_articles' => (int) $totalArticles,
-            'published' => (int) $publishedArticles,
-            'drafts' => (int) $draftArticles,
-            'categories' => (int) $totalCategories,
-            'this_month' => (int) $articlesThisMonth,
-            'ai_assisted' => (int) $aiArticles,
-            'publish_rate' => $totalArticles > 0
-                ? round(($publishedArticles / $totalArticles) * 100)
-                : 0,
-        ];
+    foreach ($articles as $article) {
+      $result[] = [
+        'id' => $article->id(),
+        'title' => $article->label(),
+        'changed' => $article->get('changed')->value,
+        'author' => $article->getOwner() ? $article->getOwner()->getDisplayName() : 'Unknown',
+        'edit_url' => Url::fromRoute('entity.content_article.edit_form', ['content_article' => $article->id()])->toString(),
+      ];
     }
 
-    /**
-     * Gets recent articles.
-     */
-    protected function getRecentArticles(int $limit): array
-    {
-        $storage = $this->entityTypeManager()->getStorage('content_article');
-        $ids = $storage->getQuery()
-            ->sort('changed', 'DESC')
-            ->range(0, $limit)
-            ->accessCheck(FALSE)
-            ->execute();
+    return $result;
+  }
 
-        $articles = $storage->loadMultiple($ids);
-        $result = [];
+  /**
+   * Gets top categories by article count.
+   */
+  protected function getTopCategories(int $limit): array {
+    $categoryStorage = $this->entityTypeManager()->getStorage('content_category');
+    $articleStorage = $this->entityTypeManager()->getStorage('content_article');
 
-        foreach ($articles as $article) {
-            $result[] = [
-                'id' => $article->id(),
-                'title' => $article->label(),
-                'status' => $article->get('status')->value ?? 'draft',
-                'changed' => $article->get('changed')->value,
-                'author' => $article->getOwner() ? $article->getOwner()->getDisplayName() : 'Unknown',
-                'edit_url' => Url::fromRoute('entity.content_article.edit_form', ['content_article' => $article->id()])->toString(),
-                'view_url' => $article->hasField('slug') && $article->get('slug')->value
-                    ? '/blog/' . $article->get('slug')->value
-                    : '/blog/article/' . $article->id(),
-            ];
-        }
+    $categories = $categoryStorage->loadMultiple();
+    $result = [];
 
-        return $result;
+    foreach ($categories as $category) {
+      $count = $articleStorage->getQuery()
+        ->condition('category', $category->id())
+        ->condition('status', 'published')
+        ->accessCheck(FALSE)
+        ->count()
+        ->execute();
+
+      $result[] = [
+        'id' => $category->id(),
+        'name' => $category->label(),
+        'color' => $category->hasField('color') ? $category->get('color')->value : '#233D63',
+        'count' => (int) $count,
+        'url' => Url::fromRoute('entity.content_category.collection')->toString(),
+      ];
     }
 
-    /**
-     * Gets draft articles awaiting publication.
-     */
-    protected function getDraftArticles(int $limit): array
-    {
-        $storage = $this->entityTypeManager()->getStorage('content_article');
-        $ids = $storage->getQuery()
-            ->condition('status', 'draft')
-            ->sort('changed', 'DESC')
-            ->range(0, $limit)
-            ->accessCheck(FALSE)
-            ->execute();
+    // Sort by count descending.
+    usort($result, fn($a, $b) => $b['count'] - $a['count']);
 
-        $articles = $storage->loadMultiple($ids);
-        $result = [];
+    return array_slice($result, 0, $limit);
+  }
 
-        foreach ($articles as $article) {
-            $result[] = [
-                'id' => $article->id(),
-                'title' => $article->label(),
-                'changed' => $article->get('changed')->value,
-                'author' => $article->getOwner() ? $article->getOwner()->getDisplayName() : 'Unknown',
-                'edit_url' => Url::fromRoute('entity.content_article.edit_form', ['content_article' => $article->id()])->toString(),
-            ];
-        }
+  /**
+   * Gets quick action links.
+   */
+  protected function getQuickActions(): array {
+    return [
+          [
+            'title' => $this->t('New Article'),
+            'description' => $this->t('Create a new blog article'),
+            'url' => Url::fromRoute('entity.content_article.add_form')->toString(),
+            'icon' => 'plus',
+            'primary' => TRUE,
+          ],
+          [
+            'title' => $this->t('AI Assistant'),
+            'description' => $this->t('Generate content with AI'),
+            'url' => Url::fromRoute('entity.content_article.collection')->toString(),
+            'icon' => 'sparkles',
+            'primary' => FALSE,
+          ],
+          [
+            'title' => $this->t('Manage Categories'),
+            'description' => $this->t('Organize your content'),
+            'url' => Url::fromRoute('entity.content_category.collection')->toString(),
+            'icon' => 'folder',
+            'primary' => FALSE,
+          ],
+          [
+            'title' => $this->t('View Blog'),
+            'description' => $this->t('See your live blog'),
+            'url' => '/blog',
+            'icon' => 'eye',
+            'primary' => FALSE,
+          ],
+    ];
+  }
 
-        return $result;
-    }
-
-    /**
-     * Gets top categories by article count.
-     */
-    protected function getTopCategories(int $limit): array
-    {
-        $categoryStorage = $this->entityTypeManager()->getStorage('content_category');
-        $articleStorage = $this->entityTypeManager()->getStorage('content_article');
-
-        $categories = $categoryStorage->loadMultiple();
-        $result = [];
-
-        foreach ($categories as $category) {
-            $count = $articleStorage->getQuery()
-                ->condition('category', $category->id())
-                ->condition('status', 'published')
-                ->accessCheck(FALSE)
-                ->count()
-                ->execute();
-
-            $result[] = [
-                'id' => $category->id(),
-                'name' => $category->label(),
-                'color' => $category->hasField('color') ? $category->get('color')->value : '#233D63',
-                'count' => (int) $count,
-                'url' => Url::fromRoute('entity.content_category.collection')->toString(),
-            ];
-        }
-
-        // Sort by count descending.
-        usort($result, fn($a, $b) => $b['count'] - $a['count']);
-
-        return array_slice($result, 0, $limit);
-    }
-
-    /**
-     * Gets quick action links.
-     */
-    protected function getQuickActions(): array
-    {
-        return [
-            [
-                'title' => $this->t('New Article'),
-                'description' => $this->t('Create a new blog article'),
-                'url' => Url::fromRoute('entity.content_article.add_form')->toString(),
-                'icon' => 'plus',
-                'primary' => TRUE,
-            ],
-            [
-                'title' => $this->t('AI Assistant'),
-                'description' => $this->t('Generate content with AI'),
-                'url' => Url::fromRoute('entity.content_article.collection')->toString(),
-                'icon' => 'sparkles',
-                'primary' => FALSE,
-            ],
-            [
-                'title' => $this->t('Manage Categories'),
-                'description' => $this->t('Organize your content'),
-                'url' => Url::fromRoute('entity.content_category.collection')->toString(),
-                'icon' => 'folder',
-                'primary' => FALSE,
-            ],
-            [
-                'title' => $this->t('View Blog'),
-                'description' => $this->t('See your live blog'),
-                'url' => '/blog',
-                'icon' => 'eye',
-                'primary' => FALSE,
-            ],
-        ];
-    }
-
-    /**
-     * Gets quick action links for frontend (tenant editors).
-     *
-     * Uses admin routes since /content-hub/* doesn't have full CRUD yet.
-     * Links open in slide-panel modal via data-slide-panel attribute in template.
-     */
-    protected function getQuickActionsFrontend(): array
-    {
-        return [
-            [
-                'title' => $this->t('New Article'),
-                'description' => $this->t('Create a new blog article'),
-                // Use AJAX-aware route that returns only form HTML for slide-panel
+  /**
+   * Gets quick action links for frontend (tenant editors).
+   *
+   * Uses admin routes since /content-hub/* doesn't have full CRUD yet.
+   * Links open in slide-panel modal via data-slide-panel attribute in template.
+   */
+  protected function getQuickActionsFrontend(): array {
+    return [
+          [
+            'title' => $this->t('New Article'),
+            'description' => $this->t('Create a new blog article'),
+              // Use AJAX-aware route that returns only form HTML for slide-panel.
             'url' => Url::fromRoute('jaraba_content_hub.articles.add.frontend')->toString(),
-                'icon' => 'plus',
-                'primary' => TRUE,
-                'modal' => TRUE,
-            ],
-            [
-                'title' => $this->t('AI Assistant'),
-                'description' => $this->t('Generate content with AI'),
-                // AUDIT-TODO-RESOLVED: Points to the dedicated AI writing assistant API.
-                // The frontend uses /api/v1/content/ai/full-article for AI-generated drafts
-                // and /content-hub/articles/add for the form pre-populated with AI content.
+            'icon' => 'plus',
+            'primary' => TRUE,
+            'modal' => TRUE,
+          ],
+          [
+            'title' => $this->t('AI Assistant'),
+            'description' => $this->t('Generate content with AI'),
+              // AUDIT-TODO-RESOLVED: Points to the dedicated AI writing assistant API.
+              // The frontend uses /api/v1/content/ai/full-article for AI-generated drafts
+              // and /content-hub/articles/add for the form pre-populated with AI content.
             'url' => Url::fromRoute('jaraba_content_hub.api.ai.full_article')->toString(),
-                'icon' => 'sparkles',
-                'primary' => FALSE,
-                'modal' => TRUE,
-            ],
-            [
-                'title' => $this->t('Manage Categories'),
-                'description' => $this->t('Organize your content'),
-                // Use frontend categories route
+            'icon' => 'sparkles',
+            'primary' => FALSE,
+            'modal' => TRUE,
+          ],
+          [
+            'title' => $this->t('Manage Categories'),
+            'description' => $this->t('Organize your content'),
+              // Use frontend categories route.
             'url' => Url::fromRoute('jaraba_content_hub.categories.frontend')->toString(),
-                'icon' => 'folder',
-                'primary' => FALSE,
-                'modal' => FALSE,
-            ],
-            [
-                'title' => $this->t('View Blog'),
-                'description' => $this->t('See your live blog'),
-                'url' => Url::fromRoute('jaraba_content_hub.blog')->toString(),
-                'icon' => 'eye',
-                'primary' => FALSE,
-                'modal' => FALSE,
-            ],
-        ];
-    }
-
+            'icon' => 'folder',
+            'primary' => FALSE,
+            'modal' => FALSE,
+          ],
+          [
+            'title' => $this->t('View Blog'),
+            'description' => $this->t('See your live blog'),
+            'url' => Url::fromRoute('jaraba_content_hub.blog')->toString(),
+            'icon' => 'eye',
+            'primary' => FALSE,
+            'modal' => FALSE,
+          ],
+    ];
+  }
 
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_geo\Unit\Controller;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_geo\Controller\FaqController;
 use Drupal\Tests\UnitTestCase;
 
@@ -30,7 +31,7 @@ class FaqControllerTest extends UnitTestCase {
 
     // FaqController extends ControllerBase which uses $this->t().
     // We need string_translation in the container.
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
   }

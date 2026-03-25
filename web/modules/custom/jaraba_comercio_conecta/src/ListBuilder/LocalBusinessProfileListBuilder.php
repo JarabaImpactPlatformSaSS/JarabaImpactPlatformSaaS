@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class LocalBusinessProfileListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['business_name'] = $this->t('Nombre del Negocio');
     $header['address_city'] = $this->t('Ciudad');
@@ -18,6 +24,9 @@ class LocalBusinessProfileListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $score = $entity->get('nap_consistency_score')->value;
 

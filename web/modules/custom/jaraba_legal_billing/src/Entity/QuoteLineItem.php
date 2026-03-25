@@ -66,7 +66,6 @@ class QuoteLineItem extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['quote_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Presupuesto'))
       ->setSetting('target_type', 'quote')
@@ -86,7 +85,6 @@ class QuoteLineItem extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 2: DATOS DE LA LINEA
     // =========================================================================
-
     $fields['line_order'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Orden'))
       ->setRequired(TRUE)
@@ -138,7 +136,6 @@ class QuoteLineItem extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 3: COMPLEJIDAD
     // =========================================================================
-
     $fields['complexity_multiplier'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Multiplicador de Complejidad'))
       ->setSetting('precision', 3)
@@ -154,7 +151,6 @@ class QuoteLineItem extends ContentEntityBase {
     // =========================================================================
     // BLOQUE 4: TOTALES Y OPCIONALES
     // =========================================================================
-
     $fields['line_total'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Total Linea'))
       ->setDescription(new TranslatableMarkup('quantity * unit_price * complexity_multiplier.'))

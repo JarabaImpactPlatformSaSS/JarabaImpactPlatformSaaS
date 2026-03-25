@@ -33,6 +33,9 @@ class ReviewModerationServiceTest extends TestCase {
   private LoggerInterface&MockObject $logger;
   private ReviewAggregationService&MockObject $aggregationService;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);

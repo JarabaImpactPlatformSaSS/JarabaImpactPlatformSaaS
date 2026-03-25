@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
+use Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_andalucia_ei\Service\DocumentoRevisionIaService;
@@ -142,7 +143,7 @@ class DocumentoRevisionIaServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarRevisionWithNullAiMarksPendiente(): void {
-    $doc = $this->createMock(\Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface::class);
+    $doc = $this->createMock(ExpedienteDocumentoInterface::class);
     $doc->method('getCategoria')->willReturn('tarea_cv');
     $doc->expects($this->once())->method('setEstadoRevision')->with('pendiente');
     $doc->method('save');
@@ -167,7 +168,7 @@ class DocumentoRevisionIaServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarRevisionRejectsNonEvaluableCategory(): void {
-    $doc = $this->createMock(\Drupal\jaraba_andalucia_ei\Entity\ExpedienteDocumentoInterface::class);
+    $doc = $this->createMock(ExpedienteDocumentoInterface::class);
     $doc->method('getCategoria')->willReturn('sto_dni');
 
     $storage = $this->createMock(EntityStorageInterface::class);

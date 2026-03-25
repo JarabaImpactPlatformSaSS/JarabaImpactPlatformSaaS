@@ -49,7 +49,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   // ==========================================================================
 
   /**
-   * GET|POST /api/v1/copilot/comercio/proactive
+   * GET|POST /api/v1/copilot/comercio/proactive.
    *
    * GET: Checks for pending proactive actions for the current user.
    * POST: Dismisses a proactive action.
@@ -103,7 +103,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   // ==========================================================================
 
   /**
-   * POST /api/v1/merchant/copilot/generate/description
+   * POST /api/v1/merchant/copilot/generate/description.
    *
    * Genera una descripcion atractiva para un producto.
    *
@@ -135,7 +135,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   }
 
   /**
-   * POST /api/v1/merchant/copilot/generate/price
+   * POST /api/v1/merchant/copilot/generate/price.
    *
    * Sugiere un precio competitivo para un producto.
    *
@@ -167,7 +167,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   }
 
   /**
-   * POST /api/v1/merchant/copilot/generate/social-post
+   * POST /api/v1/merchant/copilot/generate/social-post.
    *
    * Genera un post para redes sociales.
    *
@@ -201,7 +201,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   }
 
   /**
-   * POST /api/v1/merchant/copilot/generate/flash-offer
+   * POST /api/v1/merchant/copilot/generate/flash-offer.
    *
    * Genera una oferta flash para un producto.
    *
@@ -238,7 +238,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   }
 
   /**
-   * POST /api/v1/merchant/copilot/generate/review-response
+   * POST /api/v1/merchant/copilot/generate/review-response.
    *
    * Genera respuesta a una resena de cliente.
    *
@@ -270,7 +270,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
   }
 
   /**
-   * POST /api/v1/merchant/copilot/generate/email-promo
+   * POST /api/v1/merchant/copilot/generate/email-promo.
    *
    * Genera un email promocional.
    *

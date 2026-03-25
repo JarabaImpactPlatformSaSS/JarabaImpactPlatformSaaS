@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Insert;
 use Drupal\Core\Database\Query\Select;
@@ -83,7 +84,7 @@ class JarabaLexFeatureGateServiceTest extends UnitTestCase {
     $this->database = $this->createMock(Connection::class);
     $this->currentUser = $this->createMock(AccountProxyInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
-    $this->tenantContext = $this->createMock(\Drupal\ecosistema_jaraba_core\Service\TenantContextService::class);
+    $this->tenantContext = $this->createMock(TenantContextService::class);
 
     // Schema mock: table always exists to avoid CREATE TABLE calls.
     $this->schema = $this->createMock(Schema::class);
@@ -343,6 +344,9 @@ class JarabaLexFeatureGateServiceTest extends UnitTestCase {
         protected string $upgradeMessage,
       ) {}
 
+      /**
+       *
+       */
       public function get(string $field): int|string {
         return match ($field) {
           'limit_value' => $this->limitValue,

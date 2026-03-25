@@ -74,7 +74,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT Y RELACIONES ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('The tenant (Group) this document belongs to.'))
@@ -92,7 +91,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- IDENTIFICACION FACTURA ---
-
     $fields['facturae_number'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Facturae Number'))
       ->setDescription(t('NumSerieFactura: invoice series + sequential number.'))
@@ -176,7 +174,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- FECHAS ---
-
     $fields['issue_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Issue Date'))
       ->setDescription(t('FechaExpedicion: invoice issue date.'))
@@ -201,7 +198,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- EMISOR (SELLER) ---
-
     $fields['seller_nif'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Seller NIF'))
       ->setDescription(t('NIF/CIF of the invoice issuer.'))
@@ -250,7 +246,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RECEPTOR (BUYER) ---
-
     $fields['buyer_nif'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Buyer NIF'))
       ->setDescription(t('NIF/CIF of the invoice receiver.'))
@@ -305,7 +300,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- LINEAS Y DETALLE ---
-
     $fields['invoice_lines_json'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Invoice Lines'))
       ->setDescription(t('JSON array of invoice line items with description, quantity, unit_price, total, tax_rate.'))
@@ -314,7 +308,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- IMPUESTOS ---
-
     $fields['taxes_outputs_json'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Tax Outputs'))
       ->setDescription(t('JSON with taxes charged (IVA) broken down by rate.'))
@@ -329,7 +322,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TOTALES ---
-
     $fields['total_gross_amount'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Total Gross Amount'))
       ->setDescription(t('TotalBrutoAntesImpuestos: gross total before taxes.'))
@@ -406,7 +398,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PAGO Y LITERALES ---
-
     $fields['payment_details_json'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Payment Details'))
       ->setDescription(t('JSON with payment info: IBAN, due dates, payment method.'))
@@ -431,7 +422,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- XML Y FIRMA ---
-
     $fields['xml_unsigned'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Unsigned XML'))
       ->setDescription(t('Generated Facturae 3.2.2 XML before signing.'))
@@ -455,7 +445,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO DE FIRMA ---
-
     $fields['signature_status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Signature Status'))
       ->setDescription(t('XAdES-EPES signature status.'))
@@ -481,7 +470,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO FACe ---
-
     $fields['face_status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('FACe Status'))
       ->setDescription(t('Status in the FACe portal.'))
@@ -537,14 +525,12 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VALIDACION ---
-
     $fields['validation_errors_json'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Validation Errors'))
       ->setDescription(t('JSON with XSD and business validation errors.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO GENERAL ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Document Status'))
       ->setDescription(t('Overall document lifecycle status.'))
@@ -562,7 +548,6 @@ class FacturaeDocument extends ContentEntityBase implements EntityChangedInterfa
       ->setDisplayConfigurable('view', TRUE);
 
     // --- METADATOS ---
-
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Author'))
       ->setDescription(t('User who created this document.'))

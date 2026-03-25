@@ -29,7 +29,7 @@ class SecurityGuardianService {
   public function auditTenantSafety(int $tenantId): void {
     // 1. Chequeo de Anomalías en IA.
     $aiAnomaly = $this->anomalyDetector->detectAiUsageAnomaly($tenantId);
-    
+
     if ($aiAnomaly['is_anomaly']) {
       $this->triggerSecurityAlert($tenantId, $aiAnomaly);
     }
@@ -40,7 +40,7 @@ class SecurityGuardianService {
    */
   protected function triggerSecurityAlert(int $tenantId, array $anomaly): void {
     $msg = "⚠️ ALERTA CRÍTICA: Detectada anomalía '{$anomaly['type']}' en Tenant #{$tenantId}. Valor actual: {$anomaly['current_value']}.";
-    
+
     $this->logger->critical($msg);
 
     // Notificar al Super Admin (UID 1) vía PWA.

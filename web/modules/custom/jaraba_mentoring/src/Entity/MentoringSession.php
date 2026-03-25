@@ -58,288 +58,283 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.mentoring_session.settings",
  * )
  */
-class MentoringSession extends ContentEntityBase
-{
+class MentoringSession extends ContentEntityBase {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // === Relaciones ===
-        $fields['engagement_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Engagement'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'mentoring_engagement')
-            ->setDisplayConfigurable('view', TRUE);
+    // === Relaciones ===
+    $fields['engagement_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Engagement'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'mentoring_engagement')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Mentor'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'mentor_profile')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Mentor'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'mentor_profile')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['mentee_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Emprendedor'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'user')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['mentee_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Emprendedor'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['session_number'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Número de Sesión'))
-            ->setDescription(t('Número de esta sesión dentro del engagement.'))
-            ->setDefaultValue(1)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['session_number'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Número de Sesión'))
+      ->setDescription(t('Número de esta sesión dentro del engagement.'))
+      ->setDefaultValue(1)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Programación ===
-        $fields['scheduled_start'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Inicio Programado'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', ['weight' => 0])
-            ->setDisplayOptions('form', [
-                'type' => 'datetime_default',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Programación ===
+    $fields['scheduled_start'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Inicio Programado'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', ['weight' => 0])
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['scheduled_end'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fin Programado'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', ['weight' => 1])
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['scheduled_end'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fin Programado'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['timezone'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Zona Horaria'))
-            ->setDefaultValue('Europe/Madrid')
-            ->setSetting('max_length', 64);
+    $fields['timezone'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Zona Horaria'))
+      ->setDefaultValue('Europe/Madrid')
+      ->setSetting('max_length', 64);
 
-        $fields['actual_start'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Inicio Real'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['actual_start'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Inicio Real'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['actual_end'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fin Real'))
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['actual_end'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fin Real'))
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Tipo de Sesión ===
-        $fields['session_type'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tipo de Sesión'))
-            ->setSetting('allowed_values', [
-                'initial' => 'Sesión Inicial',
-                'followup' => 'Seguimiento',
-                'review' => 'Revisión',
-                'emergency' => 'Emergencia',
-            ])
-            ->setDefaultValue('followup')
-            ->setDisplayOptions('view', ['weight' => 5])
-            ->setDisplayConfigurable('view', TRUE);
+    // === Tipo de Sesión ===
+    $fields['session_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de Sesión'))
+      ->setSetting('allowed_values', [
+        'initial' => 'Sesión Inicial',
+        'followup' => 'Seguimiento',
+        'review' => 'Revisión',
+        'emergency' => 'Emergencia',
+      ])
+      ->setDefaultValue('followup')
+      ->setDisplayOptions('view', ['weight' => 5])
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Videollamada ===
-        $fields['meeting_provider'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Proveedor de Videollamada'))
-            ->setSetting('allowed_values', [
-                'google_meet' => 'Google Meet',
-                'zoom' => 'Zoom',
-                'jitsi' => 'Jitsi Meet (legacy)',
-            ])
-            ->setDefaultValue('google_meet')
-            ->setDisplayConfigurable('view', TRUE);
+    // === Videollamada ===
+    $fields['meeting_provider'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Proveedor de Videollamada'))
+      ->setSetting('allowed_values', [
+        'google_meet' => 'Google Meet',
+        'zoom' => 'Zoom',
+        'jitsi' => 'Jitsi Meet (legacy)',
+      ])
+      ->setDefaultValue('google_meet')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['meeting_room_id'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('ID de Sala'))
-            ->setSetting('max_length', 128);
+    $fields['meeting_room_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('ID de Sala'))
+      ->setSetting('max_length', 128);
 
-        $fields['meeting_url'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('URL de la Reunión'))
-            ->setSetting('max_length', 500)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['meeting_url'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('URL de la Reunión'))
+      ->setSetting('max_length', 500)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Agenda y Notas ===
-        $fields['agenda'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Agenda'))
-            ->setDescription(t('Temas a tratar en la sesión.'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Agenda y Notas ===
+    $fields['agenda'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Agenda'))
+      ->setDescription(t('Temas a tratar en la sesión.'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Contenido de la Sesión (Hoja de Servicio) ===
-        $fields['session_notes'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Notas de la sesión'))
-            ->setDescription(t('Resumen narrativo de lo tratado en la sesión.'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 11,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Contenido de la Sesión (Hoja de Servicio) ===
+    $fields['session_notes'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Notas de la sesión'))
+      ->setDescription(t('Resumen narrativo de lo tratado en la sesión.'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['objectives_worked'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Objetivos trabajados'))
-            ->setDescription(t('Objetivos abordados durante la sesión (JSON array).'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 12,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['objectives_worked'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Objetivos trabajados'))
+      ->setDescription(t('Objetivos abordados durante la sesión (JSON array).'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 12,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['agreements'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Acuerdos alcanzados'))
-            ->setDescription(t('Compromisos y acuerdos de la sesión (JSON array).'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 13,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['agreements'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Acuerdos alcanzados'))
+      ->setDescription(t('Compromisos y acuerdos de la sesión (JSON array).'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 13,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['next_steps'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Próximos pasos'))
-            ->setDescription(t('Acciones a realizar antes de la siguiente sesión (JSON array).'))
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 14,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['next_steps'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Próximos pasos'))
+      ->setDescription(t('Acciones a realizar antes de la siguiente sesión (JSON array).'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 14,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Valoraciones de la sesión ===
-        $fields['participant_rating'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Valoración del participante'))
-            ->setDescription(t('Puntuación que da el participante a la sesión (1-5).'))
-            ->setSetting('min', 1)
-            ->setSetting('max', 5)
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Valoraciones de la sesión ===
+    $fields['participant_rating'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Valoración del participante'))
+      ->setDescription(t('Puntuación que da el participante a la sesión (1-5).'))
+      ->setSetting('min', 1)
+      ->setSetting('max', 5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['mentor_rating'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Valoración del mentor'))
-            ->setDescription(t('Puntuación que da el mentor al participante (1-5).'))
-            ->setSetting('min', 1)
-            ->setSetting('max', 5)
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['mentor_rating'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Valoración del mentor'))
+      ->setDescription(t('Puntuación que da el mentor al participante (1-5).'))
+      ->setSetting('min', 1)
+      ->setSetting('max', 5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Hoja de Servicio y Firma ===
-        $fields['service_sheet_doc'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Documento Hoja de Servicio'))
-            ->setDescription(t('ID del ExpedienteDocumento generado como hoja de servicio.'));
+    // === Hoja de Servicio y Firma ===
+    $fields['service_sheet_doc'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Documento Hoja de Servicio'))
+      ->setDescription(t('ID del ExpedienteDocumento generado como hoja de servicio.'));
 
-        $fields['firma_participante_status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Firma participante'))
-            ->setDescription(t('Estado de firma digital del participante.'))
-            ->setSetting('allowed_values', [
-                'pending' => 'Pendiente',
-                'signed' => 'Firmado',
-                'rejected' => 'Rechazado',
-            ])
-            ->setDefaultValue('pending')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['firma_participante_status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Firma participante'))
+      ->setDescription(t('Estado de firma digital del participante.'))
+      ->setSetting('allowed_values', [
+        'pending' => 'Pendiente',
+        'signed' => 'Firmado',
+        'rejected' => 'Rechazado',
+      ])
+      ->setDefaultValue('pending')
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['firma_orientador_status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Firma orientador'))
-            ->setDescription(t('Estado de firma digital del orientador/mentor.'))
-            ->setSetting('allowed_values', [
-                'pending' => 'Pendiente',
-                'signed' => 'Firmado',
-                'rejected' => 'Rechazado',
-            ])
-            ->setDefaultValue('pending')
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['firma_orientador_status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Firma orientador'))
+      ->setDescription(t('Estado de firma digital del orientador/mentor.'))
+      ->setSetting('allowed_values', [
+        'pending' => 'Pendiente',
+        'signed' => 'Firmado',
+        'rejected' => 'Rechazado',
+      ])
+      ->setDefaultValue('pending')
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Estado ===
-        $fields['status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'scheduled' => 'Programada',
-                'confirmed' => 'Confirmada',
-                'in_progress' => 'En Progreso',
-                'completed' => 'Completada',
-                'cancelled' => 'Cancelada',
-                'no_show' => 'No Show',
-            ])
-            ->setDefaultValue('scheduled')
-            ->setDisplayOptions('view', ['weight' => 20])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === Estado ===
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'scheduled' => 'Programada',
+        'confirmed' => 'Confirmada',
+        'in_progress' => 'En Progreso',
+        'completed' => 'Completada',
+        'cancelled' => 'Cancelada',
+        'no_show' => 'No Show',
+      ])
+      ->setDefaultValue('scheduled')
+      ->setDisplayOptions('view', ['weight' => 20])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === Recordatorios ===
-        $fields['reminder_24h_sent'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Recordatorio 24h Enviado'))
-            ->setDefaultValue(FALSE);
+    // === Recordatorios ===
+    $fields['reminder_24h_sent'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Recordatorio 24h Enviado'))
+      ->setDefaultValue(FALSE);
 
-        $fields['reminder_1h_sent'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Recordatorio 1h Enviado'))
-            ->setDefaultValue(FALSE);
+    $fields['reminder_1h_sent'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Recordatorio 1h Enviado'))
+      ->setDefaultValue(FALSE);
 
-        $fields['reminder_15min_sent'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Recordatorio 15min Enviado'))
-            ->setDefaultValue(FALSE);
+    $fields['reminder_15min_sent'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Recordatorio 15min Enviado'))
+      ->setDefaultValue(FALSE);
 
-        // === Multi-tenancy (TENANT-001) ===
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('Tenant al que pertenece esta sesión.'))
-            ->setSetting('target_type', 'group')
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('form', TRUE);
+    // === Multi-tenancy (TENANT-001) ===
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant al que pertenece esta sesión.'))
+      ->setSetting('target_type', 'group')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE);
 
-        // === Timestamps ===
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'));
+    // === Timestamps ===
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'));
 
-        return $fields;
+    return $fields;
+  }
+
+  /**
+   * Checks if the session is in the future.
+   */
+  public function isUpcoming(): bool {
+    $start = $this->get('scheduled_start')->value;
+    if (!$start) {
+      return FALSE;
     }
+    return strtotime($start) > time();
+  }
 
-    /**
-     * Checks if the session is in the future.
-     */
-    public function isUpcoming(): bool
-    {
-        $start = $this->get('scheduled_start')->value;
-        if (!$start) {
-            return FALSE;
-        }
-        return strtotime($start) > time();
+  /**
+   * Checks if session can be joined (within 15 min window).
+   */
+  public function canJoin(): bool {
+    $start = $this->get('scheduled_start')->value;
+    if (!$start) {
+      return FALSE;
     }
+    $session_time = strtotime($start);
+    $now = time();
+    // Can join 15 min before until end.
+    return ($now >= $session_time - 900) && ($now < $session_time + 3600);
+  }
 
-    /**
-     * Checks if session can be joined (within 15 min window).
-     */
-    public function canJoin(): bool
-    {
-        $start = $this->get('scheduled_start')->value;
-        if (!$start) {
-            return FALSE;
-        }
-        $session_time = strtotime($start);
-        $now = time();
-        // Can join 15 min before until end.
-        return ($now >= $session_time - 900) && ($now < $session_time + 3600);
-    }
-
-    /**
-     * Gets the meeting URL.
-     */
-    public function getMeetingUrl(): string
-    {
-        return $this->get('meeting_url')->value ?? '';
-    }
+  /**
+   * Gets the meeting URL.
+   */
+  public function getMeetingUrl(): string {
+    return $this->get('meeting_url')->value ?? '';
+  }
 
 }

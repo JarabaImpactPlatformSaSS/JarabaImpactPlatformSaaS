@@ -85,21 +85,21 @@ class ServiciosConectaCopilotAgent {
 
       $providerId = reset($providerIds);
 
-      // No services → quote_assistant
+      // No services → quote_assistant.
       $servicesCount = (int) $this->entityTypeManager->getStorage('service_offering')
         ->getQuery()->accessCheck(FALSE)->condition('provider_id', $providerId)->count()->execute();
       if ($servicesCount === 0) {
         return 'quote_assistant';
       }
 
-      // No availability slots → schedule_optimizer
+      // No availability slots → schedule_optimizer.
       $slotsCount = (int) $this->entityTypeManager->getStorage('availability_slot')
         ->getQuery()->accessCheck(FALSE)->condition('provider_id', $providerId)->condition('is_active', TRUE)->count()->execute();
       if ($slotsCount === 0) {
         return 'schedule_optimizer';
       }
 
-      // Has bookings → client_communicator
+      // Has bookings → client_communicator.
       $bookingsCount = (int) $this->entityTypeManager->getStorage('booking')
         ->getQuery()->accessCheck(FALSE)->condition('provider_id', $providerId)->count()->execute();
       if ($bookingsCount > 5) {

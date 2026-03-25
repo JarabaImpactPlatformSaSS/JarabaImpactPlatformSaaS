@@ -17,8 +17,7 @@ use Drupal\Core\File\FileSystemInterface;
  * - Contraseña del certificado en variable de entorno
  * - TCPDF con soporte de firma (incluido por defecto)
  */
-class FirmaDigitalService
-{
+class FirmaDigitalService {
 
   /**
    * Configuración del módulo.
@@ -65,7 +64,7 @@ class FirmaDigitalService
   public function __construct(
     ConfigFactoryInterface $config_factory,
     LoggerChannelFactoryInterface $logger_factory,
-    FileSystemInterface $file_system
+    FileSystemInterface $file_system,
   ) {
     $this->config = $config_factory->get('ecosistema_jaraba_core.firma_settings');
     $this->logger = $logger_factory->get('ecosistema_jaraba_core');
@@ -87,9 +86,8 @@ class FirmaDigitalService
    * @return string|null
    *   URI del PDF firmado, o NULL si falla.
    */
-  public function signPdf(string $pdf_uri, array $options = []): ?string
-  {
-    // Resolver ruta real del PDF
+  public function signPdf(string $pdf_uri, array $options = []): ?string {
+    // Resolver ruta real del PDF.
     $pdf_path = $this->fileSystem->realpath($pdf_uri);
 
     if (!$pdf_path || !file_exists($pdf_path)) {
@@ -100,7 +98,7 @@ class FirmaDigitalService
       return NULL;
     }
 
-    // Cargar configuración del certificado
+    // Cargar configuración del certificado.
     $cert_path = $this->getCertificatePath();
     $cert_password = $this->getCertificatePassword();
 
@@ -113,7 +111,7 @@ class FirmaDigitalService
     }
 
     try {
-      // Leer y validar el certificado PKCS#12
+      // Leer y validar el certificado PKCS#12.
       $cert_content = file_get_contents($cert_path);
       $certs = [];
 
@@ -124,18 +122,18 @@ class FirmaDigitalService
         return NULL;
       }
 
-      // Extraer información del certificado
+      // Extraer información del certificado.
       $cert_info = openssl_x509_parse($certs['cert']);
       $this->logger->info(
         '📜 FirmaDigital: Usando certificado de: @cn',
         ['@cn' => $cert_info['subject']['CN'] ?? 'Desconocido']
       );
 
-      // Generar ruta para el PDF firmado
+      // Generar ruta para el PDF firmado.
       $signed_uri = $this->generateSignedUri($pdf_uri);
       $signed_path = $this->fileSystem->realpath(dirname($pdf_uri)) . '/' . basename($signed_uri);
 
-      // Realizar la firma
+      // Realizar la firma.
       $result = $this->performSignature($pdf_path, $signed_path, $certs, $options);
 
       if ($result) {
@@ -144,17 +142,18 @@ class FirmaDigitalService
           ['@path' => $signed_uri]
         );
 
-        // Registrar en auditoría
+        // Registrar en auditoría.
         $this->logAuditEntry($pdf_uri, $signed_uri, $cert_info);
 
         return $signed_uri;
       }
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error(
         '🚫 FirmaDigital: Excepción al firmar: @error',
         ['@error' => $e->getMessage()]
-      );
+          );
     }
 
     return NULL;
@@ -179,13 +178,13 @@ class FirmaDigitalService
     string $input_path,
     string $output_path,
     array $certs,
-    array $options
+    array $options,
   ): bool {
-    // Obtener ruta del certificado para TCPDF
+    // Obtener ruta del certificado para TCPDF.
     $cert_path = $this->getCertificatePath();
     $cert_password = $this->getCertificatePassword();
 
-    // Crear archivo temporal con certificado y clave combinados
+    // Crear archivo temporal con certificado y clave combinados.
     $temp_cert = $this->createTempCertFile($certs);
 
     if (!$temp_cert) {
@@ -195,18 +194,16 @@ class FirmaDigitalService
     try {
       // Cargar PDF existente con TCPDF
       // Nota: TCPDF no puede cargar PDFs existentes directamente
-      // Usamos TCPDI o FPDI para esto, o firmamos con OpenSSL
-
+      // Usamos TCPDI o FPDI para esto, o firmamos con OpenSSL.
       // MÉTODO 1: Firma con TCPDF (si el PDF fue generado con TCPDF)
-      // Este método requiere que el PDF se firme durante su creación
-
+      // Este método requiere que el PDF se firme durante su creación.
       // MÉTODO 2: Firma con OpenSSL (más flexible)
       $result = $this->signWithOpenSSL($input_path, $output_path, $certs, $options);
 
       return $result;
 
     } finally {
-      // Limpiar archivo temporal
+      // Limpiar archivo temporal.
       if (file_exists($temp_cert)) {
         unlink($temp_cert);
       }
@@ -232,16 +229,16 @@ class FirmaDigitalService
     string $input_path,
     string $output_path,
     array $certs,
-    array $options
+    array $options,
   ): bool {
-    // Leer el PDF
+    // Leer el PDF.
     $pdf_content = file_get_contents($input_path);
 
     if (!$pdf_content) {
       return FALSE;
     }
 
-    // Obtener clave privada
+    // Obtener clave privada.
     $private_key = openssl_pkey_get_private($certs['pkey']);
 
     if (!$private_key) {
@@ -249,7 +246,7 @@ class FirmaDigitalService
       return FALSE;
     }
 
-    // Crear firma PKCS#7
+    // Crear firma PKCS#7.
     $signature = '';
     $sign_result = openssl_sign($pdf_content, $signature, $private_key, OPENSSL_ALGO_SHA256);
 
@@ -260,14 +257,11 @@ class FirmaDigitalService
 
     // Para una firma PAdES completa embebida en el PDF,
     // necesitamos usar una librería especializada como SetaPDF o TCPDF
-    // Por ahora, creamos una firma detached y modificamos el PDF
-
+    // Por ahora, creamos una firma detached y modificamos el PDF.
     // OPCIÓN SIMPLE: Copiar PDF y añadir metadatos de firma
     // (No es firma PAdES completa, pero funciona para demostración)
-
     // Para producción real, usar SetaPDF-Signer o similar
     // https://www.setasign.com/products/setapdf-signer/
-
     // Crear el PDF firmado (copia + metadatos)
     $result = $this->embedSignatureInPdf($input_path, $output_path, $signature, $certs, $options);
 
@@ -299,16 +293,16 @@ class FirmaDigitalService
     string $output_path,
     string $signature,
     array $certs,
-    array $options
+    array $options,
   ): bool {
-    // Leer PDF original
+    // Leer PDF original.
     $pdf_content = file_get_contents($input_path);
 
-    // Obtener información del certificado
+    // Obtener información del certificado.
     $cert_info = openssl_x509_parse($certs['cert']);
     $signer_name = $cert_info['subject']['CN'] ?? 'Ecosistema Jaraba';
 
-    // Preparar datos de firma
+    // Preparar datos de firma.
     $signature_data = [
       'signer' => $signer_name,
       'reason' => $options['reason'] ?? 'Certificado de Trazabilidad',
@@ -319,12 +313,10 @@ class FirmaDigitalService
     ];
 
     // Para una implementación completa, aquí se modificaría la estructura
-    // del PDF para incluir el diccionario de firma según PDF 1.7 spec
-
+    // del PDF para incluir el diccionario de firma según PDF 1.7 spec.
     // Implementación simplificada: añadir metadatos al final
     // (Esto NO es una firma PAdES válida, solo para demostración)
-
-    // Guardar archivo firmado
+    // Guardar archivo firmado.
     if (file_put_contents($output_path, $pdf_content) === FALSE) {
       return FALSE;
     }
@@ -334,7 +326,7 @@ class FirmaDigitalService
     $sig_data = json_encode($signature_data, JSON_PRETTY_PRINT);
     file_put_contents($sig_path, $sig_data);
 
-    // Guardar firma binaria
+    // Guardar firma binaria.
     $sig_bin_path = $output_path . '.p7s';
     file_put_contents($sig_bin_path, base64_encode($signature));
 
@@ -349,9 +341,8 @@ class FirmaDigitalService
   /**
    * Obtiene la ruta del certificado desde configuración.
    */
-  protected function getCertificatePath(): ?string
-  {
-    // Prioridad: variable de entorno > configuración
+  protected function getCertificatePath(): ?string {
+    // Prioridad: variable de entorno > configuración.
     $path = getenv('ECOSISTEMA_JARABA_CERT_PATH');
 
     if (!$path) {
@@ -364,9 +355,8 @@ class FirmaDigitalService
   /**
    * Obtiene la contraseña del certificado de forma segura.
    */
-  protected function getCertificatePassword(): string
-  {
-    // SIEMPRE desde variable de entorno por seguridad
+  protected function getCertificatePassword(): string {
+    // SIEMPRE desde variable de entorno por seguridad.
     $password = getenv('ECOSISTEMA_JARABA_CERT_PASSWORD');
 
     if (!$password) {
@@ -386,8 +376,7 @@ class FirmaDigitalService
   /**
    * Crea un archivo temporal con el certificado.
    */
-  protected function createTempCertFile(array $certs): ?string
-  {
+  protected function createTempCertFile(array $certs): ?string {
     $temp_dir = $this->fileSystem->getTempDirectory();
     $temp_file = $temp_dir . '/ecosistema_jaraba_cert_' . uniqid() . '.pem';
 
@@ -405,8 +394,7 @@ class FirmaDigitalService
   /**
    * Genera la URI para el PDF firmado.
    */
-  protected function generateSignedUri(string $original_uri): string
-  {
+  protected function generateSignedUri(string $original_uri): string {
     $pathinfo = pathinfo($original_uri);
     return $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-firmado.pdf';
   }
@@ -414,8 +402,7 @@ class FirmaDigitalService
   /**
    * Registra la firma en el log de auditoría.
    */
-  protected function logAuditEntry(string $original, string $signed, array $cert_info): void
-  {
+  protected function logAuditEntry(string $original, string $signed, array $cert_info): void {
     $audit_data = [
       'timestamp' => date('c'),
       'original_file' => $original,
@@ -446,22 +433,21 @@ class FirmaDigitalService
    * @return bool
    *   TRUE si la firma es válida.
    */
-  public function verifySignature(string $pdf_uri): bool
-  {
+  public function verifySignature(string $pdf_uri): bool {
     $pdf_path = $this->fileSystem->realpath($pdf_uri);
 
     if (!$pdf_path || !file_exists($pdf_path)) {
       return FALSE;
     }
 
-    // Verificar con pdfsig (poppler-utils) si está disponible
+    // Verificar con pdfsig (poppler-utils) si está disponible.
     $output = [];
     $return_var = 0;
 
     exec('which pdfsig 2>/dev/null', $output, $return_var);
 
     if ($return_var === 0) {
-      // pdfsig está disponible
+      // Pdfsig está disponible.
       $output = [];
       exec('pdfsig "' . escapeshellarg($pdf_path) . '" 2>&1', $output, $return_var);
 
@@ -473,10 +459,11 @@ class FirmaDigitalService
       return $return_var === 0;
     }
 
-    // Verificar archivo de firma detached
+    // Verificar archivo de firma detached.
     $sig_path = $pdf_path . '.p7s';
     if (file_exists($sig_path)) {
-      return TRUE; // Firma detached existe
+      // Firma detached existe.
+      return TRUE;
     }
 
     return FALSE;
@@ -488,8 +475,7 @@ class FirmaDigitalService
    * @return array|null
    *   Información del certificado o NULL.
    */
-  public function getCertificateInfo(): ?array
-  {
+  public function getCertificateInfo(): ?array {
     $cert_path = $this->getCertificatePath();
     $cert_password = $this->getCertificatePassword();
 

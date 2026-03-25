@@ -83,7 +83,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 1. REFERENCIA AL EXPERIMENTO
     // =========================================================================
-
     $fields['experiment_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Experimento'))
       ->setDescription(t('Experimento A/B al que pertenece esta exposicion.'))
@@ -96,7 +95,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 2. VARIANTE Y VISITANTE
     // =========================================================================
-
     $fields['variant_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Clave de Variante'))
       ->setDescription(t('Identificador de la variante asignada al visitante.'))
@@ -126,7 +124,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 3. CONTEXTO DEL VISITANTE
     // =========================================================================
-
     $fields['device_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Tipo de Dispositivo'))
       ->setDescription(t('Tipo de dispositivo desde el que se accedio.'))
@@ -158,7 +155,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 4. PARAMETROS UTM
     // =========================================================================
-
     $fields['utm_source'] = BaseFieldDefinition::create('string')
       ->setLabel(t('UTM Source'))
       ->setDescription(t('Parametro utm_source del trafico de origen.'))
@@ -178,7 +174,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 5. TRACKING DE EXPOSICION Y CONVERSION
     // =========================================================================
-
     $fields['exposed_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Momento de Exposicion'))
       ->setDescription(t('Timestamp del momento en que el visitante fue expuesto a la variante.'))
@@ -206,7 +201,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 6. MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta exposicion.'))
@@ -218,7 +212,6 @@ class ExperimentExposure extends ContentEntityBase implements EntityChangedInter
     // =========================================================================
     // 7. METADATA
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Creacion'));
 

@@ -12,6 +12,7 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Yaml\Yaml;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
 /**
@@ -32,7 +33,7 @@ function _jaraba_crm_load_allowed_values(string $key): array {
 
     if (file_exists($yaml_path)) {
       $yaml_content = file_get_contents($yaml_path);
-      $all_values = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+      $all_values = Yaml::parse($yaml_content);
       $cache[$key] = $all_values[$key] ?? [];
     }
     else {
@@ -135,4 +136,3 @@ function jaraba_crm_get_bant_need_values(?FieldStorageDefinitionInterface $defin
 function jaraba_crm_get_bant_timeline_values(?FieldStorageDefinitionInterface $definition = NULL): array {
   return _jaraba_crm_load_allowed_values('bant_timeline');
 }
-

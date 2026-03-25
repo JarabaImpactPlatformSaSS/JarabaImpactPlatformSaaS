@@ -16,35 +16,31 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * Route: /admin/structure/success-case
  */
-class SuccessCaseSettingsForm extends FormBase
-{
+class SuccessCaseSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'success_case_settings';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'success_case_settings';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['info'] = [
-            '#markup' => '<p>' . $this->t('Use the tabs above to manage fields, form display, and view display for Success Case entities.') . '</p>',
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['info'] = [
+      '#markup' => '<p>' . $this->t('Use the tabs above to manage fields, form display, and view display for Success Case entities.') . '</p>',
+    ];
 
-        return $form;
-    }
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-        // No settings to save — this form exists solely for Field UI base route.
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    // No settings to save — this form exists solely for Field UI base route.
+  }
 
 }

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_einvoice_b2b\Unit;
 
+use Psr\Log\LoggerInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\jaraba_einvoice_b2b\Service\SPFEClient\SPFEClientInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_einvoice_b2b\Service\EInvoicePaymentStatusService;
 use Drupal\Tests\UnitTestCase;
 
@@ -25,10 +29,10 @@ class EInvoicePaymentStatusServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $entityTypeManager = $this->createMock(\Drupal\Core\Entity\EntityTypeManagerInterface::class);
-    $spfeClient = $this->createMock(\Drupal\jaraba_einvoice_b2b\Service\SPFEClient\SPFEClientInterface::class);
-    $loggerFactory = $this->createMock(\Drupal\Core\Logger\LoggerChannelFactoryInterface::class);
-    $loggerFactory->method('get')->willReturn($this->createMock(\Psr\Log\LoggerInterface::class));
+    $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
+    $spfeClient = $this->createMock(SPFEClientInterface::class);
+    $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
+    $loggerFactory->method('get')->willReturn($this->createMock(LoggerInterface::class));
 
     $this->service = new EInvoicePaymentStatusService(
       $entityTypeManager,

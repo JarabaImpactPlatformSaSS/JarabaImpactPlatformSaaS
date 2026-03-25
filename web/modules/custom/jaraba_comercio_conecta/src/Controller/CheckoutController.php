@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**
+ *
+ */
 class CheckoutController extends ControllerBase {
 
   public function __construct(
@@ -22,6 +25,9 @@ class CheckoutController extends ControllerBase {
     protected StripePaymentRetailService $paymentService,
   ) {}
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_comercio_conecta.cart'),
@@ -30,6 +36,9 @@ class CheckoutController extends ControllerBase {
     );
   }
 
+  /**
+   *
+   */
   public function checkoutPage(Request $request): array {
     $cart = $this->cartService->getOrCreateCart($request->getSession()->getId());
     $items = $this->cartService->getCartItems($cart);
@@ -99,6 +108,9 @@ class CheckoutController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   public function processPayment(Request $request): JsonResponse {
     $cart = $this->cartService->getOrCreateCart($request->getSession()->getId());
     $items = $this->cartService->getCartItems($cart);
@@ -120,8 +132,8 @@ class CheckoutController extends ControllerBase {
     $result = $this->checkoutService->processCheckout($cart, $checkout_data);
 
     if (!$result['success']) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
     }
 
     $payment_result = $this->paymentService->createPaymentIntent($result['order']);
@@ -142,6 +154,9 @@ class CheckoutController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function confirmationPage(int $order_id): array {
     $order = $this->entityTypeManager()->getStorage('order_retail')->load($order_id);
     if (!$order) {
@@ -169,6 +184,9 @@ class CheckoutController extends ControllerBase {
     ];
   }
 
+  /**
+   *
+   */
   public function webhookStripe(Request $request): JsonResponse {
     $payload = $request->getContent();
     $data = json_decode($payload, TRUE);

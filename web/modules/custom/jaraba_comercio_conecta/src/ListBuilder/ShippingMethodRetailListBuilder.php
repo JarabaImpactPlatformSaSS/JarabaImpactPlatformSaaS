@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class ShippingMethodRetailListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['name'] = $this->t('Nombre');
     $header['base_price'] = $this->t('Precio Base');
@@ -17,6 +23,9 @@ class ShippingMethodRetailListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $row['name'] = $entity->get('name')->value;
     $row['base_price'] = number_format((float) $entity->get('base_price')->value, 2, ',', '.') . ' EUR';

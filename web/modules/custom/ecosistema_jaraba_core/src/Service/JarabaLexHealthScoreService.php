@@ -217,8 +217,10 @@ class JarabaLexHealthScoreService {
 
   // ==================================================================
   // KPI calculators — Vertical level.
-  // ==================================================================
 
+  /**
+   * ==================================================================
+   */
   protected function calculateSearchesPerUser(): array {
     $target = self::KPI_TARGETS['searches_per_user_month'];
     $value = 0;
@@ -244,36 +246,57 @@ class JarabaLexHealthScoreService {
     ];
   }
 
+  /**
+   *
+   */
   protected function calculateBookmarksPerUser(): array {
     $target = self::KPI_TARGETS['bookmarks_per_user'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Bookmarks/usuario', 'unit' => 'count'];
   }
 
+  /**
+   *
+   */
   protected function calculateAlertsPerUser(): array {
     $target = self::KPI_TARGETS['alerts_per_user'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Alertas/usuario', 'unit' => 'count'];
   }
 
+  /**
+   *
+   */
   protected function calculateCitationsPerUser(): array {
     $target = self::KPI_TARGETS['citations_per_user'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Citas/usuario', 'unit' => 'count'];
   }
 
+  /**
+   *
+   */
   protected function calculateCopilotSessions(): array {
     $target = self::KPI_TARGETS['copilot_sessions_month'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Sesiones copilot/mes', 'unit' => 'count'];
   }
 
+  /**
+   *
+   */
   protected function calculateConversionRate(): array {
     $target = self::KPI_TARGETS['conversion_free_paid'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Conversion free→paid', 'unit' => '%'];
   }
 
+  /**
+   *
+   */
   protected function calculateRetention(): array {
     $target = self::KPI_TARGETS['user_retention_30d'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'Retencion 30 dias', 'unit' => '%'];
   }
 
+  /**
+   *
+   */
   protected function calculateNps(): array {
     $target = self::KPI_TARGETS['nps_score'];
     return ['value' => 0, 'target' => $target, 'status' => 'behind', 'label' => 'NPS', 'unit' => 'score'];

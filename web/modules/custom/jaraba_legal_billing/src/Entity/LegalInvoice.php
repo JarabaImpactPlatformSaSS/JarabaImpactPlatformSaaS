@@ -118,7 +118,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 1: MULTI-TENANT E IDENTIFICACION
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece la factura.'))
@@ -160,7 +159,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 2: REFERENCIA A EXPEDIENTE
     // =========================================================================
-
     $fields['case_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Expediente'))
       ->setDescription(new TranslatableMarkup('Expediente juridico asociado a la factura.'))
@@ -172,7 +170,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 3: DATOS DEL CLIENTE
     // =========================================================================
-
     $fields['client_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del Cliente'))
       ->setRequired(TRUE)
@@ -204,7 +201,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 4: FECHAS
     // =========================================================================
-
     $fields['issue_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha de Emision'))
       ->setSetting('datetime_type', 'date')
@@ -222,7 +218,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 5: IMPORTES
     // =========================================================================
-
     $fields['subtotal'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Subtotal'))
       ->setSetting('precision', 12)
@@ -280,7 +275,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 6: ESTADO Y PAGO
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -316,7 +310,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 7: STRIPE
     // =========================================================================
-
     $fields['stripe_invoice_id'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Stripe Invoice ID'))
       ->setSetting('max_length', 255)
@@ -330,7 +323,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 8: PAGOS
     // =========================================================================
-
     $fields['paid_at'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Fecha de Pago'))
       ->setSetting('datetime_type', 'datetime')
@@ -350,7 +342,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 9: NOTAS
     // =========================================================================
-
     $fields['notes'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Notas'))
       ->setDescription(new TranslatableMarkup('Notas internas sobre la factura.'))
@@ -361,7 +352,6 @@ class LegalInvoice extends ContentEntityBase implements EntityOwnerInterface, En
     // =========================================================================
     // BLOQUE 10: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

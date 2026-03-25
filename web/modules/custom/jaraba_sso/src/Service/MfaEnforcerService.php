@@ -7,7 +7,6 @@ namespace Drupal\jaraba_sso\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
-use Drupal\jaraba_sso\Entity\MfaPolicy;
 use Drupal\jaraba_sso\Entity\MfaPolicyInterface;
 use Drupal\user\UserInterface;
 
@@ -84,7 +83,7 @@ class MfaEnforcerService {
    *   - allowed_methods: string[] (totp, webauthn, sms)
    *   - grace_period_days: int
    *   - session_duration_hours: int
-   *   - max_concurrent_sessions: int
+   *   - max_concurrent_sessions: int.
    *
    * @return \Drupal\jaraba_sso\Entity\MfaPolicyInterface
    *   The created or updated MFA policy.

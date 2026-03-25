@@ -29,61 +29,58 @@ use Drupal\Core\Session\AccountInterface;
  * Los ajustes contables se realizan mediante asientos compensatorios.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-class FinancialTransactionAccessControlHandler extends EntityAccessControlHandler
-{
+class FinancialTransactionAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     *
-     * Controla el acceso a operaciones sobre transacciones existentes.
-     *
-     * LÓGICA:
-     * - view: Requiere permiso 'view financial transactions'
-     * - update: SIEMPRE DENEGADO (inmutable)
-     * - delete: SIEMPRE DENEGADO (inmutable)
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        switch ($operation) {
-            case 'view':
-                // Permitir visualización con el permiso correspondiente
-                return AccessResult::allowedIfHasPermission($account, 'view financial transactions');
+  /**
+   * {@inheritdoc}
+   *
+   * Controla el acceso a operaciones sobre transacciones existentes.
+   *
+   * LÓGICA:
+   * - view: Requiere permiso 'view financial transactions'
+   * - update: SIEMPRE DENEGADO (inmutable)
+   * - delete: SIEMPRE DENEGADO (inmutable)
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    switch ($operation) {
+      case 'view':
+        // Permitir visualización con el permiso correspondiente.
+        return AccessResult::allowedIfHasPermission($account, 'view financial transactions');
 
-            case 'update':
-                // ═══════════════════════════════════════════════════════════════════
-                // INMUTABILIDAD: Edición SIEMPRE denegada
-                // Las transacciones financieras son append-only para garantizar
-                // la integridad del libro mayor contable.
-                // ═══════════════════════════════════════════════════════════════════
-                return AccessResult::forbidden('Las transacciones financieras son inmutables. Use asientos compensatorios para ajustes.')
-                    ->addCacheableDependency($entity);
+      case 'update':
+        // ═══════════════════════════════════════════════════════════════════
+        // INMUTABILIDAD: Edición SIEMPRE denegada
+        // Las transacciones financieras son append-only para garantizar
+        // la integridad del libro mayor contable.
+        // ═══════════════════════════════════════════════════════════════════
+        return AccessResult::forbidden('Las transacciones financieras son inmutables. Use asientos compensatorios para ajustes.')
+          ->addCacheableDependency($entity);
 
-            case 'delete':
-                // ═══════════════════════════════════════════════════════════════════
-                // INMUTABILIDAD: Eliminación SIEMPRE denegada
-                // Mantener registro completo para auditorías y compliance.
-                // ═══════════════════════════════════════════════════════════════════
-                return AccessResult::forbidden('Las transacciones financieras no pueden eliminarse. Use asientos compensatorios para anulaciones.')
-                    ->addCacheableDependency($entity);
+      case 'delete':
+        // ═══════════════════════════════════════════════════════════════════
+        // INMUTABILIDAD: Eliminación SIEMPRE denegada
+        // Mantener registro completo para auditorías y compliance.
+        // ═══════════════════════════════════════════════════════════════════
+        return AccessResult::forbidden('Las transacciones financieras no pueden eliminarse. Use asientos compensatorios para anulaciones.')
+          ->addCacheableDependency($entity);
 
-            default:
-                return AccessResult::neutral();
-        }
+      default:
+        return AccessResult::neutral();
     }
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Controla el acceso a la creación de nuevas transacciones.
-     *
-     * LÓGICA:
-     * La creación requiere permiso 'create financial transactions'.
-     * Este permiso está restringido porque las transacciones afectan
-     * directamente las métricas financieras del ecosistema.
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'create financial transactions');
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * Controla el acceso a la creación de nuevas transacciones.
+   *
+   * LÓGICA:
+   * La creación requiere permiso 'create financial transactions'.
+   * Este permiso está restringido porque las transacciones afectan
+   * directamente las métricas financieras del ecosistema.
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'create financial transactions');
+  }
 
 }

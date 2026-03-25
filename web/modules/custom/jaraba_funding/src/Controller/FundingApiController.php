@@ -78,11 +78,15 @@ class FundingApiController extends ControllerBase {
       $data[] = $this->serializeOpportunity($opp);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -114,7 +118,9 @@ class FundingApiController extends ControllerBase {
       ]);
       $opportunity->save();
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeOpportunity($opportunity),
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeOpportunity($opportunity),
       ], 201);
     }
     catch (\Exception $e) {
@@ -201,11 +207,13 @@ class FundingApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data, 'meta' => [
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -284,8 +292,8 @@ class FundingApiController extends ControllerBase {
       if (isset($content['status'])) {
         $result = $this->applicationManager->updateStatus((int) $app->id(), $content['status']);
         if (!$result['success']) {
-          return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
+          // AUDIT-CONS-N08: Standardized JSON envelope.
+          return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
         }
         $app = $storage->load($funding_application);
       }

@@ -28,7 +28,7 @@ class MultiModalApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/ai/multimodal/capabilities
+   * GET /api/v1/ai/multimodal/capabilities.
    */
   public function getCapabilities(): JsonResponse {
     return new JsonResponse([

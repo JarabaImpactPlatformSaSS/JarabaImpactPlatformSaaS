@@ -63,7 +63,8 @@ class TenantExportCleanupWorkerTest extends KernelTestBase {
       'export_type' => 'full',
       'status' => 'completed',
       'progress' => 100,
-      'expires_at' => time() - 3600, // Expired 1 hour ago.
+    // Expired 1 hour ago.
+      'expires_at' => time() - 3600,
       'download_token' => 'expired-token',
     ]);
     $record->save();

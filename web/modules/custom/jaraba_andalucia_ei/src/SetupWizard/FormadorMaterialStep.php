@@ -24,26 +24,44 @@ class FormadorMaterialStep implements SetupWizardStepInterface {
     protected AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'formador_ei.material';
   }
 
+  /**
+   *
+   */
   public function getWizardId(): string {
     return 'formador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Subir material didáctico');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Sube tu primer material de formación al programa');
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return [
       'category' => 'content',
@@ -52,22 +70,37 @@ class FormadorMaterialStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.formador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function isComplete(int $tenantId): bool {
     try {
       if (!$this->entityTypeManager->hasDefinition('material_didactico_ei')) {
@@ -86,6 +119,9 @@ class FormadorMaterialStep implements SetupWizardStepInterface {
     }
   }
 
+  /**
+   *
+   */
   public function getCompletionData(int $tenantId): array {
     $count = 0;
     try {
@@ -110,6 +146,9 @@ class FormadorMaterialStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function isOptional(): bool {
     return TRUE;
   }

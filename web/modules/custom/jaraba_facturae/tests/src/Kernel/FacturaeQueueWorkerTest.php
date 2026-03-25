@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\jaraba_facturae\Plugin\QueueWorker\FACeSyncWorker;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +26,7 @@ class FacturaeQueueWorkerTest extends KernelTestBase {
    */
   public function testFACeSyncWorkerExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Plugin\QueueWorker\FACeSyncWorker::class),
+      class_exists(FACeSyncWorker::class),
       'FACeSyncWorker class should exist.'
     );
   }
@@ -33,9 +35,9 @@ class FacturaeQueueWorkerTest extends KernelTestBase {
    * Tests that FACeSyncWorker implements ContainerFactoryPluginInterface.
    */
   public function testFACeSyncWorkerImplementsContainerFactory(): void {
-    $reflection = new \ReflectionClass(\Drupal\jaraba_facturae\Plugin\QueueWorker\FACeSyncWorker::class);
+    $reflection = new \ReflectionClass(FACeSyncWorker::class);
     $this->assertTrue(
-      $reflection->implementsInterface(\Drupal\Core\Plugin\ContainerFactoryPluginInterface::class),
+      $reflection->implementsInterface(ContainerFactoryPluginInterface::class),
       'FACeSyncWorker should implement ContainerFactoryPluginInterface.'
     );
   }

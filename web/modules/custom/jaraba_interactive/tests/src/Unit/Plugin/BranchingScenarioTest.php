@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\jaraba_interactive\Plugin\InteractiveType\BranchingScenario;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,7 +34,7 @@ class BranchingScenarioTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -116,8 +117,10 @@ class BranchingScenarioTest extends UnitTestCase {
 
   // ==========================================================================
   // SCHEMA TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetSchemaReturnsArrayWithRequiredKeys(): void {
     $schema = $this->plugin->getSchema();
@@ -134,8 +137,10 @@ class BranchingScenarioTest extends UnitTestCase {
 
   // ==========================================================================
   // CALCULATE SCORE TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreOptimalPath(): void {
     $nodes = [
@@ -181,6 +186,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertSame('Excelente decision', $result['details']['node_1']['feedback']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreSuboptimalPath(): void {
     $nodes = [
@@ -218,6 +226,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertSame(3, $result['path_length']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreEmptyPath(): void {
     $nodes = [
@@ -241,6 +252,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertEmpty($result['details']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithNonExistentNodeIsSkipped(): void {
     $nodes = [
@@ -272,6 +286,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertSame(2, $result['path_length']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreCappedAt100Percent(): void {
     $nodes = [
@@ -302,6 +319,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertSame(140, $result['raw_score']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreWithMaxOptimalScoreZeroReturnsZero(): void {
     $nodes = [
@@ -326,6 +346,9 @@ class BranchingScenarioTest extends UnitTestCase {
     $this->assertSame(0, $result['raw_max']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testCalculateScoreResultIncludesPathLength(): void {
     $nodes = [
@@ -363,8 +386,10 @@ class BranchingScenarioTest extends UnitTestCase {
 
   // ==========================================================================
   // XAPI VERBS TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testGetXapiVerbsReturnsFiveVerbsIncludingInteracted(): void {
     $verbs = $this->plugin->getXapiVerbs();
@@ -380,8 +405,10 @@ class BranchingScenarioTest extends UnitTestCase {
 
   // ==========================================================================
   // RENDER TESTS
-  // ==========================================================================
 
+  /**
+ * ==========================================================================
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function testRenderReturnsThemeBranchingScenario(): void {
     $data = [

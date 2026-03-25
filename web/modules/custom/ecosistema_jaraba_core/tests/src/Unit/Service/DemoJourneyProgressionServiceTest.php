@@ -9,7 +9,6 @@ use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Database\Query\Update;
 use Drupal\Core\Database\StatementInterface;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\Core\GeneratedUrl;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_institutional\Entity;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -87,8 +88,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- tenant_id: referencia al grupo (AUDIT-CONS-005) ---
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tenant'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('El grupo (tenant) al que pertenece este participante.'))
+      ->setLabel(new TranslatableMarkup('Tenant'))
+      ->setDescription(new TranslatableMarkup('El grupo (tenant) al que pertenece este participante.'))
       ->setSetting('target_type', 'group')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -100,8 +101,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- program_id: referencia al programa institucional ---
     $fields['program_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Programa'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Programa institucional al que esta inscrito el participante.'))
+      ->setLabel(new TranslatableMarkup('Programa'))
+      ->setDescription(new TranslatableMarkup('Programa institucional al que esta inscrito el participante.'))
       ->setSetting('target_type', 'institutional_program')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -113,8 +114,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- user_id: participante (owner via EntityOwnerTrait) ---
     $fields['user_id']
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Participante'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Usuario participante del programa.'))
+      ->setLabel(new TranslatableMarkup('Participante'))
+      ->setDescription(new TranslatableMarkup('Usuario participante del programa.'))
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
@@ -125,8 +126,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- enrollment_date ---
     $fields['enrollment_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de inscripcion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de alta del participante en el programa.'))
+      ->setLabel(new TranslatableMarkup('Fecha de inscripcion'))
+      ->setDescription(new TranslatableMarkup('Fecha de alta del participante en el programa.'))
       ->setRequired(TRUE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
@@ -138,8 +139,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- exit_date ---
     $fields['exit_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de salida'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de baja del participante en el programa.'))
+      ->setLabel(new TranslatableMarkup('Fecha de salida'))
+      ->setDescription(new TranslatableMarkup('Fecha de baja del participante en el programa.'))
       ->setRequired(FALSE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
@@ -151,8 +152,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- exit_reason ---
     $fields['exit_reason'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Motivo de salida'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Razon por la que el participante dejo el programa.'))
+      ->setLabel(new TranslatableMarkup('Motivo de salida'))
+      ->setDescription(new TranslatableMarkup('Razon por la que el participante dejo el programa.'))
       ->setRequired(FALSE)
       ->setSetting('allowed_values', [
         'completed' => 'Completado',
@@ -169,8 +170,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- sto_ficha_id ---
     $fields['sto_ficha_id'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('ID Ficha STO'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Identificador de la ficha STO asociada.'))
+      ->setLabel(new TranslatableMarkup('ID Ficha STO'))
+      ->setDescription(new TranslatableMarkup('Identificador de la ficha STO asociada.'))
       ->setRequired(FALSE)
       ->setSetting('max_length', 50)
       ->setDisplayOptions('form', [
@@ -182,8 +183,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- employment_outcome ---
     $fields['employment_outcome'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Resultado de insercion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Resultado laboral del participante tras el programa.'))
+      ->setLabel(new TranslatableMarkup('Resultado de insercion'))
+      ->setDescription(new TranslatableMarkup('Resultado laboral del participante tras el programa.'))
       ->setRequired(FALSE)
       ->setSetting('allowed_values', [
         'employed' => 'Empleado cuenta ajena',
@@ -200,8 +201,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- employment_date ---
     $fields['employment_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de insercion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha en que el participante consiguio empleo.'))
+      ->setLabel(new TranslatableMarkup('Fecha de insercion'))
+      ->setDescription(new TranslatableMarkup('Fecha en que el participante consiguio empleo.'))
       ->setRequired(FALSE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
@@ -213,8 +214,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- hours_orientation ---
     $fields['hours_orientation'] = BaseFieldDefinition::create('decimal')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Horas de orientacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Total de horas de orientacion recibidas.'))
+      ->setLabel(new TranslatableMarkup('Horas de orientacion'))
+      ->setDescription(new TranslatableMarkup('Total de horas de orientacion recibidas.'))
       ->setRequired(FALSE)
       ->setDefaultValue('0')
       ->setSetting('precision', 6)
@@ -228,8 +229,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- hours_training ---
     $fields['hours_training'] = BaseFieldDefinition::create('decimal')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Horas de formacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Total de horas de formacion recibidas.'))
+      ->setLabel(new TranslatableMarkup('Horas de formacion'))
+      ->setDescription(new TranslatableMarkup('Total de horas de formacion recibidas.'))
       ->setRequired(FALSE)
       ->setDefaultValue('0')
       ->setSetting('precision', 6)
@@ -243,8 +244,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- certifications_obtained ---
     $fields['certifications_obtained'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Certificaciones obtenidas'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('JSON array'))
+      ->setLabel(new TranslatableMarkup('Certificaciones obtenidas'))
+      ->setDescription(new TranslatableMarkup('JSON array'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -255,8 +256,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- status ---
     $fields['status'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado actual del participante en el programa.'))
+      ->setLabel(new TranslatableMarkup('Estado'))
+      ->setDescription(new TranslatableMarkup('Estado actual del participante en el programa.'))
       ->setRequired(TRUE)
       ->setDefaultValue('active')
       ->setSetting('allowed_values', [
@@ -273,8 +274,8 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- notes ---
     $fields['notes'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Notas'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Notas internas sobre el participante.'))
+      ->setLabel(new TranslatableMarkup('Notas'))
+      ->setDescription(new TranslatableMarkup('Notas internas sobre el participante.'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -376,14 +377,14 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
 
     // --- created ---
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de creacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de creacion del registro.'))
+      ->setLabel(new TranslatableMarkup('Fecha de creacion'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora de creacion del registro.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- changed ---
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de modificacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
+      ->setLabel(new TranslatableMarkup('Fecha de modificacion'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
       ->setDisplayConfigurable('view', TRUE);
 
     return $fields;

@@ -74,9 +74,14 @@ class EiBadgeBridgeServiceTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConBadgeAwardService(): void {
     $badgeAwardService = new class {
+
+      /**
+       *
+       */
       public function getBadgesForEntity(string $type, int $id): array {
         return [];
       }
+
     };
 
     $service = new EiBadgeBridgeService(
@@ -152,25 +157,42 @@ class EiBadgeBridgeServiceTest extends UnitTestCase {
     // Sin badgeAwardService, intenta leer de entidad.
     // Participante sin campo badges_obtenidos.
     $participante = new class {
+
+      /**
+       *
+       */
       public function id(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function hasField(string $name): bool {
         return FALSE;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
 
     $this->storage->method('load')->willReturn($participante);

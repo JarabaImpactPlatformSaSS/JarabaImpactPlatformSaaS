@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexEmailSequenceService;
@@ -175,7 +176,7 @@ class JarabaLexEmailSequenceServiceTest extends UnitTestCase {
       ->willReturn([]);
 
     // Create should be called 5 times (once per sequence).
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(EntityInterface::class);
     $entity->method('save')->willReturn(1);
 
     $storage->expects($this->exactly(5))
@@ -205,7 +206,7 @@ class JarabaLexEmailSequenceServiceTest extends UnitTestCase {
     $storage = $this->createMock(EntityStorageInterface::class);
 
     // All sequences already exist.
-    $existingEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $existingEntity = $this->createMock(EntityInterface::class);
     $storage->method('loadByProperties')
       ->willReturn([$existingEntity]);
 

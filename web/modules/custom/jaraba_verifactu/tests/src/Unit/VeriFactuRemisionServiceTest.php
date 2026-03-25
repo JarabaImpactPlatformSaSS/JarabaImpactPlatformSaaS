@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Unit;
 
+use Drupal\jaraba_verifactu\Entity\VeriFactuRemisionBatch;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -86,7 +88,7 @@ class VeriFactuRemisionServiceTest extends UnitTestCase {
    * Tests processQueue returns 0 when no pending records.
    */
   public function testProcessQueueNoPendingRecords(): void {
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();
     $query->method('accessCheck')->willReturnSelf();
@@ -131,7 +133,8 @@ class VeriFactuRemisionServiceTest extends UnitTestCase {
         return 0;
       }
       if ($key === VeriFactuRemisionService::STATE_LAST_SUBMIT) {
-        return time(); // Just submitted.
+        // Just submitted.
+        return time();
       }
       return $default;
     });
@@ -185,7 +188,7 @@ class VeriFactuRemisionServiceTest extends UnitTestCase {
    * Creates a mock VeriFactuRemisionBatch for testing.
    */
   protected function createMockBatch(): object {
-    $batch = $this->createMock(\Drupal\jaraba_verifactu\Entity\VeriFactuRemisionBatch::class);
+    $batch = $this->createMock(VeriFactuRemisionBatch::class);
     $batch->method('id')->willReturn(1);
 
     $batch->method('get')->willReturnCallback(function (string $field) {

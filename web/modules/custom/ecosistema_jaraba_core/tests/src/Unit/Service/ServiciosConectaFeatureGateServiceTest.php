@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
@@ -92,7 +93,7 @@ class ServiciosConectaFeatureGateServiceTest extends UnitTestCase {
     $featureKey = 'services';
     $plan = 'profesional';
 
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->with('limit_value')->willReturn(-1);
     $limitEntity->method('status')->willReturn(TRUE);
 
@@ -117,7 +118,7 @@ class ServiciosConectaFeatureGateServiceTest extends UnitTestCase {
     $featureKey = 'ai_triage';
     $plan = 'free';
 
-    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity = $this->createMock(FreemiumVerticalLimitInterface::class);
     $limitEntity->method('get')->willReturnMap([
       ['limit_value', 0],
       ['upgrade_message', 'Upgrade to access AI Triage.'],

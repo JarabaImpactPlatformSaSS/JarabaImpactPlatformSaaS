@@ -85,7 +85,7 @@ class ProjectionService {
    *   - 'seasonality': array|null, 12 monthly multipliers (e.g., [1.0, 0.8, ...])
    *   - 'price_per_unit': float|null, unit price for unit-based projections
    *   - 'units_month_1': int|null, initial monthly units sold
-   *   - 'unit_growth_rate': float|null, monthly unit growth rate
+   *   - 'unit_growth_rate': float|null, monthly unit growth rate.
    *
    * @return array
    *   Full projection with monthly breakdown and summary.
@@ -202,7 +202,7 @@ class ProjectionService {
    *   Cost structure:
    *   - 'fixed_monthly': float, monthly fixed costs
    *   - 'variable_per_unit': float, variable cost per unit
-   *   - 'initial_investment': float, one-time startup costs
+   *   - 'initial_investment': float, one-time startup costs.
    *
    * @param array $revenue
    *   Revenue parameters:

@@ -13,44 +13,42 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for the Enrollment entity.
  */
-class EnrollmentAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class EnrollmentAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
 
-        switch ($operation) {
-            case 'view':
-                // Users can view their own enrollments
-                if ((int) $entity->get('user_id')->target_id === (int) $account->id()) {
-                    return AccessResult::allowed()->cachePerUser();
-                }
-                return AccessResult::allowedIfHasPermission($account, 'view enrollments');
-
-            case 'update':
-                return AccessResult::allowedIfHasPermission($account, 'edit enrollments');
-
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'delete enrollments');
+    switch ($operation) {
+      case 'view':
+        // Users can view their own enrollments.
+        if ((int) $entity->get('user_id')->target_id === (int) $account->id()) {
+          return AccessResult::allowed()->cachePerUser();
         }
+        return AccessResult::allowedIfHasPermission($account, 'view enrollments');
 
-        return AccessResult::neutral();
+      case 'update':
+        return AccessResult::allowedIfHasPermission($account, 'edit enrollments');
+
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'delete enrollments');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'create enrollments')
-            ->orIf(AccessResult::allowedIfHasPermission($account, 'access administration pages'));
-    }
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'create enrollments')
+      ->orIf(AccessResult::allowedIfHasPermission($account, 'access administration pages'));
+  }
 
 }

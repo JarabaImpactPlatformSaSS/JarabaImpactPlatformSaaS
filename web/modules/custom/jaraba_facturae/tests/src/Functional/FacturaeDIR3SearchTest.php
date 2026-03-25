@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Functional;
 
+use Drupal\jaraba_facturae\ValueObject\DIR3Unit;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -50,7 +51,7 @@ class FacturaeDIR3SearchTest extends BrowserTestBase {
    * Tests DIR3Unit value object structure.
    */
   public function testDIR3UnitValueObject(): void {
-    $unit = \Drupal\jaraba_facturae\ValueObject\DIR3Unit::fromArray([
+    $unit = DIR3Unit::fromArray([
       'code' => 'L01234567',
       'name' => 'Oficina Contable Test',
       'type' => '01',

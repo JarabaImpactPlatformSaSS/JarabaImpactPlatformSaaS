@@ -13,51 +13,49 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler for CandidateSkill entities.
  */
-class CandidateSkillAccessControlHandler extends EntityAccessControlHandler
-{
+class CandidateSkillAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        /** @var \Drupal\jaraba_candidate\Entity\CandidateSkillInterface $entity */
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    /** @var \Drupal\jaraba_candidate\Entity\CandidateSkillInterface $entity */
 
-        // Admin can do anything.
-        if ($account->hasPermission('administer candidate skills')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // Owner can view/edit their own skills.
-        $is_owner = $entity->getOwnerId() === $account->id();
-
-        switch ($operation) {
-            case 'view':
-                if ($is_owner) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                // Public profiles can have skills viewed.
-                return AccessResult::allowedIfHasPermission($account, 'view candidate skills');
-
-            case 'update':
-            case 'delete':
-                if ($is_owner) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                return AccessResult::forbidden();
-        }
-
-        return AccessResult::neutral();
+    // Admin can do anything.
+    if ($account->hasPermission('administer candidate skills')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermissions($account, [
-            'administer candidate skills',
-            'create own candidate skills',
-        ], 'OR');
+    // Owner can view/edit their own skills.
+    $is_owner = $entity->getOwnerId() === $account->id();
+
+    switch ($operation) {
+      case 'view':
+        if ($is_owner) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        // Public profiles can have skills viewed.
+        return AccessResult::allowedIfHasPermission($account, 'view candidate skills');
+
+      case 'update':
+      case 'delete':
+        if ($is_owner) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::forbidden();
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermissions($account, [
+      'administer candidate skills',
+      'create own candidate skills',
+    ], 'OR');
+  }
 
 }

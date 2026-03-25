@@ -74,7 +74,6 @@ class DrTestResult extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- IDENTIFICACION ---
-
     $fields['test_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del test'))
       ->setDescription(new TranslatableMarkup('Nombre descriptivo de la prueba DR ejecutada.'))
@@ -107,7 +106,6 @@ class DrTestResult extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO Y EJECUCION ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado actual de la prueba DR.'))
@@ -146,7 +144,6 @@ class DrTestResult extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- METRICAS RTO / RPO ---
-
     $fields['rto_achieved'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('RTO alcanzado (segundos)'))
       ->setDescription(new TranslatableMarkup('Recovery Time Objective alcanzado en la prueba, en segundos.'))
@@ -162,7 +159,6 @@ class DrTestResult extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS TECNICOS ---
-
     $fields['results_data'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Datos de resultados'))
       ->setDescription(new TranslatableMarkup('JSON con los resultados tecnicos detallados de la prueba.'))
@@ -171,7 +167,6 @@ class DrTestResult extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- RESPONSABLE ---
-
     $fields['executed_by'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Ejecutado por'))
       ->setDescription(new TranslatableMarkup('Usuario que ejecuto la prueba DR.'))
@@ -181,7 +176,6 @@ class DrTestResult extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creacion del registro.'));

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_insights_hub\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Formulario para conectar y gestionar cuentas de Google Search Console.
@@ -86,9 +84,9 @@ class SearchConsoleConnectForm extends FormBase {
       $form['no_credentials'] = [
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--warning">' .
-          $this->t('Debe configurar las credenciales OAuth2 de Google antes de conectar. <a href="@url">Ir a configuracion</a>.', [
-            '@url' => Url::fromRoute('jaraba_insights_hub.settings')->toString(),
-          ]) . '</div>',
+        $this->t('Debe configurar las credenciales OAuth2 de Google antes de conectar. <a href="@url">Ir a configuracion</a>.', [
+          '@url' => Url::fromRoute('jaraba_insights_hub.settings')->toString(),
+        ]) . '</div>',
       ];
       return $form;
     }
@@ -102,9 +100,9 @@ class SearchConsoleConnectForm extends FormBase {
       $form['oauth_error'] = [
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--error">' .
-          $this->t('Error en la autorizacion de Google: @error', [
-            '@error' => $auth_error,
-          ]) . '</div>',
+        $this->t('Error en la autorizacion de Google: @error', [
+          '@error' => $auth_error,
+        ]) . '</div>',
       ];
     }
 
@@ -112,7 +110,7 @@ class SearchConsoleConnectForm extends FormBase {
       $form['oauth_success'] = [
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--status">' .
-          $this->t('Codigo de autorizacion recibido. Complete el formulario para finalizar la conexion.') . '</div>',
+        $this->t('Codigo de autorizacion recibido. Complete el formulario para finalizar la conexion.') . '</div>',
       ];
 
       $form['auth_code'] = [

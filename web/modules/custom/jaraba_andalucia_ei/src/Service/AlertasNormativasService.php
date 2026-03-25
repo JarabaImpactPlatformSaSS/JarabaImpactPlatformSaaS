@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * - Sin indicadores FSE+ de entrada después de la segunda semana
  * - Sin carril asignado después de 3 semanas
  * - Horas insuficientes próximos a fin de programa
- * - Formación sin VoBo SAE
+ * - Formación sin VoBo SAE.
  *
  * TENANT-001: Queries filtradas por tenant.
  */

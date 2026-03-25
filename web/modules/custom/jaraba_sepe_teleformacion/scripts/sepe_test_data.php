@@ -4,14 +4,12 @@
  * @file
  * Script para generar datos de prueba SEPE.
  *
- * Ejecutar con: drush php:script sepe_test_data.php
+ * Ejecutar con: drush php:script sepe_test_data.php.
  */
-
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 // Verificar que estamos en Drupal.
 if (!defined('DRUPAL_ROOT')) {
-    throw new \RuntimeException('Este script debe ejecutarse con Drush.');
+  throw new \RuntimeException('Este script debe ejecutarse con Drush.');
 }
 
 $entityTypeManager = \Drupal::entityTypeManager();
@@ -22,19 +20,19 @@ $entityTypeManager = \Drupal::entityTypeManager();
 echo "Creando centro SEPE de prueba...\n";
 
 $centro = $entityTypeManager->getStorage('sepe_centro')->create([
-    'cif' => 'B12345678',
-    'razon_social' => 'Jaraba Formación S.L.',
-    'codigo_sepe' => 'AN0001234',
-    'tipo_registro' => 'inscripcion',
-    'direccion' => 'Calle Ejemplo, 123',
-    'codigo_postal' => '41001',
-    'municipio' => 'Sevilla',
-    'provincia' => 'Sevilla',
-    'telefono' => '954123456',
-    'email' => 'formacion@jarabaosc.com',
-    'url_plataforma' => 'https://plataformadeecosistemas.com',
-    'url_seguimiento' => 'https://plataformadeecosistemas.com/sepe/ws/seguimiento',
-    'is_active' => TRUE,
+  'cif' => 'B12345678',
+  'razon_social' => 'Jaraba Formación S.L.',
+  'codigo_sepe' => 'AN0001234',
+  'tipo_registro' => 'inscripcion',
+  'direccion' => 'Calle Ejemplo, 123',
+  'codigo_postal' => '41001',
+  'municipio' => 'Sevilla',
+  'provincia' => 'Sevilla',
+  'telefono' => '954123456',
+  'email' => 'formacion@jarabaosc.com',
+  'url_plataforma' => 'https://plataformadeecosistemas.com',
+  'url_seguimiento' => 'https://plataformadeecosistemas.com/sepe/ws/seguimiento',
+  'is_active' => TRUE,
 ]);
 
 $centro->save();
@@ -53,16 +51,16 @@ echo "✅ Centro configurado como activo\n";
 echo "\nCreando acción formativa de prueba...\n";
 
 $accion = $entityTypeManager->getStorage('sepe_accion_formativa')->create([
-    'id_accion_sepe' => 'AF2026-001-JARABA',
-    'centro_id' => $centro_id,
-    'denominacion' => 'Competencias Digitales para el Empleo',
-    'codigo_especialidad' => 'ADGG057PO',
-    'modalidad' => 'T',
-    'numero_horas' => 60,
-    'fecha_inicio' => date('Y-m-d'),
-    'fecha_fin' => date('Y-m-d', strtotime('+2 months')),
-    'estado' => 'en_curso',
-    'num_participantes_max' => 25,
+  'id_accion_sepe' => 'AF2026-001-JARABA',
+  'centro_id' => $centro_id,
+  'denominacion' => 'Competencias Digitales para el Empleo',
+  'codigo_especialidad' => 'ADGG057PO',
+  'modalidad' => 'T',
+  'numero_horas' => 60,
+  'fecha_inicio' => date('Y-m-d'),
+  'fecha_fin' => date('Y-m-d', strtotime('+2 months')),
+  'estado' => 'en_curso',
+  'num_participantes_max' => 25,
 ]);
 
 $accion->save();
@@ -76,16 +74,16 @@ echo "   ID SEPE: AF2026-001-JARABA\n";
 echo "\nCreando participante de prueba...\n";
 
 $participante = $entityTypeManager->getStorage('sepe_participante')->create([
-    'accion_id' => $accion_id,
-    'dni' => '12345678A',
-    'nombre' => 'Usuario',
-    'apellidos' => 'Prueba SEPE',
-    'fecha_alta' => date('Y-m-d'),
-    'estado' => 'activo',
-    'horas_conectado' => 5.5,
-    'porcentaje_progreso' => 25,
-    'num_actividades' => 3,
-    'nota_media' => 7.5,
+  'accion_id' => $accion_id,
+  'dni' => '12345678A',
+  'nombre' => 'Usuario',
+  'apellidos' => 'Prueba SEPE',
+  'fecha_alta' => date('Y-m-d'),
+  'estado' => 'activo',
+  'horas_conectado' => 5.5,
+  'porcentaje_progreso' => 25,
+  'num_actividades' => 3,
+  'nota_media' => 7.5,
 ]);
 
 $participante->save();

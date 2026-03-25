@@ -69,8 +69,8 @@ class ChurnPredictionListBuilder extends EntityListBuilder {
     $row['risk_level'] = [
       'data' => [
         '#markup' => '<span class="badge ' . ($risk_classes[$risk_level] ?? '') . '">'
-          . ($risk_labels[$risk_level] ?? $risk_level)
-          . '</span>',
+        . ($risk_labels[$risk_level] ?? $risk_level)
+        . '</span>',
       ],
     ];
     $row['model_version'] = $entity->get('model_version')->value ?? '';

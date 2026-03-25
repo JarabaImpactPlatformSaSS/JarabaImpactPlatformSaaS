@@ -96,7 +96,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 1. IDENTITY
     // =========================================================================
-
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre del Experimento'))
       ->setDescription(t('Nombre descriptivo del experimento A/B.'))
@@ -119,7 +118,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 2. EXPERIMENT CONFIG
     // =========================================================================
-
     $fields['experiment_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Tipo de Experimento'))
       ->setDescription(t('Categoría del experimento A/B.'))
@@ -168,7 +166,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 3. TARGETING
     // =========================================================================
-
     $fields['target_audience'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Audiencia Objetivo'))
       ->setDescription(t('Segmento de usuarios que participarán en el experimento.'))
@@ -206,7 +203,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 4. STATUS
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado del Experimento'))
       ->setDescription(t('Estado actual del ciclo de vida del experimento.'))
@@ -234,7 +230,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 5. STATISTICAL CONFIG
     // =========================================================================
-
     $fields['confidence_threshold'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Umbral de Confianza'))
       ->setDescription(t('Nivel de confianza estadística requerido (0.00 a 1.00). Por defecto 0.95 (95%).'))
@@ -267,7 +262,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 6. SCHEDULING
     // =========================================================================
-
     $fields['start_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha de Inicio'))
       ->setDescription(t('Fecha y hora de inicio del experimento.'))
@@ -293,7 +287,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 7. MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece este experimento.'))
@@ -306,7 +299,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 8. METADATA
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Creación'));
 
@@ -316,7 +308,6 @@ class ABExperiment extends ContentEntityBase implements EntityChangedInterface, 
     // =========================================================================
     // 9. RESULTS CACHE
     // =========================================================================
-
     $fields['total_visitors'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Total Visitantes'))
       ->setDescription(t('Caché agregado del total de visitantes en todas las variantes.'))

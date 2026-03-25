@@ -30,6 +30,9 @@ class ReviewSchemaOrgServiceTest extends TestCase {
   private EntityTypeManagerInterface&MockObject $entityTypeManager;
   private RequestStack&MockObject $requestStack;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->aggregationService = $this->createMock(ReviewAggregationService::class);
@@ -225,9 +228,13 @@ class ReviewSchemaOrgServiceTest extends TestCase {
         $this->value = $v;
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->value === NULL || $this->value === '';
       }
+
     };
   }
 

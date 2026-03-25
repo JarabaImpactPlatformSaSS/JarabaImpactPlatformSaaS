@@ -161,7 +161,7 @@ class FichaTecnicaEi extends ContentEntityBase implements EntityChangedInterface
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // JSON array: [{nombre, nif, titulacion, provincia, email, telefono}]
+    // JSON array: [{nombre, nif, titulacion, provincia, email, telefono}].
     $fields['personal_tecnico'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Personal técnico'))
       ->setDescription(t('JSON con datos del equipo técnico: nombre, NIF, titulación, provincia, contacto.'))

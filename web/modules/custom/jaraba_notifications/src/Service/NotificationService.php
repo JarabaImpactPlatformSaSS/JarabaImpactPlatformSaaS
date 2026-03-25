@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
  * Directivas:
  * - TENANT-001: Todas las queries filtran por tenant_id
  * - API-NAMING-001: No usa create() como nombre publico — usa send()
- * - KERNEL-OPTIONAL-AI-001: Sin dependencias AI directas
+ * - KERNEL-OPTIONAL-AI-001: Sin dependencias AI directas.
  */
 class NotificationService {
 

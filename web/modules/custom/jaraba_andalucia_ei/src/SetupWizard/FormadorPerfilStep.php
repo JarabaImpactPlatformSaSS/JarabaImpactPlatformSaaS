@@ -25,26 +25,44 @@ class FormadorPerfilStep implements SetupWizardStepInterface {
     protected AccountProxyInterface $currentUser,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'formador_ei.perfil';
   }
 
+  /**
+   *
+   */
   public function getWizardId(): string {
     return 'formador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Perfil profesional');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Completa tu perfil con titulación y especialidades');
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 10;
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return [
       'category' => 'users',
@@ -53,22 +71,37 @@ class FormadorPerfilStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.formador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function isComplete(int $tenantId): bool {
     try {
       if (!$this->entityTypeManager->hasDefinition('staff_profile_ei')) {
@@ -88,6 +121,9 @@ class FormadorPerfilStep implements SetupWizardStepInterface {
     }
   }
 
+  /**
+   *
+   */
   public function getCompletionData(int $tenantId): array {
     $complete = $this->isComplete($tenantId);
     return [
@@ -98,6 +134,9 @@ class FormadorPerfilStep implements SetupWizardStepInterface {
     ];
   }
 
+  /**
+   *
+   */
   public function isOptional(): bool {
     return FALSE;
   }

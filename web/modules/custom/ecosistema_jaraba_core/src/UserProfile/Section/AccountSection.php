@@ -14,34 +14,58 @@ use Drupal\ecosistema_jaraba_core\UserProfile\AbstractUserProfileSection;
  */
 class AccountSection extends AbstractUserProfileSection {
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'account';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     return (string) $this->t('Cuenta');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     return (string) $this->t('Configuracion de tu cuenta');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'actions', 'name' => 'settings'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'neutral';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 100;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     $links = [];
 

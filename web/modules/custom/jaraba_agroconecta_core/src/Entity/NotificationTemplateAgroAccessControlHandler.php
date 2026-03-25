@@ -16,34 +16,31 @@ use Drupal\Core\Access\AccessResultInterface;
  * Solo administradores con 'manage agro notifications' pueden
  * crear, editar o eliminar plantillas de notificación.
  */
-class NotificationTemplateAgroAccessControlHandler extends EntityAccessControlHandler
-{
+class NotificationTemplateAgroAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        $admin_permission = $this->entityType->getAdminPermission();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    $admin_permission = $this->entityType->getAdminPermission();
 
-        if ($account->hasPermission($admin_permission)) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
+    if ($account->hasPermission($admin_permission)) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        $admin_permission = $this->entityType->getAdminPermission();
+    return AccessResult::allowedIfHasPermission($account, 'manage agro notifications');
+  }
 
-        return AccessResult::allowedIfHasPermissions($account, [
-            $admin_permission,
-            'manage agro notifications',
-        ], 'OR');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    $admin_permission = $this->entityType->getAdminPermission();
+
+    return AccessResult::allowedIfHasPermissions($account, [
+      $admin_permission,
+      'manage agro notifications',
+    ], 'OR');
+  }
 
 }

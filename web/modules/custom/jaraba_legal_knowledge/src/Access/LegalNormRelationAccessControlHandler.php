@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_knowledge\Access;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
@@ -55,7 +56,7 @@ class LegalNormRelationAccessControlHandler extends EntityAccessControlHandler i
       case 'update':
       case 'delete':
         $hasPermission = AccessResult::allowedIfHasPermission($account, 'manage legal norms');
-        if ($hasPermission->isAllowed() && $this->tenantContext !== NULL && $entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+        if ($hasPermission->isAllowed() && $this->tenantContext !== NULL && $entity instanceof ContentEntityInterface) {
           $entityTenantId = (int) $entity->get('tenant_id')->target_id;
           $currentTenantId = $this->tenantContext->getCurrentTenantId();
           if ($entityTenantId > 0 && $currentTenantId !== NULL && $entityTenantId !== (int) $currentTenantId) {

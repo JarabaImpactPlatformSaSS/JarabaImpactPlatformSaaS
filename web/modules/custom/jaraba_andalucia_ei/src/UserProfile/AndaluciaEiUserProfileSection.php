@@ -69,10 +69,16 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
     protected readonly ?LoggerInterface $logger = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'andalucia_ei_programa';
   }
 
+  /**
+   *
+   */
   public function getTitle(int $uid): string {
     $roles = $this->detectRoles($uid);
     $labels = [];
@@ -102,6 +108,9 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
     return (string) $this->t('Andalucia +ei');
   }
 
+  /**
+   *
+   */
   public function getSubtitle(int $uid): string {
     $roles = $this->detectRoles($uid);
 
@@ -118,23 +127,38 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
     return (string) $this->t('Programa Andalucia +ei');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'verticals', 'name' => 'andalucia-ei'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'innovation';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 15;
   }
 
+  /**
+   *
+   */
   public function isApplicable(int $uid): bool {
     $roles = $this->detectRoles($uid);
     return $roles['participante'] || $roles['orientador'] || $roles['coordinador'];
   }
 
+  /**
+   *
+   */
   public function getLinks(int $uid): array {
     $roles = $this->detectRoles($uid);
     $links = [];
@@ -154,6 +178,9 @@ class AndaluciaEiUserProfileSection implements UserProfileSectionInterface {
     return array_values(array_filter($links));
   }
 
+  /**
+   *
+   */
   public function getExtraData(int $uid): array {
     $roles = $this->detectRoles($uid);
     $extra = [];

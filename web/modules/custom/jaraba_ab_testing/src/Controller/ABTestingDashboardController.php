@@ -81,7 +81,7 @@ class ABTestingDashboardController extends ControllerBase {
   public function dashboard(): array {
     $tenant_id = 0;
 
-    // Obtener métricas KPI
+    // Obtener métricas KPI.
     $kpis = $this->aggregator
       ? $this->aggregator->getDashboardMetrics($tenant_id)
       : [
@@ -93,7 +93,7 @@ class ABTestingDashboardController extends ControllerBase {
         'avg_days_to_significance' => 0,
       ];
 
-    // Obtener experimentos activos
+    // Obtener experimentos activos.
     $active_experiments = $this->aggregator
       ? $this->aggregator->getTenantExperiments($tenant_id, 'running')
       : [];
@@ -103,7 +103,7 @@ class ABTestingDashboardController extends ControllerBase {
       ? $this->aggregator->getTenantExperiments($tenant_id, 'completed')
       : [];
 
-    // Todos los experimentos
+    // @todo s los experimentos
     $all_experiments = $this->aggregator
       ? $this->aggregator->getTenantExperiments($tenant_id)
       : [];

@@ -93,8 +93,10 @@ class MultiRegionApiController extends ControllerBase {
         ], 404);
       }
 
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $this->serializeRegion($region),
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeRegion($region),
       ]);
     }
     catch (\Exception $e) {
@@ -233,11 +235,13 @@ class MultiRegionApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data, 'meta' => [
+        'data' => $data,
+        'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -285,7 +289,9 @@ class MultiRegionApiController extends ControllerBase {
       ]);
       $rule->save();
 
-      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeTaxRule($rule),
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => $this->serializeTaxRule($rule),
       ], 201);
     }
     catch (\Exception $e) {
@@ -357,11 +363,13 @@ class MultiRegionApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data, 'meta' => [
+        'data' => $data,
+        'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ]]);
+        ],
+      ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([

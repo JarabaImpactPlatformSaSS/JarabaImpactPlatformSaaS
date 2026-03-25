@@ -43,67 +43,63 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.document_download_log.settings",
  * )
  */
-class DocumentDownloadLog extends ContentEntityBase
-{
+class DocumentDownloadLog extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setSetting('target_type', 'taxonomy_term')
-            ->setSetting('handler_settings', ['target_bundles' => ['tenants' => 'tenants']])
-            ->setRequired(TRUE);
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler_settings', ['target_bundles' => ['tenants' => 'tenants']])
+      ->setRequired(TRUE);
 
-        $fields['document_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Documento'))
-            ->setDescription(t('Documento que fue descargado.'))
-            ->setSetting('target_type', 'product_document')
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['document_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Documento'))
+      ->setDescription(t('Documento que fue descargado.'))
+      ->setSetting('target_type', 'product_document')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['relationship_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Partner'))
-            ->setDescription(t('Relación partner que realizó la descarga.'))
-            ->setSetting('target_type', 'partner_relationship')
-            ->setRequired(TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['relationship_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Partner'))
+      ->setDescription(t('Relación partner que realizó la descarga.'))
+      ->setSetting('target_type', 'partner_relationship')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['downloaded_at'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de descarga'))
-            ->setDescription(t('Momento exacto de la descarga.'));
+    $fields['downloaded_at'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de descarga'))
+      ->setDescription(t('Momento exacto de la descarga.'));
 
-        $fields['ip_address'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Dirección IP'))
-            ->setSetting('max_length', 45)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['ip_address'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Dirección IP'))
+      ->setSetting('max_length', 45)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['user_agent'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('User agent'))
-            ->setSetting('max_length', 255)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['user_agent'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('User agent'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('view', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene el ID del documento descargado.
-     */
-    public function getDocumentId(): ?int
-    {
-        return $this->get('document_id')->target_id ? (int) $this->get('document_id')->target_id : NULL;
-    }
+  /**
+   * Obtiene el ID del documento descargado.
+   */
+  public function getDocumentId(): ?int {
+    return $this->get('document_id')->target_id ? (int) $this->get('document_id')->target_id : NULL;
+  }
 
-    /**
-     * Obtiene el ID de la relación partner.
-     */
-    public function getRelationshipId(): ?int
-    {
-        return $this->get('relationship_id')->target_id ? (int) $this->get('relationship_id')->target_id : NULL;
-    }
+  /**
+   * Obtiene el ID de la relación partner.
+   */
+  public function getRelationshipId(): ?int {
+    return $this->get('relationship_id')->target_id ? (int) $this->get('relationship_id')->target_id : NULL;
+  }
 
 }

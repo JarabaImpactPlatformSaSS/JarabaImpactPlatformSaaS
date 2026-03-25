@@ -111,7 +111,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/solicitudes
+   * GET /api/v1/andalucia-ei/hub/solicitudes.
    */
   public function listSolicitudes(Request $request): JsonResponse {
     $estado = $request->query->get('estado', '');
@@ -138,7 +138,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/andalucia-ei/hub/solicitud/{id}/approve
+   * POST /api/v1/andalucia-ei/hub/solicitud/{id}/approve.
    */
   public function approveSolicitud(int $id): JsonResponse {
     $tenantId = $this->resolveTenantId();
@@ -152,7 +152,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/andalucia-ei/hub/solicitud/{id}/reject
+   * POST /api/v1/andalucia-ei/hub/solicitud/{id}/reject.
    */
   public function rejectSolicitud(int $id, Request $request): JsonResponse {
     $content = $request->getContent();
@@ -175,7 +175,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/andalucia-ei/hub/participant/{id}/phase
+   * POST /api/v1/andalucia-ei/hub/participant/{id}/phase.
    */
   public function changePhase(int $id, Request $request): JsonResponse {
     $content = $request->getContent();
@@ -210,7 +210,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/participants
+   * GET /api/v1/andalucia-ei/hub/participants.
    */
   public function listParticipants(Request $request): JsonResponse {
     $fase = $request->query->get('fase', '');
@@ -238,7 +238,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/sessions
+   * GET /api/v1/andalucia-ei/hub/sessions.
    */
   public function listSessions(Request $request): JsonResponse {
     $days = min(max((int) $request->query->get('days', '7'), 1), 90);
@@ -253,7 +253,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/kpis
+   * GET /api/v1/andalucia-ei/hub/kpis.
    */
   public function getKpis(): JsonResponse {
     $tenantId = $this->resolveTenantId();
@@ -410,7 +410,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/acciones-formativas
+   * GET /api/v1/andalucia-ei/hub/acciones-formativas.
    *
    * Lista acciones formativas del tenant con filtros opcionales.
    */
@@ -468,7 +468,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/sesiones-formativas
+   * GET /api/v1/andalucia-ei/hub/sesiones-formativas.
    *
    * Lista sesiones programadas del tenant.
    */
@@ -518,7 +518,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/planes-formativos
+   * GET /api/v1/andalucia-ei/hub/planes-formativos.
    *
    * Lista planes formativos del tenant.
    */
@@ -571,7 +571,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/indicadores-esf
+   * GET /api/v1/andalucia-ei/hub/indicadores-esf.
    *
    * Indicadores ESF+ (CO01-CO14, CR01-CR06) para financiador.
    */
@@ -602,7 +602,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/andalucia-ei/hub/calendar-events
+   * GET /api/v1/andalucia-ei/hub/calendar-events.
    *
    * FullCalendar JSON event source. Returns flat array (no wrapper).
    * API-WHITELIST-001: Validates all filter params.
@@ -669,7 +669,7 @@ class CoordinadorHubApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/andalucia-ei/hub/session/{id}/reschedule
+   * POST /api/v1/andalucia-ei/hub/session/{id}/reschedule.
    *
    * CSRF-API-001: Protected via _csrf_request_header_token.
    */

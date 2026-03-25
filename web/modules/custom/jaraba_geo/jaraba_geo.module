@@ -15,6 +15,7 @@
 
 declare(strict_types=1);
 
+use Drupal\jaraba_page_builder\Entity\PageContent;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 
@@ -33,7 +34,7 @@ function jaraba_geo_page_attachments(array &$attachments): void {
   try {
     $route_match = \Drupal::routeMatch();
     $page_content = $route_match->getParameter('page_content');
-    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+    if ($page_content instanceof PageContent) {
       if (\Drupal::hasService('jaraba_site_builder.meta_site_resolver')) {
         $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
         $metaSite = $resolver->resolveFromPageContent($page_content);
@@ -55,7 +56,7 @@ function jaraba_geo_page_attachments(array &$attachments): void {
   try {
     $route_match = \Drupal::routeMatch();
     $page_content = $route_match->getParameter('page_content');
-    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+    if ($page_content instanceof PageContent) {
       /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
       $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
       $metaSite = $resolver->resolveFromPageContent($page_content);
@@ -244,7 +245,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
   /** @var \Drupal\jaraba_job_board\Entity\JobPostingInterface $entity */
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
 
-  // Mapeo de job_type a employmentType de Schema.org
+  // Mapeo de job_type a employmentType de Schema.org.
   $employment_type_map = [
     'full_time' => 'FULL_TIME',
     'part_time' => 'PART_TIME',
@@ -257,7 +258,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
   $job_type = $entity->getJobType();
   $employment_type = $employment_type_map[$job_type] ?? 'FULL_TIME';
 
-  // Schema base
+  // Schema base.
   $schema = [
     '@context' => 'https://schema.org',
     '@type' => 'JobPosting',
@@ -274,7 +275,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
     ],
   ];
 
-  // Ubicación
+  // Ubicación.
   $city = $entity->getLocationCity();
   $remote_type = $entity->getRemoteType();
 
@@ -292,7 +293,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
     ];
   }
 
-  // Salario si está disponible
+  // Salario si está disponible.
   $salary = $entity->getSalaryRange();
   if (!empty($salary['min']) && !empty($salary['max'])) {
     $schema['baseSalary'] = [
@@ -307,7 +308,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
     ];
   }
 
-  // Empleador
+  // Empleador.
   $employer_id = $entity->getEmployerId();
   if ($employer_id) {
     $employer = \Drupal::entityTypeManager()->getStorage('user')->load($employer_id);
@@ -320,7 +321,7 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
     }
   }
 
-  // Habilidades requeridas
+  // Habilidades requeridas.
   $skills = $entity->getSkillsRequired();
   if (!empty($skills)) {
     $schema['skills'] = $skills;
@@ -328,7 +329,6 @@ function _jaraba_geo_build_job_posting_schema(EntityInterface $entity): array {
 
   return $schema;
 }
-
 
 /**
  * Construye Schema.org Product para un nodo de producto.
@@ -510,7 +510,7 @@ function jaraba_geo_user_view(array &$build, EntityInterface $entity, EntityView
   // Solo procesar si es un profesional verificado (tiene rol de proveedor).
   $roles = $entity->getRoles();
   $professional_roles = ['proveedor', 'profesional', 'provider', 'professional', 'freelancer'];
-  
+
   $is_professional = FALSE;
   foreach ($professional_roles as $role) {
     if (in_array($role, $roles)) {
@@ -549,7 +549,7 @@ function jaraba_geo_user_view(array &$build, EntityInterface $entity, EntityView
  */
 function _jaraba_geo_build_local_business_schema(EntityInterface $entity): ?array {
   $name = $entity->getDisplayName();
-  
+
   // Si tiene nombre de empresa, usarlo.
   if ($entity->hasField('field_company_name') && !$entity->get('field_company_name')->isEmpty()) {
     $name = $entity->get('field_company_name')->value;
@@ -655,7 +655,8 @@ function _jaraba_geo_build_local_business_schema(EntityInterface $entity): ?arra
     foreach ($entity->get('field_services') as $service) {
       if ($service->entity) {
         $services[] = $service->entity->label();
-      } elseif ($service->value) {
+      }
+      elseif ($service->value) {
         $services[] = $service->value;
       }
     }
@@ -663,7 +664,7 @@ function _jaraba_geo_build_local_business_schema(EntityInterface $entity): ?arra
       $schema['hasOfferCatalog'] = [
         '@type' => 'OfferCatalog',
         'name' => 'Servicios',
-        'itemListElement' => array_map(function($s) {
+        'itemListElement' => array_map(function ($s) {
           return ['@type' => 'Offer', 'itemOffered' => ['@type' => 'Service', 'name' => $s]];
         }, $services),
       ];
@@ -713,10 +714,8 @@ function jaraba_geo_preprocess_professional_profile(array &$variables): void {
   $schema = _jaraba_geo_build_local_business_schema($professional);
 
   if ($schema) {
-    $variables['schema_org_json_ld'] = '<script type="application/ld+json">' . 
-      json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . 
+    $variables['schema_org_json_ld'] = '<script type="application/ld+json">' .
+      json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) .
       '</script>';
   }
 }
-
-

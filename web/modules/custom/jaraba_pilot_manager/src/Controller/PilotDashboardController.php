@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\jaraba_pilot_manager\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\jaraba_pilot_manager\Service\PilotEvaluatorService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

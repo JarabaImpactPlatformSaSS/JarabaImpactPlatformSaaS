@@ -72,19 +72,24 @@ function jaraba_performance_page_attachments_alter(array &$attachments): void {
   // -------------------------------------------------------------------------
   // PASO 1: Determinar si debemos aplicar CSS crítico en esta ruta.
   // -------------------------------------------------------------------------
-
   $routeMatch = \Drupal::routeMatch();
   $routeName = $routeMatch->getRouteName() ?? '';
 
   // Lista de prefijos de rutas que NO deben recibir CSS crítico.
   // Estas son rutas del admin de Drupal core que usan el admin theme.
   $rutasExcluidas = [
-    'system.',         // Rutas del sistema (batch, cron, etc.)
-    'entity.',         // CRUD de entidades genérico
-    'views_ui.',       // Editor de Views
-    'field_ui.',       // Configuración de campos
-    'config.',         // Importar/exportar config
-    'devel.',          // Herramientas de desarrollo
+  // Rutas del sistema (batch, cron, etc.)
+    'system.',
+  // CRUD de entidades genérico.
+    'entity.',
+  // Editor de Views.
+    'views_ui.',
+  // Configuración de campos.
+    'field_ui.',
+  // Importar/exportar config.
+    'config.',
+  // Herramientas de desarrollo.
+    'devel.',
   ];
 
   foreach ($rutasExcluidas as $prefijo) {
@@ -113,7 +118,6 @@ function jaraba_performance_page_attachments_alter(array &$attachments): void {
   // -------------------------------------------------------------------------
   // PASO 3: Inyectar el CSS crítico inline en el <head>.
   // -------------------------------------------------------------------------
-
   // Añadimos el CSS como un tag <style> con peso muy bajo (-100) para que
   // se renderice antes que cualquier otro CSS o JavaScript.
   $attachments['#attached']['html_head'][] = [
@@ -137,7 +141,6 @@ function jaraba_performance_page_attachments_alter(array &$attachments): void {
   // -------------------------------------------------------------------------
   // PASO 4: Añadir JavaScript para carga diferida del CSS restante.
   // -------------------------------------------------------------------------
-
   // Este JavaScript convierte los stylesheets con media="print" a media="all"
   // después de que la página termine de cargar, permitiendo carga no-bloqueante.
   $attachments['#attached']['library'][] = 'jaraba_performance/critical_css_loader';
@@ -177,4 +180,3 @@ function jaraba_performance_preprocess_image(array &$variables): void {
     $variables['attributes']['loading'] = 'lazy';
   }
 }
-

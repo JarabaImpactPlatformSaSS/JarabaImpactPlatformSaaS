@@ -361,9 +361,30 @@ class LexnetSyncServiceTest extends UnitTestCase {
  * Temporary interface for mocking LexNET notifications.
  */
 interface LexnetNotificationMockInterface {
+
+  /**
+   *
+   */
   public function id();
+
+  /**
+   *
+   */
   public function uuid();
+
+  /**
+   *
+   */
   public function save();
+
+  /**
+   *
+   */
   public function set($field, $value);
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }

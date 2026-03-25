@@ -13,101 +13,100 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 /**
  * List builder para PageContent.
  */
-class PageContentListBuilder extends EntityListBuilder
-{
+class PageContentListBuilder extends EntityListBuilder {
 
-    /**
-     * El servicio de formateo de fechas.
-     *
-     * @var \Drupal\Core\Datetime\DateFormatterInterface
-     */
-    protected $dateFormatter;
+  /**
+   * El servicio de formateo de fechas.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected $dateFormatter;
 
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext;
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        EntityTypeInterface $entity_type,
-        EntityStorageInterface $storage,
-        DateFormatterInterface $date_formatter,
-        ?TenantContextService $tenantContext = NULL, // AUDIT-CONS-N10: Proper DI for tenant context.
-    ) {
-        parent::__construct($entity_type, $storage);
-        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
-        $this->dateFormatter = $date_formatter;
-    }
+  /**
+   * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+   */
+  protected ?TenantContextService $tenantContext;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type)
-    {
-        return new static(
-            $entity_type,
-            $container->get('entity_type.manager')->getStorage($entity_type->id()),
-            $container->get('date.formatter'),
-            $container->has('ecosistema_jaraba_core.tenant_context') ? $container->get('ecosistema_jaraba_core.tenant_context') : NULL, // AUDIT-CONS-N10: Proper DI for tenant context.
-        );
-    }
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    EntityTypeInterface $entity_type,
+    EntityStorageInterface $storage,
+    DateFormatterInterface $date_formatter,
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    ?TenantContextService $tenantContext = NULL,
+  ) {
+    parent::__construct($entity_type, $storage);
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    $this->tenantContext = $tenantContext;
+    $this->dateFormatter = $date_formatter;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildHeader()
-    {
-        $header['title'] = $this->t('Título');
-        $header['template'] = $this->t('Plantilla');
-        $header['status'] = $this->t('Estado');
-        $header['author'] = $this->t('Autor');
-        $header['changed'] = $this->t('Modificado');
-        return $header + parent::buildHeader();
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+          $entity_type,
+          $container->get('entity_type.manager')->getStorage($entity_type->id()),
+          $container->get('date.formatter'),
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+          $container->has('ecosistema_jaraba_core.tenant_context') ? $container->get('ecosistema_jaraba_core.tenant_context') : NULL,
+      );
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildRow(EntityInterface $entity)
-    {
-        /** @var \Drupal\jaraba_page_builder\PageContentInterface $entity */
-        $row['title'] = $entity->toLink();
-        $row['template'] = $entity->getTemplateId();
-        $row['status'] = $entity->isPublished()
+  /**
+   * {@inheritdoc}
+   */
+  public function buildHeader() {
+    $header['title'] = $this->t('Título');
+    $header['template'] = $this->t('Plantilla');
+    $header['status'] = $this->t('Estado');
+    $header['author'] = $this->t('Autor');
+    $header['changed'] = $this->t('Modificado');
+    return $header + parent::buildHeader();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\jaraba_page_builder\PageContentInterface $entity */
+    $row['title'] = $entity->toLink();
+    $row['template'] = $entity->getTemplateId();
+    $row['status'] = $entity->isPublished()
             ? $this->t('Publicado')
             : $this->t('Borrador');
-        $row['author'] = $entity->getOwner() ? $entity->getOwner()->getDisplayName() : '';
-        $row['changed'] = $this->dateFormatter->format(
-            $entity->getChangedTime(),
-            'short'
-        );
-        return $row + parent::buildRow($entity);
-    }
+    $row['author'] = $entity->getOwner() ? $entity->getOwner()->getDisplayName() : '';
+    $row['changed'] = $this->dateFormatter->format(
+          $entity->getChangedTime(),
+          'short'
+      );
+    return $row + parent::buildRow($entity);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getEntityIds()
-    {
-        $query = $this->getStorage()->getQuery()
-            ->accessCheck(TRUE)
-            ->sort('changed', 'DESC');
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
+      ->sort('changed', 'DESC');
 
-        // Filtrar por tenant si el usuario tiene uno asignado.
-        $current_user = \Drupal::currentUser();
-        if (!$current_user->hasPermission('administer page builder')) {
-            if ($this->tenantContext !== NULL) {
-                $tenantId = $this->tenantContext->getCurrentTenantId();
-                if ($tenantId) {
-                    $query->condition('tenant_id', $tenantId);
-                }
-            }
+    // Filtrar por tenant si el usuario tiene uno asignado.
+    $current_user = \Drupal::currentUser();
+    if (!$current_user->hasPermission('administer page builder')) {
+      if ($this->tenantContext !== NULL) {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
+        if ($tenantId) {
+          $query->condition('tenant_id', $tenantId);
         }
-
-        return $query->execute();
+      }
     }
+
+    return $query->execute();
+  }
 
 }

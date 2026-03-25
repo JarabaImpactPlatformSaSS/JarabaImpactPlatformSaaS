@@ -54,17 +54,22 @@ class SentimentEngineService {
       }
     }
 
-    // Normalizar score entre -1 y 1
+    // Normalizar score entre -1 y 1.
     $normalizedScore = $matches > 0 ? $score / $matches : 0;
 
     $label = 'neutral';
-    if ($normalizedScore > 0.3) $label = 'positive';
-    if ($normalizedScore < -0.3) $label = 'negative';
+    if ($normalizedScore > 0.3) {
+      $label = 'positive';
+    }
+    if ($normalizedScore < -0.3) {
+      $label = 'negative';
+    }
 
     return [
       'score' => $normalizedScore,
       'label' => $label,
-      'confidence' => $matches > 0 ? 0.8 : 0.1, // Baja confianza si no hay keywords.
+    // Baja confianza si no hay keywords.
+      'confidence' => $matches > 0 ? 0.8 : 0.1,
     ];
   }
 

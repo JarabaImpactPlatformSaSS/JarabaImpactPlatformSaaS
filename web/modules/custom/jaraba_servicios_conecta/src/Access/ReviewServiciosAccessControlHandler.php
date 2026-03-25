@@ -62,6 +62,9 @@ class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler imp
     };
   }
 
+  /**
+   *
+   */
   protected function checkViewAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     $status = $entity->hasField('status') ? $entity->get('status')->value : NULL;
     if ($status === 'approved') {
@@ -74,6 +77,9 @@ class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler imp
     return AccessResult::neutral()->addCacheableDependency($entity);
   }
 
+  /**
+   *
+   */
   protected function checkUpdateAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
     if ($account->hasPermission('respond servicios reviews')) {
       return AccessResult::allowed()->cachePerPermissions();

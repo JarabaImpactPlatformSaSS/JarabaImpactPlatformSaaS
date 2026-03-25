@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class SalesMessageAgroSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'sales_message_agro_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Mensaje Sales Agent.') . '</p>',
@@ -23,6 +29,9 @@ final class SalesMessageAgroSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

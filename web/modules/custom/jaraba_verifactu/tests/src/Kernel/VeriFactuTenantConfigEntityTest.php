@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_verifactu\Kernel;
 
+use Drupal\ecosistema_jaraba_core\Service\CertificateManagerService;
 use Drupal\KernelTests\KernelTestBase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -37,11 +38,14 @@ class VeriFactuTenantConfigEntityTest extends KernelTestBase {
       ->setSynthetic(TRUE);
   }
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->container->set(
       'ecosistema_jaraba_core.certificate_manager',
-      $this->createMock(\Drupal\ecosistema_jaraba_core\Service\CertificateManagerService::class),
+      $this->createMock(CertificateManagerService::class),
     );
     $this->installEntitySchema('user');
     $this->installEntitySchema('verifactu_tenant_config');

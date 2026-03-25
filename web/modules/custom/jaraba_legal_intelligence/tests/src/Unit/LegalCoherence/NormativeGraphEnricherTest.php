@@ -18,6 +18,9 @@ class NormativeGraphEnricherTest extends TestCase {
 
   protected NormativeGraphEnricher $enricher;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->enricher = new NormativeGraphEnricher(NULL, new NullLogger());

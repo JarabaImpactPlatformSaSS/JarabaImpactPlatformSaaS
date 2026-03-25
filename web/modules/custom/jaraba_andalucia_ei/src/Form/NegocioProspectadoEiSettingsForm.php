@@ -14,10 +14,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class NegocioProspectadoEiSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'negocio_prospectado_ei_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Configuración de negocios prospectados. Utiliza las pestañas superiores para gestionar campos y modos de visualización.') . '</p>',
@@ -25,6 +31,9 @@ class NegocioProspectadoEiSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

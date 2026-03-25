@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\ValueObject\ValidationResult;
+use Drupal\jaraba_facturae\Service\FacturaeValidationService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +26,7 @@ class FacturaeValidationKernelTest extends KernelTestBase {
    */
   public function testValidationServiceExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FacturaeValidationService::class),
+      class_exists(FacturaeValidationService::class),
       'FacturaeValidationService class should exist.'
     );
   }
@@ -33,7 +35,7 @@ class FacturaeValidationKernelTest extends KernelTestBase {
    * Tests that ValidationResult value object is immutable.
    */
   public function testValidationResultImmutable(): void {
-    $result = new \Drupal\jaraba_facturae\ValueObject\ValidationResult(TRUE, []);
+    $result = new ValidationResult(TRUE, []);
     $this->assertTrue($result->valid);
     $this->assertEmpty($result->errors);
 

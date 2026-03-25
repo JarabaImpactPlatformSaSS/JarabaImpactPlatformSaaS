@@ -89,7 +89,6 @@ class LegalSource extends ContentEntityBase implements EntityOwnerInterface, Ent
     // Campos que identifican la fuente de forma unica en el sistema.
     // machine_name es la clave de negocio; name es la etiqueta visible.
     // =========================================================================
-
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('Nombre visible de la fuente de datos juridicos.'))
@@ -111,7 +110,6 @@ class LegalSource extends ContentEntityBase implements EntityOwnerInterface, Ent
     // BLOQUE 2: CONFIGURACION DEL SPIDER
     // URL base, clase PHP del spider y cadencia de ejecucion.
     // =========================================================================
-
     $fields['base_url'] = BaseFieldDefinition::create('uri')
       ->setLabel(t('Base URL'))
       ->setDescription(t('URL base de la fuente de datos (ej: https://www.poderjudicial.es/search/).'))
@@ -156,7 +154,6 @@ class LegalSource extends ContentEntityBase implements EntityOwnerInterface, Ent
     // BLOQUE 3: MONITORIZACION
     // Campos que permiten supervisar la salud y el rendimiento de cada fuente.
     // =========================================================================
-
     $fields['last_sync_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Last Sync'))
       ->setDescription(t('Timestamp de la ultima sincronizacion exitosa.'))
@@ -182,7 +179,6 @@ class LegalSource extends ContentEntityBase implements EntityOwnerInterface, Ent
     // =========================================================================
     // BLOQUE 4: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('Timestamp de creacion del registro en el sistema.'));

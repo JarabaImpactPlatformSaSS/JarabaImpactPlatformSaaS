@@ -250,7 +250,7 @@ class AuditLogServiceTest extends TestCase {
     // Override the request stack to return null.
     $requestStack = $this->createMock(RequestStack::class);
     $requestStack->method('getCurrentRequest')
-      ->willReturn(null);
+      ->willReturn(NULL);
 
     $service = new AuditLogService(
       $this->entityTypeManager,

@@ -145,8 +145,8 @@ class ReportApiController extends ControllerBase {
       return new JsonResponse($results, $statusCode);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
   }
 
 }

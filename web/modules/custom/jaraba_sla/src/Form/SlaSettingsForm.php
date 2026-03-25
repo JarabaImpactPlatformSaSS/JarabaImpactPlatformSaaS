@@ -39,7 +39,6 @@ class SlaSettingsForm extends ConfigFormBase {
     // =========================================================================
     // Fieldset 1: Monitoring Configuration
     // =========================================================================
-
     $form['monitoring'] = [
       '#type' => 'details',
       '#title' => $this->t('Monitoring Configuration'),
@@ -147,7 +146,6 @@ class SlaSettingsForm extends ConfigFormBase {
     // =========================================================================
     // Fieldset 2: SLA Tier Defaults
     // =========================================================================
-
     $form['sla_tiers'] = [
       '#type' => 'details',
       '#title' => $this->t('SLA Tier Configuration'),

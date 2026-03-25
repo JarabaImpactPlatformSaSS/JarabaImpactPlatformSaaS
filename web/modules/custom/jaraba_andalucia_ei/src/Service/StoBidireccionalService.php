@@ -129,7 +129,7 @@ class StoBidireccionalService {
       return $this->pullEstadoLocal($tenantId);
     }
 
-    // TODO: Implementar llamada SOAP/REST al STO real.
+    // @todo Implementar llamada SOAP/REST al STO real.
     // El STO no expone API pública aún (pendiente convenio Junta).
     // Por ahora, verificación local de integridad.
     return $this->pullEstadoLocal($tenantId);

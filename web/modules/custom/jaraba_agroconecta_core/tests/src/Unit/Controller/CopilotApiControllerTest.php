@@ -23,117 +23,112 @@ use Symfony\Component\HttpFoundation\Request;
  * @group jaraba_agroconecta_core
  * @coversDefaultClass \Drupal\jaraba_agroconecta_core\Controller\CopilotApiController
  */
-class CopilotApiControllerTest extends UnitTestCase
-{
+class CopilotApiControllerTest extends UnitTestCase {
 
-    private ProducerCopilotService&MockObject $copilotService;
-    private DemandForecasterService&MockObject $demandForecaster;
-    private MarketSpyService&MockObject $marketSpy;
-    private CopilotApiController $controller;
+  private ProducerCopilotService&MockObject $copilotService;
+  private DemandForecasterService&MockObject $demandForecaster;
+  private MarketSpyService&MockObject $marketSpy;
+  private CopilotApiController $controller;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
 
-        $this->copilotService = $this->createMock(ProducerCopilotService::class);
-        $this->demandForecaster = $this->createMock(DemandForecasterService::class);
-        $this->marketSpy = $this->createMock(MarketSpyService::class);
+    $this->copilotService = $this->createMock(ProducerCopilotService::class);
+    $this->demandForecaster = $this->createMock(DemandForecasterService::class);
+    $this->marketSpy = $this->createMock(MarketSpyService::class);
 
-        $this->controller = new CopilotApiController(
-            $this->copilotService,
-            $this->demandForecaster,
-            $this->marketSpy,
-        );
+    $this->controller = new CopilotApiController(
+          $this->copilotService,
+          $this->demandForecaster,
+          $this->marketSpy,
+      );
 
-        // Mock current user.
-        $currentUser = $this->createMock(AccountProxyInterface::class);
-        $currentUser->method('id')->willReturn(42);
+    // Mock current user.
+    $currentUser = $this->createMock(AccountProxyInterface::class);
+    $currentUser->method('id')->willReturn(42);
 
-        // ControllerBase stores currentUser in a protected property.
-        // Inject via reflection since there's no public setter.
-        $reflector = new \ReflectionClass($this->controller);
-        $property = $reflector->getProperty('currentUser');
-        $property->setValue($this->controller, $currentUser);
-    }
+    // ControllerBase stores currentUser in a protected property.
+    // Inject via reflection since there's no public setter.
+    $reflector = new \ReflectionClass($this->controller);
+    $property = $reflector->getProperty('currentUser');
+    $property->setValue($this->controller, $currentUser);
+  }
 
-    /**
-     * Tests chat() requires a message.
-     */
-    #[\PHPUnit\Framework\Attributes\Test]
-    public function chatRequiresMessage(): void
-    {
-        $request = new Request([], [], [], [], [], [],
-            json_encode(['producer_id' => 999])
-        );
+  /**
+   * Tests chat() requires a message.
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function chatRequiresMessage(): void {
+    $request = new Request([], [], [], [], [], [],
+          json_encode(['producer_id' => 999])
+      );
 
-        $response = $this->controller->chat($request);
+    $response = $this->controller->chat($request);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(400, $response->getStatusCode());
-    }
+    $this->assertInstanceOf(JsonResponse::class, $response);
+    $this->assertEquals(400, $response->getStatusCode());
+  }
 
-    /**
-     * Tests chat() ignores producer_id from request and uses currentUser.
-     */
-    #[\PHPUnit\Framework\Attributes\Test]
-    public function chatIgnoresClientProvidedProducerId(): void
-    {
-        $this->copilotService
-            ->expects($this->once())
-            ->method('chat')
-            ->willReturn(['response' => 'test', 'conversation_id' => 1]);
+  /**
+   * Tests chat() ignores producer_id from request and uses currentUser.
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function chatIgnoresClientProvidedProducerId(): void {
+    $this->copilotService
+      ->expects($this->once())
+      ->method('chat')
+      ->willReturn(['response' => 'test', 'conversation_id' => 1]);
 
-        $request = new Request([], [], [], [], [], [],
-            json_encode([
-                'producer_id' => 999,
-                'message' => 'Hello',
-            ])
-        );
+    $request = new Request([], [], [], [], [], [],
+          json_encode([
+            'producer_id' => 999,
+            'message' => 'Hello',
+          ])
+      );
 
-        $response = $this->controller->chat($request);
+    $response = $this->controller->chat($request);
 
-        // The controller should use currentUser->id() not the provided 999.
-        $this->assertInstanceOf(JsonResponse::class, $response);
-    }
+    // The controller should use currentUser->id() not the provided 999.
+    $this->assertInstanceOf(JsonResponse::class, $response);
+  }
 
-    /**
-     * Tests conversations() does not accept producer_id from query.
-     */
-    #[\PHPUnit\Framework\Attributes\Test]
-    public function conversationsUsesCurrentUser(): void
-    {
-        $this->copilotService
-            ->expects($this->once())
-            ->method('getConversations')
-            ->willReturn([]);
+  /**
+   * Tests conversations() does not accept producer_id from query.
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function conversationsUsesCurrentUser(): void {
+    $this->copilotService
+      ->expects($this->once())
+      ->method('getConversations')
+      ->willReturn([]);
 
-        $request = new Request(['producer_id' => 999, 'limit' => 10]);
+    $request = new Request(['producer_id' => 999, 'limit' => 10]);
 
-        $response = $this->controller->conversations($request);
+    $response = $this->controller->conversations($request);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-    }
+    $this->assertInstanceOf(JsonResponse::class, $response);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
 
-    /**
-     * Tests competitivePosition() does not accept producer_id from query.
-     */
-    #[\PHPUnit\Framework\Attributes\Test]
-    public function competitivePositionUsesCurrentUser(): void
-    {
-        $this->marketSpy
-            ->expects($this->once())
-            ->method('getCompetitivePosition')
-            ->willReturn(['score' => 75]);
+  /**
+   * Tests competitivePosition() does not accept producer_id from query.
+   */
+  #[\PHPUnit\Framework\Attributes\Test]
+  public function competitivePositionUsesCurrentUser(): void {
+    $this->marketSpy
+      ->expects($this->once())
+      ->method('getCompetitivePosition')
+      ->willReturn(['score' => 75]);
 
-        $request = new Request(['producer_id' => 999]);
+    $request = new Request(['producer_id' => 999]);
 
-        $response = $this->controller->competitivePosition($request);
+    $response = $this->controller->competitivePosition($request);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-    }
+    $this->assertInstanceOf(JsonResponse::class, $response);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
 }

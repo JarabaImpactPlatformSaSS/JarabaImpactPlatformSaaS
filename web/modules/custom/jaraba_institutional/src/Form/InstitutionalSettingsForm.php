@@ -6,7 +6,6 @@ namespace Drupal\jaraba_institutional\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Formulario de configuracion del modulo de programas institucionales.

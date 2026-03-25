@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update and uninstall functions for Jaraba Customer Success.
  */
 
-declare(strict_types=1);
+use Symfony\Component\Yaml\Yaml;
+
 
 /**
  * Implements hook_install().
@@ -63,7 +66,7 @@ function jaraba_customer_success_update_10001(): void {
       continue;
     }
 
-    $data = \Symfony\Component\Yaml\Yaml::parseFile($yamlFile);
+    $data = Yaml::parseFile($yamlFile);
     if (!$data) {
       continue;
     }

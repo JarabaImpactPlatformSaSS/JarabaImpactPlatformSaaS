@@ -88,7 +88,7 @@ class MarketplaceControllerTest extends UnitTestCase {
    * Tests provider slug format validation.
    */
   public function testSlugFormat(): void {
-    // Valid slug from routing: [a-z0-9\-]+
+    // Valid slug from routing: [a-z0-9\-]+.
     $valid_slugs = ['juan-garcia', 'dr-lopez-45', 'a'];
     $invalid_slugs = ['Juan Garcia', 'dr.lópez', ''];
 

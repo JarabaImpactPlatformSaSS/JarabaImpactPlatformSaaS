@@ -25,115 +25,108 @@ use Psr\Log\LoggerInterface;
  * FIX-031: Provider Fallback for resilience.
  * FIX-033: Context Window Manager.
  */
-class SmartMarketingAgent extends SmartBaseAgent
-{
+class SmartMarketingAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a SmartMarketingAgent.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
-    }
+  /**
+   * Constructs a SmartMarketingAgent.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ModelRouterService $modelRouter,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+    $this->setModelRouter($modelRouter);
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'smart_marketing';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'smart_marketing';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Smart Marketing Agent';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Smart Marketing Agent';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Marketing con routing inteligente: usa modelos económicos para tareas simples, premium para complejas.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Marketing con routing inteligente: usa modelos económicos para tareas simples, premium para complejas.';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'social_post' => [
-                'label' => 'Crear Post para Redes Sociales',
-                'description' => 'Genera contenido optimizado para redes sociales.',
-                'requires' => ['product_name', 'platform', 'objective'],
-                'complexity' => 'low',
-            ],
-            'email_promo' => [
-                'label' => 'Email de Marketing',
-                'description' => 'Crea emails promocionales efectivos.',
-                'requires' => ['product_name', 'objective', 'offer_details'],
-                'complexity' => 'medium',
-            ],
-            'ad_copy' => [
-                'label' => 'Copy para Anuncios',
-                'description' => 'Genera textos para campañas publicitarias.',
-                'requires' => ['product_name', 'platform', 'audience'],
-                'complexity' => 'medium',
-            ],
-            'campaign_strategy' => [
-                'label' => 'Estrategia de Campaña',
-                'description' => 'Planifica campañas de marketing completas.',
-                'requires' => ['brand_name', 'goals', 'budget', 'timeline'],
-                'complexity' => 'high',
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    return [
+      'social_post' => [
+        'label' => 'Crear Post para Redes Sociales',
+        'description' => 'Genera contenido optimizado para redes sociales.',
+        'requires' => ['product_name', 'platform', 'objective'],
+        'complexity' => 'low',
+      ],
+      'email_promo' => [
+        'label' => 'Email de Marketing',
+        'description' => 'Crea emails promocionales efectivos.',
+        'requires' => ['product_name', 'objective', 'offer_details'],
+        'complexity' => 'medium',
+      ],
+      'ad_copy' => [
+        'label' => 'Copy para Anuncios',
+        'description' => 'Genera textos para campañas publicitarias.',
+        'requires' => ['product_name', 'platform', 'audience'],
+        'complexity' => 'medium',
+      ],
+      'campaign_strategy' => [
+        'label' => 'Estrategia de Campaña',
+        'description' => 'Planifica campañas de marketing completas.',
+        'requires' => ['brand_name', 'goals', 'budget', 'timeline'],
+        'complexity' => 'high',
+      ],
+    ];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        return match ($action) {
-            'social_post' => $this->generateSocialPost($context),
+  /**
+   * {@inheritdoc}
+   */
+  protected function doExecute(string $action, array $context): array {
+    return match ($action) {
+      'social_post' => $this->generateSocialPost($context),
             'email_promo' => $this->generateEmailPromo($context),
             'ad_copy' => $this->generateAdCopy($context),
             'campaign_strategy' => $this->generateCampaignStrategy($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
-    }
+    };
+  }
 
-    /**
-     * Generates a social media post (complexity: low → fast tier).
-     */
-    protected function generateSocialPost(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $platform = $context['platform'] ?? 'Instagram';
-        $objective = $context['objective'] ?? 'Engagement';
+  /**
+   * Generates a social media post (complexity: low → fast tier).
+   */
+  protected function generateSocialPost(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $platform = $context['platform'] ?? 'Instagram';
+    $objective = $context['objective'] ?? 'Engagement';
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Crear un post para {$platform}.
 PRODUCTO: {$product}
@@ -143,30 +136,29 @@ FORMATO JSON:
 {"content": "...", "hashtags": "...", "cta": "...", "visual_suggestion": "..."}
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'social_post';
-                $response['data']['platform'] = $platform;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'social_post';
+        $response['data']['platform'] = $platform;
+      }
     }
 
-    /**
-     * Generates a promotional email (complexity: medium → balanced tier).
-     */
-    protected function generateEmailPromo(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $objective = $context['objective'] ?? 'Ventas';
-        $offerDetails = $context['offer_details'] ?? '';
+    return $response;
+  }
 
-        $prompt = <<<EOT
+  /**
+   * Generates a promotional email (complexity: medium → balanced tier).
+   */
+  protected function generateEmailPromo(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $objective = $context['objective'] ?? 'Ventas';
+    $offerDetails = $context['offer_details'] ?? '';
+
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Crear un email promocional efectivo.
 PRODUCTO: {$product}
@@ -183,29 +175,28 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'email_promo';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'email_promo';
+      }
     }
 
-    /**
-     * Generates ad copy (complexity: medium → balanced tier).
-     */
-    protected function generateAdCopy(array $context): array
-    {
-        $product = $context['product_name'] ?? 'producto';
-        $platform = $context['platform'] ?? 'Meta Ads';
-        $audience = $context['audience'] ?? 'público general';
+    return $response;
+  }
 
-        $prompt = <<<EOT
+  /**
+   * Generates ad copy (complexity: medium → balanced tier).
+   */
+  protected function generateAdCopy(array $context): array {
+    $product = $context['product_name'] ?? 'producto';
+    $platform = $context['platform'] ?? 'Meta Ads';
+    $audience = $context['audience'] ?? 'público general';
+
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Crear copy para anuncio en {$platform}.
 PRODUCTO: {$product}
@@ -220,30 +211,29 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'ad_copy';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'ad_copy';
+      }
     }
 
-    /**
-     * Generates campaign strategy (complexity: high → premium tier).
-     */
-    protected function generateCampaignStrategy(array $context): array
-    {
-        $brand = $context['brand_name'] ?? 'marca';
-        $goals = $context['goals'] ?? '';
-        $budget = $context['budget'] ?? '';
-        $timeline = $context['timeline'] ?? '';
+    return $response;
+  }
 
-        $prompt = <<<EOT
+  /**
+   * Generates campaign strategy (complexity: high → premium tier).
+   */
+  protected function generateCampaignStrategy(array $context): array {
+    $brand = $context['brand_name'] ?? 'marca';
+    $goals = $context['goals'] ?? '';
+    $budget = $context['budget'] ?? '';
+    $timeline = $context['timeline'] ?? '';
+
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Crear estrategia de campaña de marketing completa.
 MARCA: {$brand}
@@ -264,26 +254,25 @@ FORMATO JSON:
 }
 EOT;
 
-        // Force premium tier for complex strategy.
-        $response = $this->callAiApi($prompt, ['require_quality' => TRUE]);
+    // Force premium tier for complex strategy.
+    $response = $this->callAiApi($prompt, ['require_quality' => TRUE]);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'campaign_strategy';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'campaign_strategy';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return "Eres un experto en marketing digital. Tono profesional pero cercano. Orientado a resultados.";
-    }
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultBrandVoice(): string {
+    return "Eres un experto en marketing digital. Tono profesional pero cercano. Orientado a resultados.";
+  }
 
 }

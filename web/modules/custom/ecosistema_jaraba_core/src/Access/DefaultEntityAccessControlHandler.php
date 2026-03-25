@@ -140,7 +140,8 @@ class DefaultEntityAccessControlHandler extends EntityAccessControlHandler {
           ->addCacheContexts(['user'])
           ->addCacheableDependency($entity);
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // PRESAVE-RESILIENCE-001: Don't block access on service failure.
       // Log but allow the standard permission check to proceed.
     }

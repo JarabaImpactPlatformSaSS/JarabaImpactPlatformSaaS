@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_integrations\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,7 +28,8 @@ class ConnectorConfigurationForm extends FormBase {
 
   public function __construct(
     protected ConnectorInstallerService $connectorInstaller,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -36,7 +38,8 @@ class ConnectorConfigurationForm extends FormBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_integrations.connector_installer'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -92,10 +95,10 @@ class ConnectorConfigurationForm extends FormBase {
         $form['authorize'] = [
           '#type' => 'link',
           '#title' => $this->t('Autorizar con @name', ['@name' => $connector->getName()]),
-          '#url' => \Drupal\Core\Url::fromUri($connector->getApiBaseUrl() . '/oauth/authorize', [
+          '#url' => Url::fromUri($connector->getApiBaseUrl() . '/oauth/authorize', [
             'query' => [
               'client_id' => 'jaraba_platform',
-              'redirect_uri' => \Drupal\Core\Url::fromRoute('jaraba_integrations.oauth.callback', [], ['absolute' => TRUE])->toString(),
+              'redirect_uri' => Url::fromRoute('jaraba_integrations.oauth.callback', [], ['absolute' => TRUE])->toString(),
               'response_type' => 'code',
               'state' => base64_encode(json_encode(['connector_id' => $connector->id()])),
             ],

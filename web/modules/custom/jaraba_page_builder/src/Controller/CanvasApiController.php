@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Controller;
 
+use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\ecosistema_jaraba_core\Service\CanvasSanitizationService;
@@ -20,692 +21,684 @@ use Symfony\Component\HttpFoundation\Response;
  * Endpoints para persistencia del contenido del canvas visual:
  * - GET /api/v1/pages/{id}/canvas - Obtener contenido del canvas
  * - PATCH /api/v1/pages/{id}/canvas - Guardar contenido del canvas
- * - GET /api/v1/page-builder/blocks - Listar bloques disponibles
+ * - GET /api/v1/page-builder/blocks - Listar bloques disponibles.
  *
  * @see docs/tecnicos/20260204b-Canvas_Editor_v3_Arquitectura_Maestra.md
  */
-class CanvasApiController extends ControllerBase
-{
+class CanvasApiController extends ControllerBase {
 
-    /**
-     * Lock duration in seconds (5 minutes).
-     */
-    protected const LOCK_DURATION = 300;
+  /**
+   * Lock duration in seconds (5 minutes).
+   */
+  protected const LOCK_DURATION = 300;
 
-    /**
-     * Servicio de sanitización canvas.
-     */
-    protected CanvasSanitizationService $canvasSanitization;
+  /**
+   * Servicio de sanitización canvas.
+   */
+  protected CanvasSanitizationService $canvasSanitization;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        $instance = new static();
-        $instance->entityTypeManager = $container->get('entity_type.manager');
-        $instance->canvasSanitization = $container->get('ecosistema_jaraba_core.canvas_sanitization');
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = new static();
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->canvasSanitization = $container->get('ecosistema_jaraba_core.canvas_sanitization');
+    return $instance;
+  }
+
+  /**
+   * GET /api/v1/pages/{page_content}/canvas.
+   *
+   * Obtiene el contenido del canvas GrapesJS para una página.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   La entidad de página.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   JSON con componentes y estilos del canvas.
+   */
+  public function getCanvas(ContentEntityInterface $page_content): JsonResponse {
+    try {
+      // Obtener datos del canvas almacenados.
+      $canvasData = [];
+
+      // El campo canvas_data almacena JSON con componentes y estilos.
+      if ($page_content->hasField('canvas_data') && !$page_content->get('canvas_data')->isEmpty()) {
+        $canvasData = json_decode($page_content->get('canvas_data')->value, TRUE) ?? [];
+      }
+
+      // Si no hay datos del canvas, generar desde secciones existentes.
+      if (empty($canvasData)) {
+        $canvasData = $this->generateCanvasFromSections($page_content);
+      }
+
+      return new JsonResponse([
+        'components' => $canvasData['components'] ?? [],
+        'styles' => $canvasData['styles'] ?? [],
+        'html' => $canvasData['html'] ?? '',
+        'css' => $canvasData['css'] ?? '',
+        'entity_changed' => (int) $page_content->getChangedTime(),
+      ]);
+
     }
-
-    /**
-     * GET /api/v1/pages/{page_content}/canvas
-     *
-     * Obtiene el contenido del canvas GrapesJS para una página.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   La entidad de página.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   JSON con componentes y estilos del canvas.
-     */
-    public function getCanvas(ContentEntityInterface $page_content): JsonResponse
-    {
-        try {
-            // Obtener datos del canvas almacenados.
-            $canvasData = [];
-
-            // El campo canvas_data almacena JSON con componentes y estilos.
-            if ($page_content->hasField('canvas_data') && !$page_content->get('canvas_data')->isEmpty()) {
-                $canvasData = json_decode($page_content->get('canvas_data')->value, TRUE) ?? [];
-            }
-
-            // Si no hay datos del canvas, generar desde secciones existentes.
-            if (empty($canvasData)) {
-                $canvasData = $this->generateCanvasFromSections($page_content);
-            }
-
-            return new JsonResponse([
-                'components' => $canvasData['components'] ?? [],
-                'styles' => $canvasData['styles'] ?? [],
-                'html' => $canvasData['html'] ?? '',
-                'css' => $canvasData['css'] ?? '',
-                'entity_changed' => (int) $page_content->getChangedTime(),
-            ]);
-
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error obteniendo canvas para página @id: @error',
-                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error obteniendo canvas para página @id: @error',
+            ['@id' => $page_content->id(), '@error' => $e->getMessage()]
             );
 
-            return new JsonResponse(
-                ['error' => 'Error al obtener el canvas'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+      return new JsonResponse(
+            ['error' => 'Error al obtener el canvas'],
+            Response::HTTP_INTERNAL_SERVER_ERROR
             );
-        }
     }
+  }
 
-    /**
-     * PATCH /api/v1/pages/{page_content}/canvas
-     *
-     * Guarda el contenido del canvas GrapesJS.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   La entidad de página.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   Request HTTP con JSON body.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Respuesta con estado del guardado.
-     */
-    public function saveCanvas(ContentEntityInterface $page_content, Request $request): JsonResponse
-    {
-        try {
-            // ── Optimistic locking: verify X-Entity-Changed header ──
-            $clientChanged = $request->headers->get('X-Entity-Changed');
-            if ($clientChanged !== NULL && $clientChanged !== '') {
-                $currentChanged = (int) $page_content->getChangedTime();
-                if ((int) $clientChanged !== $currentChanged) {
-                    // Entity was modified by someone else since the client last loaded it.
-                    $lockUid = $page_content->hasField('edit_lock_uid')
+  /**
+   * PATCH /api/v1/pages/{page_content}/canvas.
+   *
+   * Guarda el contenido del canvas GrapesJS.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   La entidad de página.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   Request HTTP con JSON body.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Respuesta con estado del guardado.
+   */
+  public function saveCanvas(ContentEntityInterface $page_content, Request $request): JsonResponse {
+    try {
+      // ── Optimistic locking: verify X-Entity-Changed header ──
+      $clientChanged = $request->headers->get('X-Entity-Changed');
+      if ($clientChanged !== NULL && $clientChanged !== '') {
+        $currentChanged = (int) $page_content->getChangedTime();
+        if ((int) $clientChanged !== $currentChanged) {
+          // Entity was modified by someone else since the client last loaded it.
+          $lockUid = $page_content->hasField('edit_lock_uid')
                         ? ($page_content->get('edit_lock_uid')->target_id ?? NULL)
                         : NULL;
 
-                    return new JsonResponse([
-                        'error' => 'conflict',
-                        'message' => 'La página fue modificada por otro usuario. Recarga para ver los cambios.',
-                        'current_editor' => $lockUid,
-                        'entity_changed' => $currentChanged,
-                    ], Response::HTTP_CONFLICT);
-                }
-            }
-
-            // Parsear JSON del body.
-            $data = json_decode($request->getContent(), TRUE);
-
-            if (empty($data)) {
-                return new JsonResponse(
-                    ['error' => 'Datos inválidos'],
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
-            // Validar estructura mínima.
-            // FIX C2: Sanitizar HTML con método permisivo (no Xss::filterAdmin).
-            $canvasData = [
-                'components' => $data['components'] ?? [],
-                'styles' => $data['styles'] ?? [],
-                'html' => $this->sanitizePageBuilderHtml($data['html'] ?? ''),
-                'css' => $this->sanitizeCss($data['css'] ?? ''),
-                'updated_at' => date('c'),
-            ];
-
-            // Almacenar en el campo canvas_data si existe.
-            if ($page_content->hasField('canvas_data')) {
-                $page_content->set('canvas_data', json_encode($canvasData, JSON_UNESCAPED_UNICODE));
-            }
-
-            // También actualizar el HTML renderizado para el frontend público.
-            if ($page_content->hasField('rendered_html') && !empty($data['html'])) {
-                $page_content->set('rendered_html', $this->sanitizeHtml($data['html']));
-            }
-
-            // ── Update edit lock to current user on successful save ──
-            $currentUid = (int) \Drupal::currentUser()->id();
-            if ($page_content->hasField('edit_lock_uid')) {
-                $page_content->set('edit_lock_uid', $currentUid);
-            }
-            if ($page_content->hasField('edit_lock_expires')) {
-                $page_content->set('edit_lock_expires', \Drupal::time()->getRequestTime() + self::LOCK_DURATION);
-            }
-
-            // Guardar con nueva revisión (si la entidad lo soporta).
-            if (method_exists($page_content, 'setNewRevision')) {
-                $page_content->setNewRevision(TRUE);
-            }
-            // Solo llamar a métodos de revisión si la entidad implementa RevisionLogInterface.
-            if ($page_content instanceof \Drupal\Core\Entity\RevisionLogInterface) {
-                $page_content->setRevisionLogMessage('Auto-guardado desde Canvas Editor v3');
-                $page_content->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-            }
-            $page_content->save();
-
-            return new JsonResponse([
-                'success' => TRUE,
-                'message' => 'Canvas guardado correctamente',
-                'revision_id' => $page_content->getRevisionId(),
-                'entity_changed' => (int) $page_content->getChangedTime(),
-            ]);
-
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error guardando canvas para página @id: @error',
-                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
-            );
-
-            return new JsonResponse(
-                ['error' => 'Error al guardar el canvas: ' . $e->getMessage()],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+          return new JsonResponse([
+            'error' => 'conflict',
+            'message' => 'La página fue modificada por otro usuario. Recarga para ver los cambios.',
+            'current_editor' => $lockUid,
+            'entity_changed' => $currentChanged,
+          ], Response::HTTP_CONFLICT);
         }
+      }
+
+      // Parsear JSON del body.
+      $data = json_decode($request->getContent(), TRUE);
+
+      if (empty($data)) {
+        return new JsonResponse(
+              ['error' => 'Datos inválidos'],
+              Response::HTTP_BAD_REQUEST
+          );
+      }
+
+      // Validar estructura mínima.
+      // FIX C2: Sanitizar HTML con método permisivo (no Xss::filterAdmin).
+      $canvasData = [
+        'components' => $data['components'] ?? [],
+        'styles' => $data['styles'] ?? [],
+        'html' => $this->sanitizePageBuilderHtml($data['html'] ?? ''),
+        'css' => $this->sanitizeCss($data['css'] ?? ''),
+        'updated_at' => date('c'),
+      ];
+
+      // Almacenar en el campo canvas_data si existe.
+      if ($page_content->hasField('canvas_data')) {
+        $page_content->set('canvas_data', json_encode($canvasData, JSON_UNESCAPED_UNICODE));
+      }
+
+      // También actualizar el HTML renderizado para el frontend público.
+      if ($page_content->hasField('rendered_html') && !empty($data['html'])) {
+        $page_content->set('rendered_html', $this->sanitizeHtml($data['html']));
+      }
+
+      // ── Update edit lock to current user on successful save ──
+      $currentUid = (int) \Drupal::currentUser()->id();
+      if ($page_content->hasField('edit_lock_uid')) {
+        $page_content->set('edit_lock_uid', $currentUid);
+      }
+      if ($page_content->hasField('edit_lock_expires')) {
+        $page_content->set('edit_lock_expires', \Drupal::time()->getRequestTime() + self::LOCK_DURATION);
+      }
+
+      // Guardar con nueva revisión (si la entidad lo soporta).
+      if (method_exists($page_content, 'setNewRevision')) {
+        $page_content->setNewRevision(TRUE);
+      }
+      // Solo llamar a métodos de revisión si la entidad implementa RevisionLogInterface.
+      if ($page_content instanceof RevisionLogInterface) {
+        $page_content->setRevisionLogMessage('Auto-guardado desde Canvas Editor v3');
+        $page_content->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+      }
+      $page_content->save();
+
+      return new JsonResponse([
+        'success' => TRUE,
+        'message' => 'Canvas guardado correctamente',
+        'revision_id' => $page_content->getRevisionId(),
+        'entity_changed' => (int) $page_content->getChangedTime(),
+      ]);
+
     }
-
-    /**
-     * GET /api/v1/page-builder/blocks
-     *
-     * Lista todos los bloques disponibles para GrapesJS.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   Request HTTP con query params (tenant, vertical).
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   JSON con array de bloques.
-     */
-    public function listBlocks(Request $request): JsonResponse
-    {
-        try {
-            // PageTemplate es ConfigEntity global, no se filtra por tenant.
-            // Todos los templates están disponibles para todos los tenants.
-            $storage = $this->entityTypeManager->getStorage('page_template');
-            $query = $storage->getQuery()
-                ->accessCheck(TRUE)
-                ->condition('status', TRUE)
-                ->sort('category', 'ASC')
-                ->sort('weight', 'ASC');
-
-            $ids = $query->execute();
-            $templates = $storage->loadMultiple($ids);
-
-            // Convertir a formato GrapesJS.
-            $blocks = [];
-            foreach ($templates as $template) {
-                $blocks[] = $this->templateToGrapesJSBlock($template);
-            }
-
-            return new JsonResponse($blocks);
-
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error listando bloques: @error',
-                ['@error' => $e->getMessage()]
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error guardando canvas para página @id: @error',
+            ['@id' => $page_content->id(), '@error' => $e->getMessage()]
             );
 
-            return new JsonResponse(
-                ['error' => 'Error al listar bloques'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+      return new JsonResponse(
+            ['error' => 'Error al guardar el canvas: ' . $e->getMessage()],
+            Response::HTTP_INTERNAL_SERVER_ERROR
             );
-        }
     }
+  }
 
-    /**
-     * POST /api/v1/pages/{page_content}/canvas/lock
-     *
-     * Acquires an edit lock for the current user.
-     * Returns the current entity `changed` timestamp for the client to track.
-     * If already locked by another user and not expired, returns 423 Locked.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   The page entity.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The HTTP request.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Lock acquisition result.
-     */
-    public function acquireLock(ContentEntityInterface $page_content, Request $request): JsonResponse
-    {
-        try {
-            $currentUid = (int) \Drupal::currentUser()->id();
-            $now = \Drupal::time()->getRequestTime();
+  /**
+   * GET /api/v1/page-builder/blocks.
+   *
+   * Lista todos los bloques disponibles para GrapesJS.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   Request HTTP con query params (tenant, vertical).
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   JSON con array de bloques.
+   */
+  public function listBlocks(Request $request): JsonResponse {
+    try {
+      // PageTemplate es ConfigEntity global, no se filtra por tenant.
+      // @todo s los templates están disponibles para todos los tenants.
+      $storage = $this->entityTypeManager->getStorage('page_template');
+      $query = $storage->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('status', TRUE)
+        ->sort('category', 'ASC')
+        ->sort('weight', 'ASC');
 
-            // Check existing lock.
-            $lockUid = $page_content->hasField('edit_lock_uid')
+      $ids = $query->execute();
+      $templates = $storage->loadMultiple($ids);
+
+      // Convertir a formato GrapesJS.
+      $blocks = [];
+      foreach ($templates as $template) {
+        $blocks[] = $this->templateToGrapesJSBlock($template);
+      }
+
+      return new JsonResponse($blocks);
+
+    }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error listando bloques: @error',
+            ['@error' => $e->getMessage()]
+        );
+
+      return new JsonResponse(
+            ['error' => 'Error al listar bloques'],
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+  }
+
+  /**
+   * POST /api/v1/pages/{page_content}/canvas/lock.
+   *
+   * Acquires an edit lock for the current user.
+   * Returns the current entity `changed` timestamp for the client to track.
+   * If already locked by another user and not expired, returns 423 Locked.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   The page entity.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Lock acquisition result.
+   */
+  public function acquireLock(ContentEntityInterface $page_content, Request $request): JsonResponse {
+    try {
+      $currentUid = (int) \Drupal::currentUser()->id();
+      $now = \Drupal::time()->getRequestTime();
+
+      // Check existing lock.
+      $lockUid = $page_content->hasField('edit_lock_uid')
                 ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
                 : 0;
-            $lockExpires = $page_content->hasField('edit_lock_expires')
+      $lockExpires = $page_content->hasField('edit_lock_expires')
                 ? (int) ($page_content->get('edit_lock_expires')->value ?? 0)
                 : 0;
 
-            // If locked by another user and not expired, deny.
-            if ($lockUid > 0 && $lockUid !== $currentUid && $lockExpires > $now) {
-                $lockUser = User::load($lockUid);
-                $lockUserName = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
+      // If locked by another user and not expired, deny.
+      if ($lockUid > 0 && $lockUid !== $currentUid && $lockExpires > $now) {
+        $lockUser = User::load($lockUid);
+        $lockUserName = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
 
-                return new JsonResponse([
-                    'error' => 'locked',
-                    'message' => "La página está siendo editada por $lockUserName.",
-                    'locked_by' => $lockUid,
-                    'locked_by_name' => $lockUserName,
-                    'lock_expires' => $lockExpires,
-                    'entity_changed' => (int) $page_content->getChangedTime(),
-                ], 423);
-            }
+        return new JsonResponse([
+          'error' => 'locked',
+          'message' => "La página está siendo editada por $lockUserName.",
+          'locked_by' => $lockUid,
+          'locked_by_name' => $lockUserName,
+          'lock_expires' => $lockExpires,
+          'entity_changed' => (int) $page_content->getChangedTime(),
+        ], 423);
+      }
 
-            // Acquire or renew lock.
-            if ($page_content->hasField('edit_lock_uid')) {
-                $page_content->set('edit_lock_uid', $currentUid);
-            }
-            if ($page_content->hasField('edit_lock_expires')) {
-                $page_content->set('edit_lock_expires', $now + self::LOCK_DURATION);
-            }
+      // Acquire or renew lock.
+      if ($page_content->hasField('edit_lock_uid')) {
+        $page_content->set('edit_lock_uid', $currentUid);
+      }
+      if ($page_content->hasField('edit_lock_expires')) {
+        $page_content->set('edit_lock_expires', $now + self::LOCK_DURATION);
+      }
 
-            // Save without creating a new revision (lock is transient state).
-            $page_content->setSyncing(TRUE);
-            $page_content->save();
+      // Save without creating a new revision (lock is transient state).
+      $page_content->setSyncing(TRUE);
+      $page_content->save();
 
-            return new JsonResponse([
-                'success' => TRUE,
-                'message' => 'Bloqueo adquirido',
-                'locked_by' => $currentUid,
-                'lock_expires' => $now + self::LOCK_DURATION,
-                'entity_changed' => (int) $page_content->getChangedTime(),
-            ]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'message' => 'Bloqueo adquirido',
+        'locked_by' => $currentUid,
+        'lock_expires' => $now + self::LOCK_DURATION,
+        'entity_changed' => (int) $page_content->getChangedTime(),
+      ]);
 
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error acquiring lock for page @id: @error',
-                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
-            );
-
-            return new JsonResponse(
-                ['error' => 'Error al adquirir bloqueo: ' . $e->getMessage()],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
     }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error acquiring lock for page @id: @error',
+            ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+            );
 
-    /**
-     * DELETE /api/v1/pages/{page_content}/canvas/lock
-     *
-     * Releases the edit lock. Only the lock owner or an admin can release.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   The page entity.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The HTTP request.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Lock release result.
-     */
-    public function releaseLock(ContentEntityInterface $page_content, Request $request): JsonResponse
-    {
-        try {
-            $currentUid = (int) \Drupal::currentUser()->id();
-            $isAdmin = \Drupal::currentUser()->hasPermission('administer page builder');
+      return new JsonResponse(
+            ['error' => 'Error al adquirir bloqueo: ' . $e->getMessage()],
+            Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+    }
+  }
 
-            $lockUid = $page_content->hasField('edit_lock_uid')
+  /**
+   * DELETE /api/v1/pages/{page_content}/canvas/lock.
+   *
+   * Releases the edit lock. Only the lock owner or an admin can release.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   The page entity.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The HTTP request.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Lock release result.
+   */
+  public function releaseLock(ContentEntityInterface $page_content, Request $request): JsonResponse {
+    try {
+      $currentUid = (int) \Drupal::currentUser()->id();
+      $isAdmin = \Drupal::currentUser()->hasPermission('administer page builder');
+
+      $lockUid = $page_content->hasField('edit_lock_uid')
                 ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
                 : 0;
 
-            // Only the lock owner or admin can release.
-            if ($lockUid > 0 && $lockUid !== $currentUid && !$isAdmin) {
-                return new JsonResponse([
-                    'error' => 'forbidden',
-                    'message' => 'Solo el usuario que bloqueó la página o un administrador puede liberar el bloqueo.',
-                ], Response::HTTP_FORBIDDEN);
-            }
+      // Only the lock owner or admin can release.
+      if ($lockUid > 0 && $lockUid !== $currentUid && !$isAdmin) {
+        return new JsonResponse([
+          'error' => 'forbidden',
+          'message' => 'Solo el usuario que bloqueó la página o un administrador puede liberar el bloqueo.',
+        ], Response::HTTP_FORBIDDEN);
+      }
 
-            // Clear lock fields.
-            if ($page_content->hasField('edit_lock_uid')) {
-                $page_content->set('edit_lock_uid', NULL);
-            }
-            if ($page_content->hasField('edit_lock_expires')) {
-                $page_content->set('edit_lock_expires', NULL);
-            }
+      // Clear lock fields.
+      if ($page_content->hasField('edit_lock_uid')) {
+        $page_content->set('edit_lock_uid', NULL);
+      }
+      if ($page_content->hasField('edit_lock_expires')) {
+        $page_content->set('edit_lock_expires', NULL);
+      }
 
-            // Save without creating a new revision.
-            $page_content->setSyncing(TRUE);
-            $page_content->save();
+      // Save without creating a new revision.
+      $page_content->setSyncing(TRUE);
+      $page_content->save();
 
-            return new JsonResponse([
-                'success' => TRUE,
-                'message' => 'Bloqueo liberado',
-            ]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'message' => 'Bloqueo liberado',
+      ]);
 
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error releasing lock for page @id: @error',
-                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
-            );
-
-            return new JsonResponse(
-                ['error' => 'Error al liberar bloqueo: ' . $e->getMessage()],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
     }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error releasing lock for page @id: @error',
+            ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+            );
 
-    /**
-     * GET /api/v1/pages/{page_content}/canvas/lock
-     *
-     * Returns the current lock status for the page.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   The page entity.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     *   Lock status information.
-     */
-    public function getLockStatus(ContentEntityInterface $page_content): JsonResponse
-    {
-        try {
-            $now = \Drupal::time()->getRequestTime();
+      return new JsonResponse(
+            ['error' => 'Error al liberar bloqueo: ' . $e->getMessage()],
+            Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+    }
+  }
 
-            $lockUid = $page_content->hasField('edit_lock_uid')
+  /**
+   * GET /api/v1/pages/{page_content}/canvas/lock.
+   *
+   * Returns the current lock status for the page.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   The page entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Lock status information.
+   */
+  public function getLockStatus(ContentEntityInterface $page_content): JsonResponse {
+    try {
+      $now = \Drupal::time()->getRequestTime();
+
+      $lockUid = $page_content->hasField('edit_lock_uid')
                 ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
                 : 0;
-            $lockExpires = $page_content->hasField('edit_lock_expires')
+      $lockExpires = $page_content->hasField('edit_lock_expires')
                 ? (int) ($page_content->get('edit_lock_expires')->value ?? 0)
                 : 0;
 
-            $isLocked = $lockUid > 0 && $lockExpires > $now;
+      $isLocked = $lockUid > 0 && $lockExpires > $now;
 
-            $response = [
-                'is_locked' => $isLocked,
-                'locked_by' => $isLocked ? $lockUid : NULL,
-                'locked_by_name' => NULL,
-                'lock_expires' => $isLocked ? $lockExpires : NULL,
-                'entity_changed' => (int) $page_content->getChangedTime(),
-            ];
+      $response = [
+        'is_locked' => $isLocked,
+        'locked_by' => $isLocked ? $lockUid : NULL,
+        'locked_by_name' => NULL,
+        'lock_expires' => $isLocked ? $lockExpires : NULL,
+        'entity_changed' => (int) $page_content->getChangedTime(),
+      ];
 
-            if ($isLocked) {
-                $lockUser = User::load($lockUid);
-                $response['locked_by_name'] = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
-            }
+      if ($isLocked) {
+        $lockUser = User::load($lockUid);
+        $response['locked_by_name'] = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
+      }
 
-            return new JsonResponse($response);
+      return new JsonResponse($response);
 
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->error(
-                'Error getting lock status for page @id: @error',
-                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+    }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->error(
+            'Error getting lock status for page @id: @error',
+            ['@id' => $page_content->id(), '@error' => $e->getMessage()]
             );
 
-            return new JsonResponse(
-                ['error' => 'Error al obtener estado del bloqueo'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+      return new JsonResponse(
+            ['error' => 'Error al obtener estado del bloqueo'],
+            Response::HTTP_INTERNAL_SERVER_ERROR
             );
+    }
+  }
+
+  /**
+   * Genera contenido de canvas inicial desde las secciones existentes.
+   *
+   * Si no hay secciones pero hay un template_id asignado, pre-carga
+   * el HTML del template para que el usuario comience con contenido.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+   *   La entidad de página.
+   *
+   * @return array
+   *   Datos del canvas (components, styles, html, css).
+   */
+  protected function generateCanvasFromSections(ContentEntityInterface $page_content): array {
+    $components = [];
+    $html = '';
+
+    // Obtener secciones si el campo existe.
+    if ($page_content->hasField('sections') && !$page_content->get('sections')->isEmpty()) {
+      foreach ($page_content->get('sections') as $sectionItem) {
+        $sectionData = json_decode($sectionItem->value, TRUE);
+        if ($sectionData) {
+          // Convertir cada sección a componente GrapesJS.
+          $components[] = [
+            'type' => 'jaraba-section',
+            'attributes' => [
+              'data-block-id' => $sectionData['template_id'] ?? '',
+              'data-section-uuid' => $sectionData['uuid'] ?? '',
+            ],
+            'components' => $this->sectionToComponents($sectionData),
+          ];
         }
+      }
     }
 
-    /**
-     * Genera contenido de canvas inicial desde las secciones existentes.
-     *
-     * Si no hay secciones pero hay un template_id asignado, pre-carga
-     * el HTML del template para que el usuario comience con contenido.
-     *
-     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
-     *   La entidad de página.
-     *
-     * @return array
-     *   Datos del canvas (components, styles, html, css).
-     */
-    protected function generateCanvasFromSections(ContentEntityInterface $page_content): array
-    {
-        $components = [];
-        $html = '';
-
-        // Obtener secciones si el campo existe.
-        if ($page_content->hasField('sections') && !$page_content->get('sections')->isEmpty()) {
-            foreach ($page_content->get('sections') as $sectionItem) {
-                $sectionData = json_decode($sectionItem->value, TRUE);
-                if ($sectionData) {
-                    // Convertir cada sección a componente GrapesJS.
-                    $components[] = [
-                        'type' => 'jaraba-section',
-                        'attributes' => [
-                            'data-block-id' => $sectionData['template_id'] ?? '',
-                            'data-section-uuid' => $sectionData['uuid'] ?? '',
-                        ],
-                        'components' => $this->sectionToComponents($sectionData),
-                    ];
-                }
-            }
-        }
-
-        // Si no hay secciones pero hay un template_id, pre-cargar HTML del template.
-        if (empty($components) && $page_content->hasField('template_id')) {
-            $templateId = $page_content->get('template_id')->value;
-            if (!empty($templateId)) {
-                $html = $this->generateHtmlFromTemplate($templateId);
-            }
-        }
-
-        return [
-            'components' => $components,
-            'styles' => [],
-            'html' => $html,
-            'css' => '',
-        ];
+    // Si no hay secciones pero hay un template_id, pre-cargar HTML del template.
+    if (empty($components) && $page_content->hasField('template_id')) {
+      $templateId = $page_content->get('template_id')->value;
+      if (!empty($templateId)) {
+        $html = $this->generateHtmlFromTemplate($templateId);
+      }
     }
 
-    /**
-     * Genera HTML renderizado desde un PageTemplate.
-     *
-     * @param string $templateId
-     *   ID del template.
-     *
-     * @return string
-     *   HTML renderizado del template con datos de ejemplo.
-     */
-    protected function generateHtmlFromTemplate(string $templateId): string
-    {
-        try {
-            /** @var \Drupal\jaraba_page_builder\PageTemplateInterface|null $template */
-            $template = $this->entityTypeManager
-                ->getStorage('page_template')
-                ->load($templateId);
+    return [
+      'components' => $components,
+      'styles' => [],
+      'html' => $html,
+      'css' => '',
+    ];
+  }
 
-            if (!$template) {
-                return '';
-            }
+  /**
+   * Genera HTML renderizado desde un PageTemplate.
+   *
+   * @param string $templateId
+   *   ID del template.
+   *
+   * @return string
+   *   HTML renderizado del template con datos de ejemplo.
+   */
+  protected function generateHtmlFromTemplate(string $templateId): string {
+    try {
+      /** @var \Drupal\jaraba_page_builder\PageTemplateInterface|null $template */
+      $template = $this->entityTypeManager
+        ->getStorage('page_template')
+        ->load($templateId);
 
-            // Obtener datos de ejemplo para el template.
-            $previewData = [];
-            if (method_exists($template, 'getPreviewData')) {
-                $previewData = $template->getPreviewData() ?: [];
-            }
+      if (!$template) {
+        return '';
+      }
 
-            // Obtener ruta del template Twig.
-            $twigPath = '';
-            if (method_exists($template, 'getTwigTemplate')) {
-                $twigPath = $template->getTwigTemplate();
-            }
+      // Obtener datos de ejemplo para el template.
+      $previewData = [];
+      if (method_exists($template, 'getPreviewData')) {
+        $previewData = $template->getPreviewData() ?: [];
+      }
 
-            if (empty($twigPath)) {
-                // Fallback: generar placeholder con datos del template.
-                return sprintf(
-                    '<section class="jaraba-section jaraba-block" data-block-id="%s">
+      // Obtener ruta del template Twig.
+      $twigPath = '';
+      if (method_exists($template, 'getTwigTemplate')) {
+        $twigPath = $template->getTwigTemplate();
+      }
+
+      if (empty($twigPath)) {
+        // Fallback: generar placeholder con datos del template.
+        return sprintf(
+              '<section class="jaraba-section jaraba-block" data-block-id="%s">
                         <div class="jaraba-block__container">
                             <h2 class="jaraba-block__title">%s</h2>
                             <p class="jaraba-block__subtitle">%s</p>
                         </div>
                     </section>',
-                    htmlspecialchars($templateId),
-                    htmlspecialchars($template->label()),
-                    htmlspecialchars($template->get('description') ?: '')
-                );
-            }
+              htmlspecialchars($templateId),
+              htmlspecialchars($template->label()),
+              htmlspecialchars($template->get('description') ?: '')
+          );
+      }
 
-            // Renderizar el template Twig con datos de ejemplo.
-            // FIX C3/C4: Pasar datos como 'content' (genéricos) Y planos (verticales).
-            /** @var \Twig\Environment $twig */
-            $twig = \Drupal::service('twig');
-            $twigVars = array_merge($previewData, ['content' => $previewData]);
-            return $twig->render($twigPath, $twigVars);
+      // Renderizar el template Twig con datos de ejemplo.
+      // FIX C3/C4: Pasar datos como 'content' (genéricos) Y planos (verticales).
+      /** @var \Twig\Environment $twig */
+      $twig = \Drupal::service('twig');
+      $twigVars = array_merge($previewData, ['content' => $previewData]);
+      return $twig->render($twigPath, $twigVars);
 
-        } catch (\Exception $e) {
-            $this->getLogger('jaraba_page_builder')->warning(
-                'Error generando HTML desde template @id: @error',
-                ['@id' => $templateId, '@error' => $e->getMessage()]
+    }
+    catch (\Exception $e) {
+      $this->getLogger('jaraba_page_builder')->warning(
+            'Error generando HTML desde template @id: @error',
+            ['@id' => $templateId, '@error' => $e->getMessage()]
             );
-            return '';
+      return '';
+    }
+  }
+
+  /**
+   * Convierte datos de sección a componentes GrapesJS.
+   *
+   * @param array $sectionData
+   *   Datos de la sección.
+   *
+   * @return array
+   *   Array de componentes GrapesJS.
+   */
+  protected function sectionToComponents(array $sectionData): array {
+    // Por ahora retornar componente simple con el contenido.
+    return [
+          [
+            'type' => 'text',
+            'content' => $sectionData['title'] ?? 'Sección sin título',
+          ],
+    ];
+  }
+
+  /**
+   * Convierte un PageTemplate a definición de bloque GrapesJS.
+   *
+   * @param mixed $template
+   *   Entidad PageTemplate.
+   *
+   * @return array
+   *   Definición de bloque GrapesJS.
+   */
+  protected function templateToGrapesJSBlock(PageTemplate $template): array {
+    // PageTemplate es ConfigEntity, usar métodos de la entidad.
+    $category = method_exists($template, 'getCategory') ? ($template->getCategory() ?: 'content') : 'content';
+
+    // Obtener thumbnail/preview desde el método getPreviewImage.
+    // GrapesJS espera HTML o SVG en el campo media, no una URL string.
+    $mediaHtml = '';
+    if (method_exists($template, 'getPreviewImage')) {
+      $previewPath = $template->getPreviewImage();
+      if ($previewPath) {
+        $thumbnailUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($previewPath) ?: '';
+        if ($thumbnailUrl) {
+          // Formato HTML para GrapesJS con estilos inline para sizing.
+          $mediaHtml = '<img src="' . htmlspecialchars($thumbnailUrl) . '" alt="' . htmlspecialchars($template->label()) . '" style="width: 100%; height: auto; border-radius: 4px; object-fit: cover;">';
         }
+      }
     }
 
-    /**
-     * Convierte datos de sección a componentes GrapesJS.
-     *
-     * @param array $sectionData
-     *   Datos de la sección.
-     *
-     * @return array
-     *   Array de componentes GrapesJS.
-     */
-    protected function sectionToComponents(array $sectionData): array
-    {
-        // Por ahora retornar componente simple con el contenido.
-        return [
-            [
-                'type' => 'text',
-                'content' => $sectionData['title'] ?? 'Sección sin título',
-            ],
-        ];
+    // Fallback a icono SVG si no hay thumbnail.
+    if (empty($mediaHtml)) {
+      $mediaHtml = $this->getDefaultBlockIcon($category);
     }
 
-    /**
-     * Convierte un PageTemplate a definición de bloque GrapesJS.
-     *
-     * @param mixed $template
-     *   Entidad PageTemplate.
-     *
-     * @return array
-     *   Definición de bloque GrapesJS.
-     */
-    protected function templateToGrapesJSBlock(PageTemplate $template): array
-    {
-        // PageTemplate es ConfigEntity, usar métodos de la entidad.
-        $category = method_exists($template, 'getCategory') ? ($template->getCategory() ?: 'content') : 'content';
+    // Generar HTML real renderizado desde el template Twig.
+    // Esto permite que GrapesJS muestre el diseño completo en el canvas.
+    $templateId = $template->id();
+    $content = $this->generateHtmlFromTemplate($templateId);
 
-        // Obtener thumbnail/preview desde el método getPreviewImage.
-        // GrapesJS espera HTML o SVG en el campo media, no una URL string.
-        $mediaHtml = '';
-        if (method_exists($template, 'getPreviewImage')) {
-            $previewPath = $template->getPreviewImage();
-            if ($previewPath) {
-                $thumbnailUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($previewPath) ?: '';
-                if ($thumbnailUrl) {
-                    // Formato HTML para GrapesJS con estilos inline para sizing.
-                    $mediaHtml = '<img src="' . htmlspecialchars($thumbnailUrl) . '" alt="' . htmlspecialchars($template->label()) . '" style="width: 100%; height: auto; border-radius: 4px; object-fit: cover;">';
-                }
-            }
-        }
-
-        // Fallback a icono SVG si no hay thumbnail.
-        if (empty($mediaHtml)) {
-            $mediaHtml = $this->getDefaultBlockIcon($category);
-        }
-
-        // Generar HTML real renderizado desde el template Twig.
-        // Esto permite que GrapesJS muestre el diseño completo en el canvas.
-        $templateId = $template->id();
-        $content = $this->generateHtmlFromTemplate($templateId);
-
-        // Si no se pudo generar el HTML (error de Twig o template sin path),
-        // usar un placeholder informativo pero no con borde dashed.
-        if (empty($content)) {
-            $templateLabel = htmlspecialchars($template->label());
-            $content = sprintf(
-                '<section class="jaraba-section jaraba-block" data-block-id="%s">
+    // Si no se pudo generar el HTML (error de Twig o template sin path),
+    // usar un placeholder informativo pero no con borde dashed.
+    if (empty($content)) {
+      $templateLabel = htmlspecialchars($template->label());
+      $content = sprintf(
+            '<section class="jaraba-section jaraba-block" data-block-id="%s">
                     <div class="jaraba-block__container" style="padding: 2rem; text-align: center;">
                         <h2 class="jaraba-block__title">%s</h2>
                         <p class="jaraba-block__subtitle" style="color: #64748b;">%s</p>
                     </div>
                 </section>',
-                $templateId,
-                $templateLabel,
-                htmlspecialchars($template->get('description') ?: 'Sección del Page Builder')
-            );
-        }
-
-        return [
-            'id' => 'jaraba-' . $templateId,
-            'label' => $template->label(),
-            'category' => $category,
-            'media' => $mediaHtml,
-            'content' => $content,
-            'schema' => $this->getTemplateSchema($template),
-        ];
+            $templateId,
+            $templateLabel,
+            htmlspecialchars($template->get('description') ?: 'Sección del Page Builder')
+        );
     }
 
+    return [
+      'id' => 'jaraba-' . $templateId,
+      'label' => $template->label(),
+      'category' => $category,
+      'media' => $mediaHtml,
+      'content' => $content,
+      'schema' => $this->getTemplateSchema($template),
+    ];
+  }
 
-    /**
-     * Obtiene el schema de campos para un template.
-     *
-     * @param mixed $template
-     *   Entidad PageTemplate.
-     *
-     * @return array
-     *   Schema de campos editables.
-     */
-    protected function getTemplateSchema(PageTemplate $template): array
-    {
-        // FIX C5: getFieldsSchema() retorna array directamente (no JSON string).
-        // El método getSchema() no existe en PageTemplate.
-        return $template->getFieldsSchema();
-    }
+  /**
+   * Obtiene el schema de campos para un template.
+   *
+   * @param mixed $template
+   *   Entidad PageTemplate.
+   *
+   * @return array
+   *   Schema de campos editables.
+   */
+  protected function getTemplateSchema(PageTemplate $template): array {
+    // FIX C5: getFieldsSchema() retorna array directamente (no JSON string).
+    // El método getSchema() no existe en PageTemplate.
+    return $template->getFieldsSchema();
+  }
 
-    /**
-     * Obtiene icono SVG por defecto según categoría.
-     *
-     * @param string $category
-     *   Nombre de la categoría.
-     *
-     * @return string
-     *   SVG del icono.
-     */
-    protected function getDefaultBlockIcon(string $category): string
-    {
-        // Keys use machine names (lowercase) to match getCategory() output.
-        $icons = [
-            'hero' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21,3H3C1.89,3 1,3.89 1,5V19A2,2 0 0,0 3,21H21C22.11,21 23,20.11 23,19V5C23,3.89 22.11,3 21,3M21,19H3V5H21V19Z"/></svg>',
-            'cta' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2"/></svg>',
-            'features' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,11H11V3H3V11M5,5H9V9H5V5M13,21H21V13H13V21M15,15H19V19H15V15M3,21H11V13H3V21M5,15H9V19H5V15M13,3V11H21V3H13M19,9H15V5H19V9Z"/></svg>',
-            'testimonials' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2Z"/></svg>',
-            'content' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>',
-            'pricing' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/></svg>',
-            'gallery' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M22,16V4A2,2 0 0,0 20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16M11,12L13.03,14.71L16,11L20,16H8L11,12M2,6V20A2,2 0 0,0 4,22H18V20H4V6H2Z"/></svg>',
-        ];
+  /**
+   * Obtiene icono SVG por defecto según categoría.
+   *
+   * @param string $category
+   *   Nombre de la categoría.
+   *
+   * @return string
+   *   SVG del icono.
+   */
+  protected function getDefaultBlockIcon(string $category): string {
+    // Keys use machine names (lowercase) to match getCategory() output.
+    $icons = [
+      'hero' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21,3H3C1.89,3 1,3.89 1,5V19A2,2 0 0,0 3,21H21C22.11,21 23,20.11 23,19V5C23,3.89 22.11,3 21,3M21,19H3V5H21V19Z"/></svg>',
+      'cta' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2"/></svg>',
+      'features' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,11H11V3H3V11M5,5H9V9H5V5M13,21H21V13H13V21M15,15H19V19H15V15M3,21H11V13H3V21M5,15H9V19H5V15M13,3V11H21V3H13M19,9H15V5H19V9Z"/></svg>',
+      'testimonials' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2Z"/></svg>',
+      'content' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>',
+      'pricing' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/></svg>',
+      'gallery' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M22,16V4A2,2 0 0,0 20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16M11,12L13.03,14.71L16,11L20,16H8L11,12M2,6V20A2,2 0 0,0 4,22H18V20H4V6H2Z"/></svg>',
+    ];
 
-        return $icons[$category] ?? '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,5V19H5V5H19M21,3H3V21H21V3Z"/></svg>';
-    }
+    return $icons[$category] ?? '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,5V19H5V5H19M21,3H3V21H21V3Z"/></svg>';
+  }
 
-    /**
-     * Sanitiza HTML para almacenamiento público.
-     *
-     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
-     */
-    protected function sanitizeHtml(string $html): string {
-        return $this->canvasSanitization->sanitizeHtml($html);
-    }
+  /**
+   * Sanitiza HTML para almacenamiento público.
+   *
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
+   */
+  protected function sanitizeHtml(string $html): string {
+    return $this->canvasSanitization->sanitizeHtml($html);
+  }
 
-    /**
-     * Sanitiza HTML con lista blanca ampliada para el Page Builder.
-     *
-     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
-     */
-    protected function sanitizePageBuilderHtml(string $html): string {
-        return $this->canvasSanitization->sanitizePageBuilderHtml($html);
-    }
+  /**
+   * Sanitiza HTML con lista blanca ampliada para el Page Builder.
+   *
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
+   */
+  protected function sanitizePageBuilderHtml(string $html): string {
+    return $this->canvasSanitization->sanitizePageBuilderHtml($html);
+  }
 
-    /**
-     * Sanitiza CSS para prevenir inyección de código.
-     *
-     * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
-     */
-    protected function sanitizeCss(string $css): string {
-        return $this->canvasSanitization->sanitizeCss($css);
-    }
+  /**
+   * Sanitiza CSS para prevenir inyección de código.
+   *
+   * CANVAS-SANITIZER-EXTRACT-001: Delega en CanvasSanitizationService.
+   */
+  protected function sanitizeCss(string $css): string {
+    return $this->canvasSanitization->sanitizeCss($css);
+  }
 
 }

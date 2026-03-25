@@ -159,7 +159,7 @@ class ActuacionStoServiceTest extends UnitTestCase {
 
     $this->service->incrementarHorasParticipante(1, 'prospeccion', 5.0);
 
-    // prospeccion no mapea a ningun campo, no debe llamar set/save.
+    // Prospeccion no mapea a ningun campo, no debe llamar set/save.
     $this->assertFalse($participante->wasSaved());
   }
 
@@ -284,42 +284,69 @@ class ActuacionStoServiceTest extends UnitTestCase {
 
       public function __construct(private readonly array $fieldValues) {}
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         $this->setValues[$fieldName] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         $this->saved = TRUE;
         return 1;
       }
 
+      /**
+       *
+       */
       public function wasSaved(): bool {
         return $this->saved;
       }
 
+      /**
+       *
+       */
       public function getSetValue(string $fieldName): mixed {
         return $this->setValues[$fieldName] ?? NULL;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ['programa_participante_ei:1'];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 
@@ -330,11 +357,15 @@ class ActuacionStoServiceTest extends UnitTestCase {
    */
   protected function createActuacionMock(string $tipo, int $duracionMinutos): object {
     return new class($tipo, $duracionMinutos) {
+
       public function __construct(
         private readonly string $tipo,
         private readonly int $duracionMinutos,
       ) {}
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $map = [
           'tipo_actuacion' => $this->tipo,
@@ -342,21 +373,33 @@ class ActuacionStoServiceTest extends UnitTestCase {
         ];
         $value = $map[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ['actuacion_sto:1'];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

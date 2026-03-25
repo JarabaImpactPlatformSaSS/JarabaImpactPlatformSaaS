@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_candidate\Form;
 
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
@@ -86,7 +87,7 @@ class ProfessionalBrandForm extends PremiumEntityFormBase {
     // (renderer->render() strips attached settings from HTML). Using a data
     // attribute ensures the URL is always embedded in the DOM.
     // Use Url::fromRoute() to include the language prefix and CSRF token.
-    $copilot_url = \Drupal\Core\Url::fromRoute('jaraba_candidate.copilot.chat', [], [
+    $copilot_url = Url::fromRoute('jaraba_candidate.copilot.chat', [], [
       'query' => ['_format' => 'json'],
     ])->toString();
     $form['#attributes']['data-copilot-url'] = $copilot_url;

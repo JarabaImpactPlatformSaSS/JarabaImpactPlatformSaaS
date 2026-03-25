@@ -263,7 +263,7 @@ class CheckoutController extends ControllerBase {
   /**
    * Pagina de cancelacion de checkout.
    *
-   * GET /planes/checkout/cancel
+   * GET /planes/checkout/cancel.
    *
    * @return array
    *   Render array con template de cancelacion.

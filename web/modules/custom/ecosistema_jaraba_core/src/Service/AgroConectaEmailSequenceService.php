@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * - SEQ_AGRO_003: Re-engagement
  * - SEQ_AGRO_004: Upsell Starter
  * - SEQ_AGRO_005: Upsell Profesional
- * - SEQ_AGRO_006: Retention
+ * - SEQ_AGRO_006: Retention.
  *
  * Plan Elevacion AgroConecta Clase Mundial v1 — Fase 7
  *
@@ -83,6 +83,9 @@ class AgroConectaEmailSequenceService {
   ) {
   }
 
+  /**
+   *
+   */
   public function enroll(int $userId, string $sequenceKey): bool {
     if (!isset(self::SEQUENCES[$sequenceKey])) {
       $this->logger->warning('AgroConecta email sequence @key not found.', ['@key' => $sequenceKey]);
@@ -133,10 +136,16 @@ class AgroConectaEmailSequenceService {
     }
   }
 
+  /**
+   *
+   */
   public function getAvailableSequences(): array {
     return self::SEQUENCES;
   }
 
+  /**
+   *
+   */
   public function ensureSequences(): int {
     $created = 0;
     foreach (self::SEQUENCES as $key => $sequence) {

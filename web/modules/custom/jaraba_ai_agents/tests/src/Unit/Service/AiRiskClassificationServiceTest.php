@@ -18,6 +18,9 @@ class AiRiskClassificationServiceTest extends TestCase {
 
   protected AiRiskClassificationService $service;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
 

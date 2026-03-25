@@ -88,7 +88,6 @@ class DocumentRequest extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 1: REFERENCIA AL EXPEDIENTE Y TIPO
     // =========================================================================
-
     $fields['case_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Expediente'))
       ->setDescription(new TranslatableMarkup('Expediente juridico vinculado a la solicitud.'))
@@ -109,7 +108,6 @@ class DocumentRequest extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 2: DATOS DE LA SOLICITUD
     // =========================================================================
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Titulo'))
       ->setDescription(new TranslatableMarkup('Titulo descriptivo de la solicitud.'))
@@ -145,7 +143,6 @@ class DocumentRequest extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 3: ESTADO Y REVISION
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setRequired(TRUE)
@@ -189,7 +186,6 @@ class DocumentRequest extends ContentEntityBase implements EntityOwnerInterface,
     // =========================================================================
     // BLOQUE 4: TENANT Y TIMESTAMPS
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece la solicitud.'))

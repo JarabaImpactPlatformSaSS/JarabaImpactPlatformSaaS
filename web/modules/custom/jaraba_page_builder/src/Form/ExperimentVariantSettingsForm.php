@@ -17,42 +17,38 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * ESPECIFICACIÓN: Entity Navigation Standards - Double Navigation Pattern
  */
-class ExperimentVariantSettingsForm extends FormBase
-{
+class ExperimentVariantSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'experiment_variant_settings';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'experiment_variant_settings';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['info'] = [
-            '#type' => 'container',
-            '#attributes' => ['class' => ['entity-settings-info']],
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['info'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['entity-settings-info']],
+    ];
 
-        $form['info']['description'] = [
-            '#markup' => '<h3>' . $this->t('Configuración de Variantes de Experimento') . '</h3>' .
-                '<p>' . $this->t('Configura los campos y la presentación de las Variantes de Experimento.') . '</p>' .
-                '<p>' . $this->t('Usa las pestañas superiores para gestionar campos y formularios.') . '</p>',
-        ];
+    $form['info']['description'] = [
+      '#markup' => '<h3>' . $this->t('Configuración de Variantes de Experimento') . '</h3>' .
+      '<p>' . $this->t('Configura los campos y la presentación de las Variantes de Experimento.') . '</p>' .
+      '<p>' . $this->t('Usa las pestañas superiores para gestionar campos y formularios.') . '</p>',
+    ];
 
-        return $form;
-    }
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-        // No hay configuración que guardar en este formulario básico.
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    // No hay configuración que guardar en este formulario básico.
+  }
 
 }

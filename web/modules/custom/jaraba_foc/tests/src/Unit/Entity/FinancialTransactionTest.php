@@ -13,7 +13,8 @@ use Drupal\Tests\UnitTestCase;
  *
  * COBERTURA:
  * Verifica los getters de la entidad inmutable de transacciones financieras.
- * Todos los campos se simulan via mock del metodo get() ya que
+ *
+ * @todo s los campos se simulan via mock del metodo get() ya que
  * ContentEntityBase requiere un constructor completo de Drupal.
  *
  * CAMPOS VERIFICADOS:
@@ -472,7 +473,8 @@ class FinancialTransactionTest extends UnitTestCase {
    * para el tenant 42 en el vertical emprendimiento.
    */
   public function testFullTransactionScenario(): void {
-    $timestamp = 1708300800; // 2024-02-19 00:00:00 UTC
+    // 2024-02-19 00:00:00 UTC
+    $timestamp = 1708300800;
     $entity = $this->createEntityMock([
       'amount' => ['value' => '49.9900'],
       'currency' => ['value' => 'EUR'],

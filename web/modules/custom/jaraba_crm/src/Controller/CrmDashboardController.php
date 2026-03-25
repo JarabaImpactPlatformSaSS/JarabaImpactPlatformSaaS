@@ -15,96 +15,92 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Controlador para el dashboard y pipeline del CRM.
  */
-class CrmDashboardController extends ControllerBase
-{
+class CrmDashboardController extends ControllerBase {
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        protected CompanyService $companyService,
-        protected ContactService $contactService,
-        protected OpportunityService $opportunityService,
-        protected ActivityService $activityService,
-        protected TenantContextService $tenantContext,
-    ) {
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    protected CompanyService $companyService,
+    protected ContactService $contactService,
+    protected OpportunityService $opportunityService,
+    protected ActivityService $activityService,
+    protected TenantContextService $tenantContext,
+  ) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+          $container->get('jaraba_crm.company'),
+          $container->get('jaraba_crm.contact'),
+          $container->get('jaraba_crm.opportunity'),
+          $container->get('jaraba_crm.activity'),
+          $container->get('ecosistema_jaraba_core.tenant_context'),
+      );
+  }
+
+  /**
+   * Muestra el dashboard principal del CRM.
+   *
+   * @return array
+   *   Render array del dashboard.
+   */
+  public function dashboard(): array {
+    $tenantId = $this->tenantContext->getCurrentTenantId();
+
+    return [
+      '#theme' => 'crm_dashboard',
+      '#companies_count' => $this->companyService->count($tenantId),
+      '#contacts_count' => $this->contactService->count($tenantId),
+      '#opportunities_count' => $this->opportunityService->count($tenantId),
+      '#pipeline_value' => $this->opportunityService->getPipelineValue($tenantId),
+      '#weighted_value' => $this->opportunityService->getWeightedPipelineValue($tenantId),
+      '#recent_activities' => $this->activityService->getRecent($tenantId, 10),
+      '#top_contacts' => $this->contactService->getTopEngaged(5, $tenantId),
+      '#closing_soon' => $this->opportunityService->getClosingSoon(30, $tenantId),
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+  }
+
+  /**
+   * Muestra el pipeline Kanban de oportunidades.
+   *
+   * @return array
+   *   Render array del pipeline.
+   */
+  public function pipeline(): array {
+    $tenantId = $this->tenantContext->getCurrentTenantId();
+    $stageLabels = jaraba_crm_get_opportunity_stage_values();
+    $pipelineData = $this->opportunityService->getByStage($tenantId);
+
+    // Construir estructura de stages con oportunidades y valores.
+    $stages = [];
+    foreach ($stageLabels as $stageKey => $label) {
+      $stageOpportunities = $pipelineData[$stageKey] ?? [];
+      $stageValue = 0;
+      foreach ($stageOpportunities as $opp) {
+        $stageValue += (float) ($opp['value'] ?? 0);
+      }
+      $stages[$stageKey] = [
+        'label' => $label,
+        'opportunities' => $stageOpportunities,
+        'total_value' => $stageValue,
+      ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container): static
-    {
-        return new static(
-            $container->get('jaraba_crm.company'),
-            $container->get('jaraba_crm.contact'),
-            $container->get('jaraba_crm.opportunity'),
-            $container->get('jaraba_crm.activity'),
-            $container->get('ecosistema_jaraba_core.tenant_context'),
-        );
-    }
-
-    /**
-     * Muestra el dashboard principal del CRM.
-     *
-     * @return array
-     *   Render array del dashboard.
-     */
-    public function dashboard(): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-
-        return [
-            '#theme' => 'crm_dashboard',
-            '#companies_count' => $this->companyService->count($tenantId),
-            '#contacts_count' => $this->contactService->count($tenantId),
-            '#opportunities_count' => $this->opportunityService->count($tenantId),
-            '#pipeline_value' => $this->opportunityService->getPipelineValue($tenantId),
-            '#weighted_value' => $this->opportunityService->getWeightedPipelineValue($tenantId),
-            '#recent_activities' => $this->activityService->getRecent($tenantId, 10),
-            '#top_contacts' => $this->contactService->getTopEngaged(5, $tenantId),
-            '#closing_soon' => $this->opportunityService->getClosingSoon(30, $tenantId),
-            '#cache' => [
-                'max-age' => 0,
-            ],
-        ];
-    }
-
-    /**
-     * Muestra el pipeline Kanban de oportunidades.
-     *
-     * @return array
-     *   Render array del pipeline.
-     */
-    public function pipeline(): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $stageLabels = jaraba_crm_get_opportunity_stage_values();
-        $pipelineData = $this->opportunityService->getByStage($tenantId);
-
-        // Construir estructura de stages con oportunidades y valores.
-        $stages = [];
-        foreach ($stageLabels as $stageKey => $label) {
-            $stageOpportunities = $pipelineData[$stageKey] ?? [];
-            $stageValue = 0;
-            foreach ($stageOpportunities as $opp) {
-                $stageValue += (float) ($opp['value'] ?? 0);
-            }
-            $stages[$stageKey] = [
-                'label' => $label,
-                'opportunities' => $stageOpportunities,
-                'total_value' => $stageValue,
-            ];
-        }
-
-        return [
-            '#theme' => 'crm_pipeline',
-            '#stages' => $stages,
-            '#total_value' => $this->opportunityService->getPipelineValue($tenantId),
-            '#cache' => [
-                'max-age' => 0,
-            ],
-        ];
-    }
+    return [
+      '#theme' => 'crm_pipeline',
+      '#stages' => $stages,
+      '#total_value' => $this->opportunityService->getPipelineValue($tenantId),
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+  }
 
 }

@@ -8,7 +8,6 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Psr\Log\LoggerInterface;
-use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de Feature Gating para el vertical Andalucía +ei.
@@ -54,7 +53,8 @@ class AndaluciaEiFeatureGateService {
     protected Connection $database,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {
   }
 

@@ -102,14 +102,14 @@ class EventLandingService {
       'image_url' => $this->getImageUrl($event),
     ];
 
-    // Determinar si el early bird está activo
+    // Determinar si el early bird está activo.
     $early_bird_active = FALSE;
     if ($event_data['early_bird_price'] > 0 && $event_data['early_bird_deadline']) {
       $early_bird_active = strtotime($event_data['early_bird_deadline']) > time();
     }
     $event_data['early_bird_active'] = $early_bird_active;
 
-    // Determinar precio actual
+    // Determinar precio actual.
     $event_data['current_price'] = $early_bird_active
       ? $event_data['early_bird_price']
       : $event_data['price'];
@@ -153,12 +153,12 @@ class EventLandingService {
       'eventStatus' => 'https://schema.org/EventScheduled',
     ];
 
-    // Fecha de fin
+    // Fecha de fin.
     if ($event->get('end_date')->value) {
       $schema['endDate'] = $event->get('end_date')->value;
     }
 
-    // Formato de asistencia
+    // Formato de asistencia.
     if ($format === 'online') {
       $schema['eventAttendanceMode'] = 'https://schema.org/OnlineEventAttendanceMode';
       $schema['location'] = [
@@ -178,13 +178,13 @@ class EventLandingService {
       $schema['eventAttendanceMode'] = 'https://schema.org/MixedEventAttendanceMode';
     }
 
-    // Imagen
+    // Imagen.
     $image_url = $this->getImageUrl($event);
     if ($image_url) {
       $schema['image'] = $image_url;
     }
 
-    // Oferta de precio
+    // Oferta de precio.
     if ((bool) $event->get('is_free')->value) {
       $schema['isAccessibleForFree'] = TRUE;
       $schema['offers'] = [
@@ -205,14 +205,14 @@ class EventLandingService {
       ];
     }
 
-    // Capacidad
+    // Capacidad.
     $max = (int) $event->get('max_attendees')->value;
     if ($max > 0) {
       $schema['maximumAttendeeCapacity'] = $max;
       $schema['remainingAttendeeCapacity'] = $event->getSpotsRemaining() ?? 0;
     }
 
-    // Organizador
+    // Organizador.
     $schema['organizer'] = [
       '@type' => 'Organization',
       'name' => 'Jaraba Impact Platform',
@@ -244,7 +244,7 @@ class EventLandingService {
       ->sort('start_date', 'ASC')
       ->range(0, $limit);
 
-    // Filtrar por tenant si tiene tenant_id
+    // Filtrar por tenant si tiene tenant_id.
     $tenant_id = $event->get('tenant_id')->target_id;
     if ($tenant_id) {
       $query->condition('tenant_id', $tenant_id);

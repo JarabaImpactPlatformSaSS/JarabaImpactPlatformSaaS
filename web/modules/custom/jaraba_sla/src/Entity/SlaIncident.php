@@ -102,7 +102,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 1: MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant affected by this incident.'))
@@ -114,7 +113,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 2: INCIDENT CLASSIFICATION
     // =========================================================================
-
     $fields['component'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Component'))
       ->setDescription(new TranslatableMarkup('The affected platform component.'))
@@ -149,7 +147,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 3: DESCRIPTION
     // =========================================================================
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Title'))
       ->setDescription(new TranslatableMarkup('Brief description of the incident.'))
@@ -169,7 +166,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 4: TIMING
     // =========================================================================
-
     $fields['started_at'] = BaseFieldDefinition::create('datetime')
       ->setLabel(new TranslatableMarkup('Started At'))
       ->setDescription(new TranslatableMarkup('When the incident started.'))
@@ -197,7 +193,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 5: POSTMORTEM
     // =========================================================================
-
     $fields['root_cause'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Root Cause'))
       ->setDescription(new TranslatableMarkup('Root cause analysis of the incident.'))
@@ -222,7 +217,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 6: STATUS
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Status'))
       ->setDescription(new TranslatableMarkup('Current status of the incident.'))
@@ -242,7 +236,6 @@ class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {
     // =========================================================================
     // BLOCK 7: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Created'));
 

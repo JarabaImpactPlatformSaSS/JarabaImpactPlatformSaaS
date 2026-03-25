@@ -50,7 +50,7 @@ class CatalogoPublicoController extends ControllerBase {
   public function ver(string $slug): array {
     $pack = $this->catalogoService->getPackPorSlug($slug);
 
-    if ($pack === null) {
+    if ($pack === NULL) {
       throw new NotFoundHttpException();
     }
 
@@ -65,7 +65,7 @@ class CatalogoPublicoController extends ControllerBase {
    */
   public function title(string $slug): string {
     $pack = $this->catalogoService->getPackPorSlug($slug);
-    if ($pack !== null) {
+    if ($pack !== NULL) {
       /** @var \Drupal\Core\Entity\ContentEntityInterface $pack */
       $titulo = $pack->get('titulo_personalizado')->value;
       return is_string($titulo) ? $titulo : (string) $this->t('Catálogo de servicios');

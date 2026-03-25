@@ -5,6 +5,8 @@
  * Install, update and uninstall functions for jaraba_billing.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_install().
  */
@@ -198,7 +200,7 @@ function jaraba_billing_update_10002(): string {
   $updateManager = \Drupal::entityDefinitionUpdateManager();
   try {
     if ($updateManager->getEntityType('billing_usage_record')) {
-      $syncedField = \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      $syncedField = BaseFieldDefinition::create('boolean')
         ->setName('synced_to_stripe')
         ->setTargetEntityTypeId('billing_usage_record')
         ->setLabel(t('Sincronizado con Stripe'))
@@ -207,7 +209,7 @@ function jaraba_billing_update_10002(): string {
         'synced_to_stripe', 'billing_usage_record', 'jaraba_billing', $syncedField
       );
 
-      $syncedAtField = \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      $syncedAtField = BaseFieldDefinition::create('timestamp')
         ->setName('stripe_synced_at')
         ->setTargetEntityTypeId('billing_usage_record')
         ->setLabel(t('Fecha sincronizacion Stripe'))

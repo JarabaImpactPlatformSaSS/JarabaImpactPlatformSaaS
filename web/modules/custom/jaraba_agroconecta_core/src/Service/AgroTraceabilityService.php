@@ -6,7 +6,6 @@ namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\jaraba_agroconecta_core\Entity\AgroBatch;
 use Drupal\jaraba_agroconecta_core\Entity\TraceEventAgro;
 use Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface;
 

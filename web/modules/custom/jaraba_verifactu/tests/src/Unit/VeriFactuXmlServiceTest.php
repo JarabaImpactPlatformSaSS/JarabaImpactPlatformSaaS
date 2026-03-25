@@ -6,7 +6,6 @@ namespace Drupal\Tests\jaraba_verifactu\Unit;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_verifactu\Entity\VeriFactuInvoiceRecord;
 use Drupal\jaraba_verifactu\Service\VeriFactuXmlService;
 use Drupal\Tests\UnitTestCase;

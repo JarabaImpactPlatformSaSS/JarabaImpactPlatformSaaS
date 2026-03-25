@@ -103,7 +103,6 @@ function jaraba_ai_agents_theme(): array {
   ];
 }
 
-
 /**
  * Prepares variables for ai_usage_log templates.
  *

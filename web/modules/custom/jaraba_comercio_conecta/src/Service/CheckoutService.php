@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class CheckoutService {
 
   public function __construct(
@@ -18,6 +21,9 @@ class CheckoutService {
     protected ?object $revenueMetrics = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function initiateCheckout(object $cart): array {
     $items = $this->cartService->getCartItems($cart);
     if (empty($items)) {
@@ -38,6 +44,9 @@ class CheckoutService {
     ];
   }
 
+  /**
+   *
+   */
   public function processCheckout(object $cart, array $checkout_data): array {
     $items = $this->cartService->getCartItems($cart);
     if (empty($items)) {
@@ -87,6 +96,9 @@ class CheckoutService {
     ];
   }
 
+  /**
+   *
+   */
   protected function createOrderItems(object $order, array $cart_items): void {
     $item_storage = $this->entityTypeManager->getStorage('order_item_retail');
     $tenant_id = $order->get('tenant_id')->target_id;
@@ -110,6 +122,9 @@ class CheckoutService {
     }
   }
 
+  /**
+   *
+   */
   protected function createSuborders(object $order, array $cart_items): void {
     $merchants = [];
     foreach ($cart_items as $cart_item) {
@@ -150,6 +165,9 @@ class CheckoutService {
     }
   }
 
+  /**
+   *
+   */
   protected function recordCouponRedemption(object $cart, object $order): void {
     $coupon_id = $cart->get('coupon_id')->target_id;
     if (!$coupon_id) {
@@ -172,6 +190,9 @@ class CheckoutService {
     }
   }
 
+  /**
+   *
+   */
   protected function validateStock(array $cart_items): array {
     foreach ($cart_items as $item) {
       $product = $item->get('product_id')->entity;
@@ -185,15 +206,21 @@ class CheckoutService {
       $stock = (int) $product->get('stock_quantity')->value;
       $requested = (int) $item->get('quantity')->value;
       if ($stock >= 0 && $requested > $stock) {
-        return ['valid' => FALSE, 'message' => t('Stock insuficiente para @name. Disponible: @stock', [
-          '@name' => $product->get('title')->value,
-          '@stock' => $stock,
-        ])];
+        return [
+          'valid' => FALSE,
+          'message' => t('Stock insuficiente para @name. Disponible: @stock', [
+            '@name' => $product->get('title')->value,
+            '@stock' => $stock,
+          ]),
+        ];
       }
     }
     return ['valid' => TRUE];
   }
 
+  /**
+   *
+   */
   protected function calculateTax(object $cart): float {
     $subtotal = (float) $cart->get('subtotal')->value;
     $discount = (float) $cart->get('discount_amount')->value;
@@ -232,8 +259,21 @@ class CheckoutService {
 
     // Hardcoded fallback — backwards compatible with pre-GAP-M02.
     return new class {
-      public function getEffectiveRate(?string $cat = NULL): float { return 10.0; }
-      public function getPlatformFee(): float { return 0.0; }
+
+      /**
+       *
+       */
+      public function getEffectiveRate(?string $cat = NULL): float {
+        return 10.0;
+      }
+
+      /**
+       *
+       */
+      public function getPlatformFee(): float {
+        return 0.0;
+      }
+
     };
   }
 

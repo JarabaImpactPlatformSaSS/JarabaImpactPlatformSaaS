@@ -67,7 +67,7 @@ class AddonSubscriptionServiceTest extends TestCase {
    * @covers ::subscribe
    */
   public function testSubscribeThrowsWhenAddonInactive(): void {
-    $addon = $this->createFakeAddon(active: false, priceMonthly: 9.99);
+    $addon = $this->createFakeAddon(active: FALSE, priceMonthly: 9.99);
     $addonStorage = $this->createMock(EntityStorageInterface::class);
     $addonStorage->method('load')->with(1)->willReturn($addon);
 
@@ -83,7 +83,7 @@ class AddonSubscriptionServiceTest extends TestCase {
    * @covers ::subscribe
    */
   public function testSubscribeThrowsWhenDuplicateActiveSubscription(): void {
-    $addon = $this->createFakeAddon(active: true, priceMonthly: 9.99);
+    $addon = $this->createFakeAddon(active: TRUE, priceMonthly: 9.99);
 
     $addonStorage = $this->createMock(EntityStorageInterface::class);
     $addonStorage->method('load')->with(1)->willReturn($addon);
@@ -111,7 +111,7 @@ class AddonSubscriptionServiceTest extends TestCase {
    * @covers ::subscribe
    */
   public function testSubscribeCreatesSubscriptionWithMonthlyBilling(): void {
-    $addon = $this->createFakeAddon(active: true, priceMonthly: 19.99);
+    $addon = $this->createFakeAddon(active: TRUE, priceMonthly: 19.99);
 
     $addonStorage = $this->createMock(EntityStorageInterface::class);
     $addonStorage->method('load')->with(1)->willReturn($addon);
@@ -152,7 +152,7 @@ class AddonSubscriptionServiceTest extends TestCase {
    * @covers ::subscribe
    */
   public function testSubscribeUsesYearlyPrice(): void {
-    $addon = $this->createFakeAddon(active: true, priceMonthly: 19.99, priceYearly: 199.90);
+    $addon = $this->createFakeAddon(active: TRUE, priceMonthly: 19.99, priceYearly: 199.90);
 
     $addonStorage = $this->createMock(EntityStorageInterface::class);
     $addonStorage->method('load')->with(1)->willReturn($addon);
@@ -215,7 +215,7 @@ class AddonSubscriptionServiceTest extends TestCase {
 
     // Mock para get('addon_id')->entity y get('tenant_id')->target_id.
     $addonRef = new class {
-      public ?object $entity = null;
+      public ?object $entity = NULL;
     };
     $tenantRef = new class {
       public ?int $target_id = 1;
@@ -355,14 +355,23 @@ class AddonSubscriptionServiceTest extends TestCase {
         $this->priceYearly = $py;
       }
 
+      /**
+       *
+       */
       public function isActive(): bool {
         return $this->active;
       }
 
+      /**
+       *
+       */
       public function label(): string {
         return 'Test Addon';
       }
 
+      /**
+       *
+       */
       public function getPrice(string $billingCycle = 'monthly'): float {
         return $billingCycle === 'yearly' ? $this->priceYearly : $this->priceMonthly;
       }

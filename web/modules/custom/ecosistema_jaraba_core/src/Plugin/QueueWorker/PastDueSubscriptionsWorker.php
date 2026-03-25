@@ -18,56 +18,53 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   cron = {"time" = 30}
  * )
  */
-class PastDueSubscriptionsWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface
-{
+class PastDueSubscriptionsWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
-    public function __construct(
-        array $configuration,
-        $plugin_id,
-        $plugin_definition,
-        protected EntityTypeManagerInterface $entityTypeManager,
-        protected TenantManager $tenantManager,
-        protected LoggerInterface $logger,
-    ) {
-        parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected TenantManager $tenantManager,
+    protected LoggerInterface $logger,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    return new static(
+          $configuration,
+          $plugin_id,
+          $plugin_definition,
+          $container->get('entity_type.manager'),
+          $container->get('ecosistema_jaraba_core.tenant_manager'),
+          $container->get('logger.channel.ecosistema_jaraba_core'),
+      );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processItem($data): void {
+    $tenantId = $data['tenant_id'] ?? NULL;
+    if (!$tenantId) {
+      return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static
-    {
-        return new static(
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $container->get('entity_type.manager'),
-            $container->get('ecosistema_jaraba_core.tenant_manager'),
-            $container->get('logger.channel.ecosistema_jaraba_core'),
-        );
+    $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
+    if (!$tenant) {
+      return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function processItem($data): void
-    {
-        $tenantId = $data['tenant_id'] ?? NULL;
-        if (!$tenantId) {
-            return;
-        }
+    $this->tenantManager->suspendTenant($tenant, 'payment_overdue');
 
-        $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
-        if (!$tenant) {
-            return;
-        }
-
-        $this->tenantManager->suspendTenant($tenant, 'payment_overdue');
-
-        $this->logger->warning(
-            'Tenant @tenant suspendido por pago pendiente',
-            ['@tenant' => $tenant->getName()]
-        );
-    }
+    $this->logger->warning(
+          'Tenant @tenant suspendido por pago pendiente',
+          ['@tenant' => $tenant->getName()]
+      );
+  }
 
 }

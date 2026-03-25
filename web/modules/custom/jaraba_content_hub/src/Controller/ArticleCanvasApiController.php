@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Endpoints para persistencia del contenido del canvas visual:
  * - GET  /api/v1/articles/{content_article}/canvas — Cargar datos canvas
- * - PATCH /api/v1/articles/{content_article}/canvas — Guardar datos canvas
+ * - PATCH /api/v1/articles/{content_article}/canvas — Guardar datos canvas.
  *
  * SEPARACIÓN del Page Builder:
  * Endpoints propios para artículos (no compartidos con PageContent):
@@ -54,7 +54,7 @@ class ArticleCanvasApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/articles/{content_article}/canvas
+   * GET /api/v1/articles/{content_article}/canvas.
    *
    * Obtiene el contenido del canvas GrapesJS para un artículo.
    *
@@ -95,7 +95,7 @@ class ArticleCanvasApiController extends ControllerBase {
   }
 
   /**
-   * PATCH /api/v1/articles/{content_article}/canvas
+   * PATCH /api/v1/articles/{content_article}/canvas.
    *
    * Guarda el contenido del canvas GrapesJS de un artículo.
    *

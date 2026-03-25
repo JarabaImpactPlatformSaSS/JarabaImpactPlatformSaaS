@@ -21,18 +21,30 @@ class FormFillerTool extends BaseTool {
     parent::__construct($logger);
   }
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'form_filler';
   }
 
+  /**
+   *
+   */
   public function getLabel(): string {
     return 'Form Filler';
   }
 
+  /**
+   *
+   */
   public function getDescription(): string {
     return 'Fills and submits web forms using headless browser. Requires approval. URL must be in the vertical allowlist.';
   }
 
+  /**
+   *
+   */
   public function getParameters(): array {
     return [
       'url' => [
@@ -53,10 +65,16 @@ class FormFillerTool extends BaseTool {
     ];
   }
 
+  /**
+   *
+   */
   public function requiresApproval(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function execute(array $params, array $context = []): array {
     $url = $params['url'] ?? '';
     if (empty($url)) {

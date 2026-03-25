@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Primary module hooks for Jaraba Billing.
  */
 
-declare(strict_types=1);
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Entity\EntityInterface;
+
 
 /**
  * Implements hook_cron().
@@ -154,7 +158,7 @@ function jaraba_billing_cron(): void {
  * Products/Prices. Aplica PRESAVE-RESILIENCE-001: servicio opcional + try-catch.
  * El save del plan NUNCA falla por errores de Stripe.
  */
-function jaraba_billing_saas_plan_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_billing_saas_plan_presave(EntityInterface $entity): void {
   // Solo si el servicio existe (modulo habilitado).
   if (!\Drupal::hasService('jaraba_billing.stripe_product_sync')) {
     return;
@@ -200,7 +204,7 @@ function jaraba_billing_saas_plan_presave(\Drupal\Core\Entity\EntityInterface $e
  *
  * GAP-M05: Auto-crear Stripe Customer cuando se crea un Tenant.
  */
-function jaraba_billing_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_billing_entity_insert(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'tenant') {
     return;
   }
@@ -254,7 +258,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
         '@site' => $siteName,
         '@date' => $trialEnd,
       ]);
-      $message['body'][] = \Drupal\Core\Render\Markup::create(
+      $message['body'][] = Markup::create(
         "<p $pStyle>" . t('Hola:') . '</p>'
         . "<p $pStyle>" . t('El período de prueba de @tenant en @site termina el @date.', [
           '@tenant' => $tenantLabel,
@@ -272,7 +276,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
       $invoiceId = $params['invoice_id'] ?? '';
       $invoiceLine = $invoiceId ? "<p $pStyle>" . t('Referencia de factura: @id', ['@id' => $invoiceId]) . '</p>' : '';
       $message['subject'] = t('Problema con tu pago en @site', ['@site' => $siteName]);
-      $message['body'][] = \Drupal\Core\Render\Markup::create(
+      $message['body'][] = Markup::create(
         "<p $pStyle>" . t('Hola:') . '</p>'
         . "<p $pStyle>" . t('No hemos podido procesar el pago de tu suscripción de @tenant.', [
           '@tenant' => $tenantLabel,
@@ -288,7 +292,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
       $cancelAt = $params['cancel_at'] ?? '';
       $cancelLine = $cancelAt ? "<p $pStyle>" . t('Tu acceso continuará activo hasta el @date.', ['@date' => $cancelAt]) . '</p>' : '';
       $message['subject'] = t('Confirmación de cancelación en @site', ['@site' => $siteName]);
-      $message['body'][] = \Drupal\Core\Render\Markup::create(
+      $message['body'][] = Markup::create(
         "<p $pStyle>" . t('Hola:') . '</p>'
         . "<p $pStyle>" . t('Tu suscripción de @tenant ha sido cancelada.', [
           '@tenant' => $tenantLabel,
@@ -342,7 +346,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
     }
 
     $dunningBody .= "<p $pStyle>" . t('Un saludo,') . '<br>' . t('El equipo de @site', ['@site' => $siteName]) . '</p>';
-    $message['body'][] = \Drupal\Core\Render\Markup::create($dunningBody);
+    $message['body'][] = Markup::create($dunningBody);
   }
 
   // === KIT DIGITAL — Emails de ciclo de vida del acuerdo ===
@@ -350,7 +354,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
     $message['subject'] = t('Acuerdo Kit Digital creado — @agreement', [
       '@agreement' => $params['agreement_number'] ?? '',
     ]);
-    $message['body'][] = \Drupal\Core\Render\Markup::create(
+    $message['body'][] = Markup::create(
       "<p $pStyle>" . t('Hola:') . '</p>'
       . "<p $pStyle>" . t('Se ha creado el acuerdo Kit Digital @num para @beneficiary.', [
         '@num' => $params['agreement_number'] ?? '',
@@ -369,7 +373,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
     $message['subject'] = t('Recordatorio: justificación pendiente — @agreement', [
       '@agreement' => $params['agreement_number'] ?? '',
     ]);
-    $message['body'][] = \Drupal\Core\Render\Markup::create(
+    $message['body'][] = Markup::create(
       "<p $pStyle>" . t('Hola:') . '</p>'
       . "<p $pStyle>" . t('El acuerdo Kit Digital @num con @beneficiary requiere justificación ante Red.es antes del @date.', [
         '@num' => $params['agreement_number'] ?? '',
@@ -385,7 +389,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
     $message['subject'] = t('Bono Kit Digital próximo a expirar — @agreement', [
       '@agreement' => $params['agreement_number'] ?? '',
     ]);
-    $message['body'][] = \Drupal\Core\Render\Markup::create(
+    $message['body'][] = Markup::create(
       "<p $pStyle>" . t('Hola:') . '</p>'
       . "<p $pStyle>" . t('El bono digital del acuerdo @num con @beneficiary expira el @date. Tras esa fecha, el tenant pasará a facturación regular vía Stripe.', [
         '@num' => $params['agreement_number'] ?? '',
@@ -406,7 +410,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
 
     switch ($key) {
       case 'winback_welcome_back_7d':
-        $message['body'][] = \Drupal\Core\Render\Markup::create(
+        $message['body'][] = Markup::create(
           "<p $pStyle>" . t('Hola:') . '</p>'
           . "<p $pStyle>" . t('Hace una semana que cancelaste tu suscripción de @tenant. Queremos que sepas que tu cuenta sigue activa y tus datos están seguros.', [
             '@tenant' => $tenantName,
@@ -418,7 +422,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
         break;
 
       case 'winback_feature_update_30d':
-        $message['body'][] = \Drupal\Core\Render\Markup::create(
+        $message['body'][] = Markup::create(
           "<p $pStyle>" . t('Hola:') . '</p>'
           . "<p $pStyle>" . t('Desde que te fuiste, hemos añadido nuevas funcionalidades a @site que creemos que te interesarán:', [
             '@site' => $siteName,
@@ -434,7 +438,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
         break;
 
       case 'winback_discount_60d':
-        $message['body'][] = \Drupal\Core\Render\Markup::create(
+        $message['body'][] = Markup::create(
           "<p $pStyle>" . t('Hola:') . '</p>'
           . "<p $pStyle>" . t('Han pasado 2 meses desde tu cancelación y queremos hacerte una oferta especial:') . '</p>'
           . "<p $pStyle><strong>" . t('50%% de descuento durante los próximos 3 meses.') . '</strong></p>'
@@ -446,7 +450,7 @@ function jaraba_billing_mail(string $key, array &$message, array $params): void 
         break;
 
       case 'winback_final_survey_90d':
-        $message['body'][] = \Drupal\Core\Render\Markup::create(
+        $message['body'][] = Markup::create(
           "<p $pStyle>" . t('Hola:') . '</p>'
           . "<p $pStyle>" . t('Han pasado 3 meses desde que dejaste @tenant. Antes de cerrar definitivamente tu cuenta, nos gustaría saber:', [
             '@tenant' => $tenantName,
@@ -542,7 +546,7 @@ function jaraba_billing_theme(): array {
 }
 
 /**
- * Implements template_preprocess_kit_digital_agreement().
+ * Implements hook_preprocess_kit_digital_agreement().
  *
  * ENTITY-PREPROCESS-001: Toda ContentEntity con view mode necesita preprocess.
  */

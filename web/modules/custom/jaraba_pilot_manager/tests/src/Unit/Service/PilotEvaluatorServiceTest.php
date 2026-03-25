@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_pilot_manager\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_pilot_manager\Service\PilotEvaluatorService;
 use PHPUnit\Framework\TestCase;
 
@@ -142,11 +141,16 @@ class PilotEvaluatorServiceTest extends TestCase {
    */
   protected function createProgramMock(int $id): object {
     return new class($id) {
+
       public function __construct(protected int $programId) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->programId;
       }
+
     };
   }
 
@@ -182,13 +186,20 @@ class PilotEvaluatorServiceTest extends TestCase {
         ];
       }
 
+      /**
+       *
+       */
       public function id(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function get(string $field): object {
         return $this->fields[$field] ?? (object) ['value' => NULL];
       }
+
     };
   }
 

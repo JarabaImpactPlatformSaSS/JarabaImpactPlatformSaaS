@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ComercioAdminService {
 
   protected LoggerInterface $logger;
@@ -21,6 +24,9 @@ class ComercioAdminService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.admin');
   }
 
+  /**
+   *
+   */
   public function getDashboardStats(): array {
     try {
       $merchant_storage = $this->entityTypeManager->getStorage('merchant_profile');
@@ -75,6 +81,9 @@ class ComercioAdminService {
     }
   }
 
+  /**
+   *
+   */
   public function getPendingModerations(int $limit = 20): array {
     try {
       $storage = $this->entityTypeManager->getStorage('moderation_queue');
@@ -112,6 +121,9 @@ class ComercioAdminService {
     }
   }
 
+  /**
+   *
+   */
   public function getRecentIncidents(int $limit = 20): array {
     try {
       $storage = $this->entityTypeManager->getStorage('incident_ticket');
@@ -148,6 +160,9 @@ class ComercioAdminService {
     }
   }
 
+  /**
+   *
+   */
   public function getPendingPayouts(): array {
     try {
       $storage = $this->entityTypeManager->getStorage('payout_record');
@@ -190,6 +205,9 @@ class ComercioAdminService {
     }
   }
 
+  /**
+   *
+   */
   public function getTopMerchants(int $limit = 10): array {
     try {
       $query = $this->database->select('order_retail', 'o');

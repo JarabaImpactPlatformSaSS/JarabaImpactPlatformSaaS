@@ -14,24 +14,22 @@ use Twig\Loader\FilesystemLoader;
  *
  * desde cualquier otro módulo o tema.
  */
-class JarabaI18nTwigLoader extends FilesystemLoader
-{
+class JarabaI18nTwigLoader extends FilesystemLoader {
 
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
+  /**
+   * Constructor.
+   */
+  public function __construct() {
+    parent::__construct();
 
-        // Obtener la ruta del módulo.
-        $modulePath = \Drupal::service('extension.list.module')->getPath('jaraba_i18n');
-        $templatesPath = DRUPAL_ROOT . '/' . $modulePath . '/templates';
+    // Obtener la ruta del módulo.
+    $modulePath = \Drupal::service('extension.list.module')->getPath('jaraba_i18n');
+    $templatesPath = DRUPAL_ROOT . '/' . $modulePath . '/templates';
 
-        // Registrar el namespace.
-        if (is_dir($templatesPath)) {
-            $this->addPath($templatesPath, 'jaraba_i18n');
-        }
+    // Registrar el namespace.
+    if (is_dir($templatesPath)) {
+      $this->addPath($templatesPath, 'jaraba_i18n');
     }
+  }
 
 }

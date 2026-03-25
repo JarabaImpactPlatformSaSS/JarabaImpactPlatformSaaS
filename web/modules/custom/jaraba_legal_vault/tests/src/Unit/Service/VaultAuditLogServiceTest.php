@@ -290,16 +290,37 @@ class VaultAuditLogServiceTest extends UnitTestCase {
  * Temporary interface for mocking audit entries.
  */
 interface VaultAuditEntryMockInterface {
+
+  /**
+   *
+   */
   public function id();
+
+  /**
+   *
+   */
   public function save();
+
+  /**
+   *
+   */
   public function get(string $field);
+
 }
 
 /**
  * Temporary interface for field items.
  */
 interface VaultFieldItemMockInterface {
-  public function first();
-  public function getValue();
-}
 
+  /**
+   *
+   */
+  public function first();
+
+  /**
+   *
+   */
+  public function getValue();
+
+}

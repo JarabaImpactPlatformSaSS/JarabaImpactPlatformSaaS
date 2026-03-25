@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_tenant_export\Unit;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -23,7 +24,7 @@ class TenantBackupServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
   }
@@ -59,7 +60,8 @@ class TenantBackupServiceTest extends UnitTestCase {
    */
   public function testBackupRotationLogic(): void {
     $retentionDailyDays = 30;
-    $retentionWeeklyDays = 84; // 12 weeks
+    // 12 weeks
+    $retentionWeeklyDays = 84;
 
     // Test: Day 0 (today) - should keep.
     $this->assertTrue(0 <= $retentionDailyDays);

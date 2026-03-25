@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Queue\QueueInterface;
 use Drupal\ecosistema_jaraba_core\Service\ReviewWebhookService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -69,7 +69,7 @@ class ReviewWebhookServiceTest extends UnitTestCase {
     // Queue should never be called for invalid events.
     $this->queueFactory->expects($this->never())->method('get');
 
-    $entity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
     $entity->method('getEntityTypeId')->willReturn('comercio_review');
 
     $this->service->dispatch('invalid.event', $entity);
@@ -81,7 +81,7 @@ class ReviewWebhookServiceTest extends UnitTestCase {
   public function testDispatchNonReviewEntityIsIgnored(): void {
     $this->queueFactory->expects($this->never())->method('get');
 
-    $entity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
     $entity->method('getEntityTypeId')->willReturn('node');
 
     // Non-review entity types return early before DB query.

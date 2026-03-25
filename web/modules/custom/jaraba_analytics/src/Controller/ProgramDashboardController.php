@@ -44,7 +44,7 @@ class ProgramDashboardController extends ControllerBase {
   }
 
   /**
-   * GET /programa/dashboard
+   * GET /programa/dashboard.
    *
    * Dashboard principal del programa institucional.
    */
@@ -81,7 +81,7 @@ class ProgramDashboardController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/programa/grant-status
+   * GET /api/v1/programa/grant-status.
    *
    * Retorna el estado actual del grant en JSON.
    */
@@ -105,7 +105,7 @@ class ProgramDashboardController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/programa/reports/generate
+   * POST /api/v1/programa/reports/generate.
    *
    * Genera un informe institucional en PDF.
    *

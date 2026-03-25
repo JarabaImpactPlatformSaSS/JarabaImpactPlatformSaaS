@@ -13,37 +13,35 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Control de acceso para entidades SuborderAgro.
  */
-class SuborderAgroAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class SuborderAgroAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
 
-        if ($account->hasPermission('administer agroconecta')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
+    if ($account->hasPermission('administer agroconecta')) {
+      return AccessResult::allowed()->cachePerPermissions();
+    }
 
-        return match ($operation) {
-            'view' => AccessResult::allowedIfHasPermission($account, 'manage agro orders'),
+    return match ($operation) {
+      'view' => AccessResult::allowedIfHasPermission($account, 'manage agro orders'),
             'update' => AccessResult::allowedIfHasPermission($account, 'manage agro orders'),
             'delete' => AccessResult::allowedIfHasPermission($account, 'administer agroconecta'),
             default => AccessResult::neutral(),
-        };
-    }
+    };
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage agro orders');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'manage agro orders');
+  }
 
 }

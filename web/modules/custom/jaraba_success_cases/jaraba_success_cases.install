@@ -5,6 +5,8 @@
  * Install, update, and uninstall functions for jaraba_success_cases.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Add hero_image field to SuccessCase entity.
  */
@@ -14,7 +16,7 @@ function jaraba_success_cases_update_10001() {
   $field_storage = $entity_definition_manager->getFieldStorageDefinition('hero_image', 'success_case');
 
   if (!$field_storage) {
-    $field_storage = \Drupal\Core\Field\BaseFieldDefinition::create('image')
+    $field_storage = BaseFieldDefinition::create('image')
       ->setLabel(t('Photo'))
       ->setDescription(t('Portrait or professional headshot of the person.'))
       ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
@@ -40,7 +42,6 @@ function jaraba_success_cases_update_10001() {
 
   return t('Campo hero_image ya existe.');
 }
-
 
 /**
  * Add landing page fields and tenant_id to SuccessCase entity.

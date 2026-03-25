@@ -185,7 +185,8 @@ class ReviewSeoController extends ControllerBase {
             $user = $this->entityTypeManager()->getStorage('user')->load($uid);
             $authorName = $user ? $user->getDisplayName() : '';
           }
-          catch (\Exception) {}
+          catch (\Exception) {
+          }
         }
       }
 
@@ -211,7 +212,8 @@ class ReviewSeoController extends ControllerBase {
     try {
       $stats = $this->aggregation->getRatingStats($reviewType, NULL, 0);
     }
-    catch (\Exception) {}
+    catch (\Exception) {
+    }
 
     // JSON-LD AggregateRating.
     $schemaType = self::VERTICAL_SCHEMA_TYPE_MAP[$vertical] ?? 'Product';

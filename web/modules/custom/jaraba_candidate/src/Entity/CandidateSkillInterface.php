@@ -11,27 +11,26 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Provides an interface for CandidateSkill entities.
  */
-interface CandidateSkillInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface CandidateSkillInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Gets the skill term ID.
-     */
-    public function getSkillId(): ?int;
+  /**
+   * Gets the skill term ID.
+   */
+  public function getSkillId(): ?int;
 
-    /**
-     * Gets the skill level.
-     */
-    public function getLevel(): string;
+  /**
+   * Gets the skill level.
+   */
+  public function getLevel(): string;
 
-    /**
-     * Gets years of experience with this skill.
-     */
-    public function getYearsExperience(): int;
+  /**
+   * Gets years of experience with this skill.
+   */
+  public function getYearsExperience(): int;
 
-    /**
-     * Checks if this skill is verified.
-     */
-    public function isVerified(): bool;
+  /**
+   * Checks if this skill is verified.
+   */
+  public function isVerified(): bool;
 
 }

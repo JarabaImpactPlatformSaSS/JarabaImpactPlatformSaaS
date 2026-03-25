@@ -32,7 +32,8 @@ class PredictiveDashboardController extends ControllerBase {
    *
    * ESTRUCTURA: Metodo principal del controller que retorna render array.
    * LOGICA: Retorna markup vacio siguiendo el patron zero-region.
-   *   Todo el contenido se inyecta via preprocess en el template.
+   *
+   *   @todo el contenido se inyecta via preprocess en el template.
    *
    * @return array
    *   Render array con markup vacio.

@@ -12,14 +12,23 @@ use Drupal\Core\Entity\ContentEntityInterface;
  */
 class SpeedOfCertificationRule implements FraudRuleInterface {
 
+  /**
+   *
+   */
   public function getName(): string {
     return 'lms_speed_of_certification';
   }
 
+  /**
+   *
+   */
   public function getWeight(): float {
     return 0.6;
   }
 
+  /**
+   *
+   */
   public function evaluate(mixed $subject, array $context = []): int {
     // El subject sería la entidad 'lms_enrollment' o similar.
     if (!$subject instanceof ContentEntityInterface || $subject->getEntityTypeId() !== 'lms_enrollment') {
@@ -28,7 +37,7 @@ class SpeedOfCertificationRule implements FraudRuleInterface {
 
     $created = (int) $subject->get('created')->value;
     $completed = (int) ($context['completed_at'] ?? time());
-    
+
     $timeTakenMinutes = ($completed - $created) / 60;
 
     // Si un curso de 10 horas se completa en 2 minutos...

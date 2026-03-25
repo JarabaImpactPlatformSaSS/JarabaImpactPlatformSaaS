@@ -40,6 +40,7 @@ class ProfessionalServicesSection extends AbstractUserProfileSection {
   /**
    * {@inheritdoc}
    */
+
   /**
    * {@inheritdoc}
    *

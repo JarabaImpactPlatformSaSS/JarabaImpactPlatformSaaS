@@ -28,141 +28,134 @@ use Psr\Log\LoggerInterface;
  * - Respuestas de reseña y precios → tier fast (bajo coste).
  * - Descripciones SEO y chat → tier balanced (calidad/coste).
  */
-class ProducerCopilotAgent extends SmartBaseAgent
-{
+class ProducerCopilotAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a ProducerCopilotAgent.
-     */
-    public function __construct(
-        AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
-        if ($toolRegistry) {
-            $this->setToolRegistry($toolRegistry);
-        }
-        if ($providerFallback) {
-            $this->setProviderFallback($providerFallback);
-        }
-        if ($contextWindowManager) {
-            $this->setContextWindowManager($contextWindowManager);
-        }
+  /**
+   * Constructs a ProducerCopilotAgent.
+   */
+  public function __construct(
+    AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    TenantBrandVoiceService $brandVoice,
+    AIObservabilityService $observability,
+    ModelRouterService $modelRouter,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+    $this->setModelRouter($modelRouter);
+    if ($toolRegistry) {
+      $this->setToolRegistry($toolRegistry);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'producer_copilot';
+    if ($providerFallback) {
+      $this->setProviderFallback($providerFallback);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Copiloto del Productor';
+    if ($contextWindowManager) {
+      $this->setContextWindowManager($contextWindowManager);
     }
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Asistente IA para productores AgroConecta: genera descripciones SEO, sugiere precios, redacta respuestas a reseñas y ofrece asistencia general.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'producer_copilot';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'generate_description' => [
-                'label' => 'Generar Descripción SEO',
-                'description' => 'Genera descripciones optimizadas para SEO de productos agroalimentarios.',
-                'requires' => ['product_name'],
-                'optional' => ['product_category', 'product_price', 'product_origin', 'product_certifications'],
-                'complexity' => 'medium',
-            ],
-            'suggest_price' => [
-                'label' => 'Sugerir Precio',
-                'description' => 'Analiza el mercado y sugiere un precio competitivo con estrategia de posicionamiento.',
-                'requires' => ['product_name', 'current_price'],
-                'optional' => ['competitor_prices', 'product_category', 'has_traceability'],
-                'complexity' => 'low',
-            ],
-            'respond_review' => [
-                'label' => 'Responder Reseña',
-                'description' => 'Genera un borrador de respuesta a una reseña del cliente con el tono adecuado.',
-                'requires' => ['review_rating', 'review_comment'],
-                'optional' => ['product_name', 'reviewer_name'],
-                'complexity' => 'low',
-            ],
-            'chat' => [
-                'label' => 'Chat Copiloto',
-                'description' => 'Conversación libre con contexto de producción agroalimentaria.',
-                'requires' => ['message'],
-                'optional' => ['conversation_history'],
-                'complexity' => 'medium',
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Copiloto del Productor';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        return match ($action) {
-            'generate_description' => $this->executeGenerateDescription($context),
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Asistente IA para productores AgroConecta: genera descripciones SEO, sugiere precios, redacta respuestas a reseñas y ofrece asistencia general.';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    return [
+      'generate_description' => [
+        'label' => 'Generar Descripción SEO',
+        'description' => 'Genera descripciones optimizadas para SEO de productos agroalimentarios.',
+        'requires' => ['product_name'],
+        'optional' => ['product_category', 'product_price', 'product_origin', 'product_certifications'],
+        'complexity' => 'medium',
+      ],
+      'suggest_price' => [
+        'label' => 'Sugerir Precio',
+        'description' => 'Analiza el mercado y sugiere un precio competitivo con estrategia de posicionamiento.',
+        'requires' => ['product_name', 'current_price'],
+        'optional' => ['competitor_prices', 'product_category', 'has_traceability'],
+        'complexity' => 'low',
+      ],
+      'respond_review' => [
+        'label' => 'Responder Reseña',
+        'description' => 'Genera un borrador de respuesta a una reseña del cliente con el tono adecuado.',
+        'requires' => ['review_rating', 'review_comment'],
+        'optional' => ['product_name', 'reviewer_name'],
+        'complexity' => 'low',
+      ],
+      'chat' => [
+        'label' => 'Chat Copiloto',
+        'description' => 'Conversación libre con contexto de producción agroalimentaria.',
+        'requires' => ['message'],
+        'optional' => ['conversation_history'],
+        'complexity' => 'medium',
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function doExecute(string $action, array $context): array {
+    return match ($action) {
+      'generate_description' => $this->executeGenerateDescription($context),
             'suggest_price' => $this->executeSuggestPrice($context),
             'respond_review' => $this->executeRespondReview($context),
             'chat' => $this->executeChat($context),
             default => [
-                'success' => FALSE,
-                'error' => "Acción no soportada: {$action}",
+              'success' => FALSE,
+              'error' => "Acción no soportada: {$action}",
             ],
-        };
+    };
+  }
+
+  /**
+   * Genera descripción SEO para un producto (balanced tier).
+   */
+  protected function executeGenerateDescription(array $context): array {
+    $productName = $context['product_name'] ?? 'Producto';
+    $category = $context['product_category'] ?? '';
+    $price = $context['product_price'] ?? '';
+    $origin = $context['product_origin'] ?? '';
+    $certifications = $context['product_certifications'] ?? '';
+
+    $contextBlock = "PRODUCTO: {$productName}";
+    if ($category) {
+      $contextBlock .= "\nCATEGORÍA: {$category}";
+    }
+    if ($price) {
+      $contextBlock .= "\nPRECIO: {$price}€";
+    }
+    if ($origin) {
+      $contextBlock .= "\nORIGEN: {$origin}";
+    }
+    if ($certifications) {
+      $contextBlock .= "\nCERTIFICACIONES: {$certifications}";
     }
 
-    /**
-     * Genera descripción SEO para un producto (balanced tier).
-     */
-    protected function executeGenerateDescription(array $context): array
-    {
-        $productName = $context['product_name'] ?? 'Producto';
-        $category = $context['product_category'] ?? '';
-        $price = $context['product_price'] ?? '';
-        $origin = $context['product_origin'] ?? '';
-        $certifications = $context['product_certifications'] ?? '';
-
-        $contextBlock = "PRODUCTO: {$productName}";
-        if ($category) {
-            $contextBlock .= "\nCATEGORÍA: {$category}";
-        }
-        if ($price) {
-            $contextBlock .= "\nPRECIO: {$price}€";
-        }
-        if ($origin) {
-            $contextBlock .= "\nORIGEN: {$origin}";
-        }
-        if ($certifications) {
-            $contextBlock .= "\nCERTIFICACIONES: {$certifications}";
-        }
-
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Generar una descripción SEO-optimizada para un producto agroalimentario.
 
@@ -185,36 +178,35 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'product_description';
-                $response['data']['product_name'] = $productName;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'product_description';
+        $response['data']['product_name'] = $productName;
+      }
     }
 
-    /**
-     * Sugiere precio competitivo (fast tier).
-     */
-    protected function executeSuggestPrice(array $context): array
-    {
-        $productName = $context['product_name'] ?? 'Producto';
-        $currentPrice = $context['current_price'] ?? 0;
-        $competitorPrices = $context['competitor_prices'] ?? [];
-        $category = $context['product_category'] ?? '';
-        $hasTraceability = $context['has_traceability'] ?? FALSE;
+    return $response;
+  }
 
-        $competitorInfo = !empty($competitorPrices)
+  /**
+   * Sugiere precio competitivo (fast tier).
+   */
+  protected function executeSuggestPrice(array $context): array {
+    $productName = $context['product_name'] ?? 'Producto';
+    $currentPrice = $context['current_price'] ?? 0;
+    $competitorPrices = $context['competitor_prices'] ?? [];
+    $category = $context['product_category'] ?? '';
+    $hasTraceability = $context['has_traceability'] ?? FALSE;
+
+    $competitorInfo = !empty($competitorPrices)
             ? 'PRECIOS COMPETIDORES: ' . implode('€, ', $competitorPrices) . '€'
             : 'Sin datos de competidores';
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Analizar y sugerir precio competitivo para un producto agroalimentario.
 
@@ -241,38 +233,37 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt, ['require_speed' => TRUE]);
+    $response = $this->callAiApi($prompt, ['require_speed' => TRUE]);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'price_suggestion';
-                $response['data']['product_name'] = $productName;
-                $response['data']['current_price'] = $currentPrice;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'price_suggestion';
+        $response['data']['product_name'] = $productName;
+        $response['data']['current_price'] = $currentPrice;
+      }
     }
 
-    /**
-     * Genera borrador de respuesta a reseña (fast tier).
-     */
-    protected function executeRespondReview(array $context): array
-    {
-        $rating = (int) ($context['review_rating'] ?? 3);
-        $comment = $context['review_comment'] ?? '';
-        $productName = $context['product_name'] ?? '';
-        $reviewerName = $context['reviewer_name'] ?? '';
+    return $response;
+  }
 
-        $tone = match (TRUE) {
-            $rating >= 4 => 'TONO: Agradecimiento genuino y calidez',
+  /**
+   * Genera borrador de respuesta a reseña (fast tier).
+   */
+  protected function executeRespondReview(array $context): array {
+    $rating = (int) ($context['review_rating'] ?? 3);
+    $comment = $context['review_comment'] ?? '';
+    $productName = $context['product_name'] ?? '';
+    $reviewerName = $context['reviewer_name'] ?? '';
+
+    $tone = match (TRUE) {
+      $rating >= 4 => 'TONO: Agradecimiento genuino y calidez',
             $rating >= 3 => 'TONO: Profesional, constructivo y empático',
             default => 'TONO: Empático, resolutivo y orientado a la recuperación del cliente',
-        };
+    };
 
-        $prompt = <<<EOT
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Generar respuesta profesional a una reseña de cliente.
 
@@ -300,31 +291,30 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt, ['require_speed' => TRUE]);
+    $response = $this->callAiApi($prompt, ['require_speed' => TRUE]);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'review_response';
-                $response['data']['original_rating'] = $rating;
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'review_response';
+        $response['data']['original_rating'] = $rating;
+      }
     }
 
-    /**
-     * Chat libre con contexto agroalimentario (balanced tier).
-     */
-    protected function executeChat(array $context): array
-    {
-        $message = $context['message'] ?? '';
-        $history = $context['conversation_history'] ?? '';
+    return $response;
+  }
 
-        $historyBlock = $history ? "\nHISTORIAL DE CONVERSACIÓN:\n{$history}\n" : '';
+  /**
+   * Chat libre con contexto agroalimentario (balanced tier).
+   */
+  protected function executeChat(array $context): array {
+    $message = $context['message'] ?? '';
+    $history = $context['conversation_history'] ?? '';
 
-        $prompt = <<<EOT
+    $historyBlock = $history ? "\nHISTORIAL DE CONVERSACIÓN:\n{$history}\n" : '';
+
+    $prompt = <<<EOT
 VERTICAL: {$this->getVerticalContext()}
 TAREA: Responder como copiloto IA de un productor agroalimentario.
 {$historyBlock}
@@ -353,28 +343,28 @@ FORMATO JSON:
 }
 EOT;
 
-        $response = $this->callAiApi($prompt);
+    $response = $this->callAiApi($prompt);
 
-        if ($response['success']) {
-            $parsed = $this->parseJsonResponse($response['data']['text']);
-            if ($parsed) {
-                $response['data'] = $parsed;
-                $response['data']['content_type'] = 'chat_response';
-            }
-        }
-
-        return $response;
+    if ($response['success']) {
+      $parsed = $this->parseJsonResponse($response['data']['text']);
+      if ($parsed) {
+        $response['data'] = $parsed;
+        $response['data']['content_type'] = 'chat_response';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return "Eres el Copiloto IA de AgroConecta, un marketplace de productos agroalimentarios de proximidad. " .
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultBrandVoice(): string {
+    return "Eres el Copiloto IA de AgroConecta, un marketplace de productos agroalimentarios de proximidad. " .
             "Tu misión es ayudar a los productores a vender más y mejor. " .
             "Tono: cercano, profesional, orientado a resultados. " .
             "Valoras la trazabilidad, el origen local, la sostenibilidad y la calidad artesanal. " .
             "Nunca recomiendas prácticas deshonestas ni precios depredadores.";
-    }
+  }
+
 }

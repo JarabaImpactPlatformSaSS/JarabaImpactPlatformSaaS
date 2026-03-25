@@ -221,6 +221,7 @@ class PromotionConfig extends ConfigEntityBase implements PromotionConfigInterfa
   /**
    * {@inheritdoc}
    */
+
   /**
    * @return array<string, string>
    */
@@ -233,6 +234,7 @@ class PromotionConfig extends ConfigEntityBase implements PromotionConfigInterfa
   /**
    * {@inheritdoc}
    */
+
   /**
    * @param array<string, string> $values
    */

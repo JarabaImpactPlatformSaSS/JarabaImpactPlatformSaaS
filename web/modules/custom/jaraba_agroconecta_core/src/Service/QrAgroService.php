@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\jaraba_agroconecta_core\Entity\AgroBatch;
@@ -22,9 +23,9 @@ class QrAgroService {
   /**
    * Genera el registro de un QR para un lote.
    */
-  public function createBatchQr(AgroBatch $batch): \Drupal\Core\Entity\EntityInterface {
+  public function createBatchQr(AgroBatch $batch): EntityInterface {
     $storage = $this->entityTypeManager->getStorage('qr_code_agro');
-    
+
     /** @var \Drupal\Core\Url $url */
     $url = Url::fromRoute('jaraba_agroconecta.traceability.public', [
       'batch_code' => $batch->getBatchCode(),
@@ -38,7 +39,7 @@ class QrAgroService {
       'qr_type' => 'traceability',
       'status' => TRUE,
     ]);
-    
+
     $qr->save();
     return $qr;
   }

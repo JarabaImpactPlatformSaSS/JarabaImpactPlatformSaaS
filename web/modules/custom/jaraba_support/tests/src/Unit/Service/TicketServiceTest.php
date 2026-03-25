@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_support\Unit\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -97,22 +98,22 @@ class TicketServiceTest extends UnitTestCase {
    */
   #[Test]
   public function testIsValidTransitionAcceptsValid(): void {
-    // new -> open is allowed.
+    // New -> open is allowed.
     $this->assertTrue($this->service->isValidTransition('new', 'open'));
 
-    // new -> ai_handling is allowed.
+    // New -> ai_handling is allowed.
     $this->assertTrue($this->service->isValidTransition('new', 'ai_handling'));
 
-    // open -> resolved is allowed.
+    // Open -> resolved is allowed.
     $this->assertTrue($this->service->isValidTransition('open', 'resolved'));
 
-    // resolved -> closed is allowed.
+    // Resolved -> closed is allowed.
     $this->assertTrue($this->service->isValidTransition('resolved', 'closed'));
 
-    // closed -> reopened is allowed.
+    // Closed -> reopened is allowed.
     $this->assertTrue($this->service->isValidTransition('closed', 'reopened'));
 
-    // reopened -> open is allowed.
+    // Reopened -> open is allowed.
     $this->assertTrue($this->service->isValidTransition('reopened', 'open'));
   }
 
@@ -124,16 +125,16 @@ class TicketServiceTest extends UnitTestCase {
    */
   #[Test]
   public function testIsValidTransitionRejectsInvalid(): void {
-    // closed -> open is NOT allowed (must go through reopened).
+    // Closed -> open is NOT allowed (must go through reopened).
     $this->assertFalse($this->service->isValidTransition('closed', 'open'));
 
-    // new -> resolved is NOT allowed (must go through open or ai_handling).
+    // New -> resolved is NOT allowed (must go through open or ai_handling).
     $this->assertFalse($this->service->isValidTransition('new', 'resolved'));
 
-    // open -> new is NOT allowed (no backward transition to new).
+    // Open -> new is NOT allowed (no backward transition to new).
     $this->assertFalse($this->service->isValidTransition('open', 'new'));
 
-    // resolved -> open is NOT allowed (must go through reopened).
+    // Resolved -> open is NOT allowed (must go through reopened).
     $this->assertFalse($this->service->isValidTransition('resolved', 'open'));
 
     // Unknown status returns false.
@@ -155,7 +156,7 @@ class TicketServiceTest extends UnitTestCase {
 
     // Mock ticket_event_log storage for logEvent().
     $eventLogStorage = $this->createMock(EntityStorageInterface::class);
-    $mockEventLog = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $mockEventLog = $this->createMock(EntityInterface::class);
     $eventLogStorage->method('create')->willReturn($mockEventLog);
 
     $this->entityTypeManager->method('getStorage')
@@ -262,7 +263,7 @@ class TicketServiceTest extends UnitTestCase {
 
     // Mock ticket_event_log storage for logEvent().
     $eventLogStorage = $this->createMock(EntityStorageInterface::class);
-    $mockEventLog = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $mockEventLog = $this->createMock(EntityInterface::class);
     $eventLogStorage->method('create')->willReturn($mockEventLog);
 
     $this->entityTypeManager->method('getStorage')
@@ -315,7 +316,7 @@ class TicketServiceTest extends UnitTestCase {
       });
 
     $eventLogStorage = $this->createMock(EntityStorageInterface::class);
-    $mockEventLog = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $mockEventLog = $this->createMock(EntityInterface::class);
     $eventLogStorage->method('create')->willReturn($mockEventLog);
 
     $this->entityTypeManager->method('getStorage')

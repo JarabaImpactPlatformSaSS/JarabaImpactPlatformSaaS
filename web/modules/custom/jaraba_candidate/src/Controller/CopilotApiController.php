@@ -18,7 +18,7 @@ use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
  * PROPOSITO:
  * Expone 2 endpoints REST para el copilot del frontend:
  * - POST /api/v1/copilot/employability/chat → Procesar mensaje
- * - GET /api/v1/copilot/employability/suggestions → Sugerencias contextuales
+ * - GET /api/v1/copilot/employability/suggestions → Sugerencias contextuales.
  *
  * ESTRUCTURA:
  * - chat(): Recibe mensaje y modo, ejecuta el agente, retorna respuesta
@@ -50,13 +50,14 @@ class CopilotApiController extends ControllerBase {
     $instance = parent::create($container);
     $instance->copilotAgent = $container->get('jaraba_candidate.agent.employability_copilot');
     $instance->routeMatch = $container->get('current_route_match');
-    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
 
     return $instance;
   }
 
   /**
-   * POST /api/v1/copilot/employability/chat
+   * POST /api/v1/copilot/employability/chat.
    *
    * Procesa un mensaje del usuario y retorna la respuesta del copilot.
    *
@@ -111,7 +112,7 @@ class CopilotApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/copilot/employability/suggestions
+   * GET /api/v1/copilot/employability/suggestions.
    *
    * Retorna sugerencias contextuales segun la pagina desde la que se llama.
    *
@@ -132,7 +133,7 @@ class CopilotApiController extends ControllerBase {
   }
 
   /**
-   * GET|POST /api/v1/copilot/employability/proactive
+   * GET|POST /api/v1/copilot/employability/proactive.
    *
    * GET: Checks for pending proactive actions for the current user.
    * POST: Dismisses a proactive action.

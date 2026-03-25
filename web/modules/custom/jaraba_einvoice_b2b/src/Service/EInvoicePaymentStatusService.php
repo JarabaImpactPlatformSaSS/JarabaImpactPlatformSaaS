@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  *
  * Handles payment tracking and morosity detection conforming to:
  *   - Ley 3/2004 (morosidad en operaciones comerciales)
- *   - Ley 18/2022 (Crea y Crece) — payment status reporting to SPFE
+ *   - Ley 18/2022 (Crea y Crece) — payment status reporting to SPFE.
  *
  * Legal deadlines:
  *   - General: 30 days from invoice receipt

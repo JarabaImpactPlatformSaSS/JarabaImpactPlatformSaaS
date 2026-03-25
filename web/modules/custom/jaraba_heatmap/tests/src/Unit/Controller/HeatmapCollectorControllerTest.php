@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_heatmap\Unit\Controller;
 
+use Psr\Log\LoggerInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_heatmap\Controller\HeatmapCollectorController;
 use Drupal\jaraba_heatmap\Service\HeatmapCollectorService;
@@ -48,9 +51,9 @@ class HeatmapCollectorControllerTest extends UnitTestCase {
     );
 
     // ControllerBase needs a container for getLogger().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
-    $loggerFactory = $this->createMock(\Drupal\Core\Logger\LoggerChannelFactoryInterface::class);
-    $loggerFactory->method('get')->willReturn($this->createMock(\Psr\Log\LoggerInterface::class));
+    $container = new ContainerBuilder();
+    $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
+    $loggerFactory->method('get')->willReturn($this->createMock(LoggerInterface::class));
     $container->set('logger.factory', $loggerFactory);
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);

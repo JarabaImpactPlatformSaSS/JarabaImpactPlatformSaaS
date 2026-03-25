@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * - Creación y finalización de sesiones
  * - Seguimiento de mensajes por sesión
  * - Métricas agregadas de uso
- * - Historial de sesiones por usuario
+ * - Historial de sesiones por usuario.
  *
  * Utiliza Drupal State API para persistencia de sesiones, lo que permite
  * almacenamiento rápido sin necesidad de esquema de base de datos adicional.
@@ -469,7 +469,7 @@ class CopilotSessionService {
     $totalEnded = ($metrics['total_ended_sessions'] ?? 0) + 1;
     $currentAvg = (float) ($metrics['average_duration_seconds'] ?? 0);
 
-    // Incremental average: new_avg = old_avg + (new_value - old_avg) / n
+    // Incremental average: new_avg = old_avg + (new_value - old_avg) / n.
     $newAvg = $currentAvg + ($newDuration - $currentAvg) / $totalEnded;
 
     $metrics['total_ended_sessions'] = $totalEnded;

@@ -31,7 +31,7 @@ class NewsletterBridgeService {
     name: 'hub_create_newsletter',
     description: 'Crea un borrador de newsletter a partir de un artículo del Content Hub.',
     parameters: [
-      'articleId' => ['type' => 'integer', 'description' => 'ID del artículo de origen']
+      'articleId' => ['type' => 'integer', 'description' => 'ID del artículo de origen'],
     ]
   )]
   public function createArticleNewsletter(ContentArticle $article): ?int {
@@ -58,7 +58,7 @@ class NewsletterBridgeService {
         ]),
       ]);
 
-      // Aquí se podría inyectar el cuerpo del artículo en un campo body_html 
+      // Aquí se podría inyectar el cuerpo del artículo en un campo body_html
       // si la entidad EmailCampaign lo soporta.
       $campaign->save();
 

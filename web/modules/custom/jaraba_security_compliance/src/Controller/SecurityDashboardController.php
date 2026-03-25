@@ -126,7 +126,7 @@ class SecurityDashboardController extends ControllerBase {
   public function dashboard(): array {
     $complianceScore = $this->complianceTracker->getComplianceScore();
     $frameworks = $this->complianceTracker->getComplianceStatus();
-    
+
     // Ejecutar chequeos automatizados en tiempo real (F193).
     $automatedChecks = $this->automatedCompliance->runComplianceChecks();
 
@@ -136,7 +136,8 @@ class SecurityDashboardController extends ControllerBase {
       '#frameworks' => $frameworks,
       '#recent_events' => $this->getRecentAuditEvents(),
       '#active_policies' => $this->getActivePoliciesSummary(),
-      '#automated_checks' => $automatedChecks, // Nueva variable para el template.
+    // Nueva variable para el template.
+      '#automated_checks' => $automatedChecks,
       '#stats' => [
         'compliance_score' => $complianceScore,
         'total_frameworks' => count($frameworks),
@@ -164,7 +165,9 @@ class SecurityDashboardController extends ControllerBase {
    * Calcula el ratio de éxito de los chequeos automatizados.
    */
   protected function calculatePassRate(array $checks): int {
-    if (empty($checks)) return 0;
+    if (empty($checks)) {
+      return 0;
+    }
     $passed = count(array_filter($checks, fn($c) => $c['status'] === 'pass'));
     return (int) (($passed / count($checks)) * 100);
   }

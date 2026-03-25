@@ -96,30 +96,51 @@ class PromptTemplate extends ConfigEntityBase {
    */
   protected int $updated = 0;
 
+  /**
+   *
+   */
   public function getAgentId(): string {
     return $this->agent_id;
   }
 
+  /**
+   *
+   */
   public function getVersion(): string {
     return $this->version;
   }
 
+  /**
+   *
+   */
   public function getSystemPrompt(): string {
     return $this->system_prompt;
   }
 
+  /**
+   *
+   */
   public function getTemperature(): float {
     return $this->temperature;
   }
 
+  /**
+   *
+   */
   public function getModelTier(): string {
     return $this->model_tier;
   }
 
+  /**
+   *
+   */
   public function getVariables(): array {
     return $this->variables;
   }
 
+  /**
+   *
+   */
   public function isActiveVersion(): bool {
     return $this->is_active;
   }

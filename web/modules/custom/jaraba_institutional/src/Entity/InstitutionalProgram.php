@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_institutional\Entity;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -86,8 +87,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- tenant_id: referencia al grupo (AUDIT-CONS-005) ---
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tenant'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('El grupo (tenant) al que pertenece este programa.'))
+      ->setLabel(new TranslatableMarkup('Tenant'))
+      ->setDescription(new TranslatableMarkup('El grupo (tenant) al que pertenece este programa.'))
       ->setSetting('target_type', 'group')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -99,8 +100,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- uid: propietario (via ownerBaseFieldDefinitions) ---
     $fields['uid']
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Autor'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('El usuario que creo este programa.'))
+      ->setLabel(new TranslatableMarkup('Autor'))
+      ->setDescription(new TranslatableMarkup('El usuario que creo este programa.'))
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => -19,
@@ -110,8 +111,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- program_type ---
     $fields['program_type'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tipo de programa'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Tipologia del programa institucional.'))
+      ->setLabel(new TranslatableMarkup('Tipo de programa'))
+      ->setDescription(new TranslatableMarkup('Tipologia del programa institucional.'))
       ->setRequired(TRUE)
       ->setDefaultValue('sto')
       ->setSetting('allowed_values', [
@@ -130,8 +131,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- program_code ---
     $fields['program_code'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Codigo del programa'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Codigo identificador unico del programa.'))
+      ->setLabel(new TranslatableMarkup('Codigo del programa'))
+      ->setDescription(new TranslatableMarkup('Codigo identificador unico del programa.'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 50)
       ->setDisplayOptions('form', [
@@ -143,8 +144,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- name ---
     $fields['name'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Nombre del programa'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Nombre completo del programa institucional.'))
+      ->setLabel(new TranslatableMarkup('Nombre del programa'))
+      ->setDescription(new TranslatableMarkup('Nombre completo del programa institucional.'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('form', [
@@ -156,8 +157,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- funding_entity ---
     $fields['funding_entity'] = BaseFieldDefinition::create('string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Entidad financiadora'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('SAE, SEPE, Junta de Andalucia, UE...'))
+      ->setLabel(new TranslatableMarkup('Entidad financiadora'))
+      ->setDescription(new TranslatableMarkup('SAE, SEPE, Junta de Andalucia, UE...'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('form', [
@@ -169,8 +170,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- start_date ---
     $fields['start_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de inicio'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de inicio del programa.'))
+      ->setLabel(new TranslatableMarkup('Fecha de inicio'))
+      ->setDescription(new TranslatableMarkup('Fecha de inicio del programa.'))
       ->setRequired(TRUE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
@@ -182,8 +183,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- end_date ---
     $fields['end_date'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de fin'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de finalizacion del programa.'))
+      ->setLabel(new TranslatableMarkup('Fecha de fin'))
+      ->setDescription(new TranslatableMarkup('Fecha de finalizacion del programa.'))
       ->setRequired(FALSE)
       ->setSetting('datetime_type', 'date')
       ->setDisplayOptions('form', [
@@ -195,8 +196,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- budget_total ---
     $fields['budget_total'] = BaseFieldDefinition::create('decimal')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Presupuesto total'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Presupuesto total asignado al programa.'))
+      ->setLabel(new TranslatableMarkup('Presupuesto total'))
+      ->setDescription(new TranslatableMarkup('Presupuesto total asignado al programa.'))
       ->setRequired(FALSE)
       ->setSetting('precision', 12)
       ->setSetting('scale', 2)
@@ -209,8 +210,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- budget_executed ---
     $fields['budget_executed'] = BaseFieldDefinition::create('decimal')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Presupuesto ejecutado'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Presupuesto ejecutado hasta la fecha.'))
+      ->setLabel(new TranslatableMarkup('Presupuesto ejecutado'))
+      ->setDescription(new TranslatableMarkup('Presupuesto ejecutado hasta la fecha.'))
       ->setRequired(FALSE)
       ->setDefaultValue('0')
       ->setSetting('precision', 12)
@@ -224,8 +225,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- participants_target ---
     $fields['participants_target'] = BaseFieldDefinition::create('integer')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Participantes objetivo'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Numero objetivo de participantes del programa.'))
+      ->setLabel(new TranslatableMarkup('Participantes objetivo'))
+      ->setDescription(new TranslatableMarkup('Numero objetivo de participantes del programa.'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'number',
@@ -236,8 +237,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- participants_actual ---
     $fields['participants_actual'] = BaseFieldDefinition::create('integer')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Participantes actuales'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Numero actual de participantes inscritos.'))
+      ->setLabel(new TranslatableMarkup('Participantes actuales'))
+      ->setDescription(new TranslatableMarkup('Numero actual de participantes inscritos.'))
       ->setRequired(FALSE)
       ->setDefaultValue(0)
       ->setDisplayOptions('form', [
@@ -249,8 +250,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- status ---
     $fields['status'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Estado actual del ciclo de vida del programa.'))
+      ->setLabel(new TranslatableMarkup('Estado'))
+      ->setDescription(new TranslatableMarkup('Estado actual del ciclo de vida del programa.'))
       ->setRequired(TRUE)
       ->setDefaultValue('draft')
       ->setSetting('allowed_values', [
@@ -269,8 +270,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- reporting_deadlines ---
     $fields['reporting_deadlines'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Plazos de justificacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Plazos de justificacion (JSON)'))
+      ->setLabel(new TranslatableMarkup('Plazos de justificacion'))
+      ->setDescription(new TranslatableMarkup('Plazos de justificacion (JSON)'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -281,8 +282,8 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- notes ---
     $fields['notes'] = BaseFieldDefinition::create('text_long')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Notas'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Notas internas sobre el programa.'))
+      ->setLabel(new TranslatableMarkup('Notas'))
+      ->setDescription(new TranslatableMarkup('Notas internas sobre el programa.'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
@@ -358,14 +359,14 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
 
     // --- created ---
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de creacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de creacion del registro.'))
+      ->setLabel(new TranslatableMarkup('Fecha de creacion'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora de creacion del registro.'))
       ->setDisplayConfigurable('view', TRUE);
 
     // --- changed ---
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de modificacion'))
-      ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
+      ->setLabel(new TranslatableMarkup('Fecha de modificacion'))
+      ->setDescription(new TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
       ->setDisplayConfigurable('view', TRUE);
 
     return $fields;

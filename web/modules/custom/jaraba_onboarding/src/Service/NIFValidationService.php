@@ -56,7 +56,7 @@ class NIFValidationService {
    * S = Organos de la Administracion del Estado
    * U = Uniones Temporales de Empresas
    * V = Otros tipos
-   * W = Establecimientos permanentes de entidades no residentes
+   * W = Establecimientos permanentes de entidades no residentes.
    */
   private const CIF_PREFIXES = 'ABCDEFGHJKLMNPQRSUVW';
 

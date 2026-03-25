@@ -64,101 +64,101 @@ class AsistenciaDetalladaEi extends ContentEntityBase implements EntityOwnerInte
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     $fields['participante_id'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Participante'))
-        ->setDescription(t('Participante del programa.'))
-        ->setSetting('target_type', 'programa_participante_ei')
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Participante'))
+      ->setDescription(t('Participante del programa.'))
+      ->setSetting('target_type', 'programa_participante_ei')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['sesion_id'] = BaseFieldDefinition::create('string')
-        ->setLabel(t('ID de Sesión'))
-        ->setDescription(t('Identificador de sesión del programa: OI-1.1, M0-1, M1-2, etc.'))
-        ->setSetting('max_length', 20)
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('ID de Sesión'))
+      ->setDescription(t('Identificador de sesión del programa: OI-1.1, M0-1, M1-2, etc.'))
+      ->setSetting('max_length', 20)
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['modulo'] = BaseFieldDefinition::create('list_string')
-        ->setLabel(t('Módulo'))
-        ->setDescription(t('Módulo del programa al que pertenece la sesión.'))
-        ->setSetting('allowed_values', [
-            'orientacion' => t('Orientación Inicial'),
-            'modulo_0' => t('Módulo 0 — Fundamentos IA'),
-            'modulo_1' => t('Módulo 1 — Propuesta de Valor'),
-            'modulo_2' => t('Módulo 2 — Finanzas'),
-            'modulo_3' => t('Módulo 3 — Trámites'),
-            'modulo_4' => t('Módulo 4 — Marketing Digital'),
-            'modulo_5' => t('Módulo 5 — Integración'),
-            'acompanamiento' => t('Acompañamiento Inserción'),
-        ])
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Módulo'))
+      ->setDescription(t('Módulo del programa al que pertenece la sesión.'))
+      ->setSetting('allowed_values', [
+        'orientacion' => t('Orientación Inicial'),
+        'modulo_0' => t('Módulo 0 — Fundamentos IA'),
+        'modulo_1' => t('Módulo 1 — Propuesta de Valor'),
+        'modulo_2' => t('Módulo 2 — Finanzas'),
+        'modulo_3' => t('Módulo 3 — Trámites'),
+        'modulo_4' => t('Módulo 4 — Marketing Digital'),
+        'modulo_5' => t('Módulo 5 — Integración'),
+        'acompanamiento' => t('Acompañamiento Inserción'),
+      ])
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['fecha'] = BaseFieldDefinition::create('datetime')
-        ->setLabel(t('Fecha y hora'))
-        ->setDescription(t('Fecha y hora de la sesión.'))
-        ->setSetting('datetime_type', 'datetime')
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Fecha y hora'))
+      ->setDescription(t('Fecha y hora de la sesión.'))
+      ->setSetting('datetime_type', 'datetime')
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['modalidad'] = BaseFieldDefinition::create('list_string')
-        ->setLabel(t('Modalidad'))
-        ->setDescription(t('Presencial (≥80% formación) u online sincrónica (≤20%). Normativa PIIL.'))
-        ->setSetting('allowed_values', [
-            'presencial' => t('Presencial'),
-            'online_sincronica' => t('Online sincrónica (videoconferencia)'),
-        ])
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Modalidad'))
+      ->setDescription(t('Presencial (≥80% formación) u online sincrónica (≤20%). Normativa PIIL.'))
+      ->setSetting('allowed_values', [
+        'presencial' => t('Presencial'),
+        'online_sincronica' => t('Online sincrónica (videoconferencia)'),
+      ])
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['horas'] = BaseFieldDefinition::create('decimal')
-        ->setLabel(t('Horas'))
-        ->setDescription(t('Duración de la sesión en horas.'))
-        ->setSetting('precision', 4)
-        ->setSetting('scale', 2)
-        ->setRequired(TRUE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Horas'))
+      ->setDescription(t('Duración de la sesión en horas.'))
+      ->setSetting('precision', 4)
+      ->setSetting('scale', 2)
+      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['asistio'] = BaseFieldDefinition::create('boolean')
-        ->setLabel(t('¿Asistió?'))
-        ->setDescription(t('Si el participante asistió a la sesión.'))
-        ->setDefaultValue(FALSE)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('¿Asistió?'))
+      ->setDescription(t('Si el participante asistió a la sesión.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['evidencia'] = BaseFieldDefinition::create('list_string')
-        ->setLabel(t('Tipo de evidencia'))
-        ->setDescription(t('Cómo se evidencia la asistencia.'))
-        ->setSetting('allowed_values', [
-            'firma_hoja' => t('Firma en hoja de servicio'),
-            'conexion_videoconferencia' => t('Log de conexión videoconferencia'),
-            'ambas' => t('Ambas'),
-        ])
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Tipo de evidencia'))
+      ->setDescription(t('Cómo se evidencia la asistencia.'))
+      ->setSetting('allowed_values', [
+        'firma_hoja' => t('Firma en hoja de servicio'),
+        'conexion_videoconferencia' => t('Log de conexión videoconferencia'),
+        'ambas' => t('Ambas'),
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['registrado_por'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Registrado por'))
-        ->setDescription(t('Formador o coordinador que registró la asistencia.'))
-        ->setSetting('target_type', 'user')
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setLabel(t('Registrado por'))
+      ->setDescription(t('Formador o coordinador que registró la asistencia.'))
+      ->setSetting('target_type', 'user')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Tenant'))
-        ->setSetting('target_type', 'group')
-        ->setDisplayConfigurable('form', TRUE);
+      ->setLabel(t('Tenant'))
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
-        ->setLabel(t('Creado'));
+      ->setLabel(t('Creado'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-        ->setLabel(t('Modificado'));
+      ->setLabel(t('Modificado'));
 
     return $fields;
   }

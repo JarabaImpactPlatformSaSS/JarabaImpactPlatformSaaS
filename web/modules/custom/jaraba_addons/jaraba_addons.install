@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update, and uninstall functions for jaraba_addons module.
  */
 
-declare(strict_types=1);
+use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
  * Add 'vertical' to addon_type allowed values and add vertical_ref field.
@@ -33,7 +35,7 @@ function jaraba_addons_update_10001(): string {
     // 2. Install vertical_ref field.
     $vertical_ref = $update_manager->getFieldStorageDefinition('vertical_ref', 'addon');
     if (!$vertical_ref) {
-      $field_definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      $field_definition = BaseFieldDefinition::create('string')
         ->setName('vertical_ref')
         ->setTargetEntityTypeId('addon')
         ->setLabel(t('Vertical (machine_name)'))
@@ -197,7 +199,7 @@ function jaraba_addons_update_10003(): string {
     $updateManager = \Drupal::entityDefinitionUpdateManager();
     $existing = $updateManager->getFieldStorageDefinition('stripe_subscription_item_id', 'addon_subscription');
     if (!$existing) {
-      $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      $field = BaseFieldDefinition::create('string')
         ->setName('stripe_subscription_item_id')
         ->setTargetEntityTypeId('addon_subscription')
         ->setLabel(t('Stripe Subscription Item ID'))
@@ -314,7 +316,7 @@ function jaraba_addons_update_10004(): string {
 
     // 2. Install compatible_verticals field.
     $new_fields = [
-      'compatible_verticals' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      'compatible_verticals' => BaseFieldDefinition::create('string_long')
         ->setName('compatible_verticals')
         ->setTargetEntityTypeId('addon')
         ->setLabel(t('Verticales Compatibles (JSON)'))
@@ -322,7 +324,7 @@ function jaraba_addons_update_10004(): string {
         ->setDisplayOptions('form', ['weight' => 22])
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
-      'recommendation_level' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      'recommendation_level' => BaseFieldDefinition::create('string')
         ->setName('recommendation_level')
         ->setTargetEntityTypeId('addon')
         ->setLabel(t('Nivel de Recomendación'))
@@ -332,7 +334,7 @@ function jaraba_addons_update_10004(): string {
         ->setDisplayOptions('form', ['weight' => 23])
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
-      'bundle_items' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      'bundle_items' => BaseFieldDefinition::create('string_long')
         ->setName('bundle_items')
         ->setTargetEntityTypeId('addon')
         ->setLabel(t('Items del Bundle (JSON)'))
@@ -340,7 +342,7 @@ function jaraba_addons_update_10004(): string {
         ->setDisplayOptions('form', ['weight' => 24])
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayConfigurable('view', TRUE),
-      'bundle_discount_pct' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      'bundle_discount_pct' => BaseFieldDefinition::create('integer')
         ->setName('bundle_discount_pct')
         ->setTargetEntityTypeId('addon')
         ->setLabel(t('Descuento del Bundle (%)'))
@@ -581,7 +583,7 @@ function jaraba_addons_update_10005(): string {
       continue;
     }
     try {
-      $definition = \Drupal\Core\Field\BaseFieldDefinition::create($config['type'])
+      $definition = BaseFieldDefinition::create($config['type'])
         ->setName($field_name)
         ->setTargetEntityTypeId($entity_type_id)
         ->setLabel(t($config['label']))

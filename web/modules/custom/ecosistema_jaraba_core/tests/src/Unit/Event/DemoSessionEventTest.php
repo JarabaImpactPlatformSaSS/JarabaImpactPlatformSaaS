@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Event;
 
+use Drupal\Component\EventDispatcher\Event;
 use Drupal\ecosistema_jaraba_core\Event\DemoSessionEvent;
 use PHPUnit\Framework\TestCase;
 
@@ -81,7 +82,7 @@ class DemoSessionEventTest extends TestCase {
   public function testExtendsSymfonyCompatibleEvent(): void {
     $event = new DemoSessionEvent('sess-003', 'teacher');
 
-    $this->assertInstanceOf(\Drupal\Component\EventDispatcher\Event::class, $event);
+    $this->assertInstanceOf(Event::class, $event);
   }
 
 }

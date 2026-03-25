@@ -43,7 +43,7 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/lexnet/notifications
+   * GET /api/v1/legal/lexnet/notifications.
    */
   public function listNotifications(Request $request): JsonResponse {
     $filters = [];
@@ -63,14 +63,14 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/lexnet/sync
+   * POST /api/v1/legal/lexnet/sync.
    */
   public function forceSync(): JsonResponse {
     $result = $this->syncService->fetchNotifications();
 
     if (isset($result['error'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 500);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 500);
     }
 
     return new JsonResponse(['success' => TRUE, 'data' => $result]);
@@ -120,7 +120,7 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/lexnet/notifications/{id}/acknowledge
+   * POST /api/v1/legal/lexnet/notifications/{id}/acknowledge.
    */
   public function acknowledge(int $id): JsonResponse {
     $result = $this->syncService->acknowledgeNotification($id);
@@ -133,7 +133,7 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/lexnet/submissions
+   * POST /api/v1/legal/lexnet/submissions.
    */
   public function storeSubmission(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
@@ -165,7 +165,7 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/lexnet/submissions
+   * GET /api/v1/legal/lexnet/submissions.
    */
   public function listSubmissions(Request $request): JsonResponse {
     $filters = [];
@@ -182,11 +182,13 @@ class LexnetApiController extends ControllerBase {
     $result = $this->submissionService->listSubmissions($filters, $limit, $offset);
 
     return new JsonResponse([
-      'data' => $result['items'], 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
+      'data' => $result['items'],
+      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
+    ]);
   }
 
   /**
-   * POST /api/v1/legal/lexnet/submissions/{id}/submit
+   * POST /api/v1/legal/lexnet/submissions/{id}/submit.
    */
   public function submitToLexnet(int $id): JsonResponse {
     $result = $this->submissionService->submit($id);
@@ -199,7 +201,7 @@ class LexnetApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/lexnet/submissions/{id}/status
+   * GET /api/v1/legal/lexnet/submissions/{id}/status.
    */
   public function checkStatus(int $id): JsonResponse {
     $result = $this->submissionService->checkStatus($id);

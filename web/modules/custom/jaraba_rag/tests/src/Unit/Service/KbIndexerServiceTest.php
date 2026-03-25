@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_rag\Unit\Service;
 
-use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\ContentEntityInterface;

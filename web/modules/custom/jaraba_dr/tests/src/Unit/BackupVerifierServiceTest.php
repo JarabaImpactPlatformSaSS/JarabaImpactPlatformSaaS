@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_dr\Unit;
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -57,7 +59,7 @@ class BackupVerifierServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -107,7 +109,7 @@ class BackupVerifierServiceTest extends UnitTestCase {
       ->willReturn($storage);
 
     // La entidad mock devuelve un ID.
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(EntityInterface::class);
     $entity->method('id')->willReturn('1');
     $storage->method('create')->willReturn($entity);
     $entity->method('save')->willReturn(1);
@@ -136,7 +138,7 @@ class BackupVerifierServiceTest extends UnitTestCase {
       ->with('backup_verification')
       ->willReturn($storage);
 
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(EntityInterface::class);
     $entity->method('id')->willReturn('2');
     $storage->method('create')->willReturn($entity);
     $entity->method('save')->willReturn(1);
@@ -231,7 +233,7 @@ class BackupVerifierServiceTest extends UnitTestCase {
       ->with('backup_verification')
       ->willReturn($storage);
 
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(EntityInterface::class);
     $entity->method('id')->willReturn('3');
     $storage->method('create')->willReturn($entity);
     $entity->method('save')->willReturn(1);

@@ -10,8 +10,14 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class FlashOfferClaimAccessControlHandler extends EntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('manage comercio flash offers')) {
       return AccessResult::allowed()->cachePerPermissions();
@@ -33,6 +39,9 @@ class FlashOfferClaimAccessControlHandler extends EntityAccessControlHandler {
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermission($account, 'claim comercio flash offers');
   }

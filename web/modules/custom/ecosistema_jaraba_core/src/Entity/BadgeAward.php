@@ -43,112 +43,105 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.badge_award.settings",
  * )
  */
-class BadgeAward extends ContentEntityBase
-{
+class BadgeAward extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Referencia a la insignia otorgada.
-        $fields['badge_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Insignia'))
-            ->setDescription(t('La insignia que fue otorgada.'))
-            ->setSetting('target_type', 'badge')
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-                'weight' => 0,
-            ]);
+    // Referencia a la insignia otorgada.
+    $fields['badge_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Insignia'))
+      ->setDescription(t('La insignia que fue otorgada.'))
+      ->setSetting('target_type', 'badge')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 0,
+      ]);
 
-        // Referencia al usuario que recibió la insignia.
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Usuario'))
-            ->setDescription(t('El usuario al que se le otorgó la insignia.'))
-            ->setSetting('target_type', 'user')
-            ->setRequired(TRUE)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-                'weight' => 1,
-            ]);
+    // Referencia al usuario que recibió la insignia.
+    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Usuario'))
+      ->setDescription(t('El usuario al que se le otorgó la insignia.'))
+      ->setSetting('target_type', 'user')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 1,
+      ]);
 
-        // Referencia al tenant (grupo).
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('Tenant en el contexto del cual se otorgó la insignia.'))
-            ->setSetting('target_type', 'group')
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-                'weight' => 2,
-            ]);
+    // Referencia al tenant (grupo).
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant en el contexto del cual se otorgó la insignia.'))
+      ->setSetting('target_type', 'group')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 2,
+      ]);
 
-        // Motivo del otorgamiento.
-        $fields['awarded_reason'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Motivo'))
-            ->setDescription(t('Razón por la que se otorgó la insignia.'))
-            ->setSettings([
-                'max_length' => 255,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => 3,
-            ]);
+    // Motivo del otorgamiento.
+    $fields['awarded_reason'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Motivo'))
+      ->setDescription(t('Razón por la que se otorgó la insignia.'))
+      ->setSettings([
+        'max_length' => 255,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 3,
+      ]);
 
-        // Fecha de otorgamiento.
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Otorgada'))
-            ->setDescription(t('Fecha en que se otorgó la insignia.'));
+    // Fecha de otorgamiento.
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Otorgada'))
+      ->setDescription(t('Fecha en que se otorgó la insignia.'));
 
-        return $fields;
-    }
+    return $fields;
+  }
 
-    /**
-     * Obtiene la entidad Badge asociada.
-     */
-    public function getBadge(): ?Badge
-    {
-        $entity = $this->get('badge_id')->entity;
-        return $entity instanceof Badge ? $entity : NULL;
-    }
+  /**
+   * Obtiene la entidad Badge asociada.
+   */
+  public function getBadge(): ?Badge {
+    $entity = $this->get('badge_id')->entity;
+    return $entity instanceof Badge ? $entity : NULL;
+  }
 
-    /**
-     * Obtiene el ID de la insignia.
-     */
-    public function getBadgeId(): int
-    {
-        return (int) ($this->get('badge_id')->target_id ?? 0);
-    }
+  /**
+   * Obtiene el ID de la insignia.
+   */
+  public function getBadgeId(): int {
+    return (int) ($this->get('badge_id')->target_id ?? 0);
+  }
 
-    /**
-     * Obtiene el ID del usuario.
-     */
-    public function getUserId(): int
-    {
-        return (int) ($this->get('user_id')->target_id ?? 0);
-    }
+  /**
+   * Obtiene el ID del usuario.
+   */
+  public function getUserId(): int {
+    return (int) ($this->get('user_id')->target_id ?? 0);
+  }
 
-    /**
-     * Obtiene el ID del tenant.
-     */
-    public function getTenantId(): ?int
-    {
-        $value = $this->get('tenant_id')->target_id;
-        return $value !== NULL ? (int) $value : NULL;
-    }
+  /**
+   * Obtiene el ID del tenant.
+   */
+  public function getTenantId(): ?int {
+    $value = $this->get('tenant_id')->target_id;
+    return $value !== NULL ? (int) $value : NULL;
+  }
 
-    /**
-     * Obtiene el motivo del otorgamiento.
-     */
-    public function getAwardedReason(): string
-    {
-        return $this->get('awarded_reason')->value ?? '';
-    }
+  /**
+   * Obtiene el motivo del otorgamiento.
+   */
+  public function getAwardedReason(): string {
+    return $this->get('awarded_reason')->value ?? '';
+  }
 
 }

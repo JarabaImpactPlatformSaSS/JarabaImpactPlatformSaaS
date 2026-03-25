@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * - SEQ_SVC_003: Re-engagement Inactivos
  * - SEQ_SVC_004: Upsell Free a Starter
  * - SEQ_SVC_005: Upsell Starter a Profesional
- * - SEQ_SVC_006: Resumen Mensual + Cross-sell
+ * - SEQ_SVC_006: Resumen Mensual + Cross-sell.
  *
  * Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 7
  *

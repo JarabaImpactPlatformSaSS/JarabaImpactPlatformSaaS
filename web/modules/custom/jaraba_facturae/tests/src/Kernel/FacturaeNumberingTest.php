@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Service\FacturaeNumberingService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +25,7 @@ class FacturaeNumberingTest extends KernelTestBase {
    */
   public function testNumberingServiceClassExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FacturaeNumberingService::class),
+      class_exists(FacturaeNumberingService::class),
       'FacturaeNumberingService class should exist.'
     );
   }
@@ -34,7 +35,7 @@ class FacturaeNumberingTest extends KernelTestBase {
    */
   public function testFormatNumberMethodExists(): void {
     $this->assertTrue(
-      method_exists(\Drupal\jaraba_facturae\Service\FacturaeNumberingService::class, 'formatNumber'),
+      method_exists(FacturaeNumberingService::class, 'formatNumber'),
       'FacturaeNumberingService should have formatNumber method.'
     );
   }

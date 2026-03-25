@@ -10,8 +10,9 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Formulario de configuración del módulo Jaraba Secure Messaging.
  *
- * Ruta: /admin/config/jaraba/messaging
- * Todos los parámetros son configurables desde la UI sin tocar código.
+ * Ruta: /admin/config/jaraba/messaging.
+ *
+ * @todo s los parámetros son configurables desde la UI sin tocar código.
  */
 class MessagingSettingsForm extends ConfigFormBase {
 

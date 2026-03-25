@@ -7,7 +7,6 @@ namespace Drupal\jaraba_copilot_v2\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\jaraba_copilot_v2\Entity\EntrepreneurProfileInterface;
 
 /**
  * Servicio de contexto enriquecido para emprendedores.
@@ -67,7 +66,7 @@ class EntrepreneurContextService {
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
-    LoggerChannelInterface $logger
+    LoggerChannelInterface $logger,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
@@ -300,7 +299,7 @@ class EntrepreneurContextService {
         }
       }
 
-      // Calcular porcentaje global de validación
+      // Calcular porcentaje global de validación.
       $totalValidated = 0;
       $totalHypotheses = 0;
 
@@ -376,7 +375,7 @@ class EntrepreneurContextService {
    */
   protected function getFieldExitsCount(int $userId): int {
     try {
-      // Intentar desde field_exit entity si existe
+      // Intentar desde field_exit entity si existe.
       $storage = $this->entityTypeManager->getStorage('field_exit');
       $count = $storage->getQuery()
         ->accessCheck(FALSE)
@@ -387,7 +386,7 @@ class EntrepreneurContextService {
       return (int) $count;
     }
     catch (\Exception $e) {
-      // Si la entidad no existe, usar datos del perfil
+      // Si la entidad no existe, usar datos del perfil.
       try {
         $storage = $this->entityTypeManager->getStorage('entrepreneur_profile');
         $profiles = $storage->loadByProperties(['user_id' => $userId]);
@@ -398,7 +397,7 @@ class EntrepreneurContextService {
         }
       }
       catch (\Exception $e2) {
-        // Ignore
+        // Ignore.
       }
 
       return 0;
@@ -458,7 +457,7 @@ class EntrepreneurContextService {
    * 1. Customer Discovery - Validando problema
    * 2. Customer Validation - Validando solución
    * 3. Customer Creation - Escalando demanda
-   * 4. Company Building - Construyendo empresa
+   * 4. Company Building - Construyendo empresa.
    *
    * @param int $userId
    *   ID del usuario.
@@ -471,10 +470,11 @@ class EntrepreneurContextService {
     $hypStats = $this->getHypothesisStats($userId);
     $exits = $this->getFieldExitsCount($userId);
 
-    // Lógica de determinación de fase
+    // Lógica de determinación de fase.
     if (!($profile['has_validated_problem'] ?? FALSE)) {
       $phase = 'customer_discovery';
-      $progress = min(100, $exits * 5); // 5% por cada salida, max 100
+      // 5% por cada salida, max 100
+      $progress = min(100, $exits * 5);
     }
     elseif (!($profile['has_validated_solution'] ?? FALSE)) {
       $phase = 'customer_validation';

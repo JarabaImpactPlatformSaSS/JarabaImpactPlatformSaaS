@@ -476,7 +476,8 @@ class PlatformPushService {
     // Construir JWT payload con claims VAPID.
     $jwtPayload = $this->base64UrlEncode(json_encode([
       'aud' => $audience,
-      'exp' => time() + 43200, // 12 horas.
+    // 12 horas.
+      'exp' => time() + 43200,
       'sub' => $vapidKeys['subject'],
     ]));
 
@@ -508,10 +509,12 @@ class PlatformPushService {
     // Construir la clave PEM desde los bytes crudos de la clave privada.
     // La clave VAPID es un escalar EC de 32 bytes para la curva P-256.
     $derPrefix = hex2bin(
-      '30770201010420' // SEQUENCE, INTEGER version=1, OCTET STRING 32 bytes
+    // SEQUENCE, INTEGER version=1, OCTET STRING 32 bytes.
+      '30770201010420'
     );
     $derSuffix = hex2bin(
-      'a00a06082a8648ce3d030107' // [0] OID prime256v1
+    // [0] OID prime256v1
+      'a00a06082a8648ce3d030107'
     );
     $der = $derPrefix . $privateKeyRaw . $derSuffix;
     $pem = "-----BEGIN EC PRIVATE KEY-----\n"

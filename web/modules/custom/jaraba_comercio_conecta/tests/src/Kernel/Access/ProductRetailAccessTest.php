@@ -14,7 +14,7 @@ use Drupal\user\Entity\User;
  * Verifies:
  * - Admin bypass via manage comercio products
  * - Active products are publicly viewable
- * - Merchant ownership check for updates
+ * - Merchant ownership check for updates.
  *
  * @group jaraba_comercio_conecta
  * @group access_control

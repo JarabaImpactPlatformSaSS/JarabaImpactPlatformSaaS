@@ -17,58 +17,100 @@ class RegistrarLoteAction implements DailyActionInterface {
 
   use StringTranslationTrait;
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'producer_agro.lote';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'producer_agro';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Registrar lote');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Crear nuevo lote de trazabilidad');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'compliance', 'name' => 'link', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'verde-innovacion';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'entity.agro_batch.add_form';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'large';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 30;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     return [
       'badge' => NULL,

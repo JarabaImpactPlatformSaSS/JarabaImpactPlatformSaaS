@@ -46,6 +46,9 @@ class InstructorDashboardController extends ControllerBase {
     $this->database = $database;
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),

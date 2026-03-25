@@ -20,49 +20,46 @@ use Drupal\Core\Access\AccessResultInterface;
  *
  * @package Drupal\jaraba_page_builder
  */
-class ExperimentVariantAccessControlHandler extends EntityAccessControlHandler
-{
+class ExperimentVariantAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     *
-     * Verifica acceso a variantes existentes.
-     * Las variantes se gestionan dentro del contexto del experimento padre.
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        // Administradores tienen acceso total.
-        if ($account->hasPermission('administer page builder')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // Verificar permisos del experimento padre para la operación.
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'view page experiment');
-
-            case 'update':
-                return AccessResult::allowedIfHasPermission($account, 'edit page experiment');
-
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'delete page experiment');
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   *
+   * Verifica acceso a variantes existentes.
+   * Las variantes se gestionan dentro del contexto del experimento padre.
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // Administradores tienen acceso total.
+    if ($account->hasPermission('administer page builder')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Verifica acceso para crear nuevas variantes.
-     * Se requiere permiso de edición de experimentos.
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermissions($account, [
-            'administer page builder',
-            'edit page experiment',
-        ], 'OR');
+    // Verificar permisos del experimento padre para la operación.
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'view page experiment');
+
+      case 'update':
+        return AccessResult::allowedIfHasPermission($account, 'edit page experiment');
+
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'delete page experiment');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Verifica acceso para crear nuevas variantes.
+   * Se requiere permiso de edición de experimentos.
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermissions($account, [
+      'administer page builder',
+      'edit page experiment',
+    ], 'OR');
+  }
 
 }

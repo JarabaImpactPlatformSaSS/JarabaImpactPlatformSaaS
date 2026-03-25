@@ -12,34 +12,31 @@ use Drupal\Core\Entity\EntityListBuilder;
  *
  * Muestra: nombre, tipo, canal, idioma, activa, fecha modificación.
  */
-class NotificationTemplateAgroListBuilder extends EntityListBuilder
-{
+class NotificationTemplateAgroListBuilder extends EntityListBuilder {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildHeader(): array
-    {
-        $header['name'] = $this->t('Nombre');
-        $header['type'] = $this->t('Tipo');
-        $header['channel'] = $this->t('Canal');
-        $header['language'] = $this->t('Idioma');
-        $header['is_active'] = $this->t('Activa');
-        return $header + parent::buildHeader();
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildHeader(): array {
+    $header['name'] = $this->t('Nombre');
+    $header['type'] = $this->t('Tipo');
+    $header['channel'] = $this->t('Canal');
+    $header['language'] = $this->t('Idioma');
+    $header['is_active'] = $this->t('Activa');
+    return $header + parent::buildHeader();
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildRow(EntityInterface $entity): array
-    {
-        /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationTemplateAgro $entity */
-        $row['name'] = $entity->get('name')->value;
-        $row['type'] = $entity->get('type')->value;
-        $row['channel'] = $entity->getChannelLabel();
-        $row['language'] = $entity->get('language')->value;
-        $row['is_active'] = $entity->isActive() ? $this->t('Sí') : $this->t('No');
-        return $row + parent::buildRow($entity);
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildRow(EntityInterface $entity): array {
+    /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationTemplateAgro $entity */
+    $row['name'] = $entity->get('name')->value;
+    $row['type'] = $entity->get('type')->value;
+    $row['channel'] = $entity->getChannelLabel();
+    $row['language'] = $entity->get('language')->value;
+    $row['is_active'] = $entity->isActive() ? $this->t('Sí') : $this->t('No');
+    return $row + parent::buildRow($entity);
+  }
 
 }

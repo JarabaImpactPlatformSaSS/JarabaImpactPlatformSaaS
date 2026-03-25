@@ -6,7 +6,6 @@ namespace Drupal\jaraba_andalucia_ei\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_andalucia_ei\Entity\InscripcionSesionEiInterface;
-use Drupal\jaraba_andalucia_ei\Entity\SesionProgramadaEiInterface;
 use Psr\Log\LoggerInterface;
 
 /**

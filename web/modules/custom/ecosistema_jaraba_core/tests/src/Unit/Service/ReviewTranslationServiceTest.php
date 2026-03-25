@@ -6,7 +6,6 @@ namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\ReviewTranslationService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -121,9 +120,13 @@ class ReviewTranslationServiceTest extends UnitTestCase {
         $this->empty = ($v === '');
       }
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return $this->empty;
       }
+
     };
 
     $entity->method('get')->willReturn($bodyField);

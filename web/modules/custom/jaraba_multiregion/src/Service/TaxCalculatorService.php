@@ -375,7 +375,7 @@ class TaxCalculatorService {
           ? new TranslatableMarkup(
               'Regimen OSS: umbral de @threshold EUR anuales para ventas B2C intracomunitarias. Si se supera, se debe declarar IVA del pais destino.',
               ['@threshold' => number_format(self::OSS_THRESHOLD_EUR, 0, ',', '.')]
-            )
+        )
           : new TranslatableMarkup('El regimen OSS solo aplica a vendedores establecidos en la UE.'),
       ];
 

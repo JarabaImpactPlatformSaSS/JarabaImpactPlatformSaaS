@@ -18,8 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
  * IMPORTANTE: Este controlador reemplaza el listado de admin para que
  * los tenants no usen el tema de administración de Drupal.
  */
-class CategoriesListController extends ControllerBase
-{
+class CategoriesListController extends ControllerBase {
 
   use PremiumFormAjaxTrait;
 
@@ -31,8 +30,7 @@ class CategoriesListController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
     $instance->renderer = $container->get('renderer');
     return $instance;
@@ -44,8 +42,7 @@ class CategoriesListController extends ControllerBase
    * @return array
    *   Render array for the categories list.
    */
-  public function list(): array
-  {
+  public function list(): array {
     $storage = $this->entityTypeManager()->getStorage('content_category');
     $ids = $storage->getQuery()
       ->accessCheck(TRUE)
@@ -103,8 +100,7 @@ class CategoriesListController extends ControllerBase
    * @return array|\Symfony\Component\HttpFoundation\Response
    *   Render array or Response for AJAX requests.
    */
-  public function add(Request $request): array|Response
-  {
+  public function add(Request $request): array|Response {
     $category = $this->entityTypeManager()
       ->getStorage('content_category')
       ->create();

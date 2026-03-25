@@ -6,7 +6,6 @@ namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\jaraba_andalucia_ei\Service\CoordinadorHubService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -166,6 +165,10 @@ class CoordinadorHubServiceTest extends UnitTestCase {
    */
   public function testRescheduleSessionRejectsCompletedSessions(): void {
     $sesion = new class () {
+
+      /**
+       *
+       */
       public function get(string $field): object {
         return match ($field) {
           'estado' => (object) ['value' => 'completada'],
@@ -173,6 +176,7 @@ class CoordinadorHubServiceTest extends UnitTestCase {
           default => (object) ['value' => NULL],
         };
       }
+
     };
 
     $storage = $this->createMock(EntityStorageInterface::class);
@@ -191,6 +195,10 @@ class CoordinadorHubServiceTest extends UnitTestCase {
    */
   public function testRescheduleSessionRejectsTenantMismatch(): void {
     $sesion = new class () {
+
+      /**
+       *
+       */
       public function get(string $field): object {
         return match ($field) {
           'estado' => (object) ['value' => 'programada'],
@@ -198,6 +206,7 @@ class CoordinadorHubServiceTest extends UnitTestCase {
           default => (object) ['value' => NULL],
         };
       }
+
     };
 
     $storage = $this->createMock(EntityStorageInterface::class);

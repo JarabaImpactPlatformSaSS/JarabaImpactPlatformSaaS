@@ -301,7 +301,7 @@ class AdCampaign extends ContentEntityBase implements EntityChangedInterface, En
     $clicks = (int) $this->get('clicks')->value;
     $spend = (float) $this->get('spend_to_date')->value;
 
-    // CTR = (clicks / impressions) * 100
+    // CTR = (clicks / impressions) * 100.
     if ($impressions > 0) {
       $this->set('ctr', round(($clicks / $impressions) * 100, 4));
     }
@@ -309,7 +309,7 @@ class AdCampaign extends ContentEntityBase implements EntityChangedInterface, En
       $this->set('ctr', 0);
     }
 
-    // CPC = spend / clicks
+    // CPC = spend / clicks.
     if ($clicks > 0) {
       $this->set('cpc', round($spend / $clicks, 4));
     }

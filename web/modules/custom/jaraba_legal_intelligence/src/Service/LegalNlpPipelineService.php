@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_intelligence\Service;
 
-use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Component\Uuid\Php as UuidGenerator;

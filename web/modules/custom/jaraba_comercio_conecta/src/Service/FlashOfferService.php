@@ -7,6 +7,9 @@ namespace Drupal\jaraba_comercio_conecta\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class FlashOfferService {
 
   public function __construct(

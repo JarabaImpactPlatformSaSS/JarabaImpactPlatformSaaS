@@ -72,7 +72,6 @@ class PrivacyPolicy extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece esta política.'))
@@ -83,7 +82,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERTICAL ---
-
     $fields['vertical'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Vertical'))
       ->setDescription(new TranslatableMarkup('Vertical del ecosistema para la que aplica esta política.'))
@@ -101,7 +99,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERSIONADO ---
-
     $fields['version'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Versión'))
       ->setDescription(new TranslatableMarkup('Versión de la política (ej: 1.0, 2.0).'))
@@ -112,7 +109,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CONTENIDO ---
-
     $fields['content_html'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Contenido HTML'))
       ->setDescription(new TranslatableMarkup('Contenido completo de la política de privacidad en HTML.'))
@@ -128,7 +124,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PUBLICACIÓN ---
-
     $fields['published_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de publicación'))
       ->setDescription(new TranslatableMarkup('Timestamp de cuándo se publicó esta versión.'))
@@ -143,7 +138,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PERSONALIZACIÓN ---
-
     $fields['custom_sections'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Secciones personalizadas'))
       ->setDescription(new TranslatableMarkup('JSON con secciones adicionales personalizadas por el tenant.'))
@@ -158,7 +152,6 @@ class PrivacyPolicy extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

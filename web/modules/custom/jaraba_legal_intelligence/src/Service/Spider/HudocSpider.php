@@ -168,7 +168,7 @@ class HudocSpider implements SpiderInterface {
       ]);
 
       // La API HUDOC devuelve JSON con estructura:
-      // { "resultcount": N, "results": [ { "columns": { ... } }, ... ] }
+      // { "resultcount": N, "results": [ { "columns": { ... } }, ... ] }.
       $json = (string) $response->getBody();
       $resolutions = $this->parseResponse($json);
 

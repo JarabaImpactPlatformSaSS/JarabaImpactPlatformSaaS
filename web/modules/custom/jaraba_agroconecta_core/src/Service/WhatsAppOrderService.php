@@ -143,7 +143,7 @@ class WhatsAppOrderService {
 
       if ($products === []) {
         // Sin productos encontrados — responder con catálogo general.
-        if ($this->whatsAppApi !== null) {
+        if ($this->whatsAppApi !== NULL) {
           $this->whatsAppApi->sendTextMessage(
             $senderPhone,
             "¡Hola! No encontré productos específicos para tu consulta. " .
@@ -157,12 +157,12 @@ class WhatsAppOrderService {
 
       // Crear pedido con los productos encontrados.
       $order = $this->createOrderFromProducts($products, $senderPhone, $tenantId);
-      if ($order !== null) {
+      if ($order !== NULL) {
         $result['order_id'] = (int) $order->id();
 
         // Generar payment link y enviar por WhatsApp.
         $paymentUrl = $this->generatePaymentLink($order);
-        if ($this->whatsAppApi !== null && $paymentUrl !== '') {
+        if ($this->whatsAppApi !== NULL && $paymentUrl !== '') {
           $total = number_format((float) ($order->get('total')->value ?? 0), 2, ',', '.');
           $this->whatsAppApi->sendTextMessage(
             $senderPhone,

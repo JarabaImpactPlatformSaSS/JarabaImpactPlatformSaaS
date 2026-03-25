@@ -33,7 +33,6 @@ function jaraba_mobile_preprocess_html(array &$variables): void {
   }
 }
 
-
 /**
  * Prepares variables for mobile_device templates.
  *

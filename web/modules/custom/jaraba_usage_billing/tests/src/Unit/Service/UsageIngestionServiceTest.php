@@ -137,8 +137,17 @@ class UsageIngestionServiceTest extends UnitTestCase {
     // Use an anonymous class to avoid Transaction's readonly property
     // issue when __destruct runs on mock objects.
     $transaction = new class () {
+
+      /**
+       *
+       */
       public function commitOrRelease(): void {}
+
+      /**
+       *
+       */
       public function rollBack(): void {}
+
     };
     $this->database->method('startTransaction')
       ->willReturn($transaction);

@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * los umbrales criticos que justificarian parar el producto:
  * - Activation <15%
  * - Retention D30 <10%
- * - NPS <0 durante 2 meses consecutivos
+ * - NPS <0 durante 2 meses consecutivos.
  */
 class KillCriteriaAlertService {
 

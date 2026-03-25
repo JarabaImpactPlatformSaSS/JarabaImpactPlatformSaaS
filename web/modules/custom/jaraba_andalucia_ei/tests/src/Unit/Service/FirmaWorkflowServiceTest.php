@@ -109,16 +109,22 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
             $this->target_id = $t;
           }
 
+          /**
+           *
+           */
           public function isEmpty(): bool {
             return $this->target_id === NULL;
           }
+
         };
       }
 
       // Scalar fields need ->value.
       $val = $fieldValues[$fieldName] ?? NULL;
       return new class($val) {
+
         public function __construct(public readonly mixed $value) {}
+
       };
     });
 
@@ -129,8 +135,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     return $doc;
   }
 
-  // === TESTS ===
-
+  /**
+ * === TESTS ===
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaConDocumentoInexistenteDevuelveError(): void {
     $this->docStorage->method('load')->with(999)->willReturn(NULL);
@@ -142,6 +149,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('no encontrado', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaDesdeEstadoBorradorTransicionaCorrectamente(): void {
     $doc = $this->createDocMock(1, [
@@ -157,6 +167,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('pendiente_firma', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaDesdeEstadoFirmadoEsTransicionInvalida(): void {
     $doc = $this->createDocMock(2, [
@@ -172,6 +185,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('inválida', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaDualIniciaEnPendienteFirmaTecnico(): void {
     $doc = $this->createDocMock(3, [
@@ -187,6 +203,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('pendiente_firma_tecnico', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaTactilConFirmaInvalidaDevuelveError(): void {
     $doc = $this->createDocMock(4, [
@@ -204,6 +223,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('no es válida', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaTactilValidaTransicionaAFirmado(): void {
     $doc = $this->createDocMock(5, [
@@ -223,6 +245,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('firmado', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaTactilDualTransicionaAFirmadoParcial(): void {
     $doc = $this->createDocMock(6, [
@@ -242,6 +267,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('firmado_parcial', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function rechazarFirmaDesdeEstadoPendienteEsValido(): void {
     $doc = $this->createDocMock(7, [
@@ -257,6 +285,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('rechazado', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function rechazarFirmaDesdeBorradorEsInvalido(): void {
     $doc = $this->createDocMock(8, [
@@ -272,6 +303,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('No se puede rechazar', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function getEstadoFirmaConDocumentoInexistenteDevuelveVacio(): void {
     $this->docStorage->method('load')->with(999)->willReturn(NULL);
@@ -284,6 +318,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame([], $result['firmantes']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function verificarDocumentoConHashInvalidoDevuelveInvalido(): void {
     $service = $this->createService();
@@ -294,6 +331,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertNull($result['documento']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaSelloSinServicioDevuelveError(): void {
     $doc = $this->createDocMock(9, [
@@ -309,6 +349,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('no disponible', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaAutofirmaConPdfInvalidoDevuelveError(): void {
     $doc = $this->createDocMock(11, [
@@ -329,6 +372,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('no es válido', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaAutofirmaConCertIncompletoDevuelveError(): void {
     $doc = $this->createDocMock(12, [
@@ -348,6 +394,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertStringContainsString('incompleta', $result['message']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function procesarFirmaAutofirmaValidaTransicionaAFirmado(): void {
     $doc = $this->createDocMock(13, [
@@ -367,6 +416,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('firmado', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constantesDeEstadoSonConsistentes(): void {
     $this->assertSame('borrador', FirmaWorkflowService::ESTADO_BORRADOR);
@@ -377,6 +429,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('firmado_parcial', FirmaWorkflowService::ESTADO_FIRMADO_PARCIAL);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function constantesDeMetodoSonCorrectas(): void {
     $this->assertSame('tactil', FirmaWorkflowService::METODO_TACTIL);
@@ -384,6 +439,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('sello_empresa', FirmaWorkflowService::METODO_SELLO_EMPRESA);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaDesdeRechazadoPermiteResolicitud(): void {
     $doc = $this->createDocMock(14, [
@@ -399,6 +457,9 @@ class FirmaWorkflowServiceTest extends UnitTestCase {
     $this->assertSame('pendiente_firma', $result['estado']);
   }
 
+  /**
+ *
+ */
   #[\PHPUnit\Framework\Attributes\Test]
   public function solicitarFirmaDesdeCaducadoPermiteResolicitud(): void {
     $doc = $this->createDocMock(15, [

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * jaraba_legal_billing.module — Facturacion Legal JarabaLex.
+ * Jaraba_legal_billing.module — Facturacion Legal JarabaLex.
  *
  * Estructura: Hooks de modulo para facturacion, time tracking y presupuestos.
  * Logica: hook_theme, hook_preprocess_html, hook_preprocess_page,

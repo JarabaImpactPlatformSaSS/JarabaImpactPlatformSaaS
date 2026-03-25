@@ -10,7 +10,7 @@
  * - Entidades financieras inmutables (libro mayor digital)
  * - Integración Stripe Connect con Destination Charges
  * - Métricas SaaS 2.0 (MRR, ARR, LTV, CAC, Churn)
- * - Sistema de alertas prescriptivas via ECA
+ * - Sistema de alertas prescriptivas via ECA.
  *
  * MODELO ECONÓMICO:
  * - Motor Institucional (30%): Subvenciones, PERTE, Kit Digital
@@ -91,25 +91,26 @@ function jaraba_foc_theme(): array {
  * Se recomienda configurar cron para ejecutarse cada 15-60 minutos.
  */
 function jaraba_foc_cron(): void {
-  // Verificar si ha pasado suficiente tiempo desde la última evaluación
+  // Verificar si ha pasado suficiente tiempo desde la última evaluación.
   $lastRun = \Drupal::state()->get('jaraba_foc.last_alert_evaluation', 0);
-  $interval = 3600; // Evaluar cada hora como máximo
-  
+  // Evaluar cada hora como máximo.
+  $interval = 3600;
+
   if ((\Drupal::time()->getRequestTime() - $lastRun) < $interval) {
     return;
   }
-  
+
   try {
     /** @var \Drupal\jaraba_foc\Service\AlertService $alertService */
     $alertService = \Drupal::service('jaraba_foc.alerts');
     $newAlerts = $alertService->evaluateAllAlerts();
-    
+
     if (!empty($newAlerts)) {
       \Drupal::logger('jaraba_foc')->info('Cron FOC: @count nuevas alertas generadas.', [
         '@count' => count($newAlerts),
       ]);
     }
-    
+
     \Drupal::state()->set('jaraba_foc.last_alert_evaluation', \Drupal::time()->getRequestTime());
   }
   catch (\Exception $e) {
@@ -128,7 +129,6 @@ function jaraba_foc_entity_type_build(array &$entity_types): void {
   // Las entidades se definen via anotaciones en las clases Entity,
   // este hook está disponible para ajustes dinámicos si es necesario.
 }
-
 
 /**
  * Prepares variables for cost_allocation templates.

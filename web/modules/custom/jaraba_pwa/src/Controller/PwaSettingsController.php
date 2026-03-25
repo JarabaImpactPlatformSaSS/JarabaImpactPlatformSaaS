@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - VAPID key status
  * - Push subscription statistics
  * - Cache strategy summary
- * - Pending sync action count
+ * - Pending sync action count.
  */
 class PwaSettingsController extends ControllerBase {
 

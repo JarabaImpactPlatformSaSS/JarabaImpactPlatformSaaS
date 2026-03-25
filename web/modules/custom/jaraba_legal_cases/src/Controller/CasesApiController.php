@@ -66,11 +66,15 @@ class CasesApiController extends ControllerBase {
       $data[] = $this->serializeCase($case);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -79,8 +83,8 @@ class CasesApiController extends ControllerBase {
   public function store(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['title']) || empty($content['client_name'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y client_name son obligatorios.']], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y client_name son obligatorios.']], 400);
     }
 
     try {
@@ -242,11 +246,13 @@ class CasesApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data, 'meta' => [
+      'data' => $data,
+      'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**

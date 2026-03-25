@@ -74,11 +74,15 @@ class HealthScoresApiController extends ControllerBase {
       $data[] = $this->serializeHealthScore($entity);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => $data,
+      'meta' => [
         'total' => count($data),
         'limit' => $limit,
         'offset' => $offset,
-      ]]);
+      ],
+    ]);
   }
 
   /**
@@ -88,8 +92,8 @@ class HealthScoresApiController extends ControllerBase {
     $history = $this->healthCalculator->getHistory($tenant_id, 1);
 
     if (empty($history)) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No health score found for tenant.']], 404);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No health score found for tenant.']], 404);
     }
 
     $entity = reset($history);

@@ -57,8 +57,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.lms_course.settings",
  * )
  */
-class Course extends ContentEntityBase implements CourseInterface, EntityOwnerInterface, EntityChangedInterface
-{
+class Course extends ContentEntityBase implements CourseInterface, EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;
@@ -66,16 +65,14 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function getTitle(): string
-  {
+  public function getTitle(): string {
     return $this->get('title')->value ?? '';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setTitle(string $title): CourseInterface
-  {
+  public function setTitle(string $title): CourseInterface {
     $this->set('title', $title);
     return $this;
   }
@@ -83,56 +80,49 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function getMachineName(): string
-  {
+  public function getMachineName(): string {
     return $this->get('machine_name')->value ?? '';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescription(): ?string
-  {
+  public function getDescription(): ?string {
     return $this->get('description')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSummary(): string
-  {
+  public function getSummary(): string {
     return $this->get('summary')->value ?? '';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDurationMinutes(): int
-  {
+  public function getDurationMinutes(): int {
     return (int) ($this->get('duration_minutes')->value ?? 0);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDifficultyLevel(): string
-  {
+  public function getDifficultyLevel(): string {
     return $this->get('difficulty_level')->value ?? 'beginner';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isPublished(): bool
-  {
+  public function isPublished(): bool {
     return (bool) $this->get('is_published')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setPublished(bool $published): CourseInterface
-  {
+  public function setPublished(bool $published): CourseInterface {
     $this->set('is_published', $published);
     return $this;
   }
@@ -140,16 +130,14 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function isPremium(): bool
-  {
+  public function isPremium(): bool {
     return (bool) $this->get('is_premium')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPrice(): ?float
-  {
+  public function getPrice(): ?float {
     $price = $this->get('price')->value;
     return $price !== NULL ? (float) $price : NULL;
   }
@@ -157,16 +145,14 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function getCompletionCredits(): int
-  {
+  public function getCompletionCredits(): int {
     return (int) ($this->get('completion_credits')->value ?? 100);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTenantId(): ?int
-  {
+  public function getTenantId(): ?int {
     $value = $this->get('tenant_id')->value;
     return $value !== NULL ? (int) $value : NULL;
   }
@@ -174,8 +160,7 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function getPrerequisites(): array
-  {
+  public function getPrerequisites(): array {
     $json = $this->get('prerequisites')->value;
     return $json ? json_decode($json, TRUE) : [];
   }
@@ -183,8 +168,7 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public function getTags(): array
-  {
+  public function getTags(): array {
     $json = $this->get('tags')->value;
     return $json ? json_decode($json, TRUE) : [];
   }
@@ -192,8 +176,7 @@ class Course extends ContentEntityBase implements CourseInterface, EntityOwnerIn
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-  {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 

@@ -116,9 +116,9 @@ class AgentConversationListBuilder extends EntityListBuilder {
     $row['status'] = [
       'data' => [
         '#markup' => '<span style="background-color:' . htmlspecialchars($color, ENT_QUOTES, 'UTF-8')
-          . ';color:#fff;padding:2px 8px;border-radius:4px;font-size:0.85em;">'
-          . ($status_labels[$status] ?? $status)
-          . '</span>',
+        . ';color:#fff;padding:2px 8px;border-radius:4px;font-size:0.85em;">'
+        . ($status_labels[$status] ?? $status)
+        . '</span>',
       ],
     ];
     $row['handoffs'] = $handoff_count;

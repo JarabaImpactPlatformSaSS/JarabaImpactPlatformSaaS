@@ -12,6 +12,7 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -247,7 +248,7 @@ function jaraba_support_cron(): void {
  *
  * PRESAVE-RESILIENCE-001: Optional services with hasService() + try-catch.
  */
-function jaraba_support_support_ticket_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+function jaraba_support_support_ticket_presave(EntityInterface $entity): void {
   // Auto-classify via AI if enabled and ticket is new.
   if ($entity->isNew() && \Drupal::hasService('jaraba_support.ai_classification')) {
     try {
@@ -264,7 +265,6 @@ function jaraba_support_support_ticket_presave(\Drupal\Core\Entity\EntityInterfa
     }
   }
 }
-
 
 /**
  * Prepares variables for agent_saved_view templates.

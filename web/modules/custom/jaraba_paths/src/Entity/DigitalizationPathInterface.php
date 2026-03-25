@@ -11,37 +11,36 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Interface para DigitalizationPath.
  */
-interface DigitalizationPathInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface DigitalizationPathInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Obtiene el título del itinerario.
-     */
-    public function getTitle(): string;
+  /**
+   * Obtiene el título del itinerario.
+   */
+  public function getTitle(): string;
 
-    /**
-     * Obtiene el sector objetivo.
-     */
-    public function getTargetSector(): string;
+  /**
+   * Obtiene el sector objetivo.
+   */
+  public function getTargetSector(): string;
 
-    /**
-     * Obtiene el nivel de madurez objetivo.
-     */
-    public function getTargetMaturityLevel(): ?string;
+  /**
+   * Obtiene el nivel de madurez objetivo.
+   */
+  public function getTargetMaturityLevel(): ?string;
 
-    /**
-     * Obtiene la duración estimada en semanas.
-     */
-    public function getEstimatedWeeks(): int;
+  /**
+   * Obtiene la duración estimada en semanas.
+   */
+  public function getEstimatedWeeks(): int;
 
-    /**
-     * Verifica si el itinerario está publicado.
-     */
-    public function isPublished(): bool;
+  /**
+   * Verifica si el itinerario está publicado.
+   */
+  public function isPublished(): bool;
 
-    /**
-     * Verifica si el itinerario es destacado.
-     */
-    public function isFeatured(): bool;
+  /**
+   * Verifica si el itinerario es destacado.
+   */
+  public function isFeatured(): bool;
 
 }

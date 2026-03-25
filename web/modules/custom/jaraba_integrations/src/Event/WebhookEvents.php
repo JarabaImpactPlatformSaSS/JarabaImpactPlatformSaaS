@@ -17,14 +17,13 @@ namespace Drupal\jaraba_integrations\Event;
  *     - { name: event_subscriber }
  * @endcode
  */
-final class WebhookEvents
-{
+final class WebhookEvents {
 
-    /**
-     * Se dispara cuando se recibe un webhook de cualquier proveedor.
-     *
-     * @var string
-     */
-    public const RECEIVED = 'jaraba_integrations.webhook.received';
+  /**
+   * Se dispara cuando se recibe un webhook de cualquier proveedor.
+   *
+   * @var string
+   */
+  public const RECEIVED = 'jaraba_integrations.webhook.received';
 
 }

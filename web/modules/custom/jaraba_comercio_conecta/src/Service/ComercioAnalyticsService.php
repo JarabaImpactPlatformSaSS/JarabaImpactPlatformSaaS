@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class ComercioAnalyticsService {
 
   protected LoggerInterface $logger;
@@ -21,6 +24,9 @@ class ComercioAnalyticsService {
     $this->logger = $loggerFactory->get('jaraba_comercio_conecta.analytics');
   }
 
+  /**
+   *
+   */
   public function getMarketplaceKpis(string $period = '30d'): array {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -84,6 +90,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getRevenueChart(string $period = '30d'): array {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -116,6 +125,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getTopProducts(int $limit = 10, string $period = '30d'): array {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -153,6 +165,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getTopCategories(int $limit = 10): array {
     try {
       $query = $this->database->select('order_item_retail', 'oi');
@@ -185,6 +200,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   public function getCustomerRetentionRate(string $period = '30d'): float {
     try {
       $start_timestamp = $this->getPeriodStartTimestamp($period);
@@ -216,6 +234,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   protected function getPeriodStartTimestamp(string $period): int {
     $days = match ($period) {
       '7d' => 7,
@@ -229,6 +250,9 @@ class ComercioAnalyticsService {
     return \Drupal::time()->getRequestTime() - ($days * 86400);
   }
 
+  /**
+   *
+   */
   protected function getNewCustomerCount(int $startTimestamp): int {
     try {
       $query = $this->database->select('order_retail', 'o');
@@ -250,6 +274,9 @@ class ComercioAnalyticsService {
     }
   }
 
+  /**
+   *
+   */
   protected function estimateConversionRate(int $startTimestamp): float {
     try {
       $total_orders = (int) $this->entityTypeManager->getStorage('order_retail')

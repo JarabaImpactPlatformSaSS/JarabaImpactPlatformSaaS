@@ -35,9 +35,20 @@ class ContentArticleSlugTest extends TestCase {
    */
   protected function slugify(string $string): string {
     $transliterations = [
-      'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-      'ñ' => 'n', 'ü' => 'u', 'Á' => 'a', 'É' => 'e', 'Í' => 'i',
-      'Ó' => 'o', 'Ú' => 'u', 'Ñ' => 'n', 'Ü' => 'u',
+      'á' => 'a',
+      'é' => 'e',
+      'í' => 'i',
+      'ó' => 'o',
+      'ú' => 'u',
+      'ñ' => 'n',
+      'ü' => 'u',
+      'Á' => 'a',
+      'É' => 'e',
+      'Í' => 'i',
+      'Ó' => 'o',
+      'Ú' => 'u',
+      'Ñ' => 'n',
+      'Ü' => 'u',
     ];
     $string = strtr($string, $transliterations);
     $slug = preg_replace('/[^a-z0-9]+/', '-', strtolower($string));

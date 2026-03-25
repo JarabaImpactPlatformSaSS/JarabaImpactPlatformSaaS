@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_legal_intelligence\Kernel;
 
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
-use Drupal\jaraba_legal_intelligence\Entity\LegalSource;
 use Drupal\jaraba_legal_intelligence\Service\LegalIngestionService;
 use Drupal\KernelTests\KernelTestBase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -7,8 +7,14 @@ namespace Drupal\jaraba_comercio_conecta\ListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
+/**
+ *
+ */
 class AbandonedCartListBuilder extends EntityListBuilder {
 
+  /**
+   *
+   */
   public function buildHeader(): array {
     $header['email'] = $this->t('Email');
     $header['value'] = $this->t('Valor');
@@ -18,6 +24,9 @@ class AbandonedCartListBuilder extends EntityListBuilder {
     return $header + parent::buildHeader();
   }
 
+  /**
+   *
+   */
   public function buildRow(EntityInterface $entity): array {
     $row['email'] = $entity->get('email')->value ?? '-';
     $row['value'] = number_format((float) $entity->get('cart_value')->value, 2, ',', '.') . ' EUR';

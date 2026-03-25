@@ -13,7 +13,6 @@ declare(strict_types=1);
 function jaraba_interactive_install(): void {
   // Las tablas de entidades se crean automáticamente por Drupal.
   // Este hook es para configuración adicional post-instalación.
-  
   \Drupal::messenger()->addStatus(t('Jaraba Interactive AI-Powered instalado correctamente.'));
 }
 
@@ -23,7 +22,7 @@ function jaraba_interactive_install(): void {
 function jaraba_interactive_uninstall(): void {
   // Limpiar configuración.
   \Drupal::configFactory()->getEditable('jaraba_interactive.settings')->delete();
-  
+
   \Drupal::messenger()->addStatus(t('Jaraba Interactive desinstalado. Las entidades han sido eliminadas.'));
 }
 

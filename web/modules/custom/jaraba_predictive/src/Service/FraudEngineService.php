@@ -74,10 +74,19 @@ class FraudEngineService {
     ];
   }
 
+  /**
+   *
+   */
   protected function getRiskLevel(int $score): string {
-    if ($score >= 75) return 'critical';
-    if ($score >= 50) return 'high';
-    if ($score >= 25) return 'medium';
+    if ($score >= 75) {
+      return 'critical';
+    }
+    if ($score >= 50) {
+      return 'high';
+    }
+    if ($score >= 25) {
+      return 'medium';
+    }
     return 'low';
   }
 

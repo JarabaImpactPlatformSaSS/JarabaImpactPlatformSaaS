@@ -101,7 +101,7 @@ class ABTestingApiController extends ControllerBase {
    * Asigna una variante a un visitante (POST /api/v1/ab-testing/assign).
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   Body JSON: { "experiment": "machine_name_del_experimento" }
+   *   Body JSON: { "experiment": "machine_name_del_experimento" }.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   { "data": { "variant_id": int, "variant_key": string, "is_control": bool } }
@@ -130,15 +130,15 @@ class ABTestingApiController extends ControllerBase {
       ], 404);
     }
 
-    return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => TRUE, 'data' => $assignment, 'meta' => ['timestamp' => time()]]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $assignment, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
    * Registra una conversión (POST /api/v1/ab-testing/convert).
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   Body JSON: { "experiment": "machine_name", "revenue": 0.0 }
+   *   Body JSON: { "experiment": "machine_name", "revenue": 0.0 }.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   { "data": { "recorded": true } }
@@ -198,7 +198,7 @@ class ABTestingApiController extends ControllerBase {
    * Registra una exposición de visitante a variante (POST /api/v1/ab-testing/exposures/record).
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   Body JSON: { "experiment_id": int, "variant_id": string, "visitor_id": string, "context": {} }
+   *   Body JSON: { "experiment_id": int, "variant_id": string, "visitor_id": string, "context": {} }.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   { "data": { "id": int, "experiment_id": int, "variant_id": string, ... } }
@@ -318,7 +318,7 @@ class ABTestingApiController extends ControllerBase {
    * Declara la variante ganadora de un experimento (POST .../declare-winner).
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   Body JSON: { "variant_id": string }
+   *   Body JSON: { "variant_id": string }.
    * @param int $experiment_id
    *   ID del experimento.
    *

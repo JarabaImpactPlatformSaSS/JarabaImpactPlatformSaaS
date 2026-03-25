@@ -137,7 +137,7 @@ class PuntosImpactoEiServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function calcularPuntosParticipanteAlumniIncluyeBonus(): void {
-    // alumni no esta en PUNTOS_POR_FASE -> default 10.
+    // Alumni no esta en PUNTOS_POR_FASE -> default 10.
     // alumni bonus: 10. Total: 10 + 10 = 20 (sin horas).
     $participante = $this->createParticipanteMock(3, [
       'fase_actual' => 'alumni',
@@ -250,7 +250,8 @@ class PuntosImpactoEiServiceTest extends UnitTestCase {
     $impacto = $this->service->getImpactoGlobalPrograma(5);
 
     $this->assertSame(2, $impacto['participantes_evaluados']);
-    $this->assertSame(95, $impacto['total_puntos']); // 10 + 85.
+    // 10 + 85.
+    $this->assertSame(95, $impacto['total_puntos']);
     $this->assertSame(85, $impacto['max_puntos']);
     $this->assertSame(10, $impacto['min_puntos']);
     $this->assertSame(47.5, $impacto['media_puntos']);
@@ -285,19 +286,29 @@ class PuntosImpactoEiServiceTest extends UnitTestCase {
    */
   protected function createParticipanteMock(int $id, array $fieldValues): object {
     return new class($id, $fieldValues) {
+
       public function __construct(
         private readonly int $id,
         private readonly array $fieldValues,
       ) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->id;
       }
 
+      /**
+       *
+       */
       public function label(): ?string {
         return "Test #{$this->id}";
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         if ($fieldName === 'tenant_id') {
           $targetId = $this->fieldValues['tenant_id_target'] ?? NULL;
@@ -307,37 +318,59 @@ class PuntosImpactoEiServiceTest extends UnitTestCase {
             public function __construct(mixed $t) {
               $this->target_id = $t;
             }
+
           };
         }
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function getOwner(): ?object {
         return NULL;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ["programa_participante_ei:{$this->id}"];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

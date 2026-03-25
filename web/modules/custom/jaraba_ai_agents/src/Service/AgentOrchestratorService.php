@@ -36,10 +36,10 @@ class AgentOrchestratorService {
    */
   public function runWorkflow(string $goal, array $context): array {
     $tools = $this->toolRegistry->getTools();
-    
+
     // 1. Planning: Ask LLM to break down the goal into tool calls.
     $plan = $this->generatePlan($goal, $tools, $context);
-    
+
     $results = [];
     $executionLog = [];
 
@@ -47,7 +47,7 @@ class AgentOrchestratorService {
     foreach ($plan['steps'] as $step) {
       $toolName = $step['tool'];
       $params = $step['parameters'];
-      
+
       // Add context to params if needed.
       $params['tenantId'] = $context['tenant_id'];
 
@@ -72,7 +72,8 @@ class AgentOrchestratorService {
           'status' => 'error',
           'error' => $e->getMessage(),
         ];
-        break; // Stop on first error for safety.
+        // Stop on first error for safety.
+        break;
       }
     }
 
@@ -91,8 +92,8 @@ class AgentOrchestratorService {
     // Note: In a real implementation, we'd use a robust prompt.
     // For the prototype, we return a structured array.
     $this->logger->info('Generating plan for goal: @goal', ['@goal' => $goal]);
-    
-    // Simulate LLM response for "Analyze sales and create newsletter"
+
+    // Simulate LLM response for "Analyze sales and create newsletter".
     if (str_contains($goal, 'newsletter')) {
       return [
         'steps' => [
@@ -105,8 +106,8 @@ class AgentOrchestratorService {
             'description' => 'Create newsletter draft from recent article',
             'tool' => 'hub_create_newsletter',
             'parameters' => ['articleId' => 1],
-          ]
-        ]
+          ],
+        ],
       ];
     }
 

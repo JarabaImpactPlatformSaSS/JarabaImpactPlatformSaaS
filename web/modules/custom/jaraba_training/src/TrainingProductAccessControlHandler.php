@@ -13,31 +13,29 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para TrainingProduct.
  */
-class TrainingProductAccessControlHandler extends EntityAccessControlHandler
-{
+class TrainingProductAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'view training products');
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'view training products');
 
-            case 'update':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'administer training products');
-        }
-
-        return AccessResult::neutral();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
+      case 'update':
+      case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'administer training products');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'administer training products');
+  }
 
 }

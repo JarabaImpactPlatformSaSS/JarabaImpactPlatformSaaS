@@ -229,38 +229,62 @@ class CalendarioProgramaServiceTest extends UnitTestCase {
         ];
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         $value = $this->values[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         $this->values[$fieldName] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         $this->saved = TRUE;
         return 1;
       }
 
+      /**
+       *
+       */
       public function wasSaved(): bool {
         return $this->saved;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ['programa_participante_ei:1'];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

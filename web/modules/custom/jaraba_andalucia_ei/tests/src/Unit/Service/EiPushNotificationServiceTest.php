@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_andalucia_ei\Unit\Service;
 
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_andalucia_ei\Service\EiPushNotificationService;
@@ -73,10 +74,20 @@ class EiPushNotificationServiceTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConServiciosOpcionales(): void {
     $pushService = new class {
+
+      /**
+       *
+       */
       public function sendToUser(int $uid, array $data): void {}
+
     };
     $notificationService = new class {
+
+      /**
+       *
+       */
       public function sendEmail(int $uid, array $data): void {}
+
     };
 
     $service = new EiPushNotificationService(
@@ -175,7 +186,7 @@ class EiPushNotificationServiceTest extends UnitTestCase {
    */
   #[\PHPUnit\Framework\Attributes\Test]
   public function getPendientesNoLeidasSinServicioDevuelveArray(): void {
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
     $query->method('sort')->willReturnSelf();

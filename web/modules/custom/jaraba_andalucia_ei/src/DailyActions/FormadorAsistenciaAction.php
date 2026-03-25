@@ -25,58 +25,100 @@ class FormadorAsistenciaAction implements DailyActionInterface {
     protected readonly ?object $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'formador_ei.asistencia';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'formador_ei';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Pasar asistencia');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Sesiones con asistencia pendiente de registrar');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'actions', 'name' => 'check-circle', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'verde-innovacion';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'jaraba_andalucia_ei.formador_dashboard';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 20;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $count = 0;
     try {

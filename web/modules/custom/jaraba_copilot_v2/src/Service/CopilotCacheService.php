@@ -20,320 +20,311 @@ use Psr\Log\LoggerInterface;
  * - Cache hit rate objetivo: 20%+
  * - Estimated savings: €2-5/day with typical usage
  */
-class CopilotCacheService
-{
+class CopilotCacheService {
 
-    /**
-     * Cache backend.
-     */
-    protected CacheBackendInterface $cache;
+  /**
+   * Cache backend.
+   */
+  protected CacheBackendInterface $cache;
 
-    /**
-     * Logger.
-     */
-    protected LoggerInterface $logger;
+  /**
+   * Logger.
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * Cache tags invalidator.
-     */
-    protected CacheTagsInvalidatorInterface $cacheTagsInvalidator;
+  /**
+   * Cache tags invalidator.
+   */
+  protected CacheTagsInvalidatorInterface $cacheTagsInvalidator;
 
-    /**
-     * Default TTL in seconds (1 hour).
-     */
-    protected const DEFAULT_TTL = 3600;
+  /**
+   * Default TTL in seconds (1 hour).
+   */
+  protected const DEFAULT_TTL = 3600;
 
-    /**
-     * Constructs CopilotCacheService.
-     */
-    public function __construct(
-        CacheBackendInterface $cache,
-        LoggerInterface $logger,
-        CacheTagsInvalidatorInterface $cacheTagsInvalidator
-    ) {
-        $this->cache = $cache;
-        $this->logger = $logger;
-        $this->cacheTagsInvalidator = $cacheTagsInvalidator;
+  /**
+   * Constructs CopilotCacheService.
+   */
+  public function __construct(
+    CacheBackendInterface $cache,
+    LoggerInterface $logger,
+    CacheTagsInvalidatorInterface $cacheTagsInvalidator,
+  ) {
+    $this->cache = $cache;
+    $this->logger = $logger;
+    $this->cacheTagsInvalidator = $cacheTagsInvalidator;
+  }
+
+  /**
+   * Generates cache key for a message.
+   *
+   * @param string $message
+   *   User message.
+   * @param string $mode
+   *   Copilot mode.
+   * @param array $context
+   *   Context array (will hash relevant parts).
+   *
+   * @return string
+   *   Cache key.
+   */
+  public function generateCacheKey(string $message, string $mode, array $context): string {
+    // Normalize message (lowercase, trim, remove extra spaces)
+    $normalizedMessage = strtolower(trim(preg_replace('/\s+/', ' ', $message)));
+
+    // Extract stable context elements for cache key.
+    // current_page differentiates same question from different pages
+    // (e.g., coordinador vs participant view).
+    $stableContext = [
+      'vertical' => $context['vertical'] ?? '',
+      'phase' => $context['phase'] ?? '',
+      'tenant_plan' => $context['tenant_plan'] ?? '',
+      'current_page' => $context['current_page'] ?? '',
+    ];
+
+    // Generate hash.
+    $payload = json_encode([
+      'message' => $normalizedMessage,
+      'mode' => $mode,
+      'context' => $stableContext,
+    ]);
+
+    return 'copilot_response:' . md5($payload);
+  }
+
+  /**
+   * Gets cached response if available.
+   *
+   * FIX-036: Two-layer cache: exact match (Drupal cache) then semantic
+   * match (SemanticCacheService via Qdrant). Semantic layer catches
+   * queries like "AOVE premium" vs "aceite de oliva virgen extra".
+   *
+   * @param string $message
+   *   User message.
+   * @param string $mode
+   *   Copilot mode.
+   * @param array $context
+   *   Context array.
+   *
+   * @return array|null
+   *   Cached response or NULL if not found.
+   */
+  public function get(string $message, string $mode, array $context): ?array {
+    // Layer 1: Exact match via Drupal cache.
+    $key = $this->generateCacheKey($message, $mode, $context);
+    $cached = $this->cache->get($key);
+
+    $tenantId = $context['tenant_id'] ?? '0';
+    if ($cached && isset($cached->data)) {
+      $this->trackCacheHit($tenantId);
+      $this->logger->debug('Copilot cache HIT (exact): @key', ['@key' => $key]);
+
+      $response = $cached->data;
+      $response['from_cache'] = TRUE;
+      $response['cache_key'] = $key;
+      $response['cache_layer'] = 'exact';
+
+      return $response;
     }
 
-    /**
-     * Generates cache key for a message.
-     *
-     * @param string $message
-     *   User message.
-     * @param string $mode
-     *   Copilot mode.
-     * @param array $context
-     *   Context array (will hash relevant parts).
-     *
-     * @return string
-     *   Cache key.
-     */
-    public function generateCacheKey(string $message, string $mode, array $context): string
-    {
-        // Normalize message (lowercase, trim, remove extra spaces)
-        $normalizedMessage = strtolower(trim(preg_replace('/\s+/', ' ', $message)));
-
-        // Extract stable context elements for cache key.
-        // current_page differentiates same question from different pages
-        // (e.g., coordinador vs participant view).
-        $stableContext = [
-            'vertical' => $context['vertical'] ?? '',
-            'phase' => $context['phase'] ?? '',
-            'tenant_plan' => $context['tenant_plan'] ?? '',
-            'current_page' => $context['current_page'] ?? '',
-        ];
-
-        // Generate hash
-        $payload = json_encode([
-            'message' => $normalizedMessage,
-            'mode' => $mode,
-            'context' => $stableContext,
-        ]);
-
-        return 'copilot_response:' . md5($payload);
-    }
-
-    /**
-     * Gets cached response if available.
-     *
-     * FIX-036: Two-layer cache: exact match (Drupal cache) then semantic
-     * match (SemanticCacheService via Qdrant). Semantic layer catches
-     * queries like "AOVE premium" vs "aceite de oliva virgen extra".
-     *
-     * @param string $message
-     *   User message.
-     * @param string $mode
-     *   Copilot mode.
-     * @param array $context
-     *   Context array.
-     *
-     * @return array|null
-     *   Cached response or NULL if not found.
-     */
-    public function get(string $message, string $mode, array $context): ?array
-    {
-        // Layer 1: Exact match via Drupal cache.
-        $key = $this->generateCacheKey($message, $mode, $context);
-        $cached = $this->cache->get($key);
-
+    // Layer 2: Semantic match via SemanticCacheService (FIX-036).
+    // FIX: Include current_page in mode to prevent cross-context pollution
+    // (same query from coordinador vs emprendedor returning wrong response).
+    if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
+      try {
+        $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
         $tenantId = $context['tenant_id'] ?? '0';
-        if ($cached && isset($cached->data)) {
-            $this->trackCacheHit($tenantId);
-            $this->logger->debug('Copilot cache HIT (exact): @key', ['@key' => $key]);
+        $currentPage = $context['current_page'] ?? '';
+        $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+        $semanticResult = $semanticCache->get($message, $semanticMode, (string) $tenantId);
 
-            $response = $cached->data;
-            $response['from_cache'] = TRUE;
-            $response['cache_key'] = $key;
-            $response['cache_layer'] = 'exact';
+        if ($semanticResult !== NULL) {
+          $this->trackCacheHit($tenantId);
+          $this->logger->debug('Copilot cache HIT (semantic): @msg', ['@msg' => mb_substr($message, 0, 80)]);
 
-            return $response;
+          $semanticResult['from_cache'] = TRUE;
+          $semanticResult['cache_layer'] = 'semantic';
+
+          return $semanticResult;
         }
-
-        // Layer 2: Semantic match via SemanticCacheService (FIX-036).
-        // FIX: Include current_page in mode to prevent cross-context pollution
-        // (same query from coordinador vs emprendedor returning wrong response).
-        if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
-            try {
-                $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
-                $tenantId = $context['tenant_id'] ?? '0';
-                $currentPage = $context['current_page'] ?? '';
-                $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
-                $semanticResult = $semanticCache->get($message, $semanticMode, (string) $tenantId);
-
-                if ($semanticResult !== NULL) {
-                    $this->trackCacheHit($tenantId);
-                    $this->logger->debug('Copilot cache HIT (semantic): @msg', ['@msg' => mb_substr($message, 0, 80)]);
-
-                    $semanticResult['from_cache'] = TRUE;
-                    $semanticResult['cache_layer'] = 'semantic';
-
-                    return $semanticResult;
-                }
-            } catch (\Throwable $e) {
-                // Semantic cache failure is non-critical.
-                $this->logger->debug('Semantic cache lookup failed: @msg', ['@msg' => $e->getMessage()]);
-            }
-        }
-
-        $this->trackCacheMiss($tenantId);
-        return NULL;
+      }
+      catch (\Throwable $e) {
+        // Semantic cache failure is non-critical.
+        $this->logger->debug('Semantic cache lookup failed: @msg', ['@msg' => $e->getMessage()]);
+      }
     }
 
-    /**
-     * Stores response in cache.
-     *
-     * @param string $message
-     *   User message.
-     * @param string $mode
-     *   Copilot mode.
-     * @param array $context
-     *   Context array.
-     * @param array $response
-     *   Response to cache.
-     * @param int|null $ttl
-     *   Time to live in seconds (optional).
-     */
-    public function set(string $message, string $mode, array $context, array $response, ?int $ttl = NULL): void
-    {
-        // Don't cache error responses
-        if (isset($response['error']) && $response['error']) {
-            return;
-        }
+    $this->trackCacheMiss($tenantId);
+    return NULL;
+  }
 
-        $key = $this->generateCacheKey($message, $mode, $context);
-        $ttl = $ttl ?? self::DEFAULT_TTL;
-        $expires = time() + $ttl;
+  /**
+   * Stores response in cache.
+   *
+   * @param string $message
+   *   User message.
+   * @param string $mode
+   *   Copilot mode.
+   * @param array $context
+   *   Context array.
+   * @param array $response
+   *   Response to cache.
+   * @param int|null $ttl
+   *   Time to live in seconds (optional).
+   */
+  public function set(string $message, string $mode, array $context, array $response, ?int $ttl = NULL): void {
+    // Don't cache error responses.
+    if (isset($response['error']) && $response['error']) {
+      return;
+    }
 
-        // Remove 'from_cache' flag before storing
-        unset($response['from_cache']);
-        unset($response['cache_key']);
+    $key = $this->generateCacheKey($message, $mode, $context);
+    $ttl = $ttl ?? self::DEFAULT_TTL;
+    $expires = time() + $ttl;
 
-        // AI-10: Tags granulares para invalidación selectiva por modo/tenant.
-        $tags = ['copilot_responses'];
-        $tags[] = 'copilot_mode:' . $mode;
+    // Remove 'from_cache' flag before storing.
+    unset($response['from_cache']);
+    unset($response['cache_key']);
+
+    // AI-10: Tags granulares para invalidación selectiva por modo/tenant.
+    $tags = ['copilot_responses'];
+    $tags[] = 'copilot_mode:' . $mode;
+    $tenantId = $context['tenant_id'] ?? '0';
+    if ($tenantId) {
+      $tags[] = 'copilot_tenant:' . $tenantId;
+    }
+
+    $this->cache->set($key, $response, $expires, $tags);
+
+    // FIX-036: Also store in semantic cache for fuzzy matching.
+    // FIX: Include current_page in mode for context-isolated cache entries.
+    if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
+      try {
+        $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
         $tenantId = $context['tenant_id'] ?? '0';
-        if ($tenantId) {
-            $tags[] = 'copilot_tenant:' . $tenantId;
-        }
-
-        $this->cache->set($key, $response, $expires, $tags);
-
-        // FIX-036: Also store in semantic cache for fuzzy matching.
-        // FIX: Include current_page in mode for context-isolated cache entries.
-        if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
-            try {
-                $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
-                $tenantId = $context['tenant_id'] ?? '0';
-                $currentPage = $context['current_page'] ?? '';
-                $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
-                $responseText = $response['text'] ?? json_encode($response);
-                $semanticCache->set($message, $responseText, $semanticMode, (string) $tenantId, $ttl);
-            } catch (\Throwable $e) {
-                // Non-critical — exact cache already stored.
-            }
-        }
-
-        $this->logger->debug('Copilot cache SET: @key (TTL: @ttl)', [
-            '@key' => $key,
-            '@ttl' => $ttl,
-        ]);
+        $currentPage = $context['current_page'] ?? '';
+        $semanticMode = $currentPage ? $mode . ':' . $currentPage : $mode;
+        $responseText = $response['text'] ?? json_encode($response);
+        $semanticCache->set($message, $responseText, $semanticMode, (string) $tenantId, $ttl);
+      }
+      catch (\Throwable $e) {
+        // Non-critical — exact cache already stored.
+      }
     }
 
-    /**
-     * Invalidates all cached responses.
-     */
-    public function invalidateAll(): void
-    {
-        $this->cache->invalidateAll();
-        $this->logger->info('Copilot cache invalidated');
-    }
+    $this->logger->debug('Copilot cache SET: @key (TTL: @ttl)', [
+      '@key' => $key,
+      '@ttl' => $ttl,
+    ]);
+  }
 
-    /**
-     * Invalidates cached responses for a specific copilot mode.
-     *
-     * @param string $mode
-     *   The copilot mode (e.g., 'empleo', 'emprender').
-     */
-    public function invalidateByMode(string $mode): void
-    {
-        $this->cacheTagsInvalidator->invalidateTags(['copilot_mode:' . $mode]);
-        $this->logger->info('Copilot cache invalidated for mode: @mode', ['@mode' => $mode]);
-    }
+  /**
+   * Invalidates all cached responses.
+   */
+  public function invalidateAll(): void {
+    $this->cache->invalidateAll();
+    $this->logger->info('Copilot cache invalidated');
+  }
 
-    /**
-     * Invalidates cached responses for a specific tenant.
-     *
-     * @param string|int $tenantId
-     *   The tenant ID.
-     */
-    public function invalidateByTenant(string|int $tenantId): void
-    {
-        $this->cacheTagsInvalidator->invalidateTags(['copilot_tenant:' . $tenantId]);
-        $this->logger->info('Copilot cache invalidated for tenant: @tenant', ['@tenant' => $tenantId]);
-    }
+  /**
+   * Invalidates cached responses for a specific copilot mode.
+   *
+   * @param string $mode
+   *   The copilot mode (e.g., 'empleo', 'emprender').
+   */
+  public function invalidateByMode(string $mode): void {
+    $this->cacheTagsInvalidator->invalidateTags(['copilot_mode:' . $mode]);
+    $this->logger->info('Copilot cache invalidated for mode: @mode', ['@mode' => $mode]);
+  }
 
-    /**
-     * Gets cache statistics (CACHE-KEY-TENANT-001: per-tenant).
-     *
-     * @param string|int $tenantId
-     *   The tenant ID. Defaults to '0' (global/anonymous).
-     *
-     * @return array
-     *   Stats with hits, misses, hit_rate.
-     */
-    public function getStats(string|int $tenantId = '0'): array
-    {
-        $state = \Drupal::state();
-        $hits = $state->get('copilot_cache_hits:tenant:' . $tenantId, 0);
-        $misses = $state->get('copilot_cache_misses:tenant:' . $tenantId, 0);
-        $total = $hits + $misses;
+  /**
+   * Invalidates cached responses for a specific tenant.
+   *
+   * @param string|int $tenantId
+   *   The tenant ID.
+   */
+  public function invalidateByTenant(string|int $tenantId): void {
+    $this->cacheTagsInvalidator->invalidateTags(['copilot_tenant:' . $tenantId]);
+    $this->logger->info('Copilot cache invalidated for tenant: @tenant', ['@tenant' => $tenantId]);
+  }
 
-        return [
-            'hits' => $hits,
-            'misses' => $misses,
-            'total' => $total,
-            'hit_rate' => $total > 0 ? round(($hits / $total) * 100, 2) : 0,
-            'estimated_savings' => $this->estimateSavings($hits),
-            'tenant_id' => $tenantId,
-        ];
-    }
+  /**
+   * Gets cache statistics (CACHE-KEY-TENANT-001: per-tenant).
+   *
+   * @param string|int $tenantId
+   *   The tenant ID. Defaults to '0' (global/anonymous).
+   *
+   * @return array
+   *   Stats with hits, misses, hit_rate.
+   */
+  public function getStats(string|int $tenantId = '0'): array {
+    $state = \Drupal::state();
+    $hits = $state->get('copilot_cache_hits:tenant:' . $tenantId, 0);
+    $misses = $state->get('copilot_cache_misses:tenant:' . $tenantId, 0);
+    $total = $hits + $misses;
 
-    /**
-     * Tracks cache hit (CACHE-KEY-TENANT-001: scoped by tenant).
-     *
-     * @param string|int $tenantId
-     *   The tenant ID for scoped tracking.
-     */
-    protected function trackCacheHit(string|int $tenantId = '0'): void
-    {
-        $state = \Drupal::state();
-        $key = 'copilot_cache_hits:tenant:' . $tenantId;
-        $state->set($key, $state->get($key, 0) + 1);
-        $costKey = 'ai_cost_cache_hits:tenant:' . $tenantId;
-        $state->set($costKey, $state->get($costKey, 0) + 1);
-    }
+    return [
+      'hits' => $hits,
+      'misses' => $misses,
+      'total' => $total,
+      'hit_rate' => $total > 0 ? round(($hits / $total) * 100, 2) : 0,
+      'estimated_savings' => $this->estimateSavings($hits),
+      'tenant_id' => $tenantId,
+    ];
+  }
 
-    /**
-     * Tracks cache miss (CACHE-KEY-TENANT-001: scoped by tenant).
-     *
-     * @param string|int $tenantId
-     *   The tenant ID for scoped tracking.
-     */
-    protected function trackCacheMiss(string|int $tenantId = '0'): void
-    {
-        $state = \Drupal::state();
-        $key = 'copilot_cache_misses:tenant:' . $tenantId;
-        $state->set($key, $state->get($key, 0) + 1);
-    }
+  /**
+   * Tracks cache hit (CACHE-KEY-TENANT-001: scoped by tenant).
+   *
+   * @param string|int $tenantId
+   *   The tenant ID for scoped tracking.
+   */
+  protected function trackCacheHit(string|int $tenantId = '0'): void {
+    $state = \Drupal::state();
+    $key = 'copilot_cache_hits:tenant:' . $tenantId;
+    $state->set($key, $state->get($key, 0) + 1);
+    $costKey = 'ai_cost_cache_hits:tenant:' . $tenantId;
+    $state->set($costKey, $state->get($costKey, 0) + 1);
+  }
 
-    /**
-     * Estimates cost savings from cache hits.
-     *
-     * @param int $hits
-     *   Number of cache hits.
-     *
-     * @return float
-     *   Estimated savings in EUR.
-     */
-    protected function estimateSavings(int $hits): float
-    {
-        // Average cost per AI call (estimated)
-        $avgCostPerCall = 0.002; // €0.002 per call
-        return round($hits * $avgCostPerCall, 4);
-    }
+  /**
+   * Tracks cache miss (CACHE-KEY-TENANT-001: scoped by tenant).
+   *
+   * @param string|int $tenantId
+   *   The tenant ID for scoped tracking.
+   */
+  protected function trackCacheMiss(string|int $tenantId = '0'): void {
+    $state = \Drupal::state();
+    $key = 'copilot_cache_misses:tenant:' . $tenantId;
+    $state->set($key, $state->get($key, 0) + 1);
+  }
 
-    /**
-     * Resets cache stats for a tenant (CACHE-KEY-TENANT-001).
-     *
-     * @param string|int $tenantId
-     *   The tenant ID. Defaults to '0'.
-     */
-    public function resetStats(string|int $tenantId = '0'): void
-    {
-        $state = \Drupal::state();
-        $state->delete('copilot_cache_hits:tenant:' . $tenantId);
-        $state->delete('copilot_cache_misses:tenant:' . $tenantId);
-    }
+  /**
+   * Estimates cost savings from cache hits.
+   *
+   * @param int $hits
+   *   Number of cache hits.
+   *
+   * @return float
+   *   Estimated savings in EUR.
+   */
+  protected function estimateSavings(int $hits): float {
+    // Average cost per AI call (estimated)
+    // €0.002 per call.
+    $avgCostPerCall = 0.002;
+    return round($hits * $avgCostPerCall, 4);
+  }
+
+  /**
+   * Resets cache stats for a tenant (CACHE-KEY-TENANT-001).
+   *
+   * @param string|int $tenantId
+   *   The tenant ID. Defaults to '0'.
+   */
+  public function resetStats(string|int $tenantId = '0'): void {
+    $state = \Drupal::state();
+    $state->delete('copilot_cache_hits:tenant:' . $tenantId);
+    $state->delete('copilot_cache_misses:tenant:' . $tenantId);
+  }
 
 }

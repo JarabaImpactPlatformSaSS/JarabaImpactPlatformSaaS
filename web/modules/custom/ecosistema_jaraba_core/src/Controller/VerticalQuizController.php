@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Flood\FloodInterface;
 use Drupal\ecosistema_jaraba_core\Service\VerticalQuizService;
@@ -17,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Rutas:
  * - GET /test-vertical — Página del quiz (4 preguntas)
  * - POST /api/v1/quiz/submit — Procesar respuestas
- * - GET /test-vertical/resultado/{uuid} — Página de resultado
+ * - GET /test-vertical/resultado/{uuid} — Página de resultado.
  */
 class VerticalQuizController extends ControllerBase {
 
@@ -51,8 +53,8 @@ class VerticalQuizController extends ControllerBase {
         'library' => ['ecosistema_jaraba_theme/route-quiz'],
         'drupalSettings' => [
           'verticalQuiz' => [
-            'submitEndpoint' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.quiz_vertical.submit')->toString(),
-            'resultBaseUrl' => \Drupal\Core\Url::fromRoute('ecosistema_jaraba_core.quiz_vertical', [], ['absolute' => FALSE])->toString() . '/resultado/',
+            'submitEndpoint' => Url::fromRoute('ecosistema_jaraba_core.quiz_vertical.submit')->toString(),
+            'resultBaseUrl' => Url::fromRoute('ecosistema_jaraba_core.quiz_vertical', [], ['absolute' => FALSE])->toString() . '/resultado/',
             'totalSteps' => 4,
           ],
         ],
@@ -154,6 +156,7 @@ class VerticalQuizController extends ControllerBase {
   /**
    * Página de resultado — ZERO-REGION-001: markup vacío, datos via preprocess.
    */
+
   /**
    * Página de resultado — ZERO-REGION-001: markup vacío, datos via preprocess.
    *
@@ -164,7 +167,7 @@ class VerticalQuizController extends ControllerBase {
     // Validar que el resultado existe (404 si no).
     $result = $this->quizService->getResultByUuid($uuid);
     if (!$result) {
-      throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+      throw new NotFoundHttpException();
     }
 
     return [

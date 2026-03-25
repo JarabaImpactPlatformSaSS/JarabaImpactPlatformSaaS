@@ -179,11 +179,14 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
         '@tenant' => $tenantId,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'addon_id' => (int) $addon->id(),
-        'addon_code' => $addonCode,
-        'status' => 'active',
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'addon_id' => (int) $addon->id(),
+          'addon_code' => $addonCode,
+          'status' => 'active',
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error activating addon: @error', ['@error' => $e->getMessage()]);
@@ -240,10 +243,13 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
         '@tenant' => $tenantId,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'addon_code' => $code,
-        'status' => 'canceled',
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'addon_code' => $code,
+          'status' => 'canceled',
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error canceling addon: @error', ['@error' => $e->getMessage()]);
@@ -271,10 +277,13 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
     try {
       $result = $this->stripeSubscription->updateSubscription($subscriptionId, $newPriceId);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'subscription_id' => $result['id'],
-        'status' => $result['status'],
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'subscription_id' => $result['id'],
+          'status' => $result['status'],
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error upgrading plan: @error', ['@error' => $e->getMessage()]);
@@ -307,22 +316,25 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
         'customer' => $stripeCustomerId,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'amount_due' => ($upcoming['amount_due'] ?? 0) / 100,
-        'subtotal' => ($upcoming['subtotal'] ?? 0) / 100,
-        'tax' => ($upcoming['tax'] ?? 0) / 100,
-        'total' => ($upcoming['total'] ?? 0) / 100,
-        'currency' => strtoupper($upcoming['currency'] ?? 'EUR'),
-        'period_start' => $upcoming['period_start'] ?? NULL,
-        'period_end' => $upcoming['period_end'] ?? NULL,
-        'lines' => array_map(function ($line) {
-          return [
-            'description' => $line['description'] ?? '',
-            'amount' => ($line['amount'] ?? 0) / 100,
-            'quantity' => $line['quantity'] ?? 1,
-          ];
-        }, $upcoming['lines']['data'] ?? []),
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'amount_due' => ($upcoming['amount_due'] ?? 0) / 100,
+          'subtotal' => ($upcoming['subtotal'] ?? 0) / 100,
+          'tax' => ($upcoming['tax'] ?? 0) / 100,
+          'total' => ($upcoming['total'] ?? 0) / 100,
+          'currency' => strtoupper($upcoming['currency'] ?? 'EUR'),
+          'period_start' => $upcoming['period_start'] ?? NULL,
+          'period_end' => $upcoming['period_end'] ?? NULL,
+          'lines' => array_map(function ($line) {
+            return [
+              'description' => $line['description'] ?? '',
+              'amount' => ($line['amount'] ?? 0) / 100,
+              'quantity' => $line['quantity'] ?? 1,
+            ];
+          }, $upcoming['lines']['data'] ?? []),
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error getting upcoming invoice: @error', ['@error' => $e->getMessage()]);

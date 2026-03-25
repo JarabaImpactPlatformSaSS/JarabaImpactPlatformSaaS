@@ -88,7 +88,6 @@ class CurrencyRate extends ContentEntityBase {
     // BLOQUE 1: PAR DE MONEDAS
     // Moneda origen y moneda destino del tipo de cambio.
     // =========================================================================
-
     $fields['from_currency'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Moneda origen'))
       ->setDescription(new TranslatableMarkup('Codigo ISO 4217 de la moneda de origen (ej: EUR, USD, GBP).'))
@@ -109,7 +108,6 @@ class CurrencyRate extends ContentEntityBase {
     // BLOQUE 2: TIPO DE CAMBIO Y FUENTE
     // Valor del tipo de cambio, fuente de datos y momento de obtencion.
     // =========================================================================
-
     $fields['rate'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Tipo de cambio'))
       ->setDescription(new TranslatableMarkup('Tipo de cambio: 1 unidad de moneda origen = rate unidades de moneda destino.'))
@@ -144,7 +142,6 @@ class CurrencyRate extends ContentEntityBase {
     // BLOQUE 3: METADATOS TEMPORALES
     // Solo timestamp de creacion (entidad inmutable, sin changed).
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Fecha de creacion'));
 

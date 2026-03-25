@@ -157,13 +157,30 @@ class AdaptiveDifficultyEngineTest extends UnitTestCase {
     // Use anonymous class to properly handle ->value property access.
     $formacionField = new class($formacion) {
       public $value;
-      public function __construct(float $v) { $this->value = $v; }
-      public function isEmpty(): bool { return FALSE; }
+
+      public function __construct(float $v) {
+        $this->value = $v;
+      }
+
+      /**
+       *
+       */
+      public function isEmpty(): bool {
+        return FALSE;
+      }
+
     };
 
     $emptyField = new class() {
       public $value = NULL;
-      public function isEmpty(): bool { return TRUE; }
+
+      /**
+       *
+       */
+      public function isEmpty(): bool {
+        return TRUE;
+      }
+
     };
 
     $participante->method('get')

@@ -29,8 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Traducciones con t() en todas las cadenas visibles
  * - Datos de Chart.js se pasan via drupalSettings
  */
-class UsageDashboardController extends ControllerBase
-{
+class UsageDashboardController extends ControllerBase {
 
   /**
    * Constructor con inyección de dependencias.
@@ -46,8 +45,7 @@ class UsageDashboardController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('ecosistema_jaraba_core.tenant_context'),
       $container->get('ecosistema_jaraba_core.tenant_metering'),
@@ -61,8 +59,7 @@ class UsageDashboardController extends ControllerBase
   /**
    * Página principal de uso: /mi-cuenta/uso.
    */
-  public function dashboard(): array
-  {
+  public function dashboard(): array {
     $tenant = $this->tenantContext->getCurrentTenant();
 
     if (!$tenant) {
@@ -210,8 +207,7 @@ class UsageDashboardController extends ControllerBase
    * @return array
    *   AI usage breakdown with by_agent, by_tier, savings, and total stats.
    */
-  protected function getAiUsageBreakdown(string $tenantId): array
-  {
+  protected function getAiUsageBreakdown(string $tenantId): array {
     if (!$this->aiObservability) {
       return [];
     }

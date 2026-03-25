@@ -43,7 +43,7 @@ class OnboardingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/onboarding/progress
+   * GET /api/v1/onboarding/progress.
    *
    * Obtiene el progreso de onboarding del usuario actual.
    */
@@ -73,7 +73,7 @@ class OnboardingApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/onboarding/progress/{progress_id}/step
+   * POST /api/v1/onboarding/progress/{progress_id}/step.
    *
    * Completa un paso de onboarding.
    */
@@ -128,7 +128,7 @@ class OnboardingApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/onboarding/checklist
+   * GET /api/v1/onboarding/checklist.
    *
    * Obtiene el checklist de onboarding del usuario actual.
    */

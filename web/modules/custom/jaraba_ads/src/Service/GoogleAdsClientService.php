@@ -68,7 +68,7 @@ class GoogleAdsClientService {
       }
 
       // Llamada a la Google Ads API.
-      // En producción se usaría: GoogleAdsService.SearchStream con GAQL
+      // En producción se usaría: GoogleAdsService.SearchStream con GAQL.
       $this->logger->info('Google Ads: obteniendo campañas para cuenta @id (@ext)', [
         '@id' => $accountId,
         '@ext' => $externalId,
@@ -158,7 +158,7 @@ class GoogleAdsClientService {
       }, $emails);
 
       // Llamada a la Google Ads API.
-      // En producción: UserListService.mutate + OfflineUserDataJobService
+      // En producción: UserListService.mutate + OfflineUserDataJobService.
       $this->logger->info('Google Ads: creando audiencia Customer Match "@name" con @count miembros para cuenta @id', [
         '@name' => $name,
         '@count' => count($hashedEmails),
@@ -203,7 +203,7 @@ class GoogleAdsClientService {
       }
 
       // Llamada a la Google Ads API.
-      // En producción: ConversionUploadService.UploadClickConversions
+      // En producción: ConversionUploadService.UploadClickConversions.
       $this->logger->info('Google Ads: subiendo @count conversiones offline para cuenta @id', [
         '@count' => count($events),
         '@id' => $accountId,

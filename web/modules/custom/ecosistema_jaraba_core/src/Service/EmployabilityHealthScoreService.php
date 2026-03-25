@@ -306,7 +306,7 @@ class EmployabilityHealthScoreService {
       $score += min(50, (int) $certs * 15);
     }
     catch (\Exception $e) {
-      // credential entity may not exist.
+      // Credential entity may not exist.
     }
 
     return min(100, $score);

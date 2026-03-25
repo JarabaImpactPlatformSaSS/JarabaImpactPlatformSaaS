@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_billing\Controller;
 
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\jaraba_billing\Service\RedsysGatewayService;
@@ -170,7 +171,7 @@ class RedsysCallbackController extends ControllerBase {
             if (\Drupal::hasService('event_dispatcher')) {
               /** @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $dispatcher */
               $dispatcher = \Drupal::service('event_dispatcher');
-              $event = new \Symfony\Component\EventDispatcher\GenericEvent($orderNumber, [
+              $event = new GenericEvent($orderNumber, [
                 'plan_id' => $planId,
                 'tenant_id' => $tenantId,
                 'amount' => $amount,

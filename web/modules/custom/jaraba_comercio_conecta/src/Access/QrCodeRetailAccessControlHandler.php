@@ -10,8 +10,14 @@ use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class QrCodeRetailAccessControlHandler extends DefaultEntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
     $parentResult = parent::checkAccess($entity, $operation, $account);
@@ -33,6 +39,9 @@ class QrCodeRetailAccessControlHandler extends DefaultEntityAccessControlHandler
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermissions($account, [
       'manage comercio qr codes',
@@ -40,6 +49,9 @@ class QrCodeRetailAccessControlHandler extends DefaultEntityAccessControlHandler
     ], 'OR');
   }
 
+  /**
+   *
+   */
   protected function checkMerchantOwnership(EntityInterface $entity, AccountInterface $account): AccessResult {
     $merchant_id = $entity->get('merchant_id')->target_id;
     if (!$merchant_id) {

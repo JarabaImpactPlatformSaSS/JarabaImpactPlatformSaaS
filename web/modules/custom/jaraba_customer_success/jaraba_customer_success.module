@@ -177,7 +177,6 @@ function jaraba_customer_success_preprocess_html(array &$variables): void {
   }
 }
 
-
 /**
  * Prepares variables for churn_prediction templates.
  *

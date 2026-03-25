@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Integración:
  * - jaraba_crm: Crea crm_contact + crm_activity
  * - jaraba_email: Suscribe a lista de leads
- * - Notificación por email al administrador
+ * - Notificación por email al administrador.
  *
  * Seguridad:
  * - Flood API: 5 envíos/hora por IP

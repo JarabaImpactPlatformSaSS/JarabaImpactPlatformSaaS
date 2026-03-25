@@ -16,7 +16,7 @@
  * Define 3 tablas custom:
  * - secure_message: Mensajes cifrados con AES-256-GCM
  * - message_audit_log: Audit trail inmutable con hash chain SHA-256
- * - message_read_receipt: Read receipts por mensaje
+ * - message_read_receipt: Read receipts por mensaje.
  */
 function jaraba_messaging_schema(): array {
   $schema = [];

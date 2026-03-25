@@ -34,7 +34,8 @@ class IntegrationDashboardController extends ControllerBase implements Container
     protected ConnectorRegistryService $connectorRegistry,
     protected ConnectorInstallerService $connectorInstaller,
     protected ConnectorHealthCheckService $healthCheck,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+    protected readonly TenantContextService $tenantContext,
   ) {}
 
   /**
@@ -45,7 +46,8 @@ class IntegrationDashboardController extends ControllerBase implements Container
       $container->get('jaraba_integrations.connector_registry'),
       $container->get('jaraba_integrations.connector_installer'),
       $container->get('jaraba_integrations.health_check'),
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
+    // AUDIT-CONS-N10: Proper DI for tenant context.
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 

@@ -13,41 +13,39 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Control de acceso para la entidad SitePageTree.
  */
-class SitePageTreeAccessControlHandler extends DefaultEntityAccessControlHandler
-{
+class SitePageTreeAccessControlHandler extends DefaultEntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
-
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'view site structure')
-                    ->cachePerPermissions()
-                    ->addCacheableDependency($entity);
-
-            case 'update':
-            case 'delete':
-                return AccessResult::allowedIfHasPermission($account, 'administer site structure')
-                    ->cachePerPermissions()
-                    ->addCacheableDependency($entity);
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'administer site structure');
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'view site structure')
+          ->cachePerPermissions()
+          ->addCacheableDependency($entity);
+
+      case 'update':
+      case 'delete':
+        return AccessResult::allowedIfHasPermission($account, 'administer site structure')
+          ->cachePerPermissions()
+          ->addCacheableDependency($entity);
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'administer site structure');
+  }
 
 }

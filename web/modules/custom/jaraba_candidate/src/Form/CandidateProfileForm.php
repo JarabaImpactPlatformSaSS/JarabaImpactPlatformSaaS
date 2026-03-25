@@ -12,6 +12,9 @@ use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
  */
 class CandidateProfileForm extends PremiumEntityFormBase {
 
+  /**
+   *
+   */
   protected function getSectionDefinitions(): array {
     return [
       'personal' => [
@@ -74,10 +77,16 @@ class CandidateProfileForm extends PremiumEntityFormBase {
     return $this->t('Completa todas las secciones para maximizar tu visibilidad.');
   }
 
+  /**
+   *
+   */
   protected function getFormIcon(): array {
     return ['category' => 'ui', 'name' => 'user'];
   }
 
+  /**
+   *
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $entity = $this->getEntity();
     if ($entity->isNew() && empty($entity->get('user_id')->target_id)) {

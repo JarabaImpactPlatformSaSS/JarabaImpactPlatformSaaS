@@ -87,7 +87,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -122,7 +121,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 2: NUMERACION E IDENTIFICACION
     // =========================================================================
-
     $fields['quote_number'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Numero de Presupuesto'))
       ->setDescription(new TranslatableMarkup('Auto-generado: PRES-YYYY-NNNN.'))
@@ -147,7 +145,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 3: DATOS DEL CLIENTE
     // =========================================================================
-
     $fields['client_name'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Nombre del Cliente'))
       ->setSetting('max_length', 255)
@@ -188,7 +185,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 4: CONTENIDO DEL PRESUPUESTO
     // =========================================================================
-
     $fields['introduction'] = BaseFieldDefinition::create('text_long')
       ->setLabel(new TranslatableMarkup('Texto Introductorio'))
       ->setDisplayOptions('form', ['type' => 'text_textarea', 'weight' => 15])
@@ -210,7 +206,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 5: IMPORTES
     // =========================================================================
-
     $fields['subtotal'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Subtotal'))
       ->setSetting('precision', 10)
@@ -270,7 +265,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 6: CICLO DE VIDA
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setSetting('allowed_values', [
@@ -317,7 +311,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 7: IA
     // =========================================================================
-
     $fields['ai_generated'] = BaseFieldDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('Generado por IA'))
       ->setDefaultValue(FALSE)
@@ -326,7 +319,6 @@ class Quote extends ContentEntityBase implements EntityOwnerInterface, EntityCha
     // =========================================================================
     // BLOQUE 8: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

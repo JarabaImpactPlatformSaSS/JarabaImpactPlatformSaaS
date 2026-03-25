@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\NavigationFilterService;
 use Drupal\ecosistema_jaraba_core\Service\VerticalBrandSeoService;
 use Symfony\Component\DependencyInjection\ContainerInterface;

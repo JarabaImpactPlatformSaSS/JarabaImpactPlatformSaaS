@@ -52,14 +52,12 @@ class AgroShippingZone extends ContentEntityBase {
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
-      ->setRequired(TRUE)
-;
+      ->setRequired(TRUE);
 
     $fields['producer_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Productor'))
       ->setSetting('target_type', 'producer_profile')
-      ->setDescription(t('Si está vacío, la zona es global para el tenant.'))
-;
+      ->setDescription(t('Si está vacío, la zona es global para el tenant.'));
 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre de la Zona'))

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -7,6 +11,7 @@ declare(strict_types=1);
  * Legal Knowledge module — Base de conocimiento normativo con RAG pipeline.
  */
 
+use Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -81,7 +86,7 @@ function jaraba_legal_knowledge_preprocess_html(array &$variables): void {
 }
 
 /**
- * Implements template_preprocess_legal_norm_relation().
+ * Implements hook_preprocess_legal_norm_relation().
  *
  * ENTITY-PREPROCESS-001: Extracts primitives from the entity for Twig.
  */
@@ -93,7 +98,7 @@ function template_preprocess_legal_norm_relation(array &$variables): void {
   }
 
   $variables['relation_type'] = $entity->get('relation_type')->value;
-  $variables['relation_type_label'] = \Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation::RELATION_TYPES[$variables['relation_type']] ?? $variables['relation_type'];
+  $variables['relation_type_label'] = LegalNormRelation::RELATION_TYPES[$variables['relation_type']] ?? $variables['relation_type'];
   $variables['effective_date'] = $entity->get('effective_date')->value
     ? date('Y-m-d', (int) $entity->get('effective_date')->value)
     : NULL;

@@ -10,7 +10,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
- * SSO CONFIGURATION ENTITY — SsoConfiguration
+ * SSO CONFIGURATION ENTITY — SsoConfiguration.
  *
  * PURPOSE:
  * Stores SAML 2.0 / OIDC identity provider configurations per tenant.

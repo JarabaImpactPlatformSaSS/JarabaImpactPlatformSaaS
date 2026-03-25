@@ -180,10 +180,16 @@ class JarabaLexCrossVerticalBridgeServiceTest extends UnitTestCase {
     // Override getDismissedBridges and evaluateCondition via subclass.
     $testService = new class($this->entityTypeManager, $this->logger) extends JarabaLexCrossVerticalBridgeService {
 
+      /**
+       *
+       */
       protected function getDismissedBridges(int $userId): array {
         return [];
       }
 
+      /**
+       *
+       */
       protected function evaluateCondition(int $userId, string $condition): bool {
         // All conditions match.
         return TRUE;
@@ -206,10 +212,16 @@ class JarabaLexCrossVerticalBridgeServiceTest extends UnitTestCase {
   public function testEvaluateBridgesSortsByPriority(): void {
     $testService = new class($this->entityTypeManager, $this->logger) extends JarabaLexCrossVerticalBridgeService {
 
+      /**
+       *
+       */
       protected function getDismissedBridges(int $userId): array {
         return [];
       }
 
+      /**
+       *
+       */
       protected function evaluateCondition(int $userId, string $condition): bool {
         return TRUE;
       }
@@ -232,11 +244,17 @@ class JarabaLexCrossVerticalBridgeServiceTest extends UnitTestCase {
   public function testEvaluateBridgesExcludesDismissed(): void {
     $testService = new class($this->entityTypeManager, $this->logger) extends JarabaLexCrossVerticalBridgeService {
 
+      /**
+       *
+       */
       protected function getDismissedBridges(int $userId): array {
         // User dismissed emprendimiento_legal and fiscal_compliance.
         return ['emprendimiento_legal', 'fiscal_compliance'];
       }
 
+      /**
+       *
+       */
       protected function evaluateCondition(int $userId, string $condition): bool {
         return TRUE;
       }
@@ -258,10 +276,16 @@ class JarabaLexCrossVerticalBridgeServiceTest extends UnitTestCase {
   public function testEvaluateBridgesReturnsEmptyWhenNoConditionsMatch(): void {
     $testService = new class($this->entityTypeManager, $this->logger) extends JarabaLexCrossVerticalBridgeService {
 
+      /**
+       *
+       */
       protected function getDismissedBridges(int $userId): array {
         return [];
       }
 
+      /**
+       *
+       */
       protected function evaluateCondition(int $userId, string $condition): bool {
         return FALSE;
       }

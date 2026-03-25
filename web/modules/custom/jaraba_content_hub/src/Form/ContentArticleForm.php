@@ -100,11 +100,11 @@ class ContentArticleForm extends PremiumEntityFormBase {
       $form['canvas_editor_link'] = [
         '#type' => 'markup',
         '#markup' => '<div class="article-canvas-editor-link" style="margin-bottom: 1rem;">'
-          . '<a href="' . $canvasUrl->toString() . '" class="button button--primary" target="_blank">'
-          . '✦ ' . $this->t('Open Canvas Editor')
-          . '</a>'
-          . '<p class="description">' . $this->t('This article uses the visual Canvas Editor. Click to open the drag-and-drop editor.') . '</p>'
-          . '</div>',
+        . '<a href="' . $canvasUrl->toString() . '" class="button button--primary" target="_blank">'
+        . '✦ ' . $this->t('Open Canvas Editor')
+        . '</a>'
+        . '<p class="description">' . $this->t('This article uses the visual Canvas Editor. Click to open the drag-and-drop editor.') . '</p>'
+        . '</div>',
         '#weight' => -5,
       ];
     }

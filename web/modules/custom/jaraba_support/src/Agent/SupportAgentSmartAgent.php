@@ -38,187 +38,178 @@ use Psr\Log\LoggerInterface;
  *
  * PATRON: AGENT-GEN2-PATTERN-001, SMART-AGENT-CONSTRUCTOR-001
  */
-class SupportAgentSmartAgent extends SmartBaseAgent
-{
+class SupportAgentSmartAgent extends SmartBaseAgent {
 
-    /**
-     * Constructs a SupportAgentSmartAgent.
-     *
-     * SMART-AGENT-CONSTRUCTOR-001: 10 standard args matching services.yml.
-     *
-     * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
-     *   El gestor de proveedores IA.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   La factoria de configuracion.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El servicio de logging.
-     * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null $brandVoice
-     *   El servicio de Brand Voice.
-     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null $observability
-     *   El servicio de observabilidad.
-     * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService|null $modelRouter
-     *   El servicio de routing de modelos.
-     * @param \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null $promptBuilder
-     *   El constructor de prompts unificado (opcional).
-     * @param \Drupal\jaraba_ai_agents\Tool\ToolRegistry|null $toolRegistry
-     *   El registro de herramientas (opcional).
-     * @param \Drupal\jaraba_ai_agents\Service\ProviderFallbackService|null $providerFallback
-     *   El servicio de fallback de proveedores (opcional).
-     * @param \Drupal\jaraba_ai_agents\Service\ContextWindowManager|null $contextWindowManager
-     *   El gestor de ventana de contexto (opcional).
-     */
-    public function __construct(
-        ?AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        ?TenantBrandVoiceService $brandVoice,
-        ?AIObservabilityService $observability,
-        ?ModelRouterService $modelRouter = NULL,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-    ) {
-        if ($aiProvider && $brandVoice && $observability) {
-            parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        }
-        if ($modelRouter) {
-            $this->setModelRouter($modelRouter);
-        }
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
+  /**
+   * Constructs a SupportAgentSmartAgent.
+   *
+   * SMART-AGENT-CONSTRUCTOR-001: 10 standard args matching services.yml.
+   *
+   * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
+   *   El gestor de proveedores IA.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   La factoria de configuracion.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El servicio de logging.
+   * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null $brandVoice
+   *   El servicio de Brand Voice.
+   * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null $observability
+   *   El servicio de observabilidad.
+   * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService|null $modelRouter
+   *   El servicio de routing de modelos.
+   * @param \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null $promptBuilder
+   *   El constructor de prompts unificado (opcional).
+   * @param \Drupal\jaraba_ai_agents\Tool\ToolRegistry|null $toolRegistry
+   *   El registro de herramientas (opcional).
+   * @param \Drupal\jaraba_ai_agents\Service\ProviderFallbackService|null $providerFallback
+   *   El servicio de fallback de proveedores (opcional).
+   * @param \Drupal\jaraba_ai_agents\Service\ContextWindowManager|null $contextWindowManager
+   *   El gestor de ventana de contexto (opcional).
+   */
+  public function __construct(
+    ?AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    ?TenantBrandVoiceService $brandVoice,
+    ?AIObservabilityService $observability,
+    ?ModelRouterService $modelRouter = NULL,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+  ) {
+    if ($aiProvider && $brandVoice && $observability) {
+      parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'support_agent';
+    if ($modelRouter) {
+      $this->setModelRouter($modelRouter);
     }
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+  }
 
-    /**
-     * Returns the vertical context for this agent.
-     *
-     * @return string
-     *   The vertical identifier.
-     */
-    public function getVertical(): string
-    {
-        return 'platform';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'support_agent';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Support Agent';
-    }
+  /**
+   * Returns the vertical context for this agent.
+   *
+   * @return string
+   *   The vertical identifier.
+   */
+  public function getVertical(): string {
+    return 'platform';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Agente IA de soporte al cliente con clasificacion automatica, sugerencia de respuestas, resumen de hilos y deteccion de sentimiento.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Support Agent';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define el Brand Voice por defecto para soporte al cliente.
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return 'Eres un agente de soporte al cliente profesional, empático y resolutivo. Priorizas la satisfacción del cliente manteniendo un tono cálido pero eficiente.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Agente IA de soporte al cliente con clasificacion automatica, sugerencia de respuestas, resumen de hilos y deteccion de sentimiento.';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define las acciones disponibles con sus tiers de modelo asignados.
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'classify_ticket' => [
-                'label' => 'Clasificar ticket',
-                'description' => 'Clasifica prioridad, categoría y tipo de un ticket de soporte.',
-                'tier' => 'fast',
-            ],
-            'suggest_response' => [
-                'label' => 'Sugerir respuesta',
-                'description' => 'Sugiere una respuesta basada en el contexto del ticket y la base de conocimiento.',
-                'tier' => 'balanced',
-            ],
-            'summarize_thread' => [
-                'label' => 'Resumir hilo',
-                'description' => 'Genera un resumen conciso de una conversación larga de soporte.',
-                'tier' => 'fast',
-            ],
-            'detect_sentiment' => [
-                'label' => 'Detectar sentimiento',
-                'description' => 'Analiza el sentimiento y nivel de urgencia del cliente.',
-                'tier' => 'fast',
-            ],
-            'draft_resolution' => [
-                'label' => 'Redactar resolución',
-                'description' => 'Genera una resolución detallada con pasos de acción.',
-                'tier' => 'premium',
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * Define el Brand Voice por defecto para soporte al cliente.
+   */
+  protected function getDefaultBrandVoice(): string {
+    return 'Eres un agente de soporte al cliente profesional, empático y resolutivo. Priorizas la satisfacción del cliente manteniendo un tono cálido pero eficiente.';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * AGENT-GEN2-PATTERN-001: Enruta la ejecucion al metodo de accion
-     * correspondiente. Stub inicial que registra la accion y retorna
-     * una respuesta basica.
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        $this->logger->info('SupportAgentSmartAgent executing action: @action', [
-            '@action' => $action,
-        ]);
+  /**
+   * {@inheritdoc}
+   *
+   * Define las acciones disponibles con sus tiers de modelo asignados.
+   */
+  public function getAvailableActions(): array {
+    return [
+      'classify_ticket' => [
+        'label' => 'Clasificar ticket',
+        'description' => 'Clasifica prioridad, categoría y tipo de un ticket de soporte.',
+        'tier' => 'fast',
+      ],
+      'suggest_response' => [
+        'label' => 'Sugerir respuesta',
+        'description' => 'Sugiere una respuesta basada en el contexto del ticket y la base de conocimiento.',
+        'tier' => 'balanced',
+      ],
+      'summarize_thread' => [
+        'label' => 'Resumir hilo',
+        'description' => 'Genera un resumen conciso de una conversación larga de soporte.',
+        'tier' => 'fast',
+      ],
+      'detect_sentiment' => [
+        'label' => 'Detectar sentimiento',
+        'description' => 'Analiza el sentimiento y nivel de urgencia del cliente.',
+        'tier' => 'fast',
+      ],
+      'draft_resolution' => [
+        'label' => 'Redactar resolución',
+        'description' => 'Genera una resolución detallada con pasos de acción.',
+        'tier' => 'premium',
+      ],
+    ];
+  }
 
-        $result = match ($action) {
-            'classify_ticket' => $this->actionClassifyTicket($context),
+  /**
+   * {@inheritdoc}
+   *
+   * AGENT-GEN2-PATTERN-001: Enruta la ejecucion al metodo de accion
+   * correspondiente. Stub inicial que registra la accion y retorna
+   * una respuesta basica.
+   */
+  protected function doExecute(string $action, array $context): array {
+    $this->logger->info('SupportAgentSmartAgent executing action: @action', [
+      '@action' => $action,
+    ]);
+
+    $result = match ($action) {
+      'classify_ticket' => $this->actionClassifyTicket($context),
             'suggest_response' => $this->actionSuggestResponse($context),
             'summarize_thread' => $this->actionSummarizeThread($context),
             'detect_sentiment' => $this->actionDetectSentiment($context),
             'draft_resolution' => $this->actionDraftResolution($context),
             default => ['success' => FALSE, 'error' => "Accion no soportada: {$action}"],
-        };
+    };
 
-        return $result;
+    return $result;
+  }
+
+  /**
+   * Clasifica un ticket de soporte por prioridad y categoria.
+   *
+   * Analiza el asunto y descripcion del ticket para asignar
+   * automaticamente prioridad (low/medium/high/urgent), categoria
+   * y tipo de incidencia.
+   *
+   * @param array $context
+   *   Contexto con 'subject' (requerido), 'description', 'customer_history'.
+   *
+   * @return array
+   *   Resultado con 'priority', 'category', 'type', 'confidence'.
+   */
+  protected function actionClassifyTicket(array $context): array {
+    $subject = $context['subject'] ?? '';
+    $description = $context['description'] ?? '';
+
+    if (empty($subject) && empty($description)) {
+      return ['success' => FALSE, 'error' => 'Se requiere asunto o descripción del ticket.'];
     }
 
-    /**
-     * Clasifica un ticket de soporte por prioridad y categoria.
-     *
-     * Analiza el asunto y descripcion del ticket para asignar
-     * automaticamente prioridad (low/medium/high/urgent), categoria
-     * y tipo de incidencia.
-     *
-     * @param array $context
-     *   Contexto con 'subject' (requerido), 'description', 'customer_history'.
-     *
-     * @return array
-     *   Resultado con 'priority', 'category', 'type', 'confidence'.
-     */
-    protected function actionClassifyTicket(array $context): array
-    {
-        $subject = $context['subject'] ?? '';
-        $description = $context['description'] ?? '';
-
-        if (empty($subject) && empty($description)) {
-            return ['success' => FALSE, 'error' => 'Se requiere asunto o descripción del ticket.'];
-        }
-
-        $prompt = <<<PROMPT
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -238,48 +229,47 @@ Responde ÚNICAMENTE en formato JSON válido:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.3]);
+    $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.3]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear respuesta de clasificación.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Sugiere una respuesta para un ticket basada en contexto y KB.
-     *
-     * Genera una respuesta sugerida utilizando el historial del ticket,
-     * la base de conocimiento y el tono de marca del tenant.
-     *
-     * @param array $context
-     *   Contexto con 'subject', 'messages' (array), 'kb_context'.
-     *
-     * @return array
-     *   Resultado con 'suggested_response', 'confidence', 'sources'.
-     */
-    protected function actionSuggestResponse(array $context): array
-    {
-        $subject = $context['subject'] ?? '';
-        $messages = $context['messages'] ?? [];
-        $kbContext = $context['kb_context'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear respuesta de clasificación.'];
+  }
 
-        if (empty($subject) && empty($messages)) {
-            return ['success' => FALSE, 'error' => 'Se requiere asunto o mensajes del ticket.'];
-        }
+  /**
+   * Sugiere una respuesta para un ticket basada en contexto y KB.
+   *
+   * Genera una respuesta sugerida utilizando el historial del ticket,
+   * la base de conocimiento y el tono de marca del tenant.
+   *
+   * @param array $context
+   *   Contexto con 'subject', 'messages' (array), 'kb_context'.
+   *
+   * @return array
+   *   Resultado con 'suggested_response', 'confidence', 'sources'.
+   */
+  protected function actionSuggestResponse(array $context): array {
+    $subject = $context['subject'] ?? '';
+    $messages = $context['messages'] ?? [];
+    $kbContext = $context['kb_context'] ?? '';
 
-        $messagesText = '';
-        foreach ($messages as $msg) {
-            $role = $msg['role'] ?? 'customer';
-            $text = $msg['text'] ?? '';
-            $messagesText .= "[{$role}]: {$text}\n";
-        }
+    if (empty($subject) && empty($messages)) {
+      return ['success' => FALSE, 'error' => 'Se requiere asunto o mensajes del ticket.'];
+    }
 
-        $prompt = <<<PROMPT
+    $messagesText = '';
+    foreach ($messages as $msg) {
+      $role = $msg['role'] ?? 'customer';
+      $text = $msg['text'] ?? '';
+      $messagesText .= "[{$role}]: {$text}\n";
+    }
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -306,47 +296,46 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['temperature' => 0.6]);
+    $result = $this->callAiApi($prompt, ['temperature' => 0.6]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear respuesta sugerida.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Resume un hilo de conversacion de soporte.
-     *
-     * Genera un resumen conciso de una conversacion larga,
-     * destacando los puntos clave y el estado actual.
-     *
-     * @param array $context
-     *   Contexto con 'messages' (array requerido), 'subject'.
-     *
-     * @return array
-     *   Resultado con 'summary', 'key_points', 'current_status'.
-     */
-    protected function actionSummarizeThread(array $context): array
-    {
-        $messages = $context['messages'] ?? [];
-        $subject = $context['subject'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear respuesta sugerida.'];
+  }
 
-        if (empty($messages)) {
-            return ['success' => FALSE, 'error' => 'Se requieren mensajes para resumir.'];
-        }
+  /**
+   * Resume un hilo de conversacion de soporte.
+   *
+   * Genera un resumen conciso de una conversacion larga,
+   * destacando los puntos clave y el estado actual.
+   *
+   * @param array $context
+   *   Contexto con 'messages' (array requerido), 'subject'.
+   *
+   * @return array
+   *   Resultado con 'summary', 'key_points', 'current_status'.
+   */
+  protected function actionSummarizeThread(array $context): array {
+    $messages = $context['messages'] ?? [];
+    $subject = $context['subject'] ?? '';
 
-        $messagesText = '';
-        foreach ($messages as $msg) {
-            $role = $msg['role'] ?? 'customer';
-            $text = $msg['text'] ?? '';
-            $messagesText .= "[{$role}]: {$text}\n";
-        }
+    if (empty($messages)) {
+      return ['success' => FALSE, 'error' => 'Se requieren mensajes para resumir.'];
+    }
 
-        $prompt = <<<PROMPT
+    $messagesText = '';
+    foreach ($messages as $msg) {
+      $role = $msg['role'] ?? 'customer';
+      $text = $msg['text'] ?? '';
+      $messagesText .= "[{$role}]: {$text}\n";
+    }
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 Resume la siguiente conversación de soporte de forma concisa:
@@ -365,39 +354,38 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.3]);
+    $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.3]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear resumen.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Detecta el sentimiento y urgencia de un mensaje de cliente.
-     *
-     * Analiza el tono emocional y determina si requiere
-     * atencion prioritaria o escalacion.
-     *
-     * @param array $context
-     *   Contexto con 'text' (requerido), 'customer_history'.
-     *
-     * @return array
-     *   Resultado con 'sentiment', 'urgency', 'escalation_recommended'.
-     */
-    protected function actionDetectSentiment(array $context): array
-    {
-        $text = $context['text'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear resumen.'];
+  }
 
-        if (empty($text)) {
-            return ['success' => FALSE, 'error' => 'Se requiere texto para analizar.'];
-        }
+  /**
+   * Detecta el sentimiento y urgencia de un mensaje de cliente.
+   *
+   * Analiza el tono emocional y determina si requiere
+   * atencion prioritaria o escalacion.
+   *
+   * @param array $context
+   *   Contexto con 'text' (requerido), 'customer_history'.
+   *
+   * @return array
+   *   Resultado con 'sentiment', 'urgency', 'escalation_recommended'.
+   */
+  protected function actionDetectSentiment(array $context): array {
+    $text = $context['text'] ?? '';
 
-        $prompt = <<<PROMPT
+    if (empty($text)) {
+      return ['success' => FALSE, 'error' => 'Se requiere texto para analizar.'];
+    }
+
+    $prompt = <<<PROMPT
 Analiza el sentimiento y urgencia del siguiente mensaje de un cliente:
 
 "{$text}"
@@ -413,49 +401,48 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.2]);
+    $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.2]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear análisis de sentimiento.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Genera una resolucion detallada con pasos de accion.
-     *
-     * Crea una respuesta exhaustiva para resolver un ticket,
-     * incluyendo pasos, links a documentacion y seguimiento.
-     *
-     * @param array $context
-     *   Contexto con 'subject', 'messages', 'kb_context', 'ticket_type'.
-     *
-     * @return array
-     *   Resultado con 'resolution', 'steps', 'documentation_links'.
-     */
-    protected function actionDraftResolution(array $context): array
-    {
-        $subject = $context['subject'] ?? '';
-        $messages = $context['messages'] ?? [];
-        $kbContext = $context['kb_context'] ?? '';
-        $ticketType = $context['ticket_type'] ?? 'general';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear análisis de sentimiento.'];
+  }
 
-        if (empty($subject) && empty($messages)) {
-            return ['success' => FALSE, 'error' => 'Se requiere contexto del ticket para generar resolución.'];
-        }
+  /**
+   * Genera una resolucion detallada con pasos de accion.
+   *
+   * Crea una respuesta exhaustiva para resolver un ticket,
+   * incluyendo pasos, links a documentacion y seguimiento.
+   *
+   * @param array $context
+   *   Contexto con 'subject', 'messages', 'kb_context', 'ticket_type'.
+   *
+   * @return array
+   *   Resultado con 'resolution', 'steps', 'documentation_links'.
+   */
+  protected function actionDraftResolution(array $context): array {
+    $subject = $context['subject'] ?? '';
+    $messages = $context['messages'] ?? [];
+    $kbContext = $context['kb_context'] ?? '';
+    $ticketType = $context['ticket_type'] ?? 'general';
 
-        $messagesText = '';
-        foreach ($messages as $msg) {
-            $role = $msg['role'] ?? 'customer';
-            $text = $msg['text'] ?? '';
-            $messagesText .= "[{$role}]: {$text}\n";
-        }
+    if (empty($subject) && empty($messages)) {
+      return ['success' => FALSE, 'error' => 'Se requiere contexto del ticket para generar resolución.'];
+    }
 
-        $prompt = <<<PROMPT
+    $messagesText = '';
+    foreach ($messages as $msg) {
+      $role = $msg['role'] ?? 'customer';
+      $text = $msg['text'] ?? '';
+      $messagesText .= "[{$role}]: {$text}\n";
+    }
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -487,19 +474,19 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, [
-            'require_quality' => TRUE,
-            'temperature' => 0.5,
-        ]);
+    $result = $this->callAiApi($prompt, [
+      'require_quality' => TRUE,
+      'temperature' => 0.5,
+    ]);
 
-        if (!$result['success']) {
-            return $result;
-        }
+    if (!$result['success']) {
+      return $result;
+    }
 
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
             ? ['success' => TRUE, 'data' => $parsed]
             : ['success' => FALSE, 'error' => 'Error al parsear resolución.'];
-    }
+  }
 
 }

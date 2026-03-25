@@ -127,18 +127,30 @@ class SmartBaseAgentTest extends TestCase {
         $this->testResult = $testResult;
       }
 
+      /**
+       *
+       */
       public function getAgentId(): string {
         return 'test_smart_agent';
       }
 
+      /**
+       *
+       */
       public function getLabel(): string {
         return 'Test Smart Agent';
       }
 
+      /**
+       *
+       */
       public function getDescription(): string {
         return 'A test agent for unit testing SmartBaseAgent.';
       }
 
+      /**
+       *
+       */
       public function getAvailableActions(): array {
         return [
           'generate' => [
@@ -148,10 +160,16 @@ class SmartBaseAgentTest extends TestCase {
         ];
       }
 
+      /**
+       *
+       */
       protected function getDefaultBrandVoice(): string {
         return 'You are a professional test assistant. Respond clearly and helpfully.';
       }
 
+      /**
+       *
+       */
       protected function doExecute(string $action, array $context): array {
         $this->doExecuteCalled = [
           'action' => $action,

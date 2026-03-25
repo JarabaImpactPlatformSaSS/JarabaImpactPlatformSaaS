@@ -240,20 +240,30 @@ class ProspeccionServiceTest extends UnitTestCase {
    */
   protected function createProspeccionMock(int $id, array $fieldValues, array &$setTracker = []): object {
     return new class($id, $fieldValues, $setTracker) {
+
       public function __construct(
         private readonly int $id,
         private readonly array $fieldValues,
         private array &$setTracker,
       ) {}
 
+      /**
+       *
+       */
       public function id(): int {
         return $this->id;
       }
 
+      /**
+       *
+       */
       public function label(): ?string {
         return $this->fieldValues['empresa_nombre'] ?? "Prospeccion #{$this->id}";
       }
 
+      /**
+       *
+       */
       public function get(string $fieldName): object {
         if ($fieldName === 'tenant_id') {
           $targetId = $this->fieldValues['tenant_id_target'] ?? NULL;
@@ -263,34 +273,53 @@ class ProspeccionServiceTest extends UnitTestCase {
             public function __construct(mixed $t) {
               $this->target_id = $t;
             }
+
           };
         }
         $value = $this->fieldValues[$fieldName] ?? NULL;
         return new class($value) {
+
           public function __construct(public readonly mixed $value) {}
+
         };
       }
 
+      /**
+       *
+       */
       public function set(string $fieldName, mixed $value): static {
         $this->setTracker[$fieldName] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): int {
         return 1;
       }
 
+      /**
+       *
+       */
       public function getCacheContexts(): array {
         return [];
       }
 
+      /**
+       *
+       */
       public function getCacheTags(): array {
         return ["prospeccion_empresarial:{$this->id}"];
       }
 
+      /**
+       *
+       */
       public function getCacheMaxAge(): int {
         return -1;
       }
+
     };
   }
 

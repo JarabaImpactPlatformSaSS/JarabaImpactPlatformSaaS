@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Service;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -50,7 +51,7 @@ class InstitutionalReportService {
    *   - economic_report: program_name, period, budget_lines[], totals
    *   - impact_report: program_name, period, metrics (insertion_rate, companies_created, etc.)
    *   - technical_justification: program_name, period, activities[], evidence[]
-   *   - attendance_certificates: program_name, cohort_name, students[]
+   *   - attendance_certificates: program_name, cohort_name, students[].
    * @param int|null $tenantId
    *   ID del tenant para la marca.
    *
@@ -85,7 +86,7 @@ class InstitutionalReportService {
 
       // Guardar PDF.
       $directory = 'private://institutional_reports/' . date('Y/m');
-      \Drupal::service('file_system')->prepareDirectory($directory, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+      \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
       $filename = $type . '_' . str_replace('/', '-', $period) . '_' . time() . '.pdf';
       $uri = $directory . '/' . $filename;
@@ -155,11 +156,7 @@ class InstitutionalReportService {
    */
   protected function createPdfInstance(): \TCPDF {
     if (!class_exists('TCPDF')) {
-      // Fallback: try autoloading.
-      $autoload = DRUPAL_ROOT . '/vendor/autoload.php';
-      if (file_exists($autoload)) {
-        require_once $autoload;
-      }
+      throw new \RuntimeException('TCPDF library not available. Install: composer require tecnickcom/tcpdf');
     }
 
     $pdf = new class('P', 'mm', 'A4', TRUE, 'UTF-8', FALSE) extends \TCPDF {
@@ -196,7 +193,8 @@ class InstitutionalReportService {
 
     // Title.
     $pdf->SetFont('helvetica', 'B', 18);
-    $pdf->SetTextColor(35, 61, 99); // corporate blue
+    // Corporate blue.
+    $pdf->SetTextColor(35, 61, 99);
     $pdf->Cell(0, 12, 'SEGUIMIENTO MENSUAL', 0, 1, 'C');
 
     $pdf->SetFont('helvetica', '', 12);
@@ -455,7 +453,8 @@ class InstitutionalReportService {
     $dateIssued = $data['date_issued'] ?? date('d/m/Y');
 
     foreach ($students as $student) {
-      $pdf->AddPage('L'); // Landscape for certificates.
+      // Landscape for certificates.
+      $pdf->AddPage('L');
 
       // Border.
       $pdf->SetDrawColor(35, 61, 99);

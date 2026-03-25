@@ -45,211 +45,203 @@ use Psr\Log\LoggerInterface;
  * ESPECIFICACION: Doc 128 - Platform_AI_Content_Hub_v2
  * PATRON: AGENT-GEN2-PATTERN-001, SMART-AGENT-CONSTRUCTOR-001
  */
-class SmartContentWriterAgent extends SmartBaseAgent
-{
+class SmartContentWriterAgent extends SmartBaseAgent {
 
-    /**
-     * El gestor de tipos de entidad.
-     *
-     * Para logging de generaciones en ai_generation_log.
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
-     */
-    protected ?EntityTypeManagerInterface $entityTypeManager = NULL;
+  /**
+   * El gestor de tipos de entidad.
+   *
+   * Para logging de generaciones en ai_generation_log.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
+   */
+  protected ?EntityTypeManagerInterface $entityTypeManager = NULL;
 
-    /**
-     * El usuario actual.
-     *
-     * Para asociar generaciones al autor.
-     *
-     * @var \Drupal\Core\Session\AccountProxyInterface|null
-     */
-    protected ?AccountProxyInterface $currentUser = NULL;
+  /**
+   * El usuario actual.
+   *
+   * Para asociar generaciones al autor.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface|null
+   */
+  protected ?AccountProxyInterface $currentUser = NULL;
 
-    /**
-     * Servicio de medicion de uso por tenant.
-     *
-     * @var \Drupal\jaraba_billing\Service\TenantMeteringService|null
-     */
-    protected ?TenantMeteringService $meteringService = NULL;
+  /**
+   * Servicio de medicion de uso por tenant.
+   *
+   * @var \Drupal\jaraba_billing\Service\TenantMeteringService|null
+   */
+  protected ?TenantMeteringService $meteringService = NULL;
 
-    /**
-     * Constructs a SmartContentWriterAgent.
-     *
-     * SMART-AGENT-CONSTRUCTOR-001: 10 standard args + 3 domain-specific.
-     *
-     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
-     *   El gestor de proveedores IA.
-     * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-     *   La factoria de configuracion.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El servicio de logging.
-     * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice
-     *   El servicio de Brand Voice.
-     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
-     *   El servicio de observabilidad.
-     * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService $modelRouter
-     *   El servicio de routing de modelos.
-     * @param \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null $promptBuilder
-     *   El constructor de prompts unificado (opcional).
-     * @param \Drupal\jaraba_ai_agents\Tool\ToolRegistry|null $toolRegistry
-     *   El registro de herramientas (opcional).
-     * @param \Drupal\jaraba_ai_agents\Service\ProviderFallbackService|null $providerFallback
-     *   El servicio de fallback de proveedores (opcional).
-     * @param \Drupal\jaraba_ai_agents\Service\ContextWindowManager|null $contextWindowManager
-     *   El gestor de ventana de contexto (opcional).
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
-     *   El gestor de tipos de entidad (opcional).
-     * @param \Drupal\Core\Session\AccountProxyInterface|null $currentUser
-     *   El usuario actual (opcional).
-     * @param \Drupal\jaraba_billing\Service\TenantMeteringService|null $meteringService
-     *   El servicio de metering (opcional).
-     */
-    public function __construct(
-        ?AiProviderPluginManager $aiProvider,
-        ConfigFactoryInterface $configFactory,
-        LoggerInterface $logger,
-        ?TenantBrandVoiceService $brandVoice,
-        ?AIObservabilityService $observability,
-        ?ModelRouterService $modelRouter = NULL,
-        ?UnifiedPromptBuilder $promptBuilder = NULL,
-        ?ToolRegistry $toolRegistry = NULL,
-        ?ProviderFallbackService $providerFallback = NULL,
-        ?ContextWindowManager $contextWindowManager = NULL,
-        ?EntityTypeManagerInterface $entityTypeManager = NULL,
-        ?AccountProxyInterface $currentUser = NULL,
-        ?TenantMeteringService $meteringService = NULL,
-    ) {
-        if ($aiProvider && $brandVoice && $observability) {
-            parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        }
-        if ($modelRouter) {
-            $this->setModelRouter($modelRouter);
-        }
-        $this->setToolRegistry($toolRegistry);
-        $this->setProviderFallback($providerFallback);
-        $this->setContextWindowManager($contextWindowManager);
-        $this->entityTypeManager = $entityTypeManager;
-        $this->currentUser = $currentUser;
-        $this->meteringService = $meteringService;
+  /**
+   * Constructs a SmartContentWriterAgent.
+   *
+   * SMART-AGENT-CONSTRUCTOR-001: 10 standard args + 3 domain-specific.
+   *
+   * @param \Drupal\ai\AiProviderPluginManager $aiProvider
+   *   El gestor de proveedores IA.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   La factoria de configuracion.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El servicio de logging.
+   * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice
+   *   El servicio de Brand Voice.
+   * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
+   *   El servicio de observabilidad.
+   * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService $modelRouter
+   *   El servicio de routing de modelos.
+   * @param \Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder|null $promptBuilder
+   *   El constructor de prompts unificado (opcional).
+   * @param \Drupal\jaraba_ai_agents\Tool\ToolRegistry|null $toolRegistry
+   *   El registro de herramientas (opcional).
+   * @param \Drupal\jaraba_ai_agents\Service\ProviderFallbackService|null $providerFallback
+   *   El servicio de fallback de proveedores (opcional).
+   * @param \Drupal\jaraba_ai_agents\Service\ContextWindowManager|null $contextWindowManager
+   *   El gestor de ventana de contexto (opcional).
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
+   *   El gestor de tipos de entidad (opcional).
+   * @param \Drupal\Core\Session\AccountProxyInterface|null $currentUser
+   *   El usuario actual (opcional).
+   * @param \Drupal\jaraba_billing\Service\TenantMeteringService|null $meteringService
+   *   El servicio de metering (opcional).
+   */
+  public function __construct(
+    ?AiProviderPluginManager $aiProvider,
+    ConfigFactoryInterface $configFactory,
+    LoggerInterface $logger,
+    ?TenantBrandVoiceService $brandVoice,
+    ?AIObservabilityService $observability,
+    ?ModelRouterService $modelRouter = NULL,
+    ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
+    ?EntityTypeManagerInterface $entityTypeManager = NULL,
+    ?AccountProxyInterface $currentUser = NULL,
+    ?TenantMeteringService $meteringService = NULL,
+  ) {
+    if ($aiProvider && $brandVoice && $observability) {
+      parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAgentId(): string
-    {
-        return 'smart_content_writer';
+    if ($modelRouter) {
+      $this->setModelRouter($modelRouter);
     }
+    $this->setToolRegistry($toolRegistry);
+    $this->setProviderFallback($providerFallback);
+    $this->setContextWindowManager($contextWindowManager);
+    $this->entityTypeManager = $entityTypeManager;
+    $this->currentUser = $currentUser;
+    $this->meteringService = $meteringService;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getLabel(): string
-    {
-        return 'Smart Content Writer Agent';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getAgentId(): string {
+    return 'smart_content_writer';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription(): string
-    {
-        return 'Asistente de escritura IA con routing inteligente para generacion de articulos de blog, optimizacion SEO y creacion de contenido.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'Smart Content Writer Agent';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define el Brand Voice por defecto para escritura de contenido.
-     */
-    protected function getDefaultBrandVoice(): string
-    {
-        return 'Eres un escritor de contenido experto, especializado en crear artículos claros, informativos y optimizados para SEO.';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription(): string {
+    return 'Asistente de escritura IA con routing inteligente para generacion de articulos de blog, optimizacion SEO y creacion de contenido.';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Define las acciones disponibles con sus tiers de modelo asignados.
-     */
-    public function getAvailableActions(): array
-    {
-        return [
-            'generate_outline' => [
-                'label' => 'Generar estructura',
-                'description' => 'Genera un outline detallado para un artículo.',
-                'tier' => 'balanced',
-            ],
-            'expand_section' => [
-                'label' => 'Expandir sección',
-                'description' => 'Convierte un título de sección en contenido completo.',
-                'tier' => 'balanced',
-            ],
-            'optimize_headline' => [
-                'label' => 'Optimizar título',
-                'description' => 'Genera variantes de títulos optimizados para SEO y engagement.',
-                'tier' => 'fast',
-            ],
-            'improve_seo' => [
-                'label' => 'Mejorar SEO',
-                'description' => 'Genera answer_capsule, meta title y meta description.',
-                'tier' => 'fast',
-            ],
-            'full_article' => [
-                'label' => 'Artículo completo',
-                'description' => 'Genera un artículo completo desde un tema.',
-                'tier' => 'premium',
-            ],
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * Define el Brand Voice por defecto para escritura de contenido.
+   */
+  protected function getDefaultBrandVoice(): string {
+    return 'Eres un escritor de contenido experto, especializado en crear artículos claros, informativos y optimizados para SEO.';
+  }
 
-    /**
-     * {@inheritdoc}
-     *
-     * AGENT-GEN2-PATTERN-001: Enruta la ejecucion al metodo de accion
-     * correspondiente. Registra cada generacion en el log de auditoria.
-     */
-    protected function doExecute(string $action, array $context): array
-    {
-        $result = match ($action) {
-            'generate_outline' => $this->actionGenerateOutline($context),
+  /**
+   * {@inheritdoc}
+   *
+   * Define las acciones disponibles con sus tiers de modelo asignados.
+   */
+  public function getAvailableActions(): array {
+    return [
+      'generate_outline' => [
+        'label' => 'Generar estructura',
+        'description' => 'Genera un outline detallado para un artículo.',
+        'tier' => 'balanced',
+      ],
+      'expand_section' => [
+        'label' => 'Expandir sección',
+        'description' => 'Convierte un título de sección en contenido completo.',
+        'tier' => 'balanced',
+      ],
+      'optimize_headline' => [
+        'label' => 'Optimizar título',
+        'description' => 'Genera variantes de títulos optimizados para SEO y engagement.',
+        'tier' => 'fast',
+      ],
+      'improve_seo' => [
+        'label' => 'Mejorar SEO',
+        'description' => 'Genera answer_capsule, meta title y meta description.',
+        'tier' => 'fast',
+      ],
+      'full_article' => [
+        'label' => 'Artículo completo',
+        'description' => 'Genera un artículo completo desde un tema.',
+        'tier' => 'premium',
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * AGENT-GEN2-PATTERN-001: Enruta la ejecucion al metodo de accion
+   * correspondiente. Registra cada generacion en el log de auditoria.
+   */
+  protected function doExecute(string $action, array $context): array {
+    $result = match ($action) {
+      'generate_outline' => $this->actionGenerateOutline($context),
             'expand_section' => $this->actionExpandSection($context),
             'optimize_headline' => $this->actionOptimizeHeadline($context),
             'improve_seo' => $this->actionImproveSeo($context),
             'full_article' => $this->actionFullArticle($context),
             default => ['success' => FALSE, 'error' => "Accion no soportada: {$action}"],
-        };
+    };
 
-        // Registrar generacion para auditoria.
-        $this->logGeneration($action, $context, $result);
+    // Registrar generacion para auditoria.
+    $this->logGeneration($action, $context, $result);
 
-        return $result;
+    return $result;
+  }
+
+  /**
+   * Genera un outline/estructura para un articulo.
+   *
+   * Crea una estructura detallada con secciones, puntos clave,
+   * estimacion de palabras y keywords SEO sugeridas.
+   *
+   * @param array $context
+   *   Contexto con 'topic' (requerido), 'audience', 'length'.
+   *
+   * @return array
+   *   Resultado con 'title', 'hook', 'sections', 'seo_keywords'.
+   */
+  protected function actionGenerateOutline(array $context): array {
+    $topic = $context['topic'] ?? '';
+    $audience = $context['audience'] ?? 'general';
+    $length = $context['length'] ?? 'medium';
+
+    if (empty($topic)) {
+      return ['success' => FALSE, 'error' => 'El tema es requerido.'];
     }
 
-    /**
-     * Genera un outline/estructura para un articulo.
-     *
-     * Crea una estructura detallada con secciones, puntos clave,
-     * estimacion de palabras y keywords SEO sugeridas.
-     *
-     * @param array $context
-     *   Contexto con 'topic' (requerido), 'audience', 'length'.
-     *
-     * @return array
-     *   Resultado con 'title', 'hook', 'sections', 'seo_keywords'.
-     */
-    protected function actionGenerateOutline(array $context): array
-    {
-        $topic = $context['topic'] ?? '';
-        $audience = $context['audience'] ?? 'general';
-        $length = $context['length'] ?? 'medium';
-
-        if (empty($topic)) {
-            return ['success' => FALSE, 'error' => 'El tema es requerido.'];
-        }
-
-        $prompt = <<<PROMPT
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -275,48 +267,47 @@ Responde ÚNICAMENTE en formato JSON válido:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['temperature' => 0.7]);
+    $result = $this->callAiApi($prompt, ['temperature' => 0.7]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        if (!$parsed) {
-            return ['success' => FALSE, 'error' => 'No se pudo parsear la respuesta de IA.'];
-        }
-
-        return [
-            'success' => TRUE,
-            'data' => $parsed,
-        ];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Expande una seccion en contenido completo.
-     *
-     * Toma un encabezado y puntos clave para generar
-     * parrafos desarrollados con formato HTML.
-     *
-     * @param array $context
-     *   Contexto con 'heading' (requerido), 'key_points', 'article_context'.
-     *
-     * @return array
-     *   Resultado con 'content_html', 'word_count', 'internal_link_suggestions'.
-     */
-    protected function actionExpandSection(array $context): array
-    {
-        $heading = $context['heading'] ?? '';
-        $keyPoints = $context['key_points'] ?? [];
-        $articleContext = $context['article_context'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    if (!$parsed) {
+      return ['success' => FALSE, 'error' => 'No se pudo parsear la respuesta de IA.'];
+    }
 
-        if (empty($heading)) {
-            return ['success' => FALSE, 'error' => 'El encabezado de sección es requerido.'];
-        }
+    return [
+      'success' => TRUE,
+      'data' => $parsed,
+    ];
+  }
 
-        $pointsList = implode("\n- ", $keyPoints);
+  /**
+   * Expande una seccion en contenido completo.
+   *
+   * Toma un encabezado y puntos clave para generar
+   * parrafos desarrollados con formato HTML.
+   *
+   * @param array $context
+   *   Contexto con 'heading' (requerido), 'key_points', 'article_context'.
+   *
+   * @return array
+   *   Resultado con 'content_html', 'word_count', 'internal_link_suggestions'.
+   */
+  protected function actionExpandSection(array $context): array {
+    $heading = $context['heading'] ?? '';
+    $keyPoints = $context['key_points'] ?? [];
+    $articleContext = $context['article_context'] ?? '';
 
-        $prompt = <<<PROMPT
+    if (empty($heading)) {
+      return ['success' => FALSE, 'error' => 'El encabezado de sección es requerido.'];
+    }
+
+    $pointsList = implode("\n- ", $keyPoints);
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -341,40 +332,39 @@ Responde en formato JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['temperature' => 0.7]);
+    $result = $this->callAiApi($prompt, ['temperature' => 0.7]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Genera variantes de titulares optimizados.
-     *
-     * Propone 5 titulos con diferentes estilos (pregunta, how-to,
-     * listicle, statement, emotional) para testing.
-     *
-     * @param array $context
-     *   Contexto con 'topic' o 'current_title'.
-     *
-     * @return array
-     *   Resultado con 'variants', 'recommended', 'reasoning'.
-     */
-    protected function actionOptimizeHeadline(array $context): array
-    {
-        $topic = $context['topic'] ?? '';
-        $currentTitle = $context['current_title'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+  }
 
-        if (empty($topic) && empty($currentTitle)) {
-            return ['success' => FALSE, 'error' => 'Se requiere tema o título actual.'];
-        }
+  /**
+   * Genera variantes de titulares optimizados.
+   *
+   * Propone 5 titulos con diferentes estilos (pregunta, how-to,
+   * listicle, statement, emotional) para testing.
+   *
+   * @param array $context
+   *   Contexto con 'topic' o 'current_title'.
+   *
+   * @return array
+   *   Resultado con 'variants', 'recommended', 'reasoning'.
+   */
+  protected function actionOptimizeHeadline(array $context): array {
+    $topic = $context['topic'] ?? '';
+    $currentTitle = $context['current_title'] ?? '';
 
-        $prompt = <<<PROMPT
+    if (empty($topic) && empty($currentTitle)) {
+      return ['success' => FALSE, 'error' => 'Se requiere tema o título actual.'];
+    }
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 Genera 5 variantes de títulos optimizados para un artículo sobre:
@@ -398,43 +388,42 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.8]);
+    $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.8]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Mejora elementos SEO de un articulo.
-     *
-     * Genera Answer Capsule (para GEO/AI search), meta title
-     * y meta description basandose en el contenido existente.
-     *
-     * @param array $context
-     *   Contexto con 'title' y 'body' (requeridos).
-     *
-     * @return array
-     *   Resultado con 'answer_capsule', 'seo_title', 'seo_description'.
-     */
-    protected function actionImproveSeo(array $context): array
-    {
-        $title = $context['title'] ?? '';
-        $body = $context['body'] ?? '';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+  }
 
-        if (empty($title) || empty($body)) {
-            return ['success' => FALSE, 'error' => 'Título y cuerpo son requeridos.'];
-        }
+  /**
+   * Mejora elementos SEO de un articulo.
+   *
+   * Genera Answer Capsule (para GEO/AI search), meta title
+   * y meta description basandose en el contenido existente.
+   *
+   * @param array $context
+   *   Contexto con 'title' y 'body' (requeridos).
+   *
+   * @return array
+   *   Resultado con 'answer_capsule', 'seo_title', 'seo_description'.
+   */
+  protected function actionImproveSeo(array $context): array {
+    $title = $context['title'] ?? '';
+    $body = $context['body'] ?? '';
 
-        // Truncar body para eficiencia del prompt.
-        $bodyTruncated = mb_substr(strip_tags($body), 0, 2000);
+    if (empty($title) || empty($body)) {
+      return ['success' => FALSE, 'error' => 'Título y cuerpo son requeridos.'];
+    }
 
-        $prompt = <<<PROMPT
+    // Truncar body para eficiencia del prompt.
+    $bodyTruncated = mb_substr(strip_tags($body), 0, 2000);
+
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 Analiza el siguiente artículo y genera elementos SEO optimizados:
@@ -460,48 +449,47 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.8]);
+    $result = $this->callAiApi($prompt, ['require_speed' => TRUE, 'temperature' => 0.8]);
 
-        if (!$result['success']) {
-            return $result;
-        }
-
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
-            ? ['success' => TRUE, 'data' => $parsed]
-            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+    if (!$result['success']) {
+      return $result;
     }
 
-    /**
-     * Genera un articulo completo desde un tema.
-     *
-     * Crea todos los componentes: titulo, excerpt, answer_capsule,
-     * body HTML estructurado, meta tags y sugerencias de categoria/tags.
-     *
-     * @param array $context
-     *   Contexto con 'topic' (requerido), 'audience', 'length', 'style'.
-     *
-     * @return array
-     *   Resultado completo con todos los campos del articulo.
-     */
-    protected function actionFullArticle(array $context): array
-    {
-        $topic = $context['topic'] ?? '';
-        $audience = $context['audience'] ?? 'general';
-        $length = $context['length'] ?? 'medium';
-        $style = $context['style'] ?? 'informative';
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
+            ? ['success' => TRUE, 'data' => $parsed]
+            : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+  }
 
-        if (empty($topic)) {
-            return ['success' => FALSE, 'error' => 'El tema es requerido.'];
-        }
+  /**
+   * Genera un articulo completo desde un tema.
+   *
+   * Crea todos los componentes: titulo, excerpt, answer_capsule,
+   * body HTML estructurado, meta tags y sugerencias de categoria/tags.
+   *
+   * @param array $context
+   *   Contexto con 'topic' (requerido), 'audience', 'length', 'style'.
+   *
+   * @return array
+   *   Resultado completo con todos los campos del articulo.
+   */
+  protected function actionFullArticle(array $context): array {
+    $topic = $context['topic'] ?? '';
+    $audience = $context['audience'] ?? 'general';
+    $length = $context['length'] ?? 'medium';
+    $style = $context['style'] ?? 'informative';
 
-        $wordTarget = match ($length) {
-            'short' => 500,
+    if (empty($topic)) {
+      return ['success' => FALSE, 'error' => 'El tema es requerido.'];
+    }
+
+    $wordTarget = match ($length) {
+      'short' => 500,
             'long' => 2000,
             default => 1000,
-        };
+    };
 
-        $prompt = <<<PROMPT
+    $prompt = <<<PROMPT
 {$this->getBrandVoicePrompt()}
 
 {$this->getVerticalContext()}
@@ -535,53 +523,53 @@ Responde en JSON:
 }
 PROMPT;
 
-        $result = $this->callAiApi($prompt, [
-            'require_quality' => TRUE,
-            'temperature' => 0.7,
-        ]);
+    $result = $this->callAiApi($prompt, [
+      'require_quality' => TRUE,
+      'temperature' => 0.7,
+    ]);
 
-        if (!$result['success']) {
-            return $result;
-        }
+    if (!$result['success']) {
+      return $result;
+    }
 
-        $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
-        return $parsed
+    $parsed = $this->parseJsonResponse($result['data']['text'] ?? '');
+    return $parsed
             ? ['success' => TRUE, 'data' => $parsed]
             : ['success' => FALSE, 'error' => 'Error al parsear respuesta.'];
+  }
+
+  /**
+   * Registra la generacion IA en el log de auditoria.
+   *
+   * Crea una entidad ai_generation_log para tracking de uso,
+   * costos y auditoria de contenido generado por IA.
+   *
+   * @param string $action
+   *   La accion ejecutada.
+   * @param array $context
+   *   El contexto de la solicitud.
+   * @param array $result
+   *   El resultado de la ejecucion.
+   */
+  protected function logGeneration(string $action, array $context, array $result): void {
+    if (!$this->entityTypeManager || !$this->currentUser) {
+      return;
     }
 
-    /**
-     * Registra la generacion IA en el log de auditoria.
-     *
-     * Crea una entidad ai_generation_log para tracking de uso,
-     * costos y auditoria de contenido generado por IA.
-     *
-     * @param string $action
-     *   La accion ejecutada.
-     * @param array $context
-     *   El contexto de la solicitud.
-     * @param array $result
-     *   El resultado de la ejecucion.
-     */
-    protected function logGeneration(string $action, array $context, array $result): void
-    {
-        if (!$this->entityTypeManager || !$this->currentUser) {
-            return;
-        }
-
-        try {
-            $storage = $this->entityTypeManager->getStorage('ai_generation_log');
-            $log = $storage->create([
-                'agent_id' => $this->getAgentId(),
-                'action' => $action,
-                'context_summary' => json_encode(array_slice($context, 0, 5)),
-                'success' => $result['success'] ?? FALSE,
-                'user_id' => $this->currentUser->id(),
-            ]);
-            $log->save();
-        } catch (\Exception $e) {
-            $this->logger->warning('Error al registrar generación IA: @error', ['@error' => $e->getMessage()]);
-        }
+    try {
+      $storage = $this->entityTypeManager->getStorage('ai_generation_log');
+      $log = $storage->create([
+        'agent_id' => $this->getAgentId(),
+        'action' => $action,
+        'context_summary' => json_encode(array_slice($context, 0, 5)),
+        'success' => $result['success'] ?? FALSE,
+        'user_id' => $this->currentUser->id(),
+      ]);
+      $log->save();
     }
+    catch (\Exception $e) {
+      $this->logger->warning('Error al registrar generación IA: @error', ['@error' => $e->getMessage()]);
+    }
+  }
 
 }

@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
- * CATEGORÍA DE BASE DE CONOCIMIENTO - KbCategory
+ * CATEGORÍA DE BASE DE CONOCIMIENTO - KbCategory.
  *
  * PROPÓSITO:
  * Organiza los artículos de la base de conocimiento en categorías
@@ -66,196 +66,182 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.kb_category.settings",
  * )
  */
-class KbCategory extends ContentEntityBase implements EntityChangedInterface
-{
+class KbCategory extends ContentEntityBase implements EntityChangedInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Referencia al tenant propietario (OBLIGATORIO).
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('El tenant propietario de esta categoría.'))
-            ->setSetting('target_type', 'group')
-            ->setRequired(TRUE)
-            ->setCardinality(1);
+    // Referencia al tenant propietario (OBLIGATORIO).
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('El tenant propietario de esta categoría.'))
+      ->setSetting('target_type', 'group')
+      ->setRequired(TRUE)
+      ->setCardinality(1);
 
-        // === CONTENIDO PRINCIPAL ===
+    // === CONTENIDO PRINCIPAL ===
+    // Nombre de la categoría.
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre'))
+      ->setDescription(t('Nombre de la categoría.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
 
-        // Nombre de la categoría.
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre'))
-            ->setDescription(t('Nombre de la categoría.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('view', [
-                'label' => 'hidden',
-                'type' => 'string',
-                'weight' => 0,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ]);
+    // Slug URL amigable.
+    $fields['slug'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Slug'))
+      ->setDescription(t('URL amigable de la categoría.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 1,
+      ]);
 
-        // Slug URL amigable.
-        $fields['slug'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Slug'))
-            ->setDescription(t('URL amigable de la categoría.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 1,
-            ]);
+    // Descripción.
+    $fields['description'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Descripción'))
+      ->setDescription(t('Descripción de la categoría.'))
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'text_default',
+        'weight' => 2,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 2,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ]);
 
-        // Descripción.
-        $fields['description'] = BaseFieldDefinition::create('text_long')
-            ->setLabel(t('Descripción'))
-            ->setDescription(t('Descripción de la categoría.'))
-            ->setDisplayOptions('view', [
-                'label' => 'hidden',
-                'type' => 'text_default',
-                'weight' => 2,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'text_textarea',
-                'weight' => 2,
-                'settings' => [
-                    'rows' => 4,
-                ],
-            ]);
+    // Icono.
+    $fields['icon'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Icono'))
+      ->setDescription(t('Nombre del icono representativo (ej: book, help-circle).'))
+      ->setSetting('max_length', 128)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 3,
+      ]);
 
-        // Icono.
-        $fields['icon'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Icono'))
-            ->setDescription(t('Nombre del icono representativo (ej: book, help-circle).'))
-            ->setSetting('max_length', 128)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 3,
-            ]);
+    // === ORGANIZACIÓN ===
+    // Orden de visualización.
+    $fields['sort_order'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Orden'))
+      ->setDescription(t('Orden de visualización. Menor número = aparece primero.'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 4,
+      ]);
 
-        // === ORGANIZACIÓN ===
+    // Categoría padre para anidamiento.
+    $fields['parent_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Categoría Padre'))
+      ->setDescription(t('Categoría padre para crear jerarquías.'))
+      ->setSetting('target_type', 'kb_category')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 5,
+      ]);
 
-        // Orden de visualización.
-        $fields['sort_order'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Orden'))
-            ->setDescription(t('Orden de visualización. Menor número = aparece primero.'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 4,
-            ]);
+    // === ESTADO ===
+    // Estado de la categoría.
+    $fields['category_status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setDescription(t('Estado de la categoría.'))
+      ->setRequired(TRUE)
+      ->setSettings([
+        'allowed_values' => [
+          'active' => 'Activa',
+          'inactive' => 'Inactiva',
+        ],
+      ])
+      ->setDefaultValue('active')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 6,
+      ]);
 
-        // Categoría padre para anidamiento.
-        $fields['parent_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Categoría Padre'))
-            ->setDescription(t('Categoría padre para crear jerarquías.'))
-            ->setSetting('target_type', 'kb_category')
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 5,
-            ]);
+    // === TIMESTAMPS ===
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de Creación'));
 
-        // === ESTADO ===
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Fecha de Modificación'));
 
-        // Estado de la categoría.
-        $fields['category_status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setDescription(t('Estado de la categoría.'))
-            ->setRequired(TRUE)
-            ->setSettings([
-                'allowed_values' => [
-                    'active' => 'Activa',
-                    'inactive' => 'Inactiva',
-                ],
-            ])
-            ->setDefaultValue('active')
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 6,
-            ]);
+    return $fields;
+  }
 
-        // === TIMESTAMPS ===
+  /**
+   * Obtiene el nombre de la categoría.
+   */
+  public function getName(): string {
+    return $this->get('name')->value ?? '';
+  }
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de Creación'));
+  /**
+   * Obtiene el slug.
+   */
+  public function getSlug(): string {
+    return $this->get('slug')->value ?? '';
+  }
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Fecha de Modificación'));
+  /**
+   * Obtiene la descripción.
+   */
+  public function getDescription(): string {
+    return $this->get('description')->value ?? '';
+  }
 
-        return $fields;
-    }
+  /**
+   * Obtiene el icono.
+   */
+  public function getIcon(): string {
+    return $this->get('icon')->value ?? 'help-circle';
+  }
 
-    /**
-     * Obtiene el nombre de la categoría.
-     */
-    public function getName(): string
-    {
-        return $this->get('name')->value ?? '';
-    }
+  /**
+   * Obtiene el estado de la categoría.
+   */
+  public function getCategoryStatus(): string {
+    return $this->get('category_status')->value ?? 'active';
+  }
 
-    /**
-     * Obtiene el slug.
-     */
-    public function getSlug(): string
-    {
-        return $this->get('slug')->value ?? '';
-    }
+  /**
+   * Verifica si la categoría está activa.
+   */
+  public function isActive(): bool {
+    return $this->getCategoryStatus() === 'active';
+  }
 
-    /**
-     * Obtiene la descripción.
-     */
-    public function getDescription(): string
-    {
-        return $this->get('description')->value ?? '';
-    }
+  /**
+   * Obtiene el tenant ID.
+   */
+  public function getTenantId(): ?int {
+    return $this->get('tenant_id')->target_id ? (int) $this->get('tenant_id')->target_id : NULL;
+  }
 
-    /**
-     * Obtiene el icono.
-     */
-    public function getIcon(): string
-    {
-        return $this->get('icon')->value ?? 'help-circle';
-    }
-
-    /**
-     * Obtiene el estado de la categoría.
-     */
-    public function getCategoryStatus(): string
-    {
-        return $this->get('category_status')->value ?? 'active';
-    }
-
-    /**
-     * Verifica si la categoría está activa.
-     */
-    public function isActive(): bool
-    {
-        return $this->getCategoryStatus() === 'active';
-    }
-
-    /**
-     * Obtiene el tenant ID.
-     */
-    public function getTenantId(): ?int
-    {
-        return $this->get('tenant_id')->target_id ? (int) $this->get('tenant_id')->target_id : NULL;
-    }
-
-    /**
-     * Obtiene el ID de la categoría padre.
-     */
-    public function getParentId(): ?int
-    {
-        return $this->get('parent_id')->target_id ? (int) $this->get('parent_id')->target_id : NULL;
-    }
+  /**
+   * Obtiene el ID de la categoría padre.
+   */
+  public function getParentId(): ?int {
+    return $this->get('parent_id')->target_id ? (int) $this->get('parent_id')->target_id : NULL;
+  }
 
 }

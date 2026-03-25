@@ -207,7 +207,8 @@ class FairUsePolicyServiceTest extends UnitTestCase {
     $this->state->method('get')
       ->willReturnCallback(function (string $key) use ($graceKey) {
         if ($key === $graceKey) {
-          return time() - 3600; // 1 hour ago.
+          // 1 hour ago.
+          return time() - 3600;
         }
         return NULL;
       });
@@ -300,7 +301,8 @@ class FairUsePolicyServiceTest extends UnitTestCase {
     $this->state->method('get')
       ->willReturn([
         'action' => 'throttle',
-        'timestamp' => time() - 8000, // > 7200s TTL.
+    // > 7200s TTL.
+        'timestamp' => time() - 8000,
       ]);
 
     $this->state->expects($this->once())

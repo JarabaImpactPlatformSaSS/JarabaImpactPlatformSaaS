@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Kernel;
 
+use Drupal\ecosistema_jaraba_core\Service\TenantManager;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -12,159 +13,151 @@ use Drupal\KernelTests\KernelTestBase;
  *
  * @group ecosistema_jaraba_core
  */
-class ServiceRegistrationTest extends KernelTestBase
-{
+class ServiceRegistrationTest extends KernelTestBase {
 
-    /**
-     * Módulos requeridos para los tests de servicios.
-     *
-     * @var array
-     */
-    protected static $modules = [
-        'system',
-        'user',
-        'node',
-        'field',
-        'text',
-        'options',
-        'datetime',
-        'file',
-        'ecosistema_jaraba_core',
-    ];
+  /**
+   * Módulos requeridos para los tests de servicios.
+   *
+   * @var array
+   */
+  protected static $modules = [
+    'system',
+    'user',
+    'node',
+    'field',
+    'text',
+    'options',
+    'datetime',
+    'file',
+    'ecosistema_jaraba_core',
+  ];
 
-    /**
-     * {@inheritdoc}
-     *
-     * Configuración inicial: instala esquemas necesarios.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
+  /**
+   * {@inheritdoc}
+   *
+   * Configuración inicial: instala esquemas necesarios.
+   */
+  protected function setUp(): void {
+    parent::setUp();
 
-        // Solo instalar esquema de 'user' (requerido por el sistema base).
-        // No se instalan esquemas de vertical/saas_plan/tenant porque:
-        // - Tenant tiene entity_reference a 'group' y 'domain' (contrib)
-        // - Los tests de servicios solo necesitan el contenedor DI, no las tablas
-        $this->installEntitySchema('user');
-    }
+    // Solo instalar esquema de 'user' (requerido por el sistema base).
+    // No se instalan esquemas de vertical/saas_plan/tenant porque:
+    // - Tenant tiene entity_reference a 'group' y 'domain' (contrib)
+    // - Los tests de servicios solo necesitan el contenedor DI, no las tablas.
+    $this->installEntitySchema('user');
+  }
 
-    /**
-     * Verifica que el alias de PlanValidator es condicional.
-     *
-     * El PlanValidator vive en jaraba_billing y se registra como alias
-     * condicional via EcosistemaJarabaCoreServiceProvider. Sin jaraba_billing
-     * habilitado, el servicio no debe existir en el contenedor.
-     */
-    public function testPlanValidatorServiceIsConditional(): void
-    {
-        $container = \Drupal::getContainer();
+  /**
+   * Verifica que el alias de PlanValidator es condicional.
+   *
+   * El PlanValidator vive en jaraba_billing y se registra como alias
+   * condicional via EcosistemaJarabaCoreServiceProvider. Sin jaraba_billing
+   * habilitado, el servicio no debe existir en el contenedor.
+   */
+  public function testPlanValidatorServiceIsConditional(): void {
+    $container = \Drupal::getContainer();
 
-        // Sin jaraba_billing habilitado, el alias condicional no se registra.
-        $this->assertFalse(
-            $container->has('ecosistema_jaraba_core.plan_validator'),
-            'plan_validator no debe existir sin jaraba_billing habilitado'
-        );
-    }
+    // Sin jaraba_billing habilitado, el alias condicional no se registra.
+    $this->assertFalse(
+          $container->has('ecosistema_jaraba_core.plan_validator'),
+          'plan_validator no debe existir sin jaraba_billing habilitado'
+      );
+  }
 
-    /**
-     * Verifica que el servicio TenantManager está registrado correctamente.
-     *
-     * El TenantManager gestiona todo el ciclo de vida de los tenants:
-     * creación, activación, suspensión, cambios de plan, etc.
-     */
-    public function testTenantManagerServiceExists(): void
-    {
-        $container = \Drupal::getContainer();
+  /**
+   * Verifica que el servicio TenantManager está registrado correctamente.
+   *
+   * El TenantManager gestiona todo el ciclo de vida de los tenants:
+   * creación, activación, suspensión, cambios de plan, etc.
+   */
+  public function testTenantManagerServiceExists(): void {
+    $container = \Drupal::getContainer();
 
-        $this->assertTrue(
-            $container->has('ecosistema_jaraba_core.tenant_manager'),
-            'El servicio tenant_manager debe estar registrado'
-        );
+    $this->assertTrue(
+          $container->has('ecosistema_jaraba_core.tenant_manager'),
+          'El servicio tenant_manager debe estar registrado'
+      );
 
-        $service = $container->get('ecosistema_jaraba_core.tenant_manager');
-        $this->assertNotNull($service);
+    $service = $container->get('ecosistema_jaraba_core.tenant_manager');
+    $this->assertNotNull($service);
 
-        $this->assertInstanceOf(
-            \Drupal\ecosistema_jaraba_core\Service\TenantManager::class,
-            $service
-        );
-    }
+    $this->assertInstanceOf(
+          TenantManager::class,
+          $service
+      );
+  }
 
-    /**
-     * Verifica que el servicio CertificadoPdfService está disponible.
-     *
-     * Este servicio genera los certificados PDF de trazabilidad para
-     * los lotes de producción.
-     */
-    public function testCertificadoPdfServiceExists(): void
-    {
-        $container = \Drupal::getContainer();
+  /**
+   * Verifica que el servicio CertificadoPdfService está disponible.
+   *
+   * Este servicio genera los certificados PDF de trazabilidad para
+   * los lotes de producción.
+   */
+  public function testCertificadoPdfServiceExists(): void {
+    $container = \Drupal::getContainer();
 
-        $this->assertTrue(
-            $container->has('ecosistema_jaraba_core.certificado_pdf'),
-            'El servicio certificado_pdf debe estar registrado'
-        );
+    $this->assertTrue(
+          $container->has('ecosistema_jaraba_core.certificado_pdf'),
+          'El servicio certificado_pdf debe estar registrado'
+      );
 
-        $service = $container->get('ecosistema_jaraba_core.certificado_pdf');
-        $this->assertNotNull($service);
-    }
+    $service = $container->get('ecosistema_jaraba_core.certificado_pdf');
+    $this->assertNotNull($service);
+  }
 
-    /**
-     * Verifica que el servicio FirmaDigitalService está disponible.
-     *
-     * Este servicio gestiona la firma electrónica de documentos PDF
-     * con certificados PKCS#12 y sellado de tiempo.
-     */
-    public function testFirmaDigitalServiceExists(): void
-    {
-        $container = \Drupal::getContainer();
+  /**
+   * Verifica que el servicio FirmaDigitalService está disponible.
+   *
+   * Este servicio gestiona la firma electrónica de documentos PDF
+   * con certificados PKCS#12 y sellado de tiempo.
+   */
+  public function testFirmaDigitalServiceExists(): void {
+    $container = \Drupal::getContainer();
 
-        $this->assertTrue(
-            $container->has('ecosistema_jaraba_core.firma_digital'),
-            'El servicio firma_digital debe estar registrado'
-        );
+    $this->assertTrue(
+          $container->has('ecosistema_jaraba_core.firma_digital'),
+          'El servicio firma_digital debe estar registrado'
+      );
 
-        $service = $container->get('ecosistema_jaraba_core.firma_digital');
-        $this->assertNotNull($service);
-    }
+    $service = $container->get('ecosistema_jaraba_core.firma_digital');
+    $this->assertNotNull($service);
+  }
 
-    /**
-     * Verifica que el canal de log personalizado está configurado.
-     *
-     * Todos los servicios del módulo deben usar este canal para facilitar
-     * el debugging y monitoreo.
-     */
-    public function testLoggerChannelExists(): void
-    {
-        $logger = \Drupal::logger('ecosistema_jaraba_core');
+  /**
+   * Verifica que el canal de log personalizado está configurado.
+   *
+   * @todo s los servicios del módulo deben usar este canal para facilitar
+   * el debugging y monitoreo.
+   */
+  public function testLoggerChannelExists(): void {
+    $logger = \Drupal::logger('ecosistema_jaraba_core');
 
-        $this->assertNotNull($logger, 'El canal de log debe existir');
+    $this->assertNotNull($logger, 'El canal de log debe existir');
 
-        // Verificar que se puede escribir al log sin errores
-        $logger->info('Test de integración de servicios completado');
-    }
+    // Verificar que se puede escribir al log sin errores.
+    $logger->info('Test de integración de servicios completado');
+  }
 
-    /**
-     * Verifica que las dependencias entre servicios están correctamente inyectadas.
-     *
-     * El TenantManager depende de PlanValidator para validar cambios de plan.
-     */
-    public function testServiceDependencyInjection(): void
-    {
-        $tenantManager = \Drupal::service('ecosistema_jaraba_core.tenant_manager');
+  /**
+   * Verifica que las dependencias entre servicios están correctamente inyectadas.
+   *
+   * El TenantManager depende de PlanValidator para validar cambios de plan.
+   */
+  public function testServiceDependencyInjection(): void {
+    $tenantManager = \Drupal::service('ecosistema_jaraba_core.tenant_manager');
 
-        // El TenantManager debe tener acceso al PlanValidator
-        // Esto se verifica indirectamente probando un método que lo use
-        $this->assertNotNull($tenantManager);
+    // El TenantManager debe tener acceso al PlanValidator
+    // Esto se verifica indirectamente probando un método que lo use.
+    $this->assertNotNull($tenantManager);
 
-        // Verificar que el EntityTypeManager está inyectado
-        $reflection = new \ReflectionClass($tenantManager);
-        $properties = $reflection->getProperties();
+    // Verificar que el EntityTypeManager está inyectado.
+    $reflection = new \ReflectionClass($tenantManager);
+    $properties = $reflection->getProperties();
 
-        // Debe tener propiedades para las dependencias inyectadas
-        $propertyNames = array_map(fn($p) => $p->getName(), $properties);
-        $this->assertContains('entityTypeManager', $propertyNames);
-        $this->assertContains('planValidator', $propertyNames);
-    }
+    // Debe tener propiedades para las dependencias inyectadas.
+    $propertyNames = array_map(fn($p) => $p->getName(), $properties);
+    $this->assertContains('entityTypeManager', $propertyNames);
+    $this->assertContains('planValidator', $propertyNames);
+  }
 
 }

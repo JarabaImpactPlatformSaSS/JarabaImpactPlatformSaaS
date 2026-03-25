@@ -13,44 +13,42 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access controller for Group Event entities.
  */
-class GroupEventAccessControlHandler extends EntityAccessControlHandler
-{
+class GroupEventAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
-        if ($account->hasPermission('administer collaboration groups')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        /** @var \Drupal\jaraba_groups\Entity\GroupEvent $entity */
-        switch ($operation) {
-            case 'view':
-                return AccessResult::allowedIfHasPermission($account, 'view group events');
-
-            case 'update':
-                if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                return AccessResult::allowedIfHasPermission($account, 'manage group events');
-
-            case 'delete':
-                if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
-                    return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
-                }
-                return AccessResult::allowedIfHasPermission($account, 'manage group events');
-        }
-
-        return AccessResult::neutral();
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    if ($account->hasPermission('administer collaboration groups')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL)
-    {
-        return AccessResult::allowedIfHasPermission($account, 'create group events');
+    /** @var \Drupal\jaraba_groups\Entity\GroupEvent $entity */
+    switch ($operation) {
+      case 'view':
+        return AccessResult::allowedIfHasPermission($account, 'view group events');
+
+      case 'update':
+        if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::allowedIfHasPermission($account, 'manage group events');
+
+      case 'delete':
+        if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
+          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+        }
+        return AccessResult::allowedIfHasPermission($account, 'manage group events');
     }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::allowedIfHasPermission($account, 'create group events');
+  }
 
 }

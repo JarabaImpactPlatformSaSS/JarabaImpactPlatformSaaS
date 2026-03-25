@@ -6,7 +6,6 @@ namespace Drupal\jaraba_verifactu\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
-use Drupal\jaraba_verifactu\Exception\VeriFactuChainBreakException;
 use Drupal\jaraba_verifactu\ValueObject\ChainIntegrityResult;
 use Psr\Log\LoggerInterface;
 

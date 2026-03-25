@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_events\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\jaraba_events\Service\EventCertificateService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -190,7 +190,7 @@ class EventCertificateServiceTest extends TestCase {
    *   Mock de la entidad de registro.
    */
   protected function createMockRegistration(string $status): MockObject {
-    $registration = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $registration = $this->createMock(ContentEntityInterface::class);
 
     $statusField = new \stdClass();
     $statusField->value = $status;

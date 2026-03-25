@@ -8,7 +8,6 @@ use Drupal\jaraba_email\Service\SequenceManagerService;
 use Drupal\jaraba_events\Entity\EventRegistration;
 use Drupal\jaraba_events\Entity\MarketingEvent;
 use Drupal\jaraba_events\Exception\DuplicateRegistrationException;
-use Drupal\jaraba_events\Exception\EventFullException;
 use Drupal\jaraba_events\Exception\EventNotOpenException;
 use Psr\Log\LoggerInterface;
 
@@ -113,7 +112,7 @@ class EventRegistrationService {
    * 4. Genera token de confirmación (64 chars hex) y código de ticket
    * 5. Crea la entidad event_registration con el estado apropiado
    * 6. Incrementa el contador de asistentes del evento
-   * 7. Registra la operación en el log
+   * 7. Registra la operación en el log.
    *
    * REGLAS DE NEGOCIO:
    * - Eventos gratuitos: registration_status = 'confirmed', payment_status = 'free'
@@ -150,7 +149,7 @@ class EventRegistrationService {
       throw new EventNotOpenException('El evento solicitado no existe.');
     }
 
-    // Verificar que el evento está publicado y abierto a registros
+    // Verificar que el evento está publicado y abierto a registros.
     if ($event->get('status_event')->value !== 'published') {
       throw new EventNotOpenException(
         sprintf('El evento "%s" no está abierto a registros (estado: %s).',
@@ -160,7 +159,7 @@ class EventRegistrationService {
       );
     }
 
-    // Verificar duplicados: mismo email en el mismo evento
+    // Verificar duplicados: mismo email en el mismo evento.
     $email = $attendee_data['email'] ?? '';
     $duplicates = $this->entityTypeManager->getStorage('event_registration')
       ->getQuery()
@@ -180,12 +179,12 @@ class EventRegistrationService {
       );
     }
 
-    // Determinar estado según capacidad
+    // Determinar estado según capacidad.
     $max_attendees = (int) $event->get('max_attendees')->value;
     $current_attendees = (int) $event->get('current_attendees')->value;
     $is_waitlisted = ($max_attendees > 0 && $current_attendees >= $max_attendees);
 
-    // Determinar estado según gratuidad y capacidad
+    // Determinar estado según gratuidad y capacidad.
     $is_free = (bool) $event->get('is_free')->value;
 
     if ($is_waitlisted) {
@@ -201,14 +200,14 @@ class EventRegistrationService {
       $payment_status = 'pending_payment';
     }
 
-    // Generar token de confirmación y código de ticket
+    // Generar token de confirmación y código de ticket.
     $confirmation_token = bin2hex(random_bytes(32));
     $ticket_code = sprintf('EVT-%d-%s', $event_id, strtoupper(substr(bin2hex(random_bytes(2)), 0, 4)));
 
-    // Obtener tenant_id del evento padre
+    // Obtener tenant_id del evento padre.
     $tenant_id = $event->get('tenant_id')->target_id;
 
-    // Crear la entidad de registro
+    // Crear la entidad de registro.
     /** @var \Drupal\jaraba_events\Entity\EventRegistration $registration */
     $registration = $this->entityTypeManager->getStorage('event_registration')->create([
       'event_id' => $event_id,
@@ -300,7 +299,7 @@ class EventRegistrationService {
    * 2. Cambia estado a 'cancelled'
    * 3. Decrementa contador de asistentes del evento
    * 4. Busca el primer registro en 'waitlisted' (ordenado por created ASC)
-   * 5. Si existe, lo promueve a 'confirmed' e incrementa contador
+   * 5. Si existe, lo promueve a 'confirmed' e incrementa contador.
    *
    * @param int $registration_id
    *   ID del registro a cancelar.
@@ -318,7 +317,7 @@ class EventRegistrationService {
     $current_status = $registration->get('registration_status')->value;
     $was_active = in_array($current_status, ['pending', 'confirmed']);
 
-    // Cambiar estado a cancelado
+    // Cambiar estado a cancelado.
     $registration->set('registration_status', 'cancelled');
     $registration->save();
 
@@ -332,7 +331,7 @@ class EventRegistrationService {
         $event->decrementAttendees();
         $event->save();
 
-        // Promover al primer usuario de lista de espera
+        // Promover al primer usuario de lista de espera.
         $this->promoteFromWaitlist($event_id, $event);
       }
     }
@@ -399,19 +398,19 @@ class EventRegistrationService {
   public function getRegistrations(int $event_id, array $filters = [], int $limit = 50, int $offset = 0): array {
     $storage = $this->entityTypeManager->getStorage('event_registration');
 
-    // Consulta para contar total
+    // Consulta para contar total.
     $count_query = $storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('event_id', $event_id);
 
-    // Consulta para resultados paginados
+    // Consulta para resultados paginados.
     $query = $storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('event_id', $event_id)
       ->sort('created', 'DESC')
       ->range($offset, $limit);
 
-    // Aplicar filtro de estado
+    // Aplicar filtro de estado.
     if (!empty($filters['status'])) {
       $query->condition('registration_status', $filters['status']);
       $count_query->condition('registration_status', $filters['status']);
@@ -481,7 +480,7 @@ class EventRegistrationService {
         $stats['total_registrations']++;
       }
 
-      // Contar por estado
+      // Contar por estado.
       switch ($status) {
         case 'confirmed':
           $stats['confirmed']++;
@@ -509,7 +508,7 @@ class EventRegistrationService {
         $stats['revenue'] += (float) ($reg->get('amount_paid')->value ?? 0);
       }
 
-      // Recoger ratings para media
+      // Recoger ratings para media.
       $rating = (int) ($reg->get('rating')->value ?? 0);
       if ($rating > 0) {
         $ratings[] = $rating;
@@ -523,7 +522,7 @@ class EventRegistrationService {
       $stats['attendance_rate'] = round(($stats['attended'] / $expected) * 100, 1);
     }
 
-    // Calcular valoración media
+    // Calcular valoración media.
     if (!empty($ratings)) {
       $stats['average_rating'] = round(array_sum($ratings) / count($ratings), 1);
     }

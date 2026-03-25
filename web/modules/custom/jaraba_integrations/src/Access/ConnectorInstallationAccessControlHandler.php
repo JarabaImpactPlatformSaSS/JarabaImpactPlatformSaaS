@@ -71,7 +71,8 @@ class ConnectorInstallationAccessControlHandler extends EntityAccessControlHandl
               return AccessResult::forbidden()->cachePerUser();
             }
           }
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
           // Si hay error resolviendo, denegar acceso.
           return AccessResult::forbidden();
         }

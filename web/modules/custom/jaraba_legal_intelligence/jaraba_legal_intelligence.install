@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -340,7 +344,7 @@ SKILL,
  * Creates vertical-specific funnels:
  * - Legal Search Conversion: landing → search → bookmark → alert
  * - Legal Upgrade Funnel: search → limit_hit → upgrade_view → purchase
- * - Legal Citation Workflow: search → resolution_view → cite → expediente
+ * - Legal Citation Workflow: search → resolution_view → cite → expediente.
  */
 function jaraba_legal_intelligence_update_10003(): void {
   $entityTypeManager = \Drupal::entityTypeManager();
@@ -406,6 +410,7 @@ function jaraba_legal_intelligence_update_10003(): void {
  * Limpia las entradas de State API usadas para rate limiting del cron
  * y elimina la tabla legal_citation_graph.
  */
+
 /**
  * FASE A3: Migrar expediente_id de integer a entity_reference (client_case).
  *
@@ -448,7 +453,6 @@ function jaraba_legal_intelligence_update_10004(): void {
   }
   // Si el tipo cambio (integer -> entity_reference), ambos usan columna
   // integer en la tabla base. La definicion se actualiza al reinstalar.
-
   \Drupal::logger('jaraba_legal_intelligence')->info(
     'FASE A3: Campo expediente_id migrado a entity_reference (client_case).'
   );

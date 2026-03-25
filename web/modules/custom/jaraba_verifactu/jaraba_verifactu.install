@@ -23,7 +23,6 @@ function jaraba_verifactu_install(): void {
   $schema = Database::getConnection()->schema();
 
   // --- VERIFACTU_INVOICE_RECORD INDICES ---
-
   // Indice compuesto tenant + created para consultas ordenadas por tenant.
   if ($schema->tableExists('verifactu_invoice_record')) {
     if (!$schema->indexExists('verifactu_invoice_record', 'idx_tenant_created')) {
@@ -86,7 +85,6 @@ function jaraba_verifactu_install(): void {
   }
 
   // --- VERIFACTU_EVENT_LOG INDICES ---
-
   if ($schema->tableExists('verifactu_event_log')) {
     // Indice compuesto tenant + created para consultas de auditoria.
     if (!$schema->indexExists('verifactu_event_log', 'idx_tenant_created')) {
@@ -125,7 +123,6 @@ function jaraba_verifactu_install(): void {
   }
 
   // --- VERIFACTU_REMISION_BATCH INDICES ---
-
   if ($schema->tableExists('verifactu_remision_batch')) {
     // Indice compuesto tenant + status para consultas de remision.
     if (!$schema->indexExists('verifactu_remision_batch', 'idx_tenant_status')) {
@@ -142,7 +139,6 @@ function jaraba_verifactu_install(): void {
   }
 
   // --- VERIFACTU_TENANT_CONFIG INDICES ---
-
   if ($schema->tableExists('verifactu_tenant_config')) {
     // Indice unico en tenant_id (un tenant = una config).
     if (!$schema->indexExists('verifactu_tenant_config', 'idx_tenant_id')) {
@@ -166,7 +162,6 @@ function jaraba_verifactu_uninstall(): void {
   // Eliminar configuracion del modulo.
   \Drupal::configFactory()->getEditable('jaraba_verifactu.settings')->delete();
 }
-
 
 /**
  * Implements hook_requirements().

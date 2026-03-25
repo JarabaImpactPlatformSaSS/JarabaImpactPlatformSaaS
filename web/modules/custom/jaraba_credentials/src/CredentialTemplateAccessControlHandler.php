@@ -13,23 +13,20 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para CredentialTemplate.
  */
-class CredentialTemplateAccessControlHandler extends EntityAccessControlHandler
-{
+class CredentialTemplateAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage credential templates');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'manage credential templates');
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'manage credential templates');
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'manage credential templates');
+  }
 
 }

@@ -1,7 +1,9 @@
 <?php
+
 /**
+ * @file
  * Script para auditar y corregir iconos inválidos en templates.
- * 
+ *
  * Lista de iconos válidos en ui/:
  * alert-triangle, arrow-*, badge-check, bell, bolt, book, book-open, brain,
  * building, calendar, calendar-plus, check, check-circle, chevron-*, clipboard,
@@ -11,12 +13,12 @@
  * map-pin, medal, menu, message, minus, package, party, pause, pin, play,
  * play-circle, plug, pointer, qr-code, question, quote, search, send, settings,
  * shield, shopping-cart, sitemap, star, storefront, tools, trophy, user, users,
- * video, warning, webhook, wrench, x
+ * video, warning, webhook, wrench, x.
  */
 
-// Mapeado de iconos inválidos a válidos
+// Mapeado de iconos inválidos a válidos.
 $icon_map = [
-  // Iconos que no existen -> reemplazo
+  // Iconos que no existen -> reemplazo.
   'rocket' => 'bolt',
   'layers' => 'layout-grid',
   'target' => 'star',
@@ -76,14 +78,14 @@ foreach ($files as $file) {
   $content = file_get_contents($file);
   $original = $content;
   $file_changes = [];
-  
+
   foreach ($icon_map as $invalid => $valid) {
-    // Buscar patrones como icon: "rocket" o icon: 'rocket' o icon: rocket
+    // Buscar patrones como icon: "rocket" o icon: 'rocket' o icon: rocket.
     $patterns = [
       "/icon:\s*[\"']{$invalid}[\"']/",
-      "/icon:\s*{$invalid}\s*$/m"
+      "/icon:\s*{$invalid}\s*$/m",
     ];
-    
+
     foreach ($patterns as $pattern) {
       if (preg_match($pattern, $content)) {
         $content = preg_replace(
@@ -100,7 +102,7 @@ foreach ($files as $file) {
       }
     }
   }
-  
+
   if ($content !== $original) {
     file_put_contents($file, $content);
     $changes[basename($file)] = $file_changes;
@@ -119,7 +121,8 @@ if (!empty($changes)) {
       echo "      $change\n";
     }
   }
-} else {
+}
+else {
   echo "No invalid icons found.\n";
 }
 

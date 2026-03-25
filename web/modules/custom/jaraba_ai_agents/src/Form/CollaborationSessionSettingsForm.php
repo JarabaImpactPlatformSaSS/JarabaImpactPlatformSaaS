@@ -12,10 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 final class CollaborationSessionSettingsForm extends FormBase {
 
+  /**
+   *
+   */
   public function getFormId(): string {
     return 'collaboration_session_settings';
   }
 
+  /**
+   *
+   */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form['info'] = [
       '#markup' => '<p>' . $this->t('Use the tabs above to manage fields and display settings for Collaboration Session.') . '</p>',
@@ -23,6 +29,9 @@ final class CollaborationSessionSettingsForm extends FormBase {
     return $form;
   }
 
+  /**
+   *
+   */
   public function submitForm(array &$form, FormStateInterface $form_state): void {}
 
 }

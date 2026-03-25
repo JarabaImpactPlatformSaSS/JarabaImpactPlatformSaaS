@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -40,7 +41,7 @@ class ServiciosConectaJourneyProgressionServiceTest extends UnitTestCase {
     // Mock container for t() and \Drupal::time().
     $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
-    $time = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $time = $this->createMock(TimeInterface::class);
     $time->method('getRequestTime')->willReturn(time());
     $container->set('datetime.time', $time);
     \Drupal::setContainer($container);

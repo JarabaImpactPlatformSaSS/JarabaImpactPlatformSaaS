@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
  * ARQUITECTURA:
  * - Pedidos mono-merchant: PaymentIntent con destination charge directo
  * - Pedidos multi-merchant: PaymentIntent basico + transfers separados
- * - Fallback: simulacion si jaraba_foc.stripe_connect no disponible
+ * - Fallback: simulacion si jaraba_foc.stripe_connect no disponible.
  *
  * STRIPE-ENV-UNIFY-001: Keys via settings.secrets.php (getenv).
  * OPTIONAL-CROSSMODULE-001: StripeConnectService inyectado como @? opcional.
@@ -56,11 +56,11 @@ class StripePaymentRetailService {
     ];
 
     try {
-      // Intentar destination charge si hay un solo merchant con Stripe Connect
+      // Intentar destination charge si hay un solo merchant con Stripe Connect.
       $destinationAccount = $this->resolveDestinationAccount($order);
 
       if ($destinationAccount && $this->stripeConnectService) {
-        // Destination charge: pago directo al merchant
+        // Destination charge: pago directo al merchant.
         $result = $this->stripeConnectService->createDestinationCharge(
           $amount_cents,
           'eur',
@@ -81,7 +81,7 @@ class StripePaymentRetailService {
         ];
       }
 
-      // Fallback: PaymentIntent basico via jaraba_billing.stripe_client
+      // Fallback: PaymentIntent basico via jaraba_billing.stripe_client.
       if (\Drupal::hasService('jaraba_billing.stripe_client')) {
         $stripe = \Drupal::service('jaraba_billing.stripe_client');
         $intent = $stripe->createPaymentIntent([
@@ -149,7 +149,7 @@ class StripePaymentRetailService {
     $order->set('status', 'confirmed');
     $order->save();
 
-    // Actualizar estado de payout en subpedidos
+    // Actualizar estado de payout en subpedidos.
     $this->updateSuborderPayoutStatus($order);
 
     $this->logger->info('Pago confirmado para pedido @number (intent: @intent)', [
@@ -232,7 +232,7 @@ class StripePaymentRetailService {
       }
     }
 
-    // Solo destination charge si un unico merchant
+    // Solo destination charge si un unico merchant.
     if (count($merchant_ids) !== 1) {
       return NULL;
     }

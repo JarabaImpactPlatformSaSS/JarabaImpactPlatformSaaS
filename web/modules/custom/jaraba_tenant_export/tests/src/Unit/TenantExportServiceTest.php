@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_tenant_export\Unit;
 
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Queue\QueueInterface;
 use Drupal\ecosistema_jaraba_core\Service\AuditLogService;
 use Drupal\ecosistema_jaraba_core\Service\RateLimiterService;
 use Drupal\jaraba_tenant_export\Service\TenantDataCollectorService;
@@ -50,7 +51,7 @@ class TenantExportServiceTest extends UnitTestCase {
     parent::setUp();
 
     // Set up Drupal container for TranslatableMarkup::__toString().
-    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
@@ -132,7 +133,7 @@ class TenantExportServiceTest extends UnitTestCase {
    */
   public function testCleanupExpiredExportsNone(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
 
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();
@@ -153,7 +154,7 @@ class TenantExportServiceTest extends UnitTestCase {
    */
   public function testGetExportHistoryEmpty(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
-    $query = $this->createMock(\Drupal\Core\Entity\Query\QueryInterface::class);
+    $query = $this->createMock(QueryInterface::class);
 
     $query->method('accessCheck')->willReturnSelf();
     $query->method('condition')->willReturnSelf();

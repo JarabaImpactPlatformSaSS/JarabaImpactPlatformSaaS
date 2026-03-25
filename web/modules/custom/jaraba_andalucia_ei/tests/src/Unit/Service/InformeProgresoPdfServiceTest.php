@@ -84,9 +84,14 @@ class InformeProgresoPdfServiceTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function construccionConTodosLosServicios(): void {
     $brandedPdf = new class {
+
+      /**
+       *
+       */
       public function generateReport(array $data, ?int $tenantId = NULL): string {
         return 'private://reports/test.pdf';
       }
+
     };
 
     $service = new InformeProgresoPdfService(
@@ -118,9 +123,13 @@ class InformeProgresoPdfServiceTest extends UnitTestCase {
       public mixed $value = NULL;
       public mixed $target_id = NULL;
 
+      /**
+       *
+       */
       public function isEmpty(): bool {
         return TRUE;
       }
+
     };
     $participante->method('get')->willReturn($fieldMock);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agents\Entity;
 
+use Cron\CronExpression;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -392,7 +393,7 @@ class AutonomousAgent extends ContentEntityBase implements EntityOwnerInterface,
     // Campo 19: schedule_config — configuracion de programacion (JSON, GAP-05).
     // Para 'interval': {"every": 3600, "unit": "seconds"}
     // Para 'cron': {"expression": "0 * * * *"}
-    // Para 'one_time': {"run_at": "2026-03-01T09:00:00"}
+    // Para 'one_time': {"run_at": "2026-03-01T09:00:00"}.
     $fields['schedule_config'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Configuracion de programacion'))
       ->setDescription(t('Parametros de la programacion en formato JSON.'))
@@ -569,9 +570,10 @@ class AutonomousAgent extends ContentEntityBase implements EntityOwnerInterface,
     // Intentar usar la libreria cron-expression si esta disponible.
     if (class_exists('\\Cron\\CronExpression')) {
       try {
-        $cron = new \Cron\CronExpression($expression);
+        $cron = new CronExpression($expression);
         return $cron->getNextRunDate()->getTimestamp();
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         // Fallback a calculo basico.
       }
     }

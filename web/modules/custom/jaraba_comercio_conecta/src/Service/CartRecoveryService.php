@@ -7,6 +7,9 @@ namespace Drupal\jaraba_comercio_conecta\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class CartRecoveryService {
 
   public function __construct(
@@ -14,6 +17,9 @@ class CartRecoveryService {
     protected LoggerInterface $logger,
   ) {}
 
+  /**
+   *
+   */
   public function detectAbandonedCarts(int $hours_threshold = 24): array {
     $cart_storage = $this->entityTypeManager->getStorage('comercio_cart');
     $threshold = \Drupal::time()->getRequestTime() - ($hours_threshold * 3600);
@@ -49,6 +55,9 @@ class CartRecoveryService {
     return $abandoned;
   }
 
+  /**
+   *
+   */
   protected function createAbandonedCartRecord(object $cart): ?object {
     $abandoned_storage = $this->entityTypeManager->getStorage('abandoned_cart');
 
@@ -84,6 +93,9 @@ class CartRecoveryService {
     return $record;
   }
 
+  /**
+   *
+   */
   public function sendRecoveryEmail(object $abandoned_cart): bool {
     if ($abandoned_cart->get('recovery_sent')->value) {
       return FALSE;
@@ -123,6 +135,9 @@ class CartRecoveryService {
     }
   }
 
+  /**
+   *
+   */
   public function recoverCart(string $token): ?object {
     $abandoned_storage = $this->entityTypeManager->getStorage('abandoned_cart');
     $ids = $abandoned_storage->getQuery()
@@ -156,6 +171,9 @@ class CartRecoveryService {
     return $cart;
   }
 
+  /**
+   *
+   */
   public function getRecoveryStats(int $tenant_id): array {
     $storage = $this->entityTypeManager->getStorage('abandoned_cart');
 

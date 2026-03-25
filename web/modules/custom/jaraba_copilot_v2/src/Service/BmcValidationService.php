@@ -79,7 +79,7 @@ class BmcValidationService {
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
-    LoggerInterface $logger
+    LoggerInterface $logger,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->logger = $logger;

@@ -22,12 +22,11 @@ use Symfony\Component\HttpFoundation\Response;
  * - GET /api/v1/content/articles/{article_id}/comments — listar aprobados
  * - POST /api/v1/content/articles/{article_id}/comments — crear comentario
  * - POST /api/v1/content/comments/{comment_id}/moderate — moderar
- * - POST /api/v1/content/comments/{comment_id}/helpful — marcar util
+ * - POST /api/v1/content/comments/{comment_id}/helpful — marcar util.
  *
  * REV-PHASE4: API de comentarios del Content Hub.
  */
-class CommentApiController extends ControllerBase
-{
+class CommentApiController extends ControllerBase {
 
   /**
    * API-WHITELIST-001: Campos permitidos en la creacion de comentarios.
@@ -53,8 +52,7 @@ class CommentApiController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static
-  {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('current_user'),
@@ -73,8 +71,7 @@ class CommentApiController extends ControllerBase
    *
    * Soporta threading: devuelve arbol de comentarios padre/hijo.
    */
-  public function list(int $article_id, Request $request): JsonResponse
-  {
+  public function list(int $article_id, Request $request): JsonResponse {
     $storage = $this->entityTypeManager()->getStorage('content_comment');
 
     $query = $storage->getQuery()
@@ -101,8 +98,7 @@ class CommentApiController extends ControllerBase
   /**
    * POST: Crea un nuevo comentario.
    */
-  public function createComment(int $article_id, Request $request): JsonResponse
-  {
+  public function createComment(int $article_id, Request $request): JsonResponse {
     // Verificar que el articulo existe.
     $article = $this->entityTypeManager()->getStorage('content_article')->load($article_id);
     if ($article === NULL) {
@@ -152,7 +148,8 @@ class CommentApiController extends ControllerBase
       // Usuario autenticado vs anonimo.
       if ($this->currentUser->isAuthenticated()) {
         $values['uid'] = $this->currentUser->id();
-      } else {
+      }
+      else {
         $values['uid'] = 0;
         if (!empty($data['author_name'])) {
           $values['author_name'] = strip_tags(trim($data['author_name']));
@@ -180,7 +177,8 @@ class CommentApiController extends ControllerBase
         ],
         'message' => 'Comentario enviado. Pendiente de moderacion.',
       ], Response::HTTP_CREATED);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Error creating comment for article @id: @msg', [
         '@id' => $article_id,
         '@msg' => $e->getMessage(),
@@ -192,8 +190,7 @@ class CommentApiController extends ControllerBase
   /**
    * POST: Modera un comentario (aprobar, rechazar, marcar).
    */
-  public function moderate(int $comment_id, Request $request): JsonResponse
-  {
+  public function moderate(int $comment_id, Request $request): JsonResponse {
     if ($this->moderationService === NULL) {
       return new JsonResponse(['error' => 'Servicio de moderacion no disponible.'], Response::HTTP_SERVICE_UNAVAILABLE);
     }
@@ -216,8 +213,7 @@ class CommentApiController extends ControllerBase
   /**
    * POST: Marca un comentario como util (helpful).
    */
-  public function helpful(int $comment_id): JsonResponse
-  {
+  public function helpful(int $comment_id): JsonResponse {
     $storage = $this->entityTypeManager()->getStorage('content_comment');
     $comment = $storage->load($comment_id);
 
@@ -237,8 +233,7 @@ class CommentApiController extends ControllerBase
   /**
    * Construye arbol de threading de comentarios.
    */
-  protected function buildCommentTree(array $comments): array
-  {
+  protected function buildCommentTree(array $comments): array {
     $flat = [];
     $tree = [];
 
@@ -259,7 +254,8 @@ class CommentApiController extends ControllerBase
     foreach ($flat as $id => &$item) {
       if ($item['parent_id'] !== NULL && isset($flat[$item['parent_id']])) {
         $flat[$item['parent_id']]['children'][] = &$item;
-      } else {
+      }
+      else {
         $tree[] = &$item;
       }
     }
@@ -270,8 +266,7 @@ class CommentApiController extends ControllerBase
   /**
    * Resuelve el nombre del autor para la API.
    */
-  protected function resolveAuthorName(object $comment): string
-  {
+  protected function resolveAuthorName(object $comment): string {
     if ($comment->hasField('author_name') && !$comment->get('author_name')->isEmpty()) {
       return $comment->get('author_name')->value;
     }
@@ -284,8 +279,7 @@ class CommentApiController extends ControllerBase
   /**
    * Resuelve el group ID del tenant actual.
    */
-  protected function resolveTenantGroupId(): int
-  {
+  protected function resolveTenantGroupId(): int {
     if ($this->tenantContext === NULL) {
       return 0;
     }
@@ -297,7 +291,8 @@ class CommentApiController extends ControllerBase
       return $tenant->hasField('group_id')
         ? (int) $tenant->get('group_id')->target_id
         : (int) $tenant->id();
-    } catch (\Exception) {
+    }
+    catch (\Exception) {
       return 0;
     }
   }

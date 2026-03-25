@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  * - Pivot suggestion after killed hypotheses
  * - Mentor connection post-MVP
  * - Funding opportunity alerts
- * - Post-scaling expansion to formación
+ * - Post-scaling expansion to formación.
  *
  * Plan Elevación Emprendimiento v2 — Fase 2 (G2).
  */

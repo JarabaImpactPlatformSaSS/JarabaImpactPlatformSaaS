@@ -12,36 +12,32 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * Proporciona la ruta base para Field UI.
  */
-class StrengthAssessmentSettingsForm extends FormBase
-{
+class StrengthAssessmentSettingsForm extends FormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormId(): string
-    {
-        return 'strength_assessment_settings_form';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'strength_assessment_settings_form';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form['info'] = [
-            '#type' => 'markup',
-            '#markup' => '<p>' . $this->t('Configuracion de la entidad Evaluacion de Fortalezas. Usa las pestanas para gestionar campos y displays.') . '</p>',
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['info'] = [
+      '#type' => 'markup',
+      '#markup' => '<p>' . $this->t('Configuracion de la entidad Evaluacion de Fortalezas. Usa las pestanas para gestionar campos y displays.') . '</p>',
+    ];
 
-        return $form;
-    }
+    return $form;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state): void
-    {
-        $this->messenger()->addStatus($this->t('Configuracion guardada.'));
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $this->messenger()->addStatus($this->t('Configuracion guardada.'));
+  }
 
 }

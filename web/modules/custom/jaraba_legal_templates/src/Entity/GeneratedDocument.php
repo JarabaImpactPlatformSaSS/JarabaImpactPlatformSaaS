@@ -87,7 +87,6 @@ class GeneratedDocument extends ContentEntityBase implements EntityOwnerInterfac
     // =========================================================================
     // BLOQUE 1: REFERENCIAS PRINCIPALES
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setSetting('target_type', 'taxonomy_term')
@@ -128,7 +127,6 @@ class GeneratedDocument extends ContentEntityBase implements EntityOwnerInterfac
     // =========================================================================
     // BLOQUE 2: DATOS DEL DOCUMENTO
     // =========================================================================
-
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Titulo'))
       ->setSetting('max_length', 255)
@@ -148,7 +146,6 @@ class GeneratedDocument extends ContentEntityBase implements EntityOwnerInterfac
     // =========================================================================
     // BLOQUE 3: METADATOS DE GENERACION
     // =========================================================================
-
     $fields['merge_data'] = BaseFieldDefinition::create('map')
       ->setLabel(new TranslatableMarkup('Datos de Merge'))
       ->setDescription(new TranslatableMarkup('JSON con los valores de merge-fields usados.'));
@@ -179,7 +176,6 @@ class GeneratedDocument extends ContentEntityBase implements EntityOwnerInterfac
     // =========================================================================
     // BLOQUE 4: ESTADO
     // =========================================================================
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setSetting('allowed_values', [
@@ -197,7 +193,6 @@ class GeneratedDocument extends ContentEntityBase implements EntityOwnerInterfac
     // =========================================================================
     // BLOQUE 5: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

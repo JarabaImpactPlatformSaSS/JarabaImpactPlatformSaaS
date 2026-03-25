@@ -7,7 +7,6 @@ namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\ecosistema_jaraba_core\Service\FiscalComplianceService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -96,6 +95,9 @@ class FiscalComplianceServiceTest extends UnitTestCase {
     $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $chainResult = new class {
 
+      /**
+       *
+       */
       public function toArray(): array {
         return ['is_valid' => TRUE];
       }
@@ -122,6 +124,9 @@ class FiscalComplianceServiceTest extends UnitTestCase {
     $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $chainResult = new class {
 
+      /**
+       *
+       */
       public function toArray(): array {
         return ['is_valid' => FALSE, 'error_message' => 'Chain broken at record 42'];
       }
@@ -149,6 +154,9 @@ class FiscalComplianceServiceTest extends UnitTestCase {
     $certManager = $this->createMock(FiscalCertificateManagerInterface::class);
     $certResult = new class {
 
+      /**
+       *
+       */
       public function toArray(): array {
         return ['is_valid' => FALSE, 'error' => 'Certificate expired'];
       }
@@ -172,6 +180,9 @@ class FiscalComplianceServiceTest extends UnitTestCase {
     $certManager = $this->createMock(FiscalCertificateManagerInterface::class);
     $certResult = new class {
 
+      /**
+       *
+       */
       public function toArray(): array {
         return ['is_valid' => TRUE, 'days_remaining' => 15];
       }
@@ -301,6 +312,9 @@ class FiscalComplianceServiceTest extends UnitTestCase {
  */
 interface FiscalHashServiceInterface {
 
+  /**
+   *
+   */
   public function verifyChainIntegrity();
 
 }
@@ -310,6 +324,9 @@ interface FiscalHashServiceInterface {
  */
 interface FiscalCertificateManagerInterface {
 
+  /**
+   *
+   */
   public function validateTenantCertificate(string $tenantId);
 
 }

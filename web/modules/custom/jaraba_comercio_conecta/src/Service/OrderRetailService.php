@@ -8,6 +8,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ */
 class OrderRetailService {
 
   public function __construct(
@@ -16,6 +19,9 @@ class OrderRetailService {
     protected LoggerInterface $logger,
   ) {}
 
+  /**
+   *
+   */
   public function getOrder(int $order_id): ?array {
     $storage = $this->entityTypeManager->getStorage('order_retail');
     $order = $storage->load($order_id);
@@ -33,6 +39,9 @@ class OrderRetailService {
     ];
   }
 
+  /**
+   *
+   */
   public function getOrderItems(int $order_id): array {
     $storage = $this->entityTypeManager->getStorage('order_item_retail');
     $ids = $storage->getQuery()
@@ -44,6 +53,9 @@ class OrderRetailService {
     return $ids ? array_values($storage->loadMultiple($ids)) : [];
   }
 
+  /**
+   *
+   */
   public function getSuborders(int $order_id): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
     $ids = $storage->getQuery()
@@ -55,6 +67,9 @@ class OrderRetailService {
     return $ids ? array_values($storage->loadMultiple($ids)) : [];
   }
 
+  /**
+   *
+   */
   public function getUserOrders(int $user_id, int $page = 0, int $per_page = 10): array {
     $storage = $this->entityTypeManager->getStorage('order_retail');
     $query = $storage->getQuery()
@@ -78,6 +93,9 @@ class OrderRetailService {
     ];
   }
 
+  /**
+   *
+   */
   public function getMerchantOrders(int $merchant_id, int $page = 0, int $per_page = 10): array {
     $storage = $this->entityTypeManager->getStorage('suborder_retail');
     $query = $storage->getQuery()
@@ -101,6 +119,9 @@ class OrderRetailService {
     ];
   }
 
+  /**
+   *
+   */
   public function updateStatus(int $order_id, string $new_status): bool {
     $storage = $this->entityTypeManager->getStorage('order_retail');
     $order = $storage->load($order_id);
@@ -141,6 +162,9 @@ class OrderRetailService {
     return TRUE;
   }
 
+  /**
+   *
+   */
   public function getOrderStats(int $tenant_id): array {
     $storage = $this->entityTypeManager->getStorage('order_retail');
 

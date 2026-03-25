@@ -54,6 +54,9 @@ class MetaCapiClientTest extends TestCase {
         $this->logger = $logger;
       }
 
+      /**
+       *
+       */
       public function get(string $channel): LoggerInterface {
         return $this->logger;
       }

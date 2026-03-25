@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Entity;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -148,7 +149,7 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
   /**
    * {@inheritdoc}
    */
-  public function preSave(\Drupal\Core\Entity\EntityStorageInterface $storage): void {
+  public function preSave(EntityStorageInterface $storage): void {
     parent::preSave($storage);
     $this->recalculateComputedFields();
   }
@@ -252,7 +253,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === DATOS PRINCIPALES ===
-
     $fields['titulo'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Titulo'))
       ->setDescription(t('Nombre del plan formativo.'))
@@ -301,7 +301,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === COMPOSICION (acciones formativas) ===
-
     $fields['accion_formativa_ids'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Acciones Formativas'))
       ->setDescription(t('JSON array con IDs de acciones formativas y metadatos de orden. No usar entity_reference porque se necesita orden y metadatos adicionales.'))
@@ -313,7 +312,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === HORAS (stored computed — recalculados en preSave) ===
-
     $fields['horas_formacion_previstas'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Horas Formacion Previstas'))
       ->setDescription(t('Suma de horas de formacion de las acciones asociadas. Calculado automaticamente.'))
@@ -342,7 +340,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === CUMPLIMIENTO (stored computed — recalculados en preSave) ===
-
     $fields['cumple_minimo_formacion'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Cumple Minimo Formacion'))
       ->setDescription(t('TRUE cuando horas de formacion >= 50h. Calculado automaticamente.'))
@@ -358,7 +355,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === SPRINT 14: CUMPLIMIENTO PIIL (stored computed) ===
-
     $fields['horas_orientacion_insercion_previstas'] = BaseFieldDefinition::create('decimal')
       ->setLabel(t('Horas Orientación Inserción Previstas'))
       ->setDescription(t('Horas de orientación para la inserción planificadas. Calculado automáticamente.'))
@@ -380,7 +376,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === CALENDARIO ===
-
     $fields['fecha_inicio'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Fecha de Inicio'))
       ->setDescription(t('Fecha de inicio prevista del plan formativo.'))
@@ -404,7 +399,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === NOTAS ===
-
     $fields['notas'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Notas'))
       ->setDescription(t('Notas internas sobre el plan formativo.'))
@@ -416,7 +410,6 @@ class PlanFormativoEi extends ContentEntityBase implements PlanFormativoEiInterf
       ->setDisplayConfigurable('view', TRUE);
 
     // === TIMESTAMPS ===
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creacion'))
       ->setDisplayConfigurable('view', TRUE);

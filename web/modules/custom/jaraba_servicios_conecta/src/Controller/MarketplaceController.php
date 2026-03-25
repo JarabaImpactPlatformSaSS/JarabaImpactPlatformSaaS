@@ -78,7 +78,7 @@ class MarketplaceController extends ControllerBase {
 
     $result = $this->providerService->getMarketplaceProviders($filters, $limit, $offset);
 
-    // Obtener categorías y ciudades para filtros
+    // Obtener categorías y ciudades para filtros.
     $categories = $this->entityTypeManager()
       ->getStorage('taxonomy_term')
       ->loadTree('servicios_category', 0, 1);
@@ -183,8 +183,8 @@ class MarketplaceController extends ControllerBase {
 
     return [
       '#markup' => '<div class="servicios-booking-page" data-offering-id="' . $offering->id() . '" data-provider-id="' . $provider->id() . '">'
-        . '<p>' . $this->t('Selector de fecha y hora para reservar cita. Implementación completa en Fase 2.') . '</p>'
-        . '</div>',
+      . '<p>' . $this->t('Selector de fecha y hora para reservar cita. Implementación completa en Fase 2.') . '</p>'
+      . '</div>',
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/booking'],
       ],

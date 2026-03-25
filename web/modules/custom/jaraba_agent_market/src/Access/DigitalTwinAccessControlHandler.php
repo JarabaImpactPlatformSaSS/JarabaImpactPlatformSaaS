@@ -15,6 +15,9 @@ use Drupal\Core\Access\AccessResultInterface;
  */
 class DigitalTwinAccessControlHandler extends EntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('administer jaraba agent market')) {
       return AccessResult::allowed();
@@ -25,6 +28,9 @@ class DigitalTwinAccessControlHandler extends EntityAccessControlHandler {
     return $isOwner ? AccessResult::allowed() : AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
     // Cualquier usuario autenticado puede crear un gemelo.
     return AccessResult::allowedIf($account->isAuthenticated());

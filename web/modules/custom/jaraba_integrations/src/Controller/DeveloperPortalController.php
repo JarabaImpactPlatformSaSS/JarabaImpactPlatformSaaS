@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Creen y gestionen sus conectores
  * - Descarguen el SDK y documentacion
  * - Envien conectores a revision
- * - Vean el estado de sus envios
+ * - Vean el estado de sus envios.
  *
  * Ruta: /integraciones/developer
  */

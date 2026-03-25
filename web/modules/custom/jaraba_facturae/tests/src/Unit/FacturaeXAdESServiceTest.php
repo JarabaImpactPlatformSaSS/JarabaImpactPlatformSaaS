@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Unit;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\CertificateManagerService;
@@ -291,7 +292,7 @@ class FacturaeXAdESServiceTest extends UnitTestCase {
    * Creates a mock tenant config entity.
    */
   protected function createMockTenantConfig(string $password): object {
-    $config = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $config = $this->createMock(ContentEntityInterface::class);
     $fieldMap = [
       'certificate_password_encrypted' => (object) ['value' => $password],
       'face_environment' => (object) ['value' => 'staging'],

@@ -57,7 +57,7 @@ class SearchConsoleApiController extends ControllerBase {
   /**
    * Devuelve las consultas de busqueda con mejor rendimiento.
    *
-   * GET /api/v1/insights/search-console/queries
+   * GET /api/v1/insights/search-console/queries.
    *
    * Query params:
    * - date_range: 7d|30d|90d (default: 30d)
@@ -118,7 +118,7 @@ class SearchConsoleApiController extends ControllerBase {
   /**
    * Devuelve las paginas con mejor rendimiento en busqueda.
    *
-   * GET /api/v1/insights/search-console/pages
+   * GET /api/v1/insights/search-console/pages.
    *
    * Query params:
    * - date_range: 7d|30d|90d (default: 30d)

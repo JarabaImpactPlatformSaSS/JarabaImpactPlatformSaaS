@@ -18,6 +18,9 @@ class LegalIntentClassifierServiceTest extends TestCase {
 
   protected LegalIntentClassifierService $classifier;
 
+  /**
+   *
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->classifier = new LegalIntentClassifierService(new NullLogger());

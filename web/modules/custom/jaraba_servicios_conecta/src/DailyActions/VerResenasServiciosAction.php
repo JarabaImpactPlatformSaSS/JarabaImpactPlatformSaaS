@@ -24,58 +24,100 @@ class VerResenasServiciosAction implements DailyActionInterface {
     protected readonly ?TenantContextService $tenantContext = NULL,
   ) {}
 
+  /**
+   *
+   */
   public function getId(): string {
     return 'provider_servicios.resenas';
   }
 
+  /**
+   *
+   */
   public function getDashboardId(): string {
     return 'provider_servicios';
   }
 
+  /**
+   *
+   */
   public function getLabel(): TranslatableMarkup {
     return $this->t('Ver reseñas');
   }
 
+  /**
+   *
+   */
   public function getDescription(): TranslatableMarkup {
     return $this->t('Reseñas recientes de clientes');
   }
 
+  /**
+   *
+   */
   public function getIcon(): array {
     return ['category' => 'commerce', 'name' => 'star', 'variant' => 'duotone'];
   }
 
+  /**
+   *
+   */
   public function getColor(): string {
     return 'azul-corporativo';
   }
 
+  /**
+   *
+   */
   public function getRoute(): string {
     return 'entity.review_servicios.collection';
   }
 
+  /**
+   *
+   */
   public function getRouteParameters(): array {
     return [];
   }
 
+  /**
+   *
+   */
   public function getHrefOverride(): ?string {
     return NULL;
   }
 
+  /**
+   *
+   */
   public function useSlidePanel(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getSlidePanelSize(): string {
     return 'medium';
   }
 
+  /**
+   *
+   */
   public function getWeight(): int {
     return 40;
   }
 
+  /**
+   *
+   */
   public function isPrimary(): bool {
     return FALSE;
   }
 
+  /**
+   *
+   */
   public function getContext(int $tenantId): array {
     $recent = 0;
     try {

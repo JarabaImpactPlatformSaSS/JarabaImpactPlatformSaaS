@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_governance\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -133,7 +134,7 @@ class ErasureServiceTest extends UnitTestCase {
     $nodeQuery->method('condition')->willReturnSelf();
     $nodeQuery->method('execute')->willReturn([100, 101]);
 
-    $nodeEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $nodeEntity = $this->createMock(ContentEntityInterface::class);
     $nodeEntity->method('hasField')->willReturn(TRUE);
     $nodeEntity->method('set')->willReturnSelf();
     $nodeEntity->expects($this->atLeastOnce())->method('save');
@@ -192,7 +193,7 @@ class ErasureServiceTest extends UnitTestCase {
     $nodeQuery->method('condition')->willReturnSelf();
     $nodeQuery->method('execute')->willReturn([100]);
 
-    $nodeEntity = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $nodeEntity = $this->createMock(ContentEntityInterface::class);
     $nodeEntity->method('id')->willReturn(100);
     $nodeEntity->method('hasField')->willReturn(FALSE);
     $nodeEntity->method('label')->willReturn('Test Node');

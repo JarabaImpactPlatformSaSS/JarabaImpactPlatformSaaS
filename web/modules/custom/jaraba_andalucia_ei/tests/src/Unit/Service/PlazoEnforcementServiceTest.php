@@ -53,7 +53,8 @@ class PlazoEnforcementServiceTest extends UnitTestCase {
    * @covers ::restarDiasHabiles
    */
   public function testRestarDiasHabilesCeroDias(): void {
-    $desde = new \DateTimeImmutable('2026-06-15'); // Lunes
+    // Lunes.
+    $desde = new \DateTimeImmutable('2026-06-15');
     $resultado = $this->service->restarDiasHabiles(0, $desde);
 
     // 0 días hábiles = misma fecha.
@@ -65,7 +66,8 @@ class PlazoEnforcementServiceTest extends UnitTestCase {
    */
   public function testRestarDiasHabilesDesdeFinDeSemana(): void {
     // Desde sábado, restar 1 día hábil = viernes anterior.
-    $desde = new \DateTimeImmutable('2026-06-20'); // Sábado
+    // Sábado.
+    $desde = new \DateTimeImmutable('2026-06-20');
     $resultado = $this->service->restarDiasHabiles(1, $desde);
 
     self::assertEquals('2026-06-19', $resultado->format('Y-m-d'), 'Should be Friday 19 June.');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_email\Controller;
 
+use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_email\Service\UnsubscribeTokenService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -50,7 +51,7 @@ class PublicUnsubscribeController extends ControllerBase {
       ];
     }
 
-    $processUrl = \Drupal\Core\Url::fromRoute(
+    $processUrl = Url::fromRoute(
       'jaraba_email.public_unsubscribe.process',
       ['email' => $email, 'token' => $token]
     )->toString();

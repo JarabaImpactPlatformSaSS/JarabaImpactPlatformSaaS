@@ -42,6 +42,9 @@ class DigitalTwin extends ContentEntityBase implements EntityOwnerInterface, Ent
   use EntityChangedTrait;
   use EntityOwnerTrait;
 
+  /**
+   *
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
@@ -55,7 +58,8 @@ class DigitalTwin extends ContentEntityBase implements EntityOwnerInterface, Ent
       ->setSetting('target_type', 'identity_wallet')
       ->setRequired(TRUE);
 
-    $fields['strategy'] = BaseFieldDefinition::create('string_long') // JSON
+    // JSON.
+    $fields['strategy'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Estrategia de Negociación'))
       ->setDefaultValue('{"mode": "conservative", "max_rounds": 3}')
       ->setRequired(TRUE);

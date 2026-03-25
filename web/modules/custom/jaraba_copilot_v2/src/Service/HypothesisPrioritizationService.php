@@ -30,7 +30,7 @@ class HypothesisPrioritizationService {
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
-    LoggerInterface $logger
+    LoggerInterface $logger,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->logger = $logger;
@@ -54,7 +54,7 @@ class HypothesisPrioritizationService {
     $confidence = max(1, min(5, $confidence));
     $evidence = max(1, min(5, $evidence));
 
-    // Invertimos confidence: baja confianza = mayor urgencia de validar
+    // Invertimos confidence: baja confianza = mayor urgencia de validar.
     $urgency = 6 - $confidence;
 
     return (float) ($importance * $urgency * $evidence);
@@ -79,13 +79,14 @@ class HypothesisPrioritizationService {
       $evidence = (int) ($hypothesis->get('evidence_score')->value ?? 1);
       $status = $hypothesis->get('validation_status')->value ?? 'PENDING';
 
-      // Confidence basado en el estado de validacion
+      // Confidence basado en el estado de validacion.
       $confidence = match ($status) {
         'VALIDATED' => 5,
         'IN_PROGRESS' => 3,
         'INCONCLUSIVE' => 2,
         'INVALIDATED' => 4,
-        default => 1, // PENDING = menor confianza
+        // PENDING = menor confianza.
+        default => 1,
       };
 
       $iceScore = $this->calculateIceScore($importance, $confidence, $evidence);
@@ -103,7 +104,7 @@ class HypothesisPrioritizationService {
       ];
     }
 
-    // Ordenar por ICE score descendente
+    // Ordenar por ICE score descendente.
     usort($scored, fn($a, $b) => $b['ice_score'] <=> $a['ice_score']);
 
     return $scored;
@@ -130,7 +131,7 @@ class HypothesisPrioritizationService {
       $query->condition('bmc_block', $bmcBlock);
     }
 
-    // Solo hipotesis pendientes o en progreso
+    // Solo hipotesis pendientes o en progreso.
     $query->condition('validation_status', ['PENDING', 'IN_PROGRESS'], 'IN');
 
     $ids = $query->execute();

@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update and uninstall functions for the Jaraba LMS module.
  */
 
-declare(strict_types=1);
+use Drupal\jaraba_lms\Entity\CourseReview;
+
 
 /**
  * Implements hook_schema().
@@ -15,7 +18,7 @@ declare(strict_types=1);
 function jaraba_lms_schema(): array {
   $schema = [];
 
-  // Tabla de progreso granular por actividad
+  // Tabla de progreso granular por actividad.
   $schema['lms_progress_record'] = [
     'description' => 'Stores progress records for each activity within an enrollment.',
     'fields' => [
@@ -107,7 +110,7 @@ function jaraba_lms_schema(): array {
     ],
   ];
 
-  // Tabla de lecciones
+  // Tabla de lecciones.
   $schema['lms_lesson'] = [
     'description' => 'Stores lessons within courses.',
     'fields' => [
@@ -197,7 +200,7 @@ function jaraba_lms_schema(): array {
     ],
   ];
 
-  // Tabla de actividades
+  // Tabla de actividades.
   $schema['lms_activity'] = [
     'description' => 'Stores activities within lessons.',
     'fields' => [
@@ -302,7 +305,7 @@ function jaraba_lms_schema(): array {
     ],
   ];
 
-  // Tabla de learning paths
+  // Tabla de learning paths.
   $schema['lms_learning_path'] = [
     'description' => 'Stores learning paths that group courses.',
     'fields' => [
@@ -445,7 +448,7 @@ function jaraba_lms_schema(): array {
     ],
   ];
 
-  // Tabla para almacenar xAPI statements
+  // Tabla para almacenar xAPI statements.
   $schema['lms_xapi_statements'] = [
     'description' => 'Stores xAPI statements for video tracking',
     'fields' => [
@@ -500,8 +503,7 @@ function jaraba_lms_schema(): array {
   ];
 
   // === TABLAS DE GAMIFICACIÓN (Q1 2026) ===
-
-  // Tabla de log de XP
+  // Tabla de log de XP.
   $schema['gamification_xp_log'] = [
     'description' => 'Log of XP transactions for gamification',
     'fields' => [
@@ -547,7 +549,7 @@ function jaraba_lms_schema(): array {
     ],
   ];
 
-  // Tabla de stats de usuario
+  // Tabla de stats de usuario.
   $schema['gamification_user_stats'] = [
     'description' => 'User gamification stats',
     'fields' => [
@@ -613,7 +615,7 @@ function jaraba_lms_install(): void {
  * Implements hook_uninstall().
  */
 function jaraba_lms_uninstall(): void {
-  // Clean up any configuration
+  // Clean up any configuration.
   \Drupal::configFactory()->getEditable('jaraba_lms.settings')->delete();
 }
 
@@ -644,7 +646,7 @@ function jaraba_lms_update_10002(): string {
     return 'course_review entity type not installed yet.';
   }
 
-  $fields = \Drupal\jaraba_lms\Entity\CourseReview::baseFieldDefinitions($entity_type);
+  $fields = CourseReview::baseFieldDefinitions($entity_type);
   $installed = [];
   $target_fields = ['flag_reason', 'flag_reporter_uid', 'flag_count', 'owner_response', 'owner_response_at', 'verified_purchase'];
 

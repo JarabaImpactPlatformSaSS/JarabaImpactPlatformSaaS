@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_intelligence\Service;
 
+use Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\jaraba_copilot_v2\Service\CopilotBridgeInterface;
@@ -281,7 +282,7 @@ PROMPT;
       $xml .= '</legal_context>';
 
       // LCIS Capa 4: Prepend coherencia juridica al contexto RAG legal.
-      $xml = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::COHERENCE_PROMPT_SHORT . "\n\n" . $xml;
+      $xml = LegalCoherencePromptRule::COHERENCE_PROMPT_SHORT . "\n\n" . $xml;
 
       return $xml;
     }

@@ -10,18 +10,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ *
+ */
 class CartApiController extends ControllerBase {
 
   public function __construct(
     protected CartService $cartService,
   ) {}
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_comercio_conecta.cart'),
     );
   }
 
+  /**
+   *
+   */
   public function getCart(Request $request): JsonResponse {
     $cart = $this->cartService->getOrCreateCart($request->getSession()->getId());
     $items = $this->cartService->getCartItems($cart);
@@ -53,6 +62,9 @@ class CartApiController extends ControllerBase {
     return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
+  /**
+   *
+   */
   public function addItem(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     $product_id = (int) ($data['product_id'] ?? 0);
@@ -79,6 +91,9 @@ class CartApiController extends ControllerBase {
     ], 201);
   }
 
+  /**
+   *
+   */
   public function removeItem(int $item_id, Request $request): JsonResponse {
     $cart = $this->cartService->getOrCreateCart($request->getSession()->getId());
     $success = $this->cartService->removeItem($cart, $item_id);
@@ -95,6 +110,9 @@ class CartApiController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function updateQuantity(int $item_id, Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     $quantity = (int) ($data['quantity'] ?? 0);
@@ -114,6 +132,9 @@ class CartApiController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function applyCoupon(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     $coupon_code = trim($data['coupon_code'] ?? '');
@@ -126,8 +147,8 @@ class CartApiController extends ControllerBase {
     $result = $this->cartService->applyCoupon($cart, $coupon_code);
 
     if (!$result['success']) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
     }
 
     return new JsonResponse([

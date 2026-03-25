@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_email\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\jaraba_email\Service\CampaignService;
 use Drupal\jaraba_email\Service\SequenceManagerService;
 use Drupal\Tests\UnitTestCase;
@@ -46,7 +46,7 @@ class SequenceManagerServiceTest extends UnitTestCase {
    * Tests inscribir suscriptor en secuencia inactiva.
    */
   public function testEnrollSubscriberInactiveSequence(): void {
-    $sequence = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $sequence = $this->createMock(ContentEntityInterface::class);
     $isActiveField = new \stdClass();
     $isActiveField->value = FALSE;
     $sequence->method('get')->willReturnMap([
@@ -83,7 +83,7 @@ class SequenceManagerServiceTest extends UnitTestCase {
    * Tests salir de secuencia.
    */
   public function testExitSequence(): void {
-    $sequence = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $sequence = $this->createMock(ContentEntityInterface::class);
     $currentEnrolledField = new \stdClass();
     $currentEnrolledField->value = 5;
     $sequence->method('get')->willReturnMap([

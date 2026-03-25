@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @file
+ * @file
+ * @file
+ */
+
 declare(strict_types=1);
 
 /**
@@ -63,42 +69,30 @@ function jaraba_agent_market_update_10001(): void {
   }
 }
 
-
 /**
  * Implements hook_requirements().
  */
 function jaraba_agent_market_requirements(string $phase): array {
-  $requirements = [];
-
-  if ($phase !== 'runtime') {
-    return $requirements;
-  }
-
-  $entityTypes = ['digital_twin', 'negotiation_session'];
-  $updateManager = \Drupal::entityDefinitionUpdateManager();
-  $missing = [];
-
-  foreach ($entityTypes as $typeId) {
-    if (!$updateManager->getEntityType($typeId)) {
-      $missing[] = $typeId;
-    }
-  }
-
-  if (!empty($missing)) {
-    $requirements['jaraba_agent_market_entities'] = [
-      'title' => t('Jaraba agent market: Entity Types'),
-      'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]),
-      'description' => t('Run drush entity:updates to install missing entity types.'),
-      'severity' => REQUIREMENT_ERROR,
-    ];
-  }
-  else {
-    $requirements['jaraba_agent_market_entities'] = [
-      'title' => t('Jaraba agent market: Entity Types'),
-      'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]),
-      'severity' => REQUIREMENT_OK,
-    ];
-  }
-
+$requirements = [];
+if ($phase !== 'runtime') {
   return $requirements;
+}
+
+$entityTypes = ['digital_twin', 'negotiation_session'];
+$updateManager = \Drupal::entityDefinitionUpdateManager();
+$missing = [];
+foreach ($entityTypes as $typeId) {
+  if (!$updateManager->getEntityType($typeId)) {
+    $missing[] = $typeId;
+  }
+}
+
+if (!empty($missing)) {
+  $requirements['jaraba_agent_market_entities'] = ['title' => t('Jaraba agent market: Entity Types'), 'value' => t('Missing: @types', ['@types' => implode(', ', $missing)]), 'description' => t('Run drush entity:updates to install missing entity types.'), 'severity' => REQUIREMENT_ERROR];
+}
+else {
+  $requirements['jaraba_agent_market_entities'] = ['title' => t('Jaraba agent market: Entity Types'), 'value' => t('All @count entity types installed', ['@count' => count($entityTypes)]), 'severity' => REQUIREMENT_OK];
+}
+
+return $requirements;
 }

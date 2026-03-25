@@ -208,8 +208,14 @@ class SelfDiscoveryContextServiceTest extends TestCase {
       ->addMethods(['getAllScores'])
       ->getMock();
     $assessment->method('getAllScores')->willReturn([
-      'career' => 8, 'finance' => 3, 'health' => 7, 'family' => 9,
-      'social' => 6, 'growth' => 5, 'leisure' => 4, 'environment' => 7,
+      'career' => 8,
+      'finance' => 3,
+      'health' => 7,
+      'family' => 9,
+      'social' => 6,
+      'growth' => 5,
+      'leisure' => 4,
+      'environment' => 7,
     ]);
 
     $storage->method('getQuery')->willReturn($query);

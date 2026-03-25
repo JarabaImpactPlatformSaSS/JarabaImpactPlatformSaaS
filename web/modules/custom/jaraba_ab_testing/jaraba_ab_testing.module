@@ -32,7 +32,7 @@ function jaraba_ab_testing_help($route_name, RouteMatchInterface $route_match) {
  */
 function jaraba_ab_testing_theme($existing, $type, $theme, $path) {
   return [
-    // Dashboard principal de A/B testing
+    // Dashboard principal de A/B testing.
     'jaraba_ab_testing_dashboard' => [
       'variables' => [
         'kpis' => [],
@@ -44,7 +44,7 @@ function jaraba_ab_testing_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
-    // Detalle de experimento individual
+    // Detalle de experimento individual.
     'jaraba_ab_testing_experiment_detail' => [
       'variables' => [
         'experiment' => [],

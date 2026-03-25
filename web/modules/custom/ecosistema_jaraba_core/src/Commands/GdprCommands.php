@@ -29,7 +29,7 @@ class GdprCommands extends DrushCommands {
    *
    * @var \Psr\Log\LoggerInterface|null
    */
-  protected ?\Psr\Log\LoggerInterface $logger;
+  protected ?LoggerInterface $logger;
 
   /**
    * The audit log service.
@@ -262,7 +262,8 @@ class GdprCommands extends DrushCommands {
       }
     }
     $user->save();
-    $stats['user_fields'] += 3; // username + email + status
+    // Username + email + status.
+    $stats['user_fields'] += 3;
 
     // 2. Anonymize profile entities.
     $this->io()->text('  Anonymizing profile data...');

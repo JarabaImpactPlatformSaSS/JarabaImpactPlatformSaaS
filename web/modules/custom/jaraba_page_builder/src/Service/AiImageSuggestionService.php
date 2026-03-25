@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Service;
 
+use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
@@ -223,9 +225,9 @@ class AiImageSuggestionService {
 
     $userPrompt = $this->buildKeywordPrompt($block_type, $content_context, $vertical, $page_title);
 
-    $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
-      new \Drupal\ai\OperationType\Chat\ChatMessage('system', $systemPrompt),
-      new \Drupal\ai\OperationType\Chat\ChatMessage('user', $userPrompt),
+    $chatInput = new ChatInput([
+      new ChatMessage('system', $systemPrompt),
+      new ChatMessage('user', $userPrompt),
     ]);
 
     $configuration = ['temperature' => 0.5];

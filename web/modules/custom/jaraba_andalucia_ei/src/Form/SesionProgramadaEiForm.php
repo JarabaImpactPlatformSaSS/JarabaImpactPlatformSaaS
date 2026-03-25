@@ -22,16 +22,26 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
    * Day key to ISO-8601 numeric day (1=Mon ... 7=Sun).
    */
   private const DAY_MAP = [
-    'mon' => 1, 'tue' => 2, 'wed' => 3, 'thu' => 4,
-    'fri' => 5, 'sat' => 6, 'sun' => 7,
+    'mon' => 1,
+    'tue' => 2,
+    'wed' => 3,
+    'thu' => 4,
+    'fri' => 5,
+    'sat' => 6,
+    'sun' => 7,
   ];
 
   /**
    * Reverse: ISO numeric day to key.
    */
   private const DAY_MAP_REVERSE = [
-    1 => 'mon', 2 => 'tue', 3 => 'wed', 4 => 'thu',
-    5 => 'fri', 6 => 'sat', 7 => 'sun',
+    1 => 'mon',
+    2 => 'tue',
+    3 => 'wed',
+    4 => 'thu',
+    5 => 'fri',
+    6 => 'sat',
+    7 => 'sun',
   ];
 
   /**
@@ -182,9 +192,11 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
     // ── Panel: Recurrencia Diaria ────────────────────────────────
     $section['panel_daily'] = [
       '#type' => 'container',
-      '#states' => ['visible' => $recChecked + [
-        ':input[name="tipo_recurrencia"]' => ['value' => 'daily'],
-      ]],
+      '#states' => [
+        'visible' => $recChecked + [
+          ':input[name="tipo_recurrencia"]' => ['value' => 'daily'],
+        ],
+      ],
       '#weight' => 11,
       '#attributes' => ['class' => ['recurrence-subpanel', 'recurrence-subpanel--daily']],
     ];
@@ -226,9 +238,11 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
 
     $section['panel_weekly'] = [
       '#type' => 'container',
-      '#states' => ['visible' => $recChecked + [
-        ':input[name="tipo_recurrencia"]' => ['value' => 'weekly'],
-      ]],
+      '#states' => [
+        'visible' => $recChecked + [
+          ':input[name="tipo_recurrencia"]' => ['value' => 'weekly'],
+        ],
+      ],
       '#weight' => 12,
       '#attributes' => ['class' => ['recurrence-subpanel', 'recurrence-subpanel--weekly']],
     ];
@@ -276,9 +290,11 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
 
     $section['panel_monthly'] = [
       '#type' => 'container',
-      '#states' => ['visible' => $recChecked + [
-        ':input[name="tipo_recurrencia"]' => ['value' => 'monthly'],
-      ]],
+      '#states' => [
+        'visible' => $recChecked + [
+          ':input[name="tipo_recurrencia"]' => ['value' => 'monthly'],
+        ],
+      ],
       '#weight' => 13,
       '#attributes' => ['class' => ['recurrence-subpanel', 'recurrence-subpanel--monthly']],
     ];
@@ -314,44 +330,58 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
       '#min' => 1,
       '#max' => 31,
       '#default_value' => $patron['day_of_month'] ?? $fechaDefaults['day'],
-      '#states' => ['visible' => [
-        ':input[name="monthly_type"]' => ['value' => 'day_of_month'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="monthly_type"]' => ['value' => 'day_of_month'],
+        ],
+      ],
     ];
     $section['panel_monthly']['monthly_ordinal'] = [
       '#type' => 'select',
       '#title' => $this->t('Ordinal'),
       '#options' => $ordinalOptions,
       '#default_value' => $patron['weekday_ordinal'] ?? 'first',
-      '#states' => ['visible' => [
-        ':input[name="monthly_type"]' => ['value' => 'ordinal_weekday'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="monthly_type"]' => ['value' => 'ordinal_weekday'],
+        ],
+      ],
     ];
     $section['panel_monthly']['monthly_weekday'] = [
       '#type' => 'select',
       '#title' => $this->t('Día de la semana'),
       '#options' => $weekdayOptions,
       '#default_value' => $patron['weekday'] ?? ($fechaDefaults['day_key'] ?: 'mon'),
-      '#states' => ['visible' => [
-        ':input[name="monthly_type"]' => ['value' => 'ordinal_weekday'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="monthly_type"]' => ['value' => 'ordinal_weekday'],
+        ],
+      ],
     ];
 
     // ── Panel: Recurrencia Anual ─────────────────────────────────
     $monthOptions = [
-      1 => $this->t('Enero'), 2 => $this->t('Febrero'),
-      3 => $this->t('Marzo'), 4 => $this->t('Abril'),
-      5 => $this->t('Mayo'), 6 => $this->t('Junio'),
-      7 => $this->t('Julio'), 8 => $this->t('Agosto'),
-      9 => $this->t('Septiembre'), 10 => $this->t('Octubre'),
-      11 => $this->t('Noviembre'), 12 => $this->t('Diciembre'),
+      1 => $this->t('Enero'),
+      2 => $this->t('Febrero'),
+      3 => $this->t('Marzo'),
+      4 => $this->t('Abril'),
+      5 => $this->t('Mayo'),
+      6 => $this->t('Junio'),
+      7 => $this->t('Julio'),
+      8 => $this->t('Agosto'),
+      9 => $this->t('Septiembre'),
+      10 => $this->t('Octubre'),
+      11 => $this->t('Noviembre'),
+      12 => $this->t('Diciembre'),
     ];
 
     $section['panel_yearly'] = [
       '#type' => 'container',
-      '#states' => ['visible' => $recChecked + [
-        ':input[name="tipo_recurrencia"]' => ['value' => 'yearly'],
-      ]],
+      '#states' => [
+        'visible' => $recChecked + [
+          ':input[name="tipo_recurrencia"]' => ['value' => 'yearly'],
+        ],
+      ],
       '#weight' => 14,
       '#attributes' => ['class' => ['recurrence-subpanel', 'recurrence-subpanel--yearly']],
     ];
@@ -384,27 +414,33 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
       '#min' => 1,
       '#max' => 31,
       '#default_value' => $patron['yearly_day'] ?? $fechaDefaults['day'],
-      '#states' => ['visible' => [
-        ':input[name="yearly_type"]' => ['value' => 'date'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="yearly_type"]' => ['value' => 'date'],
+        ],
+      ],
     ];
     $section['panel_yearly']['yearly_ordinal'] = [
       '#type' => 'select',
       '#title' => $this->t('Ordinal'),
       '#options' => $ordinalOptions,
       '#default_value' => $patron['yearly_ordinal'] ?? 'first',
-      '#states' => ['visible' => [
-        ':input[name="yearly_type"]' => ['value' => 'ordinal_weekday'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="yearly_type"]' => ['value' => 'ordinal_weekday'],
+        ],
+      ],
     ];
     $section['panel_yearly']['yearly_weekday'] = [
       '#type' => 'select',
       '#title' => $this->t('Día de la semana'),
       '#options' => $weekdayOptions,
       '#default_value' => $patron['yearly_weekday'] ?? ($fechaDefaults['day_key'] ?: 'mon'),
-      '#states' => ['visible' => [
-        ':input[name="yearly_type"]' => ['value' => 'ordinal_weekday'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="yearly_type"]' => ['value' => 'ordinal_weekday'],
+        ],
+      ],
     ];
 
     // ── Rango de repetición ──────────────────────────────────────
@@ -438,18 +474,22 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
       '#min' => 1,
       '#max' => 365,
       '#default_value' => $patron['count'] ?? 10,
-      '#states' => ['visible' => [
-        ':input[name="range_type"]' => ['value' => 'count'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="range_type"]' => ['value' => 'count'],
+        ],
+      ],
     ];
     $section['panel_range']['range_end_date'] = [
       '#type' => 'date',
       '#title' => $this->t('Fecha de finalización'),
       '#description' => $this->t('Última fecha posible para sesiones generadas.'),
       '#default_value' => $patron['end_date'] ?? '',
-      '#states' => ['visible' => [
-        ':input[name="range_type"]' => ['value' => 'end_date'],
-      ]],
+      '#states' => [
+        'visible' => [
+          ':input[name="range_type"]' => ['value' => 'end_date'],
+        ],
+      ],
     ];
 
     return $form;
@@ -601,6 +641,7 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
    * @return array{day: int, month: int, day_key: string|null}
    *   Day of month, month number, and day-of-week key.
    */
+
   /**
    * Pre-fills form fields from calendar query parameters.
    *
@@ -662,6 +703,9 @@ class SesionProgramadaEiForm extends PremiumEntityFormBase {
     }
   }
 
+  /**
+   *
+   */
   private function deriveFechaDefaults(): array {
     $fecha = $this->entity->get('fecha')->value ?? '';
     if (empty($fecha)) {

@@ -43,6 +43,9 @@ class ServiciosConectaHealthScoreService {
     protected readonly LoggerInterface $logger,
   ) {}
 
+  /**
+   *
+   */
   public function calculateUserHealth(int $userId): array {
     $dimensions = [];
     $overallScore = 0.0;
@@ -75,6 +78,9 @@ class ServiciosConectaHealthScoreService {
     ];
   }
 
+  /**
+   *
+   */
   protected function calculateDimension(int $userId, string $dimension): float {
     try {
       return match ($dimension) {
@@ -96,34 +102,56 @@ class ServiciosConectaHealthScoreService {
     }
   }
 
+  /**
+   *
+   */
   protected function calcProfileCompleteness(int $userId): float {
     $providerIds = $this->entityTypeManager->getStorage('provider_profile')
       ->getQuery()->accessCheck(FALSE)->condition('user_id', $userId)->range(0, 1)->execute();
-    if (empty($providerIds)) return 0.0;
+    if (empty($providerIds)) {
+      return 0.0;
+    }
     $provider = $this->entityTypeManager->getStorage('provider_profile')->load(reset($providerIds));
-    if (!$provider) return 0.0;
+    if (!$provider) {
+      return 0.0;
+    }
 
     $score = 0.0;
     // Photo (20 pts)
-    if ($provider->hasField('photo') && !$provider->get('photo')->isEmpty()) $score += 20;
+    if ($provider->hasField('photo') && !$provider->get('photo')->isEmpty()) {
+      $score += 20;
+    }
     // Bio (20 pts)
-    if ($provider->hasField('bio') && !empty($provider->get('bio')->value)) $score += 20;
+    if ($provider->hasField('bio') && !empty($provider->get('bio')->value)) {
+      $score += 20;
+    }
     // Specialties (20 pts)
-    if ($provider->hasField('service_category') && !$provider->get('service_category')->isEmpty()) $score += 20;
+    if ($provider->hasField('service_category') && !$provider->get('service_category')->isEmpty()) {
+      $score += 20;
+    }
     // Credentials (20 pts)
-    if ($provider->hasField('credentials') && !empty($provider->get('credentials')->value)) $score += 20;
+    if ($provider->hasField('credentials') && !empty($provider->get('credentials')->value)) {
+      $score += 20;
+    }
     // Schedule configured (20 pts)
     $slotsCount = (int) $this->entityTypeManager->getStorage('availability_slot')
       ->getQuery()->accessCheck(FALSE)->condition('provider_id', reset($providerIds))->condition('is_active', TRUE)->count()->execute();
-    if ($slotsCount > 0) $score += 20;
+    if ($slotsCount > 0) {
+      $score += 20;
+    }
 
     return min(100.0, $score);
   }
 
+  /**
+   *
+   */
   protected function calcBookingActivity(int $userId): float {
     $providerIds = $this->entityTypeManager->getStorage('provider_profile')
       ->getQuery()->accessCheck(FALSE)->condition('user_id', $userId)->range(0, 1)->execute();
-    if (empty($providerIds)) return 0.0;
+    if (empty($providerIds)) {
+      return 0.0;
+    }
     $providerId = reset($providerIds);
 
     // Bookings last 30 days (40 pts)
@@ -140,7 +168,7 @@ class ServiciosConectaHealthScoreService {
     $completionRate = $totalBookings > 0 ? ($completedBookings / $totalBookings) : 0;
     $completionScore = $completionRate * 30;
 
-    // Revenue trend (30 pts) — simplified: bookings growth indicator
+    // Revenue trend (30 pts) — simplified: bookings growth indicator.
     $twoMonthsAgo = date('Y-m-d\TH:i:s', strtotime('-60 days'));
     $olderBookings = (int) $this->entityTypeManager->getStorage('booking')
       ->getQuery()->accessCheck(FALSE)->condition('provider_id', $providerId)
@@ -150,36 +178,51 @@ class ServiciosConectaHealthScoreService {
     return min(100.0, $bookingScore + $completionScore + $growthScore);
   }
 
+  /**
+   *
+   */
   protected function calcClientSatisfaction(int $userId): float {
     $providerIds = $this->entityTypeManager->getStorage('provider_profile')
       ->getQuery()->accessCheck(FALSE)->condition('user_id', $userId)->range(0, 1)->execute();
-    if (empty($providerIds)) return 0.0;
+    if (empty($providerIds)) {
+      return 0.0;
+    }
     $provider = $this->entityTypeManager->getStorage('provider_profile')->load(reset($providerIds));
-    if (!$provider) return 0.0;
+    if (!$provider) {
+      return 0.0;
+    }
 
     // Average rating (40 pts)
     $rating = (float) ($provider->get('average_rating')->value ?? 0);
     $ratingScore = ($rating / 5.0) * 40;
 
-    // Reviews responded (30 pts) — simplified
+    // Reviews responded (30 pts) — simplified.
     $totalReviews = (int) ($provider->get('total_reviews')->value ?? 0);
     $reviewScore = $totalReviews > 0 ? min(30.0, ($totalReviews / 5) * 30) : 0;
 
-    // Response time (30 pts) — simplified placeholder
+    // Response time (30 pts) — simplified placeholder.
     $responseScore = $totalReviews > 0 ? 20.0 : 0.0;
 
     return min(100.0, $ratingScore + $reviewScore + $responseScore);
   }
 
+  /**
+   *
+   */
   protected function calcCopilotUsage(int $userId): float {
-    // Placeholder — will integrate with copilot telemetry in future
+    // Placeholder — will integrate with copilot telemetry in future.
     return 0.0;
   }
 
+  /**
+   *
+   */
   protected function calcMarketplacePresence(int $userId): float {
     $providerIds = $this->entityTypeManager->getStorage('provider_profile')
       ->getQuery()->accessCheck(FALSE)->condition('user_id', $userId)->range(0, 1)->execute();
-    if (empty($providerIds)) return 0.0;
+    if (empty($providerIds)) {
+      return 0.0;
+    }
     $providerId = reset($providerIds);
 
     // Services published (30 pts)
@@ -202,6 +245,9 @@ class ServiciosConectaHealthScoreService {
     return min(100.0, $servicesScore + $verificationScore + $availabilityScore + $seoScore);
   }
 
+  /**
+   *
+   */
   public function calculateVerticalKpis(): array {
     $kpis = [];
     foreach (self::KPI_TARGETS as $key => $target) {
@@ -222,11 +268,17 @@ class ServiciosConectaHealthScoreService {
     return $kpis;
   }
 
+  /**
+   *
+   */
   protected function calculateKpi(string $key): float {
-    // Simplified — in production these would query real data
+    // Simplified — in production these would query real data.
     return 0.0;
   }
 
+  /**
+   *
+   */
   protected function getKpiUnit(string $key): string {
     return match ($key) {
       'booking_completion_rate', 'activation_rate', 'engagement_rate', 'churn_rate' => '%',
@@ -238,6 +290,9 @@ class ServiciosConectaHealthScoreService {
     };
   }
 
+  /**
+   *
+   */
   protected function getKpiLabel(string $key): string {
     return match ($key) {
       'booking_completion_rate' => 'Tasa de completacion de reservas',

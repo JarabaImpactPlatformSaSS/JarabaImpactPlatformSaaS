@@ -172,7 +172,7 @@ class SessionReview extends ContentEntityBase implements EntityChangedInterface,
       ->setDisplayOptions('form', ['weight' => 12])
       ->setDisplayConfigurable('form', TRUE);
 
-    // Todos los campos del trait.
+    // @todo s los campos del trait.
     $fields += static::reviewableBaseFieldDefinitions();
 
     $fields['created'] = BaseFieldDefinition::create('created')

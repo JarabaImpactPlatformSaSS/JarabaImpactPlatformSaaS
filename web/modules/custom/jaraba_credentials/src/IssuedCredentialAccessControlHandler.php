@@ -13,40 +13,37 @@ use Drupal\Core\Access\AccessResultInterface;
 /**
  * Access control handler para IssuedCredential.
  */
-class IssuedCredentialAccessControlHandler extends EntityAccessControlHandler
-{
+class IssuedCredentialAccessControlHandler extends EntityAccessControlHandler {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
-    {
-        /** @var \Drupal\jaraba_credentials\Entity\IssuedCredential $entity */
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
+    /** @var \Drupal\jaraba_credentials\Entity\IssuedCredential $entity */
 
-        // Administradores tienen acceso completo
-        if ($account->hasPermission('administer credentials')) {
-            return AccessResult::allowed()->cachePerPermissions();
-        }
-
-        // Usuarios pueden ver sus propias credenciales
-        if ($operation === 'view') {
-            $recipientId = $entity->get('recipient_id')->target_id ?? NULL;
-            if ($recipientId && (int) $recipientId === (int) $account->id()) {
-                return AccessResult::allowed()
-                    ->cachePerUser()
-                    ->addCacheableDependency($entity);
-            }
-        }
-
-        return AccessResult::forbidden()->cachePerPermissions();
+    // Administradores tienen acceso completo.
+    if ($account->hasPermission('administer credentials')) {
+      return AccessResult::allowed()->cachePerPermissions();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface
-    {
-        return AccessResult::allowedIfHasPermission($account, 'issue credentials');
+    // Usuarios pueden ver sus propias credenciales.
+    if ($operation === 'view') {
+      $recipientId = $entity->get('recipient_id')->target_id ?? NULL;
+      if ($recipientId && (int) $recipientId === (int) $account->id()) {
+        return AccessResult::allowed()
+          ->cachePerUser()
+          ->addCacheableDependency($entity);
+      }
     }
+
+    return AccessResult::forbidden()->cachePerPermissions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    return AccessResult::allowedIfHasPermission($account, 'issue credentials');
+  }
 
 }

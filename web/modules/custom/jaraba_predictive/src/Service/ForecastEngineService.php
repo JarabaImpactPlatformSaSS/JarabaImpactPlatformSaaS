@@ -245,7 +245,7 @@ class ForecastEngineService {
           'actual_value' => $actual,
           'error_percentage' => round($error, 2),
           'within_confidence' => $actual >= (float) ($forecast->get('confidence_low')->value ?? 0)
-            && $actual <= (float) ($forecast->get('confidence_high')->value ?? 0),
+          && $actual <= (float) ($forecast->get('confidence_high')->value ?? 0),
         ];
       }
     }
@@ -287,7 +287,7 @@ class ForecastEngineService {
       ->sort('o.created', 'ASC');
 
     $results = $query->execute()->fetchAll();
-    
+
     if (count($results) < 6) {
       return ['success' => FALSE, 'message' => 'Insuficientes datos históricos (mínimo 6 meses).'];
     }
@@ -316,7 +316,7 @@ class ForecastEngineService {
    * ESTRUCTURA: Metodo interno de recopilacion de datos.
    * LOGICA: Consulta la tabla financial_transaction para obtener la serie temporal.
    */
-  protected function getHistoricalDataPoints(string $metric, int $tenantId = NULL): array {
+  protected function getHistoricalDataPoints(string $metric, ?int $tenantId = NULL): array {
     if (!$this->database->schema()->tableExists('financial_transaction')) {
       return [];
     }
@@ -331,7 +331,7 @@ class ForecastEngineService {
     }
 
     $results = $query->execute()->fetchAll();
-    
+
     if (empty($results)) {
       return [];
     }

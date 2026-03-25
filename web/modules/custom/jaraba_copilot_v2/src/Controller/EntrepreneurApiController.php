@@ -216,7 +216,7 @@ class EntrepreneurApiController extends ControllerBase {
       $profile->set('dime_emocional', $emocional);
       $profile->set('dime_score', $total);
 
-      // Asignar carril basado en DIME total
+      // Asignar carril basado en DIME total.
       $carril = $total >= 10 ? 'ACELERA' : 'IMPULSO';
       $profile->set('carril', $carril);
 

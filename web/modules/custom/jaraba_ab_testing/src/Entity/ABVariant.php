@@ -84,7 +84,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 1. IDENTITY
     // =========================================================================
-
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Nombre de la Variante'))
       ->setDescription(t('Nombre descriptivo de la variante, p.ej. "Control", "Variante A".'))
@@ -106,7 +105,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 2. EXPERIMENT
     // =========================================================================
-
     $fields['experiment_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Experimento'))
       ->setDescription(t('Experimento A/B al que pertenece esta variante.'))
@@ -119,7 +117,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 3. CONFIG
     // =========================================================================
-
     $fields['is_control'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Es Control'))
       ->setDescription(t('Marca esta variante como el grupo de control (referencia).'))
@@ -149,7 +146,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 4. METRICS
     // =========================================================================
-
     $fields['visitors'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Visitantes'))
       ->setDescription(t('Número total de visitantes asignados a esta variante.'))
@@ -179,7 +175,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 5. MULTI-TENANT
     // =========================================================================
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta variante.'))
@@ -192,7 +187,6 @@ class ABVariant extends ContentEntityBase implements EntityChangedInterface {
     // =========================================================================
     // 6. METADATA
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Creación'));
 

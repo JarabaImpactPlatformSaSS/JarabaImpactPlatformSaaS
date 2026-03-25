@@ -55,17 +55,17 @@ function jaraba_groups_entity_insert(EntityInterface $entity): void {
       _jaraba_groups_auto_assign_from_diagnostic($entity);
     }
   }
-  
+
   // GRP-002: Update activity score on new discussion.
   if ($entity->getEntityTypeId() === 'group_discussion') {
     _jaraba_groups_update_activity_score($entity->getGroupId(), 5);
   }
-  
+
   // GRP-003: Update activity score on new event.
   if ($entity->getEntityTypeId() === 'group_event') {
     _jaraba_groups_update_activity_score($entity->getGroupId(), 10);
   }
-  
+
   // GRP-004: Notify group on new member.
   if ($entity->getEntityTypeId() === 'group_membership') {
     if ($entity->getStatus() === 'active') {
@@ -83,12 +83,12 @@ function jaraba_groups_entity_update(EntityInterface $entity): void {
     $original = $entity->original ?? NULL;
     $wasNotCompleted = $original && $original->get('status')->value !== 'completed';
     $isNowCompleted = $entity->get('status')->value === 'completed';
-    
+
     if ($wasNotCompleted && $isNowCompleted) {
       _jaraba_groups_auto_assign_from_diagnostic($entity);
     }
   }
-  
+
   // GRP-006: Notify admins on pending membership request.
   if ($entity->getEntityTypeId() === 'group_membership') {
     $original = $entity->original ?? NULL;
@@ -104,7 +104,7 @@ function jaraba_groups_entity_update(EntityInterface $entity): void {
 function jaraba_groups_cron(): void {
   // GRP-007: Remind about upcoming events.
   _jaraba_groups_remind_upcoming_events();
-  
+
   // GRP-008: Archive inactive groups.
   _jaraba_groups_archive_inactive_groups();
 }
@@ -116,7 +116,7 @@ function _jaraba_groups_auto_assign_from_diagnostic(EntityInterface $diagnostic)
   try {
     $membershipService = \Drupal::service('jaraba_groups.membership_service');
     $assignedGroups = $membershipService->autoAssignFromDiagnostic($diagnostic);
-    
+
     if (!empty($assignedGroups)) {
       \Drupal::messenger()->addStatus(t('Te hemos añadido automáticamente a @count grupos basados en tu sector.', [
         '@count' => count($assignedGroups),
@@ -136,7 +136,7 @@ function _jaraba_groups_auto_assign_from_diagnostic(EntityInterface $diagnostic)
 function _jaraba_groups_update_activity_score(int $groupId, int $points): void {
   $storage = \Drupal::entityTypeManager()->getStorage('collaboration_group');
   $group = $storage->load($groupId);
-  
+
   if ($group) {
     $group->incrementActivityScore($points);
     $group->save();
@@ -149,22 +149,22 @@ function _jaraba_groups_update_activity_score(int $groupId, int $points): void {
 function _jaraba_groups_notify_new_member(EntityInterface $membership): void {
   $group = $membership->getGroup();
   $user = $membership->getOwner();
-  
+
   if (!$group || !$user) {
     return;
   }
-  
+
   // Notify admins.
   $membershipService = \Drupal::service('jaraba_groups.membership_service');
   $admins = $membershipService->getMembers($group->id(), 'active');
-  
+
   $mailManager = \Drupal::service('plugin.manager.mail');
-  
+
   foreach ($admins as $adminMembership) {
     if (!$adminMembership->isAdmin()) {
       continue;
     }
-    
+
     $adminUser = $adminMembership->getOwner();
     if ($adminUser && $adminUser->getEmail()) {
       $mailManager->mail('jaraba_groups', 'new_member', $adminUser->getEmail(), 'es', [
@@ -182,21 +182,21 @@ function _jaraba_groups_notify_new_member(EntityInterface $membership): void {
 function _jaraba_groups_notify_pending_request(EntityInterface $membership): void {
   $group = $membership->getGroup();
   $user = $membership->getOwner();
-  
+
   if (!$group || !$user) {
     return;
   }
-  
+
   $membershipService = \Drupal::service('jaraba_groups.membership_service');
   $admins = $membershipService->getMembers($group->id(), 'active');
-  
+
   $mailManager = \Drupal::service('plugin.manager.mail');
-  
+
   foreach ($admins as $adminMembership) {
     if (!$adminMembership->canModerate()) {
       continue;
     }
-    
+
     $adminUser = $adminMembership->getOwner();
     if ($adminUser && $adminUser->getEmail()) {
       $mailManager->mail('jaraba_groups', 'pending_request', $adminUser->getEmail(), 'es', [
@@ -255,33 +255,33 @@ function _jaraba_groups_archive_inactive_groups(): void {
   $state = \Drupal::state();
   $lastRun = $state->get('jaraba_groups_archive_last', 0);
   $now = \Drupal::time()->getRequestTime();
-  
+
   // Run once per day.
   if ($now - $lastRun < 86400) {
     return;
   }
-  
+
   // Find groups with no activity in 6 months.
   $sixMonthsAgo = $now - (180 * 86400);
-  
+
   $storage = \Drupal::entityTypeManager()->getStorage('collaboration_group');
   $query = $storage->getQuery()
     ->condition('status', 'active')
     ->condition('changed', $sixMonthsAgo, '<')
     ->accessCheck(FALSE);
-  
+
   $ids = $query->execute();
-  
+
   foreach ($storage->loadMultiple($ids) as $group) {
     // Only archive if no members besides creator.
     if ($group->getMemberCount() <= 1) {
       $group->set('status', 'archived');
       $group->save();
-      
+
       \Drupal::logger('jaraba_groups')->info('Archived inactive group @id', ['@id' => $group->id()]);
     }
   }
-  
+
   $state->set('jaraba_groups_archive_last', $now);
 }
 
@@ -300,7 +300,7 @@ function jaraba_groups_mail($key, &$message, $params): void {
         '@group' => $params['group']->getName(),
       ]);
       break;
-      
+
     case 'pending_request':
       $message['subject'] = t('Solicitud de ingreso a @group', [
         '@group' => $params['group']->getName(),
@@ -329,7 +329,6 @@ function jaraba_groups_mail($key, &$message, $params): void {
       break;
   }
 }
-
 
 /**
  * Prepares variables for collaboration_group templates.

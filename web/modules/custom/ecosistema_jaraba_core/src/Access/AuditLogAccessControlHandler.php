@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResultInterface;

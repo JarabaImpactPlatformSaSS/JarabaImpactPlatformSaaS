@@ -152,7 +152,7 @@ class ScimApiController extends ControllerBase {
   /**
    * Returns SCIM ServiceProviderConfig.
    *
-   * GET /scim/v2/ServiceProviderConfig
+   * GET /scim/v2/ServiceProviderConfig.
    */
   public function serviceProviderConfig(): JsonResponse {
     return $this->scimResponse($this->scimHandler->getServiceProviderConfig());
@@ -161,7 +161,7 @@ class ScimApiController extends ControllerBase {
   /**
    * Returns SCIM Schemas.
    *
-   * GET /scim/v2/Schemas
+   * GET /scim/v2/Schemas.
    */
   public function schemas(): JsonResponse {
     return $this->scimResponse($this->scimHandler->getSchemas());

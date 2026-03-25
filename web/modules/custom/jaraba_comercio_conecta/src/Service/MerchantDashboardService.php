@@ -88,7 +88,7 @@ class MerchantDashboardService {
   public function getMerchantKpis(int $merchant_id): array {
     $product_storage = $this->entityTypeManager->getStorage('product_retail');
 
-    // Total de productos activos
+    // Total de productos activos.
     $total_products = $product_storage->getQuery()
       ->accessCheck(TRUE)
       ->condition('merchant_id', $merchant_id)
@@ -96,10 +96,10 @@ class MerchantDashboardService {
       ->count()
       ->execute();
 
-    // Productos con stock bajo
+    // Productos con stock bajo.
     $stock_alerts = $this->getStockAlerts($merchant_id);
 
-    // Rating y reviews desde el perfil del comerciante
+    // Rating y reviews desde el perfil del comerciante.
     $merchant = $this->entityTypeManager->getStorage('merchant_profile')->load($merchant_id);
     $average_rating = $merchant ? ($merchant->get('average_rating')->value ?: 0) : 0;
     $total_reviews = $merchant ? ($merchant->get('total_reviews')->value ?: 0) : 0;

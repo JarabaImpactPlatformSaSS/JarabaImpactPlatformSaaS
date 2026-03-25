@@ -11,32 +11,31 @@ use Drupal\user\EntityOwnerInterface;
 /**
  * Provides an interface for CandidateEducation entities.
  */
-interface CandidateEducationInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface CandidateEducationInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    /**
-     * Gets the institution name.
-     */
-    public function getInstitution(): string;
+  /**
+   * Gets the institution name.
+   */
+  public function getInstitution(): string;
 
-    /**
-     * Gets the degree.
-     */
-    public function getDegree(): string;
+  /**
+   * Gets the degree.
+   */
+  public function getDegree(): string;
 
-    /**
-     * Gets the field of study.
-     */
-    public function getFieldOfStudy(): string;
+  /**
+   * Gets the field of study.
+   */
+  public function getFieldOfStudy(): string;
 
-    /**
-     * Gets the start date timestamp.
-     */
-    public function getStartDate(): ?int;
+  /**
+   * Gets the start date timestamp.
+   */
+  public function getStartDate(): ?int;
 
-    /**
-     * Gets the end date timestamp (NULL if ongoing).
-     */
-    public function getEndDate(): ?int;
+  /**
+   * Gets the end date timestamp (NULL if ongoing).
+   */
+  public function getEndDate(): ?int;
 
 }

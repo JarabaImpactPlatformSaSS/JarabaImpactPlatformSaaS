@@ -7,7 +7,6 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Psr\Log\LoggerInterface;
-use TCPDF;
 
 /**
  * Servicio de generacion de PDFs con marca del tenant.
@@ -513,7 +512,7 @@ class BrandedPdfService {
    * @param string $title
    *   Titulo del documento a mostrar en la cabecera.
    */
-  protected function applyBrandHeader(TCPDF $pdf, array $brand, string $title): void {
+  protected function applyBrandHeader(\TCPDF $pdf, array $brand, string $title): void {
     $primaryRgb = $this->hexToRgb($brand['color_primary']);
     $secondaryRgb = $this->hexToRgb($brand['color_secondary']);
 
@@ -559,7 +558,7 @@ class BrandedPdfService {
    * @param array $brand
    *   Configuracion de marca obtenida de getBrandConfig().
    */
-  protected function applyBrandFooter(TCPDF $pdf, array $brand): void {
+  protected function applyBrandFooter(\TCPDF $pdf, array $brand): void {
     $primaryRgb = $this->hexToRgb($brand['color_primary']);
     $pageHeight = $pdf->getPageHeight();
 
@@ -596,8 +595,8 @@ class BrandedPdfService {
    * @return \TCPDF
    *   Instancia de TCPDF lista para usar.
    */
-  protected function createPdfInstance(string $orientation = 'P'): TCPDF {
-    return new TCPDF($orientation, 'mm', 'A4', TRUE, 'UTF-8', FALSE);
+  protected function createPdfInstance(string $orientation = 'P'): \TCPDF {
+    return new \TCPDF($orientation, 'mm', 'A4', TRUE, 'UTF-8', FALSE);
   }
 
   /**
@@ -616,7 +615,7 @@ class BrandedPdfService {
    * @return string|null
    *   URI completa del archivo generado, o NULL si no se pudo guardar.
    */
-  protected function savePdf(TCPDF $pdf, string $directory, string $filename): ?string {
+  protected function savePdf(\TCPDF $pdf, string $directory, string $filename): ?string {
     $this->fileSystem->prepareDirectory(
       $directory,
       FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS

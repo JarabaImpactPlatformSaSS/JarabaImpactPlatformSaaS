@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_legal_intelligence\Unit\Service;
 
+use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Database\Connection;
@@ -79,7 +80,7 @@ class LegalNlpPipelineServiceTest extends UnitTestCase {
    * @covers ::processResolution
    */
   public function testProcessResolutionCallsLogger(): void {
-    $entity = $this->createMock(\Drupal\jaraba_legal_intelligence\Entity\LegalResolution::class);
+    $entity = $this->createMock(LegalResolution::class);
     $entity->method('get')->willReturn((object) ['value' => 'some text']);
 
     $config = $this->createMock(ImmutableConfig::class);
@@ -91,7 +92,8 @@ class LegalNlpPipelineServiceTest extends UnitTestCase {
     // This just ensures the entry point works.
     try {
       $this->service->processResolution($entity);
-    } catch (\Throwable $e) {
+    }
+    catch (\Throwable $e) {
       // It will likely fail later due to missing mocks for all stages,
       // but we only care about the initial logger call.
     }
@@ -126,12 +128,13 @@ class LegalNlpPipelineServiceTest extends UnitTestCase {
       ]);
 
     // Access private method or run a partial pipeline.
-    $entity = $this->createMock(\Drupal\jaraba_legal_intelligence\Entity\LegalResolution::class);
+    $entity = $this->createMock(LegalResolution::class);
     $entity->method('get')->willReturn((object) ['value' => 'Test']);
 
     try {
       $this->service->processResolution($entity);
-    } catch (\Throwable) {
+    }
+    catch (\Throwable) {
     }
   }
 
@@ -142,7 +145,16 @@ if (!interface_exists('Drupal\Tests\jaraba_legal_intelligence\Unit\Service\AiPro
    * Temporary interface for mocking AiProviderPluginManager.
    */
   interface AiProviderPluginManagerInterface {
+
+    /**
+     *
+     */
     public function getDefaultProviderForOperationType(string $type);
+
+    /**
+     *
+     */
     public function createInstance(string $pluginId, array $configuration = []);
+
   }
 }

@@ -43,7 +43,7 @@ class TemplatesApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/v1/legal/templates
+   * GET /api/v1/legal/templates.
    */
   public function listTemplates(Request $request): JsonResponse {
     $type = $request->query->get('type', '');
@@ -61,13 +61,13 @@ class TemplatesApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/templates
+   * POST /api/v1/legal/templates.
    */
   public function store(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['name']) || empty($data['template_type']) || empty($data['template_body'])) {
-      return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: name, template_type, template_body.']], 422);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: name, template_type, template_body.']], 422);
     }
 
     try {
@@ -96,7 +96,7 @@ class TemplatesApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/documents/generate
+   * POST /api/v1/legal/documents/generate.
    */
   public function generate(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
@@ -118,7 +118,7 @@ class TemplatesApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/v1/legal/documents/generate-ai
+   * POST /api/v1/legal/documents/generate-ai.
    */
   public function generateAi(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];

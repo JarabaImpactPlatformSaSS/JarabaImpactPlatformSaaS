@@ -49,7 +49,7 @@ class LegalIngestionService {
   /**
    * Intervalos de frecuencia en segundos.
    *
-   * daily = 86400s (24h), weekly = 604800s (7d), monthly = 2592000s (30d).
+   * Daily = 86400s (24h), weekly = 604800s (7d), monthly = 2592000s (30d).
    */
   protected const FREQUENCY_INTERVALS = [
     'daily' => 86400,

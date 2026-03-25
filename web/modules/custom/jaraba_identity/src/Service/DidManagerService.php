@@ -77,7 +77,7 @@ class DidManagerService {
 
     // 1. Desencriptar clave privada.
     $privateKey = $this->cryptoService->decryptPrivateKey($wallet->get('encrypted_private_key')->value);
-    
+
     if (!$privateKey) {
       throw new \RuntimeException("Fallo crítico de seguridad: No se pudo desencriptar la clave para $did");
     }
@@ -90,7 +90,8 @@ class DidManagerService {
       // CryptographyService::sign ya hace memzero, pero limpiamos nuestra copia local.
       if (function_exists('sodium_memzero')) {
         sodium_memzero($privateKey);
-      } else {
+      }
+      else {
         $privateKey = str_repeat("\0", strlen($privateKey));
       }
     }
@@ -104,7 +105,8 @@ class DidManagerService {
   protected function loadWalletByDid(string $did): ?object {
     $storage = $this->entityTypeManager->getStorage('identity_wallet');
     $results = $storage->getQuery()
-      ->accessCheck(FALSE) // System context
+    // System context.
+      ->accessCheck(FALSE)
       ->condition('did', $did)
       ->condition('status', TRUE)
       ->execute();

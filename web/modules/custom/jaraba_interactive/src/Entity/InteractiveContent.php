@@ -64,222 +64,215 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.interactive_content.settings",
  * )
  */
-class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface, InteractiveContentInterface
-{
+class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface, InteractiveContentInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function preSave(EntityStorageInterface $storage): void
-    {
-        parent::preSave($storage);
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage): void {
+    parent::preSave($storage);
 
-        // Establecer el usuario actual como propietario si no hay uno.
-        if (!$this->getOwner()) {
-            $this->setOwnerId(\Drupal::currentUser()->id());
-        }
+    // Establecer el usuario actual como propietario si no hay uno.
+    if (!$this->getOwner()) {
+      $this->setOwnerId(\Drupal::currentUser()->id());
     }
+  }
 
-    /**
-     * Obtiene el tipo de contenido (plugin ID).
-     *
-     * @return string
-     *   El ID del plugin InteractiveType.
-     */
-    public function getContentType(): string
-    {
-        return $this->get('content_type')->value ?? 'question_set';
-    }
+  /**
+   * Obtiene el tipo de contenido (plugin ID).
+   *
+   * @return string
+   *   El ID del plugin InteractiveType.
+   */
+  public function getContentType(): string {
+    return $this->get('content_type')->value ?? 'question_set';
+  }
 
-    /**
-     * Obtiene los datos del contenido como array.
-     *
-     * @return array
-     *   Los datos JSON decodificados.
-     */
-    public function getContentData(): array
-    {
-        $value = $this->get('content_data')->value;
-        return $value ? json_decode($value, TRUE) : [];
-    }
+  /**
+   * Obtiene los datos del contenido como array.
+   *
+   * @return array
+   *   Los datos JSON decodificados.
+   */
+  public function getContentData(): array {
+    $value = $this->get('content_data')->value;
+    return $value ? json_decode($value, TRUE) : [];
+  }
 
-    /**
-     * Establece los datos del contenido.
-     *
-     * @param array $data
-     *   Los datos a almacenar.
-     *
-     * @return $this
-     */
-    public function setContentData(array $data): self
-    {
-        $this->set('content_data', json_encode($data, JSON_UNESCAPED_UNICODE));
-        return $this;
-    }
+  /**
+   * Establece los datos del contenido.
+   *
+   * @param array $data
+   *   Los datos a almacenar.
+   *
+   * @return $this
+   */
+  public function setContentData(array $data): self {
+    $this->set('content_data', json_encode($data, JSON_UNESCAPED_UNICODE));
+    return $this;
+  }
 
-    /**
-     * Obtiene los settings del contenido.
-     *
-     * @return array
-     *   Los settings JSON decodificados.
-     */
-    public function getSettings(): array
-    {
-        $value = $this->get('settings')->value;
-        return $value ? json_decode($value, TRUE) : [];
-    }
+  /**
+   * Obtiene los settings del contenido.
+   *
+   * @return array
+   *   Los settings JSON decodificados.
+   */
+  public function getSettings(): array {
+    $value = $this->get('settings')->value;
+    return $value ? json_decode($value, TRUE) : [];
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        // Añadir trait fields (uid).
-        $fields += static::ownerBaseFieldDefinitions($entity_type);
+    // Añadir trait fields (uid).
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        $fields['title'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Título'))
-            ->setDescription(t('El título del contenido interactivo.'))
-            ->setRequired(TRUE)
-            ->setTranslatable(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -10,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'hidden',
-                'type' => 'string',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Título'))
+      ->setDescription(t('El título del contenido interactivo.'))
+      ->setRequired(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -10,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['content_type'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Tipo de Contenido'))
-            ->setDescription(t('El plugin que renderiza este contenido.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 64)
-            ->setDefaultValue('question_set')
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['content_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Tipo de Contenido'))
+      ->setDescription(t('El plugin que renderiza este contenido.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 64)
+      ->setDefaultValue('question_set')
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['content_data'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Datos del Contenido'))
-            ->setDescription(t('Estructura JSON del contenido interactivo.'))
-            ->setTranslatable(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 0,
-                'settings' => [
-                    'rows' => 10,
-                ],
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['content_data'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Datos del Contenido'))
+      ->setDescription(t('Estructura JSON del contenido interactivo.'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 0,
+        'settings' => [
+          'rows' => 10,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['settings'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Configuración'))
-            ->setDescription(t('Settings JSON del contenido (scoring, reintentos, etc).'))
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 5,
-                'settings' => [
-                    'rows' => 5,
-                ],
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Configuración'))
+      ->setDescription(t('Settings JSON del contenido (scoring, reintentos, etc).'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 5,
+        'settings' => [
+          'rows' => 5,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Organización'))
-            ->setDescription(t('La organización (grupo) propietaria de este contenido.'))
-            ->setSetting('target_type', 'group')
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Organización'))
+      ->setDescription(t('La organización (grupo) propietaria de este contenido.'))
+      ->setSetting('target_type', 'group')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['status'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado'))
-            ->setDescription(t('El estado de publicación del contenido.'))
-            ->setDefaultValue('draft')
-            ->setSetting('allowed_values', [
-                'draft' => t('Borrador'),
-                'published' => t('Publicado'),
-                'archived' => t('Archivado'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 15,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado'))
+      ->setDescription(t('El estado de publicación del contenido.'))
+      ->setDefaultValue('draft')
+      ->setSetting('allowed_values', [
+        'draft' => t('Borrador'),
+        'published' => t('Publicado'),
+        'archived' => t('Archivado'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['difficulty'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Dificultad'))
-            ->setDescription(t('Nivel de dificultad del contenido.'))
-            ->setDefaultValue('beginner')
-            ->setSetting('allowed_values', [
-                'beginner' => t('Principiante'),
-                'intermediate' => t('Intermedio'),
-                'advanced' => t('Avanzado'),
-                'expert' => t('Experto'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 16,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['difficulty'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Dificultad'))
+      ->setDescription(t('Nivel de dificultad del contenido.'))
+      ->setDefaultValue('beginner')
+      ->setSetting('allowed_values', [
+        'beginner' => t('Principiante'),
+        'intermediate' => t('Intermedio'),
+        'advanced' => t('Avanzado'),
+        'expert' => t('Experto'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 16,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['duration_minutes'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Duración (minutos)'))
-            ->setDescription(t('Duración estimada para completar el contenido.'))
-            ->setDefaultValue(10)
-            ->setDisplayOptions('form', [
-                'type' => 'number',
-                'weight' => 17,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['duration_minutes'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Duración (minutos)'))
+      ->setDescription(t('Duración estimada para completar el contenido.'))
+      ->setDefaultValue(10)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => 17,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Creado'))
-            ->setDescription(t('La marca temporal de creación de la entidad.'));
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Creado'))
+      ->setDescription(t('La marca temporal de creación de la entidad.'));
 
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Modificado'))
-            ->setDescription(t('La marca temporal de la última modificación.'));
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'))
+      ->setDescription(t('La marca temporal de la última modificación.'));
 
-        // Configurar el campo owner.
-        $fields['uid']
-            ->setLabel(t('Autor'))
-            ->setDescription(t('El usuario que creó este contenido.'))
-            ->setDisplayOptions('form', [
-                'type' => 'entity_reference_autocomplete',
-                'weight' => 20,
-                'settings' => [
-                    'match_operator' => 'CONTAINS',
-                    'size' => 60,
-                    'placeholder' => '',
-                ],
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // Configurar el campo owner.
+    $fields['uid']
+      ->setLabel(t('Autor'))
+      ->setDescription(t('El usuario que creó este contenido.'))
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 20,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => 60,
+          'placeholder' => '',
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

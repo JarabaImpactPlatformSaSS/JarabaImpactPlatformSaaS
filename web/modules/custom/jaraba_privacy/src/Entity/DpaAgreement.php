@@ -75,7 +75,6 @@ class DpaAgreement extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece este DPA.'))
@@ -86,7 +85,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- VERSIONADO ---
-
     $fields['version'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Versión'))
       ->setDescription(new TranslatableMarkup('Versión del DPA (ej: 1.0, 2.0).'))
@@ -97,7 +95,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- FIRMA ---
-
     $fields['signed_at'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Fecha de firma'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC de la firma del DPA.'))
@@ -134,7 +131,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- INTEGRIDAD ---
-
     $fields['dpa_hash'] = BaseFieldDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Hash del DPA'))
       ->setDescription(new TranslatableMarkup('Hash SHA-256 del contenido del DPA firmado.'))
@@ -142,7 +138,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- ESTADO ---
-
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(new TranslatableMarkup('Estado'))
       ->setDescription(new TranslatableMarkup('Estado del DPA.'))
@@ -160,7 +155,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PDF ---
-
     $fields['pdf_file_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('PDF firmado'))
       ->setDescription(new TranslatableMarkup('Archivo PDF del DPA firmado con sello de tiempo.'))
@@ -168,7 +162,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- DATOS ESPECÍFICOS DPA ---
-
     $fields['subprocessors_accepted'] = BaseFieldDefinition::create('string_long')
       ->setLabel(new TranslatableMarkup('Subprocesadores aceptados'))
       ->setDescription(new TranslatableMarkup('JSON con la lista de subprocesadores aceptados por el tenant.'))
@@ -180,7 +173,6 @@ class DpaAgreement extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

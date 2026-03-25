@@ -13,6 +13,9 @@ use Drupal\jaraba_predictive\DependencyInjection\Compiler\FraudRulePass;
  */
 class JarabaPredictiveServiceProvider extends ServiceProviderBase {
 
+  /**
+   *
+   */
   public function register(ContainerBuilder $container): void {
     $container->addCompilerPass(new FraudRulePass());
   }

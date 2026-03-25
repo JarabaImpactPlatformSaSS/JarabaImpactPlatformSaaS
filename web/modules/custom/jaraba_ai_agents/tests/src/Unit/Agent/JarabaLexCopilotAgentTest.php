@@ -185,8 +185,14 @@ class JarabaLexCopilotAgentTest extends UnitTestCase {
  */
 interface AiProviderPluginManagerInterface {
 
+  /**
+   *
+   */
   public function getDefaultProviderForOperationType(string $operationType): ?array;
 
+  /**
+   *
+   */
   public function createInstance(string $pluginId, array $configuration = []);
 
 }

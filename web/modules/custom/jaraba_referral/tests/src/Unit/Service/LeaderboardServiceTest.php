@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_referral\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\jaraba_referral\Service\LeaderboardService;
 use Drupal\Tests\UnitTestCase;
@@ -298,7 +298,7 @@ class LeaderboardServiceTest extends UnitTestCase {
    *   Mock de ContentEntityInterface.
    */
   protected function createCodeEntity(int $userId, int $conversions, float $revenue, object $userEntity): object {
-    $code = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
+    $code = $this->createMock(ContentEntityInterface::class);
 
     $userIdField = new \stdClass();
     $userIdField->target_id = $userId;

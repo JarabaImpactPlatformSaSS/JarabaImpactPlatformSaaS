@@ -267,19 +267,31 @@ class PromptVersionServiceTest extends TestCase {
         $this->data = $data;
       }
 
+      /**
+       *
+       */
       public function id(): string {
         return $this->entityId;
       }
 
+      /**
+       *
+       */
       public function get(string $field): mixed {
         return $this->data[$field] ?? NULL;
       }
 
+      /**
+       *
+       */
       public function set(string $field, mixed $value): static {
         $this->data[$field] = $value;
         return $this;
       }
 
+      /**
+       *
+       */
       public function save(): void {
         // No-op in tests.
       }

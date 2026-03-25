@@ -40,7 +40,7 @@ final class SupportHealthScoreService {
    * - SLA compliance rate
    * - Average CSAT score
    * - Escalation rate
-   * - Reopening rate
+   * - Reopening rate.
    *
    * @param int $tenantId
    *   The tenant ID (group entity).

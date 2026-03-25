@@ -10,8 +10,14 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
+/**
+ *
+ */
 class PosConflictAccessControlHandler extends EntityAccessControlHandler {
 
+  /**
+   *
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     if ($account->hasPermission('manage comercio pos conflicts')) {
       return AccessResult::allowed()->cachePerPermissions();
@@ -20,6 +26,9 @@ class PosConflictAccessControlHandler extends EntityAccessControlHandler {
     return AccessResult::neutral();
   }
 
+  /**
+   *
+   */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermission($account, 'manage comercio pos conflicts');
   }

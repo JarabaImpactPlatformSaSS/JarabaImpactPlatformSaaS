@@ -76,7 +76,6 @@ class InquiryTriage extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 1: REFERENCIA A LA CONSULTA
     // =========================================================================
-
     $fields['inquiry_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Consulta'))
       ->setDescription(new TranslatableMarkup('Consulta juridica que fue triada.'))
@@ -88,7 +87,6 @@ class InquiryTriage extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 2: RESULTADO DEL TRIAJE IA
     // =========================================================================
-
     $fields['urgency_score'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Score de Urgencia'))
       ->setDescription(new TranslatableMarkup('Puntuacion de urgencia 0-100, calculada por IA.'))
@@ -151,7 +149,6 @@ class InquiryTriage extends ContentEntityBase implements EntityOwnerInterface, E
     // =========================================================================
     // BLOQUE 3: TIMESTAMPS
     // =========================================================================
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'));
 

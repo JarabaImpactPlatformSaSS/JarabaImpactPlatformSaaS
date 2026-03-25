@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Permite configurar:
  * - Retención de datos (días para audit logs, assessments, anonimización)
  * - Frameworks habilitados
- * - Intervalo de auto-refresh del dashboard
+ * - Intervalo de auto-refresh del dashboard.
  */
 class SecurityComplianceSettingsForm extends ConfigFormBase {
 

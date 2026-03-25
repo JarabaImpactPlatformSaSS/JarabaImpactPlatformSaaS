@@ -12,236 +12,229 @@ use Drupal\jaraba_theming\Entity\TenantThemeConfig;
 /**
  * Servicio para gestionar Design Tokens y configuración de tema.
  *
- * Implementa la cascada: Plataforma → Vertical → Tenant
+ * Implementa la cascada: Plataforma → Vertical → Tenant.
  */
-class ThemeTokenService
-{
+class ThemeTokenService {
 
-    /**
-     * El gestor de tipos de entidad.
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
+  /**
+   * El gestor de tipos de entidad.
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
-    /**
-     * El usuario actual.
-     */
-    protected AccountInterface $currentUser;
+  /**
+   * El usuario actual.
+   */
+  protected AccountInterface $currentUser;
 
-    /**
-     * Servicio de contexto de tenant (opcional, cross-module).
-     */
-    protected ?TenantContextService $tenantContext;
+  /**
+   * Servicio de contexto de tenant (opcional, cross-module).
+   */
+  protected ?TenantContextService $tenantContext;
 
-    /**
-     * Cache de configuración activa.
-     */
-    protected ?TenantThemeConfig $activeConfig = NULL;
+  /**
+   * Cache de configuración activa.
+   */
+  protected ?TenantThemeConfig $activeConfig = NULL;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entity_type_manager,
-        AccountInterface $current_user,
-        ?TenantContextService $tenant_context = NULL,
-    ) {
-        $this->entityTypeManager = $entity_type_manager;
-        $this->currentUser = $current_user;
-        $this->tenantContext = $tenant_context;
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    AccountInterface $current_user,
+    ?TenantContextService $tenant_context = NULL,
+  ) {
+    $this->entityTypeManager = $entity_type_manager;
+    $this->currentUser = $current_user;
+    $this->tenantContext = $tenant_context;
+  }
+
+  /**
+   * Resuelve el tenant_id desde el contexto actual.
+   */
+  public function resolveTenantId(): ?int {
+    if ($this->tenantContext === NULL) {
+      return NULL;
+    }
+    try {
+      return $this->tenantContext->getCurrentTenantId();
+    }
+    catch (\Throwable) {
+      return NULL;
+    }
+  }
+
+  /**
+   * Obtiene la configuración de tema activa para el contexto actual.
+   *
+   * @param int|null $tenant_id
+   *   ID del tenant (opcional, se detecta automáticamente).
+   *
+   * @return \Drupal\jaraba_theming\Entity\TenantThemeConfig|null
+   *   La configuración activa o NULL.
+   */
+  public function getActiveConfig(?int $tenant_id = NULL): ?TenantThemeConfig {
+    if ($this->activeConfig !== NULL) {
+      return $this->activeConfig;
     }
 
-    /**
-     * Resuelve el tenant_id desde el contexto actual.
-     */
-    public function resolveTenantId(): ?int
-    {
-        if ($this->tenantContext === NULL) {
-            return NULL;
-        }
-        try {
-            return $this->tenantContext->getCurrentTenantId();
-        }
-        catch (\Throwable) {
-            return NULL;
-        }
+    // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
+    if ($tenant_id === NULL) {
+      $tenant_id = $this->resolveTenantId();
     }
 
-    /**
-     * Obtiene la configuración de tema activa para el contexto actual.
-     *
-     * @param int|null $tenant_id
-     *   ID del tenant (opcional, se detecta automáticamente).
-     *
-     * @return \Drupal\jaraba_theming\Entity\TenantThemeConfig|null
-     *   La configuración activa o NULL.
-     */
-    public function getActiveConfig(?int $tenant_id = NULL): ?TenantThemeConfig
-    {
-        if ($this->activeConfig !== NULL) {
-            return $this->activeConfig;
-        }
+    // Buscar configuración por tenant.
+    if ($tenant_id) {
+      $configs = $this->entityTypeManager
+        ->getStorage('tenant_theme_config')
+        ->loadByProperties([
+          'tenant_id' => $tenant_id,
+          'is_active' => TRUE,
+        ]);
 
-        // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
-        if ($tenant_id === NULL) {
-            $tenant_id = $this->resolveTenantId();
-        }
-
-        // Buscar configuración por tenant.
-        if ($tenant_id) {
-            $configs = $this->entityTypeManager
-                ->getStorage('tenant_theme_config')
-                ->loadByProperties([
-                    'tenant_id' => $tenant_id,
-                    'is_active' => TRUE,
-                ]);
-
-            if (!empty($configs)) {
-                $this->activeConfig = reset($configs);
-                return $this->activeConfig;
-            }
-        }
-
-        // Fallback: configuración de plataforma.
-        $configs = $this->entityTypeManager
-            ->getStorage('tenant_theme_config')
-            ->loadByProperties([
-                'vertical' => 'platform',
-                'is_active' => TRUE,
-            ]);
-
-        if (!empty($configs)) {
-            $this->activeConfig = reset($configs);
-        }
-
+      if (!empty($configs)) {
+        $this->activeConfig = reset($configs);
         return $this->activeConfig;
+      }
     }
 
-    /**
-     * Genera el CSS de tokens para inyectar en el HTML.
-     *
-     * @param int|null $tenant_id
-     *   ID del tenant.
-     *
-     * @return string
-     *   CSS con variables :root.
-     */
-    public function generateCss(?int $tenant_id = NULL): string
-    {
-        // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
-        if ($tenant_id === NULL) {
-            $tenant_id = $this->resolveTenantId();
-        }
-        $config = $this->getActiveConfig($tenant_id);
+    // Fallback: configuración de plataforma.
+    $configs = $this->entityTypeManager
+      ->getStorage('tenant_theme_config')
+      ->loadByProperties([
+        'vertical' => 'platform',
+        'is_active' => TRUE,
+      ]);
 
-        if (!$config) {
-            return $this->getDefaultCss();
-        }
-
-        $fontDeclarations = $this->generateFontDeclarations($config);
-        $cssVariables = $config->generateCssVariables();
-
-        if ($fontDeclarations) {
-            return $fontDeclarations . "\n" . $cssVariables;
-        }
-
-        return $cssVariables;
+    if (!empty($configs)) {
+      $this->activeConfig = reset($configs);
     }
 
-    /**
-     * Genera declaraciones @font-face o @import para fuentes personalizadas.
-     *
-     * @param \Drupal\jaraba_theming\Entity\TenantThemeConfig $config
-     *   La configuración de tema activa.
-     *
-     * @return string
-     *   Declaraciones CSS de fuentes, o cadena vacía.
-     */
-    protected function generateFontDeclarations(TenantThemeConfig $config): string
-    {
-        $declarations = [];
+    return $this->activeConfig;
+  }
 
-        // Fuente personalizada para títulos.
-        $headingUrl = $config->hasField('font_heading_url') ? $config->get('font_heading_url')->value : NULL;
-        $headingFamily = $config->hasField('font_heading_family') ? $config->get('font_heading_family')->value : NULL;
+  /**
+   * Genera el CSS de tokens para inyectar en el HTML.
+   *
+   * @param int|null $tenant_id
+   *   ID del tenant.
+   *
+   * @return string
+   *   CSS con variables :root.
+   */
+  public function generateCss(?int $tenant_id = NULL): string {
+    // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
+    if ($tenant_id === NULL) {
+      $tenant_id = $this->resolveTenantId();
+    }
+    $config = $this->getActiveConfig($tenant_id);
 
-        if ($headingUrl && $headingFamily) {
-            if (str_ends_with($headingUrl, '.woff2')) {
-                $declarations[] = "@font-face {\n  font-family: '{$headingFamily}';\n  src: url('{$headingUrl}') format('woff2');\n  font-display: swap;\n}";
-            }
-            elseif (str_starts_with($headingUrl, 'https://fonts.googleapis.com')) {
-                $declarations[] = "@import url('{$headingUrl}');";
-            }
-        }
-
-        // Fuente personalizada para cuerpo.
-        $bodyUrl = $config->hasField('font_body_url') ? $config->get('font_body_url')->value : NULL;
-        $bodyFamily = $config->hasField('font_body_family') ? $config->get('font_body_family')->value : NULL;
-
-        if ($bodyUrl && $bodyFamily) {
-            if (str_ends_with($bodyUrl, '.woff2')) {
-                $declarations[] = "@font-face {\n  font-family: '{$bodyFamily}';\n  src: url('{$bodyUrl}') format('woff2');\n  font-display: swap;\n}";
-            }
-            elseif (str_starts_with($bodyUrl, 'https://fonts.googleapis.com')) {
-                $declarations[] = "@import url('{$bodyUrl}');";
-            }
-        }
-
-        return implode("\n\n", $declarations);
+    if (!$config) {
+      return $this->getDefaultCss();
     }
 
-    /**
-     * Obtiene los tokens de vertical base.
-     *
-     * @param string $vertical
-     *   Nombre del vertical.
-     *
-     * @return array
-     *   Array de tokens con valores por defecto del vertical.
-     */
-    public function getVerticalTokens(string $vertical): array
-    {
-        $defaults = [
-            'platform' => [
-                'color_primary' => '#FF8C42',
-                'color_secondary' => '#00A9A5',
-                'color_accent' => '#233D63',
-            ],
-            'empleabilidad' => [
-                'color_primary' => '#2563EB',
-                'color_secondary' => '#00A9A5',
-                'color_accent' => '#F59E0B',
-            ],
-            'emprendimiento' => [
-                'color_primary' => '#8B5CF6',
-                'color_secondary' => '#EC4899',
-                'color_accent' => '#10B981',
-            ],
-            'agroconecta' => [
-                'color_primary' => '#16A34A',
-                'color_secondary' => '#CA8A04',
-                'color_accent' => '#7C3AED',
-            ],
-            'comercio' => [
-                'color_primary' => '#FF8C42',
-                'color_secondary' => '#3B82F6',
-                'color_accent' => '#EF4444',
-            ],
-            'servicios' => [
-                'color_primary' => '#0891B2',
-                'color_secondary' => '#6366F1',
-                'color_accent' => '#F97316',
-            ],
-        ];
+    $fontDeclarations = $this->generateFontDeclarations($config);
+    $cssVariables = $config->generateCssVariables();
 
-        return $defaults[$vertical] ?? $defaults['platform'];
+    if ($fontDeclarations) {
+      return $fontDeclarations . "\n" . $cssVariables;
     }
 
-    /**
-     * CSS por defecto cuando no hay configuración.
-     */
-    protected function getDefaultCss(): string
-    {
-        return <<<CSS
+    return $cssVariables;
+  }
+
+  /**
+   * Genera declaraciones @font-face o @import para fuentes personalizadas.
+   *
+   * @param \Drupal\jaraba_theming\Entity\TenantThemeConfig $config
+   *   La configuración de tema activa.
+   *
+   * @return string
+   *   Declaraciones CSS de fuentes, o cadena vacía.
+   */
+  protected function generateFontDeclarations(TenantThemeConfig $config): string {
+    $declarations = [];
+
+    // Fuente personalizada para títulos.
+    $headingUrl = $config->hasField('font_heading_url') ? $config->get('font_heading_url')->value : NULL;
+    $headingFamily = $config->hasField('font_heading_family') ? $config->get('font_heading_family')->value : NULL;
+
+    if ($headingUrl && $headingFamily) {
+      if (str_ends_with($headingUrl, '.woff2')) {
+        $declarations[] = "@font-face {\n  font-family: '{$headingFamily}';\n  src: url('{$headingUrl}') format('woff2');\n  font-display: swap;\n}";
+      }
+      elseif (str_starts_with($headingUrl, 'https://fonts.googleapis.com')) {
+        $declarations[] = "@import url('{$headingUrl}');";
+      }
+    }
+
+    // Fuente personalizada para cuerpo.
+    $bodyUrl = $config->hasField('font_body_url') ? $config->get('font_body_url')->value : NULL;
+    $bodyFamily = $config->hasField('font_body_family') ? $config->get('font_body_family')->value : NULL;
+
+    if ($bodyUrl && $bodyFamily) {
+      if (str_ends_with($bodyUrl, '.woff2')) {
+        $declarations[] = "@font-face {\n  font-family: '{$bodyFamily}';\n  src: url('{$bodyUrl}') format('woff2');\n  font-display: swap;\n}";
+      }
+      elseif (str_starts_with($bodyUrl, 'https://fonts.googleapis.com')) {
+        $declarations[] = "@import url('{$bodyUrl}');";
+      }
+    }
+
+    return implode("\n\n", $declarations);
+  }
+
+  /**
+   * Obtiene los tokens de vertical base.
+   *
+   * @param string $vertical
+   *   Nombre del vertical.
+   *
+   * @return array
+   *   Array de tokens con valores por defecto del vertical.
+   */
+  public function getVerticalTokens(string $vertical): array {
+    $defaults = [
+      'platform' => [
+        'color_primary' => '#FF8C42',
+        'color_secondary' => '#00A9A5',
+        'color_accent' => '#233D63',
+      ],
+      'empleabilidad' => [
+        'color_primary' => '#2563EB',
+        'color_secondary' => '#00A9A5',
+        'color_accent' => '#F59E0B',
+      ],
+      'emprendimiento' => [
+        'color_primary' => '#8B5CF6',
+        'color_secondary' => '#EC4899',
+        'color_accent' => '#10B981',
+      ],
+      'agroconecta' => [
+        'color_primary' => '#16A34A',
+        'color_secondary' => '#CA8A04',
+        'color_accent' => '#7C3AED',
+      ],
+      'comercio' => [
+        'color_primary' => '#FF8C42',
+        'color_secondary' => '#3B82F6',
+        'color_accent' => '#EF4444',
+      ],
+      'servicios' => [
+        'color_primary' => '#0891B2',
+        'color_secondary' => '#6366F1',
+        'color_accent' => '#F97316',
+      ],
+    ];
+
+    return $defaults[$vertical] ?? $defaults['platform'];
+  }
+
+  /**
+   * CSS por defecto cuando no hay configuración.
+   */
+  protected function getDefaultCss(): string {
+    return <<<CSS
 :root {
   --ej-color-primary: #FF8C42;
   --ej-color-secondary: #00A9A5;
@@ -252,30 +245,28 @@ class ThemeTokenService
   --ej-border-radius: 8px;
 }
 CSS;
-    }
+  }
 
-    /**
-     * Obtiene la variante de header activa.
-     *
-     * @return string
-     *   Nombre de la variante (classic, transparent, etc.).
-     */
-    public function getHeaderVariant(): string
-    {
-        $config = $this->getActiveConfig();
-        return $config ? ($config->get('header_variant')->value ?? 'classic') : 'classic';
-    }
+  /**
+   * Obtiene la variante de header activa.
+   *
+   * @return string
+   *   Nombre de la variante (classic, transparent, etc.).
+   */
+  public function getHeaderVariant(): string {
+    $config = $this->getActiveConfig();
+    return $config ? ($config->get('header_variant')->value ?? 'classic') : 'classic';
+  }
 
-    /**
-     * Obtiene la variante de hero activa.
-     *
-     * @return string
-     *   Nombre de la variante.
-     */
-    public function getHeroVariant(): string
-    {
-        $config = $this->getActiveConfig();
-        return $config ? ($config->get('hero_variant')->value ?? 'split') : 'split';
-    }
+  /**
+   * Obtiene la variante de hero activa.
+   *
+   * @return string
+   *   Nombre de la variante.
+   */
+  public function getHeroVariant(): string {
+    $config = $this->getActiveConfig();
+    return $config ? ($config->get('hero_variant')->value ?? 'split') : 'split';
+  }
 
 }

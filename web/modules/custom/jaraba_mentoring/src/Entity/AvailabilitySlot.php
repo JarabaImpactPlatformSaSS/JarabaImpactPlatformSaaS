@@ -47,63 +47,61 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.availability_slot.settings",
  * )
  */
-class AvailabilitySlot extends ContentEntityBase
-{
+class AvailabilitySlot extends ContentEntityBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-        $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Mentor'))
-            ->setRequired(TRUE)
-            ->setSetting('target_type', 'mentor_profile')
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['mentor_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Mentor'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'mentor_profile')
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['day_of_week'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Día de la Semana'))
-            ->setDescription(t('0=Domingo, 1=Lunes, ..., 6=Sábado'))
-            ->setSetting('min', 0)
-            ->setSetting('max', 6)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['day_of_week'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Día de la Semana'))
+      ->setDescription(t('0=Domingo, 1=Lunes, ..., 6=Sábado'))
+      ->setSetting('min', 0)
+      ->setSetting('max', 6)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['start_time'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Hora de Inicio'))
-            ->setDescription(t('Formato HH:MM (ej: 09:00)'))
-            ->setSetting('max_length', 5)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['start_time'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Hora de Inicio'))
+      ->setDescription(t('Formato HH:MM (ej: 09:00)'))
+      ->setSetting('max_length', 5)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['end_time'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Hora de Fin'))
-            ->setDescription(t('Formato HH:MM (ej: 18:00)'))
-            ->setSetting('max_length', 5)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['end_time'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Hora de Fin'))
+      ->setDescription(t('Formato HH:MM (ej: 18:00)'))
+      ->setSetting('max_length', 5)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['timezone'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Zona Horaria'))
-            ->setDefaultValue('Europe/Madrid')
-            ->setSetting('max_length', 64)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['timezone'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Zona Horaria'))
+      ->setDefaultValue('Europe/Madrid')
+      ->setSetting('max_length', 64)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['is_recurring'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Es Recurrente'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_recurring'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Es Recurrente'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['specific_date'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha Específica'))
-            ->setDescription(t('Si no es recurrente, fecha específica.'))
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['specific_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Específica'))
+      ->setDescription(t('Si no es recurrente, fecha específica.'))
+      ->setDisplayConfigurable('form', TRUE);
 
-        $fields['is_available'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Disponible'))
-            ->setDefaultValue(TRUE)
-            ->setDisplayConfigurable('form', TRUE);
+    $fields['is_available'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Disponible'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayConfigurable('form', TRUE);
 
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

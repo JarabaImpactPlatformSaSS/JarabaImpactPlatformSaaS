@@ -8,7 +8,7 @@
  * - Notificaciones push (Web Push API / RFC 8030)
  * - Soporte offline con Service Worker
  * - Background sync para acciones pendientes
- * - Manifiesto dinamico por tenant
+ * - Manifiesto dinamico por tenant.
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;

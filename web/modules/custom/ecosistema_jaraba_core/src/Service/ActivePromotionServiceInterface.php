@@ -32,7 +32,7 @@ interface ActivePromotionServiceInterface {
    *   priority: int,
    *   copilot_instruction: string,
    *   expires: ?string,
-   * }>
+   *   }>
    */
   public function getActivePromotions(): array;
 

@@ -219,8 +219,8 @@ function jaraba_rag_requirements(string $phase): array {
  * Implements hook_uninstall().
  */
 function jaraba_rag_uninstall(): void {
-  // Eliminar configuración
+  // Eliminar configuración.
   \Drupal::configFactory()->getEditable('jaraba_rag.settings')->delete();
 
-  // Nota: La tabla se elimina automáticamente por Drupal al desinstalar
+  // Nota: La tabla se elimina automáticamente por Drupal al desinstalar.
 }

@@ -51,676 +51,657 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "entity.solicitud_ei.settings",
  * )
  */
-class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
-{
+class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getNombre(): string
-    {
-        return (string) $this->get('nombre')->value;
+  /**
+   * {@inheritdoc}
+   */
+  public function getNombre(): string {
+    return (string) $this->get('nombre')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEmail(): string {
+    return (string) $this->get('email')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTelefono(): string {
+    return (string) $this->get('telefono')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProvincia(): string {
+    return (string) $this->get('provincia')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEstado(): string {
+    return (string) $this->get('estado')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEstado(string $estado): static {
+    $this->set('estado', $estado);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getColectivoInferido(): ?string {
+    return $this->get('colectivo_inferido')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setColectivoInferido(string $colectivo): static {
+    $this->set('colectivo_inferido', $colectivo);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function inferirColectivo(): string {
+    $fecha_nacimiento = $this->get('fecha_nacimiento')->value;
+    $situacion = $this->get('situacion_laboral')->value;
+    $tiempo_desempleo = $this->get('tiempo_desempleo')->value;
+
+    // Personas migrantes (campo explícito).
+    $es_migrante = (bool) $this->get('es_migrante')->value;
+    if ($es_migrante) {
+      return 'migrantes';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEmail(): string
-    {
-        return (string) $this->get('email')->value;
+    // Personas perceptoras de prestaciones/subsidio/RAI.
+    $percibe_prestacion = (bool) $this->get('percibe_prestacion')->value;
+    if ($percibe_prestacion && $situacion === 'desempleado') {
+      return 'perceptores_prestaciones';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTelefono(): string
-    {
-        return (string) $this->get('telefono')->value;
+    // Mayores de 45 años.
+    if ($fecha_nacimiento) {
+      $birth = new \DateTime($fecha_nacimiento);
+      $now = new \DateTime();
+      $age = (int) $now->diff($birth)->y;
+
+      if ($age >= 45 && $situacion === 'desempleado') {
+        return 'mayores_45';
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getProvincia(): string
-    {
-        return (string) $this->get('provincia')->value;
+    // Desempleados de larga duración (>12 meses).
+    if ($situacion === 'desempleado' && $tiempo_desempleo === 'mas_12_meses') {
+      return 'larga_duracion';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEstado(): string
-    {
-        return (string) $this->get('estado')->value;
-    }
+    // No encaja claramente en un colectivo prioritario.
+    return 'otros';
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setEstado(string $estado): static
-    {
-        $this->set('estado', $estado);
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getColectivoInferido(): ?string
-    {
-        return $this->get('colectivo_inferido')->value;
-    }
+    // === DATOS PERSONALES ===
+    $fields['nombre'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre completo'))
+      ->setDescription(t('Nombre y apellidos del candidato.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -15,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => -15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setColectivoInferido(string $colectivo): static
-    {
-        $this->set('colectivo_inferido', $colectivo);
-        return $this;
-    }
+    $fields['email'] = BaseFieldDefinition::create('email')
+      ->setLabel(t('Correo electrónico'))
+      ->setDescription(t('Email de contacto del candidato.'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'email_default',
+        'weight' => -14,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'email_mailto',
+        'weight' => -14,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function inferirColectivo(): string
-    {
-        $fecha_nacimiento = $this->get('fecha_nacimiento')->value;
-        $situacion = $this->get('situacion_laboral')->value;
-        $tiempo_desempleo = $this->get('tiempo_desempleo')->value;
+    $fields['telefono'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Teléfono'))
+      ->setDescription(t('Número de teléfono de contacto.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 20)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -13,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => -13,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Personas migrantes (campo explícito).
-        $es_migrante = (bool) $this->get('es_migrante')->value;
-        if ($es_migrante) {
-            return 'migrantes';
-        }
+    $fields['fecha_nacimiento'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha de nacimiento'))
+      ->setDescription(t('Para determinar el colectivo (Jóvenes 18-29, Mayores 45+).'))
+      ->setRequired(TRUE)
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => -12,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'datetime_default',
+        'weight' => -12,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Personas perceptoras de prestaciones/subsidio/RAI.
-        $percibe_prestacion = (bool) $this->get('percibe_prestacion')->value;
-        if ($percibe_prestacion && $situacion === 'desempleado') {
-            return 'perceptores_prestaciones';
-        }
+    $fields['dni_nie'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('DNI/NIE'))
+      ->setDescription(t('Documento identificativo (opcional en solicitud).'))
+      ->setSetting('max_length', 12)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -11,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => -11,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Mayores de 45 años.
-        if ($fecha_nacimiento) {
-            $birth = new \DateTime($fecha_nacimiento);
-            $now = new \DateTime();
-            $age = (int) $now->diff($birth)->y;
+    // === DATOS TERRITORIALES ===
+    $fields['provincia'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Provincia'))
+      ->setDescription(t('Provincia de residencia (elegibilidad territorial).'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'almeria' => t('Almería'),
+        'cadiz' => t('Cádiz'),
+        'cordoba' => t('Córdoba'),
+        'granada' => t('Granada'),
+        'huelva' => t('Huelva'),
+        'jaen' => t('Jaén'),
+        'malaga' => t('Málaga'),
+        'sevilla' => t('Sevilla'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -10,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-            if ($age >= 45 && $situacion === 'desempleado') {
-                return 'mayores_45';
-            }
-        }
+    $fields['municipio'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Municipio'))
+      ->setDescription(t('Municipio de residencia.'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 100)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -9,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // Desempleados de larga duración (>12 meses).
-        if ($situacion === 'desempleado' && $tiempo_desempleo === 'mas_12_meses') {
-            return 'larga_duracion';
-        }
+    // === DATOS PARA TRIAJE ===
+    $fields['situacion_laboral'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Situación laboral actual'))
+      ->setDescription(t('Estado laboral del candidato.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'desempleado' => t('Desempleado/a'),
+        'empleado' => t('Empleado/a por cuenta ajena'),
+        'autonomo' => t('Autónomo/a'),
+        'estudiante' => t('Estudiante'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -8,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => -8,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // No encaja claramente en un colectivo prioritario.
-        return 'otros';
-    }
+    $fields['tiempo_desempleo'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tiempo en desempleo'))
+      ->setDescription(t('Solo si está desempleado/a. Determina colectivo larga duración.'))
+      ->setSetting('allowed_values', [
+        'menos_6_meses' => t('Menos de 6 meses'),
+        '6_12_meses' => t('Entre 6 y 12 meses'),
+        'mas_12_meses' => t('Más de 12 meses'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -7,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => -7,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
+    $fields['nivel_estudios'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Nivel de estudios'))
+      ->setDescription(t('Nivel máximo de estudios completado.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'sin_estudios' => t('Sin estudios'),
+        'eso' => t('ESO / Graduado Escolar'),
+        'bachillerato' => t('Bachillerato'),
+        'fp_medio' => t('FP Grado Medio'),
+        'fp_superior' => t('FP Grado Superior'),
+        'grado' => t('Grado universitario'),
+        'master' => t('Máster / Postgrado'),
+        'doctorado' => t('Doctorado'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -6,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => -6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === DATOS PERSONALES ===
+    $fields['es_migrante'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Persona migrante'))
+      ->setDescription(t('Marcar si el candidato es persona migrante.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -5,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'boolean',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['nombre'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Nombre completo'))
-            ->setDescription(t('Nombre y apellidos del candidato.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 255)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -15,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => -15,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['percibe_prestacion'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Percibe prestación/subsidio/RAI'))
+      ->setDescription(t('Marcar si percibe prestación, subsidio por desempleo o Renta Activa de Inserción.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => -4,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'boolean',
+        'weight' => -4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['email'] = BaseFieldDefinition::create('email')
-            ->setLabel(t('Correo electrónico'))
-            ->setDescription(t('Email de contacto del candidato.'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'email_default',
-                'weight' => -14,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'email_mailto',
-                'weight' => -14,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['experiencia_sector'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Experiencia profesional'))
+      ->setDescription(t('Breve descripción de experiencia laboral relevante.'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => -3,
+        'settings' => ['rows' => 3],
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => -3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['telefono'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Teléfono'))
-            ->setDescription(t('Número de teléfono de contacto.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 20)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -13,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => -13,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['motivacion'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Motivación'))
+      ->setDescription(t('¿Por qué quieres participar en el programa Andalucía +ei?'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => -2,
+        'settings' => ['rows' => 4],
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => -2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['fecha_nacimiento'] = BaseFieldDefinition::create('datetime')
-            ->setLabel(t('Fecha de nacimiento'))
-            ->setDescription(t('Para determinar el colectivo (Jóvenes 18-29, Mayores 45+).'))
-            ->setRequired(TRUE)
-            ->setSetting('datetime_type', 'date')
-            ->setDisplayOptions('form', [
-                'type' => 'datetime_default',
-                'weight' => -12,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'datetime_default',
-                'weight' => -12,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === ACCESO DIGITAL Y DISPONIBILIDAD ===
+    $fields['nivel_digital'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Nivel de competencias digitales'))
+      ->setDescription(t('Autoevaluación según marco DigComp 2.2.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'ninguno' => t('Ninguno — No uso ordenador ni móvil'),
+        'basico' => t('Básico — Email, WhatsApp, navegación web'),
+        'intermedio' => t('Intermedio — Ofimática, redes sociales, apps'),
+        'avanzado' => t('Avanzado — Herramientas profesionales, edición, gestión online'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['dni_nie'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('DNI/NIE'))
-            ->setDescription(t('Documento identificativo (opcional en solicitud).'))
-            ->setSetting('max_length', 12)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -11,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => -11,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['conoce_ia'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Conocimiento de Inteligencia Artificial'))
+      ->setDescription(t('Nivel de familiaridad con herramientas de IA.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'no_conozco' => t('No conozco — No sé qué es la IA'),
+        'he_oido' => t('He oído hablar — Sé que existe pero no la he usado'),
+        'uso_basico' => t('Uso básico — He usado ChatGPT o similar alguna vez'),
+        'uso_habitual' => t('Uso habitual — Utilizo IA regularmente en mi día a día'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 1,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === DATOS TERRITORIALES ===
+    $fields['acceso_ordenador'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Acceso a ordenador'))
+      ->setDescription(t('Disponibilidad de equipo informático para uso personal.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'no_tengo' => t('No tengo acceso a ordenador'),
+        'compartido' => t('Comparto ordenador con otras personas'),
+        'propio_antiguo' => t('Tengo ordenador propio (antiguo o limitado)'),
+        'propio_reciente' => t('Tengo ordenador propio (reciente, funciona bien)'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 2,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['provincia'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Provincia'))
-            ->setDescription(t('Provincia de residencia (elegibilidad territorial).'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'almeria' => t('Almería'),
-                'cadiz' => t('Cádiz'),
-                'cordoba' => t('Córdoba'),
-                'granada' => t('Granada'),
-                'huelva' => t('Huelva'),
-                'jaen' => t('Jaén'),
-                'malaga' => t('Málaga'),
-                'sevilla' => t('Sevilla'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => -10,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => -10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['acceso_internet'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Acceso a Internet'))
+      ->setDescription(t('Tipo de conexión a Internet disponible.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'sin_acceso' => t('Sin acceso a Internet en casa'),
+        'movil_solo' => t('Solo datos móviles'),
+        'wifi_inestable' => t('Wi-Fi en casa (inestable o lento)'),
+        'fibra_estable' => t('Fibra o conexión estable en casa'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 3,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 3,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['municipio'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Municipio'))
-            ->setDescription(t('Municipio de residencia.'))
-            ->setRequired(TRUE)
-            ->setSetting('max_length', 100)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => -9,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => -9,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['disponibilidad_horaria'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Disponibilidad horaria'))
+      ->setDescription(t('Franja horaria preferente para participar en el programa.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'mananas' => t('Mañanas (9:00–14:00)'),
+        'tardes' => t('Tardes (16:00–20:00)'),
+        'flexible' => t('Flexible — Puedo adaptarme a cualquier horario'),
+        'fines_semana' => t('Solo fines de semana'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 4,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === DATOS PARA TRIAJE ===
+    $fields['como_conocio'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('¿Cómo conociste el programa?'))
+      ->setDescription(t('Canal por el que el candidato supo del programa Andalucía +ei.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'redes_sociales' => t('Redes sociales (Instagram, Facebook, TikTok...)'),
+        'web' => t('Buscando en Internet / página web'),
+        'conocido' => t('Me lo recomendó un conocido/a'),
+        'sae' => t('Servicio Andaluz de Empleo (SAE)'),
+        'ayuntamiento' => t('Ayuntamiento u otra administración pública'),
+        'otro' => t('Otro'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 5,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['situacion_laboral'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Situación laboral actual'))
-            ->setDescription(t('Estado laboral del candidato.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'desempleado' => t('Desempleado/a'),
-                'empleado' => t('Empleado/a por cuenta ajena'),
-                'autonomo' => t('Autónomo/a'),
-                'estudiante' => t('Estudiante'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => -8,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => -8,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === CAMPOS ADMINISTRATIVOS ===
+    $fields['estado'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado de la solicitud'))
+      ->setDescription(t('Estado actual en el proceso de triaje.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'pendiente' => t('Pendiente'),
+        'contactado' => t('Contactado'),
+        'admitido' => t('Admitido'),
+        'rechazado' => t('Rechazado'),
+        'lista_espera' => t('Lista de espera'),
+      ])
+      ->setDefaultValue('pendiente')
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 10,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['tiempo_desempleo'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Tiempo en desempleo'))
-            ->setDescription(t('Solo si está desempleado/a. Determina colectivo larga duración.'))
-            ->setSetting('allowed_values', [
-                'menos_6_meses' => t('Menos de 6 meses'),
-                '6_12_meses' => t('Entre 6 y 12 meses'),
-                'mas_12_meses' => t('Más de 12 meses'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => -7,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => -7,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['colectivo_inferido'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Colectivo inferido'))
+      ->setDescription(t('Colectivo asignado automáticamente según datos del candidato.'))
+      ->setSetting('allowed_values', [
+        'larga_duracion' => t('Desempleados larga duración'),
+        'mayores_45' => t('Mayores de 45 años'),
+        'migrantes' => t('Personas migrantes'),
+        'perceptores_prestaciones' => t('Perceptores prestaciones/subsidio/RAI'),
+        'otros' => t('Otros'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 11,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['nivel_estudios'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Nivel de estudios'))
-            ->setDescription(t('Nivel máximo de estudios completado.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'sin_estudios' => t('Sin estudios'),
-                'eso' => t('ESO / Graduado Escolar'),
-                'bachillerato' => t('Bachillerato'),
-                'fp_medio' => t('FP Grado Medio'),
-                'fp_superior' => t('FP Grado Superior'),
-                'grado' => t('Grado universitario'),
-                'master' => t('Máster / Postgrado'),
-                'doctorado' => t('Doctorado'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => -6,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => -6,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['notas_admin'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Notas del administrador'))
+      ->setDescription(t('Notas internas sobre esta solicitud.'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 12,
+        'settings' => ['rows' => 3],
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => 12,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['es_migrante'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Persona migrante'))
-            ->setDescription(t('Marcar si el candidato es persona migrante.'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -5,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'boolean',
-                'weight' => -5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['ip_address'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Dirección IP'))
+      ->setDescription(t('IP desde la que se envió la solicitud.'))
+      ->setSetting('max_length', 45)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 13,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['percibe_prestacion'] = BaseFieldDefinition::create('boolean')
-            ->setLabel(t('Percibe prestación/subsidio/RAI'))
-            ->setDescription(t('Marcar si percibe prestación, subsidio por desempleo o Renta Activa de Inserción.'))
-            ->setDefaultValue(FALSE)
-            ->setDisplayOptions('form', [
-                'type' => 'boolean_checkbox',
-                'weight' => -4,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'boolean',
-                'weight' => -4,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === TENANT ISOLATION ===
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Tenant al que pertenece esta solicitud.'))
+      ->setSetting('target_type', 'tenant')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 14,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['experiencia_sector'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Experiencia profesional'))
-            ->setDescription(t('Breve descripción de experiencia laboral relevante.'))
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => -3,
-                'settings' => ['rows' => 3],
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => -3,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    // === TIMESTAMPS ===
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Fecha de solicitud'))
+      ->setDescription(t('Fecha y hora en que se envió la solicitud.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['motivacion'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Motivación'))
-            ->setDescription(t('¿Por qué quieres participar en el programa Andalucía +ei?'))
-            ->setRequired(TRUE)
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => -2,
-                'settings' => ['rows' => 4],
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => -2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Última modificación'))
+      ->setDescription(t('Fecha de última actualización.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 16,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        // === ACCESO DIGITAL Y DISPONIBILIDAD ===
+    // === TRIAJE IA ===
+    $fields['ai_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación IA'))
+      ->setDescription(t('Puntuación de idoneidad asignada por IA (0-100).'))
+      ->setDefaultValue(NULL)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'number_integer',
+        'weight' => 20,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['nivel_digital'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Nivel de competencias digitales'))
-            ->setDescription(t('Autoevaluación según marco DigComp 2.2.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'ninguno' => t('Ninguno — No uso ordenador ni móvil'),
-                'basico' => t('Básico — Email, WhatsApp, navegación web'),
-                'intermedio' => t('Intermedio — Ofimática, redes sociales, apps'),
-                'avanzado' => t('Avanzado — Herramientas profesionales, edición, gestión online'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 0,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['ai_justificacion'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Justificación IA'))
+      ->setDescription(t('Análisis textual generado por IA sobre la solicitud.'))
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => 21,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['conoce_ia'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Conocimiento de Inteligencia Artificial'))
-            ->setDescription(t('Nivel de familiaridad con herramientas de IA.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'no_conozco' => t('No conozco — No sé qué es la IA'),
-                'he_oido' => t('He oído hablar — Sé que existe pero no la he usado'),
-                'uso_basico' => t('Uso básico — He usado ChatGPT o similar alguna vez'),
-                'uso_habitual' => t('Uso habitual — Utilizo IA regularmente en mi día a día'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 1,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 1,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+    $fields['ai_recomendacion'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Recomendación IA'))
+      ->setDescription(t('Recomendación automática del sistema de triaje IA.'))
+      ->setSetting('allowed_values', [
+        'admitir' => t('Admitir'),
+        'revisar' => t('Revisar manualmente'),
+        'rechazar' => t('Rechazar'),
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 22,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
-        $fields['acceso_ordenador'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Acceso a ordenador'))
-            ->setDescription(t('Disponibilidad de equipo informático para uso personal.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'no_tengo' => t('No tengo acceso a ordenador'),
-                'compartido' => t('Comparto ordenador con otras personas'),
-                'propio_antiguo' => t('Tengo ordenador propio (antiguo o limitado)'),
-                'propio_reciente' => t('Tengo ordenador propio (reciente, funciona bien)'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 2,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 2,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['acceso_internet'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Acceso a Internet'))
-            ->setDescription(t('Tipo de conexión a Internet disponible.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'sin_acceso' => t('Sin acceso a Internet en casa'),
-                'movil_solo' => t('Solo datos móviles'),
-                'wifi_inestable' => t('Wi-Fi en casa (inestable o lento)'),
-                'fibra_estable' => t('Fibra o conexión estable en casa'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 3,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 3,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['disponibilidad_horaria'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Disponibilidad horaria'))
-            ->setDescription(t('Franja horaria preferente para participar en el programa.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'mananas' => t('Mañanas (9:00–14:00)'),
-                'tardes' => t('Tardes (16:00–20:00)'),
-                'flexible' => t('Flexible — Puedo adaptarme a cualquier horario'),
-                'fines_semana' => t('Solo fines de semana'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 4,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 4,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['como_conocio'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('¿Cómo conociste el programa?'))
-            ->setDescription(t('Canal por el que el candidato supo del programa Andalucía +ei.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'redes_sociales' => t('Redes sociales (Instagram, Facebook, TikTok...)'),
-                'web' => t('Buscando en Internet / página web'),
-                'conocido' => t('Me lo recomendó un conocido/a'),
-                'sae' => t('Servicio Andaluz de Empleo (SAE)'),
-                'ayuntamiento' => t('Ayuntamiento u otra administración pública'),
-                'otro' => t('Otro'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 5,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 5,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        // === CAMPOS ADMINISTRATIVOS ===
-
-        $fields['estado'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Estado de la solicitud'))
-            ->setDescription(t('Estado actual en el proceso de triaje.'))
-            ->setRequired(TRUE)
-            ->setSetting('allowed_values', [
-                'pendiente' => t('Pendiente'),
-                'contactado' => t('Contactado'),
-                'admitido' => t('Admitido'),
-                'rechazado' => t('Rechazado'),
-                'lista_espera' => t('Lista de espera'),
-            ])
-            ->setDefaultValue('pendiente')
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 10,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 10,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['colectivo_inferido'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Colectivo inferido'))
-            ->setDescription(t('Colectivo asignado automáticamente según datos del candidato.'))
-            ->setSetting('allowed_values', [
-                'larga_duracion' => t('Desempleados larga duración'),
-                'mayores_45' => t('Mayores de 45 años'),
-                'migrantes' => t('Personas migrantes'),
-                'perceptores_prestaciones' => t('Perceptores prestaciones/subsidio/RAI'),
-                'otros' => t('Otros'),
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'options_select',
-                'weight' => 11,
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 11,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['notas_admin'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Notas del administrador'))
-            ->setDescription(t('Notas internas sobre esta solicitud.'))
-            ->setDisplayOptions('form', [
-                'type' => 'string_textarea',
-                'weight' => 12,
-                'settings' => ['rows' => 3],
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => 12,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['ip_address'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Dirección IP'))
-            ->setDescription(t('IP desde la que se envió la solicitud.'))
-            ->setSetting('max_length', 45)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => 13,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        // === TENANT ISOLATION ===
-
-        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Tenant'))
-            ->setDescription(t('Tenant al que pertenece esta solicitud.'))
-            ->setSetting('target_type', 'tenant')
-            ->setRequired(FALSE)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-                'weight' => 14,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        // === TIMESTAMPS ===
-
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Fecha de solicitud'))
-            ->setDescription(t('Fecha y hora en que se envió la solicitud.'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 15,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Última modificación'))
-            ->setDescription(t('Fecha de última actualización.'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 16,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        // === TRIAJE IA ===
-
-        $fields['ai_score'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Puntuación IA'))
-            ->setDescription(t('Puntuación de idoneidad asignada por IA (0-100).'))
-            ->setDefaultValue(NULL)
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'number_integer',
-                'weight' => 20,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['ai_justificacion'] = BaseFieldDefinition::create('string_long')
-            ->setLabel(t('Justificación IA'))
-            ->setDescription(t('Análisis textual generado por IA sobre la solicitud.'))
-            ->setDisplayOptions('view', [
-                'label' => 'above',
-                'type' => 'basic_string',
-                'weight' => 21,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        $fields['ai_recomendacion'] = BaseFieldDefinition::create('list_string')
-            ->setLabel(t('Recomendación IA'))
-            ->setDescription(t('Recomendación automática del sistema de triaje IA.'))
-            ->setSetting('allowed_values', [
-                'admitir' => t('Admitir'),
-                'revisar' => t('Revisar manualmente'),
-                'rechazar' => t('Rechazar'),
-            ])
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'list_default',
-                'weight' => 22,
-            ])
-            ->setDisplayConfigurable('view', TRUE);
-
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

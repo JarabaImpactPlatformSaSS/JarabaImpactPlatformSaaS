@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Kernel;
 
+use Drupal\jaraba_facturae\Service\FACeClientService;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -24,7 +25,7 @@ class FACeClientKernelTest extends KernelTestBase {
    */
   public function testFACeClientServiceClassExists(): void {
     $this->assertTrue(
-      class_exists(\Drupal\jaraba_facturae\Service\FACeClientService::class),
+      class_exists(FACeClientService::class),
       'FACeClientService class should exist.'
     );
   }
@@ -36,7 +37,7 @@ class FACeClientKernelTest extends KernelTestBase {
     $methods = ['sendInvoice', 'queryInvoice', 'queryInvoiceList', 'cancelInvoice', 'testConnection'];
     foreach ($methods as $method) {
       $this->assertTrue(
-        method_exists(\Drupal\jaraba_facturae\Service\FACeClientService::class, $method),
+        method_exists(FACeClientService::class, $method),
         "FACeClientService should have $method method."
       );
     }

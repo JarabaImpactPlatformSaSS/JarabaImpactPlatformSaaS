@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Service;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\ai\OperationType\TextToImage\TextToImageInput;
 use Drupal\ai\OperationType\TextToSpeech\TextToSpeechInput;
 use Drupal\jaraba_ai_agents\Contract\MultiModalInputInterface;
@@ -277,7 +278,7 @@ class MultiModalBridgeService implements MultiModalInputInterface, MultiModalOut
       // Save audio to temporary file.
       $fileSystem = \Drupal::service('file_system');
       $destination = 'temporary://jaraba-tts/';
-      $fileSystem->prepareDirectory($destination, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+      $fileSystem->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY);
       $filename = 'tts_' . md5($text . $voice . microtime()) . '.mp3';
       $uri = $fileSystem->saveData($audioData, $destination . $filename);
 
@@ -390,7 +391,7 @@ class MultiModalBridgeService implements MultiModalInputInterface, MultiModalOut
       // Save each image to temp file.
       $fileSystem = \Drupal::service('file_system');
       $destination = 'temporary://jaraba-imagegen/';
-      $fileSystem->prepareDirectory($destination, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+      $fileSystem->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY);
 
       $images = [];
       foreach ($imageFiles as $index => $imageFile) {

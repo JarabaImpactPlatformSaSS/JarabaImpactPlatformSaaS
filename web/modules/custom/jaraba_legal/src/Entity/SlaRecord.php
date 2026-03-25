@@ -71,7 +71,6 @@ class SlaRecord extends ContentEntityBase {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     // --- TENANT (aislamiento multi-tenant) ---
-
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(new TranslatableMarkup('Tenant'))
       ->setDescription(new TranslatableMarkup('Tenant al que pertenece este registro SLA.'))
@@ -82,7 +81,6 @@ class SlaRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- PERIODO ---
-
     $fields['period_start'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(new TranslatableMarkup('Inicio del periodo'))
       ->setDescription(new TranslatableMarkup('Timestamp UTC del inicio del periodo de medición.'))
@@ -100,7 +98,6 @@ class SlaRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- MÉTRICAS ---
-
     $fields['uptime_percentage'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Uptime (%)'))
       ->setDescription(new TranslatableMarkup('Porcentaje de disponibilidad medido en el periodo.'))
@@ -130,7 +127,6 @@ class SlaRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- CRÉDITOS ---
-
     $fields['credit_percentage'] = BaseFieldDefinition::create('decimal')
       ->setLabel(new TranslatableMarkup('Crédito (%)'))
       ->setDescription(new TranslatableMarkup('Porcentaje de crédito aplicado por incumplimiento.'))
@@ -150,7 +146,6 @@ class SlaRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- INCIDENTES ---
-
     $fields['incident_count'] = BaseFieldDefinition::create('integer')
       ->setLabel(new TranslatableMarkup('Número de incidentes'))
       ->setDescription(new TranslatableMarkup('Número de incidentes de disponibilidad durante el periodo.'))
@@ -160,7 +155,6 @@ class SlaRecord extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     // --- TIMESTAMPS ---
-
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new TranslatableMarkup('Creado'))
       ->setDescription(new TranslatableMarkup('Fecha de creación del registro.'));

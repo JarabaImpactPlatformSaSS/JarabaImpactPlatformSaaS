@@ -174,7 +174,7 @@ class HeatmapCollectorServiceTest extends TestCase {
   /**
    * Tests that x_percent is calculated correctly.
    *
-   * x=640 with viewport_width=1280 should yield x_percent = 50.00.
+   * X=640 with viewport_width=1280 should yield x_percent = 50.00.
    *
    * @covers ::processEvents
    */

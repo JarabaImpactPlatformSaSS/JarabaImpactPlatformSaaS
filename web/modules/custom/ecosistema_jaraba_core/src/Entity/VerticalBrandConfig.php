@@ -160,66 +160,114 @@ class VerticalBrandConfig extends ConfigEntityBase {
    */
   protected $enabled = TRUE;
 
+  /**
+   *
+   */
   public function getVertical(): string {
     return $this->vertical;
   }
 
+  /**
+   *
+   */
   public function getPublicName(): string {
     return $this->public_name !== '' ? $this->public_name : $this->label;
   }
 
+  /**
+   *
+   */
   public function getTagline(): string {
     return $this->tagline;
   }
 
+  /**
+   *
+   */
   public function getDescription(): string {
     return $this->description;
   }
 
+  /**
+   *
+   */
   public function getIconCategory(): string {
     return $this->icon_category;
   }
 
+  /**
+   *
+   */
   public function getIconName(): string {
     return $this->icon_name;
   }
 
+  /**
+   *
+   */
   public function getPrimaryColor(): string {
     return $this->primary_color;
   }
 
+  /**
+   *
+   */
   public function getSecondaryColor(): string {
     return $this->secondary_color;
   }
 
+  /**
+   *
+   */
   public function getHeroImageUrl(): string {
     return $this->hero_image_url;
   }
 
+  /**
+   *
+   */
   public function getOgImageUrl(): string {
     return $this->og_image_url;
   }
 
+  /**
+   *
+   */
   public function getSeoTitleTemplate(): string {
     return $this->seo_title_template;
   }
 
+  /**
+   *
+   */
   public function getSeoDescription(): string {
     return $this->seo_description;
   }
 
+  /**
+   *
+   */
   public function getSchemaOrgType(): string {
     return $this->schema_org_type;
   }
 
+  /**
+   *
+   */
   public function getRevelationLevel(): string {
     return $this->revelation_level;
   }
 
+  /**
+   *
+   */
   public function getLandingRoute(): string {
     return $this->landing_route;
   }
 
+  /**
+   *
+   */
   public function isEnabled(): bool {
     return $this->enabled;
   }

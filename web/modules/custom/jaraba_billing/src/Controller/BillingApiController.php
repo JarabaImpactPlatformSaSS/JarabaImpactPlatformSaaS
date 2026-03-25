@@ -143,11 +143,14 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
       // Activate locally.
       $this->tenantSubscription->activateSubscription($tenant);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'subscription_id' => $subscription['id'],
-        'status' => $subscription['status'],
-        'current_period_end' => $subscription['current_period_end'] ?? NULL,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'subscription_id' => $subscription['id'],
+          'status' => $subscription['status'],
+          'current_period_end' => $subscription['current_period_end'] ?? NULL,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creating subscription: @error', ['@error' => $e->getMessage()]);
@@ -175,10 +178,13 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     try {
       $result = $this->stripeSubscription->updateSubscription($subscriptionId, $newPriceId);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'subscription_id' => $result['id'],
-        'status' => $result['status'],
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'subscription_id' => $result['id'],
+          'status' => $result['status'],
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error changing plan: @error', ['@error' => $e->getMessage()]);
@@ -211,10 +217,13 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
         $this->tenantSubscription->cancelSubscription($tenant, $immediately);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'subscription_id' => $result['id'],
-        'cancel_at_period_end' => $result['cancel_at_period_end'] ?? FALSE,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'subscription_id' => $result['id'],
+          'cancel_at_period_end' => $result['cancel_at_period_end'] ?? FALSE,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error canceling subscription: @error', ['@error' => $e->getMessage()]);
@@ -246,10 +255,13 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
         $this->tenantSubscription->activateSubscription($tenant);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'subscription_id' => $result['id'],
-        'status' => $result['status'],
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'subscription_id' => $result['id'],
+          'status' => $result['status'],
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error reactivating subscription: @error', ['@error' => $e->getMessage()]);
@@ -370,9 +382,12 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
         'return_url' => $returnUrl,
       ]);
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'url' => $session['url'] ?? NULL,
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'url' => $session['url'] ?? NULL,
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creating portal session: @error', ['@error' => $e->getMessage()]);
@@ -445,10 +460,13 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
         $this->stripeCustomer->setDefaultPaymentMethod($customer['stripe_customer_id'], $paymentMethodId);
       }
 
-      return new JsonResponse(['success' => TRUE, 'data' => [
-        'payment_method_id' => $result['id'],
-        'type' => $result['type'] ?? 'card',
-      ]]);
+      return new JsonResponse([
+        'success' => TRUE,
+        'data' => [
+          'payment_method_id' => $result['id'],
+          'type' => $result['type'] ?? 'card',
+        ],
+      ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error adding payment method: @error', ['@error' => $e->getMessage()]);

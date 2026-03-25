@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Install, update and uninstall functions for the Jaraba Mentoring module.
  */
 
-declare(strict_types=1);
+use Drupal\Core\Field\BaseFieldDefinition;
+
 
 /**
  * Implements hook_install().
@@ -119,24 +122,24 @@ function jaraba_mentoring_update_10003(): void {
   }
 
   $fields = [
-    'uid' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    'uid' => BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Owner'))
       ->setSetting('target_type', 'user')
       ->setDefaultValueCallback('\Drupal\user\EntityOwnerTrait::getDefaultEntityOwner')
       ->setTargetEntityTypeId($entity_type_id),
-    'title' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    'title' => BaseFieldDefinition::create('string')
       ->setLabel(t('Titulo'))
       ->setSetting('max_length', 255)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE)
       ->setTargetEntityTypeId($entity_type_id),
-    'tenant_id' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    'tenant_id' => BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setRequired(TRUE)
       ->setSetting('target_type', 'group')
       ->setDisplayConfigurable('form', TRUE)
       ->setTargetEntityTypeId($entity_type_id),
-    'review_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    'review_status' => BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado de moderacion'))
       ->setRequired(TRUE)
       ->setDefaultValue('pending')
@@ -147,20 +150,20 @@ function jaraba_mentoring_update_10003(): void {
         'flagged' => t('Marcada'),
       ])
       ->setTargetEntityTypeId($entity_type_id),
-    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'helpful_count' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Votos de utilidad'))
       ->setDefaultValue(0)
       ->setTargetEntityTypeId($entity_type_id),
-    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'photos' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Fotos'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'ai_summary' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
-    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    'ai_summary_generated_at' => BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de resumen IA'))
       ->setTargetEntityTypeId($entity_type_id),
-    'changed' => \Drupal\Core\Field\BaseFieldDefinition::create('changed')
+    'changed' => BaseFieldDefinition::create('changed')
       ->setLabel(t('Modificado'))
       ->setTargetEntityTypeId($entity_type_id),
   ];
@@ -193,25 +196,25 @@ function jaraba_mentoring_update_10004(): string {
 
   // Define fields inline to avoid baseFieldDefinitions() owner entity key check.
   $field_defs = [
-    'flag_reason' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+    'flag_reason' => BaseFieldDefinition::create('string')
       ->setLabel(t('Razon de reporte'))
       ->setSetting('max_length', 255)
       ->setDisplayConfigurable('view', TRUE),
-    'flag_reporter_uid' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'flag_reporter_uid' => BaseFieldDefinition::create('integer')
       ->setLabel(t('UID del reportante'))
       ->setDefaultValue(0)
       ->setDisplayConfigurable('view', TRUE),
-    'flag_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'flag_count' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Numero de reportes'))
       ->setDefaultValue(0)
       ->setDisplayConfigurable('view', TRUE),
-    'owner_response' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+    'owner_response' => BaseFieldDefinition::create('string_long')
       ->setLabel(t('Respuesta del propietario'))
       ->setDisplayConfigurable('view', TRUE),
-    'owner_response_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    'owner_response_at' => BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Fecha de respuesta'))
       ->setDisplayConfigurable('view', TRUE),
-    'verified_purchase' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+    'verified_purchase' => BaseFieldDefinition::create('boolean')
       ->setLabel(t('Compra verificada'))
       ->setDefaultValue(FALSE)
       ->setDisplayConfigurable('view', TRUE),
@@ -241,44 +244,44 @@ function jaraba_mentoring_update_10005(): string {
   }
 
   $field_defs = [
-    'session_notes' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    'session_notes' => BaseFieldDefinition::create('text_long')
       ->setLabel(t('Notas de la sesión'))
       ->setDescription(t('Resumen narrativo de lo tratado en la sesión.'))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'objectives_worked' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    'objectives_worked' => BaseFieldDefinition::create('text_long')
       ->setLabel(t('Objetivos trabajados'))
       ->setDescription(t('Objetivos abordados durante la sesión (JSON array).'))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'agreements' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    'agreements' => BaseFieldDefinition::create('text_long')
       ->setLabel(t('Acuerdos alcanzados'))
       ->setDescription(t('Compromisos y acuerdos de la sesión (JSON array).'))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'next_steps' => \Drupal\Core\Field\BaseFieldDefinition::create('text_long')
+    'next_steps' => BaseFieldDefinition::create('text_long')
       ->setLabel(t('Próximos pasos'))
       ->setDescription(t('Acciones a realizar antes de la siguiente sesión (JSON array).'))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'participant_rating' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'participant_rating' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Valoración del participante'))
       ->setDescription(t('Puntuación que da el participante a la sesión (1-5).'))
       ->setSetting('min', 1)
       ->setSetting('max', 5)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'mentor_rating' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'mentor_rating' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Valoración del mentor'))
       ->setDescription(t('Puntuación que da el mentor al participante (1-5).'))
       ->setSetting('min', 1)
       ->setSetting('max', 5)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE),
-    'service_sheet_doc' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+    'service_sheet_doc' => BaseFieldDefinition::create('integer')
       ->setLabel(t('Documento Hoja de Servicio'))
       ->setDescription(t('ID del ExpedienteDocumento generado como hoja de servicio.')),
-    'firma_participante_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    'firma_participante_status' => BaseFieldDefinition::create('list_string')
       ->setLabel(t('Firma participante'))
       ->setDescription(t('Estado de firma digital del participante.'))
       ->setSetting('allowed_values', [
@@ -288,7 +291,7 @@ function jaraba_mentoring_update_10005(): string {
       ])
       ->setDefaultValue('pending')
       ->setDisplayConfigurable('view', TRUE),
-    'firma_orientador_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+    'firma_orientador_status' => BaseFieldDefinition::create('list_string')
       ->setLabel(t('Firma orientador'))
       ->setDescription(t('Estado de firma digital del orientador/mentor.'))
       ->setSetting('allowed_values', [
@@ -337,7 +340,7 @@ function jaraba_mentoring_update_10006(): string {
   }
 
   try {
-    $definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $definition = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Programas asociados'))
       ->setDescription(t('Grupos/programas en los que este mentor está activo.'))
       ->setCardinality(-1)
@@ -370,7 +373,7 @@ function jaraba_mentoring_update_10007(): string {
   }
 
   try {
-    $definition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    $definition = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setDescription(t('Tenant al que pertenece esta sesión.'))
       ->setSetting('target_type', 'group')
@@ -385,7 +388,6 @@ function jaraba_mentoring_update_10007(): string {
   }
 }
 
-
 /**
  * Doc 181: Add stripe_product_id + vertical fields to mentoring_package.
  * Amplify package_type + engagement status for professional services model.
@@ -399,7 +401,7 @@ function jaraba_mentoring_update_10008(): string {
   $field_name = 'stripe_product_id';
   if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
     try {
-      $definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      $definition = BaseFieldDefinition::create('string')
         ->setName($field_name)
         ->setTargetEntityTypeId($entity_type_id)
         ->setLabel(t('Stripe Product ID'))
@@ -421,7 +423,7 @@ function jaraba_mentoring_update_10008(): string {
   $field_name = 'vertical';
   if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
     try {
-      $definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      $definition = BaseFieldDefinition::create('string')
         ->setName($field_name)
         ->setTargetEntityTypeId($entity_type_id)
         ->setLabel(t('Vertical'))
