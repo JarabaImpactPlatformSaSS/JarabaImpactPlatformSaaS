@@ -197,6 +197,9 @@ run_check "LOGGER-INJECT-001" "Logger injection consistency (fast)" \
 run_check "PHANTOM-ARG-001" "Phantom args in services.yml vs constructor params" \
   php "$SCRIPT_DIR/validate-phantom-args.php"
 
+run_check "OPTIONAL-PARAM-ORDER-001" "Optional constructor params before required (PHP 8.4)" \
+  php "$SCRIPT_DIR/validate-optional-param-order.php"
+
 run_check "TWIG-SYNTAX-LINT-001" "Twig static syntax lint (double comma, balance, blocks)" \
   php "$SCRIPT_DIR/validate-twig-syntax.php"
 
@@ -489,6 +492,9 @@ if [ "$MODE" = "full" ]; then
   run_check "CLAUDE-MD-SIZE-001" "CLAUDE.md performance budget (<39k chars)" \
     php "$SCRIPT_DIR/validate-claude-md-size.php"
 
+  run_check "STATUS-REPORT-PROACTIVE-001" "Drupal status report (0 errors, 0 unexpected warnings)" \
+    php "$SCRIPT_DIR/validate-status-report.php"
+
   warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
     php "$SCRIPT_DIR/validate-csp-completeness.php"
 
@@ -704,6 +710,7 @@ else
   skip_check "JS-SYNTAX-LINT-001" "JavaScript static syntax lint"
   skip_check "VALIDATOR-COVERAGE-001" "Meta-safeguard orphaned validators"
   skip_check "CLAUDE-MD-SIZE-001" "CLAUDE.md performance budget"
+  skip_check "STATUS-REPORT-PROACTIVE-001" "Drupal status report"
   skip_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference"
   skip_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements coverage"
   skip_check "INFRA-HEALTH-001" "Infrastructure health"

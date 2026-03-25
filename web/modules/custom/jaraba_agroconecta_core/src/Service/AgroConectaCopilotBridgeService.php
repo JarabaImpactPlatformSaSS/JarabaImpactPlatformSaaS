@@ -21,8 +21,8 @@ class AgroConectaCopilotBridgeService implements CopilotBridgeInterface {
 
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
-    protected readonly ?AgroConectaFeatureGateService $featureGate = NULL,
     protected readonly LoggerInterface $logger,
+    protected readonly ?AgroConectaFeatureGateService $featureGate = NULL,
   ) {
   }
 

@@ -740,6 +740,18 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # STATUS REPORT MONITOR (STATUS-REPORT-PROACTIVE-001)
+  # ===========================================
+
+  # Proactive Drupal status report monitoring — compares against last snapshot.
+  ecosistema_jaraba_core.status_report_monitor:
+    class: Drupal\ecosistema_jaraba_core\Service\StatusReportMonitorService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.alerting'
+
+  # ===========================================
   # USAGE ANOMALY DETECTION (G111-3)
   # ===========================================
 

@@ -2786,6 +2786,19 @@ function _ecosistema_jaraba_core_cron_extended() {
     _ecosistema_jaraba_core_check_expiring_trials();
     _ecosistema_jaraba_core_check_past_due_subscriptions();
     _ecosistema_jaraba_core_check_usage_limits();
+
+    // STATUS-REPORT-PROACTIVE-001: Proactive status report monitoring.
+    if (\Drupal::hasService('ecosistema_jaraba_core.status_report_monitor')) {
+      try {
+        \Drupal::service('ecosistema_jaraba_core.status_report_monitor')->check();
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('ecosistema_jaraba_core')->error('Status report monitor failed: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
     $state->set('six_hour_check_last', time());
   }
 }

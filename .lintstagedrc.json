@@ -1,6 +1,7 @@
 {
   "web/modules/custom/**/*.php": [
-    "php vendor/bin/phpstan analyse --no-progress --error-format=raw"
+    "php vendor/bin/phpstan analyse --no-progress --error-format=raw",
+    "php scripts/validation/validate-optional-param-order.php"
   ],
   "web/themes/custom/**/*.scss": [
     "php scripts/validation/validate-compiled-assets.php"
@@ -16,7 +17,8 @@
     "php scripts/validation/validate-phantom-args.php",
     "php scripts/validation/validate-optional-deps.php",
     "php scripts/validation/validate-circular-deps.php",
-    "php scripts/validation/validate-logger-injection.php"
+    "php scripts/validation/validate-logger-injection.php",
+    "php scripts/validation/validate-optional-param-order.php"
   ],
   "web/modules/custom/**/*.routing.yml": [
     "bash scripts/validation/validate-all.sh --fast"
@@ -26,5 +28,8 @@
   ],
   "web/themes/custom/**/*.js": [
     "php scripts/validation/validate-js-syntax.php"
+  ],
+  "CLAUDE.md": [
+    "php scripts/validation/validate-claude-md-size.php"
   ]
 }

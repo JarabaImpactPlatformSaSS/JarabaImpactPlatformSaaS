@@ -59,9 +59,9 @@ final class LegalCoherenceVerifierService {
   private const PASS_THRESHOLD = 0.7;
 
   public function __construct(
+    protected readonly LoggerInterface $logger,
     protected readonly ?AiProviderPluginManager $aiProvider = NULL,
     protected readonly ?ModelRouterService $modelRouter = NULL,
-    protected readonly LoggerInterface $logger,
     protected readonly ?AIObservabilityService $observability = NULL,
     protected readonly ?EntityTypeManagerInterface $entityTypeManager = NULL,
   ) {}

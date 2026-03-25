@@ -139,9 +139,9 @@ services:
   jaraba_legal_intelligence.legal_coherence_verifier:
     class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherenceVerifierService
     arguments:
+      - '@logger.channel.jaraba_legal_intelligence'
       - '@?ai.provider'
       - '@?jaraba_ai_agents.model_router'
-      - '@logger.channel.jaraba_legal_intelligence'
       - '@?jaraba_ai_agents.observability'
       - '@?entity_type.manager'
 

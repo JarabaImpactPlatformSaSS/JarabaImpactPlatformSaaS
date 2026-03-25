@@ -910,29 +910,36 @@ $settings['trusted_host_patterns'] = [
     '^www\.jarabaimpact\.com$',
 ];
 
-// REDIS CACHE BACKEND
-// AUDIT-PERF-010: Habilitado en cualquier entorno con REDIS_HOST definido.
-// - Lando: REDIS_HOST=redis (automático via .lando.yml)
-// - Producción IONOS: Definir REDIS_HOST en variables de entorno del hosting
-// - Sin REDIS_HOST: Fallback seguro a cache.backend.database
-$redis_host = getenv('REDIS_HOST');
-if ($redis_host && extension_loaded('redis') && class_exists('Redis')) {
-  $settings['redis.connection']['interface'] = 'PhpRedis';
-  $settings['redis.connection']['host'] = $redis_host;
-  $settings['redis.connection']['port'] = getenv('REDIS_PORT') ?: 6379;
-  if ($redis_password = getenv('REDIS_PASSWORD')) {
-    $settings['redis.connection']['password'] = $redis_password;
-  }
-  $settings['cache_prefix'] = 'jaraba_';
-  $settings['cache']['default'] = 'cache.backend.redis';
+  // REDIS CACHE BACKEND (Redis 8.0 — REDIS-ACL-001)
+  // AUDIT-PERF-010: Habilitado en cualquier entorno con REDIS_HOST definido.
+  // - Lando: REDIS_HOST=redis (automático via .lando.yml)
+  // - Producción IONOS: Definir REDIS_HOST en variables de entorno del hosting
+  // - Sin REDIS_HOST: Fallback seguro a cache.backend.database
+  $redis_host = getenv('REDIS_HOST');
+  if ($redis_host && extension_loaded('redis') && class_exists('Redis')) {
+    $settings['redis.connection']['interface'] = 'PhpRedis';
+    $settings['redis.connection']['host'] = $redis_host;
+    $settings['redis.connection']['port'] = getenv('REDIS_PORT') ?: 6379;
+    if ($redis_password = getenv('REDIS_PASSWORD')) {
+      $settings['redis.connection']['password'] = $redis_password;
+    }
+    // REDIS-ACL-001: Redis 8 ACL requires AUTH <user> <pass> (two-argument).
+    // PhpRedis 5.3+ supports 'username'. Default ACL user = 'default'.
+    // In dev (Lando) without ACL, this is optional and safely ignored.
+    if ($redis_user = getenv('REDIS_USER')) {
+      $settings['redis.connection']['username'] = $redis_user;
+    }
+    $settings['cache_prefix'] = 'jaraba_';
+    $settings['cache']['default'] = 'cache.backend.redis';
 
-  // Cache bins de IA (alto volumen, alto impacto en rendimiento).
-  $settings['cache']['bins']['ai_embeddings'] = 'cache.backend.redis';
-  $settings['cache']['bins']['ai_recommendations'] = 'cache.backend.redis';
-  $settings['cache']['bins']['ai_tenant_knowledge'] = 'cache.backend.redis';
-  $settings['cache']['bins']['matching_results'] = 'cache.backend.redis';
-  $settings['cache']['bins']['copilot_responses'] = 'cache.backend.redis';
-}
+    // Cache bins de IA (alto volumen, alto impacto en rendimiento).
+    $settings['cache']['bins']['ai_embeddings'] = 'cache.backend.redis';
+    $settings['cache']['bins']['ai_recommendations'] = 'cache.backend.redis';
+    $settings['cache']['bins']['ai_tenant_knowledge'] = 'cache.backend.redis';
+    $settings['cache']['bins']['matching_results'] = 'cache.backend.redis';
+    $settings['cache']['bins']['copilot_responses'] = 'cache.backend.redis';
+  }
+
 
 
 // ============================================================================

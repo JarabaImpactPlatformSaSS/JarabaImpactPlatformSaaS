@@ -243,8 +243,8 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\AgroConectaCopilotBridgeService
     arguments:
       - '@entity_type.manager'
-      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
       - '@logger.channel.jaraba_agroconecta_core'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # =========================================================================
   # Setup Wizard Steps — SETUP-WIZARD-DAILY-001 (Producer Agro)
