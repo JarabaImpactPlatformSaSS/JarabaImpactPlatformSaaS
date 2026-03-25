@@ -486,6 +486,9 @@ if [ "$MODE" = "full" ]; then
   run_check "VALIDATOR-COVERAGE-001" "Meta-safeguard: orphaned validator detection" \
     php "$SCRIPT_DIR/validate-validator-coverage.php"
 
+  run_check "CLAUDE-MD-SIZE-001" "CLAUDE.md performance budget (<39k chars)" \
+    php "$SCRIPT_DIR/validate-claude-md-size.php"
+
   warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
     php "$SCRIPT_DIR/validate-csp-completeness.php"
 
@@ -661,6 +664,17 @@ if [ "$MODE" = "full" ]; then
   warn_check "VISUAL-REGRESSION-001" "Critical page structural smoke test (requires Lando)" \
     php "$SCRIPT_DIR/validate-visual-smoke.php"
 
+  # ── Safeguard System Fase 9 — Silent gap detection ──────
+
+  warn_check "DASHBOARD-WIRING-001" "Dashboard controllers return #theme (not empty markup)" \
+    php "$SCRIPT_DIR/validate-dashboard-wiring.php"
+
+  warn_check "FIELD-NAME-PARITY-001" "Service field names match entity baseFieldDefinitions" \
+    php "$SCRIPT_DIR/validate-field-name-parity.php"
+
+  run_check "DAILY-ACTION-ROUTES-001" "DailyAction/SetupWizard routes exist in routing.yml" \
+    php "$SCRIPT_DIR/validate-daily-action-routes.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -689,6 +703,7 @@ else
   skip_check "HOOK-UPDATE-COVERAGE-001" "Entity types install/update hooks"
   skip_check "JS-SYNTAX-LINT-001" "JavaScript static syntax lint"
   skip_check "VALIDATOR-COVERAGE-001" "Meta-safeguard orphaned validators"
+  skip_check "CLAUDE-MD-SIZE-001" "CLAUDE.md performance budget"
   skip_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference"
   skip_check "HOOK-REQUIREMENTS-COVERAGE-001" "Module hook_requirements coverage"
   skip_check "INFRA-HEALTH-001" "Infrastructure health"
@@ -699,6 +714,9 @@ else
   skip_check "PERF-N1-QUERY-001" "N+1 query detection"
   skip_check "CACHE-KEY-TENANT-001" "Cache key tenant scope"
   skip_check "EMAIL-TEMPLATE-RENDER-001" "Email template syntax"
+  skip_check "DASHBOARD-WIRING-001" "Dashboard wiring"
+  skip_check "FIELD-NAME-PARITY-001" "Field name parity"
+  skip_check "DAILY-ACTION-ROUTES-001" "Daily action routes"
 fi
 
 fi  # End of non-checklist mode guard.
