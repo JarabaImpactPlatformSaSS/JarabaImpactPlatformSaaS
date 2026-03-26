@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-25 | Version: 1.10.0
+# Ultima actualizacion: 2026-03-26 | Version: 1.11.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -365,7 +365,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 
 ### DOC-GUARD-001
 - CLAUDE-MD-SIZE-001: CLAUDE.md DEBE mantenerse < 39,000 chars. Solo reglas MUST/NEVER/ALWAYS. Estado de implementacion → memory files. Validacion: `php scripts/validation/validate-claude-md-size.php` + pre-commit lint-staged
-- STATUS-REPORT-PROACTIVE-001: 3 capas monitoring proactivo — validator (CI), cron (6h, AlertingService), GitHub Actions (diario, auto-issue)
+- STATUS-REPORT-PROACTIVE-001: 3 capas monitoring proactivo — validator (CI), cron (6h, AlertingService + email fallback), GitHub Actions (diario, auto-issue)
+- ALERTING-EMAIL-FALLBACK-001: Todo servicio de alerta DEBE tener email como canal de ultimo recurso. Si webhooks fallan o no estan configurados, enviar a system.site.mail
+- STATUS-BASELINE-SSOT-001: Lista de warnings esperados DEBE definirse en constante unica (StatusReportMonitorService::EXPECTED_WARNINGS_DEV/PROD) y referenciarse desde todas las capas
+- MONITOR-NO-DEADCODE-001: Metodos publicos en servicios de monitoring DEBEN tener al menos 1 consumidor. Dead code en monitoring = alerta silenciada
 - NUNCA sobreescribir master docs (00_*.md) con Write. SIEMPRE Edit incremental
 - Pre-commit hook: max 10% perdida de lineas + umbrales absolutos:
   DIRECTRICES >= 2000 | ARQUITECTURA >= 2400 | INDICE >= 2000 | FLUJO >= 700
@@ -377,8 +380,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ARQUITECTURA: v150.0.0
 - INDICE: v195.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #224
-- Ultima golden rule: #157
+- Ultimo aprendizaje: #225
+- Ultima golden rule: #160
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -435,12 +438,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 163 validators individuales en `scripts/validation/` (121 run_check + 45 warn_check = 166 checks). Lista completa: `docs/validators-reference.md`
+- 165 validators individuales en `scripts/validation/` (122 run_check + 46 warn_check = 168 checks). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 163 scripts validacion (121 run + 45 warn = 166 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 165 scripts validacion (122 run + 46 warn = 168 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos) + StatusReportMonitorService (email fallback), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
