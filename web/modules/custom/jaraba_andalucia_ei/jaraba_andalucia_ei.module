@@ -2961,6 +2961,23 @@ function template_preprocess_negocio_prospectado_ei(array &$variables): void {
   $variables['label'] = $entity->label() ?? t('Negocio #@id', ['@id' => $entity->id()]);
 }
 
+/**
+ * Prepares variables for cliente_participante_ei entity templates.
+ *
+ * ENTITY-PREPROCESS-001: TODA ContentEntity con view mode DEBE tener
+ * template_preprocess_{type}() en .module.
+ */
+function template_preprocess_cliente_participante_ei(array &$variables): void {
+  $entity = $variables['elements']['#cliente_participante_ei'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_andalucia_ei\Entity\ClienteParticipanteEi $entity */
+  $variables['cliente_participante_ei'] = $entity;
+  $variables['label'] = $entity->label() ?? t('Cliente #@id', ['@id' => $entity->id()]);
+}
+
 // =============================================================================
 // SPRINT E4 — COMPLIANCE NORMATIVA P1: PRESAVE HOOKS
 // =============================================================================
