@@ -1,0 +1,120 @@
+{#
+ # Link-in-bio page for Andalucía +ei social profiles.
+ #
+ # Variables:
+ #   - links_primary: array of primary CTA links
+ #   - stats: array of {value, label} metrics
+ #   - links_secondary: array of secondary links
+ #   - program_info: {name, edition, entity, website, funding}
+ #
+ # ICON-EMOJI-001: All icons via jaraba_icon(), no emojis.
+ # FUNNEL-COMPLETENESS-001: data-track-cta + data-track-position on every link.
+ # CSS-VAR-ALL-COLORS-001: No hardcoded colors, BEM classes + var(--ej-*).
+ #}
+
+<div class="aei-enlaces">
+
+  {# === Schema.org JSON-LD === #}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "{{ program_info.name|e('js') }}",
+      "description": "{{ program_info.edition|e('js') }} — {{ program_info.funding|e('js') }}",
+      "url": "https://{{ program_info.website|e('js') }}",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "{{ program_info.entity|e('js') }}",
+        "url": "https://{{ program_info.website|e('js') }}"
+      },
+      "areaServed": {
+        "@type": "AdministrativeArea",
+        "name": "Andalucía, España"
+      }
+    }
+  </script>
+
+  {# === HEADER === #}
+  <header class="aei-enlaces__header">
+    <div class="aei-enlaces__avatar">
+      {{ jaraba_icon('brand', 'rocket', { variant: 'duotone', color: 'white', size: '48px' }) }}
+    </div>
+    <p class="aei-enlaces__program-name">{% trans %}Programa Andalucía +ei{% endtrans %}</p>
+    <h1 class="aei-enlaces__title">{% trans %}Andalucía +ei{% endtrans %}</h1>
+    <p class="aei-enlaces__subtitle">
+      {% trans %}Emprendimiento Aumentado con Inteligencia Artificial · 2ª Edición{% endtrans %}
+    </p>
+  </header>
+
+  {# === PRIMARY CTAs === #}
+  <nav class="aei-enlaces__primary" aria-label="{% trans %}Acciones principales{% endtrans %}">
+    {% for link in links_primary %}
+      <a href="{{ link.url }}"
+         class="aei-enlaces__btn aei-enlaces__btn--primary aei-enlaces__btn--{{ link.color }}"
+         data-track-cta="{{ link.icon|replace({'/': '_'}) }}"
+         data-track-position="primary"
+         aria-label="{{ link.label }}">
+        <span class="aei-enlaces__btn-icon">
+          {{ jaraba_icon(link.icon|split('/')[0], link.icon|split('/')[1], { variant: 'duotone', color: 'white', size: '28px' }) }}
+        </span>
+        <span class="aei-enlaces__btn-text">
+          <span class="aei-enlaces__btn-label">{{ link.label }}</span>
+          {% if link.sublabel %}
+            <span class="aei-enlaces__btn-sublabel">{{ link.sublabel }}</span>
+          {% endif %}
+        </span>
+      </a>
+    {% endfor %}
+  </nav>
+
+  {# === STATS ROW === #}
+  <div class="aei-enlaces__stats" role="list" aria-label="{% trans %}Cifras del programa{% endtrans %}">
+    {% for stat in stats %}
+      <div class="aei-enlaces__stat" role="listitem">
+        <span class="aei-enlaces__stat-value">{{ stat.value }}</span>
+        <span class="aei-enlaces__stat-label">{{ stat.label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# === DIVIDER === #}
+  <hr class="aei-enlaces__divider" aria-hidden="true">
+
+  {# === SECONDARY LINKS === #}
+  <nav class="aei-enlaces__secondary" aria-label="{% trans %}Enlaces adicionales{% endtrans %}">
+    {% for link in links_secondary %}
+      <a href="{{ link.href is defined ? link.href : link.url }}"
+         class="aei-enlaces__btn aei-enlaces__btn--secondary{% if link.color is defined %} aei-enlaces__btn--{{ link.color }}{% endif %}"
+         data-track-cta="{{ link.icon|replace({'/': '_'}) }}"
+         data-track-position="secondary"
+         aria-label="{{ link.label }}"
+         {% if link.href is defined %}target="_blank" rel="noopener noreferrer"{% endif %}>
+        <span class="aei-enlaces__btn-icon">
+          {{ jaraba_icon(link.icon|split('/')[0], link.icon|split('/')[1], { variant: 'duotone', color: 'white', size: '22px' }) }}
+        </span>
+        <span class="aei-enlaces__btn-text">
+          <span class="aei-enlaces__btn-label">{{ link.label }}</span>
+          {% if link.sublabel is defined %}
+            <span class="aei-enlaces__btn-sublabel">{{ link.sublabel }}</span>
+          {% endif %}
+        </span>
+      </a>
+    {% endfor %}
+  </nav>
+
+  {# === FOOTER === #}
+  <footer class="aei-enlaces__footer">
+    <p class="aei-enlaces__entity">{{ program_info.entity }}</p>
+    <a href="https://{{ program_info.website }}"
+       class="aei-enlaces__website"
+       data-track-cta="website"
+       data-track-position="footer"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="{% trans %}Visitar sitio web{% endtrans %}">
+      {{ program_info.website }}
+    </a>
+    <p class="aei-enlaces__funding">{{ program_info.funding }}</p>
+  </footer>
+
+</div>

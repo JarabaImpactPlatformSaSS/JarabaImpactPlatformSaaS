@@ -72,6 +72,16 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-reclutamiento',
     ],
+    // Sprint I — SPEC-CONV-001: Link-in-Bio.
+    'andalucia_ei_enlaces' => [
+      'variables' => [
+        'links_primary' => [],
+        'stats' => [],
+        'links_secondary' => [],
+        'program_info' => [],
+      ],
+      'template' => 'enlaces-andalucia-ei',
+    ],
     'participante_expediente' => [
       'variables' => [
         'completitud' => [],

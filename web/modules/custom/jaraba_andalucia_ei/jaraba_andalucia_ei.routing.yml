@@ -1729,3 +1729,12 @@ entity.cliente_participante_ei.settings:
     _title: 'Cliente del Participante settings'
   requirements:
     _permission: 'administer andalucia ei'
+
+# Sprint I — SPEC-CONV-001: Link-in-Bio (enlaces)
+jaraba_andalucia_ei.enlaces:
+  path: '/andalucia-ei/enlaces'
+  defaults:
+    _controller: '\Drupal\jaraba_andalucia_ei\Controller\EnlacesController::enlaces'
+    _title: 'Andalucía +ei — Enlaces'
+  requirements:
+    _access: 'TRUE'
