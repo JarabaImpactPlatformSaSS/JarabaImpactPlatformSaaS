@@ -1,0 +1,57 @@
+langcode: es
+status: true
+dependencies: {}
+id: local_beauty
+label: 'Centro de Belleza'
+description: 'Página web profesional para peluquerías, centros de estética, spas y salones de belleza'
+category: local-business
+twig_template: '@jaraba_page_builder/blocks/local-business/local-beauty.html.twig'
+fields_schema:
+  type: object
+  properties:
+    nombre:
+      type: string
+      title: 'Nombre del centro'
+      maxLength: 150
+    descripcion:
+      type: string
+      title: 'Descripción'
+      maxLength: 500
+    telefono:
+      type: string
+      title: 'Teléfono'
+    email:
+      type: string
+      title: 'Email'
+      format: email
+    direccion:
+      type: string
+      title: 'Dirección'
+    horario:
+      type: string
+      title: 'Horario de apertura'
+    servicios_precios:
+      type: string
+      title: 'Servicios y precios'
+      format: html
+    imagen_hero:
+      type: string
+      title: 'Imagen principal'
+      format: uri
+  required:
+    - nombre
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/local-beauty.png'
+preview_data:
+  nombre: 'Salón Esencia'
+  descripcion: 'Tu espacio de bienestar y belleza en el centro de Córdoba'
+  telefono: '+34 600 000 003'
+  email: 'citas@salonesencia.es'
+  direccion: 'Calle Tendillas 22, Córdoba'
+  horario: 'Mar-Sáb 10:00-20:00'
+  servicios_precios: 'Corte y peinado desde 25€, Coloración desde 45€, Manicura desde 18€, Tratamientos faciales desde 35€'
+weight: 203

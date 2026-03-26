@@ -1,0 +1,57 @@
+langcode: es
+status: true
+dependencies: {}
+id: local_shop
+label: 'Comercio Local'
+description: 'Página web profesional para tiendas, comercios de barrio y establecimientos minoristas'
+category: local-business
+twig_template: '@jaraba_page_builder/blocks/local-business/local-shop.html.twig'
+fields_schema:
+  type: object
+  properties:
+    nombre:
+      type: string
+      title: 'Nombre del comercio'
+      maxLength: 150
+    descripcion:
+      type: string
+      title: 'Descripción'
+      maxLength: 500
+    telefono:
+      type: string
+      title: 'Teléfono'
+    email:
+      type: string
+      title: 'Email'
+      format: email
+    direccion:
+      type: string
+      title: 'Dirección completa'
+    horario:
+      type: string
+      title: 'Horario de apertura'
+    productos_destacados:
+      type: string
+      title: 'Productos destacados'
+      format: html
+    imagen_hero:
+      type: string
+      title: 'Imagen principal'
+      format: uri
+  required:
+    - nombre
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/local-shop.png'
+preview_data:
+  nombre: 'Tienda La Esquina'
+  descripcion: 'Tu tienda de confianza con productos locales y de calidad'
+  telefono: '+34 600 000 001'
+  email: 'info@tiendalaesquina.es'
+  direccion: 'Avenida de la Constitución 8, Granada'
+  horario: 'Lun-Sáb 10:00-14:00, 17:00-20:30'
+  productos_destacados: 'Alimentación ecológica, cosmética natural, artesanía local'
+weight: 201

@@ -1,0 +1,62 @@
+langcode: es
+status: true
+dependencies: {}
+id: local_professional
+label: 'Profesional Liberal'
+description: 'Página web profesional para abogados, arquitectos, consultores y otros profesionales liberales'
+category: local-business
+twig_template: '@jaraba_page_builder/blocks/local-business/local-professional.html.twig'
+fields_schema:
+  type: object
+  properties:
+    nombre:
+      type: string
+      title: 'Nombre del profesional'
+      maxLength: 150
+    titulo_profesional:
+      type: string
+      title: 'Título profesional'
+      maxLength: 200
+    descripcion:
+      type: string
+      title: 'Descripción'
+      maxLength: 500
+    telefono:
+      type: string
+      title: 'Teléfono'
+    email:
+      type: string
+      title: 'Email'
+      format: email
+    direccion:
+      type: string
+      title: 'Dirección del despacho'
+    servicios:
+      type: string
+      title: 'Servicios ofrecidos'
+      format: html
+    experiencia:
+      type: string
+      title: 'Años de experiencia'
+    imagen_hero:
+      type: string
+      title: 'Imagen principal'
+      format: uri
+  required:
+    - nombre
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/local-professional.png'
+preview_data:
+  nombre: 'María García López'
+  titulo_profesional: 'Abogada especialista en derecho mercantil'
+  descripcion: 'Más de 15 años de experiencia asesorando a empresas y autónomos'
+  telefono: '+34 600 000 002'
+  email: 'maria@garcialopezabogados.es'
+  direccion: 'Plaza Nueva 3, 2ºA, Málaga'
+  servicios: 'Derecho mercantil, constitución de empresas, contratos, asesoría fiscal'
+  experiencia: '15 años'
+weight: 202

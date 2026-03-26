@@ -1,0 +1,189 @@
+{#
+/**
+ * @file
+ * Template para página de Restaurante Local.
+ *
+ * Schema.org: Restaurant (subtipo de LocalBusiness/FoodEstablishment).
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * Variables:
+ *   - content.nombre: Nombre del restaurante
+ *   - content.slogan: Eslogan
+ *   - content.descripcion: Descripción
+ *   - content.telefono: Teléfono
+ *   - content.email: Email
+ *   - content.direccion: Dirección completa
+ *   - content.horario: Horario de apertura
+ *   - content.tipo_cocina: Tipo de cocina
+ *   - content.precio_medio: Precio medio
+ *   - content.reservas_url: URL de reservas
+ *   - content.imagen_hero: Imagen principal
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+
+<article class="jaraba-local-business jaraba-local-restaurant jaraba-block"
+         itemscope
+         itemtype="https://schema.org/Restaurant"
+         data-block-type="local_restaurant"
+         aria-label="{{ content.nombre|default('Restaurante') }}">
+
+  {# ===== HERO SECTION ===== #}
+  <section class="jaraba-local-business__hero" aria-label="{% trans %}Presentación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <div class="jaraba-local-business__hero-wrapper">
+        <div class="jaraba-local-business__hero-content">
+          {% if content.tipo_cocina %}
+            <span class="jaraba-block__eyebrow" itemprop="servesCuisine">{{ content.tipo_cocina }}</span>
+          {% endif %}
+
+          <h1 class="jaraba-local-business__title" itemprop="name">{{ content.nombre }}</h1>
+
+          {% if content.slogan %}
+            <p class="jaraba-local-business__slogan">{{ content.slogan }}</p>
+          {% endif %}
+
+          {% if content.descripcion %}
+            <p class="jaraba-local-business__description" itemprop="description">{{ content.descripcion }}</p>
+          {% endif %}
+
+          <div class="jaraba-local-business__hero-ctas">
+            {% if content.reservas_url %}
+              <a href="{{ content.reservas_url }}"
+                 class="jaraba-btn jaraba-btn--primary jaraba-btn--lg"
+                 itemprop="url"
+                 aria-label="{% trans %}Reservar mesa{% endtrans %}">
+                {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '20px', color: 'white' }) }}
+                {% trans %}Reservar mesa{% endtrans %}
+              </a>
+            {% endif %}
+            {% if content.telefono %}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}"
+                 class="jaraba-btn jaraba-btn--outline jaraba-btn--lg"
+                 aria-label="{% trans %}Llamar{% endtrans %}">
+                {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+                {% trans %}Llamar{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if content.imagen_hero %}
+          <div class="jaraba-local-business__hero-media">
+            <img src="{{ content.imagen_hero }}"
+                 alt="{{ content.nombre }}"
+                 itemprop="image"
+                 class="jaraba-local-business__hero-image"
+                 loading="eager"
+                 fetchpriority="high"
+                 decoding="async">
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# ===== MENU PLACEHOLDER ===== #}
+  <section class="jaraba-local-business__section jaraba-local-restaurant__menu"
+           aria-label="{% trans %}Nuestra carta{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('commerce', 'menu', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+        {% trans %}Nuestra carta{% endtrans %}
+      </h2>
+      <p class="jaraba-local-business__section-subtitle">
+        {% trans %}Descubre nuestros platos elaborados con ingredientes de temporada{% endtrans %}
+      </p>
+      {% if content.precio_medio %}
+        <div class="jaraba-local-restaurant__price-range" itemprop="priceRange">
+          {{ jaraba_icon('commerce', 'tag', { variant: 'duotone', size: '18px', color: 'verde-innovacion' }) }}
+          <span>{% trans %}Precio medio:{% endtrans %} {{ content.precio_medio }}</span>
+        </div>
+      {% endif %}
+      <div class="jaraba-local-restaurant__menu-placeholder">
+        <p>{% trans %}Añade las secciones de tu carta desde el editor{% endtrans %}</p>
+      </div>
+    </div>
+  </section>
+
+  {# ===== HORARIO ===== #}
+  {% if content.horario %}
+    <section class="jaraba-local-business__section jaraba-local-business__schedule"
+             aria-label="{% trans %}Horario{% endtrans %}">
+      <div class="jaraba-block__container">
+        <h2 class="jaraba-local-business__section-title">
+          {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '28px', color: 'azul-corporativo' }) }}
+          {% trans %}Horario{% endtrans %}
+        </h2>
+        <div class="jaraba-local-business__schedule-content" itemprop="openingHours">
+          {{ content.horario }}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== UBICACION Y CONTACTO ===== #}
+  <section class="jaraba-local-business__section jaraba-local-business__contact"
+           aria-label="{% trans %}Contacto y ubicación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+        {% trans %}Encuéntranos{% endtrans %}
+      </h2>
+      <div class="jaraba-local-business__contact-grid">
+        <div class="jaraba-local-business__contact-info">
+          {% if content.direccion %}
+            <div class="jaraba-local-business__contact-item" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+              {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <span itemprop="streetAddress">{{ content.direccion }}</span>
+            </div>
+          {% endif %}
+          {% if content.telefono %}
+            <div class="jaraba-local-business__contact-item" itemprop="telephone">
+              {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}">{{ content.telefono }}</a>
+            </div>
+          {% endif %}
+          {% if content.email %}
+            <div class="jaraba-local-business__contact-item" itemprop="email">
+              {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="mailto:{{ content.email }}">{{ content.email }}</a>
+            </div>
+          {% endif %}
+        </div>
+        <div class="jaraba-local-business__map-placeholder" aria-label="{% trans %}Mapa de ubicación{% endtrans %}">
+          <div class="jaraba-local-business__map-embed">
+            {{ jaraba_icon('ui', 'map', { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
+            <p>{% trans %}Mapa de ubicación{% endtrans %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===== RESERVAS CTA ===== #}
+  {% if content.reservas_url %}
+    <section class="jaraba-local-business__section jaraba-local-business__cta-final"
+             aria-label="{% trans %}Reservar{% endtrans %}">
+      <div class="jaraba-block__container">
+        <div class="jaraba-local-business__cta-box">
+          <h2 class="jaraba-local-business__cta-title">{% trans %}Reserva tu mesa{% endtrans %}</h2>
+          <p class="jaraba-local-business__cta-text">{% trans %}No te quedes sin sitio. Reserva ahora y disfruta de una experiencia gastronómica única.{% endtrans %}</p>
+          <a href="{{ content.reservas_url }}"
+             class="jaraba-btn jaraba-btn--primary jaraba-btn--lg"
+             itemprop="url"
+             aria-label="{% trans %}Reservar mesa ahora{% endtrans %}">
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '20px', color: 'white' }) }}
+            {% trans %}Reservar ahora{% endtrans %}
+          </a>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+</article>

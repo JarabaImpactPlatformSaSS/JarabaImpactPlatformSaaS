@@ -856,3 +856,10 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@?jaraba_copilot_v2.copilot_orchestrator'
       - '@?jaraba_andalucia_ei.ei_multichannel_notification'
+
+  # Sprint H — SPEC-CAT-017: Dashboard métricas negocio participante
+  jaraba_andalucia_ei.mi_negocio:
+    class: Drupal\jaraba_andalucia_ei\Service\MiNegocioService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'

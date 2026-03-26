@@ -127,6 +127,19 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'page-builder-dashboard',
     ],
+    // Landing page del Método Impacto Jaraba (/metodo).
+    'metodo_landing' => [
+      'variables' => [
+        'hero' => [],
+        'fases' => [],
+        'packs' => [],
+        'resultados' => [],
+        'certificaciones' => [],
+        'faq' => [],
+        'cta_final' => [],
+      ],
+      'template' => 'metodo-landing',
+    ],
     // Dashboard de Analytics - Gap C.
     'analytics_dashboard' => [
       'variables' => [

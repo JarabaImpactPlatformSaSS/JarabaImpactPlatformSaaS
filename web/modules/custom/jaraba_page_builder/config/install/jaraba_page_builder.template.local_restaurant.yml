@@ -1,0 +1,69 @@
+langcode: es
+status: true
+dependencies: {}
+id: local_restaurant
+label: 'Restaurante Local'
+description: 'Página web profesional para restaurantes, bares y cafeterías con menú, horarios y reservas'
+category: local-business
+twig_template: '@jaraba_page_builder/blocks/local-business/local-restaurant.html.twig'
+fields_schema:
+  type: object
+  properties:
+    nombre:
+      type: string
+      title: 'Nombre del restaurante'
+      maxLength: 150
+    slogan:
+      type: string
+      title: 'Eslogan'
+      maxLength: 200
+    descripcion:
+      type: string
+      title: 'Descripción'
+      maxLength: 500
+    telefono:
+      type: string
+      title: 'Teléfono'
+    email:
+      type: string
+      title: 'Email'
+      format: email
+    direccion:
+      type: string
+      title: 'Dirección completa'
+    horario:
+      type: string
+      title: 'Horario de apertura'
+    tipo_cocina:
+      type: string
+      title: 'Tipo de cocina'
+    precio_medio:
+      type: string
+      title: 'Precio medio'
+    reservas_url:
+      type: string
+      title: 'URL de reservas'
+      format: uri
+    imagen_hero:
+      type: string
+      title: 'Imagen principal'
+      format: uri
+  required:
+    - nombre
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/local-restaurant.png'
+preview_data:
+  nombre: 'Restaurante El Olivo'
+  slogan: 'Cocina mediterránea de temporada'
+  descripcion: 'Disfruta de los mejores sabores de la cocina andaluza en un ambiente acogedor'
+  telefono: '+34 600 000 000'
+  email: 'info@restauranteolivo.es'
+  direccion: 'Calle Mayor 15, Sevilla'
+  horario: 'Lun-Sáb 13:00-16:00, 20:00-23:00'
+  tipo_cocina: 'Mediterránea'
+  precio_medio: '25-35€'
+weight: 200

@@ -1,0 +1,188 @@
+{#
+/**
+ * @file
+ * Template para página de Centro de Belleza.
+ *
+ * Schema.org: HealthAndBeautyBusiness (subtipo de LocalBusiness).
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * Variables:
+ *   - content.nombre: Nombre del centro
+ *   - content.descripcion: Descripción
+ *   - content.telefono: Teléfono
+ *   - content.email: Email
+ *   - content.direccion: Dirección
+ *   - content.horario: Horario de apertura
+ *   - content.servicios_precios: Servicios y precios (HTML)
+ *   - content.imagen_hero: Imagen principal
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+
+<article class="jaraba-local-business jaraba-local-beauty jaraba-block"
+         itemscope
+         itemtype="https://schema.org/HealthAndBeautyBusiness"
+         data-block-type="local_beauty"
+         aria-label="{{ content.nombre|default('Centro de belleza') }}">
+
+  {# ===== HERO SECTION ===== #}
+  <section class="jaraba-local-business__hero" aria-label="{% trans %}Presentación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <div class="jaraba-local-business__hero-wrapper">
+        <div class="jaraba-local-business__hero-content">
+          <span class="jaraba-block__eyebrow">{% trans %}Belleza y bienestar{% endtrans %}</span>
+
+          <h1 class="jaraba-local-business__title" itemprop="name">{{ content.nombre }}</h1>
+
+          {% if content.descripcion %}
+            <p class="jaraba-local-business__description" itemprop="description">{{ content.descripcion }}</p>
+          {% endif %}
+
+          <div class="jaraba-local-business__hero-ctas">
+            {% if content.telefono %}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}"
+                 class="jaraba-btn jaraba-btn--primary jaraba-btn--lg"
+                 aria-label="{% trans %}Pedir cita{% endtrans %}">
+                {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '20px', color: 'white' }) }}
+                {% trans %}Pedir cita{% endtrans %}
+              </a>
+            {% endif %}
+            {% if content.email %}
+              <a href="mailto:{{ content.email }}"
+                 class="jaraba-btn jaraba-btn--outline jaraba-btn--lg"
+                 aria-label="{% trans %}Contactar{% endtrans %}">
+                {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+                {% trans %}Contactar{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if content.imagen_hero %}
+          <div class="jaraba-local-business__hero-media">
+            <img src="{{ content.imagen_hero }}"
+                 alt="{{ content.nombre }}"
+                 itemprop="image"
+                 class="jaraba-local-business__hero-image"
+                 loading="eager"
+                 fetchpriority="high"
+                 decoding="async">
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# ===== SERVICIOS Y PRECIOS ===== #}
+  {% if content.servicios_precios %}
+    <section class="jaraba-local-business__section jaraba-local-beauty__services"
+             aria-label="{% trans %}Servicios y precios{% endtrans %}">
+      <div class="jaraba-block__container">
+        <h2 class="jaraba-local-business__section-title">
+          {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+          {% trans %}Nuestros servicios{% endtrans %}
+        </h2>
+        <p class="jaraba-local-business__section-subtitle">
+          {% trans %}Tratamientos personalizados para realzar tu belleza natural{% endtrans %}
+        </p>
+        <div class="jaraba-local-beauty__services-list" itemprop="hasOfferCatalog" itemscope itemtype="https://schema.org/OfferCatalog">
+          <span itemprop="description">{{ content.servicios_precios|striptags('<strong><em><br><ul><li><p><table><tr><td><th>')|raw }}</span>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== GALERIA PLACEHOLDER ===== #}
+  <section class="jaraba-local-business__section jaraba-local-beauty__gallery"
+           aria-label="{% trans %}Galería{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('ui', 'image', { variant: 'duotone', size: '28px', color: 'verde-innovacion' }) }}
+        {% trans %}Nuestro espacio{% endtrans %}
+      </h2>
+      <div class="jaraba-local-beauty__gallery-placeholder">
+        <p>{% trans %}Añade fotos de tu centro desde el editor{% endtrans %}</p>
+      </div>
+    </div>
+  </section>
+
+  {# ===== HORARIO ===== #}
+  {% if content.horario %}
+    <section class="jaraba-local-business__section jaraba-local-business__schedule"
+             aria-label="{% trans %}Horario{% endtrans %}">
+      <div class="jaraba-block__container">
+        <h2 class="jaraba-local-business__section-title">
+          {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '28px', color: 'azul-corporativo' }) }}
+          {% trans %}Horario{% endtrans %}
+        </h2>
+        <div class="jaraba-local-business__schedule-content" itemprop="openingHours">
+          {{ content.horario }}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== UBICACION Y CONTACTO ===== #}
+  <section class="jaraba-local-business__section jaraba-local-business__contact"
+           aria-label="{% trans %}Contacto y ubicación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+        {% trans %}Encuéntranos{% endtrans %}
+      </h2>
+      <div class="jaraba-local-business__contact-grid">
+        <div class="jaraba-local-business__contact-info">
+          {% if content.direccion %}
+            <div class="jaraba-local-business__contact-item" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+              {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <span itemprop="streetAddress">{{ content.direccion }}</span>
+            </div>
+          {% endif %}
+          {% if content.telefono %}
+            <div class="jaraba-local-business__contact-item" itemprop="telephone">
+              {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}">{{ content.telefono }}</a>
+            </div>
+          {% endif %}
+          {% if content.email %}
+            <div class="jaraba-local-business__contact-item" itemprop="email">
+              {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="mailto:{{ content.email }}">{{ content.email }}</a>
+            </div>
+          {% endif %}
+        </div>
+        <div class="jaraba-local-business__map-placeholder" aria-label="{% trans %}Mapa de ubicación{% endtrans %}">
+          <div class="jaraba-local-business__map-embed">
+            {{ jaraba_icon('ui', 'map', { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
+            <p>{% trans %}Mapa de ubicación{% endtrans %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===== CTA CITA ===== #}
+  {% if content.telefono %}
+    <section class="jaraba-local-business__section jaraba-local-business__cta-final"
+             aria-label="{% trans %}Pedir cita{% endtrans %}">
+      <div class="jaraba-block__container">
+        <div class="jaraba-local-business__cta-box">
+          <h2 class="jaraba-local-business__cta-title">{% trans %}Reserva tu cita{% endtrans %}</h2>
+          <p class="jaraba-local-business__cta-text">{% trans %}Déjate mimar por nuestro equipo de profesionales. Pide tu cita hoy.{% endtrans %}</p>
+          <a href="tel:{{ content.telefono|replace({' ': ''}) }}"
+             class="jaraba-btn jaraba-btn--primary jaraba-btn--lg"
+             aria-label="{% trans %}Pedir cita ahora{% endtrans %}">
+            {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '20px', color: 'white' }) }}
+            {% trans %}Pedir cita ahora{% endtrans %}
+          </a>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+</article>

@@ -1,0 +1,174 @@
+{#
+/**
+ * @file
+ * Template para página de Artesano / Taller.
+ *
+ * Schema.org: LocalBusiness (genérico para artesanos).
+ *
+ * DIRECTRICES:
+ * - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ * - Usa {% trans %} para textos de interfaz
+ * - Usa var(--ej-*) vía SCSS
+ *
+ * Variables:
+ *   - content.nombre: Nombre del artesano o taller
+ *   - content.oficio: Oficio o especialidad
+ *   - content.descripcion: Descripción
+ *   - content.telefono: Teléfono
+ *   - content.email: Email
+ *   - content.direccion: Dirección del taller
+ *   - content.proceso: Proceso creativo (HTML)
+ *   - content.imagen_hero: Imagen principal
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+
+<article class="jaraba-local-business jaraba-local-artisan jaraba-block"
+         itemscope
+         itemtype="https://schema.org/LocalBusiness"
+         data-block-type="local_artisan"
+         aria-label="{{ content.nombre|default('Artesano') }}">
+
+  {# ===== HERO SECTION ===== #}
+  <section class="jaraba-local-business__hero" aria-label="{% trans %}Presentación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <div class="jaraba-local-business__hero-wrapper">
+        <div class="jaraba-local-business__hero-content">
+          {% if content.oficio %}
+            <span class="jaraba-block__eyebrow">{{ content.oficio }}</span>
+          {% endif %}
+
+          <h1 class="jaraba-local-business__title" itemprop="name">{{ content.nombre }}</h1>
+
+          {% if content.descripcion %}
+            <p class="jaraba-local-business__description" itemprop="description">{{ content.descripcion }}</p>
+          {% endif %}
+
+          <div class="jaraba-local-business__hero-ctas">
+            {% if content.email %}
+              <a href="mailto:{{ content.email }}"
+                 class="jaraba-btn jaraba-btn--primary jaraba-btn--lg"
+                 aria-label="{% trans %}Contactar{% endtrans %}">
+                {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '20px', color: 'white' }) }}
+                {% trans %}Hacer un encargo{% endtrans %}
+              </a>
+            {% endif %}
+            {% if content.telefono %}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}"
+                 class="jaraba-btn jaraba-btn--outline jaraba-btn--lg"
+                 aria-label="{% trans %}Llamar{% endtrans %}">
+                {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+                {% trans %}Llamar{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if content.imagen_hero %}
+          <div class="jaraba-local-business__hero-media">
+            <img src="{{ content.imagen_hero }}"
+                 alt="{{ content.nombre }}"
+                 itemprop="image"
+                 class="jaraba-local-business__hero-image"
+                 loading="eager"
+                 fetchpriority="high"
+                 decoding="async">
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# ===== PROCESO CREATIVO / PORTFOLIO ===== #}
+  {% if content.proceso %}
+    <section class="jaraba-local-business__section jaraba-local-artisan__process"
+             aria-label="{% trans %}Proceso creativo{% endtrans %}">
+      <div class="jaraba-block__container">
+        <h2 class="jaraba-local-business__section-title">
+          {{ jaraba_icon('ui', 'tool', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+          {% trans %}Nuestro proceso{% endtrans %}
+        </h2>
+        <p class="jaraba-local-business__section-subtitle">
+          {% trans %}Cada pieza cuenta una historia, desde la materia prima hasta el acabado final{% endtrans %}
+        </p>
+        <div class="jaraba-local-artisan__process-content">
+          {{ content.proceso|striptags('<strong><em><br><ul><li><ol><p><h3><h4>')|raw }}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== PORTFOLIO PLACEHOLDER ===== #}
+  <section class="jaraba-local-business__section jaraba-local-artisan__portfolio"
+           aria-label="{% trans %}Portfolio{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('ui', 'image', { variant: 'duotone', size: '28px', color: 'verde-innovacion' }) }}
+        {% trans %}Nuestras creaciones{% endtrans %}
+      </h2>
+      <div class="jaraba-local-artisan__portfolio-placeholder">
+        <p>{% trans %}Añade fotos de tus trabajos desde el editor{% endtrans %}</p>
+      </div>
+    </div>
+  </section>
+
+  {# ===== OFICIO ===== #}
+  {% if content.oficio %}
+    <section class="jaraba-local-business__section jaraba-local-artisan__craft"
+             aria-label="{% trans %}Oficio{% endtrans %}">
+      <div class="jaraba-block__container">
+        <h2 class="jaraba-local-business__section-title">
+          {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '28px', color: 'azul-corporativo' }) }}
+          {% trans %}Nuestro oficio{% endtrans %}
+        </h2>
+        <div class="jaraba-local-artisan__craft-content">
+          <div class="jaraba-local-artisan__craft-badge" itemprop="knowsAbout">
+            {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '32px', color: 'naranja-impulso' }) }}
+            <span>{{ content.oficio }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== UBICACION Y CONTACTO ===== #}
+  <section class="jaraba-local-business__section jaraba-local-business__contact"
+           aria-label="{% trans %}Contacto y ubicación{% endtrans %}">
+    <div class="jaraba-block__container">
+      <h2 class="jaraba-local-business__section-title">
+        {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+        {% trans %}Visita nuestro taller{% endtrans %}
+      </h2>
+      <div class="jaraba-local-business__contact-grid">
+        <div class="jaraba-local-business__contact-info">
+          {% if content.direccion %}
+            <div class="jaraba-local-business__contact-item" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+              {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <span itemprop="streetAddress">{{ content.direccion }}</span>
+            </div>
+          {% endif %}
+          {% if content.telefono %}
+            <div class="jaraba-local-business__contact-item" itemprop="telephone">
+              {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="tel:{{ content.telefono|replace({' ': ''}) }}">{{ content.telefono }}</a>
+            </div>
+          {% endif %}
+          {% if content.email %}
+            <div class="jaraba-local-business__contact-item" itemprop="email">
+              {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+              <a href="mailto:{{ content.email }}">{{ content.email }}</a>
+            </div>
+          {% endif %}
+        </div>
+        <div class="jaraba-local-business__map-placeholder" aria-label="{% trans %}Mapa de ubicación{% endtrans %}">
+          <div class="jaraba-local-business__map-embed">
+            {{ jaraba_icon('ui', 'map', { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
+            <p>{% trans %}Mapa de ubicación{% endtrans %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</article>

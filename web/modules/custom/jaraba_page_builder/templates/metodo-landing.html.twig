@@ -1,0 +1,279 @@
+{#
+ # @file
+ # Template for the Método Impacto Jaraba landing page.
+ #
+ # Variables:
+ #   - hero: Hero section data (title, subtitle, description, cta_primary, cta_secondary).
+ #   - fases: Array of 3 method phases.
+ #   - packs: Array of 5 service packs.
+ #   - resultados: Case study data and global metrics.
+ #   - certificaciones: 3 certification levels.
+ #   - faq: Array of FAQ items.
+ #   - cta_final: Final conversion CTA data.
+ #}
+
+{# Schema.org Organization structured data for the method #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Jaraba Impact Platform",
+  "description": "{{ hero.description|e('js') }}",
+  "url": "https://jarabaimpact.com/metodo",
+  "knowsAbout": [
+    "Transformación Digital",
+    "Digitalización PYME",
+    "Inteligencia Artificial aplicada",
+    "Economía Social"
+  ]
+}
+</script>
+
+{# ══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-hero" aria-label="{% trans %}Presentación del Método Impacto Jaraba{% endtrans %}">
+  <div class="metodo-hero__container">
+    <div class="metodo-hero__badge">
+      {{ jaraba_icon('business', 'star', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
+      <span>{% trans %}Método Probado{% endtrans %}</span>
+    </div>
+    <h1 class="metodo-hero__title">{{ hero.title }}</h1>
+    <p class="metodo-hero__subtitle">{{ hero.subtitle }}</p>
+    <p class="metodo-hero__description">{{ hero.description }}</p>
+    <div class="metodo-hero__actions">
+      <a href="{{ hero.cta_primary.url }}"
+         class="metodo-btn metodo-btn--primary"
+         data-track-cta="metodo-hero-primary"
+         data-track-position="hero"
+         aria-label="{{ hero.cta_primary.text }}">
+        {{ hero.cta_primary.text }}
+      </a>
+      <a href="{{ hero.cta_secondary.url }}"
+         class="metodo-btn metodo-btn--secondary"
+         data-track-cta="metodo-hero-secondary"
+         data-track-position="hero"
+         aria-label="{{ hero.cta_secondary.text }}">
+        {{ hero.cta_secondary.text }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   3 FASES DEL MÉTODO
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-fases" aria-label="{% trans %}Las 3 fases del método{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-section__header">
+      <h2 class="metodo-section__title">{% trans %}3 Fases, 90 Días, Resultados Reales{% endtrans %}</h2>
+      <p class="metodo-section__subtitle">{% trans %}Un proceso estructurado que te lleva de la idea a la acción con acompañamiento en cada paso.{% endtrans %}</p>
+    </div>
+    <div class="metodo-fases__grid">
+      {% for fase in fases %}
+        <article class="metodo-fase-card" aria-label="{{ fase.title }}">
+          <div class="metodo-fase-card__number">
+            <span>{{ fase.number }}</span>
+          </div>
+          <div class="metodo-fase-card__icon">
+            {{ jaraba_icon(fase.icon.category, fase.icon.name, { variant: 'duotone', size: '40px', color: 'azul-corporativo' }) }}
+          </div>
+          <h3 class="metodo-fase-card__title">{{ fase.title }}</h3>
+          <p class="metodo-fase-card__duration">
+            {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
+            {{ fase.duration }}
+          </p>
+          <p class="metodo-fase-card__description">{{ fase.description }}</p>
+          {% if fase.deliverables %}
+            <ul class="metodo-fase-card__deliverables" aria-label="{% trans %}Entregables{% endtrans %}">
+              {% for deliverable in fase.deliverables %}
+                <li>
+                  {{ jaraba_icon('ui', 'check', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+                  {{ deliverable }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   5 PACKS DE SERVICIO
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-packs" aria-label="{% trans %}Los 5 packs del método{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-section__header">
+      <h2 class="metodo-section__title">{% trans %}5 Módulos que se Adaptan a tu Negocio{% endtrans %}</h2>
+      <p class="metodo-section__subtitle">{% trans %}Elige los packs que necesitas. Empieza con uno y amplía según crezcas.{% endtrans %}</p>
+    </div>
+    <div class="metodo-packs__grid">
+      {% for pack in packs %}
+        <article class="metodo-pack-card" aria-label="{{ pack.nombre }}">
+          <div class="metodo-pack-card__icon">
+            {{ jaraba_icon(pack.icon.category, pack.icon.name, { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
+          </div>
+          <h3 class="metodo-pack-card__title">{{ pack.nombre }}</h3>
+          <p class="metodo-pack-card__description">{{ pack.descripcion }}</p>
+          <div class="metodo-pack-card__price">
+            <span class="metodo-pack-card__price-label">{% trans %}Desde{% endtrans %}</span>
+            <span class="metodo-pack-card__price-value">{{ pack.precio_desde }}&nbsp;€<small>/{% trans %}mes{% endtrans %}</small></span>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   RESULTADOS — CASO PED S.L.
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-resultados" aria-label="{% trans %}Resultados del método{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-section__header">
+      <h2 class="metodo-section__title">{% trans %}Resultados Reales, No Promesas{% endtrans %}</h2>
+      <p class="metodo-section__subtitle">
+        {% trans %}Caso real: {{ resultados.case_study.empresa }} — Programa {{ resultados.case_study.programa }}{% endtrans %}
+      </p>
+    </div>
+    <div class="metodo-resultados__metrics">
+      {% for metrica in resultados.metricas_globales %}
+        <div class="metodo-metric-card">
+          <span class="metodo-metric-card__value">{{ metrica.valor }}<small>{{ metrica.sufijo }}</small></span>
+          <span class="metodo-metric-card__label">{{ metrica.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="metodo-resultados__detail">
+      <div class="metodo-resultados__case-badge">
+        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '20px', color: 'verde-innovacion' }) }}
+        <span>{% trans %}Datos verificados del programa PIIL Andalucía 2023{% endtrans %}</span>
+      </div>
+      <div class="metodo-resultados__case-stats">
+        <div class="metodo-resultados__stat">
+          <strong>{{ resultados.case_study.participantes }}</strong>
+          <span>{% trans %}participantes{% endtrans %}</span>
+        </div>
+        <div class="metodo-resultados__stat">
+          <strong>{{ resultados.case_study.negocios_creados }}</strong>
+          <span>{% trans %}negocios creados{% endtrans %}</span>
+        </div>
+        <div class="metodo-resultados__stat">
+          <strong>{{ resultados.case_study.satisfaccion }}/5</strong>
+          <span>{% trans %}satisfacción{% endtrans %}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   3 NIVELES DE CERTIFICACIÓN
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-certificaciones" aria-label="{% trans %}Niveles de certificación{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-section__header">
+      <h2 class="metodo-section__title">{% trans %}Certifícate en el Método Jaraba{% endtrans %}</h2>
+      <p class="metodo-section__subtitle">{% trans %}Tres niveles de colaboración para profesionales que quieran aplicar el método.{% endtrans %}</p>
+    </div>
+    <div class="metodo-certificaciones__grid">
+      {% for cert in certificaciones %}
+        <article class="metodo-cert-card" aria-label="{{ cert.title }}">
+          {% if cert.proximamente %}
+            <div class="metodo-cert-card__badge metodo-cert-card__badge--soon">
+              {% trans %}Próximamente{% endtrans %}
+            </div>
+          {% endif %}
+          <div class="metodo-cert-card__level">
+            {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '32px', color: 'naranja-impulso' }) }}
+            <span>{% trans %}Nivel{% endtrans %} {{ cert.level }}</span>
+          </div>
+          <h3 class="metodo-cert-card__title">{{ cert.title }}</h3>
+          <p class="metodo-cert-card__description">{{ cert.description }}</p>
+          {% if cert.requisitos %}
+            <ul class="metodo-cert-card__requirements" aria-label="{% trans %}Requisitos{% endtrans %}">
+              {% for requisito in cert.requisitos %}
+                <li>
+                  {{ jaraba_icon('ui', 'check', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
+                  {{ requisito }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   FAQ — PREGUNTAS FRECUENTES
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-faq" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-section__header">
+      <h2 class="metodo-section__title">{% trans %}Preguntas Frecuentes{% endtrans %}</h2>
+    </div>
+
+    {# Schema.org FAQPage structured data #}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {% for item in faq %}
+        {
+          "@type": "Question",
+          "name": "{{ item.question|e('js') }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ item.answer|e('js') }}"
+          }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+
+    <div class="metodo-faq__accordion" role="list">
+      {% for item in faq %}
+        <details class="metodo-faq__item" role="listitem">
+          <summary class="metodo-faq__question" aria-label="{{ item.question }}">
+            <span>{{ item.question }}</span>
+            <span class="metodo-faq__chevron" aria-hidden="true">
+              {{ jaraba_icon('ui', 'chevron-down', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+            </span>
+          </summary>
+          <div class="metodo-faq__answer">
+            <p>{{ item.answer }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ══════════════════════════════════════════════════════════════
+   CTA FINAL — CONVERSIÓN
+   ══════════════════════════════════════════════════════════════ #}
+<section class="metodo-cta-final" aria-label="{% trans %}Llamada a la acción{% endtrans %}">
+  <div class="metodo-section__container">
+    <div class="metodo-cta-final__content">
+      <h2 class="metodo-cta-final__title">{{ cta_final.title }}</h2>
+      <p class="metodo-cta-final__subtitle">{{ cta_final.subtitle }}</p>
+      <a href="{{ cta_final.cta_url }}"
+         class="metodo-btn metodo-btn--primary metodo-btn--large"
+         data-track-cta="metodo-final-cta"
+         data-track-position="footer-cta"
+         aria-label="{{ cta_final.cta_text }}">
+        {{ cta_final.cta_text }}
+      </a>
+      <p class="metodo-cta-final__trust">
+        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+        {% trans %}Sin tarjeta de crédito. Cancela cuando quieras.{% endtrans %}
+      </p>
+    </div>
+  </div>
+</section>

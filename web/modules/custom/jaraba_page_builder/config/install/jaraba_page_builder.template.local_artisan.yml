@@ -1,0 +1,58 @@
+langcode: es
+status: true
+dependencies: {}
+id: local_artisan
+label: 'Artesano / Taller'
+description: 'Página web profesional para artesanos, talleres y creadores con portfolio y proceso creativo'
+category: local-business
+twig_template: '@jaraba_page_builder/blocks/local-business/local-artisan.html.twig'
+fields_schema:
+  type: object
+  properties:
+    nombre:
+      type: string
+      title: 'Nombre del artesano o taller'
+      maxLength: 150
+    oficio:
+      type: string
+      title: 'Oficio o especialidad'
+      maxLength: 200
+    descripcion:
+      type: string
+      title: 'Descripción'
+      maxLength: 500
+    telefono:
+      type: string
+      title: 'Teléfono'
+    email:
+      type: string
+      title: 'Email'
+      format: email
+    direccion:
+      type: string
+      title: 'Dirección del taller'
+    proceso:
+      type: string
+      title: 'Proceso creativo'
+      format: html
+    imagen_hero:
+      type: string
+      title: 'Imagen principal'
+      format: uri
+  required:
+    - nombre
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/local-artisan.png'
+preview_data:
+  nombre: 'Taller Barro y Fuego'
+  oficio: 'Cerámica artesanal andaluza'
+  descripcion: 'Piezas únicas hechas a mano con técnicas tradicionales y diseño contemporáneo'
+  telefono: '+34 600 000 004'
+  email: 'info@barroyfuego.es'
+  direccion: 'Callejón del Agua 7, Triana, Sevilla'
+  proceso: 'Modelado a mano, esmaltado artesanal, cocción en horno de leña'
+weight: 204
