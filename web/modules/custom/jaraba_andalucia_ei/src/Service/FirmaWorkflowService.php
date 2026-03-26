@@ -1126,4 +1126,95 @@ class FirmaWorkflowService {
     }
   }
 
+  /**
+   * Envía recordatorios para documentos pendientes de firma.
+   *
+   * Busca documentos en estados pendiente_firma, pendiente_firma_tecnico
+   * o pendiente_firma_participante cuya fecha de solicitud supera las 48h
+   * y notifica al firmante correspondiente.
+   *
+   * @return int
+   *   Número de recordatorios enviados.
+   */
+  public function enviarRecordatoriosFirmasPendientes(): int {
+    if (!$this->notificationService) {
+      return 0;
+    }
+
+    $count = 0;
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('expediente_documento');
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->condition('estado_firma', [
+          self::ESTADO_PENDIENTE_FIRMA,
+          self::ESTADO_PENDIENTE_FIRMA_TECNICO,
+          self::ESTADO_PENDIENTE_FIRMA_PARTICIPANTE,
+        ], 'IN')
+        ->range(0, 100);
+
+      $ids = $query->execute();
+      if ($ids === []) {
+        return 0;
+      }
+
+      $documentos = $storage->loadMultiple($ids);
+      $umbral48h = date('Y-m-d\TH:i:s', time() - 48 * 3600);
+
+      foreach ($documentos as $doc) {
+        $fechaSolicitud = $doc->get('firma_solicitada_fecha')->value ?? NULL;
+        // Solo recordar si la solicitud tiene más de 48h.
+        if ($fechaSolicitud === NULL || $fechaSolicitud > $umbral48h) {
+          continue;
+        }
+
+        $estado = $this->getEstadoFirmaField($doc);
+
+        // Determinar el UID del firmante pendiente.
+        $firmanteUid = 0;
+        if ($estado === self::ESTADO_PENDIENTE_FIRMA_PARTICIPANTE) {
+          $firmanteUid = (int) ($doc->get('co_firmante_uid')->target_id ?? 0);
+        }
+        else {
+          $firmanteUid = (int) ($doc->get('firma_solicitante_uid')->target_id ?? 0);
+        }
+
+        if ($firmanteUid <= 0) {
+          continue;
+        }
+
+        try {
+          $this->notificationService->notify($firmanteUid, 'firma_recordatorio', [
+            'documento_titulo' => $doc->label() ?? '',
+            'documento_categoria' => $doc->getCategoria(),
+            'documento_id' => $doc->id(),
+            'dias_pendiente' => (int) ((time() - strtotime(str_replace('T', ' ', $fechaSolicitud))) / 86400),
+          ]);
+          $count++;
+        }
+        catch (\Throwable $e) {
+          $this->logger->warning('Error al enviar recordatorio de firma para doc @id: @msg', [
+            '@id' => $doc->id(),
+            '@msg' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Error en enviarRecordatoriosFirmasPendientes: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+
+    if ($count > 0) {
+      $this->logger->info('Enviados @count recordatorios de firma pendiente.', [
+        '@count' => $count,
+      ]);
+    }
+
+    return $count;
+  }
+
 }

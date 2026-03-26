@@ -65,6 +65,16 @@ class AndaluciaEiCopilotBridgeService implements CopilotBridgeInterface {
       return $this->getCoordinadorContext($userId);
     }
 
+    // Orientador: contexto de orientación con carga de participantes.
+    if ($this->isOrientador($userId)) {
+      return $this->getOrientadorContext($userId);
+    }
+
+    // Formador: contexto de formación con acciones formativas.
+    if ($this->isFormador($userId)) {
+      return $this->getFormadorContext($userId);
+    }
+
     // Intentar contexto PIIL rico vía context provider.
     $piilContext = $this->getPiilParticipantContext();
     if ($piilContext !== NULL) {
@@ -356,6 +366,180 @@ class AndaluciaEiCopilotBridgeService implements CopilotBridgeInterface {
       ]);
       return FALSE;
     }
+  }
+
+  /**
+   * Determina si el usuario es orientador del programa.
+   *
+   * @param int $userId
+   *   ID del usuario.
+   *
+   * @return bool
+   *   TRUE si el usuario tiene el rol orientador_ei.
+   */
+  protected function isOrientador(int $userId): bool {
+    try {
+      $userStorage = $this->entityTypeManager->getStorage('user');
+      $account = $userStorage->load($userId);
+      if (!$account) {
+        return FALSE;
+      }
+      return in_array('orientador_ei', $account->getRoles(), TRUE);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Orientador detection failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return FALSE;
+    }
+  }
+
+  /**
+   * Determina si el usuario es formador del programa.
+   *
+   * @param int $userId
+   *   ID del usuario.
+   *
+   * @return bool
+   *   TRUE si el usuario tiene el rol formador_ei.
+   */
+  protected function isFormador(int $userId): bool {
+    try {
+      $userStorage = $this->entityTypeManager->getStorage('user');
+      $account = $userStorage->load($userId);
+      if (!$account) {
+        return FALSE;
+      }
+      return in_array('formador_ei', $account->getRoles(), TRUE);
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Formador detection failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+      return FALSE;
+    }
+  }
+
+  /**
+   * Contexto específico para orientadores del programa.
+   *
+   * @param int $userId
+   *   ID del orientador.
+   *
+   * @return array
+   *   Contexto con carga de participantes asignados.
+   */
+  protected function getOrientadorContext(int $userId): array {
+    $context = [
+      'vertical' => 'andalucia_ei',
+      'rol_usuario' => 'orientador',
+      'participantes_asignados' => 0,
+      'sesiones_pendientes' => 0,
+    ];
+
+    try {
+      if ($this->entityTypeManager->hasDefinition('programa_participante_ei')) {
+        $context['participantes_asignados'] = (int) $this->entityTypeManager
+          ->getStorage('programa_participante_ei')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('orientador_uid', $userId)
+          ->condition('fase_actual', 'baja', '<>')
+          ->count()
+          ->execute();
+      }
+
+      if ($this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+        $context['sesiones_pendientes'] = (int) $this->entityTypeManager
+          ->getStorage('sesion_programada_ei')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('orientador_uid', $userId)
+          ->condition('estado', 'cancelada', '<>')
+          ->condition('fecha', date('Y-m-d'), '>=')
+          ->count()
+          ->execute();
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Orientador context error: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    $context['_system_prompt_addition'] = 'Eres el asistente del orientador/a del programa Andalucía +ei. '
+      . 'Ayuda a gestionar itinerarios de participantes, sesiones de orientación y seguimiento. '
+      . 'El usuario tiene ' . $context['participantes_asignados'] . ' participantes asignados y '
+      . $context['sesiones_pendientes'] . ' sesiones pendientes.';
+
+    $context['_instrucciones_fase'] = [
+      'El usuario es ORIENTADOR del programa. No es participante ni coordinador.',
+      'Responde como asistente de orientación laboral, no como coach de emprendimiento.',
+      'Conoce las herramientas de seguimiento individual y grupal del programa.',
+    ];
+
+    return $context;
+  }
+
+  /**
+   * Contexto específico para formadores del programa.
+   *
+   * @param int $userId
+   *   ID del formador.
+   *
+   * @return array
+   *   Contexto con acciones formativas asignadas.
+   */
+  protected function getFormadorContext(int $userId): array {
+    $context = [
+      'vertical' => 'andalucia_ei',
+      'rol_usuario' => 'formador',
+      'acciones_formativas' => 0,
+      'sesiones_proximas' => 0,
+    ];
+
+    try {
+      if ($this->entityTypeManager->hasDefinition('accion_formativa_ei')) {
+        $context['acciones_formativas'] = (int) $this->entityTypeManager
+          ->getStorage('accion_formativa_ei')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('formador_uid', $userId)
+          ->condition('estado', ['vobo_aprobado', 'en_ejecucion'], 'IN')
+          ->count()
+          ->execute();
+      }
+
+      if ($this->entityTypeManager->hasDefinition('sesion_programada_ei')) {
+        $context['sesiones_proximas'] = (int) $this->entityTypeManager
+          ->getStorage('sesion_programada_ei')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('formador_uid', $userId)
+          ->condition('estado', 'cancelada', '<>')
+          ->condition('fecha', date('Y-m-d'), '>=')
+          ->count()
+          ->execute();
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Formador context error: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    $context['_system_prompt_addition'] = 'Eres el asistente del formador/a del programa Andalucía +ei. '
+      . 'Ayuda a gestionar acciones formativas, materiales didácticos y evaluaciones. '
+      . 'El usuario tiene ' . $context['acciones_formativas'] . ' acciones formativas activas y '
+      . $context['sesiones_proximas'] . ' sesiones próximas.';
+
+    $context['_instrucciones_fase'] = [
+      'El usuario es FORMADOR del programa. No es participante ni coordinador.',
+      'Responde como asistente de formación, ayudando con contenidos y metodología.',
+      'Conoce las herramientas de gestión de acciones formativas y sesiones.',
+    ];
+
+    return $context;
   }
 
   /**

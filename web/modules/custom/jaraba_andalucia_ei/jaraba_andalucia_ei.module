@@ -96,6 +96,8 @@ function jaraba_andalucia_ei_theme(): array {
         'vertical_access' => [],
         'portfolio' => [],
         'progreso' => [],
+        'setup_wizard' => NULL,
+        'daily_actions' => [],
       ],
       'template' => 'participante-portal',
     ],
@@ -1098,6 +1100,75 @@ function jaraba_andalucia_ei_cron(): void {
   // Plan Elevación Andalucía +ei v1 — Fase 10/12:
   // Proactive AI evaluation + re-engagement (runs on its own 24h timer).
   _jaraba_andalucia_ei_cron_proactive_evaluation();
+
+  // SPEC-CAT: Recordatorios de sesión (24h y 1h antes).
+  $lastSessionReminder = $state->get('jaraba_andalucia_ei.session_reminder_last_run', 0);
+  if ($now - $lastSessionReminder >= 3600) {
+    $state->set('jaraba_andalucia_ei.session_reminder_last_run', $now);
+    if (\Drupal::hasService('jaraba_andalucia_ei.ei_multichannel_notification')) {
+      try {
+        $notificationService = \Drupal::service('jaraba_andalucia_ei.ei_multichannel_notification');
+        $tenantIds = _jaraba_andalucia_ei_get_active_tenant_ids();
+        foreach ($tenantIds as $tid) {
+          $notificationService->enviarRecordatoriosSesion($tid, 24);
+          $notificationService->enviarRecordatoriosSesion($tid, 1);
+        }
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_andalucia_ei')->error(
+          'Error enviando recordatorios de sesión: @message',
+          ['@message' => $e->getMessage()]
+        );
+      }
+    }
+  }
+
+  // SPEC-CAT: Recordatorios de firmas pendientes (cada 24h).
+  $lastFirmaReminder = $state->get('jaraba_andalucia_ei.firma_reminder_last_run', 0);
+  if ($now - $lastFirmaReminder >= 86400) {
+    $state->set('jaraba_andalucia_ei.firma_reminder_last_run', $now);
+    if (\Drupal::hasService('jaraba_andalucia_ei.firma_workflow')) {
+      try {
+        \Drupal::service('jaraba_andalucia_ei.firma_workflow')
+          ->enviarRecordatoriosFirmasPendientes();
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_andalucia_ei')->error(
+          'Error enviando recordatorios de firma: @message',
+          ['@message' => $e->getMessage()]
+        );
+      }
+    }
+  }
+
+  // SPEC-CAT: Expiración de bonos programa (cada 24h).
+  $lastBonoExpiry = $state->get('jaraba_andalucia_ei.bono_expiry_last_run', 0);
+  if ($now - $lastBonoExpiry >= 86400) {
+    $state->set('jaraba_andalucia_ei.bono_expiry_last_run', $now);
+    if (\Drupal::hasService('jaraba_andalucia_ei.bono_programa_expiry')) {
+      try {
+        $bonoService = \Drupal::service('jaraba_andalucia_ei.bono_programa_expiry');
+        // Evaluar avisos para participantes activos.
+        $storage = \Drupal::entityTypeManager()->getStorage('programa_participante_ei');
+        $activeIds = $storage->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('fase_actual', 'baja', '<>')
+          ->range(0, 200)
+          ->execute();
+        foreach ($storage->loadMultiple($activeIds) as $participante) {
+          $bonoService->evaluarAvisos($participante);
+        }
+        // Ejecutar expiraciones vencidas.
+        $bonoService->ejecutarExpiraciones();
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('jaraba_andalucia_ei')->error(
+          'Error en expiración de bonos: @message',
+          ['@message' => $e->getMessage()]
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -1337,6 +1408,32 @@ function _jaraba_andalucia_ei_enroll_email_sequence(int $userId, string $sequenc
 // FASE 12: CRON ENHANCEMENTS — PROACTIVE EVALUATION + REENGAGEMENT
 // Plan Elevación Andalucía +ei v1
 // =============================================================================
+
+/**
+ * Returns distinct tenant IDs from active participants.
+ *
+ * @return int[]
+ *   Array of tenant IDs.
+ */
+function _jaraba_andalucia_ei_get_active_tenant_ids(): array {
+  try {
+    $results = \Drupal::database()->select('programa_participante_ei_field_data', 'p')
+      ->fields('p', ['tenant_id'])
+      ->distinct()
+      ->isNotNull('p.tenant_id')
+      ->condition('p.tenant_id', 0, '>')
+      ->execute();
+
+    $ids = [];
+    foreach ($results as $row) {
+      $ids[] = (int) $row->tenant_id;
+    }
+    return $ids;
+  }
+  catch (\Throwable) {
+    return [];
+  }
+}
 
 /**
  * Implements hook_cron() — extended for Phase 12.

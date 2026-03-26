@@ -56,6 +56,24 @@
     </div>
   {% endif %}
 
+  {# === SETUP WIZARD — SETUP-WIZARD-DAILY-001 === #}
+  {% if setup_wizard %}
+    {% include '@ecosistema_jaraba_theme/partials/_setup-wizard.html.twig' with {
+      wizard: setup_wizard,
+      wizard_title: 'Completa tu itinerario'|t,
+      wizard_subtitle: 'Sigue estos pasos para aprovechar al maximo el programa'|t,
+      collapsed_label: 'Itinerario completado'|t,
+    } only %}
+  {% endif %}
+
+  {# === DAILY ACTIONS — SETUP-WIZARD-DAILY-001 === #}
+  {% if daily_actions is not empty %}
+    {% include '@ecosistema_jaraba_theme/partials/_daily-actions.html.twig' with {
+      daily_actions: daily_actions,
+      actions_title: 'Acciones del dia'|t,
+    } only %}
+  {% endif %}
+
   <div class="aei-portal__grid">
 
     <div class="aei-portal__main">

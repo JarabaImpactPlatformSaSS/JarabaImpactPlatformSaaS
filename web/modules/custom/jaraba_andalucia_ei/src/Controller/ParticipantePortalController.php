@@ -20,6 +20,8 @@ use Drupal\jaraba_andalucia_ei\Service\InformeProgresoPdfService;
 use Drupal\jaraba_andalucia_ei\Service\InscripcionSesionService;
 use Drupal\jaraba_andalucia_ei\Service\ProgramaVerticalAccessInterface;
 use Drupal\jaraba_andalucia_ei\Service\RiesgoAbandonoService;
+use Drupal\ecosistema_jaraba_core\DailyActions\DailyActionsRegistry;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -57,6 +59,8 @@ class ParticipantePortalController extends ControllerBase {
     protected ?EiContentHubBridgeService $contentHubBridge = NULL,
     protected ?EiComercioConectaBridgeService $comercioConectaBridge = NULL,
     protected ?EiJarabaLexBridgeService $jarabaLexBridge = NULL,
+    protected ?SetupWizardRegistry $wizardRegistry = NULL,
+    protected ?DailyActionsRegistry $dailyActionsRegistry = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -113,6 +117,12 @@ class ParticipantePortalController extends ControllerBase {
         : NULL,
       $container->has('jaraba_andalucia_ei.ei_jarabalex_bridge')
         ? $container->get('jaraba_andalucia_ei.ei_jarabalex_bridge')
+        : NULL,
+      $container->has('ecosistema_jaraba_core.setup_wizard_registry')
+        ? $container->get('ecosistema_jaraba_core.setup_wizard_registry')
+        : NULL,
+      $container->has('ecosistema_jaraba_core.daily_actions_registry')
+        ? $container->get('ecosistema_jaraba_core.daily_actions_registry')
         : NULL,
     );
   }
@@ -172,6 +182,16 @@ class ParticipantePortalController extends ControllerBase {
     // Sprint 13: Acceso cross-vertical y expiración.
     $verticalAccess = $this->getVerticalAccessData($participante);
 
+    // SETUP-WIZARD-DAILY-001: Wizard + daily actions.
+    // User-scoped vertical: use userId as context.
+    $wizardContextId = (int) $this->currentUser()->id();
+    $setupWizard = $this->wizardRegistry !== NULL && $this->wizardRegistry->hasWizard('andalucia_ei_participante')
+      ? $this->wizardRegistry->getStepsForWizard('andalucia_ei_participante', $wizardContextId)
+      : NULL;
+    $dailyActions = $this->dailyActionsRegistry !== NULL
+      ? $this->dailyActionsRegistry->getActionsForDashboard('andalucia_ei_participante', $wizardContextId)
+      : [];
+
     $libraries = ['jaraba_andalucia_ei/participante-portal'];
     if (!empty($firmaPendientes)) {
       $libraries[] = 'jaraba_andalucia_ei/firma-electronica';
@@ -193,6 +213,8 @@ class ParticipantePortalController extends ControllerBase {
       '#vertical_access' => $verticalAccess,
       '#portfolio' => $this->portfolioService !== NULL ? $this->portfolioService->getPortfolio((int) $participante->id()) : [],
       '#progreso' => $this->portfolioService !== NULL ? $this->portfolioService->getProgreso((int) $participante->id()) : [],
+      '#setup_wizard' => $setupWizard,
+      '#daily_actions' => $dailyActions,
       '#attached' => [
         'library' => $libraries,
       ],

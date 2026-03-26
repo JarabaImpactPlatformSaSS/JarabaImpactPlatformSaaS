@@ -57,6 +57,63 @@ class ProgramaVerticalAccessService implements ProgramaVerticalAccessInterface {
   ];
 
   /**
+   * Fases del bloque de formación.
+   *
+   * @var string[]
+   */
+  private const FASES_FORMACION = [
+    'acogida',
+    'diagnostico',
+    'atencion',
+  ];
+
+  /**
+   * Fases del bloque de inserción.
+   *
+   * @var string[]
+   */
+  private const FASES_INSERCION = [
+    'insercion',
+    'seguimiento',
+  ];
+
+  /**
+   * Features disponibles en fases de inserción.
+   *
+   * @var string[]
+   */
+  private const FEATURES_INSERCION = [
+    'bolsa_empleo',
+    'prospeccion_empresarial',
+    'plan_insercion',
+    'seguimiento_post',
+  ];
+
+  /**
+   * Features básicas disponibles en todas las fases activas.
+   *
+   * @var string[]
+   */
+  private const FEATURES_BASICAS = [
+    'expediente_digital',
+    'portfolio_entregables',
+    'copilot_ia',
+    'firma_electronica',
+  ];
+
+  /**
+   * Features disponibles en fase de atención.
+   *
+   * @var string[]
+   */
+  private const FEATURES_ATENCION = [
+    'formacion_modulos',
+    'orientacion_sesiones',
+    'mentoria_ia',
+    'calculadora_viabilidad',
+  ];
+
+  /**
    * Meses de extensión post-programa para fase seguimiento.
    */
   private const MESES_EXTENSION_SEGUIMIENTO = 6;
@@ -265,6 +322,87 @@ class ProgramaVerticalAccessService implements ProgramaVerticalAccessInterface {
     $data['access_count']++;
 
     $this->state->set($key, $data);
+  }
+
+  /**
+   * Verifica si un participante tiene acceso a una feature específica.
+   *
+   * @param int $uid
+   *   ID del usuario.
+   * @param string $feature
+   *   Clave de la feature a verificar.
+   *
+   * @return bool
+   *   TRUE si tiene acceso a la feature.
+   */
+  public function hasFeatureAccess(int $uid, string $feature): bool {
+    $available = $this->getAvailableFeatures($uid);
+    return in_array($feature, $available, TRUE);
+  }
+
+  /**
+   * Obtiene las features disponibles para un participante según su fase.
+   *
+   * @param int $uid
+   *   ID del usuario.
+   *
+   * @return string[]
+   *   Lista de claves de features disponibles.
+   */
+  public function getAvailableFeatures(int $uid): array {
+    $participante = $this->getParticipanteActivo($uid);
+    if ($participante === NULL) {
+      return [];
+    }
+
+    if ($this->isExpiredForParticipante($participante)) {
+      return [];
+    }
+
+    $fase = $participante->get('fase_actual')->value ?? '';
+    $features = self::FEATURES_BASICAS;
+
+    if (in_array($fase, self::FASES_FORMACION, TRUE) || $fase === 'atencion') {
+      $features = array_merge($features, self::FEATURES_ATENCION);
+    }
+
+    if (in_array($fase, self::FASES_INSERCION, TRUE)) {
+      $features = array_merge($features, self::FEATURES_INSERCION);
+    }
+
+    return array_unique($features);
+  }
+
+  /**
+   * Determina el alcance de fases para un participante.
+   *
+   * @param int $uid
+   *   ID del usuario.
+   *
+   * @return string
+   *   'formacion', 'insercion', 'completo' o 'ninguno'.
+   */
+  public function getFaseAlcance(int $uid): string {
+    $participante = $this->getParticipanteActivo($uid);
+    if ($participante === NULL) {
+      return 'ninguno';
+    }
+
+    $fase = $participante->get('fase_actual')->value ?? '';
+
+    if (in_array($fase, self::FASES_FORMACION, TRUE)) {
+      return 'formacion';
+    }
+
+    if (in_array($fase, self::FASES_INSERCION, TRUE)) {
+      return 'insercion';
+    }
+
+    if ($fase === 'atencion') {
+      return 'completo';
+    }
+
+    return 'ninguno';
   }
 
 }
