@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -18,6 +19,7 @@ use Drupal\Core\Url;
  * - Detectar idiomas disponibles para cada página
  * - Generar URLs alternativas por idioma
  * - Soportar x-default
+ * - SEO-HREFLANG-ACTIVE-001: Filtrar por seo_active_languages
  *
  * @package Drupal\jaraba_page_builder\Service
  */
@@ -45,16 +47,25 @@ class HreflangService {
   protected RouteMatchInterface $routeMatch;
 
   /**
+   * Config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactory;
+
+  /**
    * Constructor.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     LanguageManagerInterface $language_manager,
     RouteMatchInterface $route_match,
+    ConfigFactoryInterface $config_factory,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->languageManager = $language_manager;
     $this->routeMatch = $route_match;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -84,6 +95,15 @@ class HreflangService {
 
     // Obtener idiomas disponibles.
     $translations = $pageContent->getTranslationLanguages(TRUE);
+
+    // SEO-HREFLANG-ACTIVE-001: Solo emitir hreflang para idiomas con contenido real.
+    $activeLanguages = $this->getActiveLanguages();
+    $translations = array_filter(
+      $translations,
+      fn($lang, $code) => in_array($code, $activeLanguages, TRUE),
+      ARRAY_FILTER_USE_BOTH
+    );
+
     if (count($translations) <= 1) {
       return $tags;
     }
@@ -107,17 +127,19 @@ class HreflangService {
       ];
     }
 
-    // Añadir x-default (apuntando al idioma principal).
-    $defaultUrl = $this->getTranslatedUrl($pageContent, $defaultLangcode);
-    $tags[] = [
-      '#type' => 'html_tag',
-      '#tag' => 'link',
-      '#attributes' => [
-        'rel' => 'alternate',
-        'hreflang' => 'x-default',
-        'href' => $defaultUrl,
-      ],
-    ];
+    // Añadir x-default (apuntando al idioma principal) solo si esta activo.
+    if (in_array($defaultLangcode, $activeLanguages, TRUE)) {
+      $defaultUrl = $this->getTranslatedUrl($pageContent, $defaultLangcode);
+      $tags[] = [
+        '#type' => 'html_tag',
+        '#tag' => 'link',
+        '#attributes' => [
+          'rel' => 'alternate',
+          'hreflang' => 'x-default',
+          'href' => $defaultUrl,
+        ],
+      ];
+    }
 
     return $tags;
   }
@@ -156,7 +178,7 @@ class HreflangService {
         'language' => $this->languageManager->getLanguage($langcode),
       ])->toString();
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return '';
     }
   }
@@ -192,7 +214,7 @@ class HreflangService {
           'page_content' => $pageContent->id(),
         ])->setAbsolute()->toString();
       }
-      catch (\Exception $e) {
+      catch (\Throwable $e) {
         return NULL;
       }
     }
@@ -229,6 +251,14 @@ class HreflangService {
     $currentLangcode = $this->languageManager->getCurrentLanguage()->getId();
     $translations = $pageContent->getTranslationLanguages(TRUE);
 
+    // SEO-HREFLANG-ACTIVE-001: Filtrar a idiomas activos.
+    $activeLanguages = $this->getActiveLanguages();
+    $translations = array_filter(
+      $translations,
+      fn($lang, $code) => in_array($code, $activeLanguages, TRUE),
+      ARRAY_FILTER_USE_BOTH
+    );
+
     // og:locale para idioma actual.
     $tags[] = [
       '#type' => 'html_tag',
@@ -239,7 +269,7 @@ class HreflangService {
       ],
     ];
 
-    // og:locale:alternate para otros idiomas.
+    // og:locale:alternate solo para idiomas activos.
     foreach ($translations as $langcode => $language) {
       if ($langcode === $currentLangcode) {
         continue;
@@ -294,6 +324,23 @@ class HreflangService {
       $languages[$langcode] = $language->getName();
     }
     return $languages;
+  }
+
+  /**
+   * Obtiene idiomas activos para SEO desde theme settings.
+   *
+   * SEO-HREFLANG-ACTIVE-001: Solo idiomas con contenido real deben emitir
+   * hreflang. Configurado en ecosistema_jaraba_theme > seo_active_languages.
+   *
+   * @return string[]
+   *   Array de langcodes activos (ej: ['es']).
+   */
+  protected function getActiveLanguages(): array {
+    $setting = $this->configFactory
+      ->get('ecosistema_jaraba_theme.settings')
+      ->get('seo_active_languages') ?? 'es';
+
+    return array_map('trim', explode(',', $setting));
   }
 
 }

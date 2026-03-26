@@ -5528,9 +5528,32 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
   $is_front = \Drupal::service('path.matcher')->isFrontPage()
     || in_array($route, ['<front>', 'view.frontpage.page_1'], TRUE);
 
-  // Canonical y og:url absolutas en TODAS las paginas.
-  $canonical_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
-  $canonical_url = strtok($canonical_url, '?');
+  // SEO-CANONICAL-CLEAN-001: Canonical y og:url absolutas en TODAS las paginas.
+  // Fix 3: Homepage limpia sin /node en canonical.
+  // Fix 2: Cross-language canonical para idiomas sin contenido real.
+  $currentLangcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $seo_active_langs = array_map('trim', explode(',', theme_get_setting('seo_active_languages') ?? 'es'));
+  $defaultActiveLang = $seo_active_langs[0] ?? 'es';
+
+  if ($is_front) {
+    // Fix 3: En front page, canonical apunta a /{langcode} (sin /node).
+    // Fix 2: Si idioma inactivo, canonical apunta al idioma activo default.
+    $canonicalLang = in_array($currentLangcode, $seo_active_langs, TRUE) ? $currentLangcode : $defaultActiveLang;
+    $canonical_url = $request->getSchemeAndHttpHost() . '/' . $canonicalLang;
+  }
+  else {
+    $canonical_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+    $canonical_url = strtok($canonical_url, '?');
+    // Fix 2: Si idioma actual no esta en seo_active_languages, canonical
+    // apunta a la version en el idioma activo default (ej: /pt-br/* -> /es/*).
+    if (!in_array($currentLangcode, $seo_active_langs, TRUE)) {
+      $canonical_url = preg_replace(
+        '#^(https?://[^/]+)/' . preg_quote($currentLangcode, '#') . '(/|$)#',
+        '$1/' . $defaultActiveLang . '$2',
+        $canonical_url
+      );
+    }
+  }
 
   // Eliminar canonical/og:url duplicados del metatag module antes de inyectar los nuestros.
   if (!empty($attachments['#attached']['html_head'])) {

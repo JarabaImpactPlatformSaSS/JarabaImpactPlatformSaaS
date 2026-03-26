@@ -67,6 +67,7 @@ class SitemapController extends ControllerBase {
       'Disallow: /user/logout',
       'Disallow: /node/add/',
       'Disallow: /node/',
+      'Disallow: /node',
       'Disallow: /batch',
       'Disallow: /search/',
       'Disallow: /comment/reply/',
@@ -87,6 +88,31 @@ class SitemapController extends ControllerBase {
       'Sitemap: ' . $baseUrl . '/sitemap.xml',
       '',
     ];
+
+    // SEO-ROBOTS-LANGPREFIX-001: Disallows con prefijo de idioma.
+    // /node/ bloquea /node/* pero NO /es/node/*. Google navega con prefijos.
+    $langPrefixedPaths = [
+      '/admin/',
+      '/node/',
+      '/node',
+      '/user/register',
+      '/user/password',
+      '/user/login',
+      '/user/logout',
+      '/search/',
+      '/batch',
+      '/filter/tips',
+      '/node/add/',
+    ];
+    $languages = \Drupal::languageManager()->getLanguages();
+    $langLines = ['', '# Language-prefixed system routes (SEO-ROBOTS-LANGPREFIX-001)'];
+    foreach ($languages as $langcode => $language) {
+      foreach ($langPrefixedPaths as $blockedPath) {
+        $langLines[] = 'Disallow: /' . $langcode . $blockedPath;
+      }
+    }
+    $langLines[] = '';
+    $lines = array_merge($lines, $langLines);
 
     $content = implode("\n", $lines);
 
@@ -672,15 +698,15 @@ class SitemapController extends ControllerBase {
           ['path' => $langPrefix, 'priority' => '1.0', 'changefreq' => 'daily'],
           // Pricing.
           ['path' => $langPrefix . '/planes', 'priority' => '0.9', 'changefreq' => 'weekly'],
-          // Verticales — landings publicas.
-          ['path' => $langPrefix . '/empleabilidad.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/emprendimiento.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/comercioconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/agroconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/serviciosconecta.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/jarabalex.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/formacion.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
-          ['path' => $langPrefix . '/andaluciamasei.html', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          // Verticales — landings publicas (rutas sin .html, coinciden con routing.yml).
+          ['path' => $langPrefix . '/empleabilidad', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/emprendimiento', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/comercioconecta', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/agroconecta', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/serviciosconecta', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/jarabalex', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/formacion', 'priority' => '0.8', 'changefreq' => 'weekly'],
+          ['path' => $langPrefix . '/andaluciamasei', 'priority' => '0.8', 'changefreq' => 'weekly'],
           // Conversion.
           ['path' => $langPrefix . '/test-vertical', 'priority' => '0.7', 'changefreq' => 'monthly'],
           ['path' => $langPrefix . '/demo', 'priority' => '0.7', 'changefreq' => 'monthly'],
