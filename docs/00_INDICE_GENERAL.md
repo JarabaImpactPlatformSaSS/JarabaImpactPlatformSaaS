@@ -2423,9 +2423,10 @@
 |---------|-------------|
 | [20260129_Auditoria_PageBuilder_20260126d_v1.md](./tecnicos/auditorias/20260129_Auditoria_PageBuilder_20260126d_v1.md) | Auditoria PageBuilder 20260126d v1 |
 | [20260130-Auditoria_Exhaustiva_Directrices_Nucleares_v1_Claude.md](./tecnicos/auditorias/20260130-Auditoria_Exhaustiva_Directrices_Nucleares_v1_Claude.md) | Auditoria Exhaustiva Directrices Nucleares v1 Claude |
+| [20260326-Auditoria_Seguridad_Produccion_IONOS_v1_Claude.md](./tecnicos/auditorias/20260326-Auditoria_Seguridad_Produccion_IONOS_v1_Claude.md) | Auditoria Full-stack Seguridad Produccion IONOS: 5 CRIT + 10 ALTA + 8 MEDIA + 6 BAJA, 20+ PASS. Infra + App + Safeguard |
 
 
-**Total auditorias adicionales:** 2
+**Total auditorias adicionales:** 3
 
 ## 8. Plantillas
 
