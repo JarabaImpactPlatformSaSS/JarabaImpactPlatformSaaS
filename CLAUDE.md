@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-26 | Version: 1.11.0
+# Ultima actualizacion: 2026-03-26 | Version: 1.12.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -323,9 +323,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - AI-IDENTITY-RULE: Centralizado en AIIdentityRule::apply(). NUNCA duplicar
 - AI-GUARDRAILS-PII-001: Detecta DNI, NIE, IBAN ES, NIF/CIF, +34. Bidireccional (input + output)
 - SERVICE-CALL-CONTRACT-001: Firmas de metodo DEBEN coincidir exactamente. hasService() NO protege contra TypeError
-- COPILOT-BRIDGE-COVERAGE-001: Cada vertical DEBE tener CopilotBridgeService. 10/10 implementados (Demo, Legal, Empleabilidad, Emprendimiento, ComercioConecta, AgroConecta, AndaluciaEi, ContentHub, Formacion, ServiciosConecta)
+- COPILOT-BRIDGE-COVERAGE-001: Cada vertical DEBE tener CopilotBridgeService. 16/16 implementados (10 verticales + CRM, Billing, Support, Email, Social, Analytics). Modulos operativos usan __global__ como vertical key
+- AI-COVERAGE-001: Todo modulo con datos de negocio DEBE tener CopilotBridge + GroundingProvider. PredictiveIntegrationService centraliza acceso a jaraba_predictive (lead scoring, churn, forecast, anomalies, retention). Validacion: `php scripts/validation/validate-ai-coverage.php`
 - STREAMING-PARITY-001: StreamingOrchestratorService y CopilotOrchestratorService deben mantener paridad funcional
-- GROUNDING-PROVIDER-001: Cada vertical DEBE tener GroundingProvider (tagged: jaraba_copilot_v2.grounding_provider). 10/10 implementados. CompilerPass en JarabaCopilotV2ServiceProvider. ContentGroundingService v2 usa providers si disponibles, fallback legacy si no
+- GROUNDING-PROVIDER-001: Cada vertical DEBE tener GroundingProvider (tagged: jaraba_copilot_v2.grounding_provider). 17 implementados (10 verticales + Opportunity, Contact, Invoice, SupportTicket, EmailCampaign, SocialPost, Promotion). CompilerPass en JarabaCopilotV2ServiceProvider. ContentGroundingService v2 usa providers si disponibles, fallback legacy si no
 - CASCADE-SEARCH-001: Busqueda IA en 4 niveles con coste progresivo. N1=siempre (promotions+verticals, cache ~0). N2=keyword match (GroundingProviders). N3=por necesidad (Qdrant, memory). N4=bajo demanda (ToolUse, max 5 iter). Anonimos: N1+N2+N3(cache). Pro: N1-N4
 - ACTIVE-PROMOTION-001: ActivePromotionService resuelve promociones activas (PromotionConfig ConfigEntity). Inyectado en Nivel 1 cascada. Cache tag promotion_config_list, max-age 300s. Admin: /admin/structure/promotion-config
 - COPILOT-LEAD-CAPTURE-001: CopilotLeadCaptureService detecta intencion de compra (regex, NO LLM) y crea CRM Contact+Opportunity. Patron LEAD-MAGNET-CRM-001. Dependencias CRM opcionales (@?)
