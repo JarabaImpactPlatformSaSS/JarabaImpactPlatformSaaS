@@ -50,7 +50,9 @@ if ($charCount > $warnLimit) {
   $remaining = $hardLimit - $charCount;
   echo "\n[WARN] CLAUDE.md approaching limit. $remaining chars remaining.\n";
   echo "  Consider proactive cleanup before next feature additions.\n";
-  exit(2);
+  // Exit 0 (not 2) — warning is non-blocking for lint-staged/pre-commit.
+  // Hard limit violation (above) exits with 1 and IS blocking.
+  exit(0);
 }
 
 $remaining = $hardLimit - $charCount;

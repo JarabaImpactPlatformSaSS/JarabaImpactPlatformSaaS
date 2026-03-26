@@ -265,12 +265,16 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ### Reglas Criticas
 - SEO-HREFLANG-FRONT-001: Url::fromRoute('<front>') genera /es/node porque system.site.front=/node. SIEMPRE interceptar homepage y construir URL limpia $host/$langcode
 - SEO-METASITE-001: Cada dominio/metasitio DEBE tener title y description unicos en homepage. Configurables desde Theme Settings > TAB 17 SEO Multi-Dominio. 4 variantes: generic, pde, jarabaimpact, pepejaraba
-- SEO-HREFLANG-ACTIVE-001: Campo seo_active_languages en Theme Settings filtra hreflang a idiomas con contenido real (default: 'es'). Idiomas en/pt-br configurados sin contenido NO se emiten en hreflang
-- SEO-MULTIDOMAIN-001: Validador 10 checks. `php scripts/validation/validate-seo-multi-domain.php`
+- SEO-HREFLANG-ACTIVE-001: Campo seo_active_languages en Theme Settings filtra hreflang a idiomas con contenido real (default: 'es'). Idiomas en/pt-br configurados sin contenido NO se emiten en hreflang. Aplica en theme preprocess_page Y en HreflangService (ambos filtran)
+- SEO-REDIRECT-NODE-001: SeoRedirectSubscriber 301 redirige /node (front page path) a /{langcode}. Match exacto — /node/123 NO se redirige. Prioridad 290 en KernelEvents::REQUEST
+- SEO-CANONICAL-CLEAN-001: Canonical de homepage SIEMPRE es $host/$langcode (sin /node). Para idiomas no activos (seo_active_languages), canonical apunta al idioma activo default (es) via preg_replace del prefijo
+- SEO-ROBOTS-LANGPREFIX-001: robots.txt DEBE incluir disallows con prefijo de idioma para CADA idioma configurado (/es/node/, /en/node/, /pt-br/node/). Generados dinamicamente desde LanguageManager::getLanguages()
+- SEO-DEPLOY-NOTIFY-001: Post-deploy, drush jaraba:seo:notify-google envia sitemaps a Google Search Console para los 4 dominios de produccion. GoogleSeoNotificationService + SeoUrlNotificationWorker queue (180/dia/dominio). deploy.yml step con continue-on-error
+- SEO-MULTIDOMAIN-001: Validador 17 checks. `php scripts/validation/validate-seo-multi-domain.php`
 
 ### robots.txt Dinamico
 - web/robots.txt ELIMINADO (renombrado a .drupal-default). composer.json scaffold excluye robots.txt
-- Controller dinamico: jaraba_page_builder/SitemapController::robots() genera Sitemap: con hostname del request
+- Controller dinamico: jaraba_page_builder/SitemapController::robots() genera Sitemap: con hostname del request + disallows con prefijo de idioma (SEO-ROBOTS-LANGPREFIX-001)
 - Nginx: try_files $uri /index.php?$query_string para /robots.txt
 
 ### Schema.org Review Snippets
