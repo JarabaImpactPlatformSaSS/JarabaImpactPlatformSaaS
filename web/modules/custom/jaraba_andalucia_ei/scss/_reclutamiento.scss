@@ -1115,11 +1115,26 @@
   border-radius: var(--ej-radius-lg, 12px);
   display: flex;
   flex-direction: column;
-  transition: box-shadow 200ms ease, transform 200ms ease;
+  transition: box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
 
   &:hover {
     box-shadow: 0 8px 30px color-mix(in srgb, var(--ej-color-shadow, black) 8%, transparent);
     transform: translateY(-2px);
+  }
+
+  &--link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--ej-naranja-impulso, #FF8C42);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ej-naranja-impulso, #FF8C42);
+      outline-offset: 2px;
+    }
   }
 }
 
