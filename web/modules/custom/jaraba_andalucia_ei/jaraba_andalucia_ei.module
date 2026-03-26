@@ -72,13 +72,21 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-reclutamiento',
     ],
-    // Sprint I — SPEC-CONV-001: Link-in-Bio.
+    // Sprint I — SPEC-CONV-001: Link-in-Bio premium (clase mundial).
     'andalucia_ei_enlaces' => [
       'variables' => [
         'links_primary' => [],
         'stats' => [],
         'links_secondary' => [],
         'program_info' => [],
+        'module_path' => NULL,
+        'testimonials' => [],
+        'benefits_participantes' => [],
+        'benefits_negocios' => [],
+        'faqs' => [],
+        'urgency' => [],
+        'solicitar_url' => NULL,
+        'prueba_url' => NULL,
       ],
       'template' => 'enlaces-andalucia-ei',
     ],
@@ -1619,6 +1627,16 @@ function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
     $guiaDownloadUrl = Url::fromRoute('jaraba_andalucia_ei.guia_download_api')->toString();
     $attachments['#attached']['drupalSettings']['jarabaAndaluciaEi'] = [
       'guiaDownloadUrl' => $guiaDownloadUrl,
+    ];
+  }
+  elseif ($route === 'jaraba_andalucia_ei.enlaces') {
+    // ZERO-REGION-003: Library + drupalSettings for link-in-bio page.
+    $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/enlaces';
+    $config = \Drupal::config('jaraba_andalucia_ei.settings');
+    $attachments['#attached']['drupalSettings']['aeiEnlaces'] = [
+      'fechaLimite' => $config->get('fecha_limite_solicitudes') ?? '2026-04-10',
+      'mostrarCountdown' => (bool) ($config->get('mostrar_countdown') ?? TRUE),
+      'plazasRestantes' => (int) ($config->get('plazas_restantes') ?? 45),
     ];
   }
   elseif ($route === 'jaraba_andalucia_ei.leads_guia') {

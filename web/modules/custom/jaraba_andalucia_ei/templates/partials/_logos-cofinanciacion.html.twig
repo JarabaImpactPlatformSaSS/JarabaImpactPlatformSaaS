@@ -4,17 +4,20 @@
  * Logos de cofinanciación FSE+ — Art. 50 Reg. UE 2021/1060.
  *
  * Parcial incluido en TODAS las páginas del Programa Andalucía +ei.
- * Muestra los logos institucionales obligatorios y el texto legal de
- * cofinanciación por el Fondo Social Europeo Plus.
+ * Muestra los logos institucionales obligatorios oficiales y el texto legal
+ * de cofinanciación por el Fondo Social Europeo Plus.
  *
  * Variables:
  *   Ninguna requerida (self-contained).
+ *   Ruta del módulo hardcoded (parcial exclusivo de jaraba_andalucia_ei).
  *
- * ICON-EMOJI-001: NO emojis. Logos como imágenes/SVG.
+ * ICON-EMOJI-001: NO emojis. Logos oficiales como imagen PNG.
  * TWIG-INCLUDE-ONLY-001: Incluir con `only`.
  * CSS-VAR-ALL-COLORS-001: Tokens --ej-*.
  */
 #}
+
+{% set _module_path = 'modules/custom/jaraba_andalucia_ei' %}
 
 <aside class="aei-cofinanciacion" aria-label="{% trans %}Información de cofinanciación{% endtrans %}">
   <div class="aei-cofinanciacion__content">
@@ -24,25 +27,11 @@
     </p>
 
     <div class="aei-cofinanciacion__logos">
-      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Unión Europea — Fondo Social Europeo Plus{% endtrans %}">
-        {{ jaraba_icon('compliance', 'shield', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
-        <span class="aei-cofinanciacion__logo-text">{% trans %}Unión Europea{% endtrans %}</span>
-      </div>
-
-      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Junta de Andalucía{% endtrans %}">
-        {{ jaraba_icon('compliance', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '28px' }) }}
-        <span class="aei-cofinanciacion__logo-text">{% trans %}Junta de Andalucía{% endtrans %}</span>
-      </div>
-
-      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}Servicio Andaluz de Empleo{% endtrans %}">
-        {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
-        <span class="aei-cofinanciacion__logo-text">{% trans %}Servicio Andaluz de Empleo{% endtrans %}</span>
-      </div>
-
-      <div class="aei-cofinanciacion__logo" aria-label="{% trans %}FSE+ Fondo Social Europeo Plus{% endtrans %}">
-        {{ jaraba_icon('achievement', 'award', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
-        <span class="aei-cofinanciacion__logo-text">{% trans %}FSE+{% endtrans %}</span>
-      </div>
+      <img src="/{{ _module_path }}/images/logos-cofinanciacion-oficial.png"
+           alt="{% trans %}Cofinanciado por la Unión Europea, Ministerio de Trabajo y Economía Social, Fondos Europeos, Junta de Andalucía — Consejería de Empleo, Empresa y Trabajo Autónomo, Servicio Andaluz de Empleo{% endtrans %}"
+           class="aei-cofinanciacion__logos-img"
+           width="2937" height="277"
+           loading="lazy">
     </div>
 
     <p class="aei-cofinanciacion__legal">

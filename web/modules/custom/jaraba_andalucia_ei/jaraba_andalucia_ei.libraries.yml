@@ -210,9 +210,11 @@ recurrence-form:
   dependencies:
     - ecosistema_jaraba_core/premium-forms
 
-# Sprint I — SPEC-CONV-001: Link-in-Bio page
+# Sprint I — SPEC-CONV-001: Link-in-Bio premium page
 enlaces:
   version: 1.x
   css:
     theme:
       css/andalucia-ei.css: {}
+  js:
+    js/enlaces-landing.js: { attributes: { defer: true } }

@@ -1,28 +1,37 @@
 {#
- # Link-in-bio page for Andalucía +ei social profiles.
+ # Link-in-bio premium page for Andalucía +ei social profiles.
  #
  # Variables:
- #   - links_primary: array of primary CTA links
- #   - stats: array of {value, label} metrics
- #   - links_secondary: array of secondary links
- #   - program_info: {name, edition, entity, website, funding}
+ #   - links_primary: array of primary CTA links [{label, sublabel, url, icon, color, micro}]
+ #   - stats: array of {value, raw, suffix, label} metrics
+ #   - links_secondary: array of secondary links [{label, url|href, icon, color?, sublabel?, track_cta}]
+ #   - program_info: {name, title, subtitle, edition, entity, website, funding}
+ #   - module_path: path to module directory (for images)
+ #   - testimonials: array of {nombre, rol, sede, quote, foto, slug, resultado}
+ #   - benefits_participantes: array of string benefits
+ #   - benefits_negocios: array of string benefits
+ #   - faqs: array of {q, a} FAQ items
+ #   - urgency: {plazas_restantes, mostrar_countdown, fecha_limite}
+ #   - solicitar_url: URL for participantes form
+ #   - prueba_url: URL for negocios form
  #
  # ICON-EMOJI-001: All icons via jaraba_icon(), no emojis.
- # FUNNEL-COMPLETENESS-001: data-track-cta + data-track-position on every link.
+ # FUNNEL-COMPLETENESS-001: data-track-cta + data-track-position on every CTA.
  # CSS-VAR-ALL-COLORS-001: No hardcoded colors, BEM classes + var(--ej-*).
+ # TWIG-INCLUDE-ONLY-001: Parcial incluido con only.
  #}
 
 <div class="aei-enlaces">
 
-  {# === Schema.org JSON-LD === #}
+  {# === Schema.org JSON-LD: EducationalOccupationalProgram === #}
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "EducationalOrganization",
+      "@type": "EducationalOccupationalProgram",
       "name": "{{ program_info.name|e('js') }}",
-      "description": "{{ program_info.edition|e('js') }} — {{ program_info.funding|e('js') }}",
-      "url": "https://{{ program_info.website|e('js') }}",
-      "parentOrganization": {
+      "description": "{{ program_info.subtitle|e('js') }} — {{ program_info.edition|e('js') }}",
+      "url": "https://{{ program_info.website|e('js') }}/es/andalucia-ei/enlaces",
+      "provider": {
         "@type": "Organization",
         "name": "{{ program_info.entity|e('js') }}",
         "url": "https://{{ program_info.website|e('js') }}"
@@ -30,31 +39,103 @@
       "areaServed": {
         "@type": "AdministrativeArea",
         "name": "Andalucía, España"
-      }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "description": "100% gratuito — Financiado por FSE+ y Junta de Andalucía"
+      },
+      "occupationalCategory": "Emprendimiento Digital",
+      "timeToComplete": "P6M"
     }
   </script>
 
-  {# === HEADER === #}
+  {# === Schema.org JSON-LD: FAQPage === #}
+  {% if faqs|length > 0 %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {% for faq in faqs %}
+            {
+              "@type": "Question",
+              "name": "{{ faq.q|e('js') }}",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{{ faq.a|e('js') }}"
+              }
+            }{% if not loop.last %},{% endif %}
+
+          {% endfor %}
+        ]
+      }
+    </script>
+  {% endif %}
+
+  {# ============================================================ #}
+  {# === SECTION 1: HEADER === #}
+  {# ============================================================ #}
   <header class="aei-enlaces__header">
     <div class="aei-enlaces__avatar">
-      {{ jaraba_icon('brand', 'rocket', { variant: 'duotone', color: 'white', size: '48px' }) }}
+      <img src="/{{ module_path }}/images/avatar-andalucia-ei.png"
+           alt="{% trans %}Logo del Programa Andalucía +ei{% endtrans %}"
+           class="aei-enlaces__avatar-img"
+           width="80" height="80"
+           loading="eager">
+      <span class="aei-enlaces__verified" aria-label="{% trans %}Programa oficial verificado{% endtrans %}">
+        {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+      </span>
     </div>
-    <p class="aei-enlaces__program-name">{% trans %}Programa Andalucía +ei{% endtrans %}</p>
-    <h1 class="aei-enlaces__title">{% trans %}Andalucía +ei{% endtrans %}</h1>
-    <p class="aei-enlaces__subtitle">
-      {% trans %}Emprendimiento Aumentado con Inteligencia Artificial · 2ª Edición{% endtrans %}
-    </p>
+    <p class="aei-enlaces__program-name">{{ program_info.name }}</p>
+    <h1 class="aei-enlaces__title">{{ program_info.title }}</h1>
+    <p class="aei-enlaces__subtitle">{{ program_info.subtitle }}</p>
+    <span class="aei-enlaces__edition-pill">
+      {{ jaraba_icon('status', 'clock', { variant: 'duotone', color: 'white', size: '14px' }) }}
+      {{ program_info.edition }}
+    </span>
   </header>
 
-  {# === PRIMARY CTAs === #}
+  {# ============================================================ #}
+  {# === SECTION 2: URGENCY BANNER === #}
+  {# ============================================================ #}
+  {% if urgency.mostrar_countdown|default(true) %}
+    <div class="aei-enlaces__urgency aei-enlaces--reveal" aria-label="{% trans %}Estado de inscripciones{% endtrans %}">
+      <span class="aei-enlaces__urgency-dot" aria-hidden="true"></span>
+      <span class="aei-enlaces__urgency-badge">{% trans %}Pre-lanzamiento{% endtrans %}</span>
+      <span class="aei-enlaces__urgency-sep" aria-hidden="true">·</span>
+      <span class="aei-enlaces__urgency-text">
+        {% trans %}Solicitudes abiertas · Selección por triaje{% endtrans %}
+      </span>
+      {# Countdown: hidden by default, JS shows only when < 14 days to deadline #}
+      <span class="aei-enlaces__countdown aei-enlaces__countdown--hidden" aria-label="{% trans %}Tiempo restante para solicitar{% endtrans %}">
+        <span class="aei-enlaces__countdown-unit">
+          <span class="aei-enlaces__countdown-days">--</span>{% trans %}d{% endtrans %}
+        </span>
+        <span class="aei-enlaces__countdown-sep" aria-hidden="true">:</span>
+        <span class="aei-enlaces__countdown-unit">
+          <span class="aei-enlaces__countdown-hours">--</span>{% trans %}h{% endtrans %}
+        </span>
+        <span class="aei-enlaces__countdown-sep" aria-hidden="true">:</span>
+        <span class="aei-enlaces__countdown-unit">
+          <span class="aei-enlaces__countdown-mins">--</span>{% trans %}m{% endtrans %}
+        </span>
+      </span>
+    </div>
+  {% endif %}
+
+  {# ============================================================ #}
+  {# === SECTION 3: PRIMARY CTAs === #}
+  {# ============================================================ #}
   <nav class="aei-enlaces__primary" aria-label="{% trans %}Acciones principales{% endtrans %}">
     {% for link in links_primary %}
       <a href="{{ link.url }}"
-         class="aei-enlaces__btn aei-enlaces__btn--primary aei-enlaces__btn--{{ link.color }}"
-         data-track-cta="{{ link.icon|replace({'/': '_'}) }}"
+         class="aei-enlaces__btn aei-enlaces__btn--primary aei-enlaces__btn--{{ link.color }} aei-enlaces--reveal"
+         data-track-cta="primary_{{ link.color == 'naranja-impulso' ? 'participantes' : 'negocios' }}"
          data-track-position="primary"
          aria-label="{{ link.label }}">
-        <span class="aei-enlaces__btn-icon">
+        <span class="aei-enlaces__btn-icon" aria-hidden="true">
           {{ jaraba_icon(link.icon|split('/')[0], link.icon|split('/')[1], { variant: 'duotone', color: 'white', size: '28px' }) }}
         </span>
         <span class="aei-enlaces__btn-text">
@@ -63,33 +144,190 @@
             <span class="aei-enlaces__btn-sublabel">{{ link.sublabel }}</span>
           {% endif %}
         </span>
+        <span class="aei-enlaces__btn-arrow" aria-hidden="true">
+          {{ jaraba_icon('ui', 'chevron-right', { variant: 'outline', color: 'white', size: '18px' }) }}
+        </span>
       </a>
+      {% if link.micro %}
+        <p class="aei-enlaces__btn-micro">{{ link.micro }}</p>
+      {% endif %}
     {% endfor %}
   </nav>
 
-  {# === STATS ROW === #}
-  <div class="aei-enlaces__stats" role="list" aria-label="{% trans %}Cifras del programa{% endtrans %}">
+  {# ============================================================ #}
+  {# === SECTION 4: STATS ROW === #}
+  {# ============================================================ #}
+  <div class="aei-enlaces__stats aei-enlaces--reveal" role="list" aria-label="{% trans %}Cifras del programa{% endtrans %}">
     {% for stat in stats %}
       <div class="aei-enlaces__stat" role="listitem">
-        <span class="aei-enlaces__stat-value">{{ stat.value }}</span>
+        <span class="aei-enlaces__stat-value" data-countup="{{ stat.raw }}" data-suffix="{{ stat.suffix }}">{{ stat.value }}</span>
         <span class="aei-enlaces__stat-label">{{ stat.label }}</span>
       </div>
     {% endfor %}
   </div>
 
-  {# === DIVIDER === #}
-  <hr class="aei-enlaces__divider" aria-hidden="true">
+  {# ============================================================ #}
+  {# === SECTION 5: SOCIAL PROOF — TESTIMONIOS === #}
+  {# ============================================================ #}
+  {% if testimonials|length > 0 %}
+    <section class="aei-enlaces__testimonials aei-enlaces--reveal" aria-label="{% trans %}Testimonios de participantes{% endtrans %}">
+      <h2 class="aei-enlaces__section-title">{% trans %}Lo dicen quienes lo han vivido{% endtrans %}</h2>
 
-  {# === SECONDARY LINKS === #}
-  <nav class="aei-enlaces__secondary" aria-label="{% trans %}Enlaces adicionales{% endtrans %}">
+      {# Carousel wrapper with navigation #}
+      <div class="aei-enlaces__carousel">
+        {# Left arrow #}
+        <button class="aei-enlaces__carousel-arrow aei-enlaces__carousel-arrow--prev"
+                aria-label="{% trans %}Testimonio anterior{% endtrans %}"
+                type="button">
+          {{ jaraba_icon('ui', 'chevron-left', { variant: 'outline', color: 'white', size: '18px' }) }}
+        </button>
+
+        {# Scrollable track #}
+        <div class="aei-enlaces__testimonials-scroll">
+          {% for testimonio in testimonials %}
+            <a href="/es/caso-de-exito/{{ testimonio.slug }}"
+               class="aei-enlaces__testimonial-card"
+               data-track-cta="testimonial_{{ testimonio.slug|split('-')[0] }}"
+               data-track-position="social_proof"
+               aria-label="{{ testimonio.nombre }} — {{ testimonio.resultado }}">
+              <div class="aei-enlaces__testimonial-header">
+                <img src="/{{ module_path }}/images/{{ testimonio.foto }}"
+                     alt="{{ testimonio.nombre }}"
+                     class="aei-enlaces__testimonial-avatar"
+                     width="48" height="48"
+                     loading="lazy">
+                <div class="aei-enlaces__testimonial-meta">
+                  <span class="aei-enlaces__testimonial-nombre">{{ testimonio.nombre }}</span>
+                  <span class="aei-enlaces__testimonial-rol">{{ testimonio.rol }} · {{ testimonio.sede }}</span>
+                </div>
+              </div>
+              <blockquote class="aei-enlaces__testimonial-quote">
+                <p>{{ testimonio.quote }}</p>
+              </blockquote>
+              <div class="aei-enlaces__testimonial-resultado">
+                {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+                <span>{{ testimonio.resultado }}</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+        {# Right arrow #}
+        <button class="aei-enlaces__carousel-arrow aei-enlaces__carousel-arrow--next"
+                aria-label="{% trans %}Siguiente testimonio{% endtrans %}"
+                type="button">
+          {{ jaraba_icon('ui', 'chevron-right', { variant: 'outline', color: 'white', size: '18px' }) }}
+        </button>
+      </div>
+
+      {# Navigation dots #}
+      <div class="aei-enlaces__carousel-dots" role="tablist" aria-label="{% trans %}Navegación de testimonios{% endtrans %}">
+        {% for testimonio in testimonials %}
+          <button class="aei-enlaces__carousel-dot{% if loop.first %} aei-enlaces__carousel-dot--active{% endif %}"
+                  role="tab"
+                  aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                  aria-label="{{ testimonio.nombre }}"
+                  data-slide="{{ loop.index0 }}"
+                  type="button"></button>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ============================================================ #}
+  {# === SECTION 6: QUÉ RECIBES — VALUE PROPS === #}
+  {# ============================================================ #}
+  <section class="aei-enlaces__value-props aei-enlaces--reveal" aria-label="{% trans %}Beneficios del programa{% endtrans %}">
+    <h2 class="aei-enlaces__section-title">{% trans %}¿Qué recibes?{% endtrans %}</h2>
+    <div class="aei-enlaces__value-grid">
+
+      {# Card: Participantes #}
+      <a href="{{ solicitar_url }}"
+         class="aei-enlaces__value-card aei-enlaces__value-card--participantes"
+         data-track-cta="value_participantes"
+         data-track-position="value_props">
+        <div class="aei-enlaces__value-card-header">
+          {{ jaraba_icon('education', 'graduation', { variant: 'duotone', color: 'white', size: '24px' }) }}
+          <h3>{% trans %}Participantes{% endtrans %}</h3>
+        </div>
+        <ul class="aei-enlaces__value-list">
+          {% for benefit in benefits_participantes %}
+            <li>
+              <span class="aei-enlaces__value-check" aria-hidden="true">
+                {{ jaraba_icon('actions', 'check', { variant: 'outline', color: 'white', size: '14px' }) }}
+              </span>
+              {{ benefit }}
+            </li>
+          {% endfor %}
+        </ul>
+        <span class="aei-enlaces__value-cta">
+          {% trans %}Solicitar plaza{% endtrans %}
+          {{ jaraba_icon('ui', 'chevron-right', { variant: 'outline', color: 'white', size: '14px' }) }}
+        </span>
+      </a>
+
+      {# Card: Negocios #}
+      <a href="{{ prueba_url }}"
+         class="aei-enlaces__value-card aei-enlaces__value-card--negocios"
+         data-track-cta="value_negocios"
+         data-track-position="value_props">
+        <div class="aei-enlaces__value-card-header">
+          {{ jaraba_icon('business', 'storefront', { variant: 'duotone', color: 'white', size: '24px' }) }}
+          <h3>{% trans %}Negocios{% endtrans %}</h3>
+        </div>
+        <ul class="aei-enlaces__value-list">
+          {% for benefit in benefits_negocios %}
+            <li>
+              <span class="aei-enlaces__value-check" aria-hidden="true">
+                {{ jaraba_icon('actions', 'check', { variant: 'outline', color: 'white', size: '14px' }) }}
+              </span>
+              {{ benefit }}
+            </li>
+          {% endfor %}
+        </ul>
+        <span class="aei-enlaces__value-cta">
+          {% trans %}Prueba gratuita{% endtrans %}
+          {{ jaraba_icon('ui', 'chevron-right', { variant: 'outline', color: 'white', size: '14px' }) }}
+        </span>
+      </a>
+
+    </div>
+  </section>
+
+  {# ============================================================ #}
+  {# === SECTION 7: TRUST SIGNALS === #}
+  {# ============================================================ #}
+  <div class="aei-enlaces__trust aei-enlaces--reveal" aria-label="{% trans %}Respaldo institucional{% endtrans %}">
+    <div class="aei-enlaces__trust-item">
+      {{ jaraba_icon('compliance', 'shield', { variant: 'duotone', color: 'azul-corporativo', size: '22px' }) }}
+      <span>{% trans %}Unión Europea{% endtrans %}</span>
+    </div>
+    <div class="aei-enlaces__trust-item">
+      {{ jaraba_icon('compliance', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '22px' }) }}
+      <span>{% trans %}Junta de Andalucía{% endtrans %}</span>
+    </div>
+    <div class="aei-enlaces__trust-item">
+      {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', color: 'naranja-impulso', size: '22px' }) }}
+      <span>{% trans %}Servicio Andaluz de Empleo{% endtrans %}</span>
+    </div>
+    <div class="aei-enlaces__trust-item">
+      {{ jaraba_icon('achievement', 'award', { variant: 'duotone', color: 'azul-corporativo', size: '22px' }) }}
+      <span>{% trans %}FSE+{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# ============================================================ #}
+  {# === SECTION 8: SECONDARY LINKS === #}
+  {# ============================================================ #}
+  <nav class="aei-enlaces__secondary aei-enlaces--reveal" aria-label="{% trans %}Enlaces adicionales{% endtrans %}">
     {% for link in links_secondary %}
       <a href="{{ link.href is defined ? link.href : link.url }}"
          class="aei-enlaces__btn aei-enlaces__btn--secondary{% if link.color is defined %} aei-enlaces__btn--{{ link.color }}{% endif %}"
-         data-track-cta="{{ link.icon|replace({'/': '_'}) }}"
+         data-track-cta="{{ link.track_cta }}"
          data-track-position="secondary"
          aria-label="{{ link.label }}"
          {% if link.href is defined %}target="_blank" rel="noopener noreferrer"{% endif %}>
-        <span class="aei-enlaces__btn-icon">
+        <span class="aei-enlaces__btn-icon" aria-hidden="true">
           {{ jaraba_icon(link.icon|split('/')[0], link.icon|split('/')[1], { variant: 'duotone', color: 'white', size: '22px' }) }}
         </span>
         <span class="aei-enlaces__btn-text">
@@ -102,8 +340,62 @@
     {% endfor %}
   </nav>
 
-  {# === FOOTER === #}
-  <footer class="aei-enlaces__footer">
+  {# ============================================================ #}
+  {# === SECTION 9: MINI FAQ === #}
+  {# ============================================================ #}
+  {% if faqs|length > 0 %}
+    <section class="aei-enlaces__faq aei-enlaces--reveal" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
+      <h2 class="aei-enlaces__section-title">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
+      <div class="aei-enlaces__faq-list">
+        {% for faq in faqs %}
+          <details class="aei-enlaces__faq-item">
+            <summary class="aei-enlaces__faq-question">{{ faq.q }}</summary>
+            <div class="aei-enlaces__faq-answer">
+              <p>{{ faq.a }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ============================================================ #}
+  {# === SECTION 10: FINAL CTA === #}
+  {# ============================================================ #}
+  <section class="aei-enlaces__final-cta aei-enlaces--reveal" aria-label="{% trans %}Solicitar plaza o prueba gratuita{% endtrans %}">
+    <h2 class="aei-enlaces__final-cta-title">{% trans %}Tu siguiente paso{% endtrans %}</h2>
+    <p class="aei-enlaces__final-cta-sub">{% trans %}100% gratuito · Sin compromiso · Financiado por la UE{% endtrans %}</p>
+    <div class="aei-enlaces__final-cta-actions">
+      <a href="{{ solicitar_url }}"
+         class="aei-enlaces__btn aei-enlaces__btn--primary aei-enlaces__btn--naranja-impulso"
+         data-track-cta="final_solicitar"
+         data-track-position="final_cta">
+        <span class="aei-enlaces__btn-icon" aria-hidden="true">
+          {{ jaraba_icon('education', 'graduation', { variant: 'duotone', color: 'white', size: '24px' }) }}
+        </span>
+        <span class="aei-enlaces__btn-label">{% trans %}Solicitar plaza{% endtrans %}</span>
+      </a>
+      <a href="{{ prueba_url }}"
+         class="aei-enlaces__btn aei-enlaces__btn--primary aei-enlaces__btn--verde-innovacion"
+         data-track-cta="final_prueba"
+         data-track-position="final_cta">
+        <span class="aei-enlaces__btn-icon" aria-hidden="true">
+          {{ jaraba_icon('business', 'storefront', { variant: 'duotone', color: 'white', size: '24px' }) }}
+        </span>
+        <span class="aei-enlaces__btn-label">{% trans %}Prueba gratuita{% endtrans %}</span>
+      </a>
+    </div>
+  </section>
+
+  {# ============================================================ #}
+  {# === SECTION 11: COFINANCIACIÓN === #}
+  {# ============================================================ #}
+  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+  {# ============================================================ #}
+  {# === SECTION 12: FOOTER === #}
+  {# ============================================================ #}
+  <footer class="aei-enlaces__footer aei-enlaces--reveal">
     <p class="aei-enlaces__entity">{{ program_info.entity }}</p>
     <a href="https://{{ program_info.website }}"
        class="aei-enlaces__website"
@@ -116,5 +408,22 @@
     </a>
     <p class="aei-enlaces__funding">{{ program_info.funding }}</p>
   </footer>
+
+  {# ============================================================ #}
+  {# === SECTION 13: WHATSAPP FAB === #}
+  {# ============================================================ #}
+  <a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20información%20sobre%20Andalucía%20%2Bei"
+     class="aei-enlaces__whatsapp-fab"
+     target="_blank"
+     rel="noopener noreferrer"
+     data-track-cta="fab_whatsapp"
+     data-track-position="fab"
+     aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#FFFFFF"/>
+      <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25D366"/>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#FFFFFF"/>
+    </svg>
+  </a>
 
 </div>
