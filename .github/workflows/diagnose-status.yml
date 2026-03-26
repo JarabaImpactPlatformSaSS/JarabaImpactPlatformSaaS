@@ -55,7 +55,7 @@ jobs:
         id: status_report
         run: |
           REPORT=$(ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'REMOTE_EOF'
-            cd /var/www/jaraba
+            cd ${{ vars.DEPLOY_PATH || '/var/www/jaraba' }}
 
             # Get requirements as JSON.
             REQUIREMENTS=$(drush core:requirements --format=json 2>/dev/null)
