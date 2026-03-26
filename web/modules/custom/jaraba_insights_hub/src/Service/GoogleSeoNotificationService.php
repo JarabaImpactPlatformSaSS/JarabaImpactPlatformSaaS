@@ -128,7 +128,9 @@ class GoogleSeoNotificationService {
       return $result;
     }
 
-    $siteUrl = rawurlencode('https://' . $domain . '/');
+    // GSC API siteUrl: usar el valor de la conexion (soporta sc-domain: y https://).
+    $siteUrlRaw = $connection->get('site_url')->value ?? ('https://' . $domain . '/');
+    $siteUrl = rawurlencode($siteUrlRaw);
 
     foreach (self::SITEMAP_PATHS as $sitemapPath) {
       $sitemapUrl = rawurlencode('https://' . $domain . '/' . $sitemapPath);
