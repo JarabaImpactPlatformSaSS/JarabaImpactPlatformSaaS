@@ -188,10 +188,20 @@
         <h2 class="sc-impact__title">{% trans %}Impacto en Números{% endtrans %}</h2>
       </div>
       <div class="sc-impact__grid">
-        {% for key, value in case.metrics %}
+        {% for metric in case.metrics %}
           <div class="sc-impact__card">
-            <span class="sc-impact__value" data-counter="{{ value }}">{{ value }}</span>
-            <span class="sc-impact__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+            {% if metric.after is defined %}
+              {# Full object format: {label, before, after, change} #}
+              <span class="sc-impact__value" data-counter="{{ metric.after }}">{{ metric.after }}</span>
+              <span class="sc-impact__label">{{ metric.label }}</span>
+              {% if metric.change is defined and metric.change %}
+                <span class="sc-impact__change">{{ metric.change }}</span>
+              {% endif %}
+            {% else %}
+              {# Legacy key-value format fallback #}
+              <span class="sc-impact__value" data-counter="{{ metric }}">{{ metric }}</span>
+              <span class="sc-impact__label">{{ loop.index0 }}</span>
+            {% endif %}
           </div>
         {% endfor %}
       </div>

@@ -309,6 +309,16 @@ class SuccessCasesController extends ControllerBase {
     $data['program_funder'] = $case->get('program_funder')->value;
     $data['program_year'] = $case->get('program_year')->value;
 
+    // Override metrics with full object structure for detail template.
+    // Card uses flattened key-value, detail needs {label, before, after, change}.
+    $metricsRaw = (string) $case->get('metrics_json')->value;
+    if ($metricsRaw !== '') {
+      $decoded = json_decode($metricsRaw, TRUE);
+      if (is_array($decoded)) {
+        $data['metrics'] = $decoded;
+      }
+    }
+
     return $data;
   }
 
