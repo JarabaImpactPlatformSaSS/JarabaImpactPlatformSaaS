@@ -1,0 +1,296 @@
+{#
+/**
+ * @file
+ * Template del Analytics Hub Dashboard.
+ *
+ * Dashboard unificado de analytics para admin/tenant.
+ * Sustituye la necesidad de consultar GA4 externamente.
+ *
+ * Variables disponibles:
+ * - kpis: array con total_visits, unique_visitors, avg_session_duration,
+ *         bounce_rate, top_cta, conversion_rate.
+ * - traffic_trend: array de {date, visits, unique} (ultimos 30 dias).
+ * - top_pages: array de {url, title, views, avg_time} (top 10).
+ * - device_breakdown: {desktop, mobile, tablet} (porcentajes).
+ * - funnel_data: array de {step, name, count, rate}.
+ * - ab_experiments: array de {id, name, status, variants_count, winner}.
+ * - recent_insights: array de {type, title, severity, created}.
+ *
+ * @see \Drupal\jaraba_analytics\Controller\AnalyticsHubController::dashboard()
+ */
+#}
+
+<div class="analytics-hub">
+
+  {# ===== HERO / HEADER ===== #}
+  <header class="analytics-hub__header">
+    <div class="analytics-hub__header-content">
+      <h1 class="analytics-hub__title">
+        {{ jaraba_icon('analytics', 'dashboard', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+        {% trans %}Mi Analytics{% endtrans %}
+      </h1>
+      <p class="analytics-hub__subtitle">
+        {% trans %}Vista unificada del rendimiento de tu plataforma{% endtrans %}
+      </p>
+    </div>
+    <div class="analytics-hub__actions">
+      <select class="analytics-hub__date-range" aria-label="{% trans %}Seleccionar rango de fechas{% endtrans %}">
+        <option value="7">{% trans %}Ultimos 7 dias{% endtrans %}</option>
+        <option value="30" selected>{% trans %}Ultimos 30 dias{% endtrans %}</option>
+        <option value="90">{% trans %}Ultimos 90 dias{% endtrans %}</option>
+      </select>
+    </div>
+  </header>
+
+  {# ===== KPI CARDS ===== #}
+  <section class="analytics-hub__kpis" aria-label="{% trans %}Indicadores clave de rendimiento{% endtrans %}">
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'views', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">{{ kpis.total_visits|default(0)|number_format(0, ',', '.') }}</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Visitas totales{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'users', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">{{ kpis.unique_visitors|default(0)|number_format(0, ',', '.') }}</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Visitantes unicos{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'time', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">
+          {% set minutes = (kpis.avg_session_duration|default(0) / 60)|round %}
+          {% set seconds = kpis.avg_session_duration|default(0) % 60 %}
+          {{ minutes }}:{{ seconds < 10 ? '0' }}{{ seconds }}
+        </span>
+        <span class="analytics-hub__kpi-label">{% trans %}Duracion media sesion{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'bounce', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">{{ kpis.bounce_rate|default(0)|number_format(1) }}%</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Tasa de rebote{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'click', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">{{ kpis.top_cta|default('-') }}</span>
+        <span class="analytics-hub__kpi-label">{% trans %}CTA mas clicado{% endtrans %}</span>
+      </div>
+    </div>
+
+    <div class="analytics-hub__kpi-card">
+      <div class="analytics-hub__kpi-icon">
+        {{ jaraba_icon('analytics', 'conversion', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
+      <div class="analytics-hub__kpi-body">
+        <span class="analytics-hub__kpi-value">{{ kpis.conversion_rate|default(0)|number_format(2) }}%</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Tasa de conversion{% endtrans %}</span>
+      </div>
+    </div>
+
+  </section>
+
+  {# ===== TRAFFIC TREND CHART ===== #}
+  <section class="analytics-hub__section" aria-label="{% trans %}Tendencia de trafico{% endtrans %}">
+    <div class="analytics-hub__card analytics-hub__card--wide">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('analytics', 'trend', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Tendencia de trafico{% endtrans %}
+      </h2>
+      <div class="analytics-hub__chart-container">
+        <canvas id="analytics-hub-traffic-chart"
+                aria-label="{% trans %}Grafico de tendencia de trafico de los ultimos 30 dias{% endtrans %}"
+                role="img"></canvas>
+      </div>
+    </div>
+  </section>
+
+  {# ===== TWO COLUMNS: TOP PAGES + DEVICES ===== #}
+  <section class="analytics-hub__two-col" aria-label="{% trans %}Paginas y dispositivos{% endtrans %}">
+
+    {# Top Pages #}
+    <div class="analytics-hub__card">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('analytics', 'pages', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Paginas mas visitadas{% endtrans %}
+      </h2>
+      {% if top_pages is not empty %}
+        <div class="analytics-hub__table-wrap">
+          <table class="analytics-hub__table" aria-label="{% trans %}Tabla de paginas mas visitadas{% endtrans %}">
+            <thead>
+              <tr>
+                <th scope="col">{% trans %}Pagina{% endtrans %}</th>
+                <th scope="col" class="analytics-hub__table-num">{% trans %}Vistas{% endtrans %}</th>
+                <th scope="col" class="analytics-hub__table-num">{% trans %}Tiempo medio{% endtrans %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for page in top_pages %}
+                <tr>
+                  <td class="analytics-hub__table-url" title="{{ page.url }}">
+                    {{ page.title|default(page.url)|length > 40 ? page.title|default(page.url)|slice(0, 40) ~ '...' : page.title|default(page.url) }}
+                  </td>
+                  <td class="analytics-hub__table-num">{{ page.views|number_format(0, ',', '.') }}</td>
+                  <td class="analytics-hub__table-num">{{ (page.avg_time / 60)|round }}:{{ '%02d'|format(page.avg_time % 60) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="analytics-hub__empty">{% trans %}No hay datos de paginas disponibles.{% endtrans %}</p>
+      {% endif %}
+    </div>
+
+    {# Device Breakdown #}
+    <div class="analytics-hub__card">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('analytics', 'devices', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        {% trans %}Dispositivos{% endtrans %}
+      </h2>
+      <div class="analytics-hub__chart-container analytics-hub__chart-container--donut">
+        <canvas id="analytics-hub-device-chart"
+                aria-label="{% trans %}Grafico de distribucion por dispositivo{% endtrans %}"
+                role="img"></canvas>
+      </div>
+      <ul class="analytics-hub__device-legend" aria-label="{% trans %}Leyenda de dispositivos{% endtrans %}">
+        <li>
+          <span class="analytics-hub__legend-dot analytics-hub__legend-dot--desktop"></span>
+          {% trans %}Escritorio{% endtrans %}: {{ device_breakdown.desktop|default(0) }}%
+        </li>
+        <li>
+          <span class="analytics-hub__legend-dot analytics-hub__legend-dot--mobile"></span>
+          {% trans %}Movil{% endtrans %}: {{ device_breakdown.mobile|default(0) }}%
+        </li>
+        <li>
+          <span class="analytics-hub__legend-dot analytics-hub__legend-dot--tablet"></span>
+          {% trans %}Tablet{% endtrans %}: {{ device_breakdown.tablet|default(0) }}%
+        </li>
+      </ul>
+    </div>
+
+  </section>
+
+  {# ===== FUNNEL DE CONVERSION ===== #}
+  <section class="analytics-hub__section" aria-label="{% trans %}Funnel de conversion{% endtrans %}">
+    <div class="analytics-hub__card analytics-hub__card--wide">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('analytics', 'funnel', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
+        {% trans %}Funnel de conversion{% endtrans %}
+      </h2>
+      {% if funnel_data is not empty %}
+        <div class="analytics-hub__funnel">
+          {% for step in funnel_data %}
+            <div class="analytics-hub__funnel-step">
+              <div class="analytics-hub__funnel-bar-wrap">
+                <div class="analytics-hub__funnel-bar"
+                     style="width: {{ step.rate > 0 ? step.rate : 1 }}%"
+                     aria-valuenow="{{ step.rate }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     role="progressbar"
+                     aria-label="{{ step.name }}: {{ step.rate }}%">
+                  <span class="analytics-hub__funnel-bar-label">{{ step.rate }}%</span>
+                </div>
+              </div>
+              <div class="analytics-hub__funnel-meta">
+                <span class="analytics-hub__funnel-name">{{ step.name }}</span>
+                <span class="analytics-hub__funnel-count">{{ step.count|number_format(0, ',', '.') }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="analytics-hub__empty">{% trans %}No hay datos de funnel disponibles.{% endtrans %}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {# ===== A/B EXPERIMENTS ===== #}
+  <section class="analytics-hub__section" aria-label="{% trans %}Experimentos A/B activos{% endtrans %}">
+    <div class="analytics-hub__card analytics-hub__card--wide">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('analytics', 'experiment', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        {% trans %}Experimentos A/B activos{% endtrans %}
+      </h2>
+      {% if ab_experiments is not empty %}
+        <div class="analytics-hub__experiments">
+          {% for exp in ab_experiments %}
+            <div class="analytics-hub__experiment-card">
+              <h3 class="analytics-hub__experiment-name">{{ exp.name }}</h3>
+              <div class="analytics-hub__experiment-meta">
+                <span class="analytics-hub__experiment-status analytics-hub__experiment-status--{{ exp.status }}">
+                  {{ exp.status }}
+                </span>
+                <span class="analytics-hub__experiment-variants">
+                  {{ exp.variants_count }} {% trans %}variantes{% endtrans %}
+                </span>
+                {% if exp.winner %}
+                  <span class="analytics-hub__experiment-winner">
+                    {% trans %}Ganador{% endtrans %}: {{ exp.winner }}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <a href="/admin/ab-testing"
+           class="analytics-hub__link"
+           data-track-cta="ab-testing-hub"
+           data-track-position="analytics-hub-experiments"
+           aria-label="{% trans %}Ver todos los experimentos A/B{% endtrans %}">
+          {% trans %}Ver todos los experimentos{% endtrans %}
+        </a>
+      {% else %}
+        <p class="analytics-hub__empty">{% trans %}No hay experimentos activos.{% endtrans %}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {# ===== AI INSIGHTS ===== #}
+  <section class="analytics-hub__section" aria-label="{% trans %}Insights proactivos de IA{% endtrans %}">
+    <div class="analytics-hub__card analytics-hub__card--wide">
+      <h2 class="analytics-hub__card-title">
+        {{ jaraba_icon('ai', 'brain', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Insights de IA recientes{% endtrans %}
+      </h2>
+      {% if recent_insights is not empty %}
+        <ul class="analytics-hub__insights">
+          {% for insight in recent_insights %}
+            <li class="analytics-hub__insight analytics-hub__insight--{{ insight.severity }}">
+              <span class="analytics-hub__insight-type">{{ insight.type }}</span>
+              <span class="analytics-hub__insight-title">{{ insight.title }}</span>
+              <time class="analytics-hub__insight-date" datetime="{{ insight.created|date('Y-m-d\\TH:i:s') }}">
+                {{ insight.created|date('d/m/Y H:i') }}
+              </time>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="analytics-hub__empty">{% trans %}No hay insights recientes.{% endtrans %}</p>
+      {% endif %}
+    </div>
+  </section>
+
+</div>

@@ -63,6 +63,13 @@ services:
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_analytics'
 
+  jaraba_analytics.analytics_hub:
+    class: Drupal\jaraba_analytics\Service\AnalyticsHubService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_analytics'
+
   jaraba_analytics.analytics_data:
     class: Drupal\jaraba_analytics\Service\AnalyticsDataService
     arguments:
@@ -106,6 +113,15 @@ services:
     arguments:
       - '@config.factory'
       - '@logger.channel.jaraba_analytics'
+
+  # Conversion Insights — Deteccion anomalias + reportes conversion + funnel bottlenecks
+  # OPTIONAL-CROSSMODULE-001: ProactiveInsightsService es @? (cross-modulo jaraba_ai_agents)
+  jaraba_analytics.conversion_insights:
+    class: Drupal\jaraba_analytics\Service\ConversionInsightsService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_analytics'
+      - '@?jaraba_ai_agents.proactive_insights'
 
   jaraba_analytics.product_metrics_aggregator:
     class: Drupal\jaraba_analytics\Service\ProductMetricsAggregatorService

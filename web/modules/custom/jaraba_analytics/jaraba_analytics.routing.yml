@@ -1,5 +1,19 @@
 # Rutas del módulo Jaraba Analytics.
 
+# ==========================================================================
+# ANALYTICS HUB — Dashboard unificado para admin/tenant
+# ==========================================================================
+
+jaraba_analytics.hub:
+  path: '/mi-analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\AnalyticsHubController::dashboard'
+    _title: 'Mi Analytics'
+  requirements:
+    _permission: 'access jaraba analytics'
+  options:
+    _admin_route: FALSE
+
 # Dashboard de Analytics.
 jaraba_analytics.dashboard:
   path: '/admin/jaraba/analytics'

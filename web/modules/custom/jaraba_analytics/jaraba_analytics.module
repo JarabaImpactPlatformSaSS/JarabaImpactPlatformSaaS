@@ -18,6 +18,18 @@ use Drupal\Core\Routing\RouteMatchInterface;
  */
 function jaraba_analytics_theme() {
   return [
+    'analytics_hub_dashboard' => [
+      'variables' => [
+        'kpis' => [],
+        'traffic_trend' => [],
+        'top_pages' => [],
+        'device_breakdown' => [],
+        'funnel_data' => [],
+        'ab_experiments' => [],
+        'recent_insights' => [],
+      ],
+      'template' => 'analytics-hub-dashboard',
+    ],
     'analytics_dashboard' => [
       'variables' => [
         'tenant_id' => NULL,
