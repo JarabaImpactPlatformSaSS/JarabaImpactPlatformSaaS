@@ -248,14 +248,16 @@ foreach ($verticals_short as $vertical => $d) {
   ];
 }
 
-// Apply updates.
+// Apply updates ONLY to pre-launch placeholder cases (no program_name).
+// SAFEGUARD: Real Andalucía +ei cases have program_name filled — NEVER overwrite.
 $updated = 0;
+$skippedReal = 0;
 foreach ($data as $vertical => $fields) {
   $ids = $storage->getQuery()
     ->accessCheck(FALSE)
     ->condition('vertical', $vertical)
     ->condition('status', 1)
-    ->sort('id', 'DESC')
+    ->sort('weight', 'ASC')
     ->range(0, 1)
     ->execute();
 
@@ -270,6 +272,14 @@ foreach ($data as $vertical => $fields) {
     continue;
   }
 
+  // SAFEGUARD: Never overwrite real cases from Andalucía +ei.
+  $programName = $entity->hasField('program_name') ? (string) $entity->get('program_name')->value : '';
+  if ($programName !== '') {
+    $skippedReal++;
+    echo "PROTECT: {$entity->get('name')->value} ($vertical) — real case with program '$programName', NOT overwriting\n";
+    continue;
+  }
+
   foreach ($fields as $field => $value) {
     if ($entity->hasField($field)) {
       $entity->set($field, $value);
@@ -278,7 +288,7 @@ foreach ($data as $vertical => $fields) {
 
   $entity->save();
   $updated++;
-  echo "UPDATED: $vertical (ID: {$entity->id()})\n";
+  echo "UPDATED: $vertical (ID: {$entity->id()}, {$entity->get('name')->value})\n";
 }
 
 echo "\nCompleted: $updated entities updated with full data.\n";
