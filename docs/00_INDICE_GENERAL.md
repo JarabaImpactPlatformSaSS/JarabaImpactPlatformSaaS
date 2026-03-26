@@ -3,8 +3,12 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-24
-**Versión:** 195.0.0 (REDIS-ACL-001 — Redis 8.0 ACL + io-threads + sentinel dedicado + 140 scripts + aprendizaje #220)
+**Última actualización:** 2026-03-26
+**Versión:** 196.0.0 (SEC-AUDIT-IONOS-001 — 29 hallazgos remediados, 7 reglas, PII bidireccional, 158 scripts + aprendizaje #225)
+
+> **📋 SEC-AUDIT-IONOS-001 — v167 DIRECTRICES + v151 ARQUITECTURA + v196 INDICE** (2026-03-26)
+>
+> Aprendizaje #225: SEC-AUDIT-IONOS-001 — Auditoría full-stack seguridad producción IONOS Dedicated (3 capas paralelas: infraestructura + aplicación + safeguard). 5 CRITICOS: (1) Claude API key en Key module `config` provider en vez de `env` → migrada a `getenv('CLAUDE_API_KEY')` con fallback Key module legacy, (2) HMAC adjuntos con fallback hardcodeado `'jaraba_support_default_key'` → excepción si no configurado, (3) PII no verificado en INPUT al LLM (`checkInputPII()` solo existía en output) → nuevo método `AIGuardrailsService::checkInputPII()` con `getPiiPatterns()` refactorizado, bloquea DNI/NIE/IBAN/NIF, enmascara email/teléfono, (4) XSS via `javascript:` en `parseMarkdown` del copilot → `isSafeUrl()` valida protocolo http/https, (5) XSS SuccessCase `text_long` con `|raw` sin `Xss::filterAdmin()`. 10 ALTOS: SSH keyscan dinámico → fingerprint fijo en Secret, Nginx sin `server_tokens off`, `display_errors=On` en php.ini, CSP `unsafe-inline`+`unsafe-eval`, XSS InfoPagesController, XSS map_embed jarabalex, tenant ID `string===int` siempre FALSE, protobuf DoS, validators CSRF como `warn_check`. 8 MEDIOS: workers sin sleep, MariaDB bind 0.0.0.0, backups sin cifrar, Redis bind 0.0.0.0, Trivy generic-api-key suprimido. Nuevo validator `validate-twig-raw-audit.php` (TWIG-RAW-AUDIT-001). Deploy pipeline: ANTHROPIC_API_KEY reutilizada como CLAUDE_API_KEY, SUPPORT_ATTACHMENT_HMAC_SECRET generado (256-bit). 3 GitHub Secrets creados. Regla de oro #157: La asimetría PII input/output es el riesgo regulatorio más grave en un SaaS con IA — los datos ya viajaron a Anthropic/Google antes de poder enmascararlos en la respuesta.
 
 > **📋 REDIS-ACL-001 — v166 DIRECTRICES + v150 ARQUITECTURA + v195 INDICE** (2026-03-25)
 >

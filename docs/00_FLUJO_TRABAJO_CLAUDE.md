@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-25
-**Version:** 115.0.0 (MEGAMENU-INJECT-001 + checklist page templates + aprendizaje #220)
+**Ultima actualizacion:** 2026-03-26
+**Version:** 116.0.0 (SEC-AUDIT-IONOS-001 — checkpoint seguridad post-implementacion + aprendizaje #225)
 
 ---
 ## 1. Inicio de Sesion

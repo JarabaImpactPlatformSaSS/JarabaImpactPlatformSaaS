@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 150.0.0 (Redis 8.0 ACL — REDIS-ACL-001, io-threads 4, sentinel dedicado, 140 scripts + aprendizaje #220)
+**Versión:** 151.0.0 (SEC-AUDIT-IONOS-001 — 29 hallazgos remediados, PII-INPUT-GUARD-001 bidireccional, 158 scripts validacion, 7 reglas nuevas)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2141,7 +2141,22 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 - Toda interpolación en prompts del sistema debe sanitizarse contra whitelist
 - Filtros Qdrant para tenant deben usar `must` (AND), nunca `should` (OR)
 
-### 9.3 Cumplimiento GDPR
+### 9.3 Auditoría de Seguridad en Producción IONOS (2026-03-26)
+
+> **Referencia:** [Auditoría Seguridad Producción IONOS v1](./tecnicos/auditorias/20260326-Auditoria_Seguridad_Produccion_IONOS_v1_Claude.md)
+
+Auditoría full-stack (infraestructura + aplicación + safeguard) del servidor IONOS Dedicated. **29 hallazgos remediados**, 7 reglas nuevas:
+
+| Severidad | Hallazgos | Ejemplos clave | Estado |
+|-----------|-----------|----------------|--------|
+| CRITICA (5) | SEC-C01 a SEC-C05 | Claude API key en DB, HMAC hardcodeado, PII sin check input, XSS javascript: copilot, XSS SuccessCase |raw | **Completado** |
+| ALTA (10) | SEC-A01 a SEC-A10 | SSH keyscan dinámico, Nginx sin server_tokens, CSP unsafe-eval, tenant ID type mismatch | **Completado** |
+| MEDIA (8) | SEC-M01 a SEC-M08 | Workers sin sleep, MariaDB bind 0.0.0.0, backups sin cifrar, Redis bind 0.0.0.0 | **Completado** |
+| BAJA (6) | SEC-B01 a SEC-B06 | HSTS default FALSE, logrotate 14d, lead magnet sin rate limit | Documentado |
+
+**Nuevos artefactos:** `checkInputPII()` en AIGuardrailsService, `validate-twig-raw-audit.php`, `20-security-prod.ini`, `isSafeUrl()` en copilot JS.
+
+### 9.4 Cumplimiento GDPR
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐

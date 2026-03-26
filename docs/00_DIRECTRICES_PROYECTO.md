@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-25
-**Versión:** 166.0.0 (REDIS-ACL-001 — Redis 8.0 ACL 4 usuarios + io-threads + sentinel dedicado, 142 scripts (113 run + 32 warn) + aprendizaje #220 + golden rule #156)
+**Versión:** 167.0.0 (SEC-AUDIT-IONOS-001 — 29 hallazgos remediados, 7 reglas nuevas, 158 scripts (120 run + 41 warn = 161 checks), checkInputPII() bidireccional)
 
 ---
 
@@ -1363,6 +1363,13 @@ graph TB
 | **Anti-spam stack diferenciado por formulario** | ANTI-SPAM-STACK-001 | Login/password forms: solo reCAPTCHA v3 (zero friction) + Drupal flood control. Registration/contact forms: stack completo (reCAPTCHA v3 + antibot + honeypot + flood). NUNCA apilar time gates en login — degradan UX sin beneficio proporcional | P1 |
 | **Paridad dev/prod (14 checks)** | ENV-PARITY-001 | `validate-env-parity.php` verifica: PHP version (6 fuentes), 14 extensiones requeridas (composer.json ext-*), MariaDB version, Redis version, 5 settings PHP criticos, MariaDB my.cnf, OPcache invalidation en deploy, Supervisor workers, filesystem paths, multi-domain consistency (trusted_hosts vs Nginx vs Domain entities), code paths entorno-especificos (`getenv('LANDO')`), composer.lock freshness, reverse proxy coherence, wildcard SSL. Previene bugs que solo aparecen en produccion | P0 |
 | **Redis ACL (4 usuarios, key-pattern)** | REDIS-ACL-001 | Redis 8.0 usa ACL file (`users.acl`) en lugar de `rename-command` + `requirepass`. 4 usuarios: default (Drupal, `~jaraba_*` keys, `-@dangerous -@admin`), admin (mantenimiento, `+@all`), sentinel (failover, permisos mínimos), monitor (read-only, desactivado). Variables: REDIS_PASSWORD, REDIS_ADMIN_PASSWORD, REDIS_SENTINEL_PASSWORD, REDIS_MONITOR_PASSWORD. `validate-redis-config.php` (14 checks) | P0 |
+| **PII bidireccional en LLM** | PII-INPUT-GUARD-001 | Input a LLM externo DEBE pasar por `checkInputPII()` antes de `callProvider()`/`callAiApiWithTools()`. DNI/NIE/IBAN/NIF bloquean; email/telefono se enmascaran. Output cubierto por `maskOutputPII()`. RGPD Art. 44-46 | P0 |
+| **Auditoria |raw en Twig** | TWIG-RAW-AUDIT-001 | Toda variable Twig con `\|raw` DEBE tener sanitizacion verificable en controller/preprocess (`check_markup`, `Xss::filter*`, `Markup::create`). Validacion: `validate-twig-raw-audit.php` | P0 |
+| **Validacion protocolo URLs externas** | URL-PROTOCOL-VALIDATE-001 | URLs de datos externos (LLM, API, user input) insertadas en `href` DEBEN validar protocolo (`http:`/`https:` exclusivamente). Previene `javascript:` XSS via prompt injection | P0 |
+| **Fingerprint SSH fijo en CI** | SSH-FINGERPRINT-001 | Workflows CI/CD DEBEN usar fingerprint SSH pre-almacenado en GitHub Secret (`DEPLOY_HOST_KNOWN_HOSTS`). NUNCA `ssh-keyscan` dinamico — vulnerable a DNS hijack | P0 |
+| **Nginx hardening** | NGINX-HARDENING-001 | Config Nginx DEBE incluir `server_tokens off` y rate limiting para login/API. Implementado en `nginx-jaraba-common.conf` | P1 |
+| **Cifrado de backups** | BACKUP-ENCRYPT-001 | Backups SQL DEBEN cifrarse con GPG antes de almacenar (local o remoto) | P1 |
+| **Validators seguridad como run_check** | VALIDATOR-SECURITY-RUNCHECK-001 | Validators de CSRF (`API-CONTRACT-001`) y access handlers (`ACCESS-HANDLER-IMPL-001`) DEBEN ser `run_check` en CI. NUNCA `warn_check` para seguridad | P0 |
 
 #### 4.7.2 Reglas de Rendimiento
 
