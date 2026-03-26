@@ -602,6 +602,9 @@ if [ "$MODE" = "full" ]; then
   run_check "ANDALUCIA-EI-CATALOGO-SERVICIOS-001" "Andalucía +ei catálogo de servicios integrity" \
     php "$SCRIPT_DIR/validate-andalucia-ei-catalogo-servicios.php"
 
+  run_check "ANDALUCIA-EI-PHASE-ACCESS-001" "Andalucía +ei phase-based access control integrity" \
+    php "$SCRIPT_DIR/validate-andalucia-ei-phase-access.php"
+
   run_check "MERGE-API-AUDIT-001" "Database API phantom methods (expressions, addFields, etc.)" \
     php "$SCRIPT_DIR/validate-db-api-phantom-methods.php"
 
