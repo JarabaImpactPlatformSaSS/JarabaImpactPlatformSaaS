@@ -333,6 +333,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 
 - LCIS-AUDIT-001: Audit trail obligatorio EU AI Act Art. 12. Detalles en memory/ia-services-reference.md
 
+## ANALYTICS Y TRACKING
+- GA4-CONSENT-MODE-001: Consent Mode v2 default deny. ID en theme_settings.ga4_measurement_id. Parcial _gtm-analytics.html.twig
+- META-PIXEL-CONSENT-001: fbq consent revoke por defecto (GDPR). ID en theme_settings.meta_pixel_id
+- CTA-TRACKING-001: data-track-cta + data-track-position en TODOS los CTAs. JS: aida-tracking.js
+- AB-TESTING-001: ABExperiment + ABVariant entities. Cookie 30d. StatisticalEngineService
+
 ## GRAPESJS / PAGE BUILDER
 
 ### Arquitectura
@@ -376,11 +382,11 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v166.0.0
-- ARQUITECTURA: v150.0.0
-- INDICE: v195.0.0
+- DIRECTRICES: v167.0.0
+- ARQUITECTURA: v151.0.0
+- INDICE: v197.0.0
 - FLUJO: v115.0.0
-- Ultimo aprendizaje: #225
+- Ultimo aprendizaje: #226
 - Ultima golden rule: #160
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
@@ -438,12 +444,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 165 validators individuales en `scripts/validation/` (122 run_check + 46 warn_check = 168 checks). Lista completa: `docs/validators-reference.md`
+- 166 validators individuales en `scripts/validation/` (176 checks totales). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 165 scripts validacion (122 run + 46 warn = 168 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos) + StatusReportMonitorService (email fallback), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 166 scripts validacion (176 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos) + StatusReportMonitorService (email fallback), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
