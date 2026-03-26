@@ -3,18 +3,19 @@
 > Fuente de verdad: `scripts/validation/validate-all.sh`
 > Orchestrator: `bash scripts/validation/validate-all.sh [--full|--fast|--checklist web/modules/custom/{modulo}]`
 > Meta-safeguard: VALIDATOR-COVERAGE-001 detecta orphaned validators
-> Ultima actualizacion: 2026-03-25
+> Ultima actualizacion: 2026-03-26
 
 ## Estadisticas
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 157 |
-| run_check (CI blocker) | 119 |
-| warn_check (no blocker) | 41 |
+| Total scripts PHP | 163 |
+| run_check (CI blocker) | 121 |
+| warn_check (no blocker) | 45 |
+| skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 90 (bloquean CI)
+## Run Checks — 121 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -131,7 +132,7 @@
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 
-## Warn Checks — 41 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 44 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
@@ -160,6 +161,8 @@
 | SVG-CURRENTCOLOR-001 | SVG currentColor usage in img tags | |
 | TWIG-INCLUDE-ONLY-001 | Twig includes use only keyword | 144 pre-existing |
 | ROUTE-REFERENCE-INTEGRITY-001 | Url::fromRoute() references existing routes | 12 pre-existing |
+| TRANSLATION-API-KEYS-001 | API keys IA disponibles para traduccion (ANTHROPIC_API_KEY, Key module, permisos settings.env.php) | 4 checks |
+| TRANSLATION-COVERAGE-001 | Cobertura traduccion automatica (>80% por entity type/idioma, Redis queue, Supervisor worker) | 5 checks |
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 
 ## Pre-commit lint-staged (9 hooks)

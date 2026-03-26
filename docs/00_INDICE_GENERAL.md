@@ -4,7 +4,11 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-26
-**Versión:** 196.0.0 (SEC-AUDIT-IONOS-001 — 29 hallazgos remediados, 7 reglas, PII bidireccional, 158 scripts + aprendizaje #225)
+**Versión:** 197.0.0 (AUTO-TRANSLATE-001 — traduccion automatica IA 13 entity types, Supervisor worker, Redis queue + aprendizaje #226)
+
+> **📋 AUTO-TRANSLATE-001 — v167 DIRECTRICES + v151 ARQUITECTURA + v197 INDICE** (2026-03-26)
+>
+> Aprendizaje #226: AUTO-TRANSLATE-001 — Sistema de traduccion automatica con IA para contenido SaaS y meta-sitios. 6 problemas corregidos: (1) hook_entity_insert inexistente → contenido nuevo ahora dispara traduccion, (2) solo 2 entity types cubiertos → expandido a 13 (2 canvas + 9 texto) via TranslationTriggerService como SSOT de tiers, (3) dashboard referenciaba blog_post inexistente → corregido a content_article, (4) sin worker Supervisor → jaraba-i18n-translation con queue-worker.sh (SUPERVISOR-SLEEP-001), (5) sin catch-up → TranslationCatchupService cada 6h via hook_cron (max 50 items/run, state-based), (6) cola en DatabaseQueue → Redis (queue.redis_reliable). AITranslationService refactorizado: orchestrador con 0 agentes registrados devolvía cadenas vacias → bypass directo a AI Provider (Claude Haiku 4.5 via ChatInput). Hallazgos produccion: API key Anthropic invalida (sk-ant-api03-Lq reemplazada), settings.env.php sin permisos para www-data (640 jaraba:www-data), drush.services.yml referenciaba seo_notification no registrado. Resultado: 33 pages + 3 site_configs traducidas a EN + PT-BR en los 3 meta-sitios. URLs publicas verificadas: pepejaraba.com/en/ "Business Digital Transformation", plataformadeecosistemas.es/en/ "Digital Ecosystems Platform", jarabaimpact.com/pt-br/ "Infraestrutura Digital para a Transformacao". 2 nuevos validators: TRANSLATION-COVERAGE-001 (5 checks), TRANSLATION-API-KEYS-001 (4 checks). 163 scripts validacion total (121 run + 45 warn). Regla de oro: La asimetria entre "el codigo de traduccion existe" y "la IA realmente traduce en produccion" requiere verificar TODA la cadena: API key valida + permisos fichero + provider inicializado + orchestrador funcional + queue en Redis + worker Supervisor + entity save correcto.
 
 > **📋 SEC-AUDIT-IONOS-001 — v167 DIRECTRICES + v151 ARQUITECTURA + v196 INDICE** (2026-03-26)
 >

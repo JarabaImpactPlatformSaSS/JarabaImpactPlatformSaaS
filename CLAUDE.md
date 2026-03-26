@@ -252,6 +252,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Traducciones custom (locales_target.customized=1) son DATOS, NO config. `drush cim` NO las propaga
 - I18N-DRIFT-001: detecta drift BD vs .po > 5%. Comandos en memory/ia-services-reference.md
 
+### Traduccion Automatica con IA (AUTO-TRANSLATE-001)
+- TranslationTriggerService: SSOT de entidades traducibles. Tier 1 (canvas: page_content, content_article) + Tier 2 (texto: 9 entity types)
+- hook_entity_insert + hook_entity_update encolan automaticamente en `jaraba_i18n_canvas_translation` (Redis queue)
+- TranslationCatchupService: cron cada 6h detecta entidades sin traduccion (max 50/run)
+- Worker Supervisor dedicado: `jaraba-i18n-translation` con queue-worker.sh (SUPERVISOR-SLEEP-001)
+- AITranslationService: Claude Haiku 4.5 directo via AI Provider (NO orchestrador). Hallucination detection 7 patrones
+- TRANSLATION-COVERAGE-001: Validador 5 checks (cobertura >80%, Redis routing, Supervisor worker)
+
 ### CLI Context
 - DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
 - EMAIL-SENDER-MATCH-001: `system.site.mail` DEBE coincidir con sender SMTP permitido. IONOS rechaza remitentes sin buzon configurado
@@ -427,12 +435,12 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 151 validators individuales en `scripts/validation/` (107 run_check + 36 warn_check = 143 calls, 154 unique IDs). Lista completa: `docs/validators-reference.md`
+- 163 validators individuales en `scripts/validation/` (121 run_check + 45 warn_check = 166 checks). Lista completa: `docs/validators-reference.md`
 - Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 158 scripts validacion (120 run + 41 warn = 161 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 163 scripts validacion (121 run + 45 warn = 166 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
