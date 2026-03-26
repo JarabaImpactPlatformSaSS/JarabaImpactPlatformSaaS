@@ -189,3 +189,11 @@ services:
     class: Drupal\jaraba_candidate\DailyActions\ChatCopilotCandidatoAction
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # Sprint H — SPEC-CAT-015: GroundingProvider para Empleabilidad
+  jaraba_candidate.grounding_provider:
+    class: Drupal\jaraba_candidate\Grounding\CandidateGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

@@ -1677,3 +1677,55 @@ jaraba_andalucia_ei.portfolio_publico:
   requirements:
     _access: 'TRUE'
     participante_id: '\d+'
+
+# =========================================================================
+# Sprint G — ClienteParticipanteEi entity routes
+# =========================================================================
+
+entity.cliente_participante_ei.collection:
+  path: '/admin/content/clientes-participante-ei'
+  defaults:
+    _entity_list: 'cliente_participante_ei'
+    _title: 'Clientes del Participante'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.cliente_participante_ei.add_form:
+  path: '/admin/content/clientes-participante-ei/add'
+  defaults:
+    _entity_form: 'cliente_participante_ei.default'
+    _title: 'Registrar Cliente'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.cliente_participante_ei.edit_form:
+  path: '/admin/content/clientes-participante-ei/{cliente_participante_ei}/edit'
+  defaults:
+    _entity_form: 'cliente_participante_ei.edit'
+    _title: 'Editar Cliente'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.cliente_participante_ei.canonical:
+  path: '/admin/content/clientes-participante-ei/{cliente_participante_ei}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'access andalucia ei participante portal'
+
+entity.cliente_participante_ei.delete_form:
+  path: '/admin/content/clientes-participante-ei/{cliente_participante_ei}/delete'
+  defaults:
+    _entity_form: 'cliente_participante_ei.delete'
+    _title: 'Eliminar Cliente'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+entity.cliente_participante_ei.settings:
+  path: '/admin/structure/cliente-participante-ei'
+  defaults:
+    _form: '\Drupal\jaraba_andalucia_ei\Form\ClienteParticipanteEiSettingsForm'
+    _title: 'Cliente del Participante settings'
+  requirements:
+    _permission: 'administer andalucia ei'

@@ -828,3 +828,31 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@state'
       - '@?jaraba_andalucia_ei.ei_multichannel_notification'
+
+  # =========================================================================
+  # Sprint G — SPEC-CAT-010/011/012: CRM + Facturacion + Piloto
+  # =========================================================================
+
+  jaraba_andalucia_ei.pack_billing_activation:
+    class: Drupal\jaraba_andalucia_ei\Service\PackBillingActivationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_foc.stripe_connect'
+
+  jaraba_andalucia_ei.pilot_client_flow:
+    class: Drupal\jaraba_andalucia_ei\Service\PilotClientFlowService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.firma_workflow'
+      - '@?jaraba_andalucia_ei.catalogo_packs'
+
+  # Sprint H — SPEC-CAT-016: Auto-respuesta IA a leads
+  jaraba_andalucia_ei.lead_auto_responder:
+    class: Drupal\jaraba_andalucia_ei\Service\LeadAutoResponderService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_copilot_v2.copilot_orchestrator'
+      - '@?jaraba_andalucia_ei.ei_multichannel_notification'

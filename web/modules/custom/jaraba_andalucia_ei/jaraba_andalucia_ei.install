@@ -2336,3 +2336,23 @@ function jaraba_andalucia_ei_update_10036(): string {
     return 'Error updating SesionProgramadaEi: ' . $e->getMessage();
   }
 }
+
+/**
+ * Sprint G — SPEC-CAT-010: Install ClienteParticipanteEi entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: Toda nueva entity DEBE tener hook_update_N().
+ */
+function jaraba_andalucia_ei_update_10037(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $entityType = $entityTypeManager->getDefinition('cliente_participante_ei');
+    $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+      ->getFieldStorageDefinitions('cliente_participante_ei');
+    $updateManager->installEntityType($entityType);
+    return 'ClienteParticipanteEi: entity type installed successfully.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Error installing ClienteParticipanteEi: ' . $e->getMessage(), 0, $e);
+  }
+}

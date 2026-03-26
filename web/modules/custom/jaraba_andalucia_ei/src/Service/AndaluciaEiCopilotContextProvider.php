@@ -108,6 +108,9 @@ class AndaluciaEiCopilotContextProvider {
     // Sprint 8: Barreras de acceso para copilot sensible al colectivo.
     $this->enriquecerConBarreras($context, $participante);
 
+    // Sprint F — SPEC-CAT-008: Contexto del pack confirmado del participante.
+    $this->enriquecerConPack($context, $participante);
+
     return $context;
   }
 
@@ -424,6 +427,71 @@ class AndaluciaEiCopilotContextProvider {
     }
     catch (\Throwable) {
       return 0;
+    }
+  }
+
+  /**
+   * Enriquece contexto con datos del pack confirmado.
+   *
+   * Sprint F — SPEC-CAT-008: Inyecta info del pack del participante
+   * para que el copilot adapte respuestas al contexto de negocio.
+   *
+   * @param array<string, mixed> $context
+   *   Contexto a enriquecer (por referencia).
+   * @param \Drupal\Core\Entity\ContentEntityInterface $participante
+   *   Participante activo.
+   */
+  protected function enriquecerConPack(array &$context, $participante): void {
+    try {
+      $packConfirmado = $participante->get('pack_confirmado')->value ?? NULL;
+      if ($packConfirmado === NULL || $packConfirmado === '') {
+        return;
+      }
+
+      $packLabels = [
+        'contenido_digital' => 'Contenido Digital',
+        'asistente_virtual' => 'Asistente Virtual',
+        'presencia_online' => 'Presencia Online',
+        'tienda_digital' => 'Tienda Digital',
+        'community_manager' => 'Community Manager',
+      ];
+
+      $packLabel = $packLabels[$packConfirmado] ?? $packConfirmado;
+      $context['pack_confirmado'] = $packConfirmado;
+      $context['pack_label'] = $packLabel;
+
+      // Buscar pack publicado.
+      $storage = $this->entityTypeManager->getStorage('pack_servicio_ei');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('participante_id', $participante->id())
+        ->condition('pack_tipo', $packConfirmado)
+        ->range(0, 1)
+        ->execute();
+
+      if ($ids !== []) {
+        $pack = $storage->load(reset($ids));
+        if ($pack !== NULL) {
+          $context['pack_publicado'] = (bool) ($pack->get('publicado')->value ?? FALSE);
+          $context['pack_modalidad'] = $pack->get('modalidad')->value ?? '';
+          $context['pack_precio'] = (float) ($pack->get('precio_mensual')->value ?? 0);
+        }
+      }
+
+      // Enriquecer system prompt con contexto del pack.
+      $addition = "\n\nEl participante tiene el Pack $packLabel confirmado.";
+      if (isset($context['pack_publicado']) && $context['pack_publicado']) {
+        $addition .= ' Su pack ya está publicado en el catálogo.';
+      }
+      else {
+        $addition .= ' Su pack aún no está publicado.';
+      }
+      $addition .= ' Adapta tus respuestas a este contexto de negocio.';
+
+      $context['_system_prompt_addition'] = ($context['_system_prompt_addition'] ?? '') . $addition;
+    }
+    catch (\Throwable) {
+      // PRESAVE-RESILIENCE-001.
     }
   }
 
