@@ -112,10 +112,10 @@ class EnlacesController extends ControllerBase {
         'label' => $this->t('inserción laboral 1ª Edición'),
       ],
       [
-        'value' => '6',
-        'raw' => 6,
-        'suffix' => '',
-        'label' => $this->t('meses de programa'),
+        'value' => '100',
+        'raw' => 100,
+        'suffix' => 'h',
+        'label' => $this->t('horas de programa'),
       ],
       [
         'value' => $incentivo . '€',
@@ -216,11 +216,11 @@ class EnlacesController extends ControllerBase {
       ],
       [
         'q' => $this->t('¿Es compatible con el subsidio por desempleo?'),
-        'a' => $this->t('Sí. Al ser un programa formativo público, es compatible con prestaciones por desempleo, subsidio y RAI. El incentivo de @incentivo€ es una ayuda adicional, no una retribución salarial.', ['@incentivo' => $incentivo]),
+        'a' => $this->t('Sí. Al ser un programa formativo público, es compatible con prestaciones por desempleo, subsidio y RAI. El incentivo de @incentivo€ es una ayuda adicional, no una retribución salarial. Consulte su caso concreto con el SEPE.', ['@incentivo' => $incentivo]),
       ],
       [
         'q' => $this->t('¿Cuánto dura el programa?'),
-        'a' => $this->t('6 meses: formación (50+ horas) + orientación individualizada (10+ horas) + acompañamiento a la inserción. Compatible con otras actividades.'),
+        'a' => $this->t('El programa dura hasta 18 meses: formación intensiva (50+ horas) + orientación individualizada (10+ horas) en los primeros meses, seguido de acompañamiento a la inserción laboral (40+ horas para las personas que logran insertarse) y seguimiento durante 6 meses. Compatible con otras actividades.'),
       ],
       [
         'q' => $this->t('¿Qué recibe mi negocio en la prueba gratuita?'),

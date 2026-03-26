@@ -1198,3 +1198,46 @@
     }
   }
 }
+
+// ============================================================
+// === COFINANCIACIÓN BASE STYLES (light background) ===
+// ============================================================
+// Base styles for the _logos-cofinanciacion partial on light backgrounds.
+// Dark background override is in _enlaces.scss scoped to .aei-enlaces.
+.aei-cofinanciacion {
+  padding: 40px 0;
+  border-top: 1px solid var(--ej-border, #DEE2E6);
+
+  &__content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  &__text {
+    font-size: 0.8125rem;
+    color: var(--ej-neutral, #6B7280);
+    line-height: 1.6;
+    margin: 0 0 20px;
+  }
+
+  &__logos {
+    margin-bottom: 16px;
+  }
+
+  &__logos-img {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+  }
+
+  &__legal {
+    font-size: 0.6875rem;
+    color: var(--ej-neutral, #6B7280);
+    line-height: 1.6;
+    margin: 0;
+  }
+}

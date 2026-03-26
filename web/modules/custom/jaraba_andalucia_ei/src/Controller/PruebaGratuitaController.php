@@ -234,7 +234,7 @@ class PruebaGratuitaController extends ControllerBase {
       ['value' => $tasaInsercion . '%', 'raw' => $tasaInsercion, 'suffix' => '%', 'label' => $this->t('inserción laboral')],
       ['value' => '30+', 'raw' => 30, 'suffix' => '+', 'label' => $this->t('años de experiencia')],
       ['value' => '0€', 'raw' => 0, 'suffix' => '€', 'label' => $this->t('coste para su negocio')],
-      ['value' => '6', 'raw' => 6, 'suffix' => '', 'label' => $this->t('meses de programa')],
+      ['value' => '100', 'raw' => 100, 'suffix' => 'h', 'label' => $this->t('horas de programa')],
     ];
 
     $pricing_context = [
