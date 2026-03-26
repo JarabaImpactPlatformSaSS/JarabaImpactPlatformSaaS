@@ -1508,6 +1508,7 @@ function _ecosistema_jaraba_theme_get_base_settings($config) {
     // GA4 + GTM (Sprint I — inyectado en _gtm-analytics.html.twig).
     'ga4_measurement_id' => $config->get('ga4_measurement_id') ?: '',
     'gtm_container_id' => $config->get('gtm_container_id') ?: '',
+    'meta_pixel_id' => $config->get('meta_pixel_id') ?: '',
   ];
 }
 
