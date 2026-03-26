@@ -715,6 +715,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "TRANSLATION-COVERAGE-001" "Translation coverage for multi-language content" \
     php "$SCRIPT_DIR/validate-translation-coverage.php"
 
+  warn_check "SAFEGUARD-DEPLOY-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml)" \
+    php "$SCRIPT_DIR/validate-deploy-env-persistence.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

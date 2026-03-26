@@ -117,3 +117,17 @@ if ($claude_api_key = getenv('CLAUDE_API_KEY')) {
 if ($attachment_hmac = getenv('SUPPORT_ATTACHMENT_HMAC_SECRET')) {
   $config['jaraba_support.settings']['attachment_hmac_secret'] = $attachment_hmac;
 }
+
+// ============================================================================
+// SEO-DEPLOY-NOTIFY-001: Google Search Console OAuth credentials.
+// Uses same Google Cloud project as Social Auth Google.
+// Required for sitemap submission and Indexing API notifications.
+// Redirect URI: https://plataformadeecosistemas.com/es/admin/config/services/insights-hub/connect
+// ============================================================================
+
+if ($gsc_client_id = getenv('GOOGLE_SEARCH_CONSOLE_CLIENT_ID')) {
+  $config['jaraba_insights_hub.settings']['search_console_client_id'] = $gsc_client_id;
+}
+if ($gsc_client_secret = getenv('GOOGLE_SEARCH_CONSOLE_CLIENT_SECRET')) {
+  $config['jaraba_insights_hub.settings']['search_console_client_secret'] = $gsc_client_secret;
+}
