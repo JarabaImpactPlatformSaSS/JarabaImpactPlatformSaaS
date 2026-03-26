@@ -418,10 +418,22 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'prospeccion-pipeline',
     ],
-    // Landing pública captación negocios piloto.
+    // Landing pública captación negocios piloto (clase mundial 10/10).
     'prueba_gratuita_landing' => [
       'variables' => [
         'form_action' => '',
+        'module_path' => NULL,
+        'stats' => [],
+        'services' => [],
+        'pain_points' => [],
+        'comparison' => [],
+        'testimonials' => [],
+        'faqs' => [],
+        'urgency' => [],
+        'program_info' => [],
+        'pricing_context' => [],
+        'guarantees' => [],
+        'show_success' => FALSE,
       ],
       'template' => 'prueba-gratuita-landing',
     ],

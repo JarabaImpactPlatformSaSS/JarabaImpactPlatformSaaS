@@ -1,27 +1,142 @@
-{# Landing publica captacion negocios piloto. Variables: form_action (URL submit). #}
+{#
+ # Landing page pública para captación de negocios piloto — Andalucía +ei.
+ #
+ # Variables:
+ #   - form_action: URL de envío del formulario
+ #   - module_path: ruta al módulo (para imágenes)
+ #   - stats: array de {value, raw, suffix, label}
+ #   - services: array de {key, icon_group, icon_name, color, title, description}
+ #   - pain_points: array de {icon, title, description}
+ #   - comparison: array de {feature, diy, agency, prueba}
+ #   - testimonials: array de {nombre, rol, sector, quote, resultado, foto}
+ #   - faqs: array de {q, a}
+ #   - urgency: {mostrar_countdown, fecha_limite}
+ #   - program_info: {entity, website, funding}
+ #   - pricing_context: array de {service, market_price, our_price}
+ #   - guarantees: array de {icon, text}
+ #   - show_success: boolean (TRUE cuando ?ok=1)
+ #
+ # LANDING-CONVERSION-SCORE-001: 16 secciones, 18+ CTAs trackeados.
+ # ICON-EMOJI-001: Todos los iconos via jaraba_icon().
+ # FUNNEL-COMPLETENESS-001: data-track-cta + data-track-position en cada CTA.
+ # CSS-VAR-ALL-COLORS-001: Colores via var(--ej-*).
+ # TWIG-INCLUDE-ONLY-001: Parciales con only.
+ #}
 
-<div class="prueba-gratuita">
+{# ============================================================ #}
+{# === SCHEMA.ORG JSON-LD: Service === #}
+{# ============================================================ #}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "{% trans %}Prueba Gratuita Digital — Andalucía +ei{% endtrans %}",
+    "description": "{% trans %}Servicio profesional digital gratuito de 2-4 semanas para negocios locales. Redes sociales, web, reseñas, administración o tienda online.{% endtrans %}",
+    "provider": {
+      "@type": "Organization",
+      "name": "{{ program_info.entity|e('js') }}",
+      "url": "https://{{ program_info.website|e('js') }}"
+    },
+    "areaServed": {
+      "@type": "AdministrativeArea",
+      "name": "Andalucía, España"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR",
+      "description": "{% trans %}100% gratuito — Financiado por FSE+ y Junta de Andalucía{% endtrans %}"
+    }
+  }
+</script>
 
-  {# === HERO === #}
-  <section class="prueba-gratuita__hero" id="top">
+{# === SCHEMA.ORG JSON-LD: FAQPage === #}
+{% if faqs|length > 0 %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {% for faq in faqs %}
+          {
+            "@type": "Question",
+            "name": "{{ faq.q|e('js') }}",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "{{ faq.a|e('js') }}"
+            }
+          }{% if not loop.last %},{% endif %}
+
+        {% endfor %}
+      ]
+    }
+  </script>
+{% endif %}
+
+{# ============================================================ #}
+{# === SECTION 1: STICKY CTA BAR === #}
+{# ============================================================ #}
+<div class="prueba-gratuita__sticky-bar" aria-label="{% trans %}Solicitar prueba gratuita{% endtrans %}">
+  <div class="prueba-gratuita__sticky-bar-inner">
+    <span class="prueba-gratuita__sticky-bar-text">
+      {% trans %}Servicio digital gratis 2-4 semanas · Sin compromiso{% endtrans %}
+    </span>
+    <a href="#formulario"
+       class="prueba-gratuita__sticky-bar-cta"
+       data-track-cta="sticky_cta"
+       data-track-position="sticky">
+      {% trans %}Solicitar ahora{% endtrans %}
+    </a>
+  </div>
+</div>
+
+{# ============================================================ #}
+{# === SECTION 2: HERO === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__hero" aria-label="{% trans %}Prueba gratuita para su negocio{% endtrans %}">
+  <div class="prueba-gratuita__hero-inner">
+
     <div class="prueba-gratuita__badges">
-      {% trans %}Cofinanciado por la Unión Europea · Junta de Andalucía · Servicio Andaluz de Empleo{% endtrans %}
+      <span class="prueba-gratuita__badge">
+        {% trans %}Cofinanciado por la Unión Europea · Junta de Andalucía · SAE{% endtrans %}
+      </span>
     </div>
+
     <h1 class="prueba-gratuita__title">
       {% trans %}Mejore la presencia digital de su negocio.{% endtrans %}
       <span class="prueba-gratuita__title-accent">{% trans %}Gratis.{% endtrans %}</span>
     </h1>
+
     <p class="prueba-gratuita__subtitle">
       {% trans %}Reciba un servicio profesional de 2-4 semanas sin coste ni compromiso, en el marco de un programa público de la Junta de Andalucía cofinanciado por la Unión Europea.{% endtrans %}
     </p>
-    <a href="#formulario" class="prueba-gratuita__cta-hero"
-       data-track-cta="hero_cta"
-       data-track-position="hero">
-      {% trans %}Solicitar prueba gratuita{% endtrans %} →
-    </a>
+
+    <div class="prueba-gratuita__hero-actions">
+      <a href="#formulario"
+         class="prueba-gratuita__cta-hero"
+         data-track-cta="hero_cta"
+         data-track-position="hero">
+        {{ jaraba_icon('actions', 'arrow-down', { variant: 'outline', color: 'white', size: '18px' }) }}
+        {% trans %}Solicitar prueba gratuita{% endtrans %}
+      </a>
+      <a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+         class="prueba-gratuita__cta-whatsapp"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-track-cta="hero_whatsapp"
+         data-track-position="hero"
+         aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25D366"/>
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#FFFFFF"/>
+        </svg>
+        {% trans %}WhatsApp{% endtrans %}
+      </a>
+    </div>
+
     <div class="prueba-gratuita__trust-row">
       <div class="prueba-gratuita__trust-item">
-        <span class="prueba-gratuita__trust-value">46%</span>
+        <span class="prueba-gratuita__trust-value">{{ stats[0].value }}</span>
         <span class="prueba-gratuita__trust-label">{% trans %}inserción laboral 1ª Ed.{% endtrans %}</span>
       </div>
       <div class="prueba-gratuita__trust-item">
@@ -33,147 +148,323 @@
         <span class="prueba-gratuita__trust-label">{% trans %}compromiso{% endtrans %}</span>
       </div>
     </div>
-  </section>
 
-  {# === SERVICIOS (5 PACKS) === #}
-  <section class="prueba-gratuita__services">
-    <div class="prueba-gratuita__container">
-      <h2>{% trans %}¿Qué recibe su negocio?{% endtrans %}</h2>
-      <p class="prueba-gratuita__lead">
-        {% trans %}Un profesional formado en inteligencia artificial le prestará uno de estos servicios durante 2-4 semanas, completamente gratis:{% endtrans %}
-      </p>
-      <div class="prueba-gratuita__cards">
-        <div class="prueba-gratuita__card prueba-gratuita__card--redes">
-          <div class="prueba-gratuita__card-icon">
-            {{ jaraba_icon('social', 'instagram', { variant: 'duotone', color: 'white', size: '40px' }) }}
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 3: PAIN POINTS === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__pain-points" aria-label="{% trans %}Problemas digitales comunes{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2 class="prueba-gratuita__section-title">{% trans %}¿Le suena alguna de estas situaciones?{% endtrans %}</h2>
+    <div class="prueba-gratuita__pain-grid">
+      {% for point in pain_points %}
+        <div class="prueba-gratuita__pain-card prueba-gratuita--reveal">
+          <div class="prueba-gratuita__pain-icon" aria-hidden="true">
+            {{ jaraba_icon(point.icon|split('/')[0], point.icon|split('/')[1], { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
           </div>
-          <h3>{% trans %}Gestión de Redes Sociales{% endtrans %}</h3>
-          <p>{% trans %}Posts profesionales en Instagram y Facebook para su negocio{% endtrans %}</p>
+          <h3>{{ point.title }}</h3>
+          <p>{{ point.description }}</p>
         </div>
-        <div class="prueba-gratuita__card prueba-gratuita__card--web">
-          <div class="prueba-gratuita__card-icon">
-            {{ jaraba_icon('content', 'globe', { variant: 'duotone', color: 'white', size: '40px' }) }}
-          </div>
-          <h3>{% trans %}Creación de Web{% endtrans %}</h3>
-          <p>{% trans %}Página web profesional de 3-5 páginas con SEO local{% endtrans %}</p>
-        </div>
-        <div class="prueba-gratuita__card prueba-gratuita__card--resenas">
-          <div class="prueba-gratuita__card-icon">
-            {{ jaraba_icon('status', 'star', { variant: 'duotone', color: 'white', size: '40px' }) }}
-          </div>
-          <h3>{% trans %}Gestión de Reseñas{% endtrans %}</h3>
-          <p>{% trans %}Respuesta profesional a todas sus reseñas de Google{% endtrans %}</p>
-        </div>
-        <div class="prueba-gratuita__card prueba-gratuita__card--admin">
-          <div class="prueba-gratuita__card-icon">
-            {{ jaraba_icon('content', 'document', { variant: 'duotone', color: 'white', size: '40px' }) }}
-          </div>
-          <h3>{% trans %}Asistencia Administrativa{% endtrans %}</h3>
-          <p>{% trans %}Facturación, emails, agenda y organización documental{% endtrans %}</p>
-        </div>
-        <div class="prueba-gratuita__card prueba-gratuita__card--tienda">
-          <div class="prueba-gratuita__card-icon">
-            {{ jaraba_icon('commerce', 'cart', { variant: 'duotone', color: 'white', size: '40px' }) }}
-          </div>
-          <h3>{% trans %}Tienda Online{% endtrans %}</h3>
-          <p>{% trans %}Catálogo digital con fotos profesionales y pagos integrados{% endtrans %}</p>
-        </div>
-      </div>
-      <p class="prueba-gratuita__bottom-text">
-        {% trans %}Usted elige el que más necesite. Nosotros lo ejecutamos.{% endtrans %}
-      </p>
+      {% endfor %}
     </div>
-  </section>
+    <p class="prueba-gratuita__pain-cta-text">{% trans %}Si se identifica con al menos una, podemos ayudarle.{% endtrans %}</p>
+  </div>
+</section>
 
-  {# === CÓMO FUNCIONA (3 PASOS) === #}
-  <section class="prueba-gratuita__how">
-    <div class="prueba-gratuita__container">
-      <h2>{% trans %}¿Cómo funciona?{% endtrans %}</h2>
-      <div class="prueba-gratuita__steps">
-        <div class="prueba-gratuita__step">
-          <div class="prueba-gratuita__step-num">1</div>
+{# ============================================================ #}
+{# === SECTION 4: SERVICES — PREMIUM CARDS === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__services" aria-label="{% trans %}Servicios disponibles{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2 class="prueba-gratuita__section-title">{% trans %}¿Qué recibe su negocio?{% endtrans %}</h2>
+    <p class="prueba-gratuita__section-desc">
+      {% trans %}Un profesional formado en inteligencia artificial le prestará uno de estos servicios durante 2-4 semanas, completamente gratis:{% endtrans %}
+    </p>
+    <div class="prueba-gratuita__cards">
+      {% for service in services %}
+        <div class="prueba-gratuita__card card--premium prueba-gratuita__card--{{ service.key }} prueba-gratuita--reveal"
+             data-track-cta="service_{{ service.key }}"
+             data-track-position="services">
+          <div class="prueba-gratuita__card-accent prueba-gratuita__card-accent--{{ service.color }}" aria-hidden="true"></div>
+          <div class="prueba-gratuita__card-icon icon--pulse-hover">
+            {{ jaraba_icon(service.icon_group, service.icon_name, { variant: 'duotone', color: service.color, size: '40px' }) }}
+          </div>
+          <h3 class="prueba-gratuita__card-title">{{ service.title }}</h3>
+          <p class="prueba-gratuita__card-desc">{{ service.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="prueba-gratuita__cards-footer">{% trans %}Usted elige el que más necesite. Nosotros lo ejecutamos.{% endtrans %}</p>
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 5: HOW IT WORKS === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__how" aria-label="{% trans %}Cómo funciona{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2 class="prueba-gratuita__section-title">{% trans %}¿Cómo funciona?{% endtrans %}</h2>
+    <div class="prueba-gratuita__steps">
+      <div class="prueba-gratuita__step prueba-gratuita--reveal">
+        <span class="prueba-gratuita__step-num">1</span>
+        <div class="prueba-gratuita__step-content">
           <h3>{% trans %}Rellene el formulario{% endtrans %}</h3>
           <p>{% trans %}2 minutos. Nos cuenta qué necesita su negocio.{% endtrans %}</p>
         </div>
-        <div class="prueba-gratuita__step">
-          <div class="prueba-gratuita__step-num">2</div>
+      </div>
+      <div class="prueba-gratuita__step prueba-gratuita--reveal">
+        <span class="prueba-gratuita__step-num">2</span>
+        <div class="prueba-gratuita__step-content">
           <h3>{% trans %}Propuesta personalizada{% endtrans %}</h3>
           <p>{% trans %}Le preparamos ejemplos reales de lo que haríamos por SU negocio.{% endtrans %}</p>
         </div>
-        <div class="prueba-gratuita__step">
-          <div class="prueba-gratuita__step-num">3</div>
+      </div>
+      <div class="prueba-gratuita__step prueba-gratuita--reveal">
+        <span class="prueba-gratuita__step-num">3</span>
+        <div class="prueba-gratuita__step-content">
           <h3>{% trans %}Prueba gratuita{% endtrans %}</h3>
           <p>{% trans %}Un profesional empieza a trabajar para usted. 2-4 semanas. Sin coste.{% endtrans %}</p>
         </div>
       </div>
     </div>
-  </section>
+    <div class="prueba-gratuita__steps-cta">
+      <a href="#formulario"
+         class="prueba-gratuita__cta prueba-gratuita__cta--primary"
+         data-track-cta="steps_cta"
+         data-track-position="steps">
+        {% trans %}Solicitar ahora{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
 
-  {# === GARANTÍAS === #}
-  <section class="prueba-gratuita__guarantees">
-    <div class="prueba-gratuita__container prueba-gratuita__guarantees-grid">
-      <div class="prueba-gratuita__guarantee">
-        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
-        <span>{% trans %}Sin permanencia{% endtrans %}</span>
-      </div>
-      <div class="prueba-gratuita__guarantee">
-        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
-        <span>{% trans %}Sin coste oculto{% endtrans %}</span>
-      </div>
-      <div class="prueba-gratuita__guarantee">
-        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
-        <span>{% trans %}Supervisado por expertos{% endtrans %}</span>
-      </div>
-      <div class="prueba-gratuita__guarantee">
-        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
-        <span>{% trans %}Datos protegidos (RGPD){% endtrans %}</span>
-      </div>
-      <div class="prueba-gratuita__guarantee">
-        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
-        <span>{% trans %}+30 años de experiencia{% endtrans %}</span>
+{# ============================================================ #}
+{# === SECTION 6: COMPARISON TABLE === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__comparison" aria-label="{% trans %}Comparativa{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2 class="prueba-gratuita__section-title">{% trans %}¿Por qué esta prueba gratuita?{% endtrans %}</h2>
+    <div class="prueba-gratuita__comparison-wrapper" role="region" aria-label="{% trans %}Tabla comparativa{% endtrans %}" tabindex="0">
+      <table class="prueba-gratuita__comparison-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>{% trans %}Hacerlo yo{% endtrans %}</th>
+            <th>{% trans %}Agencia{% endtrans %}</th>
+            <th class="prueba-gratuita__comparison-highlight">{% trans %}Prueba Gratuita{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in comparison %}
+            <tr>
+              <td class="prueba-gratuita__comparison-feature">{{ row.feature }}</td>
+              <td>
+                {% if row.diy is same as(false) %}
+                  <span class="prueba-gratuita__comparison-cross" aria-label="{% trans %}No{% endtrans %}">✕</span>
+                {% elseif row.diy is same as(true) %}
+                  <span class="prueba-gratuita__comparison-check" aria-label="{% trans %}Sí{% endtrans %}">
+                    {{ jaraba_icon('actions', 'check', { variant: 'outline', color: 'verde-innovacion', size: '18px' }) }}
+                  </span>
+                {% else %}
+                  {{ row.diy }}
+                {% endif %}
+              </td>
+              <td>
+                {% if row.agency is same as(false) %}
+                  <span class="prueba-gratuita__comparison-cross" aria-label="{% trans %}No{% endtrans %}">✕</span>
+                {% elseif row.agency is same as(true) %}
+                  <span class="prueba-gratuita__comparison-check" aria-label="{% trans %}Sí{% endtrans %}">
+                    {{ jaraba_icon('actions', 'check', { variant: 'outline', color: 'verde-innovacion', size: '18px' }) }}
+                  </span>
+                {% else %}
+                  {{ row.agency }}
+                {% endif %}
+              </td>
+              <td class="prueba-gratuita__comparison-highlight">
+                {% if row.prueba is same as(false) %}
+                  <span class="prueba-gratuita__comparison-cross" aria-label="{% trans %}No{% endtrans %}">✕</span>
+                {% elseif row.prueba is same as(true) %}
+                  <span class="prueba-gratuita__comparison-check" aria-label="{% trans %}Sí{% endtrans %}">
+                    {{ jaraba_icon('actions', 'check', { variant: 'outline', color: 'verde-innovacion', size: '18px' }) }}
+                  </span>
+                {% else %}
+                  <strong>{{ row.prueba }}</strong>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="prueba-gratuita__comparison-cta">
+      <a href="#formulario"
+         class="prueba-gratuita__cta prueba-gratuita__cta--primary"
+         data-track-cta="comparison_cta"
+         data-track-position="comparison">
+        {% trans %}Solicitar prueba gratuita{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 7: TESTIMONIALS === #}
+{# ============================================================ #}
+{% if testimonials|length > 0 %}
+  <section class="prueba-gratuita__testimonials prueba-gratuita--reveal" aria-label="{% trans %}Testimonios{% endtrans %}">
+    <div class="prueba-gratuita__container">
+      <h2 class="prueba-gratuita__section-title">{% trans %}Lo dicen quienes lo han vivido{% endtrans %}</h2>
+      <div class="prueba-gratuita__testimonials-grid">
+        {% for testimonio in testimonials %}
+          <div class="prueba-gratuita__testimonial-card card--premium-subtle prueba-gratuita--reveal"
+               data-track-cta="testimonial_{{ testimonio.nombre|split(' ')[0]|lower }}"
+               data-track-position="testimonials">
+            <div class="prueba-gratuita__testimonial-header">
+              <img src="/{{ module_path }}/images/{{ testimonio.foto }}"
+                   alt="{{ testimonio.nombre }}"
+                   class="prueba-gratuita__testimonial-avatar"
+                   width="56" height="56"
+                   loading="lazy">
+              <div class="prueba-gratuita__testimonial-meta">
+                <span class="prueba-gratuita__testimonial-nombre">{{ testimonio.nombre }}</span>
+                <span class="prueba-gratuita__testimonial-rol">{{ testimonio.rol }}</span>
+                <span class="prueba-gratuita__testimonial-sector">{{ testimonio.sector }}</span>
+              </div>
+            </div>
+            <blockquote class="prueba-gratuita__testimonial-quote">
+              <p>{{ testimonio.quote }}</p>
+            </blockquote>
+            <div class="prueba-gratuita__testimonial-resultado">
+              {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
+              <span>{{ testimonio.resultado }}</span>
+            </div>
+          </div>
+        {% endfor %}
       </div>
     </div>
   </section>
+{% endif %}
 
-  {# === FORMULARIO === #}
-  <section class="prueba-gratuita__form-section" id="formulario">
-    <div class="prueba-gratuita__container">
-      <h2>{% trans %}Solicite su prueba gratuita{% endtrans %}</h2>
-      <p class="prueba-gratuita__form-lead">
+{# ============================================================ #}
+{# === SECTION 8: STATS ROW === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__stats-section prueba-gratuita--reveal" aria-label="{% trans %}Cifras del programa{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <div class="prueba-gratuita__stats" role="list">
+      {% for stat in stats %}
+        <div class="prueba-gratuita__stat" role="listitem">
+          <span class="prueba-gratuita__stat-value" data-countup="{{ stat.raw }}" data-suffix="{{ stat.suffix }}">{{ stat.value }}</span>
+          <span class="prueba-gratuita__stat-label">{{ stat.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 9: PRICING CONTEXT === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__pricing prueba-gratuita--reveal" aria-label="{% trans %}Contexto de precios{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2 class="prueba-gratuita__section-title">{% trans %}¿Cuánto cuestan estos servicios en el mercado?{% endtrans %}</h2>
+    <div class="prueba-gratuita__pricing-list">
+      {% for item in pricing_context %}
+        <div class="prueba-gratuita__pricing-item prueba-gratuita--reveal">
+          <span class="prueba-gratuita__pricing-service">{{ item.service }}</span>
+          <span class="prueba-gratuita__pricing-market">{{ item.market_price }}</span>
+          <span class="prueba-gratuita__pricing-ours">{{ item.our_price }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="prueba-gratuita__pricing-cta">
+      <a href="#formulario"
+         class="prueba-gratuita__cta prueba-gratuita__cta--primary"
+         data-track-cta="pricing_cta"
+         data-track-position="pricing">
+        {% trans %}Solicitar gratis{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 10: GUARANTEES === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__guarantees prueba-gratuita--reveal" aria-label="{% trans %}Garantías{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <div class="prueba-gratuita__guarantees-grid">
+      {% for guarantee in guarantees %}
+        <div class="prueba-gratuita__guarantee-item">
+          {{ jaraba_icon(guarantee.icon|split('/')[0], guarantee.icon|split('/')[1], { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+          <span>{{ guarantee.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 11: FORM === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__form-section" id="formulario" aria-label="{% trans %}Formulario de solicitud{% endtrans %}">
+  <div class="prueba-gratuita__container">
+
+    {% if show_success %}
+      {# === SUCCESS STATE === #}
+      <div class="prueba-gratuita__success" role="alert" aria-live="polite">
+        <div class="prueba-gratuita__success-card card--premium">
+          {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', color: 'verde-innovacion', size: '64px' }) }}
+          <h2>{% trans %}¡Solicitud recibida!{% endtrans %}</h2>
+          <p>{% trans %}Le contactaremos en un máximo de 3 días laborables con una propuesta personalizada para su negocio.{% endtrans %}</p>
+          <p class="prueba-gratuita__success-sub">{% trans %}Mientras tanto, puede contactarnos por WhatsApp para resolver cualquier duda.{% endtrans %}</p>
+          <a href="https://wa.me/34623174304?text=Hola%2C%20acabo%20de%20solicitar%20la%20prueba%20gratuita"
+             class="prueba-gratuita__cta prueba-gratuita__cta--whatsapp"
+             target="_blank"
+             rel="noopener noreferrer"
+             data-track-cta="success_whatsapp"
+             data-track-position="success">
+            {% trans %}WhatsApp: +34 623 174 304{% endtrans %}
+          </a>
+        </div>
+      </div>
+    {% else %}
+      {# === FORM === #}
+      <h2 class="prueba-gratuita__section-title">{% trans %}Solicite su prueba gratuita{% endtrans %}</h2>
+      <p class="prueba-gratuita__form-desc">
         {% trans %}Rellene este formulario y en 3 días laborables le enviaremos una propuesta personalizada para su negocio.{% endtrans %}
       </p>
 
       <form action="{{ form_action }}" method="POST" class="prueba-gratuita__form"
-            data-track-cta="form_submit"
-            data-track-position="form">
+            data-track-cta="form_submit" data-track-position="form">
 
         {# Honeypot anti-spam #}
         <div style="display:none" aria-hidden="true">
-          <input type="text" name="website" tabindex="-1" autocomplete="off">
-        </div>
-
-        <div class="prueba-gratuita__field">
-          <label for="nombre_negocio">{% trans %}Nombre del negocio{% endtrans %} <span class="prueba-gratuita__required" aria-label="{% trans %}obligatorio{% endtrans %}">*</span></label>
-          <input type="text" id="nombre_negocio" name="nombre_negocio" required
-                 placeholder="{% trans %}Ej: Bar La Esquina, Clínica Dental Reyes...{% endtrans %}">
+          <label for="prueba-website">Website</label>
+          <input type="text" name="website" id="prueba-website" tabindex="-1" autocomplete="off">
         </div>
 
         <div class="prueba-gratuita__field-row">
           <div class="prueba-gratuita__field">
-            <label for="persona_contacto">{% trans %}Persona de contacto{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-            <input type="text" id="persona_contacto" name="persona_contacto" required
-                   placeholder="{% trans %}Nombre y apellidos{% endtrans %}">
+            <label for="nombre_negocio">{% trans %}Nombre del negocio{% endtrans %} <span class="prueba-gratuita__required" aria-label="{% trans %}obligatorio{% endtrans %}">*</span></label>
+            <input type="text" id="nombre_negocio" name="nombre_negocio" required placeholder="{% trans %}Ej: Bar La Esquina, Clínica Dental Reyes...{% endtrans %}">
           </div>
           <div class="prueba-gratuita__field">
-            <label for="telefono">{% trans %}Teléfono{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-            <input type="tel" id="telefono" name="telefono" required placeholder="600 000 000">
-            <span class="prueba-gratuita__hint">{% trans %}Preferiblemente móvil (para WhatsApp){% endtrans %}</span>
+            <label for="persona_contacto">{% trans %}Persona de contacto{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="text" id="persona_contacto" name="persona_contacto" required placeholder="{% trans %}Nombre y apellidos{% endtrans %}">
           </div>
         </div>
 
-        <div class="prueba-gratuita__field">
-          <label for="email">{% trans %}Email{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-          <input type="email" id="email" name="email" required placeholder="correo@ejemplo.com">
+        <div class="prueba-gratuita__field-row">
+          <div class="prueba-gratuita__field">
+            <label for="telefono">{% trans %}Teléfono{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="tel" id="telefono" name="telefono" required placeholder="{% trans %}Preferiblemente móvil (para WhatsApp){% endtrans %}">
+          </div>
+          <div class="prueba-gratuita__field">
+            <label for="email">{% trans %}Email{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
         </div>
 
         <div class="prueba-gratuita__field-row">
@@ -186,9 +477,8 @@
             </select>
           </div>
           <div class="prueba-gratuita__field">
-            <label for="municipio">{% trans %}Municipio{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-            <input type="text" id="municipio" name="municipio" required
-                   placeholder="{% trans %}Ej: Dos Hermanas, Torremolinos...{% endtrans %}">
+            <label for="municipio">{% trans %}Municipio{% endtrans %}</label>
+            <input type="text" id="municipio" name="municipio" placeholder="{% trans %}Ej: Dos Hermanas, Torremolinos...{% endtrans %}">
           </div>
         </div>
 
@@ -208,12 +498,12 @@
             </select>
           </div>
           <div class="prueba-gratuita__field">
-            <label for="empleados">{% trans %}Número de empleados{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-            <select id="empleados" name="empleados" required>
+            <label for="empleados">{% trans %}Número de empleados{% endtrans %}</label>
+            <select id="empleados" name="empleados">
               <option value="">{% trans %}Elija una opción{% endtrans %}</option>
               <option value="1">{% trans %}1 (solo yo){% endtrans %}</option>
-              <option value="2-5">2 - 5</option>
-              <option value="6-15">6 - 15</option>
+              <option value="2-5">2-5</option>
+              <option value="6-15">6-15</option>
               <option value="15+">{% trans %}Más de 15{% endtrans %}</option>
             </select>
           </div>
@@ -222,56 +512,37 @@
         <div class="prueba-gratuita__field-row">
           <div class="prueba-gratuita__field">
             <label for="web">{% trans %}Web del negocio{% endtrans %}</label>
-            <input type="url" id="web" name="web" placeholder="https://www.sunegocio.com">
+            <input type="url" id="web" name="web" placeholder="https://">
             <span class="prueba-gratuita__hint">{% trans %}Déjelo vacío si no tiene web (es muy normal){% endtrans %}</span>
           </div>
           <div class="prueba-gratuita__field">
             <label for="rrss">{% trans %}Perfil en redes sociales{% endtrans %}</label>
-            <input type="url" id="rrss" name="rrss" placeholder="https://instagram.com/sunegocio">
+            <input type="url" id="rrss" name="rrss" placeholder="https://instagram.com/...">
             <span class="prueba-gratuita__hint">{% trans %}Instagram, Facebook o cualquier otra{% endtrans %}</span>
           </div>
         </div>
 
-        <div class="prueba-gratuita__field">
+        <div class="prueba-gratuita__field prueba-gratuita__field--full">
           <label>{% trans %}¿Qué servicio le interesa más?{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
           <div class="prueba-gratuita__checkbox-group">
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="redes">
-              <span>{% trans %}Redes sociales{% endtrans %}</span>
-            </label>
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="web">
-              <span>{% trans %}Web profesional{% endtrans %}</span>
-            </label>
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="resenas">
-              <span>{% trans %}Gestión reseñas{% endtrans %}</span>
-            </label>
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="admin">
-              <span>{% trans %}Asistencia administrativa{% endtrans %}</span>
-            </label>
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="tienda">
-              <span>{% trans %}Tienda online{% endtrans %}</span>
-            </label>
-            <label class="prueba-gratuita__checkbox-label">
-              <input type="checkbox" name="servicio[]" value="nosabe">
-              <span>{% trans %}No lo tengo claro{% endtrans %}</span>
-            </label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="redes"> {% trans %}Redes sociales{% endtrans %}</label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="web"> {% trans %}Web profesional{% endtrans %}</label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="resenas"> {% trans %}Gestión reseñas{% endtrans %}</label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="admin"> {% trans %}Asistencia administrativa{% endtrans %}</label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="tienda"> {% trans %}Tienda online{% endtrans %}</label>
+            <label class="prueba-gratuita__checkbox-label"><input type="checkbox" name="servicio[]" value="nosabe"> {% trans %}No lo tengo claro{% endtrans %}</label>
           </div>
         </div>
 
-        <div class="prueba-gratuita__field">
+        <div class="prueba-gratuita__field prueba-gratuita__field--full">
           <label for="problema">{% trans %}¿Cuál es su mayor problema digital ahora mismo?{% endtrans %}</label>
-          <textarea id="problema" name="problema"
-                    placeholder="{% trans %}Ej: No tengo tiempo para publicar en redes, tengo reseñas sin responder, mi web es muy antigua...{% endtrans %}"></textarea>
+          <textarea id="problema" name="problema" rows="3" placeholder="{% trans %}Ej: No tengo tiempo para publicar en redes, tengo reseñas sin responder, mi web es muy antigua...{% endtrans %}"></textarea>
           <span class="prueba-gratuita__hint">{% trans %}Opcional, pero nos ayuda mucho a preparar una propuesta personalizada.{% endtrans %}</span>
         </div>
 
-        <div class="prueba-gratuita__field">
-          <label for="fuente">{% trans %}¿Cómo conoció esta oferta?{% endtrans %} <span class="prueba-gratuita__required">*</span></label>
-          <select id="fuente" name="fuente" required>
+        <div class="prueba-gratuita__field prueba-gratuita__field--full">
+          <label for="fuente">{% trans %}¿Cómo conoció esta oferta?{% endtrans %}</label>
+          <select id="fuente" name="fuente">
             <option value="">{% trans %}Elija una opción{% endtrans %}</option>
             <option value="rrss">{% trans %}Redes sociales (Instagram, Facebook){% endtrans %}</option>
             <option value="visita">{% trans %}Me visitaron en el negocio{% endtrans %}</option>
@@ -284,8 +555,8 @@
         </div>
 
         <div class="prueba-gratuita__consent">
-          <input type="checkbox" name="privacidad" required id="privacy">
-          <label for="privacy">
+          <label class="prueba-gratuita__checkbox-label">
+            <input type="checkbox" name="privacidad" required>
             {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos para la gestión de esta solicitud.{% endtrans %}
           </label>
         </div>
@@ -293,16 +564,84 @@
         <button type="submit" class="prueba-gratuita__submit"
                 data-track-cta="form_submit_button"
                 data-track-position="form_bottom">
-          {% trans %}Solicitar prueba gratuita{% endtrans %} →
+          {{ jaraba_icon('actions', 'arrow-right', { variant: 'outline', color: 'white', size: '18px' }) }}
+          {% trans %}Solicitar prueba gratuita{% endtrans %}
         </button>
-        <p class="prueba-gratuita__submit-note">
+
+        <p class="prueba-gratuita__form-note">
           {% trans %}Le contactaremos en un máximo de 3 días laborables con una propuesta personalizada.{% endtrans %}
         </p>
       </form>
+    {% endif %}
+
+  </div>
+</section>
+
+{# ============================================================ #}
+{# === SECTION 12: FAQ === #}
+{# ============================================================ #}
+{% if faqs|length > 0 %}
+  <section class="prueba-gratuita__faq prueba-gratuita--reveal" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
+    <div class="prueba-gratuita__container">
+      <h2 class="prueba-gratuita__section-title">{% trans %}Preguntas frecuentes{% endtrans %}</h2>
+      <div class="prueba-gratuita__faq-list">
+        {% for faq in faqs %}
+          <details class="prueba-gratuita__faq-item">
+            <summary class="prueba-gratuita__faq-question">{{ faq.q }}</summary>
+            <div class="prueba-gratuita__faq-answer">
+              <p>{{ faq.a }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
     </div>
   </section>
+{% endif %}
 
-  {# === FOOTER INSTITUCIONAL === #}
-  {% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+{# ============================================================ #}
+{# === SECTION 13: FINAL CTA === #}
+{# ============================================================ #}
+<section class="prueba-gratuita__final-cta prueba-gratuita--reveal" aria-label="{% trans %}Solicitar prueba gratuita{% endtrans %}">
+  <div class="prueba-gratuita__container">
+    <h2>{% trans %}¿Listo para mejorar su negocio?{% endtrans %}</h2>
+    <p>{% trans %}100% gratuito · Sin compromiso · Supervisado por expertos · Financiado por la UE{% endtrans %}</p>
+    <div class="prueba-gratuita__final-cta-actions">
+      <a href="#formulario"
+         class="prueba-gratuita__cta prueba-gratuita__cta--primary prueba-gratuita__cta--large"
+         data-track-cta="final_cta"
+         data-track-position="final">
+        {% trans %}Solicitar prueba gratuita{% endtrans %}
+      </a>
+      <a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+         class="prueba-gratuita__cta prueba-gratuita__cta--whatsapp"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-track-cta="final_whatsapp"
+         data-track-position="final"
+         aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+        {% trans %}O pregúntenos por WhatsApp{% endtrans %}
+      </a>
+    </div>
+  </div>
+</section>
 
-</div>
+{# ============================================================ #}
+{# === SECTION 14: COFINANCIACIÓN === #}
+{# ============================================================ #}
+{% include '@jaraba_andalucia_ei/partials/_logos-cofinanciacion.html.twig' only %}
+
+{# ============================================================ #}
+{# === SECTION 15: WHATSAPP FAB === #}
+{# ============================================================ #}
+<a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+   class="prueba-gratuita__whatsapp-fab"
+   target="_blank"
+   rel="noopener noreferrer"
+   data-track-cta="fab_whatsapp"
+   data-track-position="fab"
+   aria-label="{% trans %}Consultar por WhatsApp{% endtrans %}">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25D366"/>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#FFFFFF"/>
+  </svg>
+</a>

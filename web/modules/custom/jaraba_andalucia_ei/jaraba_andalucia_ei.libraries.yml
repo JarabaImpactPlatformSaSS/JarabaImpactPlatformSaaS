@@ -181,8 +181,8 @@ prueba-gratuita:
   css:
     theme:
       css/andalucia-ei.css: {}
-  dependencies:
-    - core/drupal
+  js:
+    js/prueba-gratuita-landing.js: { attributes: { defer: true } }
 
 calculadora-pe:
   version: 1.x
