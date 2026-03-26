@@ -311,7 +311,11 @@ class SearchConsoleConnectForm extends FormBase {
       'client_id' => $client_id,
       'redirect_uri' => $redirect_uri,
       'response_type' => 'code',
-      'scope' => 'https://www.googleapis.com/auth/webmasters.readonly',
+      // SEO-DEPLOY-NOTIFY-001: Scope ampliado para sitemap submission + indexing.
+      'scope' => implode(' ', [
+        'https://www.googleapis.com/auth/webmasters',
+        'https://www.googleapis.com/auth/indexing',
+      ]),
       'access_type' => 'offline',
       'prompt' => 'consent',
       'state' => \Drupal::csrfToken()->get('insights-search-console-oauth'),

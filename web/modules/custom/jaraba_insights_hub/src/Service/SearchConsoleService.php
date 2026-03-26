@@ -451,7 +451,7 @@ class SearchConsoleService {
    * @return string|null
    *   Access token valido o NULL.
    */
-  protected function getAccessToken(SearchConsoleConnection $connection): ?string {
+  public function getAccessToken(SearchConsoleConnection $connection): ?string {
     $accessToken = $connection->get('access_token')->value;
     $expiresAt = (int) $connection->get('token_expires_at')->value;
 
