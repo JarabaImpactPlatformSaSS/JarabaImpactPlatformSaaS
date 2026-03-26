@@ -731,31 +731,31 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-translation-quality.php"
 
   warn_check "SAFEGUARD-DEPLOY-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-deploy-persistence.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-deploy-persistence.php"
 
   run_check "AI-COVERAGE-001" "AI integration coverage (16 bridges, 17 groundings, 10 agents)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-ai-coverage.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-ai-coverage.php"
 
   warn_check "AB-EXPERIMENT-HEALTH-001" "A/B experiment health (running experiments valid)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-ab-experiment-health.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-ab-experiment-health.php"
 
   warn_check "AB-TESTING-ACTIVE-001" "A/B testing active experiments status" \
-    "php $PROJECT_ROOT/scripts/validation/validate-ab-testing-active.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-ab-testing-active.php"
 
   warn_check "ANALYTICS-DATA-FLOW-001" "Analytics data flow integrity" \
-    "php $PROJECT_ROOT/scripts/validation/validate-analytics-data-flow.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-analytics-data-flow.php"
 
   warn_check "ANALYTICS-INTEGRITY-001" "Analytics hub integrity (services, routes, templates)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-analytics-integrity.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-analytics-integrity.php"
 
   warn_check "DEPLOY-ENV-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml, alternate)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-deploy-env-persistence.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-deploy-env-persistence.php"
 
   warn_check "HUB-ACCESSIBILITY-001" "Hub accessibility sections coverage" \
-    "php $PROJECT_ROOT/scripts/validation/validate-hub-accessibility.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-hub-accessibility.php"
 
   run_check "AUTONOMOUS-AGENT-HEALTH-001" "Autonomous agent infrastructure (workers, queues, types)" \
-    "php $PROJECT_ROOT/scripts/validation/validate-autonomous-agent-health.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-autonomous-agent-health.php"
 
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
