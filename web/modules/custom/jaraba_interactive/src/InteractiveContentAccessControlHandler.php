@@ -99,7 +99,7 @@ class InteractiveContentAccessControlHandler extends EntityAccessControlHandler 
     $memberships = $membershipLoader->loadByUser($account);
 
     foreach ($memberships as $membership) {
-      if ($membership->getGroup()->id() === $tenantId) {
+      if ((int) $membership->getGroup()->id() === $tenantId) {
         return TRUE;
       }
     }

@@ -37,4 +37,3 @@ severity:
 secret:
   allow-rules:
     - id: stripe-secret-token
-    - id: generic-api-key

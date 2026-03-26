@@ -255,6 +255,35 @@ class CopilotOrchestratorService {
       }
     }
 
+    // ================================================================
+    // PII-INPUT-GUARD-001: Check for PII BEFORE sending to external LLM.
+    // Blocks identity documents (DNI, NIE, IBAN, NIF/CIF) to comply with
+    // RGPD Art. 44-46 (international data transfers).
+    // ================================================================
+    if (\Drupal::hasService('ecosistema_jaraba_core.ai_guardrails')) {
+      try {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService $guardrails */
+        $guardrails = \Drupal::service('ecosistema_jaraba_core.ai_guardrails');
+        $piiResult = $guardrails->checkInputPII($message);
+        if ($piiResult['has_pii'] === TRUE) {
+          if ($piiResult['blocked'] === TRUE) {
+            $this->logger->warning('PII blocked in copilot input: @types', [
+              '@types' => implode(', ', $piiResult['detected_types']),
+            ]);
+            return [
+              'text' => 'Por seguridad, no puedo procesar mensajes con datos personales identificativos (DNI, NIE, IBAN, etc.). Por favor, reformula tu consulta sin incluir estos datos.',
+              'pii_blocked' => TRUE,
+            ];
+          }
+          // Use masked version for non-blocked PII (emails, phones).
+          $message = $piiResult['masked'];
+        }
+      }
+      catch (\Throwable $e) {
+        $this->logger->error('PII input check failed: @error', ['@error' => $e->getMessage()]);
+      }
+    }
+
     $providers = $this->getProvidersForMode($mode);
     $model = $this->getModelForMode($mode);
 

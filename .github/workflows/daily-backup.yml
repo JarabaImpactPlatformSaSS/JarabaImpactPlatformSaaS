@@ -53,10 +53,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
 
-      - name: Add server to known hosts
+      - name: Add server to known hosts (SSH-FINGERPRINT-001)
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p ${{ env.DEPLOY_PORT }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+          echo "${{ secrets.DEPLOY_HOST_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
       - name: Ensure backup directories exist
         run: |

@@ -638,6 +638,11 @@ if [ "$MODE" = "full" ]; then
   warn_check "PLUGIN-REGISTRY-VALIDATION-001" "Page Builder JS/CSS asset registry completeness" \
     php "$SCRIPT_DIR/validate-plugin-registry.php"
 
+  # ── Security Audit 2026-03-26 — New validators ──────────────
+
+  warn_check "TWIG-RAW-AUDIT-001" "Twig |raw usage audit (XSS prevention)" \
+    php "$SCRIPT_DIR/validate-twig-raw-audit.php"
+
   # ── Safeguard System Fase 7 — P2 validators ──────────────
 
   warn_check "A11Y-HEADING-HIERARCHY-001" "WCAG heading hierarchy (no level gaps)" \

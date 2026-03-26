@@ -11,6 +11,7 @@ use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Utility\Xss;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -238,9 +239,9 @@ final class CaseStudyLandingController extends ControllerBase {
       'headline' => $case->get('headline')->value ?? '',
       'subtitle' => $case->get('subtitle')->value ?? '',
       'cta_urgency_text' => $case->get('cta_urgency_text')->value ?? '',
-      'challenge_before' => $case->get('challenge_before')->value ?? '',
-      'solution_during' => $case->get('solution_during')->value ?? '',
-      'result_after' => $case->get('result_after')->value ?? '',
+      'challenge_before' => Xss::filterAdmin($case->get('challenge_before')->value ?? ''),
+      'solution_during' => Xss::filterAdmin($case->get('solution_during')->value ?? ''),
+      'result_after' => Xss::filterAdmin($case->get('result_after')->value ?? ''),
       'quote_short' => $case->get('quote_short')->value ?? '',
       'quote_long' => $case->get('quote_long')->value ?? '',
       'meta_description' => $case->get('meta_description')->value ?? '',

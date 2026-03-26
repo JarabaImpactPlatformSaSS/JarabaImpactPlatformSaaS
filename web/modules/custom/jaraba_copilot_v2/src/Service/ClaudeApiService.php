@@ -470,19 +470,27 @@ PROMPT,
   }
 
   /**
-   * Obtiene la API key desde el módulo Key.
+   * Obtiene la API key desde config override (env) o Key module (legacy).
+   *
+   * SEC-C01: Prioridad 1 = config override via settings.secrets.php (getenv).
+   * Prioridad 2 = Key module (legacy, para migracion gradual).
    */
   protected function getApiKey(): ?string {
     $config = $this->configFactory->get('jaraba_copilot_v2.settings');
-    $keyId = $config->get('claude_api_key');
 
-    if (empty($keyId)) {
-      return NULL;
+    // Priority 1: Config override via settings.secrets.php (SECRET-MGMT-001).
+    $keyFromEnv = $config->get('claude_api_key_value');
+    if (is_string($keyFromEnv) && $keyFromEnv !== '') {
+      return $keyFromEnv;
     }
 
-    $key = $this->keyRepository->getKey($keyId);
-    if ($key) {
-      return $key->getKeyValue();
+    // Priority 2: Key module (legacy — will be removed when all envs migrated).
+    $keyId = $config->get('claude_api_key');
+    if (is_string($keyId) && $keyId !== '') {
+      $key = $this->keyRepository->getKey($keyId);
+      if ($key) {
+        return $key->getKeyValue();
+      }
     }
 
     return NULL;
@@ -492,7 +500,7 @@ PROMPT,
    * Verifica si el servicio está configurado.
    */
   public function isConfigured(): bool {
-    return !empty($this->getApiKey());
+    return $this->getApiKey() !== NULL && $this->getApiKey() !== '';
   }
 
 }

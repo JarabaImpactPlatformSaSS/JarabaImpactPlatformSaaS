@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 
 /**
@@ -17,6 +18,7 @@ use Drupal\Core\Controller\ControllerBase;
  * - Templates limpios sin regiones Drupal (zero-region)
  * - Contenido configurable desde UI (theme settings)
  * - PHP 8.4 strict types
+ * - AUDIT-SEC-003: content from theme settings sanitized with Xss::filterAdmin()
  */
 class InfoPagesController extends ControllerBase {
 
@@ -24,7 +26,7 @@ class InfoPagesController extends ControllerBase {
    * Página Sobre Nosotros.
    */
   public function about(): array {
-    $content = theme_get_setting('about_content', 'ecosistema_jaraba_theme') ?: '';
+    $content = Xss::filterAdmin(theme_get_setting('about_content', 'ecosistema_jaraba_theme') ?: '');
 
     return [
       '#theme' => 'info_page_about',
@@ -40,7 +42,7 @@ class InfoPagesController extends ControllerBase {
    * Página de Contacto.
    */
   public function contact(): array {
-    $content = theme_get_setting('contact_content', 'ecosistema_jaraba_theme') ?: '';
+    $content = Xss::filterAdmin(theme_get_setting('contact_content', 'ecosistema_jaraba_theme') ?: '');
     $email = theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: '';
     $phone = theme_get_setting('contact_phone', 'ecosistema_jaraba_theme') ?: '';
     $address = theme_get_setting('contact_address', 'ecosistema_jaraba_theme') ?: '';

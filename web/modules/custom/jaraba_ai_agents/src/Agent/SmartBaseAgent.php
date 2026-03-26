@@ -496,6 +496,29 @@ abstract class SmartBaseAgent extends BaseAgent {
    *   Result array with tool execution trace.
    */
   protected function callAiApiWithTools(string $prompt, array $options = []): array {
+    // PII-INPUT-GUARD-001: Check for PII in prompt before sending to external LLM.
+    if (\Drupal::hasService('ecosistema_jaraba_core.ai_guardrails')) {
+      try {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService $guardrails */
+        $guardrails = \Drupal::service('ecosistema_jaraba_core.ai_guardrails');
+        $piiResult = $guardrails->checkInputPII($prompt);
+        if ($piiResult['has_pii'] === TRUE && $piiResult['blocked'] === TRUE) {
+          return [
+            'success' => FALSE,
+            'data' => ['text' => 'Input contains protected personal data (PII). Request blocked for RGPD compliance.'],
+            'tool_trace' => [],
+            'pii_blocked' => TRUE,
+          ];
+        }
+        if ($piiResult['has_pii'] === TRUE) {
+          $prompt = $piiResult['masked'];
+        }
+      }
+      catch (\Throwable $e) {
+        // Guardrail failure must not block agent execution.
+      }
+    }
+
     if (!$this->toolRegistry || empty($this->toolRegistry->getAll())) {
       return $this->callAiApi($prompt, $options);
     }

@@ -226,8 +226,13 @@ final class AttachmentUrlService {
    *   The HMAC secret key.
    */
   private function getHmacSecret(): string {
-    return $this->configFactory->get('jaraba_support.settings')
-      ->get('attachment_hmac_secret') ?? 'jaraba_support_default_key';
+    $secret = $this->configFactory->get('jaraba_support.settings')
+      ->get('attachment_hmac_secret');
+    if ($secret === NULL || $secret === '') {
+      $this->logger->error('SUPPORT_ATTACHMENT_HMAC_SECRET not configured. Attachment URLs cannot be signed securely.');
+      throw new \RuntimeException('Attachment HMAC secret not configured. Set SUPPORT_ATTACHMENT_HMAC_SECRET environment variable.');
+    }
+    return $secret;
   }
 
   /**

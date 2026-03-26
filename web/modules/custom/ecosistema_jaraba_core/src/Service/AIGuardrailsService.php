@@ -484,25 +484,75 @@ class AIGuardrailsService {
    *   Text with PII masked.
    */
   public function maskOutputPII(string $text): string {
-    $piiPatterns = [
+    $masked = $text;
+    foreach ($this->getPiiPatterns() as $pattern) {
+      $masked = preg_replace($pattern, '[DATO PROTEGIDO]', $masked);
+    }
+
+    return $masked;
+  }
+
+  /**
+   * PII-INPUT-GUARD-001: Check input text for PII before sending to LLM.
+   *
+   * Detects Spanish PII (DNI, NIE, IBAN, NIF/CIF, phone +34) in user input.
+   * Returns detection result with blocked flag and detected types.
+   *
+   * @param string $text
+   *   The user input text.
+   *
+   * @return array
+   *   Array with keys:
+   *   - has_pii: bool — TRUE if any PII detected.
+   *   - blocked: bool — TRUE if PII that must be blocked was found.
+   *   - detected_types: string[] — List of PII type names detected.
+   *   - masked: string — Text with PII replaced by placeholders.
+   *
+   * @return array{has_pii: bool, blocked: bool, detected_types: list<string>, masked: string}
+   */
+  public function checkInputPII(string $text): array {
+    $detectedTypes = [];
+    $masked = $text;
+
+    foreach ($this->getPiiPatterns() as $type => $pattern) {
+      if (preg_match($pattern, $text) === 1) {
+        $detectedTypes[] = $type;
+      }
+      $masked = (string) preg_replace($pattern, '[DATO PROTEGIDO]', $masked);
+    }
+
+    $hasPii = $detectedTypes !== [];
+    // Block if high-sensitivity PII detected (identity documents, bank accounts).
+    $blockableTypes = ['dni', 'nie', 'iban_es', 'nif_cif', 'ssn', 'credit_card'];
+    $blocked = array_intersect($detectedTypes, $blockableTypes) !== [];
+
+    return [
+      'has_pii' => $hasPii,
+      'blocked' => $blocked,
+      'detected_types' => $detectedTypes,
+      'masked' => $masked,
+    ];
+  }
+
+  /**
+   * Returns PII detection patterns for Spanish and international PII.
+   *
+   * @return array<string, string>
+   *   Associative array of PII type => regex pattern.
+   */
+  private function getPiiPatterns(): array {
+    return [
       'email' => '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/',
       'phone_us' => '/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/',
       'ssn' => '/\b\d{3}-\d{2}-\d{4}\b/',
       'credit_card' => '/\b(?:\d{4}[-\s]?){3}\d{4}\b/',
-          // Spanish PII.
+      // Spanish PII.
       'dni' => '/\b\d{8}[A-Za-z]\b/',
       'nie' => '/\b[XYZxyz]\d{7}[A-Za-z]\b/',
       'iban_es' => '/\bES\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{2}[\s-]?\d{10}\b/',
       'nif_cif' => '/\b[A-HJ-NP-SUVW]\d{7}[A-J0-9]\b/',
       'phone_es' => '/\b(?:\+34|0034)[\s-]?\d{9}\b/',
     ];
-
-    $masked = $text;
-    foreach ($piiPatterns as $pattern) {
-      $masked = preg_replace($pattern, '[DATO PROTEGIDO]', $masked);
-    }
-
-    return $masked;
   }
 
   /**

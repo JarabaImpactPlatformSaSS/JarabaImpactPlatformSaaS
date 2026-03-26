@@ -72,12 +72,27 @@
         return { html: html, endIdx: rowIdx - 1 };
       }
 
+      // URL-PROTOCOL-VALIDATE-001: Validate URL protocol to prevent XSS
+      // via javascript:, data:, vbscript: in LLM-generated links.
+      function isSafeUrl(url) {
+        try {
+          var parsed = new URL(url, window.location.href);
+          return ['http:', 'https:'].indexOf(parsed.protocol) !== -1;
+        } catch (e) {
+          return false;
+        }
+      }
+
       function parseMarkdown(text) {
         if (!text) return '';
 
         // 0. Extraer marcadores [ACTION:label|url] como botones CTA.
         var actionPlaceholders = [];
         var processed = text.replace(/\[ACTION:([^|\]]+)\|([^\]]+)\]/g, function (match, label, url) {
+          // SEC-C04: Validate protocol before creating link.
+          if (!isSafeUrl(url.trim())) {
+            return escapeHtml(label.trim());
+          }
           var placeholder = '__ACTION_' + actionPlaceholders.length + '__';
           var safeLabel = escapeHtml(label.trim());
           var safeUrl = escapeHtml(url.trim());
@@ -107,9 +122,13 @@
         // 2. Extraer enlaces antes de escapar.
         var linkPlaceholders = [];
         processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, linkText, url) {
+          // SEC-C04: Validate protocol before creating link.
+          if (!isSafeUrl(url.trim())) {
+            return escapeHtml(linkText);
+          }
           var placeholder = '__LINK_' + linkPlaceholders.length + '__';
           var safeText = escapeHtml(linkText);
-          linkPlaceholders.push('<a href="' + url + '" class="copilot-link" target="_blank" rel="noopener">' + safeText + '</a>');
+          linkPlaceholders.push('<a href="' + escapeHtml(url.trim()) + '" class="copilot-link" target="_blank" rel="noopener">' + safeText + '</a>');
           return placeholder;
         });
 
