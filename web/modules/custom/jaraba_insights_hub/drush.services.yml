@@ -1,0 +1,7 @@
+services:
+  jaraba_insights_hub.commands.seo_notification:
+    class: Drupal\jaraba_insights_hub\Commands\SeoNotificationCommands
+    arguments:
+      - '@jaraba_insights_hub.seo_notification'
+    tags:
+      - { name: drush.command }

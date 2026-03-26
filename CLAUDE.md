@@ -100,12 +100,14 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Traducciones: Drupal.t('string')
 - URLs API: SIEMPRE via drupalSettings, NUNCA hardcoded (ROUTE-LANGPREFIX-001)
 - XSS: Drupal.checkPlain() para datos de API insertados via innerHTML (INNERHTML-XSS-001)
+- URL-PROTOCOL-VALIDATE-001: URLs externas en href DEBEN validar protocolo (http:/https:). Previene javascript: XSS
 - CSRF: Token de /session/token cacheado en variable del modulo (CSRF-JS-CACHE-001)
 
 ### Twig Templates
 - Textos: SIEMPRE {% trans %}texto{% endtrans %} (bloque, NO filtro |t)
 - Accesibilidad: aria-labels en interactivos, headings jerarquicos, focus visible
 - XSS: NUNCA |raw sin sanitizacion previa servidor (AUDIT-SEC-003)
+- TWIG-RAW-AUDIT-001: |raw DEBE tener sanitizacion en controller/preprocess. Validacion: `validate-twig-raw-audit.php`
 - Sin logica de negocio (solo presentacion). Usar preprocess para preparar variables
 - TWIG-URL-RENDER-ARRAY-001: `url()` en Drupal 11 devuelve **render array** (NO string). NUNCA concatenar con `~`. Solo usar dentro de `{{ }}` donde escapeFilter maneja el render array. Para construir URLs concatenadas, pasar la URL como string desde preprocess PHP o usar path relativo (`'/' ~ directory ~ '/logo.svg'`)
 - TWIG-INCLUDE-ONLY-001: Usar `only` en `{% include %}` de parciales para aislar el contexto. Sin `only`, TODAS las variables del template padre se filtran al parcial (incluyendo render arrays que colisionan con variables esperadas como strings). Pasar explicitamente solo las variables necesarias
@@ -234,7 +236,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ### Deploy Safety
 - DEPLOY-MAINTENANCE-SAFETY-001: Step "Disable maintenance mode" en deploy.yml DEBE tener `if: always()`. Sin esto, deploy fallido deja sitio en 503 indefinidamente
 - OPCACHE-PROD-001: `validate_timestamps=0`, 256MB, 20k files. Config en `config/deploy/php/10-opcache-prod.ini`. FPM reload en deploy invalida cache
-- SUPERVISOR-SLEEP-001: Workers Supervisor DEBEN tener sleep 30-60s entre ejecuciones. Sin sleep, hot-loop de bootstrap Drupal quema CPU 350%+. Script wrapper: `/opt/jaraba/scripts/queue-worker.sh`
+- SUPERVISOR-SLEEP-001: Workers DEBEN tener sleep 30-60s. Patron: `bash -c 'drush queue:run ...; sleep N'`
+- SSH-FINGERPRINT-001: CI/CD DEBE usar fingerprint SSH fijo en Secret. NUNCA ssh-keyscan
+- NGINX-HARDENING-001: `server_tokens off` + rate limiting login/API
+- BACKUP-ENCRYPT-001: Backups SQL cifrados con GPG antes de almacenar
+- VALIDATOR-SECURITY-RUNCHECK-001: Validators CSRF y access handlers como `run_check`
+- PII-INPUT-GUARD-001: Input a LLM DEBE pasar por `checkInputPII()` antes de callProvider()
 
 ### Content Seeding Pipeline (CONTENT-SEED-PIPELINE-001)
 - 3 capas datos SaaS: L1 Config (drush cim), L2 Content plataforma, L3 Content tenant
@@ -421,7 +428,7 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 157 scripts validacion (119 run + 41 warn = 160 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) 158 scripts validacion (120 run + 41 warn = 161 checks), (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
 
 ### Pre-commit lint-staged
 - PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
