@@ -1626,6 +1626,9 @@ function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
     $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/leads-guia';
   }
 
+  // OG meta tags for public Andalucía +ei landing pages.
+  _jaraba_andalucia_ei_og_meta_attachments($attachments, $route);
+
   // Popup de reclutamiento en la home de meta-sitios corporativos.
   _jaraba_andalucia_ei_popup_attachments($attachments, $route);
 }
@@ -1692,12 +1695,38 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
 
   // ZERO-REGION-003: Countdown + plazas data via drupalSettings.
   $config = \Drupal::config('jaraba_andalucia_ei.settings');
+  $plazasRestantes = (int) ($config->get('plazas_restantes') ?? 45);
   $attachments['#attached']['drupalSettings']['aeiReclutamiento'] = [
     'fechaLimite' => $config->get('fecha_limite_solicitudes') ?? '2026-06-30',
     'mostrarCountdown' => (bool) ($config->get('mostrar_countdown') ?? TRUE),
-    'plazasRestantes' => (int) ($config->get('plazas_restantes') ?? 45),
+    'plazasRestantes' => $plazasRestantes,
     'plazasTotales' => (int) ($config->get('plazas_totales') ?? 45),
   ];
+
+  // A/B Testing: inyectar variantes del CTA hero via drupalSettings.
+  // variant-tracker.js asigna la variante via API; este JS aplica el cambio visual.
+  // OPTIONAL-CROSSMODULE-001: dependencia @? — funciona sin jaraba_ab_testing.
+  if (\Drupal::moduleHandler()->moduleExists('jaraba_ab_testing')) {
+    $attachments['#attached']['library'][] = 'jaraba_ab_testing/variant-tracker';
+    $attachments['#attached']['library'][] = 'jaraba_andalucia_ei/ab-hero-cta';
+    $attachments['#attached']['drupalSettings']['aeiAbTest'] = [
+      'experiment_id' => 'aei_hero_cta',
+      'variants' => [
+        'control' => [
+          'cta_text' => (string) t('Solicitar plaza ahora'),
+          'cta_color' => 'naranja-impulso',
+        ],
+        'urgency' => [
+          'cta_text' => str_replace('{plazas}', (string) $plazasRestantes, (string) t('Solo quedan {plazas} plazas — Solicita ahora')),
+          'cta_color' => 'naranja-impulso',
+        ],
+        'benefit' => [
+          'cta_text' => (string) t('Empieza gratis + 528 € de incentivo'),
+          'cta_color' => 'verde-innovacion',
+        ],
+      ],
+    ];
+  }
 
   // Geo meta tags para buscadores (Bing, Yahoo, Yandex).
   $geo_tags = [
@@ -2092,6 +2121,54 @@ function _jaraba_andalucia_ei_add_og_tags(array &$attachments, $title, $descript
       'andalucia_ei_' . $prefix . str_replace([':', '/'], '_', $property),
     ];
   }
+}
+
+/**
+ * OG meta tags for Andalucía +ei public landing pages.
+ *
+ * Reclutamiento is handled separately in
+ * _jaraba_andalucia_ei_reclutamiento_attachments() with full SEO suite.
+ * This covers prueba_gratuita, enlaces, and solicitar.
+ */
+function _jaraba_andalucia_ei_og_meta_attachments(array &$attachments, ?string $route): void {
+  $og_map = [
+    'jaraba_andalucia_ei.prueba_gratuita' => [
+      'title' => 'Prueba Gratuita para tu Negocio — Andalucía +ei',
+      'description' => 'Gestión digital gratis para tu negocio durante 2-4 semanas. Redes sociales, web, reseñas y más. Sin compromiso.',
+      'prefix' => 'prueba_',
+    ],
+    'jaraba_andalucia_ei.enlaces' => [
+      'title' => 'Andalucía +ei — Emprendimiento con IA',
+      'description' => 'Programa gratuito. 45 plazas. 528€ incentivo. Sevilla y Málaga. 2ª Edición FSE+ Junta de Andalucía.',
+      'prefix' => 'enlaces_',
+    ],
+    'jaraba_andalucia_ei.solicitar' => [
+      'title' => 'Solicita tu Plaza — Andalucía +ei',
+      'description' => 'Formulario de solicitud para el programa gratuito de inserción laboral con IA. 45 plazas en Sevilla y Málaga.',
+      'prefix' => 'solicitar_',
+    ],
+  ];
+
+  if ($route === NULL || !isset($og_map[$route])) {
+    return;
+  }
+
+  $meta = $og_map[$route];
+  $request = \Drupal::request();
+  $currentUrl = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+
+  // Reuse shared OG helper with module-relative image placeholder.
+  $modulePath = \Drupal::service('extension.list.module')->getPath('jaraba_andalucia_ei');
+  $ogImageUrl = $request->getSchemeAndHttpHost() . '/' . $modulePath . '/images/og-andalucia-ei.jpg';
+
+  _jaraba_andalucia_ei_add_og_tags(
+    $attachments,
+    $meta['title'],
+    $meta['description'],
+    $currentUrl,
+    $meta['prefix'],
+    $ogImageUrl,
+  );
 }
 
 /**

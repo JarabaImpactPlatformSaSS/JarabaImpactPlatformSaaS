@@ -121,16 +121,18 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface {
     //   googleapis: Google Fonts + Gemini API
     //   jsdelivr/unpkg: GrapesJS + vendor libs
     //   unsplash: stock images in Page Builder
+    //   googletagmanager/google-analytics: GA4 (jaraba_pixels)
+    //   connect.facebook.net/facebook.com: Meta Pixel (jaraba_pixels)
     // ═══════════════════════════════════════════════════
     $cspEnabled = $config->get('csp.enabled') ?? TRUE;
     if ($cspEnabled) {
       $cspPolicy = $config->get('csp.policy') ?: implode('; ', [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com www.google.com www.gstatic.com js.stripe.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com www.google.com www.gstatic.com js.stripe.com www.googletagmanager.com *.google-analytics.com connect.facebook.net",
         "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
         "font-src 'self' data: fonts.gstatic.com",
-        "img-src 'self' data: blob: *.stripe.com images.unsplash.com www.gstatic.com",
-        "connect-src 'self' api.stripe.com api.openai.com api.anthropic.com generativelanguage.googleapis.com www.google.com js.stripe.com",
+        "img-src 'self' data: blob: *.stripe.com images.unsplash.com www.gstatic.com www.googletagmanager.com *.facebook.com",
+        "connect-src 'self' api.stripe.com api.openai.com api.anthropic.com generativelanguage.googleapis.com www.google.com js.stripe.com www.google-analytics.com *.analytics.google.com *.googletagmanager.com *.facebook.com",
         "frame-src 'self' js.stripe.com www.google.com",
       ]);
       $response->headers->set('Content-Security-Policy', $cspPolicy);

@@ -87,6 +87,15 @@ reclutamiento:
   js:
     js/reclutamiento-landing.js: { attributes: { defer: true } }
 
+ab-hero-cta:
+  version: 1.x
+  js:
+    js/ab-hero-cta.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 firma-electronica:
   version: 1.x
   css:

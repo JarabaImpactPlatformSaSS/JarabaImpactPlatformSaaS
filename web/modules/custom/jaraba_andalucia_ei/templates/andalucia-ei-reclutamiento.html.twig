@@ -100,9 +100,10 @@
         <span class="aei-rec__hero-stat-label">{% trans %}objetivo de inserción{% endtrans %}</span>
       </div>
     </div>
-    <div class="aei-rec__hero-actions">
-      <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary"
-         data-track-cta="aei_hero_solicitar" data-track-position="reclutamiento_hero">
+    <div class="aei-rec__hero-actions" data-ab-experiment="aei_hero_cta">
+      <a href="{{ solicitar_url }}" class="aei-rec__cta aei-rec__cta--primary js-ab-hero-cta"
+         data-track-cta="aei_hero_solicitar" data-track-position="reclutamiento_hero"
+         data-ab-convert="aei_hero_cta">
         {% trans %}Solicitar plaza ahora{% endtrans %}
       </a>
       <a href="#que-recibes" class="aei-rec__cta aei-rec__cta--secondary"
