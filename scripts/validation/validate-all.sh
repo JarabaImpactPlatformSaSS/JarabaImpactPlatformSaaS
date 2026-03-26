@@ -311,6 +311,9 @@ if [ "$MODE" = "full" ]; then
   run_check "CTA-DESTINATION-001" "CTA destinations point to existing routes" \
     php "$SCRIPT_DIR/validate-cta-destinations.php"
 
+  run_check "CTA-CONTEXT-CONSISTENCY-001" "PDE templates use corporate CTAs (not SaaS)" \
+    php "$SCRIPT_DIR/validate-cta-context-consistency.php"
+
   run_check "FUNNEL-COMPLETENESS-001" "Conversion CTAs have tracking attributes" \
     php "$SCRIPT_DIR/validate-funnel-tracking.php"
 
@@ -429,6 +432,9 @@ if [ "$MODE" = "full" ]; then
   # The real check is SCSS-COMPILE-VERIFY-001 (npm run build + git diff) in deploy.yml.
   warn_check "SCSS-COMPILE-FRESHNESS-001" "SCSS compiled CSS freshness vs partials" \
     php "$SCRIPT_DIR/validate-scss-compile-freshness.php"
+
+  warn_check "SCSS-MULTI-ENTRYPOINT-001" "SCSS multi-entrypoint freshness (30 shared partials)" \
+    php "$SCRIPT_DIR/validate-scss-multi-entrypoint.php"
 
   run_check "ROUTE-SUBSCRIBER-PARITY-001" "Case study route subscriber covers all legacy routes" \
     php "$SCRIPT_DIR/validate-route-subscriber-parity.php"
@@ -560,6 +566,9 @@ if [ "$MODE" = "full" ]; then
 
   run_check "METASITE-CONTENT-COMPLETENESS-001" "Metasite per-variant content completeness" \
     php "$SCRIPT_DIR/validate-metasite-content-completeness.php"
+
+  run_check "METASITE-NAV-URLS-001" "Metasite mega menu URLs match real page paths" \
+    php "$SCRIPT_DIR/validate-metasite-nav-urls.php"
 
   run_check "METASITE-VARIANT-MAP-SSOT-001" "Variant map SSOT (no hardcoded duplicates)" \
     php "$SCRIPT_DIR/validate-metasite-variant-map-ssot.php"

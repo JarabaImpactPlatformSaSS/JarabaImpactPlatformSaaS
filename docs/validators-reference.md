@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 173 |
-| run_check (CI blocker) | 123 |
-| warn_check (no blocker) | 54 |
+| Total scripts PHP | 177 |
+| run_check (CI blocker) | 125 |
+| warn_check (no blocker) | 55 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
@@ -43,6 +43,7 @@
 | COPILOT-RESPONSE-QUALITY-001 | Copilot context quality (10 queries) |
 | CRM-FUNNEL-ATTRIBUTION-001 | CRM funnel attribution pipeline |
 | CSS-HIDDEN-OVERRIDE-001 | CSS display vs HTML hidden conflicts |
+| CTA-CONTEXT-CONSISTENCY-001 | PDE templates use corporate CTAs (not SaaS) |
 | CTA-DESTINATION-001 | CTA destinations point to existing routes |
 | CTA-LOGGED-IN-001 | Conversion CTAs with logged_in conditional |
 | DEMO-FEATURES-FORMAT-001 | Demo features rich format (icon+title+desc) |
@@ -67,6 +68,7 @@
 | DEPRECATED-TEMPLATE-USAGE-001 | No active {% include %} of @deprecated Twig templates |
 | NANO-BANANA-ASSET-AUDIT-001 | AI-generated asset traceability registry (warn_check) |
 | METASITE-CONTENT-COMPLETENESS-001 | Metasite per-variant content completeness (4 variantes × 32 campos) |
+| METASITE-NAV-URLS-001 | Metasite mega menu URLs match real page paths |
 | METASITE-VARIANT-MAP-SSOT-001 | Variant map SSOT (no hardcoded duplicates in .theme) |
 | METASITE-DEAD-FIELDS-001 | Dead fields cleanup (old TAB 15 genérico) |
 | HOMEPAGE-VARIANT-COHERENCE-001 | Homepage variant differentiation |
@@ -159,6 +161,7 @@
 | LIBRARY-ATTACHMENT-001 | Bundle library declaration + CSS existence | 34 pre-existing |
 | PRICING-CASE-STUDY-COHERENCE-001 | Case study pricing vs controller structure | |
 | SCSS-COMPILE-FRESHNESS-001 | SCSS compiled CSS freshness vs partials | Git checkout issue |
+| SCSS-MULTI-ENTRYPOINT-001 | SCSS multi-entrypoint freshness (30 shared partials) | Timestamp comparison |
 | SVG-CURRENTCOLOR-001 | SVG currentColor usage in img tags | |
 | TWIG-INCLUDE-ONLY-001 | Twig includes use only keyword | 144 pre-existing |
 | ROUTE-REFERENCE-INTEGRITY-001 | Url::fromRoute() references existing routes | 12 pre-existing |
