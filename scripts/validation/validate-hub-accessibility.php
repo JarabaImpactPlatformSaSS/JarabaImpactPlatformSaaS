@@ -153,6 +153,94 @@ if (file_exists($servicesFile)) {
   }
 }
 
+// --- Check 7: Modules with admin routes should have hub integration (HUB-NEW-MODULE-001) ---
+
+$modulesDir = $projectRoot . '/web/modules/custom';
+$moduleDirs = glob($modulesDir . '/jaraba_*', GLOB_ONLYDIR);
+$moduleDirs = array_merge($moduleDirs, glob($modulesDir . '/ecosistema_*', GLOB_ONLYDIR));
+
+// Internal-only modules that are exempt from hub integration requirement.
+$hubExemptModules = [
+  'ecosistema_jaraba_core',
+  'jaraba_page_builder',
+  'jaraba_ai_agents',
+  'jaraba_copilot_v2',
+  'jaraba_mcp_server',
+];
+
+$modulesWithoutHub = [];
+
+foreach ($moduleDirs as $moduleDir) {
+  $moduleName = basename($moduleDir);
+
+  // Skip exempt modules.
+  if (in_array($moduleName, $hubExemptModules, TRUE)) {
+    continue;
+  }
+
+  $routingFile = $moduleDir . '/' . $moduleName . '.routing.yml';
+  if (!file_exists($routingFile)) {
+    continue;
+  }
+
+  // Check if this module has admin routes.
+  $routingContent = file_get_contents($routingFile);
+  $hasAdminRoutes = (
+    strpos($routingContent, '/admin/') !== FALSE
+    || preg_match('/^\s+_permission:/m', $routingContent)
+    || preg_match('/^\s+_admin_route:\s+TRUE/mi', $routingContent)
+  );
+
+  if (!$hasAdminRoutes) {
+    continue;
+  }
+
+  // Check for hub integration: UserProfile/Section or TenantSettings/Section.
+  $hasHubSection = FALSE;
+
+  // Check within the module itself.
+  $ownUserProfileSections = glob($moduleDir . '/src/UserProfile/Section/*.php');
+  $ownTenantSections = glob($moduleDir . '/src/TenantSettings/Section/*.php');
+  if (!empty($ownUserProfileSections) || !empty($ownTenantSections)) {
+    $hasHubSection = TRUE;
+  }
+
+  // Check in ecosistema_jaraba_core (centralized sections).
+  if (!$hasHubSection) {
+    // Look for section classes that reference this module's routes.
+    $allCentralSections = array_merge($tenantFiles, $profileFiles);
+    foreach ($allCentralSections as $sectionFile) {
+      $sectionContent = file_get_contents($sectionFile);
+      if (strpos($sectionContent, $moduleName) !== FALSE) {
+        $hasHubSection = TRUE;
+        break;
+      }
+    }
+  }
+
+  // Check services.yml for tagged section services referencing this module.
+  if (!$hasHubSection) {
+    $servicesPath = $moduleDir . '/' . $moduleName . '.services.yml';
+    if (file_exists($servicesPath)) {
+      $svcContent = file_get_contents($servicesPath);
+      if (strpos($svcContent, 'jaraba.user_profile_section') !== FALSE
+          || strpos($svcContent, 'jaraba.tenant_settings_section') !== FALSE) {
+        $hasHubSection = TRUE;
+      }
+    }
+  }
+
+  if (!$hasHubSection) {
+    $modulesWithoutHub[] = $moduleName;
+  }
+}
+
+if (!empty($modulesWithoutHub)) {
+  foreach ($modulesWithoutHub as $mod) {
+    $warnings[] = "Module '$mod' has admin routes but no UserProfile/Section or TenantSettings/Section hub integration (HUB-NEW-MODULE-001)";
+  }
+}
+
 // --- Output ---
 
 echo "HUB-ACCESSIBILITY-001: Hub Accessibility Sections Validator\n";

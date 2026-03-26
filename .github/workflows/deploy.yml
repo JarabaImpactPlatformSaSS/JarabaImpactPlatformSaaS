@@ -196,6 +196,15 @@ jobs:
           rm -f /tmp/settings.local.php
           echo "✅ settings.local.php created"
 
+      - name: Fix git object permissions (SAFEGUARD-DEPLOY-GIT-PERM-001)
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            DEPLOY_PATH=/var/www/jaraba
+            find $DEPLOY_PATH/.git/objects -type d ! -perm -u+wx -exec chmod u+wx {} \; 2>/dev/null || true
+            find $DEPLOY_PATH/.git/objects -type f ! -perm -u+w -exec chmod u+w {} \; 2>/dev/null || true
+            find $DEPLOY_PATH/.git/refs -type f ! -perm -u+w -exec chmod u+w {} \; 2>/dev/null || true
+          EOF
+
       - name: Pull code and install dependencies
         run: |
           ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'

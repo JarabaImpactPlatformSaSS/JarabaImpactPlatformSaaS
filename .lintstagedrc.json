@@ -1,6 +1,6 @@
 {
   "web/modules/custom/**/*.php": [
-    "php vendor/bin/phpstan analyse --no-progress --error-format=raw",
+    "bash scripts/lint/phpstan-staged.sh",
     "php scripts/validation/validate-optional-param-order.php"
   ],
   "web/themes/custom/**/*.scss": [
