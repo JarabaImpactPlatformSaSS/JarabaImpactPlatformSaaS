@@ -25,6 +25,9 @@ $settings['queue_service_proactive_insight_engine'] = 'queue.redis_reliable';
 $settings['queue_service_quality_evaluation'] = 'queue.redis_reliable';
 $settings['queue_service_scheduled_agent'] = 'queue.redis_reliable';
 
+// i18n: AI-powered content translation queue.
+$settings['queue_service_jaraba_i18n_canvas_translation'] = 'queue.redis_reliable';
+
 // Queue reliability settings.
 // Items are visible again after this many seconds if not acknowledged.
 // Prevents stuck items from blocking the queue permanently.

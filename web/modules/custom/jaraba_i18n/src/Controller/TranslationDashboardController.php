@@ -48,7 +48,16 @@ class TranslationDashboardController extends ControllerBase {
     // Tipos de entidad soportados para traducción.
     $entityTypes = [
       'page_content' => $this->t('Páginas'),
-      'blog_post' => $this->t('Blog Posts'),
+      'content_article' => $this->t('Artículos'),
+      'site_config' => $this->t('Configuración del sitio'),
+      'content_category' => $this->t('Categorías'),
+      'content_author' => $this->t('Autores'),
+      'homepage_content' => $this->t('Homepage'),
+      'feature_card' => $this->t('Tarjetas de características'),
+      'intention_card' => $this->t('Tarjetas de intención'),
+      'stat_item' => $this->t('Estadísticas'),
+      'tenant_faq' => $this->t('FAQs'),
+      'tenant_policy' => $this->t('Políticas'),
     ];
 
     // Obtener estadísticas por tipo.
@@ -58,8 +67,8 @@ class TranslationDashboardController extends ControllerBase {
         $stats[$typeId] = $this->translationManager->getTranslationStats($typeId);
         $stats[$typeId]['label'] = $label;
       }
-      catch (\Exception $e) {
-        // Tipo de entidad no existe, ignorar.
+      catch (\Throwable $e) {
+        // Tipo de entidad no existe o modulo desactivado, ignorar.
         continue;
       }
     }

@@ -54,99 +54,80 @@ function jaraba_i18n_theme(): array {
 }
 
 /**
+ * Implements hook_entity_insert().
+ *
+ * Encola entidades nuevas para traduccion automatica con IA.
+ * Soporta Tier 1 (canvas) y Tier 2 (texto) — 13 entity types.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ */
+function jaraba_i18n_entity_insert(EntityInterface $entity): void {
+  jaraba_i18n_handle_entity_change($entity, TRUE);
+}
+
+/**
  * Implements hook_entity_update().
  *
- * Detecta cambios en canvas_data/rendered_html de PageContent y campos
- * texto de SiteConfig, y encola traduccion asincrona via queue.
+ * Encola entidades actualizadas con cambios en campos traducibles.
  * PRESAVE-RESILIENCE-001: hasService() + try-catch.
  */
 function jaraba_i18n_entity_update(EntityInterface $entity): void {
-  // Solo entidades de contenido.
+  jaraba_i18n_handle_entity_change($entity, FALSE);
+}
+
+/**
+ * Handler compartido para insert/update de entidades.
+ *
+ * Delega a TranslationTriggerService para la logica de encolamiento.
+ * Patron: jaraba_matching_handle_entity_change().
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   La entidad insertada o actualizada.
+ * @param bool $isInsert
+ *   TRUE para insert, FALSE para update.
+ */
+function jaraba_i18n_handle_entity_change(EntityInterface $entity, bool $isInsert): void {
   if (!$entity instanceof ContentEntityInterface) {
     return;
   }
 
-  // Prevenir loops: si estamos sincronizando traducciones, no re-encolar.
-  if ($entity->isSyncing()) {
-    return;
-  }
-
-  // Solo procesar entidades que nos interesan.
-  $entityType = $entity->getEntityTypeId();
-  if (!in_array($entityType, ['page_content', 'site_config'], TRUE)) {
-    return;
-  }
-
-  // Solo el idioma original (no traducciones).
-  if (!$entity->isDefaultTranslation()) {
-    return;
-  }
-
-  // Verificar que hay original para comparar.
-  if (!isset($entity->original)) {
-    return;
-  }
-
-  $hasChanges = FALSE;
-
-  if ($entityType === 'page_content') {
-    // Detectar cambios en canvas_data o rendered_html.
-    foreach (['canvas_data', 'rendered_html', 'content_data'] as $fieldName) {
-      if (!$entity->hasField($fieldName)) {
-        continue;
-      }
-      $oldValue = $entity->original->get($fieldName)->value ?? '';
-      $newValue = $entity->get($fieldName)->value ?? '';
-      if ($oldValue !== $newValue) {
-        $hasChanges = TRUE;
-        break;
-      }
-    }
-  }
-  elseif ($entityType === 'site_config') {
-    // Detectar cambios en campos texto traducibles.
-    $translatableFields = [
-      'site_name', 'site_tagline', 'header_cta_text', 'footer_copyright',
-      'footer_col1_title', 'footer_col2_title', 'footer_col3_title', 'meta_title_suffix',
-    ];
-    foreach ($translatableFields as $fieldName) {
-      if (!$entity->hasField($fieldName)) {
-        continue;
-      }
-      $oldValue = $entity->original->get($fieldName)->value ?? '';
-      $newValue = $entity->get($fieldName)->value ?? '';
-      if ($oldValue !== $newValue) {
-        $hasChanges = TRUE;
-        break;
-      }
-    }
-  }
-
-  if (!$hasChanges) {
-    return;
-  }
-
-  // Encolar traduccion asincrona.
   try {
-    if (!\Drupal::hasService('jaraba_i18n.canvas_translation')) {
+    if (!\Drupal::hasService('jaraba_i18n.translation_trigger')) {
       return;
     }
-    /** @var \Drupal\Core\Queue\QueueFactory $queueFactory */
-    $queueFactory = \Drupal::service('queue');
-    $queue = $queueFactory->get('jaraba_i18n_canvas_translation');
-    $queue->createItem([
-      'entity_type' => $entityType,
-      'entity_id' => $entity->id(),
-      'changed_time' => $entity->hasField('changed') ? (int) $entity->get('changed')->value : 0,
-    ]);
+    \Drupal::service('jaraba_i18n.translation_trigger')
+      ->handleEntityChange($entity, $isInsert);
   }
   catch (\Throwable $e) {
     // Queue failure must not break entity save.
-    \Drupal::logger('jaraba_i18n')->error('Failed to enqueue canvas translation for @type/@id: @msg', [
-      '@type' => $entityType,
-      '@id' => $entity->id(),
-      '@msg' => $e->getMessage(),
-    ]);
+    \Drupal::logger('jaraba_i18n')->error(
+      'Failed to handle entity change for @type/@id: @msg',
+      [
+        '@type' => $entity->getEntityTypeId(),
+        '@id' => $entity->id(),
+        '@msg' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Ejecuta catch-up periodico (cada 6h) para detectar entidades
+ * sin traduccion y encolarlas automaticamente.
+ * Patron: ProactiveInsightsService::runCron().
+ */
+function jaraba_i18n_cron(): void {
+  if (\Drupal::hasService('jaraba_i18n.translation_catchup')) {
+    try {
+      \Drupal::service('jaraba_i18n.translation_catchup')->runCron();
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_i18n')->warning(
+        'Translation catchup cron failed: @error',
+        ['@error' => $e->getMessage()]
+      );
+    }
   }
 }
 
