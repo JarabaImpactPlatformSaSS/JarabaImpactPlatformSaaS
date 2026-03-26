@@ -3845,3 +3845,71 @@ function ecosistema_jaraba_core_update_9047(): string {
     return 'Error: ' . $e->getMessage();
   }
 }
+
+/**
+ * SAFEGUARD-PII-AUDIT-TRAIL-001: Create pii_detection_log table.
+ *
+ * Direct table (not ContentEntity) for high-volume PII detection logging.
+ * RGPD Art. 5.2 accountability: structured audit trail for AEPD inspections.
+ */
+function ecosistema_jaraba_core_update_9048(): string {
+  try {
+    $schema = \Drupal::database()->schema();
+    if ($schema->tableExists('pii_detection_log')) {
+      return 'Table pii_detection_log already exists — skipped.';
+    }
+
+    $schema->createTable('pii_detection_log', [
+      'description' => 'PII detection audit trail for RGPD compliance.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'detected_types' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'description' => 'Comma-separated PII types: dni, nie, iban_es, etc.',
+        ],
+        'action' => [
+          'type' => 'varchar',
+          'length' => 16,
+          'not null' => TRUE,
+          'description' => 'Action taken: blocked or masked.',
+        ],
+        'channel' => [
+          'type' => 'varchar',
+          'length' => 32,
+          'not null' => TRUE,
+          'description' => 'Detection channel: input, output, copilot, agent, mcp.',
+        ],
+        'tenant_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+          'description' => 'Tenant ID (0 for anonymous).',
+        ],
+        'created' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'description' => 'Unix timestamp of detection.',
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'action' => ['action'],
+        'channel' => ['channel'],
+        'tenant' => ['tenant_id'],
+        'created' => ['created'],
+      ],
+    ]);
+
+    return 'Created pii_detection_log table for RGPD PII audit trail.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to create pii_detection_log: ' . $e->getMessage(), 0, $e);
+  }
+}

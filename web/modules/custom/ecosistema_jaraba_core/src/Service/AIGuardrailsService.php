@@ -526,6 +526,11 @@ class AIGuardrailsService {
     $blockableTypes = ['dni', 'nie', 'iban_es', 'nif_cif', 'ssn', 'credit_card'];
     $blocked = array_intersect($detectedTypes, $blockableTypes) !== [];
 
+    // SAFEGUARD-PII-AUDIT-TRAIL-001: Log detection for RGPD accountability.
+    if ($hasPii) {
+      $this->logPiiDetection($detectedTypes, $blocked ? 'blocked' : 'masked', 'input', 0);
+    }
+
     return [
       'has_pii' => $hasPii,
       'blocked' => $blocked,
@@ -553,6 +558,39 @@ class AIGuardrailsService {
       'nif_cif' => '/\b[A-HJ-NP-SUVW]\d{7}[A-J0-9]\b/',
       'phone_es' => '/\b(?:\+34|0034)[\s-]?\d{9}\b/',
     ];
+  }
+
+  /**
+   * SAFEGUARD-PII-AUDIT-TRAIL-001: Log PII detection for RGPD compliance.
+   *
+   * Uses direct table (not ContentEntity) for high-volume performance.
+   * Retention: 12 months. Queryable by date range for audits.
+   *
+   * @param list<string> $detectedTypes
+   *   PII types detected (dni, nie, iban_es, etc.).
+   * @param string $action
+   *   Action taken: 'blocked' or 'masked'.
+   * @param string $channel
+   *   Detection channel: 'copilot', 'agent', 'mcp'.
+   * @param int $tenantId
+   *   Tenant ID (0 for anonymous).
+   */
+  public function logPiiDetection(array $detectedTypes, string $action, string $channel, int $tenantId = 0): void {
+    try {
+      $this->database->insert('pii_detection_log')
+        ->fields([
+          'detected_types' => implode(',', $detectedTypes),
+          'action' => $action,
+          'channel' => $channel,
+          'tenant_id' => $tenantId,
+          'created' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
+    }
+    catch (\Throwable $e) {
+      // Audit logging failure must never block the main flow.
+      $this->logger->notice('PII audit log failed: @error', ['@error' => $e->getMessage()]);
+    }
   }
 
   /**

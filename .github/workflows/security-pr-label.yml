@@ -1,0 +1,55 @@
+# SAFEGUARD-PR-SECURITY-LABEL-001: Auto-label PRs that touch security-sensitive files.
+# Adds 'security-review-required' label when PR modifies access control, routing,
+# secrets, Twig |raw, innerHTML, or CSP configuration.
+
+name: Security PR Label
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for security-sensitive file changes
+        id: check
+        run: |
+          SECURITY_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} | grep -E \
+            '(AccessControlHandler|\.routing\.yml|settings\.secrets\.php|trivy\.yaml|SecurityHeaders|\.github/workflows/(deploy|security)|CSP|guardrails)' || true)
+
+          TWIG_RAW=$(git diff ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} -- '*.html.twig' | grep -c '^\+.*|raw' || true)
+
+          JS_INNERHTML=$(git diff ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }} -- '*.js' | grep -c '^\+.*innerHTML' || true)
+
+          if [ -n "$SECURITY_FILES" ] || [ "$TWIG_RAW" -gt 0 ] || [ "$JS_INNERHTML" -gt 0 ]; then
+            echo "needs_review=true" >> $GITHUB_OUTPUT
+            echo "Security-sensitive changes detected:"
+            echo "$SECURITY_FILES"
+            [ "$TWIG_RAW" -gt 0 ] && echo "  + $TWIG_RAW new |raw usage(s) in Twig"
+            [ "$JS_INNERHTML" -gt 0 ] && echo "  + $JS_INNERHTML new innerHTML usage(s) in JS"
+          else
+            echo "needs_review=false" >> $GITHUB_OUTPUT
+            echo "No security-sensitive changes detected."
+          fi
+
+      - name: Add security label
+        if: steps.check.outputs.needs_review == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['security-review-required']
+            });
