@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-26
-**Version:** 118.0.0 (AI-COVERAGE-001 — cobertura IA autonoma completa + aprendizaje #227)
+**Version:** 119.0.0 (MEGAMENU-PED-CORPORATE-001 — mega menú corporativo PDE + aprendizaje #229)
 
 ---
 ## 1. Inicio de Sesion
