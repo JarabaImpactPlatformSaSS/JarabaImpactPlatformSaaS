@@ -706,6 +706,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "API-ENDPOINT-JS-PARITY-001" "JS fetch/API calls match existing routing.yml routes" \
     php "$SCRIPT_DIR/validate-api-endpoint-js-parity.php"
 
+  warn_check "TRANSLATION-COVERAGE-001" "Translation coverage for multi-language content" \
+    php "$SCRIPT_DIR/validate-translation-coverage.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
