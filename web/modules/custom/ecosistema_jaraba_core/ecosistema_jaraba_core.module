@@ -1818,7 +1818,45 @@ function ecosistema_jaraba_core_cron() {
   // 9. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
   _ecosistema_jaraba_core_cron_extended();
 
-  // 10. GAP-EMAIL-VERIFY: Cleanup expired email verification tokens.
+  // 10. AI-COVERAGE-001: Proactive churn retention — iterate high-risk tenants
+  // every 6h and trigger retention workflows automatically.
+  if (\Drupal::hasService('ecosistema_jaraba_core.predictive_integration')) {
+    try {
+      $state = \Drupal::state();
+      $lastRun = $state->get('jaraba_predictive_retention_last_run', 0);
+      $sixHoursAgo = \Drupal::time()->getRequestTime() - 21600;
+      if ($lastRun < $sixHoursAgo) {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\PredictiveIntegrationService $predictive */
+        $predictive = \Drupal::service('ecosistema_jaraba_core.predictive_integration');
+        $highRisk = $predictive->getHighRiskTenants(10);
+        $triggered = 0;
+        foreach ($highRisk as $tenant) {
+          $tenantId = (int) ($tenant['tenant_id'] ?? 0);
+          $riskScore = (int) ($tenant['risk_score'] ?? 0);
+          $riskLevel = (string) ($tenant['risk_level'] ?? 'high');
+          if ($tenantId > 0 && $riskScore >= 60) {
+            $predictive->triggerRetention($tenantId, $riskScore, $riskLevel);
+            $triggered++;
+          }
+        }
+        $state->set('jaraba_predictive_retention_last_run', \Drupal::time()->getRequestTime());
+        if ($triggered > 0) {
+          \Drupal::logger('ecosistema_jaraba_core')->info(
+            'Predictive retention: @count tenants con alto riesgo de churn procesados.',
+            ['@count' => $triggered]
+          );
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->error(
+        'Predictive retention error: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 11. GAP-EMAIL-VERIFY: Cleanup expired email verification tokens.
   if (\Drupal::hasService('ecosistema_jaraba_core.email_verification')) {
     try {
       $deleted = \Drupal::service('ecosistema_jaraba_core.email_verification')

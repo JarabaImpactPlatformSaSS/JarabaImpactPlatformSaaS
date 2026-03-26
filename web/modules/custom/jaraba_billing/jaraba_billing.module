@@ -485,6 +485,9 @@ function jaraba_billing_theme(): array {
     'revenue_dashboard' => [
       'variables' => [
         'snapshot' => [],
+        'churn_predictions' => [],
+        'revenue_forecast' => [],
+        'high_risk_tenants' => [],
       ],
       'template' => 'revenue-dashboard',
     ],

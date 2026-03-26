@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_crm\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ecosistema_jaraba_core\Service\PredictiveIntegrationService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_crm\Service\CompanyService;
 use Drupal\jaraba_crm\Service\ContactService;
@@ -26,6 +27,7 @@ class CrmDashboardController extends ControllerBase {
     protected OpportunityService $opportunityService,
     protected ActivityService $activityService,
     protected TenantContextService $tenantContext,
+    protected ?PredictiveIntegrationService $predictive = NULL,
   ) {
   }
 
@@ -34,12 +36,15 @@ class CrmDashboardController extends ControllerBase {
    */
   public static function create(ContainerInterface $container): static {
     return new static(
-          $container->get('jaraba_crm.company'),
-          $container->get('jaraba_crm.contact'),
-          $container->get('jaraba_crm.opportunity'),
-          $container->get('jaraba_crm.activity'),
-          $container->get('ecosistema_jaraba_core.tenant_context'),
-      );
+      $container->get('jaraba_crm.company'),
+      $container->get('jaraba_crm.contact'),
+      $container->get('jaraba_crm.opportunity'),
+      $container->get('jaraba_crm.activity'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
+      $container->has('ecosistema_jaraba_core.predictive_integration')
+        ? $container->get('ecosistema_jaraba_core.predictive_integration')
+        : NULL,
+    );
   }
 
   /**
@@ -51,6 +56,22 @@ class CrmDashboardController extends ControllerBase {
   public function dashboard(): array {
     $tenantId = $this->tenantContext->getCurrentTenantId();
 
+    // Predictive intelligence — AI-COVERAGE-001.
+    $topLeads = [];
+    $revenueForecast = [];
+    $anomalies = [];
+    if ($this->predictive !== NULL) {
+      try {
+        $topLeads = $this->predictive->getTopLeads(5);
+        $revenueForecast = $this->predictive->getRevenueForecast('mrr', 'monthly');
+        $anomalyResult = $this->predictive->detectAnomalies('revenue');
+        $anomalies = $anomalyResult['anomalies'] ?? [];
+      }
+      catch (\Throwable) {
+        // Predictive data is enhancement, not critical.
+      }
+    }
+
     return [
       '#theme' => 'crm_dashboard',
       '#companies_count' => $this->companyService->count($tenantId),
@@ -61,6 +82,9 @@ class CrmDashboardController extends ControllerBase {
       '#recent_activities' => $this->activityService->getRecent($tenantId, 10),
       '#top_contacts' => $this->contactService->getTopEngaged(5, $tenantId),
       '#closing_soon' => $this->opportunityService->getClosingSoon(30, $tenantId),
+      '#top_leads' => $topLeads,
+      '#revenue_forecast' => $revenueForecast,
+      '#anomalies' => $anomalies,
       '#cache' => [
         'max-age' => 0,
       ],
