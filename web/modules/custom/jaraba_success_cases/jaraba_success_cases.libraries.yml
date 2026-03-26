@@ -4,6 +4,7 @@ success-cases:
       css/jaraba-success-cases.css: {}
   js:
     js/success-cases.js: {}
+    /modules/custom/ecosistema_jaraba_core/js/tenant-dashboard-particles.js: {}
   dependencies:
     - core/once
     - core/drupal

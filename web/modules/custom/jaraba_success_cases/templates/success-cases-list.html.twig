@@ -17,9 +17,25 @@
 #}
 
 <section class="sc-hero">
+  <canvas class="sc-hero__particles" data-dashboard-particles aria-hidden="true"></canvas>
   <div class="sc-hero__container">
+    <span class="sc-hero__badge">{% trans %}Andalucía +ei{% endtrans %}</span>
     <h1 class="sc-hero__title">{% trans %}Casos de Éxito{% endtrans %}</h1>
-    <p class="sc-hero__subtitle">{% trans %}Historias reales de transformación profesional y empresarial{% endtrans %}</p>
+    <p class="sc-hero__subtitle">{% trans %}Historias reales de transformación profesional y empresarial del programa Andalucía +ei{% endtrans %}</p>
+    <div class="sc-hero__stats">
+      <div class="sc-hero__stat">
+        <span class="sc-hero__stat-value">{{ cases|length }}</span>
+        <span class="sc-hero__stat-label">{% trans %}casos documentados{% endtrans %}</span>
+      </div>
+      <div class="sc-hero__stat">
+        <span class="sc-hero__stat-value">46%</span>
+        <span class="sc-hero__stat-label">{% trans %}tasa de inserción{% endtrans %}</span>
+      </div>
+      <div class="sc-hero__stat">
+        <span class="sc-hero__stat-value">8</span>
+        <span class="sc-hero__stat-label">{% trans %}provincias andaluzas{% endtrans %}</span>
+      </div>
+    </div>
   </div>
 </section>
 

@@ -282,5 +282,42 @@ function jaraba_success_cases_requirements(string $phase): array {
     // Don't break status page.
   }
 
+  // CHECK 7: Seed script parity — detect cases in seed but missing from DB.
+  // SEED-PARITY-001: Ensures seed-success-cases.php is executed after updates.
+  try {
+    $seedFile = \Drupal::root() . '/../scripts/migration/seed-success-cases.php';
+    if (file_exists($seedFile)) {
+      $seedContent = file_get_contents($seedFile);
+      preg_match_all("/'slug'\s*=>\s*'([^']+)'/", $seedContent, $matches);
+      $seedSlugs = $matches[1] ?? [];
+      $storage = \Drupal::entityTypeManager()->getStorage('success_case');
+      $missingSlugs = [];
+      foreach ($seedSlugs as $slug) {
+        $count = $storage->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('slug', $slug)
+          ->count()
+          ->execute();
+        if ((int) $count === 0) {
+          $missingSlugs[] = $slug;
+        }
+      }
+      if (!empty($missingSlugs)) {
+        $requirements['jaraba_success_cases_seed_parity'] = [
+          'title' => t('Success cases: Seed parity'),
+          'value' => t('@count case(s) in seed script but missing from DB: @slugs', [
+            '@count' => count($missingSlugs),
+            '@slugs' => implode(', ', $missingSlugs),
+          ]),
+          'description' => t('Run: lando drush php:script scripts/migration/seed-success-cases.php'),
+          'severity' => REQUIREMENT_WARNING,
+        ];
+      }
+    }
+  }
+  catch (\Throwable) {
+    // Don't break status page.
+  }
+
   return $requirements;
 }
