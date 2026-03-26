@@ -7,9 +7,13 @@
  * SUCCESS-CASES-001: All case study data must come from SuccessCase entity.
  * Run: lando drush php:script scripts/migration/seed-success-cases.php
  *
- * This script creates 10 SuccessCase entities (one per commercial vertical
- * + 1 secondary for empleabilidad) with real data from Andalucía +ei
- * participants and pre-launch placeholders for verticals without real cases.
+ * This script creates 14 SuccessCase entities:
+ * - 9 pre-launch placeholders (one per commercial vertical, SaaS showcase)
+ * - 5 real cases from Andalucía +ei 1ª Edición:
+ *   Luis Miguel Criado (empleabilidad), Marcela Calabia (emprendimiento),
+ *   Ángel Martínez (emprendimiento), Adrián Capatina Tudor (emprendimiento),
+ *   Cristina Martín Pereira (emprendimiento), Maia Tolomeo (empleabilidad)
+ * - PED S.L. dogfooding case (andalucia_ei)
  * LEGACY-CONTROLLER-CLEANUP-001: All hardcoded CaseStudyControllers removed.
  */
 
@@ -374,12 +378,95 @@ $cases = [
     'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
     'program_year' => '2023-2024',
     'website' => 'https://www.caminoviejo.es/',
-    'video_url' => 'https://www.youtube.com/watch?v=gk8MGO8ldLE',
+    // NOTE: YouTube gk8MGO8ldLE is Camino Viejo promo, NOT program testimonial.
+    // Program interview video: 20251007-Reunión Camino Viejo-resaltar.mp4 (46 MB).
+    // video_url left empty until testimonial clip is uploaded to /sites/default/files/.
+    'video_url' => '',
     'schema_date_published' => '2025-10-07',
     'meta_description' => 'Caso de éxito real: Ángel Martínez fundó Camino Viejo, cicloturismo premium en Sierra Morena, con 18.000€ de subvención y negocio rentable gracias al programa Andalucía +ei.',
     'status' => TRUE,
     'featured' => TRUE,
     'weight' => 11,
+  ],
+  // REAL CASE: Adrián Capatina Tudor / NOVAVID — Andalucía +ei 1ª Edición.
+  // Source: Transcripción reunión 10/10/2025, Nota IA, Preparación caso NOVAVID.
+  // Photos: 2x high-res JPG (Apr 2024) + 1x WhatsApp (Oct 2025).
+  // Video: Reunión 802 MB (completa) + transcripción.
+  // Web: novavid.media | Instagram: @novavidmedia | Google Business: Novavid
+  [
+    'name' => 'Adrián Capatina Tudor',
+    'slug' => 'adrian-capatina-tudor-novavid',
+    'vertical' => 'emprendimiento',
+    'headline' => 'De inmigrante sin idioma a agencia audiovisual con clientes del sector inmobiliario de lujo',
+    'subtitle' => 'Cómo Adrián fundó NOVAVID Media Network en Estepona y transformó su talento autodidacta en un negocio estructurado con el programa Andalucía +ei',
+    'protagonist_name' => 'Adrián Capatina Tudor',
+    'protagonist_role' => 'Fundador y Director Creativo de NOVAVID',
+    'protagonist_company' => 'NOVAVID Media Network, Estepona',
+    'sector' => 'Producción audiovisual / Videografía / Diseño 3D / Marketing digital',
+    'location' => 'Estepona, Málaga',
+    'cta_urgency_text' => 'Descubre cómo emprender en el sector creativo con Andalucía +ei',
+    'challenge_before' => 'Adrián llegó a España desde Rumanía con 16 años sin conocer el idioma. Se formó de manera autodidacta en informática, videografía y diseño 3D, acumulando clientes del sector inmobiliario de lujo que valoraban personalmente su trabajo. Pero le faltaba estructura empresarial: no sabía calcular beneficios reales, no tenía un modelo de precios formal y operaba por instinto sin visión estratégica de negocio.',
+    'solution_during' => 'El programa Andalucía +ei le proporcionó la base empresarial que le faltaba: cálculo real de beneficios, estructura de precios por servicio, comprensión del sistema fiscal, networking profesional y mentalidad estratégica. Aprendió a diferenciar facturación de beneficio y a planificar el crecimiento con datos, no con intuición.',
+    'result_after' => 'Fundó NOVAVID Media Network, una agencia de producción audiovisual y marketing digital en Estepona especializada en el sector inmobiliario de lujo. Opera con clientes corporativos recurrentes, una media de 5 proyectos mensuales con contratos formales y sistema de pago 50/50. Pivotó estratégicamente de videografía generalista a diseño 3D de alto valor. Los proyectos le entran solos por Google y boca a boca. Tan impactante fue la formación que reparte los conocimientos aprendidos a otros emprendedores de su entorno.',
+    'quote_long' => 'La vida me ha cambiado, te lo aseguro. Yo todo lo que he aprendido de ti, todo lo que nos enseñaste, lo repartí a otros porque siempre te encuentras amigos o gente nueva. Cualquier persona que te das cuenta que necesita, le explico: mira, a mí me han explicado de esa manera, me lo han dicho así.',
+    'quote_short' => 'La vida me ha cambiado, te lo aseguro. Todo lo que aprendí lo reparto a otros emprendedores.',
+    'rating' => 5,
+    'metrics_json' => json_encode([
+      ['label' => 'Clientes mensuales', 'before' => 'Esporádicos', 'after' => '5 de media', 'change' => 'Recurrentes'],
+      ['label' => 'Modelo de cobro', 'before' => 'Informal', 'after' => 'Contrato 50/50', 'change' => 'Profesionalizado'],
+      ['label' => 'Pivote estratégico', 'before' => 'Videografía general', 'after' => 'Diseño 3D alto valor', 'change' => 'Mayor rentabilidad'],
+      ['label' => 'Captación', 'before' => 'Boca a boca', 'after' => 'Google + reseñas', 'change' => 'Proyectos entran solos'],
+      ['label' => 'Objetivo', 'before' => 'Sin plan', 'after' => '10.000 €/mes', 'change' => 'En 1 año'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'website' => 'https://novavid.media/',
+    'video_url' => '',
+    'schema_date_published' => '2025-10-10',
+    'meta_description' => 'Caso de éxito real: Adrián Capatina Tudor, de inmigrante rumano a fundador de NOVAVID Media Network, agencia audiovisual de lujo en Estepona, gracias al programa Andalucía +ei.',
+    'status' => TRUE,
+    'featured' => TRUE,
+    'weight' => 12,
+  ],
+  // REAL CASE: Cristina Martín Pereira / De Cris Moda — Andalucía +ei 1ª Edición.
+  // Source: Caso de Éxito completo, Transcripción 13/10/2025, Análisis estratégico.
+  // Photos: 1x high-res JPG (May 2024).
+  // Video: Reunión 298 MB (completa) + transcripción.
+  [
+    'name' => 'Cristina Martín Pereira',
+    'slug' => 'cristina-martin-pereira-de-cris-moda',
+    'vertical' => 'emprendimiento',
+    'headline' => 'De camarera a emprendedora digital: 600-800€/mes con solo 4 horas de trabajo a la semana',
+    'subtitle' => 'Cómo Cristina fundó De Cris Moda y vende moda femenina en 6 países desde su casa en Huelva gracias al programa Andalucía +ei',
+    'protagonist_name' => 'Cristina Martín Pereira',
+    'protagonist_role' => 'Fundadora de De Cris Moda',
+    'protagonist_company' => 'De Cris Moda, Huelva',
+    'sector' => 'Comercio social / Moda femenina online',
+    'location' => 'Huelva',
+    'cta_urgency_text' => 'Descubre cómo emprender en comercio digital con Andalucía +ei',
+    'challenge_before' => 'Cristina llevaba muchos años como camarera en hostelería. El trabajo había dejado de motivarla. Siempre quiso tener algo propio pero no sabía qué ni cómo: no encontraba a qué dedicarse. No sabía hacer un proyecto de empresa, en qué epígrafe darse de alta, ni por dónde empezar con la burocracia.',
+    'solution_during' => 'El programa Andalucía +ei le provocó un "shock de ecosistema": descubrió que sus competidores no eran tiendas locales sino Shein y Amazon. Aprendió a calcular beneficios reales, a estructurar una propuesta de valor diferenciada (packs de conveniencia para madres ocupadas), y a usar TikTok como motor de ventas. Las dinámicas de grupo le dieron el empujón psicológico: "la chispa que te falta, ese empujoncillo del miedo".',
+    'result_after' => 'Fundó "De Cris Moda", un negocio de comercio social 100% online que genera 600-800€/mes con solo 4 horas semanales de trabajo activo (directos los viernes). Se mudó de vivienda por falta de espacio para el stock. Vende internacionalmente en 6 países (Honduras, Francia, Italia, Holanda, Portugal, Bélgica) vía Vinted y Wallapop. Se dio de alta como autónoma ella sola gracias a lo aprendido. 8-9 meses operando.',
+    'quote_long' => 'Estoy de mudanza porque la tienda ya no cabía en casa. Yo empecé en casa y no paro de crecer. Solamente trabajo en directo los viernes, entre 2 y 4 horas. Los reels de diario ya los tengo programados, se suben solos. El rendimiento para lo que le dedico real está bastante bien.',
+    'quote_short' => 'La tienda ya no cabía en casa. Solo trabajo 4 horas a la semana y no paro de crecer.',
+    'rating' => 5,
+    'metrics_json' => json_encode([
+      ['label' => 'Ingresos mensuales', 'before' => '0 €', 'after' => '600-800 €', 'change' => 'Con 4h/semana'],
+      ['label' => 'Trabajo activo', 'before' => 'Hostelería tiempo completo', 'after' => '4 horas/semana', 'change' => 'Arbitraje de tiempo'],
+      ['label' => 'Venta internacional', 'before' => '0 países', 'after' => '6 países', 'change' => 'Honduras a Bélgica'],
+      ['label' => 'Espacio físico', 'before' => 'Habitación', 'after' => 'Mudanza + caseta stock', 'change' => 'Crecimiento'],
+      ['label' => 'Autonomía burocrática', 'before' => 'No sabía por dónde empezar', 'after' => 'Alta autónoma sola', 'change' => 'Empoderada'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'video_url' => '',
+    'schema_date_published' => '2025-10-13',
+    'meta_description' => 'Caso de éxito real: Cristina Martín Pereira, de camarera a emprendedora digital con De Cris Moda. 600-800€/mes con 4h/semana vendiendo en 6 países gracias a Andalucía +ei.',
+    'status' => TRUE,
+    'featured' => TRUE,
+    'weight' => 13,
   ],
   // REAL CASE: Maia Tolomeo — Andalucía +ei 1ª Edición.
   // Source: Video-testimonio propio (2024-03-26, 1:55 min).
@@ -415,7 +502,7 @@ $cases = [
     'meta_description' => 'Caso de éxito real: Maia Tolomeo, participante del programa Andalucía +ei, pasó del desempleo a empleada en comercio local con acompañamiento profesional personalizado.',
     'status' => TRUE,
     'featured' => FALSE,
-    'weight' => 12,
+    'weight' => 14,
   ],
 ];
 
