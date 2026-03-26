@@ -4,3 +4,10 @@ uptime_check_interval: 300
 uptime_alert_threshold: 3
 error_retention_days: 90
 web_vitals_aggregation_interval: daily
+seo_notification_enabled: true
+seo_notification_domains:
+  - plataformadeecosistemas.com
+  - jarabaimpact.com
+  - pepejaraba.com
+  - plataformadeecosistemas.es
+seo_notification_daily_limit: 180

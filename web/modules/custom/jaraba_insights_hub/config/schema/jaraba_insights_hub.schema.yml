@@ -20,3 +20,15 @@ jaraba_insights_hub.settings:
     web_vitals_aggregation_interval:
       type: string
       label: 'Web Vitals aggregation interval'
+    seo_notification_enabled:
+      type: boolean
+      label: 'Enable SEO notifications on deploy (SEO-DEPLOY-NOTIFY-001)'
+    seo_notification_domains:
+      type: sequence
+      label: 'Production domains for SEO notifications'
+      sequence:
+        type: string
+        label: 'Domain hostname'
+    seo_notification_daily_limit:
+      type: integer
+      label: 'Daily URL notification limit per domain'

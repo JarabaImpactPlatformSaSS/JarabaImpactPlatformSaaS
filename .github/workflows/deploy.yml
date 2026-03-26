@@ -325,6 +325,10 @@ jobs:
             echo ""
             echo "// SEC-C02: Support Attachment HMAC Secret"
             [ -n "${KEY_SUPPORT_HMAC}" ] && echo "putenv('SUPPORT_ATTACHMENT_HMAC_SECRET=${KEY_SUPPORT_HMAC}');"
+            echo ""
+            echo "// SEO-DEPLOY-NOTIFY-001: Google Search Console OAuth (same project as Social Auth)"
+            [ -n "${KEY_GOOGLE_CLIENT_ID}" ] && echo "putenv('GOOGLE_SEARCH_CONSOLE_CLIENT_ID=${KEY_GOOGLE_CLIENT_ID}');"
+            [ -n "${KEY_GOOGLE_CLIENT_SECRET}" ] && echo "putenv('GOOGLE_SEARCH_CONSOLE_CLIENT_SECRET=${KEY_GOOGLE_CLIENT_SECRET}');"
           } > "$ENV_FILE"
 
           PUTENV_COUNT=$(grep -c putenv "$ENV_FILE")
