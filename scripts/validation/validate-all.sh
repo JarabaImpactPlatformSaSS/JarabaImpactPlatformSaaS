@@ -421,6 +421,9 @@ if [ "$MODE" = "full" ]; then
   run_check "SUCCESS-CASES-SSOT-001" "SuccessCase entity is SSOT for case studies" \
     php "$SCRIPT_DIR/validate-success-cases-ssot.php"
 
+  warn_check "TESTIMONIAL-VERIFICATION-001" "SuccessCase data quality for credible testimonials" \
+    php "$SCRIPT_DIR/validate-testimonial-verification.php"
+
   # SCSS-COMPILE-FRESHNESS-001: downgraded to warn_check because git checkout
   # in CI sets all file timestamps to checkout time, causing false positives.
   # The real check is SCSS-COMPILE-VERIFY-001 (npm run build + git diff) in deploy.yml.

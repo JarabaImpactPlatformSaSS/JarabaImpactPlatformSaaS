@@ -2311,3 +2311,18 @@ services:
   # CANVAS-SANITIZER-EXTRACT-001: Servicio centralizado de sanitización canvas.
   ecosistema_jaraba_core.canvas_sanitization:
     class: Drupal\ecosistema_jaraba_core\Service\CanvasSanitizationService
+
+  # =========================================================================
+  # Predictive Integration Bridge (AI-COVERAGE-001)
+  # Wires jaraba_predictive ML to CRM/Billing/Support consumers.
+  # =========================================================================
+  ecosistema_jaraba_core.predictive_integration:
+    class: Drupal\ecosistema_jaraba_core\Service\PredictiveIntegrationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@?jaraba_predictive.lead_scorer'
+      - '@?jaraba_predictive.churn_predictor'
+      - '@?jaraba_predictive.forecast_engine'
+      - '@?jaraba_predictive.anomaly_detector'
+      - '@?jaraba_predictive.retention_workflow'

@@ -297,6 +297,28 @@ services:
       - '@logger.channel.jaraba_billing'
       - '@?jaraba_billing.stripe_subscription'
 
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProvider (AI-COVERAGE-001)
+  # =========================================================================
+
+  # Billing Copilot Bridge — enriches copilot with financial data.
+  jaraba_billing.copilot_bridge:
+    class: Drupal\jaraba_billing\Service\BillingCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+      - '@jaraba_billing.revenue_metrics'
+      - '@?jaraba_billing.tenant_subscription'
+      - '@?jaraba_billing.expansion_revenue'
+
+  # Invoice Grounding Provider — exposes invoices to AI grounding.
+  jaraba_billing.grounding_provider.invoice:
+    class: Drupal\jaraba_billing\Grounding\InvoiceGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+
   # Win-back email campaign (4 touches en 90 días).
   # Recupera 8-15% churned users. Patrón QUIZ-FOLLOWUP-DRIP-001.
   jaraba_billing.winback_campaign:

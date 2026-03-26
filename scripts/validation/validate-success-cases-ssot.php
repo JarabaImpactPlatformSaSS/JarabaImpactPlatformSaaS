@@ -37,9 +37,10 @@ foreach ($oldControllers as $controller) {
 if (empty($violatingControllers)) {
   echo "  [PASS] CHECK 1: No hardcoded metrics/testimonials in controllers\n";
 } else {
-  // Warn but don't fail — legacy controllers may still exist during transition.
-  $warnings[] = "CHECK 1: Legacy hardcoded controllers: " . implode(', ', $violatingControllers);
-  echo "  [WARN] CHECK 1: Legacy controllers with hardcoded data:\n";
+  // FAIL — legacy controllers with hardcoded data must be removed.
+  // Promoted from WARN to FAIL after LEGACY-CONTROLLER-CLEANUP-001 (2026-03-26).
+  $errors[] = "CHECK 1: Legacy hardcoded controllers: " . implode(', ', $violatingControllers);
+  echo "  [FAIL] CHECK 1: Legacy controllers with hardcoded data:\n";
   foreach ($violatingControllers as $c) {
     echo "         - $c\n";
   }

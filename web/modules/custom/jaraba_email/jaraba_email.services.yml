@@ -27,6 +27,23 @@ services:
       - '@logger.channel.jaraba_email'
       - '@?jaraba_email.unsubscribe_token'
 
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProvider (AI-COVERAGE-001)
+  # =========================================================================
+
+  jaraba_email.copilot_bridge:
+    class: Drupal\jaraba_email\Service\EmailCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_email'
+
+  jaraba_email.grounding_provider:
+    class: Drupal\jaraba_email\Grounding\EmailCampaignGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+
   # MJML Compiler Service
   jaraba_email.mjml_compiler:
     class: Drupal\jaraba_email\Service\MjmlCompilerService

@@ -199,5 +199,88 @@ function jaraba_success_cases_requirements(string $phase): array {
     // Don't break status page.
   }
 
+  // CHECK 3-6: Data quality checks for published SuccessCase entities.
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('success_case');
+    $publishedIds = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 1)
+      ->execute();
+
+    $noImage = [];
+    $noQuote = [];
+    $noMetrics = [];
+    $lowFaq = [];
+
+    foreach ($storage->loadMultiple($publishedIds) as $case) {
+      $name = $case->get('name')->value ?? '(unknown)';
+
+      // CHECK 3: hero_image required.
+      if ($case->hasField('hero_image') && $case->get('hero_image')->isEmpty()) {
+        $noImage[] = $name;
+      }
+
+      // CHECK 4: quote_short required.
+      if ($case->hasField('quote_short') && empty(trim((string) $case->get('quote_short')->value))) {
+        $noQuote[] = $name;
+      }
+
+      // CHECK 5: metrics_json should not be empty.
+      if ($case->hasField('metrics_json')) {
+        $metrics = json_decode((string) $case->get('metrics_json')->value, TRUE);
+        if (empty($metrics)) {
+          $noMetrics[] = $name;
+        }
+      }
+
+      // CHECK 6: faq_json should have >= 10 items for Schema.org FAQPage.
+      if ($case->hasField('faq_json')) {
+        $faqs = json_decode((string) $case->get('faq_json')->value, TRUE);
+        if (!is_array($faqs) || count($faqs) < 10) {
+          $lowFaq[] = $name;
+        }
+      }
+    }
+
+    if (!empty($noImage)) {
+      $requirements['jaraba_success_cases_images'] = [
+        'title' => t('Success cases: Hero images'),
+        'value' => t('Missing hero_image: @names', ['@names' => implode(', ', $noImage)]),
+        'description' => t('Published success cases should have a profile photo for credibility.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+
+    if (!empty($noQuote)) {
+      $requirements['jaraba_success_cases_quotes'] = [
+        'title' => t('Success cases: Testimonial quotes'),
+        'value' => t('Missing quote_short: @names', ['@names' => implode(', ', $noQuote)]),
+        'description' => t('Published success cases should include a short testimonial quote.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+
+    if (!empty($noMetrics)) {
+      $requirements['jaraba_success_cases_metrics'] = [
+        'title' => t('Success cases: Quantifiable metrics'),
+        'value' => t('Empty metrics_json: @names', ['@names' => implode(', ', $noMetrics)]),
+        'description' => t('Success cases should have quantifiable metrics for conversion impact.'),
+        'severity' => REQUIREMENT_INFO,
+      ];
+    }
+
+    if (!empty($lowFaq)) {
+      $requirements['jaraba_success_cases_faq'] = [
+        'title' => t('Success cases: FAQ coverage'),
+        'value' => t('Less than 10 FAQs: @names', ['@names' => implode(', ', $lowFaq)]),
+        'description' => t('Schema.org FAQPage requires at least 10 questions for rich results.'),
+        'severity' => REQUIREMENT_INFO,
+      ];
+    }
+  }
+  catch (\Throwable) {
+    // Don't break status page.
+  }
+
   return $requirements;
 }

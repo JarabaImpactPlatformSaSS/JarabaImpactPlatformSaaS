@@ -7,8 +7,10 @@
  * SUCCESS-CASES-001: All case study data must come from SuccessCase entity.
  * Run: lando drush php:script scripts/migration/seed-success-cases.php
  *
- * This script creates 9 SuccessCase entities (one per commercial vertical)
- * with the data previously hardcoded in the 8 CaseStudyControllers.
+ * This script creates 10 SuccessCase entities (one per commercial vertical
+ * + 1 secondary for empleabilidad) with real data from Andalucía +ei
+ * participants and pre-launch placeholders for verticals without real cases.
+ * LEGACY-CONTROLLER-CLEANUP-001: All hardcoded CaseStudyControllers removed.
  */
 
 use Drupal\Core\DrupalKernel;
@@ -25,16 +27,12 @@ if (!class_exists('Drupal') || !\Drupal::hasContainer()) {
 
 $storage = \Drupal::entityTypeManager()->getStorage('success_case');
 
-// Check if already seeded.
+// Count existing entities for info.
 $existing = $storage->getQuery()
   ->accessCheck(FALSE)
   ->count()
   ->execute();
-
-if ((int) $existing >= 9) {
-  echo "Already have $existing success cases. Skipping seed.\n";
-  return;
-}
+echo "Found $existing existing success cases. Checking for new/missing entries...\n";
 
 $theme_path = '/' . \Drupal::service('extension.list.theme')
   ->getPath('ecosistema_jaraba_theme');
@@ -134,26 +132,44 @@ $cases = [
     'featured' => TRUE,
     'weight' => 1,
   ],
+  // REAL CASE: Luis Miguel Criado — Andalucía +ei 1ª Edición (PIIL CV 2023-2024).
+  // Source: "Caso de Éxito Luis Miguel Criado_ El Poder de Empezar.docx"
+  // Photos: 2x high-res JPG (Jun 2024) + 3x WhatsApp (Oct 2025).
   [
-    'name' => 'Rosa Fernández',
-    'slug' => 'rosa-fernandez-malaga',
+    'name' => 'Luis Miguel Criado',
+    'slug' => 'luis-miguel-criado',
     'vertical' => 'empleabilidad',
-    'headline' => 'A los 52 años, contratada en 21 días con un CV que por fin hablaba su idioma profesional',
-    'subtitle' => 'Cómo Rosa pasó de 6 meses sin respuesta a 3 entrevistas en 2 semanas',
-    'protagonist_name' => 'Rosa Fernández',
-    'protagonist_role' => 'Coordinadora administrativa',
-    'protagonist_company' => 'Torremolinos, Málaga',
-    'sector' => 'Administración',
-    'location' => 'Torremolinos, Málaga',
-    'quote_long' => 'A los 52 pensé que no volvería a trabajar. El diagnóstico de 3 minutos me mostró fortalezas que yo ni sabía que tenía.',
-    'quote_short' => 'El diagnóstico me mostró fortalezas que ni sabía que tenía.',
+    'headline' => 'De la parálisis administrativa a terapeuta autónomo: el poder de dar el primer paso',
+    'subtitle' => 'Cómo Luis Miguel superó el muro invisible de la burocracia y consiguió darse de alta como autónomo con ayuda pública de la Junta de Andalucía',
+    'protagonist_name' => 'Luis Miguel Criado',
+    'protagonist_role' => 'Quiromasajista — Autónomo',
+    'protagonist_company' => 'Andalucía',
+    'sector' => 'Salud y bienestar / Terapias manuales',
+    'location' => 'Andalucía',
+    'cta_urgency_text' => 'Plazas limitadas para el programa Andalucía +ei',
+    'challenge_before' => 'Luis Miguel es quiromasajista vocacional con un perfil introvertido. Tenía la habilidad y la demanda de mercado, pero se encontraba paralizado ante el "muro invisible" de la burocracia: darse de alta como autónomo, gestión de cuotas, solicitud de ayudas, lenguaje fiscal. El reto no era falta de talento sino la ansiedad que generaba el proceso administrativo.',
+    'solution_during' => 'El programa Andalucía +ei, con la metodología "Sin Humo" de PED, le proporcionó herramientas y guías prácticas paso a paso que desmitificaron el proceso. Le dio claridad para empezar a cotizar como autónomo, le enseñó a conseguir la ayuda de la Junta de Andalucía por su cuenta y le dio autonomía para gestionar sus propias cuotas sin depender de una gestoría.',
+    'result_after' => 'Luis Miguel pasó de la parálisis a tener un negocio real en funcionamiento como autónomo. Obtuvo la ayuda pública de la Junta de Andalucía, gestiona sus cuotas de forma independiente y genera ingresos propios. Un "éxito fundacional": no mide facturación sino barreras derribadas y coraje de empezar.',
+    'quote_long' => 'Aprendí a gestionar por mí mismo las cuotas de autónomo sin depender de una gestoría. Eso es un ahorro y un control fundamental cuando empiezas. El programa me dio las herramientas para dar los pasos más difíciles: empezar a cotizar y conseguir mis primeras ayudas.',
+    'quote_short' => 'El programa me dio las herramientas para dar los pasos más difíciles: empezar a cotizar y conseguir mis primeras ayudas.',
     'rating' => 5,
-    'schema_date_published' => '2026-03-20',
-    'meta_description' => 'Caso de éxito: Rosa Fernández, 52 años, contratada en 21 días gracias a la plataforma de empleabilidad con IA.',
+    'metrics_json' => json_encode([
+      ['label' => 'Alta como autónomo', 'before' => 'Paralizado', 'after' => 'Completada', 'change' => 'Operativo'],
+      ['label' => 'Ayuda pública Junta', 'before' => 'No solicitada', 'after' => 'Obtenida', 'change' => 'Aprobada'],
+      ['label' => 'Dependencia gestoría', 'before' => 'Total', 'after' => 'Eliminada', 'change' => 'Autónomo'],
+      ['label' => 'Gestión cuotas', 'before' => 'Desconocida', 'after' => 'Autogestionada', 'change' => 'Ahorro mensual'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'schema_date_published' => '2024-06-04',
+    'meta_description' => 'Caso de éxito real: Luis Miguel Criado, quiromasajista, superó la parálisis administrativa y se estableció como autónomo con ayuda pública gracias al programa Andalucía +ei.',
     'status' => TRUE,
     'featured' => TRUE,
     'weight' => 2,
   ],
+  // PRE-LAUNCH PLACEHOLDER: Carlos Etxebarría — fictional emprendimiento case.
+  // Represents what the SaaS vertical will offer once launched.
   [
     'name' => 'Carlos Etxebarría',
     'slug' => 'carlos-etxebarria-bilbao',
@@ -190,6 +206,8 @@ $cases = [
     'featured' => TRUE,
     'weight' => 4,
   ],
+  // PRE-LAUNCH PLACEHOLDER: Carmen Navarro — fictional serviciosconecta case.
+  // Represents what the SaaS vertical will offer once launched.
   [
     'name' => 'Carmen Navarro',
     'slug' => 'carmen-navarro-madrid',
@@ -208,20 +226,37 @@ $cases = [
     'featured' => TRUE,
     'weight' => 5,
   ],
+  // REAL CASE: PED S.L. — Dogfooding. PIIL CV 2023-2024 real data.
+  // Source: internal data, 50 participants, 46% insertion rate, 8 provinces.
   [
     'name' => 'Plataforma de Ecosistemas Digitales S.L.',
     'slug' => 'plataforma-ecosistemas-digitales',
     'vertical' => 'andalucia_ei',
     'headline' => 'De gestionar 50 itinerarios de inserción laboral en Excel a un ecosistema digital con IA',
-    'subtitle' => 'Cómo PED S.L. construyó Andalucía +ei para resolver el problema que vivió en primera persona',
-    'protagonist_name' => 'Equipo técnico del programa Andalucía +ei',
-    'protagonist_role' => 'Gestión de programas de inserción laboral',
+    'subtitle' => 'Cómo PED S.L. construyó Andalucía +ei para resolver el problema que vivió en primera persona con el PIIL CV 2023',
+    'protagonist_name' => 'José Jaraba',
+    'protagonist_role' => 'Director del programa Andalucía +ei',
     'protagonist_company' => 'Plataforma de Ecosistemas Digitales S.L.',
     'sector' => 'Inserción laboral / Emprendimiento inclusivo',
     'location' => 'Málaga',
+    'cta_urgency_text' => 'La 2ª edición del programa ya está en marcha',
+    'challenge_before' => 'En 2023, PED S.L. gestionó su primer Programa Integrado de Inserción Laboral (PIIL) financiado por la Junta de Andalucía. 50 participantes en 8 provincias andaluzas, 8 orientadores coordinados por hojas de cálculo compartidas en Google Drive. Los informes para el SAE se elaboraban a mano durante semanas. Cada orientador tenía su propio Excel con formatos diferentes.',
+    'solution_during' => 'Para la 2ª edición (2025), PED S.L. construyó Andalucía +ei sobre su propio SaaS: fichas de participantes con 12 campos estructurados, itinerarios IPAE personalizados, sesiones de orientación registradas, acciones formativas con asistencia dual (presencial/online), seguimiento de inserción laboral y generación automática de informes FSE+. 21 entidades de datos, 4 roles de programa, copiloto IA con 6 fases adaptativas.',
+    'result_after' => 'La 1ª edición logró una tasa de inserción del 46% (23 de 50 participantes insertados laboralmente). La coordinación que antes requería 8 hojas Excel por provincia ahora se gestiona desde un único panel. El seguimiento individualizado con copiloto IA permite detectar oportunidades de empleo que el equipo humano no tenía tiempo de analizar.',
     'quote_short' => 'Construimos Andalucía +ei porque nosotros mismos sufrimos el problema. La primera edición la gestionamos con Excel.',
     'rating' => 5,
-    'schema_date_published' => '2026-03-20',
+    'metrics_json' => json_encode([
+      ['label' => 'Participantes programa', 'before' => '0', 'after' => '50', 'change' => '50 personas'],
+      ['label' => 'Tasa de inserción', 'before' => 'N/A', 'after' => '46%', 'change' => '23 insertados'],
+      ['label' => 'Provincias cubiertas', 'before' => '0', 'after' => '8', 'change' => 'Toda Andalucía'],
+      ['label' => 'Orientadores coordinados', 'before' => 'Excel', 'after' => 'Panel único', 'change' => '-8 hojas'],
+      ['label' => 'Tiempo informes SAE', 'before' => 'Semanas', 'after' => 'Automático', 'change' => '-95%'],
+    ]),
+    'program_name' => 'Andalucía +ei — PIIL CV',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo, Empresa y Trabajo Autónomo',
+    'program_year' => '2023-2024',
+    'schema_date_published' => '2024-01-15',
+    'meta_description' => 'Caso de éxito real: PED S.L. construyó Andalucía +ei tras gestionar 50 itinerarios de inserción laboral con Excel. 46% tasa de inserción en la 1ª edición del PIIL.',
     'status' => TRUE,
     'featured' => TRUE,
     'weight' => 6,
@@ -261,6 +296,126 @@ $cases = [
     'status' => TRUE,
     'featured' => TRUE,
     'weight' => 8,
+  ],
+  // =========================================================================
+  // ADDITIONAL REAL CASES from Andalucía +ei 1ª Edición.
+  // These are real participants with verifiable businesses/outcomes.
+  // They coexist alongside pre-launch placeholders for SaaS verticals.
+  // =========================================================================
+  // REAL CASE: Marcela Calabia — Andalucía +ei 1ª Edición.
+  // Source: "00. Caso Marcela Calabia.docx", transcripción reunión 01/10/2025.
+  // Photos: 1x high-res JPG (Jun 2024), book covers, LinkedIn banner, logo.
+  // Video: WhatsApp video 18/09/2025 (47 MB).
+  [
+    'name' => 'Marcela Calabia',
+    'slug' => 'marcela-calabia',
+    'vertical' => 'emprendimiento',
+    'headline' => 'De no saber por dónde empezar a coach premium con libros publicados en 4 idiomas',
+    'subtitle' => 'Cómo Marcela estructuró su marca personal como coach de comunicación y resiliencia con el programa Andalucía +ei',
+    'protagonist_name' => 'Marcela Calabia',
+    'protagonist_role' => 'Coach de Comunicación Estratégica y Resiliencia',
+    'protagonist_company' => 'Andalucía',
+    'sector' => 'Coaching ejecutivo / Comunicación / Servicios lingüísticos premium',
+    'location' => 'Andalucía',
+    'cta_urgency_text' => 'Plazas limitadas para emprendedores en Andalucía +ei',
+    'challenge_before' => 'Marcela venía de "otro mundo laboral" con más de 25 años de experiencia formando ejecutivos y más de 28.000 horas de formación. Necesitaba reinventarse como autónoma pero no sabía por dónde empezar. Tenía un perfil abandonado en Preply sin reservas, un LinkedIn sin optimizar, y webs muertas. Se definía como de la "era analógica".',
+    'solution_during' => 'El programa le proporcionó un acompañamiento integral: definición de nicho premium (español para ejecutivos extranjeros), reconstrucción completa de su perfil en Preply, optimización de LinkedIn, modelo de negocio con dos productos (programa de 1 mes y programa insignia de 3 meses), estructura de precios premium (mínimo 75€/hora) y estrategia de contenido digital reutilizando sus vídeos de YouTube.',
+    'result_after' => 'Marcela pasó de no tener reservas a tener un modelo de negocio completo con proyección de 48.000-80.000€/año. Publicó su libro "Sin culpa. Con coraje" en 4 idiomas (español, italiano, francés, bilingüe) usando IA para las traducciones. Lanzó un segundo libro "Comunicar con Confianza". Domina redes sociales profesionales, crea sus propias landing pages y tiene 2 emprendimientos en marcha.',
+    'quote_long' => 'Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito. Las herramientas que da, yo no las encontré en ningún otro lado. No sabía por dónde empezar. Este curso me dio no solo las herramientas para hacer mi propia web, sino la parte humana que no encontré ni en cursos de pago.',
+    'quote_short' => 'Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este programa gratuito.',
+    'rating' => 5,
+    'metrics_json' => json_encode([
+      ['label' => 'Experiencia formativa', 'before' => 'Dispersa', 'after' => 'Focalizada premium', 'change' => '+28.000h acreditadas'],
+      ['label' => 'Libros publicados', 'before' => '0', 'after' => '2 libros, 4 idiomas', 'change' => '+2 en Amazon'],
+      ['label' => 'Presencia digital', 'before' => 'Inexistente', 'after' => 'LinkedIn + Preply + YouTube', 'change' => 'Operativa'],
+      ['label' => 'Proyección anual', 'before' => '0 €', 'after' => '48.000-80.000 €', 'change' => 'Viable'],
+      ['label' => 'Precio/hora', 'before' => 'Sin definir', 'after' => 'Mín. 75 €/h', 'change' => 'Premium'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'schema_date_published' => '2025-09-18',
+    'meta_description' => 'Caso de éxito real: Marcela Calabia, coach de comunicación, pasó de no tener presencia digital a publicar 2 libros en 4 idiomas y estructurar un negocio premium con Andalucía +ei.',
+    'status' => TRUE,
+    'featured' => TRUE,
+    'weight' => 10,
+  ],
+  // REAL CASE: Ángel Martínez / Camino Viejo — Andalucía +ei 1ª Edición.
+  // Source: "Caso de Éxito Ángel Martínez_ Emprendimiento.docx", transcripción 07/10/2025.
+  // Photos: 2x high-res JPG (Jun 2024) + 8x WhatsApp activities (Oct 2025).
+  // Video: Reunión 351 MB (highlight) + 2 GB (completo).
+  // Web: caminoviejo.es | YouTube: gk8MGO8ldLE
+  [
+    'name' => 'Ángel Martínez',
+    'slug' => 'angel-martinez-camino-viejo',
+    'vertical' => 'emprendimiento',
+    'headline' => 'De ejecutivo agotado a emprendedor rural: Camino Viejo, cicloturismo premium en Sierra Morena',
+    'subtitle' => 'Cómo Ángel dejó una gran empresa para fundar un negocio de gastrobiking en Cazalla de la Sierra con el apoyo del programa Andalucía +ei',
+    'protagonist_name' => 'Ángel Martínez',
+    'protagonist_role' => 'Cofundador de Camino Viejo',
+    'protagonist_company' => 'Camino Viejo — Gastrobiking, Cazalla de la Sierra',
+    'sector' => 'Cicloturismo / Gastronomía rural / Experiencias',
+    'location' => 'Cazalla de la Sierra, Sevilla',
+    'cta_urgency_text' => 'Descubre cómo emprender en el mundo rural con Andalucía +ei',
+    'challenge_before' => 'Ángel venía de una gran empresa con un trabajo de responsabilidad y bien remunerado, pero el ritmo era incompatible con la conciliación familiar y muy estresante. Quería hacer algo que le gustase y le permitiera quedarse en su pueblo, Cazalla de la Sierra, intentando dar un servicio que no había en la zona.',
+    'solution_during' => 'A través de la formación PED del programa Andalucía +ei, aprendió principios lean: emprender minimizando la inversión inicial para ser más libre de cambiar planes y minimizar riesgos. Se le desmitificó la burocracia administrativa. Aprendió a analizar constantemente y si hay que cambiar, cambiar.',
+    'result_after' => 'Fundó "Camino Viejo" en Cazalla de la Sierra: venta y alquiler de bicicletas, taller mecánico, gastrobiking y rutas guiadas por el Parque Natural Sierra Morena. Obtuvo 18.000€ en subvenciones de la Junta de Andalucía. Negocio rentable tras año y medio. Asistió a la 1ª Feria Nacional de Cicloturismo en Zaragoza. Pivotando estratégicamente de retail a cicloturismo experiencial de alto valor.',
+    'quote_long' => 'La formación de PED es oro puro. Si se tiene una buena idea, con trabajo se puede llevar adelante; con trabajo y aprendiendo de las buenas experiencias de otros y no cometiendo sus errores. Para mí, lo más valioso que he aprendido es que hay que emprender minimizando la inversión inicial, así somos más libres para cambiar de planes sobre la marcha.',
+    'quote_short' => 'La formación de PED es oro puro. Ahora tengo conciencia de que ES POSIBLE.',
+    'rating' => 5,
+    'metrics_json' => json_encode([
+      ['label' => 'Subvención Junta', 'before' => '0 €', 'after' => '18.000 €', 'change' => 'Aprobada'],
+      ['label' => 'Tiempo operando', 'before' => '0', 'after' => '1,5 años', 'change' => 'Rentable'],
+      ['label' => 'Servicios ofrecidos', 'before' => '0', 'after' => '6 líneas', 'change' => 'Diversificado'],
+      ['label' => 'Ferias asistidas', 'before' => '0', 'after' => '1ª Feria Nacional Cicloturismo', 'change' => 'Zaragoza 2025'],
+      ['label' => 'Posición Google local', 'before' => 'Inexistente', 'after' => '1º alquiler bicis', 'change' => 'Top 1'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'website' => 'https://www.caminoviejo.es/',
+    'video_url' => 'https://www.youtube.com/watch?v=gk8MGO8ldLE',
+    'schema_date_published' => '2025-10-07',
+    'meta_description' => 'Caso de éxito real: Ángel Martínez fundó Camino Viejo, cicloturismo premium en Sierra Morena, con 18.000€ de subvención y negocio rentable gracias al programa Andalucía +ei.',
+    'status' => TRUE,
+    'featured' => TRUE,
+    'weight' => 11,
+  ],
+  // REAL CASE: Maia Tolomeo — Andalucía +ei 1ª Edición.
+  // Source: Video-testimonio propio (2024-03-26, 1:55 min).
+  // Photos: 2x high-res JPG (Feb 2024, 3.7 MB + 3.4 MB).
+  [
+    'name' => 'Maia Tolomeo',
+    'slug' => 'maia-tolomeo',
+    'vertical' => 'empleabilidad',
+    'headline' => 'De desempleada a empleada en comercio local: cuando el acompañamiento marca la diferencia',
+    'subtitle' => 'Cómo Maia pasó del desempleo a encontrar su lugar profesional en el comercio de proximidad gracias al programa Andalucía +ei',
+    'protagonist_name' => 'Maia Tolomeo',
+    'protagonist_role' => 'Empleada de comercio local',
+    'protagonist_company' => 'Andalucía',
+    'sector' => 'Comercio local / Retail de proximidad',
+    'location' => 'Andalucía',
+    'cta_urgency_text' => 'Plazas limitadas para el programa Andalucía +ei',
+    'challenge_before' => 'Maia se encontraba en situación de desempleo, sin una estrategia clara para reincorporarse al mercado laboral. La búsqueda de empleo sin orientación profesional se prolongaba sin resultados, generando frustración y pérdida de confianza en sus posibilidades.',
+    'solution_during' => 'A través del programa Andalucía +ei, recibió orientación laboral personalizada que le permitió identificar sus fortalezas, prepararse para procesos de selección y conectar con oportunidades reales en su entorno. El acompañamiento incluyó definición de perfil profesional, preparación para entrevistas y conexión con el tejido empresarial local. El intercambio de ideas con los compañeros y las clases por videollamada fueron muy prácticos.',
+    'result_after' => 'Maia consiguió empleo como dependienta en un comercio local de su zona. Pasó del desempleo a la actividad laboral, recuperando su autonomía económica y su confianza profesional. Aprendió conceptos imprescindibles para emprendimiento y a no limitarse con ideas preconcebidas.',
+    'quote_long' => 'El curso ha sido muy bueno, muy completo, se lo recomiendo a todos. Hemos aprendido un montón de conceptos imprescindibles a la hora de montar un emprendimiento. Lo que me llevo como mayor importancia del curso es el haber conocido a Pepe, que es una persona súper inteligente, culta y con un montón de experiencia. Me enseñó a abrir la mente y no limitarme. Han surgido un montón de ideas que no me las había planteado nunca. Nos enseñó a no limitarnos, básicamente.',
+    'quote_short' => 'El curso ha sido muy bueno, muy completo. Me enseñó a abrir la mente y no limitarme. Han surgido ideas que no me había planteado nunca.',
+    'rating' => 5,
+    'metrics_json' => json_encode([
+      ['label' => 'Situación laboral', 'before' => 'Desempleada', 'after' => 'Empleada', 'change' => 'Inserción'],
+      ['label' => 'Sector', 'before' => 'Sin definir', 'after' => 'Comercio local', 'change' => 'Definido'],
+      ['label' => 'Autonomía económica', 'before' => 'Dependiente', 'after' => 'Independiente', 'change' => 'Recuperada'],
+    ]),
+    'program_name' => 'Andalucía +ei',
+    'program_funder' => 'Junta de Andalucía — Consejería de Empleo',
+    'program_year' => '2023-2024',
+    'video_url' => '/sites/default/files/success-cases/videos/testimonio-maia-tolomeo.mp4',
+    'schema_date_published' => '2024-03-26',
+    'meta_description' => 'Caso de éxito real: Maia Tolomeo, participante del programa Andalucía +ei, pasó del desempleo a empleada en comercio local con acompañamiento profesional personalizado.',
+    'status' => TRUE,
+    'featured' => FALSE,
+    'weight' => 12,
   ],
 ];
 

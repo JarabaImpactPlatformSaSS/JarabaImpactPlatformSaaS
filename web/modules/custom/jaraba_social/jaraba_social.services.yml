@@ -29,6 +29,23 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_social'
 
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProvider (AI-COVERAGE-001)
+  # =========================================================================
+
+  jaraba_social.copilot_bridge:
+    class: Drupal\jaraba_social\Service\SocialCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_social'
+
+  jaraba_social.grounding_provider:
+    class: Drupal\jaraba_social\Grounding\SocialPostGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+
   jaraba_social.makecom_integration:
     class: Drupal\jaraba_social\Service\MakeComIntegrationService
     arguments:

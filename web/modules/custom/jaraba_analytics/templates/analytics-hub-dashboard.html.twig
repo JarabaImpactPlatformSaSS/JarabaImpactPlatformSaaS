@@ -75,7 +75,7 @@
           {% set seconds = kpis.avg_session_duration|default(0) % 60 %}
           {{ minutes }}:{{ seconds < 10 ? '0' }}{{ seconds }}
         </span>
-        <span class="analytics-hub__kpi-label">{% trans %}Duracion media sesion{% endtrans %}</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Duración media sesión{% endtrans %}</span>
       </div>
     </div>
 
@@ -105,42 +105,42 @@
       </div>
       <div class="analytics-hub__kpi-body">
         <span class="analytics-hub__kpi-value">{{ kpis.conversion_rate|default(0)|number_format(2) }}%</span>
-        <span class="analytics-hub__kpi-label">{% trans %}Tasa de conversion{% endtrans %}</span>
+        <span class="analytics-hub__kpi-label">{% trans %}Tasa de conversión{% endtrans %}</span>
       </div>
     </div>
 
   </section>
 
   {# ===== TRAFFIC TREND CHART ===== #}
-  <section class="analytics-hub__section" aria-label="{% trans %}Tendencia de trafico{% endtrans %}">
+  <section class="analytics-hub__section" aria-label="{% trans %}Tendencia de tráfico{% endtrans %}">
     <div class="analytics-hub__card analytics-hub__card--wide">
       <h2 class="analytics-hub__card-title">
         {{ jaraba_icon('analytics', 'trend', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
-        {% trans %}Tendencia de trafico{% endtrans %}
+        {% trans %}Tendencia de tráfico{% endtrans %}
       </h2>
       <div class="analytics-hub__chart-container">
         <canvas id="analytics-hub-traffic-chart"
-                aria-label="{% trans %}Grafico de tendencia de trafico de los ultimos 30 dias{% endtrans %}"
+                aria-label="{% trans %}Gráfico de tendencia de tráfico de los últimos 30 días{% endtrans %}"
                 role="img"></canvas>
       </div>
     </div>
   </section>
 
   {# ===== TWO COLUMNS: TOP PAGES + DEVICES ===== #}
-  <section class="analytics-hub__two-col" aria-label="{% trans %}Paginas y dispositivos{% endtrans %}">
+  <section class="analytics-hub__two-col" aria-label="{% trans %}Páginas y dispositivos{% endtrans %}">
 
     {# Top Pages #}
     <div class="analytics-hub__card">
       <h2 class="analytics-hub__card-title">
         {{ jaraba_icon('analytics', 'pages', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
-        {% trans %}Paginas mas visitadas{% endtrans %}
+        {% trans %}Páginas más visitadas{% endtrans %}
       </h2>
       {% if top_pages is not empty %}
         <div class="analytics-hub__table-wrap">
-          <table class="analytics-hub__table" aria-label="{% trans %}Tabla de paginas mas visitadas{% endtrans %}">
+          <table class="analytics-hub__table" aria-label="{% trans %}Tabla de páginas más visitadas{% endtrans %}">
             <thead>
               <tr>
-                <th scope="col">{% trans %}Pagina{% endtrans %}</th>
+                <th scope="col">{% trans %}Página{% endtrans %}</th>
                 <th scope="col" class="analytics-hub__table-num">{% trans %}Vistas{% endtrans %}</th>
                 <th scope="col" class="analytics-hub__table-num">{% trans %}Tiempo medio{% endtrans %}</th>
               </tr>
@@ -159,7 +159,7 @@
           </table>
         </div>
       {% else %}
-        <p class="analytics-hub__empty">{% trans %}No hay datos de paginas disponibles.{% endtrans %}</p>
+        <p class="analytics-hub__empty">{% trans %}No hay datos de páginas disponibles.{% endtrans %}</p>
       {% endif %}
     </div>
 
@@ -171,7 +171,7 @@
       </h2>
       <div class="analytics-hub__chart-container analytics-hub__chart-container--donut">
         <canvas id="analytics-hub-device-chart"
-                aria-label="{% trans %}Grafico de distribucion por dispositivo{% endtrans %}"
+                aria-label="{% trans %}Gráfico de distribución por dispositivo{% endtrans %}"
                 role="img"></canvas>
       </div>
       <ul class="analytics-hub__device-legend" aria-label="{% trans %}Leyenda de dispositivos{% endtrans %}">
@@ -181,7 +181,7 @@
         </li>
         <li>
           <span class="analytics-hub__legend-dot analytics-hub__legend-dot--mobile"></span>
-          {% trans %}Movil{% endtrans %}: {{ device_breakdown.mobile|default(0) }}%
+          {% trans %}Móvil{% endtrans %}: {{ device_breakdown.mobile|default(0) }}%
         </li>
         <li>
           <span class="analytics-hub__legend-dot analytics-hub__legend-dot--tablet"></span>
@@ -193,11 +193,11 @@
   </section>
 
   {# ===== FUNNEL DE CONVERSION ===== #}
-  <section class="analytics-hub__section" aria-label="{% trans %}Funnel de conversion{% endtrans %}">
+  <section class="analytics-hub__section" aria-label="{% trans %}Funnel de conversión{% endtrans %}">
     <div class="analytics-hub__card analytics-hub__card--wide">
       <h2 class="analytics-hub__card-title">
         {{ jaraba_icon('analytics', 'funnel', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
-        {% trans %}Funnel de conversion{% endtrans %}
+        {% trans %}Funnel de conversión{% endtrans %}
       </h2>
       {% if funnel_data is not empty %}
         <div class="analytics-hub__funnel">

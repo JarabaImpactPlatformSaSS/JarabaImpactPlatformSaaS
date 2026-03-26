@@ -10,10 +10,10 @@
 | Campo | Valor |
 |-------|-------|
 | **Nombre** ★ | Marcela Calabia |
-| **Cargo/Profesión actual** ★ | Coach de Comunicación Estratégica y Resiliencia |
-| **Empresa/Marca** | *(por confirmar)* |
-| **Sector** | Coaching / Comunicación / Desarrollo personal |
-| **Ubicación** ★ | *(por confirmar — Andalucía)* |
+| **Cargo/Profesión actual** ★ | Coach de Comunicacion Estrategica y Resiliencia para Profesionales Globales |
+| **Empresa/Marca** | Marca personal: Marcela Calabia |
+| **Sector** | Coaching ejecutivo / Servicios linguisticos premium / Comunicacion |
+| **Ubicación** ★ | Andalucia |
 | **Programa** ★ | Andalucía +ei |
 | **Vertical** ★ | Emprendimiento |
 | **Fecha de participación** | *(por confirmar)* |
@@ -25,36 +25,41 @@
 
 ### ★ Reto (Antes)
 
-Marcela necesitaba estructurar su marca personal como coach de comunicación estratégica y resiliencia. Antes del programa, no tenía una presencia digital profesional ni una estrategia clara para captar clientes.
+Marcela venia de "otro mundo laboral" con +25 anos de experiencia y +28.000 horas formando ejecutivos. El emprendimiento y hacerse autonoma era "un mundo que no sabia por donde empezar". Tenia un perfil abandonado en Preply sin reservas, un LinkedIn sin optimizar, webs muertas y se definia como de la "era analogica". Gestionaba todo por WhatsApp.
 
-> ⚠️ Pepe: complementa con más detalles específicos.
+### ★ Solucion (Durante)
 
-### ★ Solución (Durante)
+El programa le proporciono acompanamiento integral: definicion de nicho premium (espanol para ejecutivos extranjeros), reconstruccion completa de perfil Preply con certificados y orientacion profesional, optimizacion de LinkedIn, modelo de negocio con dos productos (programa 1 mes y programa insignia 3 meses "Inmersion Profesional Acelerada"), precios premium (min. 75EUR/h), plan de trabajo semanal, estrategia de contenido, paleta de colores de marca, y estrategia de alianzas con agencias de relocation.
 
-A través del programa Andalucía +ei, recibió acompañamiento para desarrollar su web profesional, definir su propuesta de valor y establecer una estrategia de comunicación digital.
+### ★ Resultado (Despues)
 
-> ⚠️ Pepe: complementa con herramientas específicas usadas (plataforma, copiloto IA, etc.)
-
-### ★ Resultado (Después)
-
-Pasó de no tener presencia digital a contar con una web profesional operativa y una estrategia de comunicación definida, con capacidad para captar clientes de forma autónoma como autónoma.
-
-> ⚠️ Pepe: complementa con resultados medibles.
+Marcela paso de no tener reservas a tener un modelo de negocio completo con proyeccion de 48.000-80.000EUR/ano. Publico su libro "Sin culpa. Con coraje" en 4 idiomas usando IA para traducciones. Lanzo un segundo libro "Comunicar con Confianza". Domina redes sociales profesionales, crea sus propias landing pages y tiene 2 emprendimientos en marcha. Canal de YouTube con 12+ entrevistas.
 
 ---
 
 ## Métricas Cuantificables
 
-| Métrica | Valor |
+| Metrica | Valor |
 |---------|-------|
-| *(por rellenar por Pepe)* | |
+| Experiencia acreditada | +28.000 horas formando ejecutivos |
+| Libros publicados | 2 libros, 4 idiomas, en Amazon |
+| Precio/hora premium | Min. 75 EUR/h |
+| Proyeccion anual | 48.000-80.000 EUR |
+| Presencia digital | LinkedIn + Preply + YouTube operativos |
+| Emprendimientos activos | 2 en marcha |
 
 ---
 
 ## ★ Quote Testimonial
 
-> *(Pepe: copia aquí la cita textual de Marcela del vídeo/entrevista)*
-> — Marcela Calabia, Coach de Comunicación Estratégica
+> "Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito. Las herramientas que da, yo no las encontre en ningun otro lado."
+> — Marcela Calabia, Coach de Comunicacion Estrategica y Resiliencia
+
+> "No sabia por donde empezar. Este curso me dio no solo las herramientas para hacer mi propia web, sino la parte humana que no encontre ni en cursos de pago."
+
+> "Este curso es oro puro. Es el mejor tiempo invertido que van a poder disponer."
+
+*Fuente: Transcripcion reunion 01/10/2025 + video WhatsApp 18/09/2025*
 
 ---
 

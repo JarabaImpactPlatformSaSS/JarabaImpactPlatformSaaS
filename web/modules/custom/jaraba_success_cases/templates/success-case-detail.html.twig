@@ -227,6 +227,41 @@
   {% endif %}
 
   {# ═══════════════════════════════════════════════════════════════
+     VIDEO TESTIMONIAL — Real participant video
+     ═══════════════════════════════════════════════════════════════ #}
+  {% if case.video_url %}
+    {% set is_youtube = 'youtube.com' in case.video_url or 'youtu.be' in case.video_url %}
+    {% set is_mp4 = '.mp4' in case.video_url %}
+    <section class="sc-video" aria-label="{% trans %}Video testimonial{% endtrans %}">
+      <h2 class="sc-video__title">
+        {{ jaraba_icon('media', 'play-circle', { variant: 'duotone', size: '28px', color: 'naranja-impulso' }) }}
+        {% trans %}Escucha su historia{% endtrans %}
+      </h2>
+      <div class="sc-video__player">
+        {% if is_youtube %}
+          {% set yt_id = case.video_url|split('v=')|last|split('&')|first %}
+          <div class="sc-video__embed">
+            <iframe src="https://www.youtube.com/embed/{{ yt_id }}"
+                    title="{{ case.name }} — {% trans %}Video Testimonial{% endtrans %}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy"></iframe>
+          </div>
+        {% elseif is_mp4 %}
+          <video class="sc-video__native"
+                 controls preload="metadata"
+                 poster="{{ case.image_url|default('') }}"
+                 aria-label="{{ case.name }} — {% trans %}Video Testimonial{% endtrans %}">
+            <source src="{{ case.video_url }}" type="video/mp4">
+            {% trans %}Tu navegador no soporta el elemento video.{% endtrans %}
+          </video>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════
      PROGRAM CONTEXT — Contextual info card
      ═══════════════════════════════════════════════════════════════ #}
   {% if case.program_funder or case.program_year %}

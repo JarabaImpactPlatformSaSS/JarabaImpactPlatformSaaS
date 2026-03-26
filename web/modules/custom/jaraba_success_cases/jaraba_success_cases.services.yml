@@ -3,3 +3,11 @@ services:
     class: Drupal\jaraba_success_cases\Routing\CaseStudyRouteSubscriber
     tags:
       - { name: event_subscriber }
+
+  jaraba_success_cases.daily_action.revisar_casos:
+    class: Drupal\jaraba_success_cases\DailyActions\RevisarCasosExitoAction
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

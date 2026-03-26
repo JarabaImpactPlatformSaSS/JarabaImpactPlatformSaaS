@@ -72,3 +72,35 @@ services:
       - '@jaraba_crm.pipeline_stage'
       - '@logger.channel.jaraba_crm'
       - '@cache.default'
+
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProviders (AI-COVERAGE-001)
+  # =========================================================================
+
+  # CRM Copilot Bridge — enriches copilot with CRM pipeline data.
+  # Registered manually in jaraba_copilot_v2 bridge_registry (NO tag).
+  jaraba_crm.copilot_bridge:
+    class: Drupal\jaraba_crm\Service\CrmCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_crm'
+      - '@jaraba_crm.opportunity'
+      - '@jaraba_crm.contact'
+      - '@jaraba_crm.forecasting'
+      - '@jaraba_crm.sales_playbook'
+
+  # Opportunity Grounding Provider — exposes deals to AI grounding.
+  jaraba_crm.grounding_provider.opportunity:
+    class: Drupal\jaraba_crm\Grounding\OpportunityGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+
+  # Contact Grounding Provider — exposes contacts to AI grounding.
+  jaraba_crm.grounding_provider.contact:
+    class: Drupal\jaraba_crm\Grounding\ContactGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

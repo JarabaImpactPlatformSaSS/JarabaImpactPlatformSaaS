@@ -287,15 +287,8 @@ entity.review_servicios.settings:
 
 # --- Settings Route: Field UI base route (missing target) ---
 
-# --- Case Study: Carmen Navarro, Chamberí (Madrid) ---
-
-jaraba_servicios_conecta.case_study.carmen_navarro:
-  path: '/serviciosconecta/caso-de-exito/carmen-navarro-madrid'
-  defaults:
-    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiciosCaseStudyController::caseStudy'
-    _title: 'Caso de éxito: Carmen Navarro — ServiciosConecta'
-  requirements:
-    _permission: 'access content'
+# --- Case Study: Migrado a jaraba_success_cases (LEGACY-CONTROLLER-CLEANUP-001)
+# Ruta unificada: /{vertical_path}/caso-de-exito/{slug}
 
 jaraba_servicios_conecta.review_servicios.settings:
   path: '/admin/structure/servicios-reviews'

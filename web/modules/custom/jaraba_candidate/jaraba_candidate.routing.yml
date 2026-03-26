@@ -546,13 +546,5 @@ entity.copilot_message.settings:
     _permission: 'administer copilot conversations'
 
 
-# Caso de exito: Rosa Fernandez, Malaga (storytelling de conversion).
-jaraba_candidate.case_study.rosa_fernandez:
-  path: '/empleabilidad/caso-de-exito/rosa-fernandez-malaga'
-  defaults:
-    _controller: '\Drupal\jaraba_candidate\Controller\EmpleabilidadCaseStudyController::caseStudy'
-    _title: 'Caso de exito: Rosa Fernandez, Malaga'
-  requirements:
-    _access: 'TRUE'
-  options:
-    _admin_route: FALSE
+# Caso de exito: Migrado a jaraba_success_cases (LEGACY-CONTROLLER-CLEANUP-001)
+# Ruta unificada: /{vertical_path}/caso-de-exito/{slug}

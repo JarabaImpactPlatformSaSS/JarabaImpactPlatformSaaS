@@ -975,13 +975,5 @@ jaraba_comercio_conecta.comercio_shipping_zone.settings:
   requirements:
     _permission: 'manage comercio shipping zones'
 
-# Caso de exito: Boutique La Mariposa (storytelling de conversion).
-jaraba_comercio_conecta.case_study.boutique_mariposa:
-  path: '/comercioconecta/caso-de-exito/boutique-la-mariposa'
-  defaults:
-    _controller: '\Drupal\jaraba_comercio_conecta\Controller\ComercioCaseStudyController::caseStudy'
-    _title: 'Caso de exito: Boutique La Mariposa, Sevilla'
-  requirements:
-    _access: 'TRUE'
-  options:
-    _admin_route: FALSE
+# Caso de exito: Migrado a jaraba_success_cases (LEGACY-CONTROLLER-CLEANUP-001)
+# Ruta unificada: /{vertical_path}/caso-de-exito/{slug}

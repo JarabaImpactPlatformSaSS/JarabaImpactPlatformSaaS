@@ -103,6 +103,16 @@ services:
       - '@entity_type.manager'
       - '@database'
 
+  # =========================================================================
+  # AI Integration — CopilotBridge (AI-COVERAGE-001)
+  # =========================================================================
+
+  jaraba_analytics.copilot_bridge:
+    class: Drupal\jaraba_analytics\Service\AnalyticsCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_analytics'
+
   jaraba_analytics.nps_survey:
     class: Drupal\jaraba_analytics\Service\NpsSurveyService
     arguments:

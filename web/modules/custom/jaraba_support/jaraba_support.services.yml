@@ -157,3 +157,24 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProvider (AI-COVERAGE-001)
+  # =========================================================================
+
+  # Support Copilot Bridge — enriches copilot with support context.
+  jaraba_support.copilot_bridge:
+    class: Drupal\jaraba_support\Service\SupportCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@?jaraba_support.analytics'
+      - '@?jaraba_support.health_score'
+
+  # Support Ticket Grounding Provider — exposes resolved tickets to AI.
+  jaraba_support.grounding_provider:
+    class: Drupal\jaraba_support\Grounding\SupportTicketGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }

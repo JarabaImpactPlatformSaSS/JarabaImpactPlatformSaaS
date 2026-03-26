@@ -92,8 +92,8 @@ class SuccessCasesController extends ControllerBase {
       $query->condition('vertical', $vertical_filter);
     }
 
-    // Pager: 12 items per page (4x3 grid).
-    $query->pager(12);
+    // Pager: 24 items per page (avoids unnecessary pagination for <20 cases).
+    $query->pager(24);
     $ids = $query->execute();
     $cases = $storage->loadMultiple($ids);
 
@@ -297,6 +297,9 @@ class SuccessCasesController extends ControllerBase {
 
     // Add SEO.
     $data['meta_description'] = $case->get('meta_description')->value;
+
+    // Add video testimonial URL (MP4 or YouTube/Vimeo).
+    $data['video_url'] = $case->get('video_url')->value;
 
     // Add links.
     $data['website'] = $case->get('website')->value;

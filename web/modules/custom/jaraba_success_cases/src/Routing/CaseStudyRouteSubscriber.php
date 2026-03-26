@@ -11,21 +11,25 @@ use Symfony\Component\Routing\RouteCollection;
  * Overrides legacy case study routes to use the unified controller.
  *
  * SUCCESS-CASES-001: All case study pages must come from SuccessCase entity.
- * This subscriber redirects the 9 legacy static routes (defined in vertical
- * modules) to CaseStudyLandingController, which loads data from the entity.
- *
- * Legacy routes are preserved for backwards-compatibility (same URL paths)
- * but now use the unified controller with the parametrized template.
+ * LEGACY-CONTROLLER-CLEANUP-001 (2026-03-26): Legacy routes removed from
+ * vertical routing.yml files. This subscriber acts as defense-in-depth:
+ * if legacy routes are ever re-added, it redirects them to the unified
+ * controller. The parametrized route in jaraba_success_cases.routing.yml
+ * now handles all case study URLs.
  */
 class CaseStudyRouteSubscriber extends RouteSubscriberBase {
 
   /**
    * Maps legacy route names to their vertical_path and slug parameters.
+   *
+   * Slugs match the pre-launch placeholder cases in seed-success-cases.php.
+   * Updated 2026-03-26: empleabilidad rosa-fernandez → luis-miguel-criado
+   * (Rosa was replaced with real participant Luis Miguel Criado).
    */
   private const LEGACY_ROUTES = [
     'jaraba_agroconecta_core.case_study.sierra_cazorla' => ['vertical_path' => 'agroconecta', 'slug' => 'cooperativa-sierra-cazorla'],
     'jaraba_legal.case_study.martinez' => ['vertical_path' => 'jarabalex', 'slug' => 'despacho-martinez'],
-    'jaraba_candidate.case_study.rosa_fernandez' => ['vertical_path' => 'empleabilidad', 'slug' => 'rosa-fernandez-malaga'],
+    'jaraba_candidate.case_study.rosa_fernandez' => ['vertical_path' => 'empleabilidad', 'slug' => 'luis-miguel-criado'],
     'jaraba_business_tools.case_study.carlos_etxebarria' => ['vertical_path' => 'emprendimiento', 'slug' => 'carlos-etxebarria-bilbao'],
     'jaraba_comercio_conecta.case_study.boutique_mariposa' => ['vertical_path' => 'comercioconecta', 'slug' => 'boutique-la-mariposa'],
     'jaraba_servicios_conecta.case_study.carmen_navarro' => ['vertical_path' => 'serviciosconecta', 'slug' => 'carmen-navarro-madrid'],

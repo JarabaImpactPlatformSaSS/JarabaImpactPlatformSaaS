@@ -2,226 +2,211 @@
 
 /**
  * @file validate-case-study-completeness.php
- * CASE-STUDY-PATTERN-001: Validates case study landing completeness.
+ * CASE-STUDY-COMPLETENESS-001: Validates unified case study landing architecture.
  *
- * Checks that every commercial vertical has:
- * 1. A CaseStudyController with #pricing variable
- * 2. A hook_theme entry for the case study template
- * 3. A route with .case_study. in the name
- * 4. A Twig template with 10 sections
- * 5. A library entry in ecosistema_jaraba_theme.libraries.yml
- * 6. 6 WebP images in the images directory
- * 7. Modules with str_starts_with in preprocess_page exclude .case_study.
+ * Updated 2026-03-26 for SUCCESS-CASES-001 unified architecture:
+ * - Single CaseStudyLandingController handles all 9 verticals
+ * - Single parametrized template case-study-landing.html.twig (15 sections)
+ * - CaseStudyRouteSubscriber for legacy route defense-in-depth
+ * - SuccessCase entity as SSOT (no hardcoded data)
+ *
+ * Usage: php scripts/validation/validate-case-study-completeness.php
  */
 
 $errors = [];
 $warnings = [];
 
-// 9 commercial verticals (demo excluded = internal)
-$verticals = [
-    'jarabalex' => [
-        'module' => 'jaraba_success_cases',
-        'template' => 'jarabalex-case-study',
-        'theme_key' => 'jarabalex_case_study',
-        'library' => 'jarabalex-case-study',
-        'images_dir' => 'jarabalex-case-study',
-        'alt_controller_module' => 'jaraba_legal_intelligence',
-    ],
-    'agroconecta' => [
-        'module' => 'jaraba_agroconecta_core',
-        'template' => 'agroconecta-case-study',
-        'theme_key' => 'agroconecta_case_study',
-        'library' => 'agroconecta-case-study',
-        'images_dir' => 'agroconecta-case-study',
-    ],
-    'emprendimiento' => [
-        'module' => 'jaraba_business_tools',
-        'template' => 'emprendimiento-case-study',
-        'theme_key' => 'emprendimiento_case_study',
-        'library' => 'emprendimiento-case-study',
-        'images_dir' => 'emprendimiento-case-study',
-    ],
-    'empleabilidad' => [
-        'module' => 'jaraba_candidate',
-        'template' => 'empleabilidad-case-study',
-        'theme_key' => 'empleabilidad_case_study',
-        'library' => 'empleabilidad-case-study',
-        'images_dir' => 'empleabilidad-case-study',
-    ],
-    'comercioconecta' => [
-        'module' => 'jaraba_comercio_conecta',
-        'template' => 'comercioconecta-case-study',
-        'theme_key' => 'comercioconecta_case_study',
-        'library' => 'comercioconecta-case-study',
-        'images_dir' => 'comercioconecta-case-study',
-    ],
-    'serviciosconecta' => [
-        'module' => 'jaraba_servicios_conecta',
-        'template' => 'serviciosconecta-case-study',
-        'theme_key' => 'serviciosconecta_case_study',
-        'library' => 'serviciosconecta-case-study',
-        'images_dir' => 'serviciosconecta-case-study',
-    ],
-    'formacion' => [
-        'module' => 'jaraba_lms',
-        'template' => 'formacion-case-study',
-        'theme_key' => 'formacion_case_study',
-        'library' => 'formacion-case-study',
-        'images_dir' => 'formacion-case-study',
-    ],
-    'andalucia_ei' => [
-        'module' => 'jaraba_andalucia_ei',
-        'template' => 'andalucia-ei-case-study',
-        'theme_key' => 'andalucia_ei_case_study',
-        'library' => 'andalucia-ei-case-study',
-        'images_dir' => 'andalucia-ei-case-study',
-    ],
-    'content_hub' => [
-        'module' => 'jaraba_content_hub',
-        'template' => 'contenthub-case-study',
-        'theme_key' => 'contenthub_case_study',
-        'library' => 'contenthub-case-study',
-        'images_dir' => 'contenthub-case-study',
-    ],
-];
-
 $themePath = 'web/themes/custom/ecosistema_jaraba_theme';
 $modulesPath = 'web/modules/custom';
+$successCasesModule = "$modulesPath/jaraba_success_cases";
 
-foreach ($verticals as $key => $config) {
-    $modulePath = "$modulesPath/{$config['module']}";
-
-    // 1. Check controller exists (may be in alt module)
-    $controllerGlob = glob("$modulePath/src/Controller/*CaseStudy*Controller.php");
-    if (empty($controllerGlob) && isset($config['alt_controller_module'])) {
-        $altPath = "$modulesPath/{$config['alt_controller_module']}";
-        $controllerGlob = glob("$altPath/src/Controller/*CaseStudy*Controller.php")
-            ?: glob("$altPath/src/Controller/*Landing*Controller.php");
-    }
-    if (empty($controllerGlob)) {
-        $errors[] = "[$key] Missing CaseStudyController in $modulePath/src/Controller/";
-    }
-
-    // 2. Check route with .case_study. or caso-de-exito path
-    $routeFound = false;
-    $searchModules = [$config['module']];
-    if (isset($config['alt_controller_module'])) {
-        $searchModules[] = $config['alt_controller_module'];
-    }
-    foreach ($searchModules as $mod) {
-        $routingFile = "$modulesPath/$mod/$mod.routing.yml";
-        if (file_exists($routingFile)) {
-            $routingContent = file_get_contents($routingFile);
-            if (strpos($routingContent, '.case_study.') !== false || strpos($routingContent, 'caso-de-exito') !== false) {
-                $routeFound = true;
-                break;
-            }
-        }
-    }
-    if (!$routeFound) {
-        $errors[] = "[$key] No case_study route found in any module routing.yml";
-    }
-
-    // 3. Check hook_theme entry (may be in alt module)
-    $themeFound = false;
-    foreach ($searchModules as $mod) {
-        $mFile = "$modulesPath/$mod/$mod.module";
-        if (file_exists($mFile)) {
-            $mContent = file_get_contents($mFile);
-            if (strpos($mContent, "'{$config['theme_key']}'") !== false) {
-                $themeFound = true;
-                break;
-            }
-        }
-    }
-    if (!$themeFound) {
-        $errors[] = "[$key] Missing hook_theme entry '{$config['theme_key']}' in module files";
-    }
-
-    // 4. Check template exists
-    $templateFile = "$themePath/templates/{$config['template']}.html.twig";
-    if (!file_exists($templateFile)) {
-        $errors[] = "[$key] Missing template: $templateFile";
-    } else {
-        // Check 10 sections
-        $templateContent = file_get_contents($templateFile);
-        $sectionCount = preg_match_all('/===\s+\d+/', $templateContent);
-        if ($sectionCount < 9) {
-            $warnings[] = "[$key] Template has only $sectionCount sections (expected 9-10)";
-        }
-        // Check data-track-cta
-        $ctaCount = preg_match_all('/data-track-cta/', $templateContent);
-        if ($ctaCount < 3) {
-            $errors[] = "[$key] Template has only $ctaCount CTAs with data-track-cta (min 3)";
-        }
-        // Check Schema.org
-        if (strpos($templateContent, 'application/ld+json') === false) {
-            $errors[] = "[$key] Missing Schema.org JSON-LD in template";
-        }
-    }
-
-    // 5. Check library entry
-    $librariesFile = "$themePath/ecosistema_jaraba_theme.libraries.yml";
-    if (file_exists($librariesFile)) {
-        $libContent = file_get_contents($librariesFile);
-        if (strpos($libContent, "{$config['library']}:") === false) {
-            $errors[] = "[$key] Missing library '{$config['library']}' in libraries.yml";
-        }
-    }
-
-    // 6. Check images (at least 5 WebP)
-    $imagesDir = "$themePath/images/{$config['images_dir']}";
-    if (is_dir($imagesDir)) {
-        $webpFiles = glob("$imagesDir/*.webp");
-        $webpCount = count($webpFiles);
-        if ($webpCount < 5) {
-            $errors[] = "[$key] Only $webpCount WebP images in $imagesDir (min 5)";
-        }
-    } else {
-        $errors[] = "[$key] Missing images directory: $imagesDir";
-    }
-}
-
-// 7. Check modules with str_starts_with in preprocess_page exclude .case_study.
-// Modules known to have str_starts_with in preprocess_page that must exclude .case_study.
-$modulesWithPreprocess = [
-    'jaraba_servicios_conecta',
-    'jaraba_comercio_conecta',
-    'jaraba_content_hub',
+// 9 commercial verticals (demo excluded = internal).
+$commercialVerticals = [
+  'jarabalex', 'agroconecta', 'comercioconecta', 'empleabilidad',
+  'emprendimiento', 'formacion', 'serviciosconecta', 'andalucia_ei', 'content_hub',
 ];
-// Also check hook_theme_suggestions_page_alter with str_starts_with
-$modulesWithSuggestions = [
-    'jaraba_content_hub',
+
+// Vertical path slugs used in URLs (with hyphens for multi-word).
+$verticalPathSlugs = [
+  'jarabalex', 'agroconecta', 'comercioconecta', 'empleabilidad',
+  'emprendimiento', 'formacion', 'serviciosconecta', 'andalucia-ei', 'content-hub',
 ];
-foreach ($modulesWithPreprocess as $moduleName) {
-    $moduleFile = "$modulesPath/$moduleName/$moduleName.module";
-    if (file_exists($moduleFile)) {
-        $content = file_get_contents($moduleFile);
-        if (preg_match('/preprocess_page.*str_starts_with/s', $content)
-            && strpos($content, '.case_study.') === false) {
-            $errors[] = "[$moduleName] preprocess_page uses str_starts_with but does NOT exclude .case_study. routes";
-        }
+
+echo "CASE-STUDY-COMPLETENESS-001: Validating unified case study architecture...\n\n";
+
+// CHECK 1: Unified CaseStudyLandingController exists.
+$controllerPath = "$successCasesModule/src/Controller/CaseStudyLandingController.php";
+if (file_exists($controllerPath)) {
+  $controllerContent = file_get_contents($controllerPath);
+  // Verify it handles all verticals.
+  $missingVerticals = [];
+  foreach ($verticalPathSlugs as $slug) {
+    if (strpos($controllerContent, "'$slug'") === false) {
+      $missingVerticals[] = $slug;
     }
+  }
+  if (empty($missingVerticals)) {
+    echo "  [PASS] CHECK 1: CaseStudyLandingController handles all 9 verticals\n";
+  } else {
+    $errors[] = "CaseStudyLandingController missing verticals: " . implode(', ', $missingVerticals);
+    echo "  [FAIL] CHECK 1: Missing verticals in controller: " . implode(', ', $missingVerticals) . "\n";
+  }
+} else {
+  $errors[] = "Missing unified CaseStudyLandingController";
+  echo "  [FAIL] CHECK 1: CaseStudyLandingController not found\n";
 }
 
-// Report
-if (empty($errors) && empty($warnings)) {
-    echo "CASE-STUDY-COMPLETENESS-001: PASS — 9/9 commercial verticals have complete case studies\n";
-    exit(0);
+// CHECK 2: CaseStudyRouteSubscriber exists (defense-in-depth).
+$subscriberPath = "$successCasesModule/src/Routing/CaseStudyRouteSubscriber.php";
+if (file_exists($subscriberPath)) {
+  echo "  [PASS] CHECK 2: CaseStudyRouteSubscriber exists\n";
+} else {
+  $warnings[] = "Missing CaseStudyRouteSubscriber (defense-in-depth layer)";
+  echo "  [WARN] CHECK 2: CaseStudyRouteSubscriber not found\n";
 }
 
-if (!empty($warnings)) {
-    foreach ($warnings as $w) {
-        echo "  WARN: $w\n";
+// CHECK 3: Parametrized route covers all verticals.
+$routingPath = "$successCasesModule/jaraba_success_cases.routing.yml";
+if (file_exists($routingPath)) {
+  $routingContent = file_get_contents($routingPath);
+  $allSlugsInRoute = true;
+  foreach ($verticalPathSlugs as $slug) {
+    if (strpos($routingContent, $slug) === false) {
+      $allSlugsInRoute = false;
+      $errors[] = "Vertical path '$slug' not in routing.yml requirements";
     }
-}
-if (!empty($errors)) {
-    foreach ($errors as $e) {
-        echo "  FAIL: $e\n";
-    }
-    echo "CASE-STUDY-COMPLETENESS-001: FAIL — " . count($errors) . " errors\n";
-    exit(1);
+  }
+  if ($allSlugsInRoute) {
+    echo "  [PASS] CHECK 3: Parametrized route covers all 9 vertical paths\n";
+  } else {
+    echo "  [FAIL] CHECK 3: Some vertical paths missing from routing.yml\n";
+  }
+} else {
+  $errors[] = "Missing jaraba_success_cases.routing.yml";
+  echo "  [FAIL] CHECK 3: routing.yml not found\n";
 }
 
-echo "CASE-STUDY-COMPLETENESS-001: WARN — " . count($warnings) . " warnings\n";
-exit(0);
+// CHECK 4: Unified template exists with 15 partial includes.
+$templatePath = "$themePath/templates/case-study-landing.html.twig";
+if (file_exists($templatePath)) {
+  $templateContent = file_get_contents($templatePath);
+  // Count _cs-*.html.twig includes (the 15 sections).
+  $includeCount = preg_match_all('/_cs-[a-z-]+\.html\.twig/', $templateContent);
+  if ($includeCount >= 10) {
+    echo "  [PASS] CHECK 4: Template has $includeCount section includes (min 10)\n";
+  } else {
+    $warnings[] = "Template has only $includeCount section includes (expected 10+)";
+    echo "  [WARN] CHECK 4: Template has only $includeCount section includes\n";
+  }
+} else {
+  $errors[] = "Missing unified template: $templatePath";
+  echo "  [FAIL] CHECK 4: case-study-landing.html.twig not found\n";
+}
+
+// CHECK 5: Library 'case-study-landing' exists.
+$librariesPath = "$themePath/ecosistema_jaraba_theme.libraries.yml";
+if (file_exists($librariesPath)) {
+  $libContent = file_get_contents($librariesPath);
+  if (strpos($libContent, 'case-study-landing:') !== false) {
+    echo "  [PASS] CHECK 5: Library 'case-study-landing' registered\n";
+  } else {
+    $errors[] = "Missing library 'case-study-landing' in libraries.yml";
+    echo "  [FAIL] CHECK 5: Library not found\n";
+  }
+} else {
+  $errors[] = "Missing libraries.yml";
+  echo "  [FAIL] CHECK 5: libraries.yml not found\n";
+}
+
+// CHECK 6: hook_theme registers 'case_study_landing'.
+$moduleFile = "$successCasesModule/jaraba_success_cases.module";
+if (file_exists($moduleFile)) {
+  $moduleContent = file_get_contents($moduleFile);
+  if (strpos($moduleContent, "'case_study_landing'") !== false) {
+    echo "  [PASS] CHECK 6: hook_theme registers 'case_study_landing'\n";
+  } else {
+    $errors[] = "hook_theme missing 'case_study_landing' entry";
+    echo "  [FAIL] CHECK 6: hook_theme entry not found\n";
+  }
+} else {
+  $errors[] = "Missing module file: $moduleFile";
+  echo "  [FAIL] CHECK 6: .module file not found\n";
+}
+
+// CHECK 7: No legacy CaseStudy controllers exist in vertical modules.
+$legacyModules = [
+  'jaraba_agroconecta_core', 'jaraba_andalucia_ei', 'jaraba_business_tools',
+  'jaraba_candidate', 'jaraba_comercio_conecta', 'jaraba_content_hub',
+  'jaraba_lms', 'jaraba_servicios_conecta',
+];
+$legacyControllers = [];
+foreach ($legacyModules as $mod) {
+  $pattern = "$modulesPath/$mod/src/Controller/*CaseStudyController.php";
+  foreach (glob($pattern) as $file) {
+    $legacyControllers[] = basename($file);
+  }
+}
+if (empty($legacyControllers)) {
+  echo "  [PASS] CHECK 7: No legacy CaseStudy controllers found\n";
+} else {
+  $errors[] = "Legacy controllers still exist: " . implode(', ', $legacyControllers);
+  echo "  [FAIL] CHECK 7: Found legacy controllers: " . implode(', ', $legacyControllers) . "\n";
+}
+
+// CHECK 8: No routing.yml entries reference deleted controller classes.
+$routeClassErrors = [];
+foreach ($legacyModules as $mod) {
+  $routingFile = "$modulesPath/$mod/$mod.routing.yml";
+  if (file_exists($routingFile)) {
+    $content = file_get_contents($routingFile);
+    if (preg_match('/CaseStudyController::/', $content)) {
+      $routeClassErrors[] = $mod;
+    }
+  }
+}
+if (empty($routeClassErrors)) {
+  echo "  [PASS] CHECK 8: No routing.yml entries reference deleted controllers\n";
+} else {
+  $errors[] = "Routing.yml still references deleted controllers in: " . implode(', ', $routeClassErrors);
+  echo "  [FAIL] CHECK 8: Stale routing entries in: " . implode(', ', $routeClassErrors) . "\n";
+}
+
+// CHECK 9: Seed script has at least 9 verticals covered.
+$seedPath = 'scripts/migration/seed-success-cases.php';
+if (file_exists($seedPath)) {
+  $seedContent = file_get_contents($seedPath);
+  $coveredVerticals = 0;
+  foreach ($commercialVerticals as $v) {
+    if (preg_match("/'vertical'\s*=>\s*'$v'/", $seedContent)) {
+      $coveredVerticals++;
+    }
+  }
+  if ($coveredVerticals >= 9) {
+    echo "  [PASS] CHECK 9: Seed script covers all $coveredVerticals/9 commercial verticals\n";
+  } else {
+    $errors[] = "Seed script only covers $coveredVerticals/9 verticals";
+    echo "  [FAIL] CHECK 9: Only $coveredVerticals/9 verticals in seed\n";
+  }
+} else {
+  $warnings[] = "Seed script not found (non-blocking)";
+  echo "  [WARN] CHECK 9: seed-success-cases.php not found\n";
+}
+
+// Summary.
+echo "\n";
+$totalChecks = 9;
+$failCount = count($errors);
+$warnCount = count($warnings);
+$passCount = $totalChecks - $failCount - $warnCount;
+
+if ($failCount === 0) {
+  echo "CASE-STUDY-COMPLETENESS-001: PASS — $passCount/$totalChecks checks passed";
+  if ($warnCount > 0) {
+    echo " ($warnCount warnings)";
+  }
+  echo "\n";
+  exit(0);
+}
+
+echo "CASE-STUDY-COMPLETENESS-001: FAIL — $failCount errors, $warnCount warnings\n";
+exit(1);

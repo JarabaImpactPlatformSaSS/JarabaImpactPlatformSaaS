@@ -77,6 +77,12 @@ services:
       - [addBridge, ['@?ecosistema_jaraba_core.serviciosconecta_copilot_bridge']]
       - [addBridge, ['@?jaraba_legal_intelligence.copilot_bridge']]
       - [addBridge, ['@?ecosistema_jaraba_core.demo_copilot_bridge']]
+      - [addBridge, ['@?jaraba_crm.copilot_bridge']]
+      - [addBridge, ['@?jaraba_billing.copilot_bridge']]
+      - [addBridge, ['@?jaraba_support.copilot_bridge']]
+      - [addBridge, ['@?jaraba_email.copilot_bridge']]
+      - [addBridge, ['@?jaraba_social.copilot_bridge']]
+      - [addBridge, ['@?jaraba_analytics.copilot_bridge']]
 
   jaraba_copilot_v2.copilot_orchestrator:
     class: Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService

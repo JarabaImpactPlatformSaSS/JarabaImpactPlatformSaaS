@@ -10,10 +10,10 @@
 | Campo | Valor |
 |-------|-------|
 | **Nombre** ★ | Luis Miguel Criado |
-| **Cargo/Profesión actual** ★ | Terapeuta de masajes — Autónomo |
-| **Empresa/Marca** | *(por confirmar)* |
-| **Sector** | Salud y bienestar / Terapias manuales |
-| **Ubicación** ★ | *(por confirmar — Andalucía)* |
+| **Cargo/Profesión actual** ★ | Quiromasajista — Autónomo |
+| **Empresa/Marca** | Terapeuta manual independiente |
+| **Sector** | Salud y bienestar / Terapias manuales / Quiromasaje |
+| **Ubicación** ★ | Andalucía |
 | **Programa** ★ | Andalucía +ei |
 | **Vertical** ★ | Empleabilidad |
 | **Fecha de participación** | *(por confirmar)* |
@@ -25,36 +25,39 @@
 
 ### ★ Reto (Antes)
 
-Luis Miguel buscaba establecerse como terapeuta de masajes autónomo. No tenía visibilidad digital ni una estrategia clara para darse a conocer y captar clientes en su zona.
+Luis Miguel es quiromasajista vocacional con un perfil introvertido. Tenia la habilidad y la demanda de mercado, pero se encontraba paralizado ante el "muro invisible" de la burocracia: darse de alta como autonomo, gestion de cuotas, solicitud de ayudas, lenguaje fiscal. El reto no era falta de talento sino la ansiedad que generaba el proceso administrativo.
 
-> ⚠️ Pepe: complementa con más detalles específicos.
+### ★ Solucion (Durante)
 
-### ★ Solución (Durante)
+El programa Andalucia +ei, con la metodologia "Sin Humo" de PED, le proporciono herramientas y guias practicas paso a paso que desmitificaron el proceso. Le dio claridad para empezar a cotizar como autonomo, le enseno a conseguir la ayuda de la Junta de Andalucia por su cuenta (preparar documentacion, entender convocatorias) y le dio autonomia para gestionar sus propias cuotas sin depender de una gestoria.
 
-A través del programa Andalucía +ei, recibió orientación para definir su oferta de servicios, crear su presencia digital y desarrollar una estrategia de captación de clientes como autónomo.
+### ★ Resultado (Despues)
 
-> ⚠️ Pepe: complementa con herramientas específicas usadas.
-
-### ★ Resultado (Después)
-
-Luis Miguel se dio de alta como autónomo y comenzó a ejercer como terapeuta de masajes, con una propuesta de valor definida y capacidad de captar clientes de forma independiente.
-
-> ⚠️ Pepe: complementa con resultados medibles.
+Luis Miguel paso de la paralisis a tener un negocio real en funcionamiento como autonomo. Obtuvo la ayuda publica de la Junta de Andalucia, gestiona sus cuotas de forma independiente y genera ingresos propios. Un "exito fundacional": no mide facturacion sino barreras derribadas y coraje de empezar.
 
 ---
 
 ## Métricas Cuantificables
 
-| Métrica | Valor |
+| Metrica | Valor |
 |---------|-------|
-| *(por rellenar por Pepe)* | |
+| Alta como autonomo | Completada |
+| Ayuda publica Junta de Andalucia | Obtenida |
+| Gestion cuotas sin gestoria | Autogestionada (ahorro mensual) |
+| Negocio operativo | Si |
 
 ---
 
 ## ★ Quote Testimonial
 
-> *(Pepe: copia aquí la cita textual de Luis Miguel del vídeo/entrevista)*
-> — Luis Miguel Criado, Terapeuta de masajes
+> "Aprendi a gestionar por mi mismo las cuotas de autonomo sin depender de una gestoria. Eso es un ahorro y un control fundamental cuando empiezas."
+> — Luis Miguel Criado, Quiromasajista autonomo
+
+> "El programa me dio las herramientas para dar los pasos mas dificiles: empezar a cotizar y conseguir mis primeras ayudas."
+
+> "No solo aprendi a darme de alta como autonomo, sino que logre conseguir la ayuda de la Junta por mi cuenta. Fue la prueba de que podia ser autosuficiente."
+
+*Fuente: Caso de Exito "El Poder de Empezar" (docs/assets originales)*
 
 ---
 

@@ -113,11 +113,21 @@
       </ul>
 
       {% else %}
-      {# Fallback: navegación plana para meta-sitios #}
+      {# Navegación plana para meta-sitios #}
+      {% set has_cases_link = false %}
       <ul class="landing-nav">
         {% for item in nav_items|default([]) %}
-          <li><a href="{{ lp }}{{ item.url }}">{{ item.text }}</a></li>
+          {% if 'caso' in item.url|lower or 'caso' in item.text|lower or 'testimonio' in item.url|lower %}
+            {# Meta-sitio ya tiene enlace a casos — reapuntar a /casos-de-exito si es anchor #}
+            {% set has_cases_link = true %}
+            <li><a href="{{ lp }}/casos-de-exito">{{ item.text }}</a></li>
+          {% else %}
+            <li><a href="{{ lp }}{{ item.url }}">{{ item.text }}</a></li>
+          {% endif %}
         {% endfor %}
+        {% if not has_cases_link %}
+          <li><a href="{{ lp }}/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
+        {% endif %}
       </ul>
       {% endif %}
     </nav>

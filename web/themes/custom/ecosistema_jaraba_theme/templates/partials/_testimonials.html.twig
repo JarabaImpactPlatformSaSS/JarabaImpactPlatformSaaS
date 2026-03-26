@@ -78,7 +78,7 @@
           <div class="testimonials__author-avatar testimonials__author-avatar--azul" aria-hidden="true">LM</div>
           <div class="testimonials__author-info">
             <cite class="testimonials__author-name">Luis Miguel Criado</cite>
-            <span class="testimonials__author-role">{% trans %}Terapeuta y Emprendedor{% endtrans %}</span>
+            <span class="testimonials__author-role">{% trans %}Quiromasajista autónomo{% endtrans %}</span>
           </div>
         </div>
         <div class="testimonials__result">
@@ -87,14 +87,35 @@
         </div>
       </article>
 
+      {# Testimonio 4: Maia Tolomeo #}
+      <article class="testimonials__card reveal-element reveal-fade-up" role="listitem" style="--reveal-delay: 0.4s;">
+        <div class="testimonials__quote-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'quote', { variant: 'duotone', size: '28px', color: 'verde-innovacion' }) }}
+        </div>
+        <blockquote class="testimonials__text">
+          {% trans %}El curso ha sido muy bueno, muy completo. Me enseñó a abrir la mente y no limitarme. Han surgido ideas que no me había planteado nunca.{% endtrans %}
+        </blockquote>
+        <div class="testimonials__author">
+          <div class="testimonials__author-avatar testimonials__author-avatar--verde" aria-hidden="true">MT</div>
+          <div class="testimonials__author-info">
+            <cite class="testimonials__author-name">Maia Tolomeo</cite>
+            <span class="testimonials__author-role">{% trans %}Empleada de comercio local{% endtrans %}</span>
+          </div>
+        </div>
+        <div class="testimonials__result">
+          {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', size: '18px', color: 'verde-innovacion' }) }}
+          <span>{% trans %}De desempleada a insertada laboralmente{% endtrans %}</span>
+        </div>
+      </article>
+
     </div>
 
     <div class="testimonials__cta">
-      <a href="{{ (language_prefix|default('')) ~ '/blog' }}"
+      <a href="{{ (language_prefix|default('')) ~ '/casos-de-exito' }}"
          class="btn-secondary btn-secondary--large"
          data-track-cta="testimonials_see_all"
          data-track-position="homepage_testimonials">
-        {% trans %}Ver todos los casos{% endtrans %} →
+        {% trans %}Ver todos los casos de éxito{% endtrans %} →
       </a>
     </div>
 

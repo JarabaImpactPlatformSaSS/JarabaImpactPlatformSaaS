@@ -473,15 +473,8 @@ entity.course_review.delete_form:
       course_review:
         type: entity:course_review
 
-# --- Case Study: María López, Madrid ---
-
-jaraba_lms.case_study.maria_lopez:
-  path: '/formacion/caso-de-exito/maria-lopez-madrid'
-  defaults:
-    _controller: '\Drupal\jaraba_lms\Controller\FormacionCaseStudyController::caseStudy'
-    _title: 'Caso de éxito: María López — Formación'
-  requirements:
-    _permission: 'access content'
+# --- Case Study: Migrado a jaraba_success_cases (LEGACY-CONTROLLER-CLEANUP-001)
+# Ruta unificada: /{vertical_path}/caso-de-exito/{slug}
 
 entity.course_review.settings:
   path: '/admin/structure/course-review/settings'
