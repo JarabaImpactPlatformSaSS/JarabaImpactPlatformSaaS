@@ -1393,6 +1393,41 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       break;
 
     // =========================================================================
+    // STATUS-REPORT-PROACTIVE-001: Status Report Alert (ALERTING-EMAIL-FALLBACK-001)
+    // =========================================================================
+    case 'status_report_alert':
+      $errorCount = (int) ($params['error_count'] ?? 0);
+      $warningCount = (int) ($params['warning_count'] ?? 0);
+
+      $message['subject'] = t('Alerta Status Report: @errors error(es), @warnings warning(s) - Ecosistema Jaraba', [
+        '@errors' => $errorCount,
+        '@warnings' => $warningCount,
+      ]);
+
+      $message['body'][] = t('El sistema de vigilancia autonoma ha detectado cambios en /admin/reports/status.');
+      $message['body'][] = '';
+      $message['body'][] = t('Fecha: @timestamp', ['@timestamp' => date('Y-m-d H:i:s')]);
+      $message['body'][] = '';
+
+      if (!empty($params['issues'])) {
+        $message['body'][] = t('Nuevos hallazgos:');
+        foreach ($params['issues'] as $issue) {
+          $message['body'][] = '  ' . $issue;
+        }
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('Acciones:');
+      $message['body'][] = t('  1. Revisar: /admin/reports/status');
+      $message['body'][] = t('  2. Verificar logs del servidor');
+      $message['body'][] = t('  3. Ejecutar: drush core:requirements --severity=2');
+
+      $message['body'][] = '';
+      $message['body'][] = '---';
+      $message['body'][] = t('Sistema de vigilancia autonoma STATUS-REPORT-PROACTIVE-001 - Jaraba Impact Platform');
+      break;
+
+    // =========================================================================
     // Sprint 6: Contact Form Notification
     // =========================================================================
     case 'contact_notification':

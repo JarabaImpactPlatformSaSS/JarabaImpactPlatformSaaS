@@ -98,6 +98,28 @@ function jaraba_insights_hub_update_10002(): string {
 }
 
 /**
+ * Update seo_notification_log entity type definition (field_ui_base_route + canonical link).
+ *
+ * UPDATE-HOOK-REQUIRED-001: Annotation changes require entity type update.
+ */
+function jaraba_insights_hub_update_10003(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  try {
+    $entityType = $entityTypeManager->getDefinition('seo_notification_log', FALSE);
+    if ($entityType) {
+      $updateManager->updateEntityType($entityType);
+      return 'Updated seo_notification_log entity type definition.';
+    }
+    return 'seo_notification_log definition not found.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Error updating seo_notification_log: ' . $e->getMessage(), 0, $e);
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_insights_hub_requirements(string $phase): array {

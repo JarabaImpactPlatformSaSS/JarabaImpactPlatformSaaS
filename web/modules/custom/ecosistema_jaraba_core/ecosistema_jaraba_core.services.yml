@@ -744,12 +744,15 @@ services:
   # ===========================================
 
   # Proactive Drupal status report monitoring — compares against last snapshot.
+  # ALERTING-EMAIL-FALLBACK-001: Email como canal de ultimo recurso.
   ecosistema_jaraba_core.status_report_monitor:
     class: Drupal\ecosistema_jaraba_core\Service\StatusReportMonitorService
     arguments:
       - '@state'
       - '@logger.channel.ecosistema_jaraba_core'
       - '@module_handler'
+      - '@config.factory'
+      - '@plugin.manager.mail'
       - '@?ecosistema_jaraba_core.alerting'
 
   # ===========================================

@@ -4,18 +4,30 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * STATUS-REPORT-PROACTIVE-001: Proactive Drupal status report monitoring.
  *
- * Compares current hook_requirements results against last known snapshot.
- * Detects new Errors/Warnings and triggers alerts via AlertingService.
+ * ESTRUCTURA:
+ * Compara los resultados actuales de hook_requirements contra un snapshot
+ * anterior almacenado en State API. Detecta errores/warnings nuevos y
+ * envia alertas via AlertingService (Slack/Teams) con email como fallback.
  *
- * Designed for hook_cron integration (every 6 hours).
- * Uses State API for snapshot persistence (same pattern as 42 other cron hooks).
+ * LOGICA:
+ * - Ejecutado cada 6 horas desde hook_cron (six_hour_check_last gate)
+ * - Baseline de warnings esperados centralizada como SSOT (STATUS-BASELINE-SSOT-001)
+ * - Email fallback si AlertingService no esta configurado (ALERTING-EMAIL-FALLBACK-001)
+ *
+ * RELACIONES:
+ * - StatusReportMonitorService <- hook_cron: invocado por
+ * - StatusReportMonitorService -> AlertingService: alerta via (opcional)
+ * - StatusReportMonitorService -> MailManager: email fallback
+ * - StatusReportMonitorService -> State API: persistencia snapshot
  */
 class StatusReportMonitorService {
 
@@ -30,14 +42,14 @@ class StatusReportMonitorService {
   protected const STATE_LAST_CHECK = 'jaraba_status_report.last_check';
 
   /**
-   * Interval between checks in seconds (6 hours).
+   * STATUS-BASELINE-SSOT-001: Expected warnings for development environments.
+   *
+   * Fuente unica de verdad. Referenciada por:
+   * - Este servicio (diff en runtime)
+   * - scripts/validation/validate-status-report.php
+   * - .github/workflows/diagnose-status.yml
    */
-  protected const CHECK_INTERVAL = 21600;
-
-  /**
-   * Requirement keys that are expected warnings (not actionable).
-   */
-  protected const EXPECTED_WARNINGS = [
+  public const EXPECTED_WARNINGS_DEV = [
     'ecosistema_jaraba_base_domain',
     'experimental_modules',
     'update_contrib',
@@ -45,22 +57,41 @@ class StatusReportMonitorService {
   ];
 
   /**
+   * STATUS-BASELINE-SSOT-001: Expected warnings for production environments.
+   */
+  public const EXPECTED_WARNINGS_PROD = [
+    'experimental_modules',
+  ];
+
+  /**
    * Constructor.
+   *
+   * OPTIONAL-PARAM-ORDER-001: Parametro opcional (@?) al final.
    */
   public function __construct(
     protected StateInterface $state,
     protected LoggerInterface $logger,
     protected ModuleHandlerInterface $moduleHandler,
+    protected ConfigFactoryInterface $configFactory,
+    protected MailManagerInterface $mailManager,
     protected ?AlertingService $alerting = NULL,
   ) {
   }
 
   /**
-   * Check if it's time to run the monitor.
+   * Devuelve la baseline de warnings esperados segun entorno.
+   *
+   * STATUS-BASELINE-SSOT-001: Metodo estatico para que validate-status-report.php
+   * y diagnose-status.yml puedan consultarlo sin bootstrap Drupal completo.
+   *
+   * @param string $env
+   *   Entorno: 'dev' o 'prod'.
+   *
+   * @return string[]
+   *   Array de requirement keys que son warnings esperados.
    */
-  public function shouldRun(): bool {
-    $lastCheck = (int) $this->state->get(self::STATE_LAST_CHECK, 0);
-    return (time() - $lastCheck) >= self::CHECK_INTERVAL;
+  public static function getExpectedWarnings(string $env = 'dev'): array {
+    return $env === 'prod' ? self::EXPECTED_WARNINGS_PROD : self::EXPECTED_WARNINGS_DEV;
   }
 
   /**
@@ -105,7 +136,6 @@ class StatusReportMonitorService {
     $requirements = [];
 
     // Load .install files and invoke hook_requirements for runtime phase.
-    // Each module's .install is loaded before invoking its hook.
     foreach (array_keys($this->moduleHandler->getModuleList()) as $module) {
       $this->moduleHandler->loadInclude($module, 'install');
     }
@@ -152,6 +182,9 @@ class StatusReportMonitorService {
   /**
    * Compute diff between current and previous snapshots.
    *
+   * Usa EXPECTED_WARNINGS_DEV como baseline en runtime (conservador:
+   * mejor ignorar un warning conocido de mas que alertar innecesariamente).
+   *
    * @param array<string, array{severity: string, title: string, value: string}> $current
    * @param array<string, array{severity: string, title: string, value: string}> $previous
    *
@@ -163,8 +196,8 @@ class StatusReportMonitorService {
     $resolved = [];
 
     foreach ($current as $key => $item) {
-      // Skip expected warnings.
-      if ($item['severity'] === 'Warning' && in_array($key, self::EXPECTED_WARNINGS, TRUE)) {
+      // Skip expected warnings (STATUS-BASELINE-SSOT-001).
+      if ($item['severity'] === 'Warning' && in_array($key, self::EXPECTED_WARNINGS_DEV, TRUE)) {
         continue;
       }
 
@@ -172,13 +205,11 @@ class StatusReportMonitorService {
 
       if ($item['severity'] === 'Error') {
         if ($prevSeverity !== 'Error') {
-          // New error.
           $errors[] = $item + ['key' => $key];
         }
       }
       elseif ($item['severity'] === 'Warning') {
         if ($prevSeverity !== 'Warning') {
-          // New warning.
           $newWarnings[] = $item + ['key' => $key];
         }
       }
@@ -204,6 +235,9 @@ class StatusReportMonitorService {
   /**
    * Send alerts for new issues.
    *
+   * ALERTING-EMAIL-FALLBACK-001: Intenta Slack/Teams primero,
+   * luego email como canal de ultimo recurso.
+   *
    * @param array{errors: list<array<string, string>>, new_warnings: list<array<string, string>>, resolved: list<array<string, string>>} $changes
    */
   protected function alert(array $changes): void {
@@ -219,7 +253,8 @@ class StatusReportMonitorService {
     $message = implode("\n", $issueLines);
     $type = $changes['errors'] !== [] ? AlertingService::ALERT_ERROR : AlertingService::ALERT_WARNING;
 
-    // AlertingService for Slack/Teams.
+    // Canal 1: AlertingService para Slack/Teams.
+    $slackSent = FALSE;
     if ($this->alerting !== NULL) {
       $fields = [];
       foreach ($changes['errors'] as $e) {
@@ -229,16 +264,30 @@ class StatusReportMonitorService {
         $fields[] = ['title' => $w['title'], 'value' => $w['value']];
       }
 
-      $this->alerting->send(
-        'Drupal Status Report — New Issues Detected',
-        count($changes['errors']) . ' error(s), ' . count($changes['new_warnings']) . ' warning(s) detected.',
-        $type,
-        $fields,
-        '/admin/reports/status'
-      );
+      try {
+        $this->alerting->send(
+          'Drupal Status Report — New Issues Detected',
+          count($changes['errors']) . ' error(s), ' . count($changes['new_warnings']) . ' warning(s) detected.',
+          $type,
+          $fields,
+          '/admin/reports/status'
+        );
+        $slackSent = TRUE;
+      }
+      catch (\Throwable $e) {
+        $this->logger->warning('Status report monitor: AlertingService failed: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
     }
 
-    // Log at appropriate level for watchdog/syslog.
+    // Canal 2: Email fallback (ALERTING-EMAIL-FALLBACK-001).
+    // Envia email si AlertingService no esta disponible o fallo.
+    if (!$slackSent) {
+      $this->sendEmailAlert($changes, $issueLines);
+    }
+
+    // Canal 3: Log (siempre).
     if ($changes['errors'] !== []) {
       $this->logger->error('Status report monitor detected new errors: @message', [
         '@message' => $message,
@@ -247,6 +296,51 @@ class StatusReportMonitorService {
     else {
       $this->logger->warning('Status report monitor detected new warnings: @message', [
         '@message' => $message,
+      ]);
+    }
+  }
+
+  /**
+   * Envia alerta por email como fallback.
+   *
+   * ALERTING-EMAIL-FALLBACK-001: Usa system.site.mail como destinatario.
+   * PRESAVE-RESILIENCE-001: Todo el bloque en try-catch.
+   *
+   * @param array{errors: list<array<string, string>>, new_warnings: list<array<string, string>>, resolved: list<array<string, string>>} $changes
+   * @param string[] $issueLines
+   *   Lineas formateadas de cada issue.
+   */
+  protected function sendEmailAlert(array $changes, array $issueLines): void {
+    try {
+      $siteConfig = $this->configFactory->get('system.site');
+      $adminEmail = $siteConfig->get('mail');
+
+      if ($adminEmail === NULL || $adminEmail === '') {
+        $this->logger->warning('Status report monitor: no admin email configured for fallback.');
+        return;
+      }
+
+      $params = [
+        'error_count' => count($changes['errors']),
+        'warning_count' => count($changes['new_warnings']),
+        'issues' => $issueLines,
+      ];
+
+      $this->mailManager->mail(
+        'ecosistema_jaraba_core',
+        'status_report_alert',
+        $adminEmail,
+        'es',
+        $params,
+      );
+
+      $this->logger->info('Status report alert email sent to @email.', [
+        '@email' => $adminEmail,
+      ]);
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Status report monitor: email fallback failed: @error', [
+        '@error' => $e->getMessage(),
       ]);
     }
   }
