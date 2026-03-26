@@ -712,6 +712,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "DRUPAL-SETTINGS-CONSUMERS-001" "drupalSettings injected have JS consumers" \
     php "$SCRIPT_DIR/validate-drupal-settings-consumers.php"
 
+  run_check "SAFEGUARD-AUTO-COUNTER-001" "Validator counts sync (validate-all.sh vs docs)" \
+    php "$SCRIPT_DIR/validate-safeguard-counter.php"
+
   warn_check "API-ENDPOINT-JS-PARITY-001" "JS fetch/API calls match existing routing.yml routes" \
     php "$SCRIPT_DIR/validate-api-endpoint-js-parity.php"
 
@@ -720,6 +723,9 @@ if [ "$MODE" = "full" ]; then
 
   warn_check "TRANSLATION-API-KEYS-001" "Translation AI API key availability" \
     php "$SCRIPT_DIR/validate-translation-api-keys.php"
+
+  warn_check "TRANSLATION-QUALITY-001" "Translation semantic quality (identical, empty, hallucination)" \
+    php "$SCRIPT_DIR/validate-translation-quality.php"
 
   warn_check "SAFEGUARD-DEPLOY-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml)" \
     php "$SCRIPT_DIR/validate-deploy-env-persistence.php"

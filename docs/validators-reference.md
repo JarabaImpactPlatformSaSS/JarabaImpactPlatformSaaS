@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 163 |
-| run_check (CI blocker) | 121 |
-| warn_check (no blocker) | 45 |
+| Total scripts PHP | 165 |
+| run_check (CI blocker) | 122 |
+| warn_check (no blocker) | 46 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
@@ -127,6 +127,7 @@
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |
 | HOMEPAGE-SMOKE-TEST-001 | Homepage differentiation per metasite (homepage_id, rendered_html, meta_title_suffix) |
 | RENDERED-HTML-FRESHNESS-001 | Canvas pages rendered_html completeness (detects missing pre-render) |
+| SAFEGUARD-AUTO-COUNTER-001 | Meta-safeguard: conteos validators sincronizados (validate-all.sh vs docs vs CLAUDE.md) |
 | VALIDATOR-COVERAGE-001 | Meta-safeguard: orphaned validator detection |
 | VERTICAL-COVERAGE-001 | All 9 commercial verticals in discovery points |
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
@@ -163,6 +164,7 @@
 | ROUTE-REFERENCE-INTEGRITY-001 | Url::fromRoute() references existing routes | 12 pre-existing |
 | TRANSLATION-API-KEYS-001 | API keys IA disponibles para traduccion (ANTHROPIC_API_KEY, Key module, permisos settings.env.php) | 4 checks |
 | TRANSLATION-COVERAGE-001 | Cobertura traduccion automatica (>80% por entity type/idioma, Redis queue, Supervisor worker) | 5 checks |
+| TRANSLATION-QUALITY-001 | Calidad semantica traducciones (identico al original, vacios, longitud anomala, hallucination) | 5 checks multi-entity |
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 
 ## Pre-commit lint-staged (9 hooks)

@@ -49,6 +49,7 @@ services:
       - '@config.factory'
       - '@logger.channel.jaraba_i18n'
       - '@?ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_i18n.api_key_health'
 
   # ---------------------------------------------------------------------------
   # Twig Loader Filesystem - Namespace @jaraba_i18n
@@ -93,6 +94,18 @@ services:
       - '@entity_type.manager'
       - '@language_manager'
       - '@queue'
+      - '@state'
+      - '@logger.channel.jaraba_i18n'
+
+  # ---------------------------------------------------------------------------
+  # ApiKeyHealthService
+  # ---------------------------------------------------------------------------
+  # API-KEY-ROTATION-001: Circuit breaker para API keys de traduccion.
+  # Registra fallos consecutivos y emite alerta critical al umbral.
+  #
+  jaraba_i18n.api_key_health:
+    class: Drupal\jaraba_i18n\Service\ApiKeyHealthService
+    arguments:
       - '@state'
       - '@logger.channel.jaraba_i18n'
 

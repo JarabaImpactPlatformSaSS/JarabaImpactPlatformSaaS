@@ -98,6 +98,7 @@ PROMPT;
     protected ConfigFactoryInterface $configFactory,
     protected LoggerInterface $logger,
     protected ?TenantContextService $tenantContext = NULL,
+    protected ?ApiKeyHealthService $apiKeyHealth = NULL,
   ) {}
 
   /**
@@ -128,11 +129,18 @@ PROMPT;
       return $text;
     }
 
+    // API-KEY-ROTATION-001: Circuit breaker — no intentar si la API esta caida.
+    if ($this->apiKeyHealth?->isCircuitOpen()) {
+      throw new \RuntimeException('API de traduccion temporalmente no disponible (circuit breaker abierto).');
+    }
+
     $systemPrompt = $this->buildSystemPrompt($sourceLang, $targetLang);
 
     try {
       $result = $this->callAiProvider($systemPrompt, $text);
       $result = $this->cleanResult($result, $text);
+
+      $this->apiKeyHealth?->recordSuccess();
 
       $this->logger->info('Traduccion completada: @source_lang → @target_lang, @chars chars', [
         '@source_lang' => $sourceLang,
@@ -143,6 +151,8 @@ PROMPT;
       return $result;
     }
     catch (\Throwable $e) {
+      $this->apiKeyHealth?->recordFailure($e->getMessage());
+
       $this->logger->error('Error en traduccion IA: @message', [
         '@message' => $e->getMessage(),
       ]);
