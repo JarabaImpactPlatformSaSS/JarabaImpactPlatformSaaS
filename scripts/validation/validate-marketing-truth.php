@@ -28,6 +28,10 @@ $root = dirname(__DIR__, 2);
 $searchDirs = [
     $root . '/web/modules/custom/ecosistema_jaraba_core/templates',
     $root . '/web/themes/custom/ecosistema_jaraba_theme/templates',
+    // MARKETING-TRUTH-001: All module templates with public-facing marketing copy.
+    $root . '/web/modules/custom/jaraba_andalucia_ei/templates',
+    $root . '/web/modules/custom/jaraba_page_builder/templates',
+    $root . '/web/modules/custom/jaraba_success_cases/templates',
 ];
 
 $errors = [];
