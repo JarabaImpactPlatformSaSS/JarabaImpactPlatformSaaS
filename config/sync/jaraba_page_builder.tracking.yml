@@ -9,3 +9,6 @@ heatmap_retention_days: 30
 respect_dnt: true
 anonymize_ip: true
 cookie_consent_required: false
+ga4_measurement_id: 'G-Z5JFS8RRZV'
+ga4_api_secret: ''
+ga4_enabled: true
