@@ -1441,25 +1441,25 @@ function _ecosistema_jaraba_theme_get_metasite_defaults(): array {
       'seo_description' => 'Únete a la red de franquicias de impacto social. Replica ecosistemas digitales de empleo, emprendimiento y comercio local.',
     ],
     'pde' => [
-      'hero_eyebrow' => 'La plataforma que transforma profesionales en emprendedores de impacto',
-      'hero_headline' => 'Empleo, emprendimiento y digitalización — impulsados por IA',
-      'hero_subtitle' => 'Empleabilidad · Emprendimiento · AgroConecta · ComercioConecta · ServiciosConecta · JarabaLex · Formación · Andalucía E+I',
-      'hero_cta_primary_text' => 'Empezar gratis',
-      'hero_cta_primary_url' => '/user/register',
-      'hero_cta_secondary_text' => 'Conoce el método',
-      'hero_cta_secondary_url' => '/metodo',
-      'stat_value_1' => '10', 'stat_suffix_1' => '', 'stat_label_1' => 'verticales especializados',
-      'stat_value_2' => '11', 'stat_suffix_2' => '', 'stat_label_2' => 'agentes IA integrados',
-      'stat_value_3' => '30', 'stat_suffix_3' => '+', 'stat_label_3' => 'años de metodología',
-      'stat_value_4' => '100', 'stat_suffix_4' => '%', 'stat_label_4' => 'infraestructura propia',
-      'cta_headline' => 'Tu ecosistema digital. Tu impacto.',
-      'cta_subtitle' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para empleo, emprendimiento, comercio y servicios profesionales.',
-      'cta_primary_text' => 'Empezar gratis',
-      'header_cta_text' => 'Empezar gratis',
-      'header_cta_url' => '/user/register',
-      'footer_copyright' => '© [year] PED S.L. — Plataforma de Ecosistemas Digitales. Todos los derechos reservados.',
-      'seo_title' => 'Ecosistemas Digitales de Impacto | PED S.L.',
-      'seo_description' => 'Plataforma de Ecosistemas Digitales — empleabilidad, emprendimiento, comercio y servicios profesionales con IA.',
+      'hero_eyebrow' => '+30 años de experiencia · +100M EUR en fondos europeos gestionados · +50.000 personas formadas',
+      'hero_headline' => 'Empleo, justicia y negocio digital — impulsados por IA, en una sola plataforma',
+      'hero_subtitle' => '10 verticales especializados. 11 agentes IA. Firma digital y copiloto integrado. Una sola plataforma para profesionales, empresas e instituciones.',
+      'hero_cta_primary_text' => 'Andalucía +ei — Solicita tu plaza',
+      'hero_cta_primary_url' => '/andalucia-ei/enlaces',
+      'hero_cta_secondary_text' => 'Ver la plataforma en acción',
+      'hero_cta_secondary_url' => '#product-demo',
+      'stat_value_1' => '30', 'stat_suffix_1' => '+', 'stat_label_1' => 'años de experiencia',
+      'stat_value_2' => '100', 'stat_suffix_2' => 'M+', 'stat_label_2' => 'EUR en fondos europeos gestionados',
+      'stat_value_3' => '50', 'stat_suffix_3' => '.000+', 'stat_label_3' => 'personas formadas',
+      'stat_value_4' => '10', 'stat_suffix_4' => '', 'stat_label_4' => 'verticales SaaS',
+      'cta_headline' => 'Impulsa tu territorio. Transforma tu organización.',
+      'cta_subtitle' => 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para programas de empleo, emprendimiento y desarrollo local.',
+      'cta_primary_text' => 'Contacto institucional',
+      'header_cta_text' => 'Andalucía +ei',
+      'header_cta_url' => '/andalucia-ei/enlaces',
+      'footer_copyright' => '© [year] Plataforma de Ecosistemas Digitales S.L. (B93750271). Todos los derechos reservados.',
+      'seo_title' => 'Plataforma de Ecosistemas Digitales — Empleo, Emprendimiento e IA | PED S.L.',
+      'seo_description' => 'Infraestructura digital para el desarrollo rural y la transformación de territorios. +30 años, +100M EUR en fondos europeos, 10 verticales SaaS.',
     ],
     'generic' => [
       'hero_eyebrow' => 'La plataforma que transforma profesionales en emprendedores de impacto',
@@ -3203,31 +3203,38 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $variables['language_links'] = $language_links;
 
   // =========================================================================
-  // MEGAMENU: Solo para SaaS principal (NO meta-sitios)
+  // MEGAMENU: SaaS principal + PED Corporativo (group_id 7)
   //
-  // Si $variables['meta_site'] es NULL, estamos en el SaaS principal →
-  // activar megamenu. Los meta-sitios ya inyectan sus nav_items via
-  // MetaSiteResolverService y NO tendrán header_megamenu.
+  // SaaS principal (meta_site NULL): mega menú de verticales del ecosistema.
+  // PED Corporativo (group_id 7): mega menú corporativo propio (Empresa,
+  // Plataforma, Red, Resultados) — es la web institucional, NO el producto.
+  // Demás meta-sitios (pepejaraba, jarabaimpact): mantienen nav plana.
   //
   // @see _header-classic.html.twig — Usa ts.header_megamenu|default(false)
-  // @see docs/implementacion/20260227-Plan_Correccion_Navegacion_Ecosistema_v1.md §7.2
+  // @see MEGAMENU-INJECT-001 — Columnas viajan en theme_settings._mega_menu_columns
+  // @see MegaMenuBridgeService::getPedCorporateColumns() — SSOT PED
   // =========================================================================
-  if (empty($variables['meta_site'])) {
+  $enableMegaMenu = empty($variables['meta_site']);
+  $isPedMegaMenu = FALSE;
+  if (!$enableMegaMenu && !empty($variables['meta_site'])) {
+    $metaSiteGroupId = (int) ($variables['meta_site']['group_id'] ?? 0);
+    if ($metaSiteGroupId === 7) {
+      $enableMegaMenu = TRUE;
+      $isPedMegaMenu = TRUE;
+    }
+  }
+  if ($enableMegaMenu) {
     $variables['theme_settings']['header_megamenu'] = TRUE;
 
-    // Mega menu columns: Fase B — primero intenta datos configurables desde UI
-    // (SiteMenuItem entities via MegaMenuBridgeService). Si no hay menú
-    // configurado, usa fallback hardcodeado (Fase A).
-    // MEGAMENU-INJECT-001: Inyectar columnas TANTO en $variables (para
-    // templates que pasan mega_menu_columns explícitamente) COMO en
-    // theme_settings._mega_menu_columns (para que viaje automáticamente
-    // con theme_settings y no dependa de cada page template).
-    // SSOT: Catálogo de verticales desde MegaMenuBridgeService.
-    // El servicio intenta DB (SiteMenuItem entities) primero, fallback a
-    // getVerticalCatalog(). URLs se devuelven sin prefijo de idioma.
+    // MEGAMENU-INJECT-001: Inyectar columnas TANTO en $variables como en
+    // theme_settings._mega_menu_columns para que viaje con include ... only.
     $lp = $variables['language_prefix'] ?? '';
     if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
-      $columns = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge')->getMegaMenuColumns();
+      $bridge = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge');
+      // PED usa estructura corporativa propia; SaaS usa catálogo de verticales.
+      $columns = $isPedMegaMenu
+        ? $bridge->getPedCorporateColumns()
+        : $bridge->getMegaMenuColumns();
     }
     else {
       $columns = [];
@@ -3247,6 +3254,70 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     // {% include ... with { theme_settings: theme_settings } only %} sin
     // necesidad de pasar mega_menu_columns explícitamente en cada template.
     $variables['theme_settings']['_mega_menu_columns'] = $variables['mega_menu_columns'];
+
+    // Etiqueta del botón mega menú y links directos fuera del dropdown.
+    // PED: "Conócenos" + links corporativos. SaaS: "Soluciones" + Precios/Casos.
+    if ($isPedMegaMenu) {
+      $variables['theme_settings']['megamenu_button_label'] = t('Conócenos');
+      $variables['theme_settings']['megamenu_direct_links'] = [
+        ['text' => (string) t('Impacto'), 'url' => $lp . '/impacto'],
+        ['text' => (string) t('Casos de Éxito'), 'url' => $lp . '/casos-de-exito'],
+      ];
+      // Header CTA: campaña activa de captación Andalucía +ei 2ª Edición.
+      // Prioridad conversión: programa con financiación FSE+ abierto.
+      $variables['theme_settings']['enable_header_cta'] = TRUE;
+      $variables['theme_settings']['header_cta_text'] = t('Andalucía +ei');
+      $variables['theme_settings']['header_cta_url'] = '/andalucia-ei/enlaces';
+      // Promo PED: CTA que lleva a la demo del producto en el SaaS principal.
+      // URL absoluta porque PED es un dominio distinto al SaaS.
+      // Auto-cualifica sin generar emails manuales.
+      $saasBaseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
+      $saasBaseUrl = 'https://' . $saasBaseDomain;
+      $variables['theme_settings']['megamenu_promo'] = [
+        'title' => (string) t('¿Quieres verlo en acción?'),
+        'description' => (string) t('Descubre cómo la plataforma impulsa empleo, emprendimiento y desarrollo local.'),
+        'cta_text' => (string) t('Ver la plataforma en acción'),
+        'cta_url' => $saasBaseUrl . $lp . '/#product-demo',
+        'cta_track' => 'megamenu_product_demo_ped',
+      ];
+
+      // Footer PED: 3 columnas con paths reales del tenant 7.
+      // Columna 1: Plataforma (qué ofrecemos + campaña activa).
+      $variables['theme_settings']['footer_nav_col1_title'] = (string) t('Plataforma');
+      $variables['theme_settings']['footer_nav_col1_links'] = implode("\n", [
+        'Ecosistema|/ecosistema',
+        'Impacto|/impacto',
+        'Casos de Éxito|/casos-de-exito',
+        'Andalucía +ei|/andalucia-ei/enlaces',
+      ]);
+      // Columna 2: Empresa (quiénes somos).
+      $variables['theme_settings']['footer_nav_col2_title'] = (string) t('Empresa');
+      $variables['theme_settings']['footer_nav_col2_links'] = implode("\n", [
+        'Sobre nosotros|/sobre-nosotros',
+        'Equipo directivo|/equipo',
+        'Partners|/partners',
+        'Transparencia|/transparencia',
+        'Certificaciones|/certificaciones',
+        'Prensa|/prensa',
+        'Contacto|/contacto',
+      ]);
+      // Columna 3: Legal (compliance).
+      $variables['theme_settings']['footer_nav_col3_title'] = (string) t('Legal');
+      $variables['theme_settings']['footer_nav_col3_links'] = implode("\n", [
+        'Aviso legal|/aviso-legal',
+        'Política de privacidad|/politica-privacidad',
+        'Política de cookies|/politica-cookies',
+      ]);
+      // Copyright PED.
+      $variables['theme_settings']['footer_copyright'] = '© ' . date('Y') . ' Plataforma de Ecosistemas Digitales S.L. (B93750271)';
+    }
+    else {
+      $variables['theme_settings']['megamenu_button_label'] = t('Soluciones');
+      $variables['theme_settings']['megamenu_direct_links'] = [
+        ['text' => (string) t('Precios'), 'url' => $lp . '/planes'],
+        ['text' => (string) t('Casos de Éxito'), 'url' => $lp . '/casos-de-exito'],
+      ];
+    }
   }
 
   // =========================================================================

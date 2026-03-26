@@ -44,7 +44,7 @@
         {# Dropdown: Soluciones (megamenu 3 columnas) #}
         <li class="header__menu-item has-mega-menu">
           <button class="header__menu-link" aria-expanded="false" aria-haspopup="true">
-            {% trans %}Soluciones{% endtrans %}
+            {{ ts.megamenu_button_label|default('Soluciones'|t) }}
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
               <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -72,7 +72,15 @@
                     </ul>
                     {% if column.has_promo|default(false) %}
                       <div class="mega-panel__promo">
-                        {% if logged_in %}
+                        {% if ts.megamenu_promo is defined and ts.megamenu_promo %}
+                          {# Promo configurable desde preprocess (PED, etc.) #}
+                          <h4>{{ ts.megamenu_promo.title }}</h4>
+                          <p>{{ ts.megamenu_promo.description }}</p>
+                          <a href="{{ ts.megamenu_promo.cta_url }}" class="btn-primary btn-primary--sm"
+                             data-track-cta="{{ ts.megamenu_promo.cta_track }}" data-track-position="megamenu_promo">
+                            {{ ts.megamenu_promo.cta_text }} →
+                          </a>
+                        {% elseif logged_in %}
                           <h4>{% trans %}Amplía tu ecosistema{% endtrans %}</h4>
                           <p>{% trans %}Activa verticales adicionales y desbloquea nuevas herramientas para tu negocio.{% endtrans %}</p>
                           <a href="{{ lp }}/addons" class="btn-primary btn-primary--sm"
@@ -96,10 +104,12 @@
           </div>
         </li>
 
-        {# Links directos (fuera del megamenu) #}
-        <li class="header__menu-item">
-          <a href="{{ lp }}/planes" class="header__menu-link">{% trans %}Precios{% endtrans %}</a>
-        </li>
+        {# Links directos (fuera del megamenu) — configurables desde preprocess #}
+        {% for direct_link in ts.megamenu_direct_links|default([]) %}
+          <li class="header__menu-item">
+            <a href="{{ direct_link.url }}" class="header__menu-link">{{ direct_link.text }}</a>
+          </li>
+        {% endfor %}
         {% if ts.promo_banner_enabled|default(false) and ts.promo_banner_url|default('') %}
         <li class="header__menu-item">
           <a href="{{ lp }}{{ ts.promo_banner_url }}" class="header__menu-link header__menu-link--highlight">
@@ -107,9 +117,6 @@
           </a>
         </li>
         {% endif %}
-        <li class="header__menu-item">
-          <a href="{{ lp }}/casos-de-exito" class="header__menu-link">{% trans %}Casos de Éxito{% endtrans %}</a>
-        </li>
       </ul>
 
       {% else %}

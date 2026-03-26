@@ -42,28 +42,39 @@
 
     <div class="ped-vertical-highlight__grid">
       {% for feature in highlight_features|default([]) %}
-        <div class="ped-vertical-highlight__feature">
-          <div class="ped-vertical-highlight__feature-icon">
+        {# Patron premium card del SaaS (jaraba-feature-card) aplicado a vertical highlights #}
+        {% set icon_variant = feature.icon_color|default('azul-corporativo') %}
+        {% set icon_class = icon_variant == 'naranja-impulso' ? 'impulse' :
+                           (icon_variant == 'verde-innovacion' ? 'innovation' :
+                           (icon_variant == 'white' ? 'corporate' : 'corporate')) %}
+        <div class="jaraba-feature-card ped-vertical-highlight__feature">
+          <div class="jaraba-feature-card__icon jaraba-feature-card__icon--{{ icon_class }} ped-vertical-highlight__feature-icon">
             {{ jaraba_icon(feature.icon_cat, feature.icon_name, {
               variant: 'duotone',
               color: feature.icon_color|default('azul-corporativo'),
               size: '28px'
             }) }}
           </div>
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
+          <h3 class="jaraba-feature-card__title">{{ feature.title }}</h3>
+          <p class="jaraba-feature-card__description">{{ feature.description }}</p>
         </div>
       {% endfor %}
     </div>
 
-    {# Comparativa de precios (opcional, para JarabaLex) #}
+    {# Comparativa de precios — contraste de valor (competidores vs Jaraba) #}
     {% if highlight_comparison is defined and highlight_comparison %}
-      <div class="ped-vertical-highlight__comparison">
+      <div class="ped-vertical-highlight__comparison" role="list" aria-label="{% trans %}Comparativa de precios{% endtrans %}">
         {% for item in highlight_comparison %}
-          <div class="ped-vertical-highlight__comparison-item{% if item.is_jaraba|default(false) %} ped-vertical-highlight__comparison-item--featured{% endif %}">
+          <div class="ped-vertical-highlight__comparison-item{{ item.is_jaraba|default(false) ? ' ped-vertical-highlight__comparison-item--featured' : ' ped-vertical-highlight__comparison-item--competitor' }}" role="listitem">
+            {% if item.is_jaraba|default(false) %}
+              <span class="ped-vertical-highlight__comparison-badge">{% trans %}Mejor valor{% endtrans %}</span>
+            {% endif %}
             <span class="ped-vertical-highlight__comparison-name">{{ item.name }}</span>
             <span class="ped-vertical-highlight__comparison-price">{{ item.price }}</span>
             <span class="ped-vertical-highlight__comparison-desc">{{ item.description }}</span>
+            {% if not item.is_jaraba|default(false) %}
+              <span class="ped-vertical-highlight__comparison-limit" aria-hidden="true">{% trans %}Funcionalidad limitada{% endtrans %}</span>
+            {% endif %}
           </div>
         {% endfor %}
       </div>

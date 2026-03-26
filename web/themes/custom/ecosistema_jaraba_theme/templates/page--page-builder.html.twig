@@ -169,7 +169,16 @@
     } only %}
 
     {# 7. CTA BANNER FINAL — Ultima oportunidad de conversion #}
-    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' %}
+    {% include '@ecosistema_jaraba_theme/partials/_cta-banner-final.html.twig' with {
+      logged_in: logged_in,
+      ped_urls: ped_urls|default({}),
+      cta_headline: 'Impulsa tu territorio. Transforma tu organización.'|t,
+      cta_subtitle: 'Plataforma SaaS con 10 verticales, IA y multi-tenancy para programas de empleo, emprendimiento y desarrollo local.'|t,
+      cta_primary_text: 'Contacto institucional'|t,
+      cta_primary_url: language_prefix|default('') ~ '/contacto',
+      cta_secondary_text: 'Ver la plataforma en acción'|t,
+      cta_secondary_url: '#product-demo',
+    } only %}
 
   {% else %}
     {# Páginas normales del Page Builder: renderizar canvas_data #}

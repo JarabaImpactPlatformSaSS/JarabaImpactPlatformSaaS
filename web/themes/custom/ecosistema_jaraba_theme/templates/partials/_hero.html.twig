@@ -81,7 +81,11 @@
     {# Urgency badge — HOMEPAGE-ELEVATION-001 F1 #}
     <span class="ped-hero__urgency">
       <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 5v5l3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      {% trans %}14 dias gratis — Sin tarjeta de crédito{% endtrans %}
+      {% if meta_site is defined and meta_site and meta_site.group_id|default(0) == 7 %}
+        {% trans %}Plazas abiertas — Andalucía +ei 2ª Edición{% endtrans %}
+      {% else %}
+        {% trans %}14 dias gratis — Sin tarjeta de crédito{% endtrans %}
+      {% endif %}
     </span>
 
     <span class="ped-hero__eyebrow">
@@ -141,7 +145,8 @@
         </svg>
       </a>
     </div>
-    {# Quiz CTA — visible para todos #}
+    {# Quiz CTA — solo para SaaS, no para PED corporativo #}
+    {% if not (meta_site is defined and meta_site and meta_site.group_id|default(0) == 7) %}
     <p class="hero-landing__quiz-link">
       {% trans %}¿No sabes cuál elegir?{% endtrans %}
       <a href="{{ language_prefix|default('') }}/test-vertical"
@@ -149,6 +154,7 @@
         {% trans %}Haz el test de 30 segundos{% endtrans %} →
       </a>
     </p>
+    {% endif %}
 
     {# Trust badges PED — HOMEPAGE-ELEVATION-001 F1 #}
     <div class="ped-hero__trust-bar" aria-label="{% trans %}Certificaciones y garantias{% endtrans %}">

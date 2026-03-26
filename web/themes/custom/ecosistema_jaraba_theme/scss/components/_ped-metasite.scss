@@ -558,7 +558,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     margin: 0 auto;
   }
 
-  // Variante oscura (JarabaLex, B2G)
+  // Variante oscura (JarabaLex, B2G) — Premium cards sobre fondo dark
   &--dark {
     background: $ped-gradient;
     color: var(--ej-bg-surface, #fff);
@@ -566,90 +566,280 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     .ped-vertical-highlight__title { color: var(--ej-bg-surface, #fff); }
     .ped-vertical-highlight__subtitle { color: color-mix(in srgb, white 80%, transparent); }
 
-    .ped-vertical-highlight__feature {
+    // Premium card pattern adaptado a fondo oscuro
+    .jaraba-feature-card.ped-vertical-highlight__feature {
       background: color-mix(in srgb, white 6%, transparent);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid color-mix(in srgb, white 10%, transparent);
-      border-radius: var(--ej-radius-xl, 1.5rem);
-      transition: all 0.25s ease;
+      border-radius: var(--ej-radius-lg, 16px);
+      padding: var(--ej-spacing-lg, 2rem);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      // Gradient accent top — visible on hover
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, $ped-dorado, color-mix(in srgb, $ped-dorado 60%, white));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
       &:hover {
         background: color-mix(in srgb, white 10%, transparent);
-        transform: translateY(-4px);
+        transform: translateY(-8px);
+        border-color: color-mix(in srgb, $ped-dorado 30%, transparent);
+        box-shadow: 0 20px 40px color-mix(in srgb, black 25%, transparent);
+
+        &::before { opacity: 1; }
+
+        .jaraba-feature-card__icon {
+          transform: scale(1.1);
+          background: linear-gradient(135deg, $ped-dorado, color-mix(in srgb, $ped-dorado 60%, white));
+
+          img { filter: brightness(0) invert(1); }
+        }
       }
 
-      p { color: color-mix(in srgb, white 70%, transparent); }
+      .jaraba-feature-card__title { color: var(--ej-bg-surface, #fff); }
+      .jaraba-feature-card__description { color: color-mix(in srgb, white 70%, transparent); }
     }
 
-    .ped-vertical-highlight__feature-icon {
+    .jaraba-feature-card__icon.ped-vertical-highlight__feature-icon {
+      width: 64px;
+      height: 64px;
       background: color-mix(in srgb, $ped-dorado 15%, transparent);
-      color: $ped-dorado;
+      border-radius: var(--ej-radius-md, 12px);
+      transition: all 0.3s ease;
+
+      img {
+        width: 28px;
+        height: 28px;
+        filter: brightness(0) saturate(100%) invert(81%) sepia(20%) saturate(1000%) hue-rotate(5deg);
+        transition: filter 0.3s ease;
+      }
     }
 
-    .ped-vertical-highlight__comparison-item {
-      background: color-mix(in srgb, white 8%, transparent);
-      border: 1px solid color-mix(in srgb, white 10%, transparent);
+    // Competidores en dark: recesivos sobre fondo oscuro
+    .ped-vertical-highlight__comparison-item--competitor {
+      background: color-mix(in srgb, white 4%, transparent);
+      border: 1px solid color-mix(in srgb, white 8%, transparent);
       color: var(--ej-bg-surface, #fff);
+    }
+
+    // Featured en dark: fondo dorado DEBE ganar sobre herencia dark
+    .ped-vertical-highlight__comparison-item--featured {
+      background: $ped-gradient-gold;
+      color: $ped-azul;
+      border: 1px solid color-mix(in srgb, $ped-dorado 60%, transparent);
+
+      .ped-vertical-highlight__comparison-name {
+        color: $ped-azul;
+      }
+
+      .ped-vertical-highlight__comparison-price {
+        color: $ped-azul;
+      }
+    }
+
+    // Limite en dark: rojo suave visible
+    .ped-vertical-highlight__comparison-limit {
+      color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 70%, white);
     }
   }
 
-  // Variante clara (Empleabilidad, Empresas)
+  // Variante clara (B2G, Instituciones) — Premium cards sobre fondo claro
   &--light {
     background: var(--ej-bg-section-alt, #f8fafc);
 
     .ped-vertical-highlight__title { color: var(--ej-color-corporate, $ped-azul); }
-    .ped-vertical-highlight__subtitle { color: var(--ej-color-muted, #6b7280); }
+    .ped-vertical-highlight__subtitle { color: var(--ej-text-muted, #6b7280); }
 
-    .ped-vertical-highlight__feature {
-      background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
-      border-radius: var(--ej-radius-xl, 1.5rem);
-      transition: all 0.2s ease;
+    // Premium card pattern sobre fondo claro
+    .jaraba-feature-card.ped-vertical-highlight__feature {
+      background: var(--ej-bg-surface, #ffffff);
+      border: 1px solid var(--ej-border-color, #e2e8f0);
+      border-radius: var(--ej-radius-lg, 16px);
+      padding: var(--ej-spacing-lg, 2rem);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg,
+          var(--ej-color-corporate, $ped-azul),
+          var(--ej-color-innovation, #00A9A5));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
       &:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--ej-shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.14));
+        transform: translateY(-8px);
+        border-color: transparent;
+        box-shadow:
+          0 20px 40px color-mix(in srgb, var(--ej-color-corporate, $ped-azul) 10%, transparent),
+          0 8px 16px color-mix(in srgb, black 6%, transparent);
+
+        &::before { opacity: 1; }
+
+        .jaraba-feature-card__icon {
+          transform: scale(1.1);
+          background: linear-gradient(135deg,
+            var(--ej-color-corporate, $ped-azul),
+            var(--ej-color-innovation, #00A9A5));
+
+          img { filter: brightness(0) invert(1); }
+        }
       }
     }
 
-    .ped-vertical-highlight__feature-icon {
-      background: color-mix(in srgb, $ped-azul 10%, transparent);
-      color: $ped-azul;
+    .jaraba-feature-card__icon.ped-vertical-highlight__feature-icon {
+      width: 64px;
+      height: 64px;
+      background: color-mix(in srgb, var(--ej-color-corporate, $ped-azul) 10%, transparent);
+      border-radius: var(--ej-radius-md, 12px);
+      transition: all 0.3s ease;
     }
   }
 
-  // Comparativa de precios
+  // ── Comparativa de precios — Contraste de valor ─────────────────
+  // Competidores: muted, limitados. JarabaLex: premium, destacado.
   &__comparison {
     display: flex;
-    gap: var(--ej-space-md, 1.5rem);
+    gap: var(--ej-space-lg, 2rem);
     justify-content: center;
+    align-items: stretch;
     flex-wrap: wrap;
     margin-bottom: var(--ej-space-xl, 3rem);
   }
 
   &__comparison-item {
-    padding: var(--ej-space-md, 1.5rem);
-    border-radius: var(--ej-radius-xl, 1.5rem);
-    min-width: 200px;
+    padding: var(--ej-space-lg, 2rem) var(--ej-space-md, 1.5rem);
+    border-radius: var(--ej-radius-lg, 16px);
+    min-width: 220px;
+    max-width: 280px;
+    flex: 1;
     text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
 
+    // ── Competidor: recesivo, limitación evidente ──
+    &--competitor {
+      background: color-mix(in srgb, white 4%, transparent);
+      border: 1px solid color-mix(in srgb, white 8%, transparent);
+      opacity: 0.75;
+
+      .ped-vertical-highlight__comparison-price {
+        color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 80%, white);
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+      }
+
+      .ped-vertical-highlight__comparison-desc {
+        color: color-mix(in srgb, white 50%, transparent);
+        font-style: italic;
+      }
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    // ── JarabaLex: protagonista, valor claro ──
     &--featured {
       background: $ped-gradient-gold;
       color: $ped-azul;
-      transform: scale(1.05);
-      box-shadow: 0 8px 30px color-mix(in srgb, $ped-dorado 30%, transparent);
+      transform: scale(1.12);
+      box-shadow:
+        0 12px 40px color-mix(in srgb, $ped-dorado 35%, transparent),
+        0 0 0 1px color-mix(in srgb, $ped-dorado 50%, transparent);
+      z-index: 1;
+
+      .ped-vertical-highlight__comparison-name {
+        font-size: 1.2rem;
+        color: $ped-azul;
+      }
 
       .ped-vertical-highlight__comparison-price {
-        font-size: 1.5rem;
-        font-weight: 800;
+        font-size: 2rem;
+        font-weight: 900;
+        color: $ped-azul;
+        text-shadow: 0 1px 0 color-mix(in srgb, white 30%, transparent);
+        letter-spacing: -0.02em;
+      }
+
+      .ped-vertical-highlight__comparison-desc {
+        font-weight: 700;
+        color: var(--ej-bg-surface, #fff);
+        background: $ped-azul;
+        padding: 0.35rem 1rem;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      &:hover {
+        transform: scale(1.15);
+        box-shadow:
+          0 16px 50px color-mix(in srgb, $ped-dorado 45%, transparent),
+          0 0 0 1px $ped-dorado;
       }
     }
+  }
+
+  // Badge "Mejor valor" flotante
+  &__comparison-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: $ped-azul;
+    color: $ped-dorado;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 1rem;
+    border-radius: 50rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px color-mix(in srgb, $ped-azul 40%, transparent);
+  }
+
+  // "Funcionalidad limitada" — refuerzo sutil de la debilidad
+  &__comparison-limit {
+    display: block;
+    margin-top: auto;
+    padding-top: var(--ej-space-sm, 0.75rem);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--ej-color-danger, #EF4444) 60%, white);
+    opacity: 0.8;
   }
 
   &__comparison-name {
     display: block;
     font-weight: 700;
+    font-size: 1rem;
     margin-bottom: var(--ej-space-xs, 0.5rem);
   }
 
@@ -1611,21 +1801,123 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 // ═══════════════════════════════════════════════════════════════════════
 // META-SITE TENANT-7 BODY CLASS OVERRIDES
 // ═══════════════════════════════════════════════════════════════════════
-// Cuando estamos en el meta-sitio PED, ajustar header/footer
+// Header PED: fondo azul corporativo con soporte mega menú.
+// El mega panel dropdown usa fondo claro (reset de colores heredados).
+// Logo en negativo via CSS filter para máximo contraste.
 .meta-site-tenant-7 {
-  // Header PED: fondo azul corporativo
+
+  // ── Header: fondo azul corporativo ──────────────────────────────
   .landing-header {
     background: color-mix(in srgb, $ped-azul 95%, transparent);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid color-mix(in srgb, $ped-dorado 15%, transparent);
 
-    &__name { color: var(--ej-bg-surface, #fff); }
+    // Logo en negativo (blanco) para contraste sobre fondo oscuro
+    &__logo {
+      filter: brightness(0) invert(1);
+    }
 
-    a { color: rgba(255, 255, 255, 0.85); }
-    a:hover { color: $ped-dorado; }
+    // Textos del brand
+    &__name {
+      color: var(--ej-bg-surface, #fff);
+    }
+
+    &__slogan {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    // Links de navegación y directos: blancos sobre fondo oscuro
+    a {
+      color: rgba(255, 255, 255, 0.85);
+
+      &:hover {
+        color: $ped-dorado;
+      }
+    }
+
+    // Mega menú: botón "Soluciones" + chevron
+    .header__menu-link {
+      color: rgba(255, 255, 255, 0.85);
+
+      &:hover {
+        color: $ped-dorado;
+      }
+
+      svg {
+        opacity: 0.7;
+      }
+    }
+
+    // ── Mega panel dropdown: fondo claro + texto oscuro ──────────
+    // Especificidad necesaria para resetear el `a { color: white }`
+    // heredado del header oscuro (0-4-1 > 0-3-1).
+    .header__mega-panel {
+      background: var(--ej-bg-surface, #ffffff);
+      border: 1px solid color-mix(in srgb, var(--ej-border-color, #e5e7eb) 60%, transparent);
+
+      a {
+        color: var(--ej-text-primary, #1a1d29);
+
+        &:hover {
+          color: var(--ej-color-impulse, #FF8C42);
+        }
+      }
+
+      .mega-panel__title {
+        color: var(--ej-text-muted, #6b7280);
+      }
+
+      .mega-panel__link-text strong {
+        color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+      }
+
+      .mega-panel__link-text small {
+        color: var(--ej-text-muted, #6b7280);
+      }
+
+      // Promo card mantiene sus colores propios (gradiente naranja-verde)
+      .mega-panel__promo {
+        a {
+          color: var(--ej-color-impulse, #FF8C42);
+        }
+      }
+    }
+
+    // ── Botones de acción ─────────────────────────────────────────
+    // btn-ghost: borde y texto blancos sobre fondo oscuro
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.85);
+      border-color: rgba(255, 255, 255, 0.25);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--ej-bg-surface, #fff);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: none;
+      }
+    }
+
+    // btn-primary (CTA): mantener gradiente naranja, ajustar glow
+    .btn-primary--glow {
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 30%, transparent);
+    }
+
+    // ── Hamburguesa mobile: barras blancas ────────────────────────
+    &__toggle .hamburger,
+    &__toggle .hamburger::before,
+    &__toggle .hamburger::after {
+      background: var(--ej-bg-surface, #fff);
+    }
+
+    // Estado activo (X): mantener blanco
+    &__toggle.is-active .hamburger::before,
+    &__toggle.is-active .hamburger::after {
+      background: var(--ej-bg-surface, #fff);
+    }
   }
 
-  // Footer PED
+  // ── Footer PED ──────────────────────────────────────────────────
   .landing-footer {
     background: color.adjust($ped-azul, $lightness: -5%);
     color: rgba(255, 255, 255, 0.7);

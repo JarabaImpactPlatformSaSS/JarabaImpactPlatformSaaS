@@ -186,6 +186,130 @@ class MegaMenuBridgeService {
   }
 
   /**
+   * Estructura de navegación corporativa para PED (meta-sitio group_id 7).
+   *
+   * PED es el sitio corporativo de la empresa (plataformadeecosistemas.es),
+   * NO el SaaS de producto. Su mega menú refleja la estructura institucional:
+   * quiénes somos, qué hacemos, con quién trabajamos, qué hemos logrado.
+   *
+   * Usa el mismo formato de columnas que getVerticalCatalog() para reutilizar
+   * el componente visual _header-classic.html.twig sin modificaciones.
+   *
+   * URLs relativas SIN prefijo de idioma (el consumidor lo añade).
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de 4 columnas para el mega menú corporativo PED.
+   */
+  public function getPedCorporateColumns(): array {
+    return [
+      [
+        'title' => (string) $this->t('Empresa'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Sobre nosotros'),
+            'subtitle' => (string) $this->t('Misión, visión y valores'),
+            'icon_cat' => 'business',
+            'icon_name' => 'building',
+            'color' => 'azul-corporativo',
+            'url' => '/sobre-nosotros',
+          ],
+          [
+            'title' => (string) $this->t('Equipo directivo'),
+            'subtitle' => (string) $this->t('Las personas detrás del proyecto'),
+            'icon_cat' => 'users',
+            'icon_name' => 'group',
+            'color' => 'azul-corporativo',
+            'url' => '/equipo',
+          ],
+          [
+            'title' => (string) $this->t('Transparencia'),
+            'subtitle' => (string) $this->t('Gobernanza y rendición de cuentas'),
+            'icon_cat' => 'compliance',
+            'icon_name' => 'shield',
+            'color' => 'azul-corporativo',
+            'url' => '/transparencia',
+          ],
+          [
+            'title' => (string) $this->t('Certificaciones'),
+            'subtitle' => (string) $this->t('Estándares y acreditaciones'),
+            'icon_cat' => 'compliance',
+            'icon_name' => 'certificate',
+            'color' => 'azul-corporativo',
+            'url' => '/certificaciones',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Plataforma'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Ecosistema'),
+            'subtitle' => (string) $this->t('10 verticales en una sola plataforma'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'ecosystem',
+            'color' => 'verde-innovacion',
+            'url' => '/ecosistema',
+          ],
+          [
+            'title' => (string) $this->t('Impacto'),
+            'subtitle' => (string) $this->t('Resultados medibles y verificables'),
+            'icon_cat' => 'analytics',
+            'icon_name' => 'target',
+            'color' => 'verde-innovacion',
+            'url' => '/impacto',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Colaboraciones'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Partners'),
+            'subtitle' => (string) $this->t('Colaboradores estratégicos'),
+            'icon_cat' => 'business',
+            'icon_name' => 'handshake',
+            'color' => 'naranja-impulso',
+            'url' => '/partners',
+          ],
+          [
+            'title' => (string) $this->t('Prensa'),
+            'subtitle' => (string) $this->t('Noticias y apariciones en medios'),
+            'icon_cat' => 'business',
+            'icon_name' => 'megaphone',
+            'color' => 'naranja-impulso',
+            'url' => '/prensa',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Resultados'),
+        'has_promo' => TRUE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Casos de Éxito'),
+            'subtitle' => (string) $this->t('Historias reales de transformación'),
+            'icon_cat' => 'achievement',
+            'icon_name' => 'trophy',
+            'color' => 'naranja-impulso',
+            'url' => '/casos-de-exito',
+          ],
+          [
+            'title' => (string) $this->t('Contacto'),
+            'subtitle' => (string) $this->t('Habla con nuestro equipo'),
+            'icon_cat' => 'ui',
+            'icon_name' => 'mail',
+            'color' => 'azul-corporativo',
+            'url' => '/contacto',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
    * Resuelve un nombre de color de marca a su valor hex.
    *
    * @param string $colorName

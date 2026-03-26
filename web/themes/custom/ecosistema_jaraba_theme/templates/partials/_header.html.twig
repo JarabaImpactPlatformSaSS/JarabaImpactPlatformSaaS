@@ -92,11 +92,14 @@
         </ul>
       </details>
     {% endfor %}
-    {# Links directos #}
+    {# Links directos — configurables desde preprocess (SaaS: Precios/Casos, PED: Impacto/Casos) #}
+    {% if ts.megamenu_direct_links|default([])|length > 0 %}
     <ul class="mobile-menu-list mobile-menu-list--direct">
-      <li><a href="{{ lp }}/planes">{% trans %}Precios{% endtrans %}</a></li>
-      <li><a href="{{ lp }}/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
+      {% for direct_link in ts.megamenu_direct_links %}
+        <li><a href="{{ direct_link.url }}">{{ direct_link.text }}</a></li>
+      {% endfor %}
     </ul>
+    {% endif %}
     {% else %}
     {# Navegación plana (meta-sitios) #}
     {% set has_cases_mobile = false %}
