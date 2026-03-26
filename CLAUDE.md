@@ -383,12 +383,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DOC-GLOSSARY-001: Todo documento extenso (>200 lineas) DEBE incluir un glosario de siglas al final. Cada sigla usada en el texto debe estar definida con su significado completo en espanol
 
 ### Versiones Actuales
-- DIRECTRICES: v167.0.0
-- ARQUITECTURA: v151.0.0
-- INDICE: v197.0.0
-- FLUJO: v115.0.0
-- Ultimo aprendizaje: #226
-- Ultima golden rule: #160
+- Versiones y contadores en MEMORY.md (SSOT). Mantener sincronizado
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
@@ -445,13 +440,15 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 
 ### Automatizacion
 - Orchestrator: `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
-- 173 validators individuales en `scripts/validation/` (124 run + 53 warn). Lista completa: `docs/validators-reference.md`
-- Validators clave por area: entity-integrity, tenant-isolation, scss-compile-freshness, pricing-tiers, homepage-completeness, case-study-conversion-score, copilot-grounding-coverage
+- Lista completa validators: `docs/validators-reference.md`
 
 ## SAFEGUARD SYSTEM — 6 Capas de Defensa
 
-6 capas: (1) 173 scripts validacion, (2) Pre-commit Husky+lint-staged (PHP/SCSS/MD/Twig/services.yml/routing.yml/JS/CLAUDE.md), (3) CI Gates (PHPStan L6 + PHPCS baseline, tests, security), (4) Runtime hook_requirements (94 modulos) + StatusReportMonitorService (email fallback), (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+6 capas: (1) validators, (2) Pre-commit lint-staged, (3) CI Gates, (4) Runtime hook_requirements, (5) IMPLEMENTATION-CHECKLIST-001, (6) PIPELINE-E2E-001
+- PREMIUM-CARD-USAGE-001: `.card--premium` (glassmorphism+3D lift+shine) del core. Sobre fondo `var(--ej-background)` (NO blanco puro). Variantes: subtle, bold. Child: `.icon--pulse-hover`
+- MARKETING-TRUTH-SCOPE-001: validate-marketing-truth.php DEBE cubrir TODOS los dirs con templates publicos
+- SCSS-MODULE-COMPILE-001: Modulos con SCSS propio DEBEN verificar freshness CSS > SCSS
 
 ### Pre-commit lint-staged
-- PHP: PHPStan L6 | SCSS: compiled-assets | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
+- PHP: PHPStan L6 | SCSS tema: compiled-assets | SCSS modulos: compile-freshness | docs/00_*.md: doc-integrity | Twig: syntax+ortografia
 - JS: js-syntax | libraries.yml: library-attachments | services.yml: phantom-args+optional-deps+circular-deps+logger-injection | routing.yml: validate-all --fast

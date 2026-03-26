@@ -6,6 +6,9 @@
   "web/themes/custom/**/*.scss": [
     "php scripts/validation/validate-compiled-assets.php"
   ],
+  "web/modules/custom/**/*.scss": [
+    "php scripts/validation/validate-module-scss-freshness.php"
+  ],
   "docs/00_*.md": [
     "bash scripts/maintenance/verify-doc-integrity.sh"
   ],
