@@ -26,7 +26,7 @@ function jaraba_notifications_update_10001(): string {
     $update_manager->installEntityType($entity_type);
   }
   catch (\Throwable $e) {
-    return 'Failed to install notification_preference: ' . $e->getMessage();
+    throw new \RuntimeException('Failed to install notification_preference: ' . $e->getMessage(), 0, $e);
   }
 
   \Drupal::logger('jaraba_notifications')->notice('Installed notification_preference entity type (GAP-NOTIF-PREFS).');

@@ -353,7 +353,7 @@ function jaraba_billing_update_10007(): string {
     return 'Warning: authenticated role not found.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

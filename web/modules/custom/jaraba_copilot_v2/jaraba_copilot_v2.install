@@ -390,7 +390,7 @@ function jaraba_copilot_v2_update_10006(): string {
     return 'Table copilot_funnel_event created successfully.';
   }
   catch (\Throwable $e) {
-    return 'Error creating copilot_funnel_event: ' . $e->getMessage();
+    throw new \RuntimeException('Error creating copilot_funnel_event: ' . $e->getMessage(), 0, $e);
   }
 }
 

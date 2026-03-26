@@ -81,7 +81,7 @@ function jaraba_theming_update_10002(): string {
       'Error installing header_cta_url field: @error',
       ['@error' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

@@ -598,7 +598,7 @@ function jaraba_page_builder_update_9010(): string {
     return 'Field meta_title not found.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -664,7 +664,7 @@ function jaraba_page_builder_update_9011(): string {
     $messages[] = 'Resynced entity type and field definitions.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
   return implode(' ', $messages) ?: 'Already up to date.';
 }

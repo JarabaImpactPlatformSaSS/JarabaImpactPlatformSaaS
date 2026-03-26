@@ -390,7 +390,7 @@ function jaraba_servicios_conecta_update_10006(): string {
     return 'availability_slot: table rebuilt from baseFieldDefinitions (0 rows, clean install).';
   }
   catch (\Throwable $e) {
-    return 'availability_slot rebuild ERROR: ' . $e->getMessage();
+    throw new \RuntimeException('availability_slot rebuild ERROR: ' . $e->getMessage(), 0, $e);
   }
 }
 

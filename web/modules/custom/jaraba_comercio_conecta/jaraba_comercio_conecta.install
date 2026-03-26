@@ -457,7 +457,7 @@ function jaraba_comercio_conecta_update_10007(): string {
     return 'MarketplaceCommissionConfig entity type already installed or not defined.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

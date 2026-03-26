@@ -483,7 +483,7 @@ function jaraba_andalucia_ei_update_10005(): string {
     return 'categoria field not found on expediente_documento.';
   }
   catch (\Throwable $e) {
-    return 'Error updating categoria: ' . $e->getMessage();
+    throw new \RuntimeException('Error updating categoria: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -628,7 +628,7 @@ function jaraba_andalucia_ei_update_10006(): string {
     return 'PIIL CV 2025 Phase 1 complete: ' . implode(' ', $messages);
   }
   catch (\Throwable $e) {
-    return 'Error in update_10006: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10006: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -655,7 +655,7 @@ function jaraba_andalucia_ei_update_10007(): string {
     return 'ActuacionSto ya instalada o definición no encontrada.';
   }
   catch (\Throwable $e) {
-    return 'Error installing actuacion_sto: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing actuacion_sto: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -682,7 +682,7 @@ function jaraba_andalucia_ei_update_10008(): string {
     return 'IndicadorFsePlus ya instalada o definición no encontrada.';
   }
   catch (\Throwable $e) {
-    return 'Error installing indicador_fse_plus: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing indicador_fse_plus: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -709,7 +709,7 @@ function jaraba_andalucia_ei_update_10009(): string {
     return 'InsercionLaboral ya instalada o definición no encontrada.';
   }
   catch (\Throwable $e) {
-    return 'Error installing insercion_laboral: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing insercion_laboral: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -857,7 +857,7 @@ function jaraba_andalucia_ei_update_10010(): string {
     return 'update_10010 complete: ' . implode(' ', $messages);
   }
   catch (\Throwable $e) {
-    return 'Error in update_10010: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10010: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -884,7 +884,7 @@ function jaraba_andalucia_ei_update_10011(): string {
     return 'ProspeccionEmpresarial ya instalada o definición no encontrada.';
   }
   catch (\Throwable $e) {
-    return 'Error installing prospeccion_empresarial: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing prospeccion_empresarial: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -993,7 +993,7 @@ function jaraba_andalucia_ei_update_10012(): string {
     return 'update_10012 (Acuerdo/DACI separation) complete: ' . implode(' ', $messages);
   }
   catch (\Throwable $e) {
-    return 'Error in update_10012: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10012: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -1021,7 +1021,7 @@ function jaraba_andalucia_ei_update_10013(): string {
     return 'programa_participante_ei definition not found.';
   }
   catch (\Throwable $e) {
-    return 'Error in update_10013: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10013: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -1090,7 +1090,7 @@ function jaraba_andalucia_ei_update_10014(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10014: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10014: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1260,7 +1260,7 @@ function jaraba_andalucia_ei_update_10015(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10015: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10015: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1289,7 +1289,7 @@ function jaraba_andalucia_ei_update_10016(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10016: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10016: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1333,7 +1333,7 @@ function jaraba_andalucia_ei_update_10017(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10017: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10017: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1397,7 +1397,7 @@ function jaraba_andalucia_ei_update_10018(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10018: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10018: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1446,7 +1446,7 @@ function jaraba_andalucia_ei_update_10019(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10019: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10019: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1491,7 +1491,7 @@ function jaraba_andalucia_ei_update_10020(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10020: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10020: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1536,7 +1536,7 @@ function jaraba_andalucia_ei_update_10021(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10021: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10021: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1581,7 +1581,7 @@ function jaraba_andalucia_ei_update_10022(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10022: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10022: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1652,7 +1652,7 @@ function jaraba_andalucia_ei_update_10023(): string {
     $messages[] = 'Sprint 14 schema update complete.';
   }
   catch (\Throwable $e) {
-    return 'Error in update_10023: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10023: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1709,7 +1709,7 @@ function jaraba_andalucia_ei_update_10024(): string {
   }
   catch (\Throwable $e) {
     // UPDATE-HOOK-CATCH-001: \Throwable, not \Exception.
-    return 'Error in update_10024: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10024: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1751,7 +1751,7 @@ function jaraba_andalucia_ei_update_10025(): string {
     $messages[] = 'Sprint 15: indicadores_6m_completado field installed.';
   }
   catch (\Throwable $e) {
-    return 'Error in update_10025: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10025: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1795,7 +1795,7 @@ function jaraba_andalucia_ei_update_10026(): string {
   }
   catch (\Throwable $e) {
     // UPDATE-HOOK-CATCH-001: use \Throwable, not \Exception.
-    return 'Error in update_10026: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10026: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1885,7 +1885,7 @@ function jaraba_andalucia_ei_update_10027(): string {
   }
   catch (\Throwable $e) {
     // UPDATE-HOOK-CATCH-001: use \Throwable, not \Exception.
-    return 'Error in update_10027: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10027: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -1973,7 +1973,7 @@ function jaraba_andalucia_ei_update_10028(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error in update_10028: ' . $e->getMessage();
+    throw new \RuntimeException('Error in update_10028: ' . $e->getMessage(), 0, $e);
   }
 
   return implode(' | ', $messages);
@@ -2001,7 +2001,7 @@ function jaraba_andalucia_ei_update_10029(): string {
     return 'ficha_tecnica_ei entity type already installed.';
   }
   catch (\Throwable $e) {
-    return 'Error installing ficha_tecnica_ei: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing ficha_tecnica_ei: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2146,7 +2146,7 @@ function jaraba_andalucia_ei_update_10030(): string {
     return 'Program roles provisioned: ' . implode('; ', $results);
   }
   catch (\Throwable $e) {
-    return 'Error provisioning program roles: ' . $e->getMessage();
+    throw new \RuntimeException('Error provisioning program roles: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2183,7 +2183,7 @@ function jaraba_andalucia_ei_update_10031(): string {
     return 'Entity types: ' . implode('; ', $results);
   }
   catch (\Throwable $e) {
-    return 'Error installing entity types: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing entity types: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2225,7 +2225,7 @@ function jaraba_andalucia_ei_update_10032(): string {
     return "ProgramaParticipanteEi: $installed/12 new 2E fields installed.";
   }
   catch (\Throwable $e) {
-    return 'Error updating ProgramaParticipanteEi fields: ' . $e->getMessage();
+    throw new \RuntimeException('Error updating ProgramaParticipanteEi fields: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2251,7 +2251,7 @@ function jaraba_andalucia_ei_update_10033(): string {
     return 'asistencia_detallada_ei: already installed.';
   }
   catch (\Throwable $e) {
-    return 'Error installing asistencia_detallada_ei: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing asistencia_detallada_ei: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2288,7 +2288,7 @@ function jaraba_andalucia_ei_update_10034(): string {
     return 'Sprint B entities: ' . implode('; ', $results);
   }
   catch (\Throwable $e) {
-    return 'Error installing Sprint B entities: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing Sprint B entities: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2313,7 +2313,7 @@ function jaraba_andalucia_ei_update_10035(): string {
     return 'negocio_prospectado_ei: already installed.';
   }
   catch (\Throwable $e) {
-    return 'Error installing negocio_prospectado_ei: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing negocio_prospectado_ei: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2333,7 +2333,7 @@ function jaraba_andalucia_ei_update_10036(): string {
     return 'SesionProgramadaEi: enlace_videoconferencia field added.';
   }
   catch (\Throwable $e) {
-    return 'Error updating SesionProgramadaEi: ' . $e->getMessage();
+    throw new \RuntimeException('Error updating SesionProgramadaEi: ' . $e->getMessage(), 0, $e);
   }
 }
 

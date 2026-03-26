@@ -2756,7 +2756,7 @@ function ecosistema_jaraba_core_update_9030(): string {
       'Update 9030 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2811,7 +2811,7 @@ function ecosistema_jaraba_core_update_9031(): string {
       'Update 9031 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2863,7 +2863,7 @@ function ecosistema_jaraba_core_update_9032(): string {
       'Update 9032 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -2917,7 +2917,7 @@ function ecosistema_jaraba_core_update_9033(): string {
       'Update 9033 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -3011,7 +3011,7 @@ function ecosistema_jaraba_core_update_9035(): string {
       }
     }
     catch (\Throwable $e) {
-      return "Error installing $fieldName: " . $e->getMessage();
+      throw new \RuntimeException("Error installing $fieldName: " . $e->getMessage(), 0, $e);
     }
   }
 
@@ -3344,7 +3344,7 @@ function ecosistema_jaraba_core_update_9039(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error adding funnel columns to demo_analytics: ' . $e->getMessage();
+    throw new \RuntimeException('Error adding funnel columns to demo_analytics: ' . $e->getMessage(), 0, $e);
   }
 
   return empty($added)
@@ -3370,7 +3370,7 @@ function ecosistema_jaraba_core_update_9040(): string {
     return 'QuizResult entity type definition not found — check Entity annotation.';
   }
   catch (\Throwable $e) {
-    return 'Error installing QuizResult: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing QuizResult: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -3435,7 +3435,7 @@ function ecosistema_jaraba_core_update_9041(): string {
     return "Granted $grantedCount permissions to tenant-member role (" . count($permissions) . " total checked).";
   }
   catch (\Throwable $e) {
-    return 'Error updating tenant-member permissions: ' . $e->getMessage();
+    throw new \RuntimeException('Error updating tenant-member permissions: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -3538,7 +3538,7 @@ function ecosistema_jaraba_core_update_9042(): string {
     return implode('. ', $messages) . '.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -3842,7 +3842,7 @@ function ecosistema_jaraba_core_update_9047(): string {
     return 'demo_sessions table o client_ip column no encontrada — skipped.';
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

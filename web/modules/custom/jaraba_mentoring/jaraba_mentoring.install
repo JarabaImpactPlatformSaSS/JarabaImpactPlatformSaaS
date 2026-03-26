@@ -352,7 +352,7 @@ function jaraba_mentoring_update_10006(): string {
     return 'Installed program_groups field on mentor_profile.';
   }
   catch (\Throwable $e) {
-    return 'Error installing program_groups: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing program_groups: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -384,7 +384,7 @@ function jaraba_mentoring_update_10007(): string {
     return 'Installed tenant_id field on mentoring_session.';
   }
   catch (\Throwable $e) {
-    return 'Error installing tenant_id on mentoring_session: ' . $e->getMessage();
+    throw new \RuntimeException('Error installing tenant_id on mentoring_session: ' . $e->getMessage(), 0, $e);
   }
 }
 

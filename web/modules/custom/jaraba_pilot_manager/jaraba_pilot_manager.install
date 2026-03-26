@@ -52,7 +52,7 @@ function jaraba_pilot_manager_update_10001(): string {
       'Update 10001 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -76,7 +76,7 @@ function jaraba_pilot_manager_update_10002(): string {
       'Update 10002 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -100,7 +100,7 @@ function jaraba_pilot_manager_update_10003(): string {
       'Update 10003 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

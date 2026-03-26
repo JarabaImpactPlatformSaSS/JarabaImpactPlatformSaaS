@@ -182,7 +182,7 @@ function jaraba_site_builder_update_10007(): string {
     }
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 

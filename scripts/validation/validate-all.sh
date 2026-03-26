@@ -503,7 +503,8 @@ if [ "$MODE" = "full" ]; then
   warn_check "PHPCS-BASELINE-DECAY-001" "PHPCS baseline size within limits" \
     php "$SCRIPT_DIR/validate-phpcs-baseline-decay.php"
 
-  warn_check "UPDATE-HOOK-CATCH-RETHROW-001" "hook_update catch blocks re-throw (60 pre-existing)" \
+  # Promovido a run_check tras limpiar 60 violaciones (2026-03-26).
+  run_check "UPDATE-HOOK-CATCH-RETHROW-001" "hook_update catch blocks re-throw" \
     php "$SCRIPT_DIR/validate-update-hook-rethrow.php"
 
   warn_check "CSP-DOMAIN-COMPLETENESS-001" "CSP external domain cross-reference" \
@@ -716,6 +717,9 @@ if [ "$MODE" = "full" ]; then
 
   warn_check "TRANSLATION-COVERAGE-001" "Translation coverage for multi-language content" \
     php "$SCRIPT_DIR/validate-translation-coverage.php"
+
+  warn_check "TRANSLATION-API-KEYS-001" "Translation AI API key availability" \
+    php "$SCRIPT_DIR/validate-translation-api-keys.php"
 
   warn_check "SAFEGUARD-DEPLOY-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml)" \
     php "$SCRIPT_DIR/validate-deploy-env-persistence.php"

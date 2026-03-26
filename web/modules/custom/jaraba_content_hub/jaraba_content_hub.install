@@ -298,7 +298,7 @@ function jaraba_content_hub_update_10010(&$sandbox) {
       'Error installing ContentComment entity type: @message',
       ['@message' => $e->getMessage()]
     );
-    return t('Error installing ContentComment: @message', ['@message' => $e->getMessage()]);
+    throw new \RuntimeException((string) t('Error installing ContentComment: @message', ['@message' => $e->getMessage()]), 0, $e);
   }
 }
 

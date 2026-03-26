@@ -17,6 +17,13 @@
  *   php scripts/validation/validate-db-export-freshness.php
  */
 
+// CI environments don't have local DB dumps — skip gracefully.
+if (getenv('CI') || getenv('GITHUB_ACTIONS')) {
+  echo "\n=== DB-EXPORT-FRESHNESS-001: Local DB dump freshness ===\n\n";
+  echo "  \033[33m[SKIP]\033[0m Running in CI — local DB dump checks not applicable.\n\n";
+  exit(0);
+}
+
 $errors = [];
 $warnings = [];
 $passed = 0;

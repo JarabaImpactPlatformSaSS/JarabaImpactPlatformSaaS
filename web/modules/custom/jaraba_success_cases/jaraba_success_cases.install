@@ -119,7 +119,7 @@ function jaraba_success_cases_update_10002(): string {
     return "Installed $installed new fields on SuccessCase entity.";
   }
   catch (\Throwable $e) {
-    return 'Failed to update SuccessCase: ' . $e->getMessage();
+    throw new \RuntimeException('Failed to update SuccessCase: ' . $e->getMessage(), 0, $e);
   }
 }
 

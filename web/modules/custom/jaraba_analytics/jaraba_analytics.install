@@ -25,7 +25,7 @@ function jaraba_analytics_update_10003(): string {
       'Update 10003 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
@@ -49,7 +49,7 @@ function jaraba_analytics_update_10004(): string {
       'Update 10004 failed: @msg',
       ['@msg' => $e->getMessage()]
     );
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Error: ' . $e->getMessage(), 0, $e);
   }
 }
 
