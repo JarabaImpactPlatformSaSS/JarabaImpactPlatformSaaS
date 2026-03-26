@@ -2129,6 +2129,78 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.tenant_settings_section }
 
+  # HUB-ACCESSIBILITY-001: 11 nuevas TenantSettings sections.
+  ecosistema_jaraba_core.tenant_settings_section.billing_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\BillingConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.page_builder_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\PageBuilderConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.insights_hub:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\InsightsHubSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.interactive_content:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\InteractiveContentSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.privacy_gdpr:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\PrivacyGdprSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.support_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\SupportConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.mentoring_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\MentoringConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.matching_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\MatchingConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.copilot_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\CopilotConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.review_system:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\ReviewSystemSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  ecosistema_jaraba_core.tenant_settings_section.andalucia_ei_config:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\AndaluciaEiConfigSection
+    arguments: ['@current_user', '@?module_handler']
+    tags: [{ name: ecosistema_jaraba_core.tenant_settings_section }]
+
+  # HUB-ACCESSIBILITY-001: 3 nuevas UserProfile sections.
+  ecosistema_jaraba_core.user_profile_section.ab_testing:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\ABTestingProfileSection
+    arguments: ['@current_user']
+    tags: [{ name: ecosistema_jaraba_core.user_profile_section }]
+
+  ecosistema_jaraba_core.user_profile_section.analytics_pixels:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\AnalyticsPixelsProfileSection
+    arguments: ['@current_user']
+    tags: [{ name: ecosistema_jaraba_core.user_profile_section }]
+
+  ecosistema_jaraba_core.user_profile_section.notification_prefs:
+    class: Drupal\ecosistema_jaraba_core\UserProfile\Section\NotificationPreferencesProfileSection
+    arguments: ['@current_user']
+    tags: [{ name: ecosistema_jaraba_core.user_profile_section }]
+
   # =========================================================================
   # User Profile Section Hub — Registry + Secciones (tagged services)
   # Patron identico a Tenant Settings Hub.
