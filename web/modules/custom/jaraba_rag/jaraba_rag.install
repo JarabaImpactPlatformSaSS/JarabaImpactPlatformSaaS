@@ -180,14 +180,30 @@ function jaraba_rag_requirements(string $phase): array {
   // Verificar host de Qdrant configurado.
   $config = \Drupal::config('jaraba_rag.settings');
   $qdrant_host = $config->get('vector_db.host') ?: getenv('QDRANT_HOST');
+  $rag_disabled = (bool) $config->get('disabled');
 
-  $requirements['jaraba_rag_qdrant'] = [
-    'title' => t('Jaraba RAG: Qdrant host'),
-    'severity' => !empty($qdrant_host) ? REQUIREMENT_OK : REQUIREMENT_ERROR,
-    'value' => !empty($qdrant_host)
-      ? t('Qdrant host configurado: @host', ['@host' => $qdrant_host])
-      : t('Qdrant host no configurado. Establezca vector_db.host en jaraba_rag.settings o la variable de entorno QDRANT_HOST.'),
-  ];
+  if (!empty($qdrant_host)) {
+    $requirements['jaraba_rag_qdrant'] = [
+      'title' => t('Jaraba RAG: Qdrant host'),
+      'severity' => REQUIREMENT_OK,
+      'value' => t('Qdrant host configurado: @host', ['@host' => $qdrant_host]),
+    ];
+  }
+  elseif ($rag_disabled) {
+    // Graceful degradation: RAG deshabilitado intencionalmente.
+    $requirements['jaraba_rag_qdrant'] = [
+      'title' => t('Jaraba RAG: Qdrant host'),
+      'severity' => REQUIREMENT_WARNING,
+      'value' => t('RAG/Qdrant deshabilitado por configuracion. Features de busqueda semantica no disponibles. Establezca QDRANT_CLUSTER_URL y QDRANT_API_KEY para activar.'),
+    ];
+  }
+  else {
+    $requirements['jaraba_rag_qdrant'] = [
+      'title' => t('Jaraba RAG: Qdrant host'),
+      'severity' => REQUIREMENT_ERROR,
+      'value' => t('Qdrant host no configurado. Establezca vector_db.host en jaraba_rag.settings o la variable de entorno QDRANT_HOST.'),
+    ];
+  }
 
   // Verificar módulo ai_search habilitado.
   $module_handler = \Drupal::moduleHandler();

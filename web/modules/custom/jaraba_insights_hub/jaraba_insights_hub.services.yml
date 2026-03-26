@@ -23,6 +23,17 @@ services:
     class: Drupal\jaraba_insights_hub\Service\UptimeMonitorService
     arguments: ['@http_client', '@entity_type.manager', '@state', '@logger.channel.jaraba_insights_hub']
 
+  # SEO-DEPLOY-NOTIFY-001: Notificaciones automaticas a Google.
+  # Sitemap submission post-deploy + URL notifications via Indexing API.
+  jaraba_insights_hub.seo_notification:
+    class: Drupal\jaraba_insights_hub\Service\GoogleSeoNotificationService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_insights_hub'
+      - '@jaraba_insights_hub.search_console'
+
   jaraba_insights_hub.aggregator:
     class: Drupal\jaraba_insights_hub\Service\InsightsAggregatorService
     arguments:
