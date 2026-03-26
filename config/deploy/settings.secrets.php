@@ -101,3 +101,19 @@ if ($stripe_webhook = getenv('STRIPE_WEBHOOK_SECRET')) {
 if ($stripe_foc_webhook = getenv('STRIPE_FOC_WEBHOOK_SECRET')) {
   $config['jaraba_foc.settings']['stripe_webhook_secret'] = $stripe_foc_webhook;
 }
+
+// ============================================================================
+// AI — Claude API Key (SEC-C01: migrated from Key module config to env)
+// ============================================================================
+
+if ($claude_api_key = getenv('CLAUDE_API_KEY')) {
+  $config['jaraba_copilot_v2.settings']['claude_api_key_value'] = $claude_api_key;
+}
+
+// ============================================================================
+// SUPPORT — Attachment HMAC Secret (SEC-C02: removed hardcoded fallback)
+// ============================================================================
+
+if ($attachment_hmac = getenv('SUPPORT_ATTACHMENT_HMAC_SECRET')) {
+  $config['jaraba_support.settings']['attachment_hmac_secret'] = $attachment_hmac;
+}

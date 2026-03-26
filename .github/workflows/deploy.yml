@@ -257,6 +257,8 @@ jobs:
           KEY_CDN: ${{ secrets.CDN_BASE_URL }}
           KEY_CERT_PATH: ${{ secrets.ECOSISTEMA_JARABA_CERT_PATH }}
           KEY_CERT_PASSWORD: ${{ secrets.ECOSISTEMA_JARABA_CERT_PASSWORD }}
+          KEY_CLAUDE_API: ${{ secrets.ANTHROPIC_API_KEY }}
+          KEY_SUPPORT_HMAC: ${{ secrets.SUPPORT_ATTACHMENT_HMAC_SECRET }}
         run: |
           # Generate settings.env.php LOCALLY on the runner, then scp to server.
           # This avoids SSH heredoc escaping issues with API key special characters.
@@ -317,6 +319,12 @@ jobs:
             echo "// Certificates (Firma Digital)"
             [ -n "${KEY_CERT_PATH}" ] && echo "putenv('ECOSISTEMA_JARABA_CERT_PATH=${KEY_CERT_PATH}');"
             [ -n "${KEY_CERT_PASSWORD}" ] && echo "putenv('ECOSISTEMA_JARABA_CERT_PASSWORD=${KEY_CERT_PASSWORD}');"
+            echo ""
+            echo "// SEC-C01: Claude API Key (migrated from Key module to env)"
+            [ -n "${KEY_CLAUDE_API}" ] && echo "putenv('CLAUDE_API_KEY=${KEY_CLAUDE_API}');"
+            echo ""
+            echo "// SEC-C02: Support Attachment HMAC Secret"
+            [ -n "${KEY_SUPPORT_HMAC}" ] && echo "putenv('SUPPORT_ATTACHMENT_HMAC_SECRET=${KEY_SUPPORT_HMAC}');"
           } > "$ENV_FILE"
 
           PUTENV_COUNT=$(grep -c putenv "$ENV_FILE")
@@ -638,6 +646,15 @@ jobs:
             echo ""
             echo "=== Site verification ==="
             drush status --fields=drupal-version,db-status,bootstrap 2>&1
+          EOF
+
+      - name: Notify Google Search Console (SEO-DEPLOY-NOTIFY-001)
+        continue-on-error: true
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+            echo "=== SEO: Submitting sitemaps to Google Search Console ==="
+            vendor/bin/drush jaraba:seo:notify-google 2>&1 || echo "SEO notification failed (non-blocking)"
           EOF
 
       - name: Post-deploy infrastructure health check (INFRA-HEALTH-001)
