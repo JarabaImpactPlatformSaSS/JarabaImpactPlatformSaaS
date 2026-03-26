@@ -111,13 +111,23 @@ class CanvasTranslationService {
     // Traducir path_alias.
     if ($original->hasField('path_alias')) {
       $originalAlias = $original->get('path_alias')->value ?? '';
-      if (!empty($originalAlias)) {
+      if ($originalAlias !== '') {
         try {
           $aliasText = str_replace(['/', '-'], [' ', ' '], trim($originalAlias, '/'));
-          if (!empty($aliasText)) {
+          if ($aliasText !== '') {
             $translatedAlias = $this->aiTranslation->translate($aliasText, $sourceLang, $targetLang);
-            $translatedAlias = '/' . preg_replace('/[^a-z0-9]+/', '-', mb_strtolower($translatedAlias));
+            // Transliterar acentos (á→a, ñ→n, ç→c, etc.) antes de slugificar.
+            if (function_exists('transliterator_transliterate')) {
+              $translatedAlias = transliterator_transliterate('Any-Latin; Latin-ASCII', $translatedAlias);
+            }
+            $translatedAlias = mb_strtolower($translatedAlias);
+            $translatedAlias = preg_replace('/[^a-z0-9]+/', '-', $translatedAlias) ?? $translatedAlias;
             $translatedAlias = '/' . trim($translatedAlias, '-');
+            // Truncar a 255 chars (limite columna DB).
+            if (mb_strlen($translatedAlias) > 255) {
+              $translatedAlias = mb_substr($translatedAlias, 0, 255);
+              $translatedAlias = rtrim($translatedAlias, '-');
+            }
             $translation->set('path_alias', $translatedAlias);
           }
         }
