@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_i18n\Unit\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
-use Drupal\jaraba_ai_agents\Service\AgentOrchestrator;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Drupal\jaraba_i18n\Service\AITranslationService;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,34 +21,10 @@ use Psr\Log\LoggerInterface;
  */
 class AITranslationServiceTest extends TestCase {
 
-  /**
-   * Mock del orquestador de agentes.
-   */
-  private AgentOrchestrator&MockObject $orchestrator;
-
-  /**
-   * Mock del router de modelos.
-   */
   private ModelRouterService&MockObject $modelRouter;
-
-  /**
-   * Mock de la config factory.
-   */
   private ConfigFactoryInterface&MockObject $configFactory;
-
-  /**
-   * Mock del logger.
-   */
   private LoggerInterface&MockObject $logger;
-
-  /**
-   * Mock del tenant context.
-   */
   private TenantContextService&MockObject $tenantContext;
-
-  /**
-   * El servicio bajo test.
-   */
   private AITranslationService $service;
 
   /**
@@ -58,14 +33,13 @@ class AITranslationServiceTest extends TestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->orchestrator = $this->createMock(AgentOrchestrator::class);
     $this->modelRouter = $this->createMock(ModelRouterService::class);
     $this->configFactory = $this->createMock(ConfigFactoryInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
 
     $this->service = new AITranslationService(
-      $this->orchestrator,
+      NULL,
       $this->modelRouter,
       $this->configFactory,
       $this->logger,
@@ -80,10 +54,10 @@ class AITranslationServiceTest extends TestCase {
    */
   public function testTranslateReturnsOriginalWhenEmpty(): void {
     $result = $this->service->translate('', 'es', 'en');
-    $this->assertSame('', $result);
+    static::assertSame('', $result);
 
     $result = $this->service->translate('   ', 'es', 'en');
-    $this->assertSame('   ', $result);
+    static::assertSame('   ', $result);
   }
 
   /**
@@ -94,166 +68,82 @@ class AITranslationServiceTest extends TestCase {
   public function testTranslateReturnsSameWhenSameLanguage(): void {
     $text = 'Hola mundo';
     $result = $this->service->translate($text, 'es', 'es');
-    $this->assertSame($text, $result);
+    static::assertSame($text, $result);
   }
 
   /**
-   * Tests que translate llama al orquestador y retorna la traduccion.
+   * Tests que translate lanza excepcion sin AI Provider.
+   *
+   * El AI Provider framework no esta disponible en unit tests.
    *
    * @covers ::translate
    */
-  public function testTranslateCallsOrchestrator(): void {
+  public function testTranslateThrowsWithoutProvider(): void {
     $this->tenantContext->method('getCurrentTenant')->willReturn(NULL);
-
-    $this->orchestrator->expects($this->once())
-      ->method('execute')
-      ->willReturn(['content' => 'Hello world']);
-
-    $result = $this->service->translate('Hola mundo', 'es', 'en');
-
-    $this->assertSame('Hello world', $result);
-  }
-
-  /**
-   * Tests que se lanza RuntimeException cuando el orquestador falla.
-   *
-   * @covers ::translate
-   */
-  public function testTranslateThrowsOnOrchestratorError(): void {
-    $this->tenantContext->method('getCurrentTenant')->willReturn(NULL);
-
-    $this->orchestrator->method('execute')
-      ->willThrowException(new \RuntimeException('API error'));
 
     $this->expectException(\RuntimeException::class);
-    $this->expectExceptionMessageMatches('/Error en traducción/');
+    $this->expectExceptionMessageMatches('/traduccion/i');
 
     $this->service->translate('Hola mundo', 'es', 'en');
   }
 
   /**
-   * Tests que buildPrompt contiene el contexto de marca.
+   * Tests que buildSystemPrompt contiene nombres de idiomas legibles.
    *
-   * @covers ::buildPrompt
+   * @covers ::buildSystemPrompt
    */
-  public function testBuildPromptContainsBrandContext(): void {
+  public function testBuildSystemPromptContainsLanguageNames(): void {
     $this->tenantContext->method('getCurrentTenant')->willReturn(NULL);
 
-    $method = new \ReflectionMethod(AITranslationService::class, 'buildPrompt');
-    $method->setAccessible(TRUE);
+    $method = new \ReflectionMethod(AITranslationService::class, 'buildSystemPrompt');
 
-    $prompt = $method->invoke($this->service, 'Hola', 'es', 'en', []);
+    $prompt = $method->invoke($this->service, 'es', 'en');
 
-    // Debe contener el fallback de brand context.
-    $this->assertStringContainsString('profesional pero accesible', $prompt);
-    $this->assertStringContainsString('CONTEXTO DE MARCA', $prompt);
+    static::assertStringContainsString('español', $prompt);
+    static::assertStringContainsString('inglés', $prompt);
+    static::assertStringContainsString('profesional pero accesible', $prompt);
   }
 
   /**
-   * Tests que buildPrompt contiene nombres de idiomas legibles.
+   * Tests que cleanResult elimina artefactos comunes.
    *
-   * @covers ::buildPrompt
+   * @covers ::cleanResult
    */
-  public function testBuildPromptContainsLanguageNames(): void {
-    $this->tenantContext->method('getCurrentTenant')->willReturn(NULL);
+  public function testCleanResultRemovesCodeFences(): void {
+    $method = new \ReflectionMethod(AITranslationService::class, 'cleanResult');
 
-    $method = new \ReflectionMethod(AITranslationService::class, 'buildPrompt');
-    $method->setAccessible(TRUE);
-
-    $prompt = $method->invoke($this->service, 'Hola', 'es', 'en', []);
-
-    $this->assertStringContainsString('español', $prompt);
-    $this->assertStringContainsString('inglés', $prompt);
+    $result = $method->invoke($this->service, "```html\n<p>Hello</p>\n```", '<p>Hola</p>');
+    static::assertSame('<p>Hello</p>', $result);
   }
 
   /**
-   * Tests que formatGlossary produce el formato correcto.
+   * Tests que cleanResult detecta alucinaciones.
    *
-   * @covers ::formatGlossary
+   * @covers ::cleanResult
    */
-  public function testFormatGlossaryFormatsCorrectly(): void {
-    $method = new \ReflectionMethod(AITranslationService::class, 'formatGlossary');
-    $method->setAccessible(TRUE);
-
-    $glossary = [
-      'empleabilidad' => 'employability',
-      'emprendimiento' => 'entrepreneurship',
-    ];
-
-    $result = $method->invoke($this->service, $glossary);
-
-    $this->assertStringContainsString('- empleabilidad → employability', $result);
-    $this->assertStringContainsString('- emprendimiento → entrepreneurship', $result);
-  }
-
-  /**
-   * Tests que formatGlossary retorna cadena vacia para glosario vacio.
-   *
-   * @covers ::formatGlossary
-   */
-  public function testFormatGlossaryReturnsEmptyForEmptyInput(): void {
-    $method = new \ReflectionMethod(AITranslationService::class, 'formatGlossary');
-    $method->setAccessible(TRUE);
-
-    $result = $method->invoke($this->service, []);
-
-    $this->assertSame('', $result);
-  }
-
-  /**
-   * Tests que postProcess elimina whitespace extra.
-   *
-   * @covers ::postProcess
-   */
-  public function testPostProcessTrimsWhitespace(): void {
-    $method = new \ReflectionMethod(AITranslationService::class, 'postProcess');
-    $method->setAccessible(TRUE);
+  public function testCleanResultDetectsHallucination(): void {
+    $method = new \ReflectionMethod(AITranslationService::class, 'cleanResult');
 
     $result = $method->invoke(
       $this->service,
-      "  Hello world  \n",
+      "I'm ready to translate this for you. Here is the translation: Hello",
       'Hola mundo',
-      []
     );
 
-    $this->assertSame('Hello world', $result);
+    // Debe devolver el texto original al detectar alucinacion.
+    static::assertSame('Hola mundo', $result);
   }
 
   /**
-   * Tests que getBrandContext contiene el nombre del tenant cuando existe.
+   * Tests que cleanResult preserva texto limpio.
    *
-   * @covers ::getBrandContext
+   * @covers ::cleanResult
    */
-  public function testGetBrandContextWithTenant(): void {
-    // Crear mock de tenant con label.
-    $tenant = $this->createMock(TenantInterface::class);
-    $tenant->method('label')->willReturn('TestCo');
+  public function testCleanResultPreservesCleanText(): void {
+    $method = new \ReflectionMethod(AITranslationService::class, 'cleanResult');
 
-    // Mock field values para slogan y vertical.
-    $sloganField = new \stdClass();
-    $sloganField->value = 'Impulsando el futuro';
-    $verticalField = new \stdClass();
-    $verticalField->value = 'empleabilidad';
-
-    $tenant->method('get')
-      ->willReturnCallback(function (string $field) use ($sloganField, $verticalField) {
-        return match ($field) {
-          'slogan' => $sloganField,
-          'vertical' => $verticalField,
-          default => (object) ['value' => NULL],
-        };
-      });
-
-    $this->tenantContext->method('getCurrentTenant')->willReturn($tenant);
-
-    $method = new \ReflectionMethod(AITranslationService::class, 'getBrandContext');
-    $method->setAccessible(TRUE);
-
-    $result = $method->invoke($this->service, 'tenant-1');
-
-    $this->assertStringContainsString('TestCo', $result);
-    $this->assertStringContainsString('Impulsando el futuro', $result);
-    $this->assertStringContainsString('empleabilidad', $result);
+    $result = $method->invoke($this->service, '  Hello world  ', 'Hola mundo');
+    static::assertSame('Hello world', $result);
   }
 
   /**
@@ -265,12 +155,65 @@ class AITranslationServiceTest extends TestCase {
     $this->tenantContext->method('getCurrentTenant')->willReturn(NULL);
 
     $method = new \ReflectionMethod(AITranslationService::class, 'getBrandContext');
-    $method->setAccessible(TRUE);
 
-    $result = $method->invoke($this->service, NULL);
+    $result = $method->invoke($this->service);
 
-    $this->assertStringContainsString('profesional pero accesible', $result);
-    $this->assertStringContainsString('impacto social', $result);
+    static::assertStringContainsString('profesional pero accesible', $result);
+    static::assertStringContainsString('impacto social', $result);
+  }
+
+  /**
+   * Tests que getBrandContext incluye datos del tenant.
+   *
+   * @covers ::getBrandContext
+   */
+  public function testGetBrandContextWithTenant(): void {
+    $tenant = $this->createMock(TenantInterface::class);
+    $tenant->method('label')->willReturn('TestCo');
+
+    $sloganField = new class {
+
+      public string $value = 'Impulsando el futuro';
+
+    };
+    $verticalField = new class {
+
+      public string $value = 'empleabilidad';
+
+    };
+
+    $tenant->method('get')
+      ->willReturnCallback(function (string $field) use ($sloganField, $verticalField) {
+        return match ($field) {
+          'slogan' => $sloganField,
+          'vertical' => $verticalField,
+          default => new class {
+
+            public ?string $value = NULL;
+
+          },
+        };
+      });
+
+    $this->tenantContext->method('getCurrentTenant')->willReturn($tenant);
+
+    $method = new \ReflectionMethod(AITranslationService::class, 'getBrandContext');
+
+    $result = $method->invoke($this->service);
+
+    static::assertStringContainsString('TestCo', $result);
+    static::assertStringContainsString('Impulsando el futuro', $result);
+    static::assertStringContainsString('empleabilidad', $result);
+  }
+
+  /**
+   * Tests que translateBatch retorna vacio para input vacio.
+   *
+   * @covers ::translateBatch
+   */
+  public function testTranslateBatchReturnsEmptyForEmptyInput(): void {
+    $result = $this->service->translateBatch([], 'es', 'en');
+    static::assertSame([], $result);
   }
 
 }
