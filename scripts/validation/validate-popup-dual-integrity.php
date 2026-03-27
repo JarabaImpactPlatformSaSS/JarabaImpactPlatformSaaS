@@ -155,7 +155,20 @@ if (file_exists($cssFile) && file_exists($scssFile)) {
     $warnings[] = 'CHECK 7: Cannot compare timestamps — CSS or SCSS file missing';
 }
 
-// ─── CHECK 8: i18n — Drupal.t() coverage ───
+// ─── CHECK 8: PRESAVE-RESILIENCE-001 — try-catch around Url::fromRoute() ───
+if ($moduleContent !== false) {
+    // The popup hook must wrap Url::fromRoute() in try-catch to prevent
+    // 500 errors when routes are not in cache (deploy, cache stale).
+    $hasFromRoute = str_contains($moduleContent, 'Url::fromRoute');
+    $hasTryCatch = (bool) preg_match('/try\s*\{[^}]*Url::fromRoute/s', $moduleContent);
+    if ($hasFromRoute && $hasTryCatch) {
+        $passed++;
+    } else {
+        $errors[] = 'CHECK 8: PRESAVE-RESILIENCE-001 — Url::fromRoute() in _popup_attachments() must be wrapped in try-catch to prevent 500 on metasites';
+    }
+}
+
+// ─── CHECK 9: i18n — Drupal.t() coverage ───
 if ($jsContent !== false) {
     $t_count = substr_count($jsContent, 'Drupal.t(');
     if ($t_count >= 15) {
