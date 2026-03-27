@@ -594,6 +594,9 @@ if [ "$MODE" = "full" ]; then
   run_check "EMAIL-SES-TRANSPORT-001" "Amazon SES transport integrity" \
     php "$SCRIPT_DIR/validate-ses-transport-integrity.php"
 
+  run_check "EMAIL-REPUTATION-SAFEGUARDS-001" "Email reputation safeguards (monitor+failover+audit)" \
+    php "$SCRIPT_DIR/validate-email-reputation-safeguards.php"
+
   run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
     php "$SCRIPT_DIR/validate-copilot-response-quality.php"
 
