@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-27
-**Versión:** 170.0.0 (POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 + DEPLOY-COHERENCE-001 — popup dual captación + 3 safeguards deploy/config, aprendizaje #231)
+**Versión:** 171.0.0 (WhatsApp-First + CI green — EMAIL-NOEXPOSE-001, CONTACT-SSOT-001, TEST-COVERAGE-MAP-001 resuelto, 189 validators, aprendizaje #232)
 
 ---
 
