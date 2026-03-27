@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-03-27
-**Versión:** 169.0.0 (BRAND-TERM-VALIDATOR-001 — rebrand Desarrollo Local + 3 salvaguardas deploy, aprendizaje #230)
+**Versión:** 170.0.0 (POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 + DEPLOY-COHERENCE-001 — popup dual captación + 3 safeguards deploy/config, aprendizaje #231)
 
 ---
 

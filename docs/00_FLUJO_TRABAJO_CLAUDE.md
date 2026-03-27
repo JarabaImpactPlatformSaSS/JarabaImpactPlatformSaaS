@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-27
-**Version:** 120.0.0 (POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 — popup dual captación + safeguard config drift, aprendizaje #230)
+**Version:** 121.0.0 (DEPLOY-COHERENCE-001 — caller+callee en mismo commit + deploy git chown fix, aprendizaje #231)
 
 ---
 ## 1. Inicio de Sesion
