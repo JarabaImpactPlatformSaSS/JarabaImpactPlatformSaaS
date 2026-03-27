@@ -92,18 +92,14 @@ jobs:
           npm ci
           npm run build
           cd $GITHUB_WORKSPACE
-          # Strip BOMs from compiled CSS (WSL2 sass may add BOM, Ubuntu does not).
-          find web/themes/custom/ecosistema_jaraba_theme/css -name '*.css' -exec sed -i '1s/^\xEF\xBB\xBF//' {} \;
-          DIFF_COUNT=$(git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/ | grep -c '|' || true)
-          if [ "$DIFF_COUNT" -gt 2 ]; then
-            echo "::error::Compiled CSS/JS is stale ($DIFF_COUNT files differ)! Run 'npm run build' in ecosistema_jaraba_theme and commit."
+          if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
+            echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
             git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
+            echo "--- DIFF CONTENT (first 500 bytes per file) ---"
+            git diff -- web/themes/custom/ecosistema_jaraba_theme/css/ | head -30
             exit 1
-          elif [ "$DIFF_COUNT" -gt 0 ]; then
-            echo "::warning::Minor CSS drift detected ($DIFF_COUNT files). Likely BOM/sourcemap difference between WSL2 and CI."
-            git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
           fi
-          echo "✅ Compiled CSS/JS verification complete"
+          echo "✅ Compiled CSS/JS is up-to-date"
 
   deploy:
     name: 🚀 Deploy to Production
