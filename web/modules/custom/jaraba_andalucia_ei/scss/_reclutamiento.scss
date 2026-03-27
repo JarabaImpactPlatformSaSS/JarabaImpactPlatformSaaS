@@ -1949,78 +1949,40 @@
     padding: 0.4rem 1rem;
   }
 
-  // Comparativa: stack en móvil
-  .aei-rec__comparativa-table {
-    thead {
-      display: none;
-    }
-
-    tbody,
-    tr,
-    td {
-      display: block;
-    }
-
-    tr {
-      margin-bottom: 1.5rem;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
-    }
-
-    td {
-      padding: 0.75rem 1rem;
-      text-align: left;
-
-      &::before {
-        content: attr(data-label);
-        display: block;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--ej-text-secondary, #6B7280);
-        margin-bottom: 0.25rem;
-      }
-    }
-
-    .aei-rec__comparativa-td--feature {
-      background: var(--ej-azul-corporativo, #233D63);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.95rem;
-
-      &::before {
-        display: none;
-      }
-    }
-
-    .aei-rec__comparativa-td--highlight {
-      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 8%, transparent);
-      border-left: 4px solid var(--ej-verde-innovacion, #00A9A5);
-    }
+  // Comparativa: CTA stack en móvil
+  .aei-rec__comparativa-cta-wrap {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
 // =============================================================================
-// COMPARATIVA TABLE — Premium class-world design
-// Patrón: Feature rows con columna destacada (Stripe/Linear inspired)
+// COMPARATIVA TABLE — Premium class-world design (mobile-first)
+// Patrón: Cards en móvil, tabla con columna destacada en desktop (>=900px)
 // =============================================================================
 
 .aei-rec__comparativa {
-  padding: 4.5rem 1.5rem;
+  padding: 3rem 1rem;
   background: var(--ej-background, #FAFAFA);
+
+  @media (min-width: 900px) {
+    padding: 4.5rem 1.5rem;
+  }
 }
 
 .aei-rec__comparativa-table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   border-radius: 16px;
+  background: #fff;
   box-shadow:
     0 1px 3px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent),
     0 8px 24px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
-  background: #fff;
+
+  @media (min-width: 900px) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 2.5rem;
+  }
 }
 
 .aei-rec__comparativa-table {
@@ -2028,34 +1990,41 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-// ─── Header ───
+// ─── Header: oculto en móvil, visible en desktop ───
 .aei-rec__comparativa-th {
-  padding: 1.25rem 1rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-align: center;
-  vertical-align: bottom;
-  background: var(--ej-azul-corporativo, #233D63);
-  color: #fff;
-  border-bottom: 2px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 80%, #000);
-  white-space: nowrap;
+  display: none;
+
+  @media (min-width: 900px) {
+    display: table-cell;
+    padding: 1.25rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: left;
+    vertical-align: bottom;
+    background: var(--ej-azul-corporativo, #233D63);
+    color: #fff;
+    border-bottom: 2px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 80%, #000);
+    white-space: nowrap;
+  }
 
   &--feature {
-    text-align: left;
-    width: 22%;
-    min-width: 160px;
-    border-top-left-radius: 16px;
+    @media (min-width: 900px) {
+      text-align: left;
+      width: 22%;
+      min-width: 160px;
+      border-top-left-radius: 16px;
+    }
   }
 
   &--highlight {
-    background: var(--ej-verde-innovacion, #00A9A5);
-    position: relative;
-    border-top-right-radius: 0;
-    min-width: 200px;
-    width: 30%;
+    @media (min-width: 900px) {
+      background: var(--ej-verde-innovacion, #00A9A5);
+      min-width: 200px;
+      width: 30%;
+    }
   }
 }
 
@@ -2073,64 +2042,123 @@
 }
 
 // ─── Body rows ───
+// Móvil: cada <tr> es una card apilada
+// Desktop: filas de tabla normales
 .aei-rec__comparativa-row {
-  transition: background-color 200ms ease;
+  display: block;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
 
-  &:nth-child(even) {
-    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 2.5%, transparent);
-  }
+  @media (min-width: 900px) {
+    display: table-row;
+    margin-bottom: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transition: background-color 200ms ease;
 
-  &:hover {
-    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 6%, transparent);
-  }
+    &:nth-child(even) {
+      background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 2.5%, transparent);
+    }
 
-  &:last-child td:first-child {
-    border-bottom-left-radius: 16px;
-  }
+    &:hover {
+      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 6%, transparent);
+    }
 
-  &:last-child td:last-child {
-    border-bottom-right-radius: 16px;
+    &:last-child td:first-child {
+      border-bottom-left-radius: 16px;
+    }
+
+    &:last-child td:last-child {
+      border-bottom-right-radius: 16px;
+    }
   }
 }
 
 .aei-rec__comparativa-td {
-  padding: 1rem;
-  vertical-align: middle;
-  text-align: center;
-  border-bottom: 1px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent);
+  // ── Móvil: bloques apilados dentro de la card ──
+  display: block;
+  padding: 0.75rem 1rem;
+  text-align: left;
   color: var(--ej-text-primary, #1E293B);
+  line-height: 1.5;
+
+  // Label visible solo en móvil (sustituye al thead)
+  &::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ej-text-secondary, #6B7280);
+    margin-bottom: 0.15rem;
+  }
 
   span {
-    display: inline;
     vertical-align: middle;
   }
 
-  &--feature {
+  // ── Desktop: celdas de tabla normales ──
+  @media (min-width: 900px) {
+    display: table-cell;
+    padding: 1rem 1.1rem;
     text-align: left;
-    font-weight: 600;
-    color: var(--ej-azul-corporativo, #233D63);
-    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 3%, transparent);
-    position: sticky;
-    left: 0;
-    z-index: 1;
+    vertical-align: middle;
+    border-bottom: 1px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent);
+
+    &::before {
+      display: none;
+    }
   }
 
+  // ── Variante: feature (primera columna) ──
+  &--feature {
+    background: var(--ej-azul-corporativo, #233D63);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 12px 12px 0 0;
+
+    &::before {
+      display: none;
+    }
+
+    @media (min-width: 900px) {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--ej-azul-corporativo, #233D63);
+      background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 3%, transparent);
+      border-radius: 0;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+    }
+  }
+
+  // ── Variante: highlight (columna T-Acompañamos) ──
   &--highlight {
-    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent);
+    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 8%, transparent);
+    border-left: 4px solid var(--ej-verde-innovacion, #00A9A5);
     font-weight: 600;
-    color: var(--ej-text-primary, #1E293B);
-    border-left: 3px solid var(--ej-verde-innovacion, #00A9A5);
-    border-right: 3px solid var(--ej-verde-innovacion, #00A9A5);
+
+    @media (min-width: 900px) {
+      border-left: 3px solid var(--ej-verde-innovacion, #00A9A5);
+      border-right: 3px solid var(--ej-verde-innovacion, #00A9A5);
+      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent);
+    }
   }
 }
 
 // ─── Iconos semánticos (check / partial / cross) ───
 .aei-rec__comparativa-icon {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
   border-radius: 50%;
-  margin-right: 0.4rem;
+  margin-right: 0.5rem;
   vertical-align: middle;
   flex-shrink: 0;
 
@@ -2142,11 +2170,11 @@
       content: '';
       position: absolute;
       top: 5px;
-      left: 7px;
+      left: 8px;
       width: 5px;
-      height: 9px;
+      height: 10px;
       border: solid #fff;
-      border-width: 0 2px 2px 0;
+      border-width: 0 2.5px 2.5px 0;
       transform: rotate(45deg);
     }
   }
@@ -2158,9 +2186,9 @@
     &::after {
       content: '';
       position: absolute;
-      top: 9px;
+      top: 10px;
       left: 5px;
-      width: 10px;
+      width: 12px;
       height: 2px;
       background: #fff;
       border-radius: 1px;
@@ -2168,16 +2196,16 @@
   }
 
   &--cross {
-    background: color-mix(in srgb, #EF4444 85%, transparent);
+    background: #EF4444;
     position: relative;
 
     &::before,
     &::after {
       content: '';
       position: absolute;
-      top: 9px;
+      top: 10px;
       left: 5px;
-      width: 10px;
+      width: 12px;
       height: 2px;
       background: #fff;
       border-radius: 1px;
@@ -2193,19 +2221,15 @@
   }
 }
 
-// ─── CTA wrap bajo tabla ───
-.aei-rec__comparativa-cta-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-}
-
 // ─── Fila de veredicto final ───
 .aei-rec__comparativa-row--verdict {
-  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 4%, transparent) !important;
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 5%, transparent);
+  border: 2px solid var(--ej-verde-innovacion, #00A9A5);
+
+  @media (min-width: 900px) {
+    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 4%, transparent) !important;
+    border: none;
+  }
 
   .aei-rec__comparativa-td--feature {
     background: var(--ej-azul-corporativo, #233D63);
@@ -2216,12 +2240,14 @@
 .aei-rec__comparativa-td--verdict {
   font-size: 0.82rem;
   color: var(--ej-text-secondary, #6B7280);
-  border-bottom: none;
+
+  @media (min-width: 900px) {
+    border-bottom: none;
+  }
 }
 
 .aei-rec__comparativa-td--verdict-win {
   background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 12%, transparent) !important;
-  color: var(--ej-verde-innovacion, #00A9A5);
   border-bottom: none;
   font-size: 0.95rem;
 
@@ -2230,6 +2256,102 @@
   }
 }
 
-.aei-rec__comparativa-whatsapp {
+// ─── CTA wrap bajo tabla ───
+.aei-rec__comparativa-cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding: 0 0.5rem;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+  }
+}
+
+// ─── CTA principal: máxima visibilidad (CONVERSION CRITICAL) ───
+.aei-rec__comparativa-cta-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ej-verde-innovacion, #00A9A5) 0%, #00897B 100%);
+  border: none;
+  border-radius: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 35%, transparent),
+    0 1px 3px color-mix(in srgb, #000 10%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 56px;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 20px color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 45%, transparent),
+      0 2px 6px color-mix(in srgb, #000 12%, transparent);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 600px) {
+    padding: 1rem 2.5rem;
+    font-size: 1.15rem;
+    min-width: 320px;
+  }
+}
+
+// ─── CTA secundario: WhatsApp ───
+.aei-rec__comparativa-cta-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
   font-size: 0.9rem;
+  font-weight: 600;
+  color: #25D366;
+  background: #fff;
+  border: 2px solid #25D366;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: background-color 200ms ease, color 200ms ease;
+  min-height: 48px;
+
+  &:hover,
+  &:focus-visible {
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+
+    svg {
+      fill: #fff;
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+    fill: #25D366;
+    transition: fill 200ms ease;
+  }
 }
