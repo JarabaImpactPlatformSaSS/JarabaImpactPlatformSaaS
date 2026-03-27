@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-03-26
-**Version:** 119.0.0 (MEGAMENU-PED-CORPORATE-001 — mega menú corporativo PDE + aprendizaje #229)
+**Ultima actualizacion:** 2026-03-27
+**Version:** 120.0.0 (POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 — popup dual captación + safeguard config drift, aprendizaje #230)
 
 ---
 ## 1. Inicio de Sesion
