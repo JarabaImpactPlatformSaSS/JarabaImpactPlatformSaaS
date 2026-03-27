@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Drupal\jaraba_page_builder\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Url;
+use Drupal\jaraba_page_builder\Controller\MetodoLandingController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,6 +40,11 @@ class CertificacionLandingController extends ControllerBase {
   protected LoggerInterface $loggerChannel;
 
   /**
+   * Mail manager (DI, no \Drupal::service()).
+   */
+  protected MailManagerInterface $mailManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
@@ -48,6 +55,7 @@ class CertificacionLandingController extends ControllerBase {
     /** @var \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerFactory */
     $loggerFactory = $container->get('logger.factory');
     $instance->loggerChannel = $loggerFactory->get('jaraba_certificacion');
+    $instance->mailManager = $container->get('plugin.manager.mail');
     return $instance;
   }
 
@@ -70,10 +78,13 @@ class CertificacionLandingController extends ControllerBase {
       '#comparativa' => $this->buildComparativa(),
       '#faq' => $this->buildFaq(),
       '#trust' => $this->buildTrust(),
+      '#urgencia' => $this->buildUrgencia(),
+      '#video' => $this->buildVideo(),
       '#form_config' => $this->buildFormConfig(),
       '#attached' => [
         'library' => [
           'ecosistema_jaraba_theme/certificacion-landing',
+          'jaraba_page_builder/certificacion-form',
         ],
       ],
       '#cache' => [
@@ -309,7 +320,7 @@ class CertificacionLandingController extends ControllerBase {
         $this->t('Soporte técnico y acompañamiento pedagógico'),
         $this->t('Marca blanca configurable por territorio'),
       ],
-      'stat_value' => '46',
+      'stat_value' => MetodoLandingController::INSERTION_RATE,
       'stat_suffix' => '%',
       'stat_label' => $this->t('de inserción laboral en la 1ª Edición'),
       'caso' => $this->t('Programa Andalucía +ei — Junta de Andalucía, fondos FSE+'),
@@ -424,7 +435,7 @@ class CertificacionLandingController extends ControllerBase {
    */
   protected function buildTrust(): array {
     return [
-      'stat_value' => '46',
+      'stat_value' => MetodoLandingController::INSERTION_RATE,
       'stat_suffix' => '%',
       'stat_label' => $this->t('inserción laboral'),
       'stat_source' => $this->t('Programa Andalucía +ei, 1ª Edición. Colectivos vulnerables.'),
@@ -434,9 +445,60 @@ class CertificacionLandingController extends ControllerBase {
   }
 
   /**
-   * Configuración del formulario de contacto.
+   * Urgencia/escasez — Fecha de próxima convocatoria configurable.
+   *
+   * LANDING-CONVERSION-SCORE-001 criterio #4: urgencia real (no genérica).
+   *
+   * @return array<string, mixed>
    */
+  protected function buildUrgencia(): array {
+    // Fecha configurable desde theme_settings (NO hardcodeada).
+    // Usa ConfigFactory (DI) en lugar de theme_get_setting() deprecated.
+    $themeConfig = $this->config('ecosistema_jaraba_theme.settings');
+    $rawDate = $themeConfig->get('cert_next_convocatoria');
+    $nextDate = (is_string($rawDate) && $rawDate !== '') ? $rawDate : '2026-09-01';
+    $rawPlazas = $themeConfig->get('cert_plazas_disponibles');
+    $plazas = (is_string($rawPlazas) && $rawPlazas !== '') ? $rawPlazas : '25';
+
+    return [
+      'enabled' => TRUE,
+      'date' => $nextDate,
+      'date_formatted' => date('j \d\e F \d\e Y', strtotime($nextDate)),
+      'plazas' => $plazas,
+      'text' => $this->t('Próxima convocatoria: @date — @plazas plazas disponibles', [
+        '@date' => date('j/m/Y', strtotime($nextDate)),
+        '@plazas' => $plazas,
+      ]),
+    ];
+  }
+
   /**
+   * Sección de video testimonial.
+   *
+   * LANDING-CONVERSION-SCORE-001 criterio #14: video/demo visual.
+   * El video se configura desde theme settings para poder cambiarlo sin deploy.
+   *
+   * @return array<string, mixed>
+   */
+  protected function buildVideo(): array {
+    $themeConfig = $this->config('ecosistema_jaraba_theme.settings');
+    $rawVideo = $themeConfig->get('cert_video_testimonial_url');
+    $videoUrl = is_string($rawVideo) ? $rawVideo : '';
+    $rawPoster = $themeConfig->get('cert_video_poster_url');
+    $videoPoster = is_string($rawPoster) ? $rawPoster : '';
+
+    return [
+      'enabled' => $videoUrl !== '',
+      'url' => $videoUrl,
+      'poster' => $videoPoster,
+      'title' => $this->t('Así lo viven los participantes'),
+      'caption' => $this->t('Testimonios reales del programa Andalucía +ei, 1ª Edición.'),
+    ];
+  }
+
+  /**
+   * Configuración del formulario de contacto.
+   *
    * @return array<string, mixed>
    */
   protected function buildFormConfig(): array {
@@ -497,7 +559,6 @@ class CertificacionLandingController extends ControllerBase {
    */
   protected function sendNotificationEmail(array $context, string $email): void {
     try {
-      $mailManager = \Drupal::service('plugin.manager.mail');
       $params = [
         'subject' => 'Nuevo lead de certificación: ' . ($context['tipo_formulario'] ?? 'desconocido'),
         'body' => [
@@ -508,8 +569,8 @@ class CertificacionLandingController extends ControllerBase {
           'Provincia: ' . ($context['provincia'] ?? ''),
         ],
       ];
-      $siteMail = \Drupal::config('system.site')->get('mail');
-      $mailManager->mail('jaraba_page_builder', 'certificacion_lead', $siteMail, 'es', $params);
+      $siteMail = $this->configFactory->get('system.site')->get('mail');
+      $this->mailManager->mail('jaraba_page_builder', 'certificacion_lead', $siteMail, 'es', $params);
     }
     catch (\Throwable $e) {
       $this->loggerChannel->warning('Email de notificación no enviado: @e', ['@e' => $e->getMessage()]);
