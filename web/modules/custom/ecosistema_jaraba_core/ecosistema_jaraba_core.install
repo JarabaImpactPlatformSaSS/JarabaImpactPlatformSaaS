@@ -370,7 +370,6 @@ function ecosistema_jaraba_core_requirements($phase) {
         'severity' => $matched ? REQUIREMENT_OK : REQUIREMENT_WARNING,
       ];
     }
-  }
 
     // ── CONTACT-SSOT-001 + WA-FAB-CONFIG-001: WhatsApp widget configurado ──
     $wa_enabled = theme_get_setting('whatsapp_enabled', 'ecosistema_jaraba_theme');
