@@ -1,0 +1,10 @@
+services:
+  jaraba_ses_transport.email_suppression:
+    class: Drupal\jaraba_ses_transport\Service\EmailSuppressionService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_ses'
+
+  logger.channel.jaraba_ses:
+    parent: logger.channel_base
+    arguments: ['jaraba_ses']

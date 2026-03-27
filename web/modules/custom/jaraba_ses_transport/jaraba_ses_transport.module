@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Jaraba SES Transport — Amazon SES integration with bounce suppression.
+ *
+ * EMAIL-DEDICATED-IP-001: Dedicated transport via Amazon SES (no shared IP).
+ * EMAIL-BOUNCE-SYNC-001: Auto-suppress bounced/complained addresses.
+ */
+
+use Drupal\Core\Render\Markup;
+
+/**
+ * Implements hook_mail_alter().
+ *
+ * Checks the suppression list before sending. If the recipient is suppressed
+ * (hard bounce or complaint), the email is silently cancelled to protect
+ * sender reputation. Transient bounces are allowed after 24h cooldown.
+ */
+function jaraba_ses_transport_mail_alter(array &$message): void {
+  if (empty($message['to'])) {
+    return;
+  }
+
+  if (!\Drupal::hasService('jaraba_ses_transport.email_suppression')) {
+    return;
+  }
+
+  try {
+    $suppression = \Drupal::service('jaraba_ses_transport.email_suppression');
+    $to = strtolower(trim($message['to']));
+
+    if ($suppression->isSuppressed($to)) {
+      $message['send'] = FALSE;
+      \Drupal::logger('jaraba_ses')->notice(
+        'Email to @email suppressed (bounce/complaint). Module: @module, Key: @key.',
+        [
+          '@email' => $to,
+          '@module' => $message['module'] ?? 'unknown',
+          '@key' => $message['key'] ?? 'unknown',
+        ]
+      );
+    }
+  }
+  catch (\Throwable $e) {
+    // PRESAVE-RESILIENCE-001: Never block email sending due to suppression errors.
+  }
+}

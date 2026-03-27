@@ -1,0 +1,7 @@
+jaraba_ses_transport.settings:
+  type: config_object
+  label: 'Jaraba SES Transport settings'
+  mapping:
+    sns_topic_arn:
+      type: string
+      label: 'SNS Topic ARN for bounce/complaint notifications'

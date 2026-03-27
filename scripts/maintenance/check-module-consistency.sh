@@ -28,9 +28,11 @@ CORE_EXTENSION="$PROJECT_ROOT/config/sync/core.extension.yml"
 
 # Modulos DEPRECATED o PENDIENTES DE HABILITAR que se excluyen del check.
 # jaraba_whatsapp: Módulo nuevo pendiente de drush en tras configurar Meta Business Manager.
+# jaraba_ses_transport: Pendiente de habilitar tras configurar AWS SES credentials.
 DEPRECATED_MODULES=(
   "jaraba_blog"
   "jaraba_whatsapp"
+  "jaraba_ses_transport"
 )
 
 errors=0

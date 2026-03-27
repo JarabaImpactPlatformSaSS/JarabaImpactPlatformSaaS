@@ -9,13 +9,13 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 182 |
-| run_check (CI blocker) | 127 |
+| Total scripts PHP | 184 |
+| run_check (CI blocker) | 128 |
 | warn_check (no blocker) | 58 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 127 (bloquean CI)
+## Run Checks — 128 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -113,6 +113,7 @@
 | SAFEGUARD-AEI-CAMPAIGN-001 | Andalucia +ei reclutamiento landing readiness |
 | POPUP-DUAL-SELECTOR-001 | Popup dual integrity (participante+negocio) |
 | CONFIG-INSTALL-DRIFT-001 | Config install vs schema drift detection |
+| EMAIL-SES-TRANSPORT-001 | Amazon SES transport module integrity |
 | SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
 | SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |
 | SEO-MULTIDOMAIN-001 | SEO multi-domain integrity (10 checks) |

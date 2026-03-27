@@ -1,0 +1,7 @@
+jaraba_ses_transport.sns_webhook:
+  path: '/api/v1/ses/webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_ses_transport\Controller\SesWebhookController::handle'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]

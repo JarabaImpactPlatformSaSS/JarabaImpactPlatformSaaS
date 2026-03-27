@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install/update hooks for jaraba_ses_transport.
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Creates the email_suppression table for bounce/complaint tracking.
+ */
+function jaraba_ses_transport_schema(): array {
+  $schema['email_suppression'] = [
+    'description' => 'Email addresses suppressed due to bounce or complaint via SES SNS.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'length' => 254,
+        'not null' => TRUE,
+        'description' => 'Suppressed email address (lowercase).',
+      ],
+      'reason' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'bounce',
+        'description' => 'Suppression reason: bounce, complaint, manual.',
+      ],
+      'bounce_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'description' => 'SES bounce sub-type: Permanent, Transient, Undetermined.',
+      ],
+      'ses_message_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'description' => 'Original SES message ID that triggered suppression.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp of suppression.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'email' => ['email'],
+    ],
+    'indexes' => [
+      'reason' => ['reason'],
+      'created' => ['created'],
+    ],
+  ];
+
+  return $schema;
+}

@@ -1,0 +1,11 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - symfony_mailer
+    - jaraba_ses_transport
+id: ses
+label: 'Amazon SES (eu-central-1)'
+plugin: dsn
+configuration:
+  dsn: 'ses+api://ACCESS_KEY:SECRET_KEY@default?region=eu-central-1'

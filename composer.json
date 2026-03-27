@@ -82,6 +82,7 @@
         "drupal/webform": "^6.2",
         "drush/drush": "^13",
         "stripe/stripe-php": "^15.0",
+        "symfony/amazon-mailer": "^8.0",
         "tecnickcom/tcpdf": "^6.10"
     },
     "require-dev": {

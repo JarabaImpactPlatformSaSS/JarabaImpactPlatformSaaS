@@ -591,6 +591,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "COMMIT-COMPLETENESS-001" "Caller/callee coherence (staged vs unstaged)" \
     php "$SCRIPT_DIR/validate-commit-completeness.php"
 
+  run_check "EMAIL-SES-TRANSPORT-001" "Amazon SES transport integrity" \
+    php "$SCRIPT_DIR/validate-ses-transport-integrity.php"
+
   run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
     php "$SCRIPT_DIR/validate-copilot-response-quality.php"
 

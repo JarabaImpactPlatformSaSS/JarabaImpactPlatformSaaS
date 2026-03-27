@@ -1,0 +1,8 @@
+name: 'Jaraba SES Transport'
+type: module
+description: 'Amazon SES email transport with bounce/complaint handling via SNS webhooks.'
+package: 'Jaraba - Infrastructure'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:symfony_mailer
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
