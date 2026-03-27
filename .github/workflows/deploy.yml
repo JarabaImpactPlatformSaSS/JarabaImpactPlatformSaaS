@@ -88,20 +88,29 @@ jobs:
 
       - name: Verify compiled CSS is up-to-date (SCSS-COMPILE-VERIFY-001)
         run: |
-          cd web/themes/custom/ecosistema_jaraba_theme
+          THEME_DIR=web/themes/custom/ecosistema_jaraba_theme
+          cd "$THEME_DIR"
           npm ci
           npm run build
-          cd $GITHUB_WORKSPACE
-          # Sass 1.98.0 adds UTF-8 BOM to some CSS outputs non-deterministically.
-          # Strip BOM from compiled CSS using perl (reliable across platforms).
-          find web/themes/custom/ecosistema_jaraba_theme/css -name '*.css' \
-            -exec perl -pi -e 's/^\x{FEFF}//' {} \;
-          if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
-            echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
-            git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
+          cd "$GITHUB_WORKSPACE"
+          # Sass 1.98.0 may add UTF-8 BOM non-deterministically across platforms.
+          # Normalize: strip BOM from both committed and freshly compiled CSS.
+          perl -pi -e 's/^\x{FEFF}//' $(find "$THEME_DIR/css" -name '*.css')
+          # Also strip from git index version for fair comparison.
+          for f in $(git diff --name-only -- "$THEME_DIR/css/" "$THEME_DIR/js/dist/"); do
+            git show "HEAD:$f" | perl -pe 's/^\x{FEFF}//' > "/tmp/$(basename $f).committed"
+            perl -pe 's/^\x{FEFF}//' "$f" > "/tmp/$(basename $f).compiled"
+            if ! diff -q "/tmp/$(basename $f).committed" "/tmp/$(basename $f).compiled" > /dev/null 2>&1; then
+              echo "::error::$f has real content differences (not just BOM)"
+              diff "/tmp/$(basename $f).committed" "/tmp/$(basename $f).compiled" | head -5
+              REAL_DIFF=1
+            fi
+          done
+          if [ "${REAL_DIFF:-0}" = "1" ]; then
+            echo "::error::Compiled CSS/JS is stale! Run 'npm run build' and commit."
             exit 1
           fi
-          echo "✅ Compiled CSS/JS is up-to-date"
+          echo "✅ Compiled CSS/JS is up-to-date (BOM-normalized)"
 
   deploy:
     name: 🚀 Deploy to Production
