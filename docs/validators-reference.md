@@ -10,8 +10,8 @@
 | Metrica | Valor |
 |---------|-------|
 | Total scripts PHP | 190 |
-| run_check (CI blocker) | 135 |
-| warn_check (no blocker) | 60 |
+| run_check (CI blocker) | 133 |
+| warn_check (no blocker) | 59 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
