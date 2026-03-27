@@ -13,7 +13,7 @@
 #}
 <div class="wa-conversation">
   <div class="wa-conversation__header">
-    <h2>{% trans %}Conversación{% endtrans %} #{{ conversation.id }}</h2>
+    <h2>{% trans %}Conversación{% endtrans %} #{{ conversation.id() }}</h2>
     <div class="wa-conversation__meta">
       <span class="wa-badge wa-badge--{{ status }}">{{ status }}</span>
       <span class="wa-badge wa-badge--lead">{{ lead_type }}</span>
@@ -44,7 +44,7 @@
 
   {% if status == 'escalated' or status == 'active' %}
     <div class="wa-conversation__input">
-      <form id="wa-send-form" data-conversation-id="{{ conversation.id }}">
+      <form id="wa-send-form" data-conversation-id="{{ conversation.id() }}">
         <input type="text"
                id="wa-message-input"
                placeholder="{{ 'Escribe un mensaje...'|trans }}"
