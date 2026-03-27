@@ -238,15 +238,15 @@
       var solicitarHref = buildHref(settings.solicitarUrl, settings.utmParams);
 
       return '<button class="aei-popup__close" aria-label="' + Drupal.t('Cerrar') + '">&times;</button>' +
-        '<button class="aei-popup__back" aria-label="' + Drupal.t('Volver al selector') + '">' +
-          ICONS.arrowLeft + '<span>' + Drupal.t('Volver') + '</span>' +
-        '</button>' +
         '<picture class="aei-popup__hero">' +
           '<source srcset="' + modulePath + '/images/reclutamiento-popup-hero.webp" type="image/webp">' +
           '<img src="' + modulePath + '/images/reclutamiento-popup-hero.png" ' +
             'alt="' + Drupal.t('Grupo diverso de personas colaborando en un programa de inserción laboral en Andalucía') + '" ' +
             'width="520" height="293" loading="eager">' +
         '</picture>' +
+        '<button class="aei-popup__back" aria-label="' + Drupal.t('Volver al selector') + '">' +
+          ICONS.arrowLeft + '<span>' + Drupal.t('Volver') + '</span>' +
+        '</button>' +
         '<h2 class="aei-popup__title">' + Drupal.t('¿Buscas empleo en Andalucía?') + '</h2>' +
         '<p class="aei-popup__desc" id="aei-popup-desc-participante">' +
           Drupal.t('Programa gratuito de inserción laboral con orientación personalizada, formación certificada, mentoría con IA y un incentivo de @incentivo €. Financiado por la Junta de Andalucía y la Unión Europea.', { '@incentivo': incentivo }) +
@@ -306,15 +306,15 @@
       }
 
       return '<button class="aei-popup__close" aria-label="' + Drupal.t('Cerrar') + '">&times;</button>' +
-        '<button class="aei-popup__back" aria-label="' + Drupal.t('Volver al selector') + '">' +
-          ICONS.arrowLeft + '<span>' + Drupal.t('Volver') + '</span>' +
-        '</button>' +
         '<picture class="aei-popup__hero">' +
           '<source srcset="' + modulePath + '/images/negocio-popup-hero.webp" type="image/webp">' +
           '<img src="' + modulePath + '/images/negocio-popup-hero.png" ' +
             'alt="' + Drupal.t('Empresaria andaluza mostrando su negocio digitalizado con tablet') + '" ' +
             'width="520" height="293" loading="eager">' +
         '</picture>' +
+        '<button class="aei-popup__back" aria-label="' + Drupal.t('Volver al selector') + '">' +
+          ICONS.arrowLeft + '<span>' + Drupal.t('Volver') + '</span>' +
+        '</button>' +
         '<div class="aei-popup__negocio-header">' +
           '<h2 class="aei-popup__title">' + Drupal.t('Digitalice su negocio gratis') + '</h2>' +
           '<p class="aei-popup__desc" id="aei-popup-desc-negocio">' +
