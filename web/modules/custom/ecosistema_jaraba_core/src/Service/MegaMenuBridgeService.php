@@ -310,6 +310,215 @@ class MegaMenuBridgeService {
   }
 
   /**
+   * Estructura de navegación para Jaraba Impact (meta-sitio group_id 6).
+   *
+   * Jaraba Impact es el sitio de franquicia institucional (jarabaimpact.com),
+   * orientado a partners B2B y organizaciones que quieren replicar el modelo
+   * de ecosistemas de impacto. Su mega menú refleja el funnel de conversión:
+   * Awareness (Plataforma) → Consideration (Oportunidad) → Proof (Resultados)
+   * → Decision (Conecta + promo).
+   *
+   * Usa el mismo formato de columnas que getVerticalCatalog() para reutilizar
+   * el componente visual _header-classic.html.twig sin modificaciones.
+   *
+   * URLs relativas SIN prefijo de idioma (el consumidor lo añade).
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de 4 columnas para el mega menú institucional Jaraba Impact.
+   */
+  public function getJarabaImpactColumns(): array {
+    return [
+      [
+        'title' => (string) $this->t('La Plataforma'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Ecosistema Digital'),
+            'subtitle' => (string) $this->t('10 verticales integradas en una plataforma'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'ecosystem',
+            'color' => 'verde-innovacion',
+            'url' => '/plataforma',
+          ],
+          [
+            'title' => (string) $this->t('Tecnología e IA'),
+            'subtitle' => (string) $this->t('Inteligencia artificial aplicada al impacto'),
+            'icon_cat' => 'ai',
+            'icon_name' => 'sparkles',
+            'color' => 'azul-corporativo',
+            // URL relativa — preprocess convierte a absoluta cross-domain al SaaS.
+            'url' => '/#product-demo',
+            'cross_domain_saas' => TRUE,
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Oportunidad'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Certificación Jaraba'),
+            'subtitle' => (string) $this->t('Acredita tu organización como partner'),
+            'icon_cat' => 'compliance',
+            'icon_name' => 'certificate',
+            'color' => 'azul-corporativo',
+            'url' => '/certificacion',
+          ],
+          [
+            'title' => (string) $this->t('Programas Institucionales'),
+            'subtitle' => (string) $this->t('FSE+, desarrollo local y empleo'),
+            'icon_cat' => 'business',
+            'icon_name' => 'building',
+            'color' => 'azul-corporativo',
+            'url' => '/programas',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Resultados'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Impacto Medible'),
+            'subtitle' => (string) $this->t('Indicadores verificables de transformación'),
+            'icon_cat' => 'analytics',
+            'icon_name' => 'target',
+            'color' => 'verde-innovacion',
+            'url' => '/impacto',
+          ],
+          [
+            'title' => (string) $this->t('Casos de Éxito'),
+            'subtitle' => (string) $this->t('Historias reales de partners y territorios'),
+            'icon_cat' => 'achievement',
+            'icon_name' => 'trophy',
+            'color' => 'naranja-impulso',
+            'url' => '/casos-de-exito',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Conecta'),
+        'has_promo' => TRUE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Contacto'),
+            'subtitle' => (string) $this->t('Habla con nuestro equipo'),
+            'icon_cat' => 'ui',
+            'icon_name' => 'mail',
+            'color' => 'azul-corporativo',
+            'url' => '/contacto',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Estructura de navegación para Pepe Jaraba (meta-sitio group_id 5).
+   *
+   * Pepe Jaraba es la marca personal del fundador (pepejaraba.com),
+   * orientada a generar leads de consultoría en transformación digital.
+   * Su mega menú guía el funnel: Quién soy (historia) → Qué comparto
+   * (contenido) → Visión grande (ecosistema cross-domain) → Conversión.
+   *
+   * La columna "Ecosistema" enlaza cross-domain a los otros meta-sitios,
+   * cerrando el triángulo de cross-pollination entre las 3 webs.
+   *
+   * URLs relativas SIN prefijo de idioma (el consumidor lo añade).
+   * URLs absolutas para enlaces cross-domain a otros meta-sitios.
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de 4 columnas para el mega menú de marca personal.
+   */
+  public function getPepeJarabaColumns(): array {
+    return [
+      [
+        'title' => (string) $this->t('Pepe Jaraba'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Mi Manifiesto'),
+            'subtitle' => (string) $this->t('Vi un puente roto y decidí construirlo'),
+            'icon_cat' => 'ai',
+            'icon_name' => 'lightbulb',
+            'color' => 'naranja-impulso',
+            'url' => '/manifiesto',
+          ],
+          [
+            'title' => (string) $this->t('El Método Jaraba'),
+            'subtitle' => (string) $this->t('Ciclo de Impacto Digital en 90 días'),
+            'icon_cat' => 'analytics',
+            'icon_name' => 'target',
+            'color' => 'azul-corporativo',
+            'url' => '/metodo',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Contenido'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Blog'),
+            'subtitle' => (string) $this->t('Estrategias y recursos sin humo'),
+            'icon_cat' => 'business',
+            'icon_name' => 'megaphone',
+            'color' => 'naranja-impulso',
+            'url' => '/blog',
+          ],
+          [
+            'title' => (string) $this->t('Casos de Éxito'),
+            'subtitle' => (string) $this->t('Transformaciones reales documentadas'),
+            'icon_cat' => 'achievement',
+            'icon_name' => 'trophy',
+            'color' => 'verde-innovacion',
+            'url' => '/casos-de-exito',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Ecosistema'),
+        'has_promo' => FALSE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Plataforma SaaS'),
+            'subtitle' => (string) $this->t('10 verticales de impacto digital'),
+            'icon_cat' => 'verticals',
+            'icon_name' => 'ecosystem',
+            'color' => 'verde-innovacion',
+            // URL relativa — preprocess convierte a absoluta cross-domain al SaaS.
+            'url' => '/',
+            'cross_domain_saas' => TRUE,
+          ],
+          [
+            'title' => (string) $this->t('Jaraba Impact'),
+            'subtitle' => (string) $this->t('Franquicia de ecosistemas de impacto'),
+            'icon_cat' => 'business',
+            'icon_name' => 'rocket',
+            'color' => 'azul-corporativo',
+            // URL absoluta cross-domain a jarabaimpact.com.
+            'url' => 'https://jarabaimpact.com',
+          ],
+        ],
+      ],
+      [
+        'title' => (string) $this->t('Conecta'),
+        'has_promo' => TRUE,
+        'items' => [
+          [
+            'title' => (string) $this->t('Contacto'),
+            'subtitle' => (string) $this->t('Hablemos, sin rodeos'),
+            'icon_cat' => 'ui',
+            'icon_name' => 'mail',
+            'color' => 'naranja-impulso',
+            'url' => '/contacto',
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
    * Resuelve un nombre de color de marca a su valor hex.
    *
    * @param string $colorName
