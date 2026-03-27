@@ -3615,7 +3615,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     else {
       $variables['theme_settings']['megamenu_button_label'] = t('Soluciones');
       $variables['theme_settings']['megamenu_direct_links'] = [
-        ['text' => (string) t('Metodología'), 'url' => $lp . '/metodo'],
+        ['text' => (string) t('Metodología'), 'url' => $lp . '/metodologia'],
         ['text' => (string) t('Precios'), 'url' => $lp . '/planes'],
         ['text' => (string) t('Casos de Éxito'), 'url' => $lp . '/casos-de-exito'],
       ];

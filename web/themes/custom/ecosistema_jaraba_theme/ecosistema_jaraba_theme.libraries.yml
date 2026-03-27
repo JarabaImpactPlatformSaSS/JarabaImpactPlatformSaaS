@@ -398,6 +398,16 @@ case-study-landing:
     - ecosistema_jaraba_theme/scroll-animations
     - ecosistema_jaraba_theme/landing-sticky-cta
 
+# WhatsApp FAB contextual — WA-CONTEXTUAL-001
+whatsapp-fab-contextual:
+  version: 1.0.0
+  js:
+    js/whatsapp-fab-contextual.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 # Contact Form — /contacto (Sprint 3 Remediation)
 contact-form:
   version: 1.0.0

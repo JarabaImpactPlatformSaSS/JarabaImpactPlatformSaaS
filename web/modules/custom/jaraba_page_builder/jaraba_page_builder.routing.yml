@@ -1022,7 +1022,7 @@ entity.experiment_variant.collection:
 # ============================================================
 
 jaraba_page_builder.metodo_landing:
-  path: '/metodo'
+  path: '/metodologia'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\MetodoLandingController::landing'
     _title: 'El Método Jaraba — Supervisión de Agentes IA en 90 Días'
