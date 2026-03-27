@@ -9,13 +9,13 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 189 |
-| run_check (CI blocker) | 132 |
+| Total scripts PHP | 190 |
+| run_check (CI blocker) | 133 |
 | warn_check (no blocker) | 59 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 132 (bloquean CI)
+## Run Checks — 133 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|

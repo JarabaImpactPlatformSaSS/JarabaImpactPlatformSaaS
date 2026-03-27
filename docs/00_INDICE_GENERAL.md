@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-27
-**Versión:** 202.0.0 (CONTACT-SSOT-001 + EMAIL-NOEXPOSE-001 + WA-CONTEXTUAL-001 — WhatsApp-First email protection + AB testing, aprendizaje #232)
+**Versión:** 203.0.0 (EMAIL-SES-TRANSPORT-001 — Amazon SES producción + sync cross-refs 190 validators, aprendizaje #232)
 
 > **📋 WhatsApp-First Email Protection — v168 DIRECTRICES + v151 ARQUITECTURA + v202 INDICE** (2026-03-27)
 >
@@ -1554,12 +1554,12 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v170.0.0** — POPUP-DUAL + CONFIG-DRIFT + DEPLOY-COHERENCE | 2026-03-27 (v170.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v151.0.0** — Safeguard 180 scripts, Madurez 5.0/5.0 | 2026-03-27 (v151.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v201.0.0** | 2026-03-27 (v201.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v121.0.0** — DEPLOY-COHERENCE-001 + deploy git chown fix | 2026-03-27 (v121.0.0) |
-| [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones de customización por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
-| [validators-reference.md](./validators-reference.md) | 🛡️ SSOT lista completa 180 validators (127 run + 56 warn) | 2026-03-27 |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras — **v171.0.0** — EMAIL-SES + Método Jaraba + WhatsApp | 2026-03-27 (v171.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v151.0.0** — Safeguard 190 scripts, Madurez 5.0/5.0 | 2026-03-27 (v151.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Índice general — **v203.0.0** | 2026-03-27 (v203.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo — **v122.0.0** — Método Jaraba + WhatsApp IA + SES | 2026-03-27 (v122.0.0) |
+| [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
+| [validators-reference.md](./validators-reference.md) | 🛡️ SSOT 190 validators (133 run + 59 warn) | 2026-03-27 |
 
 ---
 
@@ -2598,6 +2598,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-27 | **203.0.0** | **AWS SES Email Transport + Bounce Suppression (EMAIL-DEDICATED-IP-001):** Transporte email transaccional dedicado via Amazon SES SMTP eu-central-1. 3 reglas nuevas: EMAIL-DEDICATED-IP-001 (P0, dual SMTP IONOS+SES), EMAIL-BOUNCE-SYNC-001 (P0, SNS webhook→EmailSuppressionService), EMAIL-SES-TRANSPORT-001 (P1, validador 10 checks). Módulo jaraba_ses_transport con SesWebhookController + EmailSuppressionService (tabla email_suppression). DKIM RSA 2048, MAIL FROM mail.plataformadeecosistemas.com. 2 registros DNS IONOS (MX+SPF subdominio mail). SNS topic jaraba-ses-notifications. Config: symfony_mailer.mailer_transport.smtp_ses.yml + settings.secrets.php (SES_SMTP_*). DIRECTRICES v172. ARQUITECTURA actualizada sección 10.9. Regla de oro #164. Aprendizaje #233. |
 | 2026-03-27 | **202.0.0** | **WhatsApp-First Email Protection (CONTACT-SSOT-001 + EMAIL-NOEXPOSE-001):** Estrategia WhatsApp-First elimina 28+ emails expuestos del frontend (3.5→9.8/10). 8 reglas nuevas: CONTACT-SSOT-001 (SSOT theme_settings 20+ claves), EMAIL-NOEXPOSE-001 (cero emails en UI), CONTACT-NOHARD-001 (sin defaults hardcoded), WA-FAB-CONFIG-001 (widget configurable admin), WA-CONTEXTUAL-001 (mensajes por vertical), SCHEMA-CONTACT-CHANNEL-001 (email trampa + WhatsApp contactType), LLMS-CONTACT-FORM-001, FORM-EMAIL-DYNAMIC-001. Widget FAB contextual desktop+movil con aparicion progresiva (delay+scroll), panel expandido, 11 mensajes contextuales por vertical. AB experiment `whatsapp_fab_widget` (3 variantes). Validator validate-email-exposure.php (8/8 PASS) + validate-twig-no-email.php (pre-commit). Monitoring proactivo hook_requirements (WhatsApp + Schema email). Dominios fantasma consolidados (jaraba.io, jarabaosc.com → plataformadeecosistemas.es). 30+ ficheros modificados en 10 modulos + 1 tema. hook_update 9049-9050. Docs: 20260327e (auditoria), 20260327f (plan). Aprendizaje #232. |
 | 2026-03-24 | **194.0.0** | **Trust Strip Clase Mundial (TRUST-STRIP-001):** Parcial unificado `_trust-strip.html.twig` reemplaza `_landing-partner-logos` + `_trust-bar` (deprecados). 9 logos wordmark PNG (Nano Banana): Stripe, Google, Anthropic, Drupal, Qdrant, LinkedIn, WhatsApp, Bizum, Firma Digital. Partners per-vertical via `getPartnersForVertical()` (base 5 + extras: LinkedIn en empleabilidad, WhatsApp/Bizum en comercio/agro, Firma Digital en jarabalex). MARKETING-TRUTH-001: MRW/SEUR eliminados de 7 textos landing (sin integracion real). SCSS premium (marquee mobile, grayscale hover, 2 tiers). Homepage 4 variantes actualizadas. Validator TRUST-STRIP-INTEGRITY-001. Regla de oro #154. Aprendizaje #217. |
 | 2026-03-23 | **191.0.0** | **Migración Dedicado 10/10 + Safeguard 104 scripts:** IONOS AE12-128 (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync, RPO <6h). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2 (SSL termination fix). SEO multi-dominio: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. Safeguard system: 104 validators (88 run + 16 warn), 0 orphans, VALIDATOR-COVERAGE-001 meta-safeguard. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md nuevo (SSOT lista completa 104 scripts). ARQUITECTURA v147. Regla de oro #151. Aprendizaje #214. |
