@@ -800,6 +800,9 @@ if [ "$MODE" = "full" ]; then
   run_check "ROUTE-ALIAS-COLLISION-001" "Route vs path alias collision detection" \
     php "$PROJECT_ROOT/scripts/validation/validate-route-alias-collision.php"
 
+  warn_check "CONTENT-SEED-SYNC-001" "Content seed JSON structure and canvas_data integrity" \
+    php "$PROJECT_ROOT/scripts/validation/validate-content-seed-sync.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

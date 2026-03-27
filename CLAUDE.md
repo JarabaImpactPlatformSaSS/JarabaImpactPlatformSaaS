@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-26 | Version: 1.12.0
+# Ultima actualizacion: 2026-03-27 | Version: 1.13.0
 # Ecosistema: 10 verticales, 196+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -49,7 +49,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - OPTIONAL-CROSSMODULE-001: Toda referencia cross-modulo en services.yml DEBE usar `@?` (opcional). Solo `ecosistema_jaraba_core` y submodulos propios permiten `@` hard. Validacion: `php scripts/validation/validate-optional-deps.php`
 - CONTAINER-DEPS-002: NUNCA crear dependencias circulares en services.yml. Si A necesita B y B necesita A, una direccion DEBE ser `@?` o lazy-load via `\Drupal::service()`. Validacion: `php scripts/validation/validate-circular-deps.php`
 - LOGGER-INJECT-001: Si services.yml inyecta `@logger.channel.X`, el constructor PHP DEBE aceptar `LoggerInterface $logger` directamente (NO llamar `->get('channel')`). `->get()` solo es valido con `@logger.factory`. Validacion: `php scripts/validation/validate-logger-injection.php`
-- PHANTOM-ARG-001: args en services.yml DEBEN coincidir exactamente con params del constructor PHP. Deteccion bidireccional: args de MAS (phantom) Y de MENOS (missing). Missing es mas peligroso ($container->has() devuelve TRUE pero get() lanza TypeError transitivo). Validacion: `php scripts/validation/validate-phantom-args.php` + 12 tests regresion en tests/test-phantom-args-parser.php
+- PHANTOM-ARG-001: args en services.yml DEBEN coincidir con params del constructor. Deteccion bidireccional (phantom + missing). Validacion: validate-phantom-args.php
 - OPTIONAL-PARAM-ORDER-001: Parametros opcionales (`= NULL`, `= []`, etc.) NUNCA antes de requeridos en constructors. PHP 8.4 deprecation. Aplica especialmente a servicios `@?` que DEBEN ir al final del constructor. Validacion: `php scripts/validation/validate-optional-param-order.php`
 - STRIPE-ENV-UNIFY-001: Secrets de Stripe via `getenv()` en settings.secrets.php. NUNCA en config/sync/. Multiples config namespaces (core.stripe, foc.settings, legal_billing.settings) via un solo fichero
 
@@ -91,8 +91,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - UPDATE-HOOK-CATCH-001: try-catch en hook_update_N() DEBE usar \Throwable (NO \Exception). PHP 8.4 TypeError extiende \Error, no \Exception. catch(\Exception) deja pasar TypeErrors y mata updatedb
 - UPDATE-HOOK-CATCH-RETHROW-001: catch en hook_update_N() DEBE hacer `throw new \RuntimeException(msg, 0, $e)`. NUNCA `return $errorMsg` — Drupal trata return string como exito y registra schema completado
 - UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity (Content O Config), o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager::installEntityType(). INCLUYE ConfigEntities — Drupal trackea sus entity type definitions. Sin el hook, CI pasa pero produccion diverge con "entity type needs to be installed"
-- UPDATE-HOOK-FIELDABLE-001: Al usar `updateFieldableEntityType()`, DEBE usarse `getFieldStorageDefinitions()` (NO `getBaseFieldDefinitions()`). `getBaseFieldDefinitions()` incluye campos computed (ej: metatag del modulo metatag) que NO tienen storage. Incluirlos crea orphan entries en key-value store `entity.definitions.installed` que generan errores permanentes en /admin/reports/status
-- TRANSLATABLE-FIELDS-INSTALL-001: Cuando un hook_update_N() hace una entidad `translatable = TRUE`, DEBE instalar los 6 campos de content_translation: source, outdated, uid, status, created, changed. `updateFieldableEntityType()` solo actualiza el entity type — los campos del modulo content_translation se proveen via hook y requieren `installFieldStorageDefinition()` individual
+- UPDATE-HOOK-FIELDABLE-001: `updateFieldableEntityType()` DEBE usar `getFieldStorageDefinitions()` (NO `getBaseFieldDefinitions()` que incluye campos computed sin storage)
+- TRANSLATABLE-FIELDS-INSTALL-001: hook_update que hace entidad translatable DEBE instalar 6 campos content_translation via `installFieldStorageDefinition()` individual
 - Raw SQL SOLO en .install hooks. En todo otro contexto: Entity Query o DB API
 
 ### JavaScript
@@ -206,7 +206,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - TODA accion crear/editar/ver en frontend DEBE abrirse en slide-panel (no navegar fuera)
 - SLIDE-PANEL-RENDER-001: Usar renderPlain() (NO render()). Set $form['#action'] = $request->getRequestUri()
 - Deteccion: isSlidePanelRequest() = isXmlHttpRequest() && !_wrapper_format
-- SLIDE-PANEL-RENDER-002: Rutas con `_form:` en routing.yml NUNCA sirven para slide-panel — Drupal renderiza pagina completa con header/footer/blocks. Para slide-panel, SIEMPRE crear ruta con `_controller:` que detecte isSlidePanelRequest() y use renderPlain(). Patron: ver TenantSelfServiceController::planSlidePanel(), CoordinadorFormController::handleEntityForm()
+- SLIDE-PANEL-RENDER-002: Rutas `_form:` NUNCA para slide-panel. SIEMPRE `_controller:` + isSlidePanelRequest() + renderPlain()
 - FORM-CACHE-001: NUNCA setCached(TRUE) incondicional (LogicException en GET/HEAD)
 
 ## SEGURIDAD
@@ -225,6 +225,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 ### Rutas y URLs
 - ROUTE-LANGPREFIX-001: URLs SIEMPRE via Url::fromRoute(). El sitio usa /es/ prefix. Paths hardcoded causan 404
 - CHECKOUT-ROUTE-COLLISION-001: Commerce Checkout captura /checkout/* (step=null default). Rutas billing en /planes/checkout/*
+- ROUTE-ALIAS-COLLISION-001: page_content path aliases capturan rutas de routing.yml. NUNCA usar /metodo o /certificacion como path de controller — usar /metodologia, /metodo/certificacion. Validacion: validate-route-alias-collision.php
 - STRIPE-URL-PREFIX-001: stripeRequest() endpoints SIN /v1/ (base URL ya incluye /v1). /products NO /v1/products
 - CSP-STRIPE-SCRIPT-001: js.stripe.com en script-src + connect-src + frame-src de CSP
 
@@ -326,7 +327,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COPILOT-BRIDGE-COVERAGE-001: Cada vertical DEBE tener CopilotBridgeService. 16/16 implementados (10 verticales + CRM, Billing, Support, Email, Social, Analytics). Modulos operativos usan __global__ como vertical key
 - AI-COVERAGE-001: Todo modulo con datos de negocio DEBE tener CopilotBridge + GroundingProvider. PredictiveIntegrationService centraliza acceso a jaraba_predictive (lead scoring, churn, forecast, anomalies, retention). Validacion: `php scripts/validation/validate-ai-coverage.php`
 - STREAMING-PARITY-001: StreamingOrchestratorService y CopilotOrchestratorService deben mantener paridad funcional
-- GROUNDING-PROVIDER-001: Cada vertical DEBE tener GroundingProvider (tagged: jaraba_copilot_v2.grounding_provider). 17 implementados (10 verticales + Opportunity, Contact, Invoice, SupportTicket, EmailCampaign, SocialPost, Promotion). CompilerPass en JarabaCopilotV2ServiceProvider. ContentGroundingService v2 usa providers si disponibles, fallback legacy si no
+- GROUNDING-PROVIDER-001: Cada vertical DEBE tener GroundingProvider (tagged jaraba_copilot_v2.grounding_provider). 18 implementados. CompilerPass auto-registro
 - CASCADE-SEARCH-001: Busqueda IA en 4 niveles con coste progresivo. N1=siempre (promotions+verticals, cache ~0). N2=keyword match (GroundingProviders). N3=por necesidad (Qdrant, memory). N4=bajo demanda (ToolUse, max 5 iter). Anonimos: N1+N2+N3(cache). Pro: N1-N4
 - ACTIVE-PROMOTION-001: ActivePromotionService resuelve promociones activas (PromotionConfig ConfigEntity). Inyectado en Nivel 1 cascada. Cache tag promotion_config_list, max-age 300s. Admin: /admin/structure/promotion-config
 - COPILOT-LEAD-CAPTURE-001: CopilotLeadCaptureService detecta intencion de compra (regex, NO LLM) y crea CRM Contact+Opportunity. Patron LEAD-MAGNET-CRM-001. Dependencias CRM opcionales (@?)
