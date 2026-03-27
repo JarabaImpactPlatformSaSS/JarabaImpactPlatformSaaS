@@ -119,11 +119,10 @@ if (!empty($gaps)) {
     $byModule[$g['module']][] = $g;
   }
 
-  echo "  [GAP] Modules missing test coverage:\n";
+  echo "  [FAIL] Modules missing test coverage:\n";
   foreach ($byModule as $module => $items) {
-    echo "    $module:\n";
     foreach ($items as $item) {
-      echo "      [{$item['rule']}] {$item['message']}\n";
+      echo "  [FAIL] $module: [{$item['rule']}] {$item['message']}\n";
     }
   }
   echo "\n";
