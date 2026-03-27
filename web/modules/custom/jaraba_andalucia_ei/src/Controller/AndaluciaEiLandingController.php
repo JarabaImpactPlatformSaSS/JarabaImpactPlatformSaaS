@@ -136,7 +136,7 @@ class AndaluciaEiLandingController extends ControllerBase {
           'cargo' => 'Técnica de Empleabilidad',
           'foto' => 'equipo-remedios-estevez.webp',
           'iniciales' => 'RE',
-          'bio' => 'Licenciada en Economía (UNED) con dos Másteres (IEEE, +1.300h) y Habilitación Docente en FP. Más de 20 años en gestión de políticas activas de empleo, emprendimiento y servicios públicos locales. Programas cofinanciados por el FSE y administraciones autonómicas y provinciales.',
+          'bio' => 'Economista y formadora con más de 20 años en gestión de políticas activas de empleo, emprendimiento y servicios públicos locales. Licenciada en Economía (UNED), dos Másteres (IEEE, +1.300h), Habilitación Docente FP. Autora de Equilibrio Autónomo.',
           'badges' => [
             ['icono' => 'briefcase', 'texto' => '+20 años en empleo público'],
             ['icono' => 'chart', 'texto' => 'MBA Servicios Sociales'],
