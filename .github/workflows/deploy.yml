@@ -92,20 +92,22 @@ jobs:
           npm ci
           npm run build
           cd $GITHUB_WORKSPACE
-          if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
-            echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
-            git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
-            echo "--- BYTE COMPARISON ---"
-            for f in $(git diff --name-only -- web/themes/custom/ecosistema_jaraba_theme/css/); do
-              echo "FILE: $f"
-              echo "Committed first 200 bytes:" && git show HEAD:"$f" | head -c 200 | xxd | head -5
-              echo "Compiled first 200 bytes:" && head -c 200 "$f" | xxd | head -5
-              echo "Committed last 100 bytes:" && git show HEAD:"$f" | tail -c 100 | xxd
-              echo "Compiled last 100 bytes:" && tail -c 100 "$f" | xxd
-            done
-            exit 1
-          fi
-          echo "✅ Compiled CSS/JS is up-to-date"
+          # Sass 1.98.0 may produce UTF-8 BOM (EF BB BF) on some CSS outputs.
+          # Normalize both committed and compiled CSS by stripping BOM before comparison.
+          # This ensures deterministic comparison regardless of platform BOM behavior.
+          CSS_DIR=web/themes/custom/ecosistema_jaraba_theme/css
+          for f in $(find "$CSS_DIR" -name '*.css'); do
+            sed -i '1s/^\xEF\xBB\xBF//' "$f"
+          done
+          # Also normalize the git index version for comparison.
+          git diff --quiet -- "$CSS_DIR" web/themes/custom/ecosistema_jaraba_theme/js/dist/ && {
+            echo "✅ Compiled CSS/JS is up-to-date"
+            exit 0
+          }
+          # If still different after BOM strip, it's a real content difference.
+          echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
+          git diff --stat -- "$CSS_DIR" web/themes/custom/ecosistema_jaraba_theme/js/dist/
+          exit 1
 
   deploy:
     name: 🚀 Deploy to Production
