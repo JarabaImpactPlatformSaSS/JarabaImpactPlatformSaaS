@@ -92,14 +92,13 @@ jobs:
           npm ci
           npm run build
           cd $GITHUB_WORKSPACE
-          # Sass 1.98.0 produces UTF-8 BOM (EF BB BF) on some CSS outputs.
-          # Strip BOM from freshly compiled CSS so comparison is BOM-agnostic.
-          CSS_DIR=web/themes/custom/ecosistema_jaraba_theme/css
-          BOM=$(printf '\xEF\xBB\xBF')
-          find "$CSS_DIR" -name '*.css' -exec sed -i "1s/^${BOM}//" {} \;
-          if ! git diff --quiet -- "$CSS_DIR" web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
+          # Sass 1.98.0 adds UTF-8 BOM to some CSS outputs non-deterministically.
+          # Strip BOM from compiled CSS using perl (reliable across platforms).
+          find web/themes/custom/ecosistema_jaraba_theme/css -name '*.css' \
+            -exec perl -pi -e 's/^\x{FEFF}//' {} \;
+          if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
             echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
-            git diff --stat -- "$CSS_DIR" web/themes/custom/ecosistema_jaraba_theme/js/dist/
+            git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
             exit 1
           fi
           echo "✅ Compiled CSS/JS is up-to-date"
