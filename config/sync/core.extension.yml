@@ -139,6 +139,7 @@ module:
   jaraba_security_compliance: 0
   jaraba_self_discovery: 0
   jaraba_sepe_teleformacion: 0
+  jaraba_ses_transport: 0
   jaraba_servicios_conecta: 0
   jaraba_site_builder: 0
   jaraba_skills: 0
