@@ -21,7 +21,7 @@
     <span class="wa-badge wa-badge--{{ status|default('active') }}">{{ status|default('active') }}</span>
   </div>
   {% if conversation is defined and conversation is not null %}
-    <a href="{{ path('jaraba_whatsapp.panel.conversation', {wa_conversation: conversation.id}) }}" class="wa-list-item__link">
+    <a href="{{ path('jaraba_whatsapp.panel.conversation', {wa_conversation: conversation.id()}) }}" class="wa-list-item__link">
       {% trans %}Ver{% endtrans %}
     </a>
   {% endif %}
