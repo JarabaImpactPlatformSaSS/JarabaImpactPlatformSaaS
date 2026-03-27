@@ -78,6 +78,15 @@ services:
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
 
+  # Renovación de certificaciones (CERT-05).
+  jaraba_training.certification_renewal:
+    class: Drupal\jaraba_training\EventSubscriber\CertificationRenewalSubscriber
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@config.factory'
+      - '@logger.channel.default'
+
   # === AI Coverage (AI-COVERAGE-001) ===
   jaraba_training.copilot_bridge:
     class: Drupal\jaraba_training\Service\CertificacionCopilotBridgeService

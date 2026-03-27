@@ -161,3 +161,63 @@ entity.user_certification.settings:
     _title: 'User Certification settings'
   requirements:
     _permission: 'grant certifications'
+
+# === PORTFOLIO DEL MÉTODO JARABA ===
+
+entity.method_portfolio_item.collection:
+  path: '/admin/content/portfolio'
+  defaults:
+    _entity_list: 'method_portfolio_item'
+    _title: 'Evidencias de Portfolio'
+  requirements:
+    _permission: 'view method portfolio'
+
+entity.method_portfolio_item.canonical:
+  path: '/admin/content/portfolio/{method_portfolio_item}'
+  defaults:
+    _entity_view: 'method_portfolio_item'
+    _title: 'Ver Evidencia'
+  requirements:
+    _permission: 'view method portfolio'
+
+entity.method_portfolio_item.add_form:
+  path: '/admin/content/portfolio/add'
+  defaults:
+    _entity_form: 'method_portfolio_item.add'
+    _title: 'Añadir Evidencia'
+  requirements:
+    _permission: 'create method portfolio'
+
+entity.method_portfolio_item.edit_form:
+  path: '/admin/content/portfolio/{method_portfolio_item}/edit'
+  defaults:
+    _entity_form: 'method_portfolio_item.edit'
+    _title: 'Editar Evidencia'
+  requirements:
+    _entity_access: 'method_portfolio_item.update'
+
+entity.method_portfolio_item.delete_form:
+  path: '/admin/content/portfolio/{method_portfolio_item}/delete'
+  defaults:
+    _entity_form: 'method_portfolio_item.delete'
+    _title: 'Eliminar Evidencia'
+  requirements:
+    _entity_access: 'method_portfolio_item.delete'
+
+entity.method_portfolio_item.settings:
+  path: '/admin/structure/method-portfolio/settings'
+  defaults:
+    _form: 'Drupal\Core\Entity\EntityDeleteForm'
+    _title: 'Method Portfolio Item settings'
+  requirements:
+    _permission: 'administer method portfolio'
+
+# === PANEL DE EVALUACIÓN ===
+
+jaraba_training.evaluacion_dashboard:
+  path: '/formador/evaluaciones'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\EvaluationDashboardController::dashboard'
+    _title: 'Panel de Evaluación — Método Jaraba'
+  requirements:
+    _permission: 'evaluate method portfolio'

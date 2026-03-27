@@ -19,3 +19,20 @@ grant certifications:
 view own certifications:
   title: 'Ver propias certificaciones'
   description: 'Ver las certificaciones propias del usuario.'
+
+administer method portfolio:
+  title: 'Administrar portfolio del Método'
+  description: 'Gestionar todas las evidencias de portfolio.'
+  restrict access: true
+
+create method portfolio:
+  title: 'Crear evidencias de portfolio'
+  description: 'Subir evidencias al portfolio de certificación.'
+
+view method portfolio:
+  title: 'Ver portfolio'
+  description: 'Ver evidencias del portfolio de certificación.'
+
+evaluate method portfolio:
+  title: 'Evaluar portfolio'
+  description: 'Evaluar evidencias y emitir puntuaciones de rúbrica.'

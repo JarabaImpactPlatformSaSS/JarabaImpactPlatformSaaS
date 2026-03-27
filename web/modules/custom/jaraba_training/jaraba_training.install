@@ -100,6 +100,30 @@ function jaraba_training_update_10002(): string {
 }
 
 /**
+ * Install MethodPortfolioItem entity type.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New ContentEntity requires installEntityType().
+ */
+function jaraba_training_update_10003(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entityType = \Drupal::entityTypeManager()->getDefinition('method_portfolio_item', FALSE);
+    if (!$entityType) {
+      throw new \RuntimeException('Entity type method_portfolio_item not found in definitions');
+    }
+    if (!$updateManager->getEntityType('method_portfolio_item')) {
+      $updateManager->installEntityType($entityType);
+      return 'Installed entity type: method_portfolio_item.';
+    }
+    return 'Entity type method_portfolio_item already installed.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Error installing method_portfolio_item: ' . $e->getMessage(), 0, $e);
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_training_requirements(string $phase): array {

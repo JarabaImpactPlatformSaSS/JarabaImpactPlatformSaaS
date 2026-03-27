@@ -1,0 +1,94 @@
+{#
+/**
+ * @file
+ * Template para el panel de evaluación del Método Jaraba.
+ *
+ * CERT-06: Lista de certificaciones pendientes + completadas.
+ *
+ * Variables:
+ * - pending: array de certificaciones en evaluación
+ * - completed: array de certificaciones evaluadas recientemente
+ * - competencies: array de competencias ['pedir', 'evaluar', 'iterar', 'integrar']
+ * - levels: array de niveles {1: 'novel', 2: 'aprendiz', 3: 'competente', 4: 'autonomo'}
+ */
+#}
+
+<div class="evaluation-dashboard">
+  <h2>{% trans %}Evaluaciones pendientes{% endtrans %}</h2>
+
+  {% if pending|length > 0 %}
+    <div class="evaluation-dashboard__table-wrapper">
+      <table class="evaluation-dashboard__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Participante{% endtrans %}</th>
+            <th>{% trans %}Programa{% endtrans %}</th>
+            <th>{% trans %}Nivel actual{% endtrans %}</th>
+            <th>{% trans %}Fecha solicitud{% endtrans %}</th>
+            <th>{% trans %}Acciones{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cert in pending %}
+            <tr>
+              <td>{{ cert.user_name }}</td>
+              <td>{{ cert.program }}</td>
+              <td>
+                {% if cert.overall_level %}
+                  <span class="evaluation-dashboard__level evaluation-dashboard__level--{{ cert.overall_level }}">
+                    {% trans %}Nivel{% endtrans %} {{ cert.overall_level }}
+                  </span>
+                {% else %}
+                  <span class="evaluation-dashboard__level evaluation-dashboard__level--pending">
+                    {% trans %}Pendiente{% endtrans %}
+                  </span>
+                {% endif %}
+              </td>
+              <td>{{ cert.created|date('d/m/Y') }}</td>
+              <td>
+                <a href="/admin/content/user-certifications/{{ cert.id }}" class="btn-primary btn-primary--sm">
+                  {% trans %}Evaluar{% endtrans %} →
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="evaluation-dashboard__empty">
+      {% trans %}No hay evaluaciones pendientes en este momento.{% endtrans %}
+    </p>
+  {% endif %}
+
+  {% if completed|length > 0 %}
+    <h2>{% trans %}Evaluaciones completadas{% endtrans %}</h2>
+    <div class="evaluation-dashboard__table-wrapper">
+      <table class="evaluation-dashboard__table evaluation-dashboard__table--completed">
+        <thead>
+          <tr>
+            <th>{% trans %}Participante{% endtrans %}</th>
+            <th>{% trans %}Nivel alcanzado{% endtrans %}</th>
+            <th>{% trans %}Fecha certificación{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cert in completed %}
+            <tr>
+              <td>{{ cert.user_name }}</td>
+              <td>
+                <span class="evaluation-dashboard__level evaluation-dashboard__level--{{ cert.overall_level }}">
+                  {% trans %}Nivel{% endtrans %} {{ cert.overall_level }}
+                  {% if levels[cert.overall_level] is defined %}
+                    — {{ levels[cert.overall_level] }}
+                  {% endif %}
+                </span>
+              </td>
+              <td>{{ cert.certification_date }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>

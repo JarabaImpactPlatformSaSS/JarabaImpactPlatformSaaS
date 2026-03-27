@@ -48,6 +48,38 @@
   </div>
 </section>
 
+{# ═══ URGENCIA: Fecha real de convocatoria ═══ #}
+{% if urgencia.enabled|default(false) %}
+  <div class="cert-urgencia" role="alert">
+    <div class="metodo-container">
+      <span class="cert-urgencia__icon">⏰</span>
+      <span class="cert-urgencia__text">{{ urgencia.text }}</span>
+    </div>
+  </div>
+{% endif %}
+
+{# ═══ VIDEO TESTIMONIAL ═══ #}
+{% if video.enabled|default(false) %}
+  <section class="cert-section cert-video" aria-labelledby="cert-video-title">
+    <div class="metodo-container">
+      <h2 id="cert-video-title" class="metodo-section__title">{{ video.title }}</h2>
+      <div class="cert-video__wrapper">
+        {% if video.url starts with 'https://www.youtube' or video.url starts with 'https://youtu.be' %}
+          <iframe src="{{ video.url }}" title="{{ video.title }}" loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen class="cert-video__iframe"></iframe>
+        {% else %}
+          <video controls preload="metadata" class="cert-video__player"
+                 {% if video.poster %}poster="{{ video.poster }}"{% endif %}>
+            <source src="{{ video.url }}" type="video/mp4">
+          </video>
+        {% endif %}
+      </div>
+      <p class="cert-video__caption">{{ video.caption }}</p>
+    </div>
+  </section>
+{% endif %}
+
 {# ═══ SECCIÓN 2: 2 CAMINOS (SPLIT) ═══ #}
 <section class="cert-section cert-caminos" aria-labelledby="cert-caminos-title">
   <div class="metodo-container">
@@ -357,54 +389,4 @@
   </div>
 </section>
 
-{# ── JS para formulario condicional ── #}
-<script>
-(function() {
-  'use strict';
-  var form = document.getElementById('cert-contact-form');
-  if (!form) return;
-
-  var radios = form.querySelectorAll('input[name="tipo"]');
-  var profFields = form.querySelector('.cert-form__conditional--profesional');
-  var entFields = form.querySelector('.cert-form__conditional--entidad');
-
-  function toggle() {
-    var tipo = form.querySelector('input[name="tipo"]:checked').value;
-    profFields.style.display = tipo === 'profesional' ? '' : 'none';
-    entFields.style.display = tipo === 'entidad' ? '' : 'none';
-  }
-
-  radios.forEach(function(r) { r.addEventListener('change', toggle); });
-  toggle();
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    var btn = form.querySelector('.cert-form__submit');
-    var msg = form.querySelector('.cert-form__message');
-    btn.disabled = true;
-    btn.textContent = Drupal.t('Enviando...');
-
-    var data = new FormData(form);
-    fetch(form.action, { method: 'POST', body: data })
-      .then(function(r) { return r.json(); })
-      .then(function(json) {
-        msg.style.display = 'block';
-        msg.className = 'cert-form__message cert-form__message--' + (json.success ? 'success' : 'error');
-        msg.textContent = json.message;
-        if (json.success) {
-          form.reset();
-          toggle();
-        }
-        btn.disabled = false;
-        btn.textContent = Drupal.t('Enviar solicitud') + ' →';
-      })
-      .catch(function() {
-        msg.style.display = 'block';
-        msg.className = 'cert-form__message cert-form__message--error';
-        msg.textContent = Drupal.t('Error al enviar. Inténtalo de nuevo.');
-        btn.disabled = false;
-        btn.textContent = Drupal.t('Enviar solicitud') + ' →';
-      });
-  });
-})();
-</script>
+{# JS cargado via library jaraba_page_builder/certificacion-form (Drupal.behaviors) #}

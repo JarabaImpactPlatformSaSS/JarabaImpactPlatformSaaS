@@ -516,3 +516,12 @@ testimonials-3d:
     - core/once
     - jaraba_page_builder/page-builder
 
+
+# Formulario dual de certificación (/certificacion).
+certificacion-form:
+  version: 1.0
+  js:
+    js/certificacion-form.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings

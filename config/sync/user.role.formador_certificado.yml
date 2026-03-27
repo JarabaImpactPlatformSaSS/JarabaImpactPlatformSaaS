@@ -1,0 +1,15 @@
+uuid: 8f4c2b1e-9d3a-4e7f-b8c5-a1d6e2f0c9b7
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_training
+id: formador_certificado
+label: 'Formador Certificado Jaraba'
+weight: 8
+is_admin: false
+permissions:
+  - 'evaluate method portfolio'
+  - 'view method portfolio'
+  - 'grant certifications'
+  - 'view own certifications'

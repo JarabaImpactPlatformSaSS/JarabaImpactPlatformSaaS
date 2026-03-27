@@ -7,11 +7,11 @@
 
 set -euo pipefail
 
-TIMEOUT_SECONDS=300
+TIMEOUT_SECONDS=600
 
 if command -v timeout &>/dev/null; then
-  timeout "$TIMEOUT_SECONDS" php vendor/bin/phpstan analyse --no-progress --error-format=raw "$@"
+  timeout "$TIMEOUT_SECONDS" php -d memory_limit=4G vendor/bin/phpstan analyse --no-progress --error-format=raw "$@"
 else
   # macOS fallback (no coreutils timeout).
-  php vendor/bin/phpstan analyse --no-progress --error-format=raw "$@"
+  php -d memory_limit=4G vendor/bin/phpstan analyse --no-progress --error-format=raw "$@"
 fi

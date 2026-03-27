@@ -59,6 +59,16 @@ function jaraba_training_theme(): array {
       ],
       'template' => 'training-product-card',
     ],
+    // Panel de evaluación del Método Jaraba (CERT-06).
+    'evaluation_dashboard' => [
+      'variables' => [
+        'pending' => [],
+        'completed' => [],
+        'competencies' => [],
+        'levels' => [],
+      ],
+      'template' => 'evaluation-dashboard',
+    ],
   ];
 }
 

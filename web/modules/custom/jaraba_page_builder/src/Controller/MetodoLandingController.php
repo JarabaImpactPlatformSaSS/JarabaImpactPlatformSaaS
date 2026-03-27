@@ -24,9 +24,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MetodoLandingController extends ControllerBase {
 
   /**
+   * MARKETING-TRUTH-001: Dato verificable del Programa Andalucía +ei 1ª Ed.
+   *
+   * Fuente: PED S.L. - PIIL Andalucía 2023, 50 participantes.
+   * Documentado en docs/tecnicos/20260327c-Auditoria_Specs_Metodo_Jaraba_SaaS_v1_Claude.md
+   */
+  public const INSERTION_RATE = '46';
+  public const INSERTION_SOURCE_KEY = 'andalucia_ei_1e';
+
+  /**
    * MegaMenuBridgeService para catálogo de verticales (optional cross-module).
    */
   protected ?MegaMenuBridgeService $megaMenuBridge = NULL;
+
+  /**
+   * Base domain del SaaS (DI via Settings).
+   */
+  protected string $saasBaseDomain = 'plataformadeecosistemas.com';
 
   /**
    * {@inheritdoc}
@@ -34,6 +48,7 @@ class MetodoLandingController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
     $instance->megaMenuBridge = $container->get('ecosistema_jaraba_core.mega_menu_bridge');
+    $instance->saasBaseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
     return $instance;
   }
 
@@ -81,7 +96,7 @@ class MetodoLandingController extends ControllerBase {
       'badge' => $this->t('Método Jaraba™'),
       'title' => $this->t('Aprende a supervisar agentes de IA. Y que eso se convierta en tu profesión.'),
       'subtitle' => $this->t('Un sistema de capacitación en 90 días que te enseña a generar impacto económico real dirigiendo inteligencia artificial. Sin humo. Sin tecnicismos. Con resultados medibles.'),
-      'stat_value' => '46',
+      'stat_value' => self::INSERTION_RATE,
       'stat_suffix' => '%',
       'stat_label' => $this->t('de inserción laboral'),
       'stat_source' => $this->t('Programa Andalucía +ei, 1ª Edición'),
@@ -285,8 +300,7 @@ class MetodoLandingController extends ControllerBase {
    * @return array<string, mixed>
    */
   protected function buildCaminos(): array {
-    $saasBaseUrl = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
-    $baseUrl = 'https://' . $saasBaseUrl;
+    $baseUrl = 'https://' . $this->saasBaseDomain;
     $langPrefix = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $lp = ($langPrefix !== 'es') ? '/' . $langPrefix : '/es';
 
@@ -335,7 +349,7 @@ class MetodoLandingController extends ControllerBase {
    */
   protected function buildEvidencia(): array {
     return [
-      'stat_value' => '46',
+      'stat_value' => self::INSERTION_RATE,
       'stat_suffix' => '%',
       'stat_label' => $this->t('inserción laboral'),
       'stat_source' => $this->t('Programa Andalucía +ei, 1ª Edición. Colectivos vulnerables.'),

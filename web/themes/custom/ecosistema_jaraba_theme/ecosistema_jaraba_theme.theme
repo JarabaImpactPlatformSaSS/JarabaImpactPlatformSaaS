@@ -4896,7 +4896,7 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'jaraba_sepe_teleformacion.', 'jaraba_servicios_conecta.',
     'jaraba_site_builder.', 'jaraba_skills.', 'jaraba_social.',
     'jaraba_tenant_knowledge.', 'jaraba_theming.', 'jaraba_training.',
-    'jaraba_usage_billing.', 'jaraba_whitelabel.',
+    'jaraba_usage_billing.', 'jaraba_whatsapp.', 'jaraba_whitelabel.',
     'entity.saas_plan.', 'entity.content_article.',
     'entity.content_category.', 'entity.page_content.',
   ];
@@ -5711,6 +5711,8 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_business_tools.entrepreneur_dashboard' => ['ecosistema_jaraba_theme/bundle-entrepreneur-dashboard'],
     // Quiz de Recomendación de Vertical.
     'ecosistema_jaraba_core.quiz_vertical' => ['ecosistema_jaraba_theme/route-quiz'],
+    // WhatsApp IA Panel.
+    'jaraba_whatsapp.panel' => ['jaraba_whatsapp/panel'],
   ];
 
   // SETUP-WIZARD-DAILY-001: Attach setup-wizard library on dashboard routes
