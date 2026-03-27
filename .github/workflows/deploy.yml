@@ -95,8 +95,14 @@ jobs:
           if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
             echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
             git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
-            echo "--- DIFF CONTENT (first 500 bytes per file) ---"
-            git diff -- web/themes/custom/ecosistema_jaraba_theme/css/ | head -30
+            echo "--- BYTE COMPARISON ---"
+            for f in $(git diff --name-only -- web/themes/custom/ecosistema_jaraba_theme/css/); do
+              echo "FILE: $f"
+              echo "Committed first 200 bytes:" && git show HEAD:"$f" | head -c 200 | xxd | head -5
+              echo "Compiled first 200 bytes:" && head -c 200 "$f" | xxd | head -5
+              echo "Committed last 100 bytes:" && git show HEAD:"$f" | tail -c 100 | xxd
+              echo "Compiled last 100 bytes:" && tail -c 100 "$f" | xxd
+            done
             exit 1
           fi
           echo "✅ Compiled CSS/JS is up-to-date"
