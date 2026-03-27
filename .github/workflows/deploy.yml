@@ -200,8 +200,17 @@ jobs:
         run: |
           ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             DEPLOY_PATH=/var/www/jaraba
-            find $DEPLOY_PATH/.git/objects -type d ! -perm -u+wx -exec chmod u+wx {} \; 2>/dev/null || true
-            find $DEPLOY_PATH/.git/objects -type f ! -perm -u+w -exec chmod u+w {} \; 2>/dev/null || true
+            # Fix root-owned git objects (caused by deploy steps running as root).
+            # sudo chown requires NOPASSWD entry — added to sudoers.
+            ROOT_OBJECTS=$(find $DEPLOY_PATH/.git -user root 2>/dev/null | wc -l)
+            if [ "$ROOT_OBJECTS" -gt 0 ]; then
+              echo "⚠️ Found $ROOT_OBJECTS root-owned git objects. Fixing ownership..."
+              sudo -n chown -R jaraba:jaraba $DEPLOY_PATH/.git 2>/dev/null || {
+                echo "⚠️ sudo chown failed — trying chmod fallback"
+                find $DEPLOY_PATH/.git/objects -type d ! -perm -u+wx -exec chmod u+wx {} \; 2>/dev/null || true
+                find $DEPLOY_PATH/.git/objects -type f ! -perm -u+w -exec chmod u+w {} \; 2>/dev/null || true
+              }
+            fi
             find $DEPLOY_PATH/.git/refs -type f ! -perm -u+w -exec chmod u+w {} \; 2>/dev/null || true
           EOF
 
