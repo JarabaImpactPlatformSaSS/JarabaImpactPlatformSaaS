@@ -379,16 +379,17 @@
 .aei-popup__back {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.25rem 0.5rem;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
   margin-bottom: 0.75rem;
-  border: none;
-  background: none;
-  color: var(--ej-color-text-secondary, #6B7280);
-  font-size: 0.8rem;
+  border: 1.5px solid var(--ej-color-border-light, #E5E7EB);
+  background: var(--ej-color-surface, #fff);
+  color: var(--ej-azul-corporativo, #233D63);
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 150ms ease;
-  border-radius: 6px;
+  transition: background 150ms ease, border-color 150ms ease, transform 100ms ease;
+  border-radius: 8px;
   position: relative;
   z-index: 2;
 
@@ -399,7 +400,12 @@
 
   &:hover,
   &:focus-visible {
-    color: var(--ej-azul-corporativo, #233D63);
+    background: var(--ej-color-surface-secondary, #F3F4F6);
+    border-color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 
   &:focus-visible {
