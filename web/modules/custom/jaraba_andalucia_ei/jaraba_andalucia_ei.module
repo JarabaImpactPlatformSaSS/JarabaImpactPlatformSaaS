@@ -2259,9 +2259,16 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
   }
 
   // ROUTE-LANGPREFIX-001: URLs siempre via Url::fromRoute().
-  $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
-  $landingUrl = Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
-  $pruebaGratuitaUrl = Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita')->toString();
+  // PRESAVE-RESILIENCE-001: try-catch para evitar 500 si ruta no existe en cache.
+  try {
+    $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
+    $landingUrl = Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
+    $pruebaGratuitaUrl = Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita')->toString();
+  }
+  catch (\Throwable $e) {
+    // Ruta no disponible (cache, deploy en curso). Silenciar — no romper el sitio.
+    return;
+  }
 
   // UTM campaign params for attribution.
   $utmCampaign = $config->get('popup_campaign_utm') ?? 'aei_reclutamiento_2026';
