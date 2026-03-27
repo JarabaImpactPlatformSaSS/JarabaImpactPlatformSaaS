@@ -794,6 +794,12 @@ if [ "$MODE" = "full" ]; then
   run_check "EMAIL-NOEXPOSE-001" "Email exposure detection in frontend (no hardcoded emails)" \
     php "$PROJECT_ROOT/scripts/validation/validate-email-exposure.php"
 
+  run_check "METODO-LANDING-001" "Metodo Jaraba landing integrity (controller, template, SCSS, schema)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-metodo-landing.php"
+
+  run_check "ROUTE-ALIAS-COLLISION-001" "Route vs path alias collision detection" \
+    php "$PROJECT_ROOT/scripts/validation/validate-route-alias-collision.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
