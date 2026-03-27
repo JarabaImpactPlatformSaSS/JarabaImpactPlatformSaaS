@@ -136,7 +136,7 @@ class AndaluciaEiLandingController extends ControllerBase {
           'cargo' => 'Técnica de Empleabilidad',
           'foto' => 'equipo-remedios-estevez.webp',
           'iniciales' => 'RE',
-          'bio' => 'Licenciada en Economía (UNED) y Máster MBA en Servicios Sociales. Desde 2005 dirige una empresa pública municipal dedicada al desarrollo económico local, la formación para el empleo y el acompañamiento al emprendimiento. Formadora habilitada para docencia en FP con más de 20 años de experiencia en gestión de subvenciones, empleabilidad y servicios públicos en Andalucía.',
+          'bio' => 'Licenciada en Economía (UNED) y Máster MBA en Servicios Sociales. Desde 2005 dirige una empresa pública municipal dedicada a la prestación de servicios públicos locales. Formadora habilitada para docencia en FP con más de 20 años de experiencia en gestión de subvenciones, empleabilidad y servicios públicos en Andalucía.',
           'badges' => [
             ['icono' => 'briefcase', 'texto' => '+20 años en empleo público'],
             ['icono' => 'chart', 'texto' => 'MBA Servicios Sociales'],

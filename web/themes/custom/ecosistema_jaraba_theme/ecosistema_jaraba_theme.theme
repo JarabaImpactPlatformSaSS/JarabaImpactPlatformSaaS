@@ -1459,7 +1459,7 @@ function _ecosistema_jaraba_theme_get_metasite_defaults(): array {
       'header_cta_url' => '/andalucia-ei/enlaces',
       'footer_copyright' => '© [year] Plataforma de Ecosistemas Digitales S.L. (B93750271). Todos los derechos reservados.',
       'seo_title' => 'Plataforma de Ecosistemas Digitales — Empleo, Emprendimiento e IA | PED S.L.',
-      'seo_description' => 'Infraestructura digital para el desarrollo rural y la transformación de territorios. +30 años, +100M EUR en fondos europeos, 10 verticales SaaS.',
+      'seo_description' => 'Infraestructura digital para el desarrollo local y la transformación de territorios. +30 años, +100M EUR en fondos europeos, 10 verticales SaaS.',
     ],
     'generic' => [
       'hero_eyebrow' => 'La plataforma que transforma profesionales en emprendedores de impacto',
@@ -3203,24 +3203,34 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $variables['language_links'] = $language_links;
 
   // =========================================================================
-  // MEGAMENU: SaaS principal + PED Corporativo (group_id 7)
+  // MEGAMENU: SaaS principal + los 3 meta-sitios (PED 7, JI 6, PJ 5)
   //
   // SaaS principal (meta_site NULL): mega menú de verticales del ecosistema.
-  // PED Corporativo (group_id 7): mega menú corporativo propio (Empresa,
-  // Plataforma, Red, Resultados) — es la web institucional, NO el producto.
-  // Demás meta-sitios (pepejaraba, jarabaimpact): mantienen nav plana.
+  // PED Corporativo (group_id 7): mega menú corporativo propio.
+  // Jaraba Impact (group_id 6): mega menú franquicia B2B.
+  // Pepe Jaraba (group_id 5): mega menú marca personal.
   //
   // @see _header-classic.html.twig — Usa ts.header_megamenu|default(false)
   // @see MEGAMENU-INJECT-001 — Columnas viajan en theme_settings._mega_menu_columns
-  // @see MegaMenuBridgeService::getPedCorporateColumns() — SSOT PED
+  // @see MegaMenuBridgeService — SSOT por meta-sitio
   // =========================================================================
   $enableMegaMenu = empty($variables['meta_site']);
   $isPedMegaMenu = FALSE;
+  $isJarabaImpactMegaMenu = FALSE;
+  $isPepeJarabaMegaMenu = FALSE;
   if (!$enableMegaMenu && !empty($variables['meta_site'])) {
     $metaSiteGroupId = (int) ($variables['meta_site']['group_id'] ?? 0);
     if ($metaSiteGroupId === 7) {
       $enableMegaMenu = TRUE;
       $isPedMegaMenu = TRUE;
+    }
+    elseif ($metaSiteGroupId === 6) {
+      $enableMegaMenu = TRUE;
+      $isJarabaImpactMegaMenu = TRUE;
+    }
+    elseif ($metaSiteGroupId === 5) {
+      $enableMegaMenu = TRUE;
+      $isPepeJarabaMegaMenu = TRUE;
     }
   }
   if ($enableMegaMenu) {
@@ -3231,18 +3241,35 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     $lp = $variables['language_prefix'] ?? '';
     if (\Drupal::hasService('ecosistema_jaraba_core.mega_menu_bridge')) {
       $bridge = \Drupal::service('ecosistema_jaraba_core.mega_menu_bridge');
-      // PED usa estructura corporativa propia; SaaS usa catálogo de verticales.
-      $columns = $isPedMegaMenu
-        ? $bridge->getPedCorporateColumns()
-        : $bridge->getMegaMenuColumns();
+      // Cada meta-sitio tiene su propia estructura de navegación SSOT.
+      if ($isPedMegaMenu) {
+        $columns = $bridge->getPedCorporateColumns();
+      }
+      elseif ($isJarabaImpactMegaMenu) {
+        $columns = $bridge->getJarabaImpactColumns();
+      }
+      elseif ($isPepeJarabaMegaMenu) {
+        $columns = $bridge->getPepeJarabaColumns();
+      }
+      else {
+        $columns = $bridge->getMegaMenuColumns();
+      }
     }
     else {
       $columns = [];
     }
     // Añadir prefijo de idioma a URLs relativas.
+    // Items con cross_domain_saas=TRUE se resuelven como URL absoluta al SaaS.
+    $saasBaseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
+    $saasBaseUrl = 'https://' . $saasBaseDomain;
     foreach ($columns as &$_col) {
       foreach ($_col['items'] as &$_item) {
-        if (isset($_item['url']) && !str_starts_with($_item['url'], 'http')) {
+        if (!empty($_item['cross_domain_saas'])) {
+          // Cross-domain: URL absoluta al SaaS principal con prefijo idioma.
+          $_item['url'] = $saasBaseUrl . $lp . $_item['url'];
+          unset($_item['cross_domain_saas']);
+        }
+        elseif (isset($_item['url']) && !str_starts_with($_item['url'], 'http')) {
           $_item['url'] = $lp . $_item['url'];
         }
       }
@@ -3270,9 +3297,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       $variables['theme_settings']['header_cta_url'] = '/andalucia-ei/enlaces';
       // Promo PED: CTA que lleva a la demo del producto en el SaaS principal.
       // URL absoluta porque PED es un dominio distinto al SaaS.
-      // Auto-cualifica sin generar emails manuales.
-      $saasBaseDomain = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
-      $saasBaseUrl = 'https://' . $saasBaseDomain;
+      // $saasBaseUrl ya declarado arriba en el loop de URLs.
       $variables['theme_settings']['megamenu_promo'] = [
         'title' => (string) t('¿Quieres verlo en acción?'),
         'description' => (string) t('Descubre cómo la plataforma impulsa empleo, emprendimiento y desarrollo local.'),
@@ -3310,6 +3335,104 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       ]);
       // Copyright PED.
       $variables['theme_settings']['footer_copyright'] = '© ' . date('Y') . ' Plataforma de Ecosistemas Digitales S.L. (B93750271)';
+    }
+    elseif ($isJarabaImpactMegaMenu) {
+      // Jaraba Impact (group_id 6): franquicia B2B institucional.
+      // Botón "Descubre" invita a explorar la oportunidad de franquicia.
+      $variables['theme_settings']['megamenu_button_label'] = t('Descubre');
+      $variables['theme_settings']['megamenu_direct_links'] = [
+        ['text' => (string) t('Impacto'), 'url' => $lp . '/impacto'],
+        ['text' => (string) t('Casos de Éxito'), 'url' => $lp . '/casos-de-exito'],
+      ];
+      // Header CTA: campaña activa captación Andalucía +ei 2ª Edición.
+      // CTA-CAMPAIGN-ACTIVE-001: durante captación, todos los meta-sitios
+      // priorizan el programa con financiación FSE+ abierto.
+      $variables['theme_settings']['enable_header_cta'] = TRUE;
+      $variables['theme_settings']['header_cta_text'] = t('Andalucía +ei');
+      $variables['theme_settings']['header_cta_url'] = '/andalucia-ei/enlaces';
+      // Promo Jaraba Impact: CTA cross-domain al SaaS para ver el producto.
+      // $saasBaseUrl ya declarado arriba en el loop de URLs.
+      $variables['theme_settings']['megamenu_promo'] = [
+        'title' => (string) t('¿Quieres replicar el modelo?'),
+        'description' => (string) t('Descubre cómo llevar el ecosistema de impacto a tu territorio.'),
+        'cta_text' => (string) t('Ver la plataforma en acción'),
+        'cta_url' => $saasBaseUrl . $lp . '/#product-demo',
+        'cta_track' => 'megamenu_product_demo_jarabaimpact',
+      ];
+
+      // Footer Jaraba Impact: 3 columnas con paths reales del tenant 6.
+      // Columna 1: Plataforma (qué ofrecemos).
+      $variables['theme_settings']['footer_nav_col1_title'] = (string) t('Plataforma');
+      $variables['theme_settings']['footer_nav_col1_links'] = implode("\n", [
+        'Ecosistema Digital|/plataforma',
+        'Impacto|/impacto',
+        'Casos de Éxito|/casos-de-exito',
+        'Programas|/programas',
+      ]);
+      // Columna 2: Franquicia (cómo unirte).
+      $variables['theme_settings']['footer_nav_col2_title'] = (string) t('Franquicia');
+      $variables['theme_settings']['footer_nav_col2_links'] = implode("\n", [
+        'Certificación Jaraba|/certificacion',
+        'Programas Institucionales|/programas',
+        'Contacto|/contacto',
+      ]);
+      // Columna 3: Legal (compliance).
+      $variables['theme_settings']['footer_nav_col3_title'] = (string) t('Legal');
+      $variables['theme_settings']['footer_nav_col3_links'] = implode("\n", [
+        'Aviso legal|/aviso-legal',
+        'Política de privacidad|/politica-privacidad',
+        'Política de cookies|/politica-cookies',
+      ]);
+      // Copyright Jaraba Impact.
+      $variables['theme_settings']['footer_copyright'] = '© ' . date('Y') . ' Jaraba Impact — Plataforma de Ecosistemas Digitales S.L.';
+    }
+    elseif ($isPepeJarabaMegaMenu) {
+      // Pepe Jaraba (group_id 5): marca personal del fundador.
+      // Botón "Explora" — tono personal, invita a descubrir.
+      $variables['theme_settings']['megamenu_button_label'] = t('Explora');
+      $variables['theme_settings']['megamenu_direct_links'] = [
+        ['text' => (string) t('Blog'), 'url' => $lp . '/blog'],
+        ['text' => (string) t('Contacto'), 'url' => $lp . '/contacto'],
+      ];
+      // Header CTA: campaña activa captación Andalucía +ei 2ª Edición.
+      // CTA-CAMPAIGN-ACTIVE-001: durante captación, todos los meta-sitios
+      // priorizan el programa con financiación FSE+ abierto.
+      $variables['theme_settings']['enable_header_cta'] = TRUE;
+      $variables['theme_settings']['header_cta_text'] = t('Andalucía +ei');
+      $variables['theme_settings']['header_cta_url'] = '/andalucia-ei/enlaces';
+      // Promo Pepe Jaraba: CTA al SaaS con mensaje personal.
+      // $saasBaseUrl ya declarado arriba en el loop de URLs.
+      $variables['theme_settings']['megamenu_promo'] = [
+        'title' => (string) t('¿Listo para transformar tu territorio?'),
+        'description' => (string) t('Accede al ecosistema completo: empleo, emprendimiento y comercio en una sola plataforma.'),
+        'cta_text' => (string) t('Explorar el ecosistema'),
+        'cta_url' => $saasBaseUrl . $lp . '/',
+        'cta_track' => 'megamenu_ecosystem_pepejaraba',
+      ];
+
+      // Footer Pepe Jaraba: 3 columnas con paths del content seed.
+      // Columna 1: Pepe Jaraba (quién soy).
+      $variables['theme_settings']['footer_nav_col1_title'] = (string) t('Pepe Jaraba');
+      $variables['theme_settings']['footer_nav_col1_links'] = implode("\n", [
+        'Mi Manifiesto|/manifiesto',
+        'El Método|/metodo',
+        'Contacto|/contacto',
+      ]);
+      // Columna 2: Contenido (qué comparto).
+      $variables['theme_settings']['footer_nav_col2_title'] = (string) t('Contenido');
+      $variables['theme_settings']['footer_nav_col2_links'] = implode("\n", [
+        'Blog|/blog',
+        'Casos de Éxito|/casos-de-exito',
+      ]);
+      // Columna 3: Legal (compliance).
+      $variables['theme_settings']['footer_nav_col3_title'] = (string) t('Legal');
+      $variables['theme_settings']['footer_nav_col3_links'] = implode("\n", [
+        'Aviso legal|/aviso-legal',
+        'Política de privacidad|/privacidad',
+        'Política de cookies|/cookies',
+      ]);
+      // Copyright Pepe Jaraba.
+      $variables['theme_settings']['footer_copyright'] = '© ' . date('Y') . ' Pepe Jaraba. Plataforma de Ecosistemas Digitales S.L.';
     }
     else {
       $variables['theme_settings']['megamenu_button_label'] = t('Soluciones');

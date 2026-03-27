@@ -126,9 +126,9 @@ $dictEN = [
 
   // --- PED (tenant 7) ---
   'Plataforma de Ecosistemas Digitales' => 'Digital Ecosystems Platform',
-  'Infraestructura Digital para el Desarrollo Rural' => 'Digital Infrastructure for Rural Development',
-  'Infraestructura Digital para el Desarrollo Rural y la Transformacion de Territorios' => 'Digital Infrastructure for Rural Development and Territory Transformation',
-  'Infraestructura Digital para el Desarrollo Rural y la Transformación de Territorios' => 'Digital Infrastructure for Rural Development and Territory Transformation',
+  'Infraestructura Digital para el Desarrollo Local' => 'Digital Infrastructure for Local Development',
+  'Infraestructura Digital para el Desarrollo Local y la Transformacion de Territorios' => 'Digital Infrastructure for Local Development and Territory Transformation',
+  'Infraestructura Digital para el Desarrollo Local y la Transformación de Territorios' => 'Digital Infrastructure for Local Development and Territory Transformation',
   'Plataforma de Ecosistemas Digitales S.L. opera el Ecosistema Jaraba: tecnologia de impacto al servicio de personas, pymes y municipios' => 'Plataforma de Ecosistemas Digitales S.L. operates the Jaraba Ecosystem: impact technology at the service of people, SMEs and municipalities',
   'Conoce nuestro impacto' => 'Discover our impact',
   'Contacto institucional' => 'Institutional contact',

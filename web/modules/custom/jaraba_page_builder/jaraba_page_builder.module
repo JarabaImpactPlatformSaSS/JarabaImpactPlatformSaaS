@@ -764,7 +764,7 @@ function _jaraba_page_builder_generate_cofounders_schema(string $baseUrl): strin
         'knowsAbout' => [
           'Derecho Comunitario',
           'Fondos Europeos',
-          'Desarrollo Rural Territorial',
+          'Desarrollo Local y Territorial',
           'Inteligencia Artificial aplicada',
         ],
         'description' => 'Jurista especializado en Derecho Comunitario con mas de 30 anos de experiencia en transformacion territorial. Ha gestionado +100M EUR en fondos europeos y acompanado +500 proyectos de emprendimiento y empleo.',

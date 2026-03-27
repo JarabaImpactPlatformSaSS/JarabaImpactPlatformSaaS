@@ -165,7 +165,7 @@ $pages[83] = <<<'HTML'
         </div>
         <div class="ped-card ped-card--gold-top">
           <div class="ped-card__title">Vision</div>
-          <p class="ped-card__text">Ser la infraestructura digital de referencia para el desarrollo rural sostenible en el mundo hispanohablante, conectando instituciones, empresas y personas en un ecosistema de impacto medible.</p>
+          <p class="ped-card__text">Ser la infraestructura digital de referencia para el desarrollo local sostenible en el mundo hispanohablante, conectando instituciones, empresas y personas en un ecosistema de impacto medible.</p>
         </div>
         <div class="ped-card ped-card--gold-top">
           <div class="ped-card__title">Filosofia: Sin Humo</div>
@@ -214,8 +214,8 @@ $pages[83] = <<<'HTML'
         <div>
           <div class="ped-founder__name">Jose Jaraba Munoz</div>
           <div class="ped-founder__title">Cofundador y CEO</div>
-          <div class="ped-founder__subtitle">Jurista · Experto en Desarrollo Rural Territorial · +30 anos de experiencia</div>
-          <p class="ped-founder__bio">Licenciado en Derecho (UCO), tres Masters, doctorando y certificado EOQ Quality System Manager. Ha dirigido grupos de desarrollo rural que han gestionado +100M€ en fondos europeos, creado programas para +50.000 beneficiarios y transformado +120 municipios rurales. En 2020 fundo PED para convertir esa experiencia en tecnologia SaaS de impacto.</p>
+          <div class="ped-founder__subtitle">Jurista · Experto en Desarrollo Local y Territorial · +30 anos de experiencia</div>
+          <p class="ped-founder__bio">Licenciado en Derecho (UCO), tres Masters, doctorando y certificado EOQ Quality System Manager. Ha dirigido grupos de desarrollo local que han gestionado +100M€ en fondos europeos, creado programas para +50.000 beneficiarios y transformado +120 municipios rurales. En 2020 fundo PED para convertir esa experiencia en tecnologia SaaS de impacto.</p>
           <div class="ped-founder__social">
             <a href="/equipo" class="ped-founder__social-link">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -579,7 +579,7 @@ $pages[87] = <<<'HTML'
         <div>
           <div class="ped-founder__name">Jose Jaraba Munoz</div>
           <div class="ped-founder__title">Cofundador y CEO</div>
-          <div class="ped-founder__subtitle">Jurista · Experto en Desarrollo Rural Territorial · Doctorando UCO</div>
+          <div class="ped-founder__subtitle">Jurista · Experto en Desarrollo Local y Territorial · Doctorando UCO</div>
           <p class="ped-founder__bio">Licenciado en Derecho por la Universidad de Cordoba, con tres Masters (Gestion de Turismo Ambiental por la UPM, Gestion del Desarrollo Rural por la UCO y MBA en proceso), doctorando en la UCO y certificado EOQ Quality System Manager e ITIL Foundation. Pepe Jaraba combina una formacion juridica de alto nivel con mas de 30 anos de experiencia practica en la interseccion entre politicas publicas, fondos europeos, desarrollo territorial y tecnologia.</p>
           <p class="ped-founder__bio">Su vision: convertir tres decadas de intervencion directa en +120 municipios en una infraestructura digital SaaS que democratice el acceso al desarrollo economico local, disponible para cualquier territorio del mundo hispanohablante.</p>
           <div class="ped-founder__social">
@@ -646,7 +646,7 @@ $pages[87] = <<<'HTML'
           <div class="ped-founder__timeline-date">1997 – 2015</div>
           <div class="ped-founder__timeline-title">Director Gerente</div>
           <div class="ped-founder__timeline-org">Asociacion Grupo de Desarrollo Rural Campina Sur Cordobesa</div>
-          <p class="ped-founder__timeline-desc">Direccion durante 18 anos del principal grupo de desarrollo rural de la provincia de Cordoba. Gestion directa de +100 millones de euros en politicas europeas (LEADER, PRODER, FSE, FEDER). Coordinacion de programas de empleo, formacion y emprendimiento con impacto en +50.000 beneficiarios directos.</p>
+          <p class="ped-founder__timeline-desc">Direccion durante 18 anos del principal grupo de desarrollo local de la provincia de Cordoba. Gestion directa de +100 millones de euros en politicas europeas (LEADER, PRODER, FSE, FEDER). Coordinacion de programas de empleo, formacion y emprendimiento con impacto en +50.000 beneficiarios directos.</p>
         </div>
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">1992 – 1995</div>

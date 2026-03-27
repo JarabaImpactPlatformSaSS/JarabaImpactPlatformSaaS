@@ -424,8 +424,8 @@ msgstr "Protected Data"
 msgid "De la idea al negocio"
 msgstr "From idea to business"
 
-msgid "Desarrollo rural digital"
-msgstr "Digital rural development"
+msgid "Desarrollo local digital"
+msgstr "Digital local development"
 
 msgid "Descarga tu Kit de Impulso Digital Gratuito"
 msgstr "Download Your Free Digital Boost Kit"
@@ -712,8 +712,8 @@ msgstr "Driving talent and innovation from the territory"
 msgid "Información de la cuenta"
 msgstr "Account information"
 
-msgid "Infraestructura digital para el desarrollo rural y la transformación de territorios. Tecnología de impacto al servicio de personas, pymes y municipios."
-msgstr "Digital infrastructure for rural development and territory transformation. Impact technology serving people, SMEs and municipalities."
+msgid "Infraestructura digital para el desarrollo local y la transformación de territorios. Tecnología de impacto al servicio de personas, pymes y municipios."
+msgstr "Digital infrastructure for local development and territory transformation. Impact technology serving people, SMEs and municipalities."
 
 msgid "Infraestructura digital para la transformación que importa. Plataforma SaaS multi-tenant que sincroniza empleo, emprendimiento y comercio local con tecnología de impacto."
 msgstr "Digital infrastructure for the transformation that matters. Multi-tenant SaaS platform synchronizing employment, entrepreneurship and local commerce with impact technology."

@@ -71,7 +71,7 @@ $sobre_nosotros_html = <<<'HTML'
         </div>
         <div class="ped-card ped-card--gold-top">
           <div class="ped-card__title">Vision</div>
-          <p class="ped-card__text">Ser la infraestructura digital de referencia para el desarrollo rural sostenible en el mundo hispanohablante, conectando instituciones, empresas y personas en un ecosistema de impacto medible.</p>
+          <p class="ped-card__text">Ser la infraestructura digital de referencia para el desarrollo local sostenible en el mundo hispanohablante, conectando instituciones, empresas y personas en un ecosistema de impacto medible.</p>
         </div>
         <div class="ped-card ped-card--gold-top">
           <div class="ped-card__title">Filosofia: Sin Humo</div>
@@ -124,7 +124,7 @@ $sobre_nosotros_html = <<<'HTML'
           </div>
           <div class="ped-founder__name">Jose Jaraba Munoz</div>
           <div class="ped-founder__title">Cofundador y CEO</div>
-          <div class="ped-founder__subtitle">Jurista &middot; Experto en Desarrollo Rural Territorial &middot; +30 anos</div>
+          <div class="ped-founder__subtitle">Jurista &middot; Experto en Desarrollo Local y Territorial &middot; +30 anos</div>
           <p class="ped-founder__bio">Licenciado en Derecho por la UCO, tres Masters, doctorando y certificado EOQ Quality System Manager. Ha gestionado +100M&euro; en fondos europeos y acompanado +500 proyectos de emprendimiento y empleo en +120 municipios rurales.</p>
           <div class="ped-founder__social">
             <a href="/equipo" class="ped-founder__social-link">
@@ -241,7 +241,7 @@ $equipo_html = <<<'HTML'
         <div>
           <div class="ped-founder__name">Jose Jaraba Munoz</div>
           <div class="ped-founder__title">Cofundador y CEO</div>
-          <div class="ped-founder__subtitle">Jurista &middot; Experto en Desarrollo Rural Territorial &middot; Doctorando UCO</div>
+          <div class="ped-founder__subtitle">Jurista &middot; Experto en Desarrollo Local y Territorial &middot; Doctorando UCO</div>
           <div class="ped-founder__badges">
             <span class="ped-founder__badge">Derecho Comunitario</span>
             <span class="ped-founder__badge">Fondos Europeos</span>
@@ -250,7 +250,7 @@ $equipo_html = <<<'HTML'
             <span class="ped-founder__badge">ITIL Foundation</span>
           </div>
           <p class="ped-founder__bio">Licenciado en Derecho por la Universidad de Cordoba, con tres Masters (Gestion de Turismo Ambiental por la UPM, Gestion del Desarrollo Rural por la UCO y MBA en proceso), doctorando en la UCO y certificado EOQ Quality System Manager e ITIL Foundation. Pepe Jaraba combina una formacion juridica de alto nivel con mas de 30 anos de experiencia practica en la interseccion entre politicas publicas, fondos europeos, desarrollo territorial y tecnologia.</p>
-          <p class="ped-founder__bio">Ha dirigido grupos de desarrollo rural que han gestionado mas de 100 millones de euros en fondos europeos (LEADER, PRODER, FSE, FEDER), ha acompanado mas de 500 proyectos de emprendimiento y empleo, y ha transformado mas de 120 municipios rurales. En 2020 cofundo PED para convertir esa experiencia en tecnologia SaaS de impacto.</p>
+          <p class="ped-founder__bio">Ha dirigido grupos de desarrollo local que han gestionado mas de 100 millones de euros en fondos europeos (LEADER, PRODER, FSE, FEDER), ha acompanado mas de 500 proyectos de emprendimiento y empleo, y ha transformado mas de 120 municipios rurales. En 2020 cofundo PED para convertir esa experiencia en tecnologia SaaS de impacto.</p>
           <div class="ped-founder__social">
             <a href="https://www.linkedin.com/in/pepejaraba/" target="_blank" rel="noopener noreferrer" class="ped-founder__social-link" aria-label="Perfil de LinkedIn de Pepe Jaraba">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -315,7 +315,7 @@ $equipo_html = <<<'HTML'
           <div class="ped-founder__timeline-date">1997 &ndash; 2015</div>
           <div class="ped-founder__timeline-title">Director Gerente</div>
           <div class="ped-founder__timeline-org">Asociacion Grupo de Desarrollo Rural Campina Sur Cordobesa</div>
-          <p class="ped-founder__timeline-desc">Direccion durante 18 anos del principal grupo de desarrollo rural de la provincia de Cordoba. Gestion directa de +100 millones de euros en politicas europeas (LEADER, PRODER, FSE, FEDER). Coordinacion de programas de empleo, formacion y emprendimiento con impacto en +50.000 beneficiarios directos.</p>
+          <p class="ped-founder__timeline-desc">Direccion durante 18 anos del principal grupo de desarrollo local de la provincia de Cordoba. Gestion directa de +100 millones de euros en politicas europeas (LEADER, PRODER, FSE, FEDER). Coordinacion de programas de empleo, formacion y emprendimiento con impacto en +50.000 beneficiarios directos.</p>
         </div>
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">1992 &ndash; 1995</div>

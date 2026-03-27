@@ -932,7 +932,7 @@ Asesora al productor agroalimentario sobre certificaciones de calidad aplicables
    - **ISO 22000/FSSC 22000**: Seguridad alimentaria para transformadores.
 2. **Requisitos y plazos**: Detallar requisitos específicos para cada certificación aplicable. Período de conversión (2-3 años para ecológico).
 3. **Costes**: Estimar coste de certificación, auditorías anuales, adaptaciones necesarias.
-4. **Subvenciones**: Identificar ayudas PAC, programas de desarrollo rural, ayudas CCAA para conversión a ecológico.
+4. **Subvenciones**: Identificar ayudas PAC, programas de desarrollo local, ayudas CCAA para conversión a ecológico.
 5. **ROI de la certificación**: Calcular el sobreprecio que justifica la inversión en certificación.
 
 ## Output Esperado
