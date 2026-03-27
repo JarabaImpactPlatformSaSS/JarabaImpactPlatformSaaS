@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-26
-**Versión:** 199.0.0 (MEGAMENU-PED-CORPORATE-001 — mega menú corporativo PDE + auditoría conversión meta-sitio + aprendizaje #229)
+**Última actualización:** 2026-03-27
+**Versión:** 200.0.0 (BRAND-TERM-VALIDATOR-001 — rebrand Desarrollo Local + 3 salvaguardas deploy + aprendizaje #230)
 
 > **📋 MEGAMENU-PED-CORPORATE-001 — v168 DIRECTRICES + v151 ARQUITECTURA + v199 INDICE** (2026-03-26)
 >
@@ -1752,6 +1752,8 @@
 | [20260216-Plan_Implementacion_Tenant_Export_v1.md](./implementacion/20260216-Plan_Implementacion_Tenant_Export_v1.md) | 📦 **Tenant Export + Daily Backup** ⭐ — TenantExportRecord entity, TenantDataCollectorService (6 grupos datos), TenantExportService + QueueWorkers, 6 API REST endpoints, página frontend self-service, SCSS BEM + JS dashboard, daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente), 3 Drush commands, 8 test suites (Unit/Kernel/Functional). GDPR Art. 20 portabilidad | 2026-02-16 |
 | [2026-02-27_Casos_Exito_Clase_Mundial_Plan_Implementacion.md](./implementacion/2026-02-27_Casos_Exito_Clase_Mundial_Plan_Implementacion.md) | 🏆 **Casos de Éxito Clase Mundial** ⭐ — jaraba_success_cases module, SuccessCase ContentEntity (20+ fields), 4 view modes por meta-sitio, Controller list+detail+API, 3 Twig templates (Schema.org JSON-LD), 5 SCSS partials (glassmorphism), JS counter animation, seeder script. 26 ficheros | 2026-02-27 |
 | [2026-02-28_Plan_Implementacion_Centro_Ayuda_Clase_Mundial_v1.md](./implementacion/2026-02-28_Plan_Implementacion_Centro_Ayuda_Clase_Mundial_v1.md) | 📞 **Centro de Ayuda Clase Mundial** ⭐ — jaraba_tenant_knowledge elevado, HelpCenterController refactorizado (6 metodos), 8 categorias SaaS, 25 FAQs seed platform-wide (update_10003), busqueda unificada FAQ+KB, Schema.org FAQPage+BreadcrumbList+QAPage JSON-LD, template con trust signals+quick links+KB cross-link+CTA, SCSS ~270 LOC, JS drupalSettings+IntersectionObserver. 11 gaps RUNTIME-VERIFY-001 corregidos. 10 ficheros | 2026-02-28 |
+
+| [20260327a-Plan_Implementacion_Rebrand_Desarrollo_Local_Bio_Remedios_v1_Claude.md](./implementacion/20260327a-Plan_Implementacion_Rebrand_Desarrollo_Local_Bio_Remedios_v1_Claude.md) | **Rebrand Desarrollo Local + Bio Remedios** — Rebranding "Desarrollo Rural" → "Desarrollo Local" en 19 ficheros, 3 idiomas (ES/EN/PT-BR), Schema.org, canvas_data, content-seed. Bio Remedios reestructurada. 3 salvaguardas: BRAND-TERM-VALIDATOR-001, CONTENT-SEED-DEPLOY-001, TRANSLATION-SYNC-DEPLOY-001. 45/45 validaciones OK | 2026-03-27 |
 
 ### 6.2 Bloques de Implementación Plan Maestro v3.0 ⭐
 
