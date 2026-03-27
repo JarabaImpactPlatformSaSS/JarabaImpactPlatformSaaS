@@ -576,6 +576,14 @@ certificacion-landing:
   dependencies:
     - ecosistema_jaraba_theme/global-styling
 
+editorial-landing:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/editorial-landing.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 route-empleabilidad:
   version: 1.0.0
   css:

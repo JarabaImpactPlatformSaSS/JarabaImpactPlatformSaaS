@@ -106,6 +106,28 @@
 }
 
 // =============================================================================
+// WHATSAPP — Canal prioritario (WA-CONTEXTUAL-001)
+// =============================================================================
+
+.btn--whatsapp {
+    background: linear-gradient(135deg, var(--ej-brand-whatsapp, #25d366) 0%, color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 80%, #128c7e) 100%);
+    color: var(--ej-bg-surface, #fff);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 30%, transparent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+        flex-shrink: 0;
+    }
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 8px 25px color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 45%, transparent);
+        filter: brightness(1.05);
+    }
+}
+
+// =============================================================================
 // GHOST — Tertiary, minimal visual weight
 // =============================================================================
 

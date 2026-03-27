@@ -207,9 +207,8 @@
             {% trans %}Estamos preparando la pasarela de pago para este plan. Contactanos y te avisaremos en cuanto este disponible.{% endtrans %}
           </p>
 
-          {% set wa_num = theme_settings.whatsapp_number|default('') %}
-          {% if wa_num %}
-            <a href="https://wa.me/{{ wa_num }}?text={% trans %}Hola, me interesa el plan{% endtrans %} {{ plan.name }}"
+          {% if whatsapp_number %}
+            <a href="https://wa.me/{{ whatsapp_number }}?text={% trans %}Hola, me interesa el plan{% endtrans %} {{ plan.name }}"
                class="checkout-preview__cta"
                target="_blank"
                rel="noopener noreferrer"

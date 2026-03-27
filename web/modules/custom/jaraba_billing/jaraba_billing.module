@@ -504,6 +504,7 @@ function jaraba_billing_theme(): array {
         'is_admin' => FALSE,
         'admin_edit_url' => '',
         'contact_email' => '',
+        'whatsapp_number' => '',
       ],
       'template' => 'checkout-page',
       'path' => $themePath,

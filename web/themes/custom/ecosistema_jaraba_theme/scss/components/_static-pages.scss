@@ -52,7 +52,7 @@
     margin-bottom: var(--ej-spacing-8, 3rem);
 
     @media (min-width: 768px) {
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1fr 1.2fr;
     }
   }
 
@@ -257,5 +257,87 @@
     padding: var(--ej-spacing-8, 3rem);
     color: var(--ej-color-muted, #64748b);
     font-style: italic;
+  }
+
+  // ─── Contact page — WhatsApp-first layout (EMAIL-NOEXPOSE-001) ───
+
+  &__channel {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: var(--ej-radius-md, 12px);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-primary, #ff8c42) 4%, transparent);
+    }
+
+    &--primary {
+      background: color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 6%, transparent);
+      border: 1px solid color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 20%, transparent);
+      padding: 1.5rem;
+      border-radius: var(--ej-radius-lg, 16px);
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 10%, transparent);
+      }
+    }
+
+    &--secondary {
+      border-bottom: 1px solid var(--ej-color-card-border, #e5e7eb);
+      border-radius: 0;
+      padding-bottom: 1.5rem;
+    }
+  }
+
+  &__channel-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ej-radius-md, 12px);
+    background: color-mix(in srgb, var(--ej-color-primary, #ff8c42) 8%, transparent);
+
+    .static-page__channel--primary & {
+      background: color-mix(in srgb, var(--ej-brand-whatsapp, #25d366) 12%, transparent);
+    }
+  }
+
+  &__channel-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__channel-title {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1a1a2e);
+    margin-bottom: 0.25rem;
+  }
+
+  &__channel-desc {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, #64748b);
+    line-height: 1.5;
+    margin: 0 0 0.75rem;
+  }
+
+  &__channel-note {
+    font-size: 0.8125rem;
+    color: var(--ej-brand-whatsapp, #25d366);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__address {
+    font-style: normal;
+    font-size: 0.875rem;
+    color: var(--ej-color-body-text, #334155);
+    line-height: 1.6;
+    margin: 0;
   }
 }

@@ -1874,6 +1874,13 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
   }
 
+  // Editorial landing — body class para SCSS targeting.
+  if ($route === 'jaraba_page_builder.editorial_equilibrio_autonomo') {
+    $variables['attributes']['class'][] = 'landing-page';
+    $variables['attributes']['class'][] = 'page-editorial';
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
+  }
+
   // Item 1 — Vertical Brand: inject CSS custom properties + body class.
   if (\Drupal::hasService('entity_type.manager')) {
     try {
@@ -5653,6 +5660,11 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // Certificación → page--certificacion.html.twig (landing ZERO-REGION-001)
   if ($route === 'jaraba_page_builder.certificacion_landing') {
     $suggestions[] = 'page__certificacion';
+  }
+
+  // Editorial → page--editorial.html.twig (landing ZERO-REGION-001)
+  if ($route === 'jaraba_page_builder.editorial_equilibrio_autonomo') {
+    $suggestions[] = 'page__editorial';
   }
 
   // Onboarding wizard → page--auth.html.twig (flujo de registro)

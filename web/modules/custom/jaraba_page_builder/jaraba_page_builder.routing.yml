@@ -1045,3 +1045,26 @@ jaraba_page_builder.certificacion_submit:
   requirements:
     _access: 'TRUE'
 
+# ============================================================
+# EDITORIAL LANDING — Pagina publica libro Equilibrio Autonomo
+# Autora: Remedios Estevez Palomino
+# Publisher: Plataforma de Ecosistemas Digitales S.L.
+# ROUTE-ALIAS-COLLISION-001: /editorial/* no colisiona con page_content
+# ============================================================
+
+jaraba_page_builder.editorial_equilibrio_autonomo:
+  path: '/editorial/equilibrio-autonomo'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\EditorialLandingController::landing'
+    _title: 'Equilibrio Autonomo — Vida y Trabajo con Sentido'
+  requirements:
+    _access: 'TRUE'
+
+jaraba_page_builder.editorial_equilibrio_autonomo_submit:
+  path: '/editorial/equilibrio-autonomo/descargar'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\EditorialLandingController::submit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+

@@ -1,0 +1,456 @@
+{#
+/**
+ * @file
+ * Landing de conversion: "Equilibrio Autonomo" — Remedios Estevez Palomino.
+ *
+ * LANDING-CONVERSION-SCORE-001: 10 secciones, 15 criterios, 4 CTAs.
+ * NO-HARDCODE-PRICE-001: Precios desde variables del controller.
+ * FUNNEL-COMPLETENESS-001: data-track-cta en todos los CTAs.
+ * ICON-CONVENTION-001: jaraba_icon() con variant duotone.
+ *
+ * @see EditorialLandingController::landing()
+ */
+#}
+
+{# ═══════════ SCHEMA.ORG JSON-LD ═══════════ #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "{{ hero.book_title }} — {{ hero.book_subtitle }}",
+  "author": { "@type": "Person", "name": "{{ autora.name }}" },
+  "isbn": "{{ formatos.cards.0.isbn }}",
+  "numberOfPages": {{ formatos.pages }},
+  "bookFormat": ["https://schema.org/Paperback", "https://schema.org/EBook"],
+  "publisher": { "@type": "Organization", "name": "{{ formatos.publisher }}" },
+  "offers": [
+    {% for card in formatos.cards %}{% if card.price_raw %}
+    { "@type": "Offer", "price": "{{ card.price_raw }}", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" }{% if not loop.last %},{% endif %}
+    {% endif %}{% endfor %}
+  ],
+  "inLanguage": "es",
+  "datePublished": "2025"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ autora.name }}",
+  "jobTitle": "{{ autora.job_title }}",
+  "description": "{{ autora.bio_short }}",
+  "worksFor": { "@type": "Organization", "name": "{{ formatos.publisher }}" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq.items %}
+    { "@type": "Question", "name": "{{ item.q }}", "acceptedAnswer": { "@type": "Answer", "text": "{{ item.a }}" } }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+
+{# ═══════════ S1 — HERO ═══════════ #}
+<section class="editorial-hero" aria-labelledby="editorial-hero-title">
+  <div class="editorial-container">
+    <div class="editorial-hero__layout">
+      <div class="editorial-hero__book">
+        <div class="editorial-hero__book-3d">
+          <img src="{{ hero.book_cover }}"
+               alt="{% trans %}Portada del libro Equilibrio Autonomo{% endtrans %}"
+               class="editorial-hero__book-cover"
+               width="300" height="450"
+               loading="eager">
+        </div>
+      </div>
+
+      <div class="editorial-hero__content">
+        <span class="editorial-hero__eyebrow">
+          {{ jaraba_icon('content', 'book-open', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
+          {{ hero.eyebrow }}
+        </span>
+        <h1 id="editorial-hero-title" class="editorial-hero__title">
+          {{ hero.title }}
+        </h1>
+        <p class="editorial-hero__subtitle">{{ hero.subtitle }}</p>
+
+        <div class="editorial-hero__author-badge">
+          <img src="{{ hero.author_photo }}"
+               alt="{{ autora.name }}"
+               class="editorial-hero__author-avatar"
+               width="48" height="48"
+               loading="eager">
+          <div class="editorial-hero__author-info">
+            <span class="editorial-hero__author-name">{{ autora.name }}</span>
+            <span class="editorial-hero__author-title">{{ autora.credential_short }}</span>
+          </div>
+        </div>
+
+        <div class="editorial-hero__actions">
+          {% if hero.cta_primary %}
+            <a href="{{ hero.cta_primary.url }}"
+               class="editorial-btn editorial-btn--primary"
+               data-track-cta="{{ hero.cta_primary.track }}"
+               data-track-position="hero"
+               {% if hero.cta_primary.external %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              {{ hero.cta_primary.text }}
+            </a>
+          {% endif %}
+          {% if hero.cta_secondary %}
+            <a href="{{ hero.cta_secondary.url }}"
+               class="editorial-btn editorial-btn--secondary"
+               data-track-cta="{{ hero.cta_secondary.track }}"
+               data-track-position="hero">
+              {{ hero.cta_secondary.text }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S2 — PROBLEMA ═══════════ #}
+<section class="editorial-section editorial-problema" id="problema" aria-labelledby="editorial-problema-title">
+  <div class="editorial-container">
+    <h2 id="editorial-problema-title" class="editorial-section__title">{{ problema.title }}</h2>
+    <p class="editorial-section__intro">{{ problema.intro }}</p>
+
+    <div class="editorial-problema__grid">
+      {% for item in problema.items %}
+        <div class="editorial-problema__card">
+          <div class="editorial-problema__icon">
+            {{ jaraba_icon(item.icon.category, item.icon.name, { variant: 'duotone', size: '32px', color: 'naranja-impulso' }) }}
+          </div>
+          <span class="editorial-problema__stat" data-counter-target="{{ item.stat|replace({'%': ''}) }}">{{ item.stat }}</span>
+          <strong class="editorial-problema__label">{{ item.label }}</strong>
+          <p class="editorial-problema__desc">{{ item.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S3 — SOLUCION ═══════════ #}
+<section class="editorial-section editorial-solucion" id="solucion" aria-labelledby="editorial-solucion-title">
+  <div class="editorial-container">
+    <h2 id="editorial-solucion-title" class="editorial-section__title">{{ solucion.title }}</h2>
+    <p class="editorial-section__intro">{{ solucion.intro }}</p>
+
+    <div class="editorial-solucion__pillars">
+      {% for pillar in solucion.pillars %}
+        <div class="editorial-solucion__pillar editorial-solucion__pillar--{{ pillar.color }}">
+          <div class="editorial-solucion__pillar-icon">
+            {{ jaraba_icon(pillar.icon.category, pillar.icon.name, { variant: 'duotone', size: '40px', color: pillar.color }) }}
+          </div>
+          <h3 class="editorial-solucion__pillar-title">{{ pillar.title }}</h3>
+          <p class="editorial-solucion__pillar-desc">{{ pillar.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if solucion.cta %}
+      <div class="editorial-section__cta">
+        <a href="{{ solucion.cta.url }}"
+           class="editorial-btn editorial-btn--secondary"
+           data-track-cta="{{ solucion.cta.track }}"
+           data-track-position="solucion">
+          {{ solucion.cta.text }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{# ═══════════ S4 — CONTENIDO ═══════════ #}
+<section class="editorial-section editorial-contenido" id="contenido" aria-labelledby="editorial-contenido-title">
+  <div class="editorial-container">
+    <h2 id="editorial-contenido-title" class="editorial-section__title">{{ contenido.title }}</h2>
+    <p class="editorial-section__intro">{{ contenido.intro }}</p>
+
+    <div class="editorial-contenido__parts">
+      {% for part in contenido.parts %}
+        <div class="editorial-contenido__part">
+          <div class="editorial-contenido__part-header">
+            <span class="editorial-contenido__part-number">{{ part.number }}</span>
+            <div>
+              <h3 class="editorial-contenido__part-title">{{ part.title }}</h3>
+              <span class="editorial-contenido__part-subtitle">{{ part.subtitle }}</span>
+            </div>
+          </div>
+          <ul class="editorial-contenido__chapters">
+            {% for chapter in part.chapters %}
+              <li class="editorial-contenido__chapter">
+                {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
+                {{ chapter }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S5 — AUTORA ═══════════ #}
+<section class="editorial-section editorial-autora" id="autora" aria-labelledby="editorial-autora-title">
+  <div class="editorial-container">
+    <h2 id="editorial-autora-title" class="editorial-section__title">{% trans %}Sobre la autora{% endtrans %}</h2>
+
+    <div class="editorial-autora__layout">
+      <div class="editorial-autora__photo-wrapper">
+        <img src="{{ autora.photo }}"
+             alt="{{ autora.name }}"
+             class="editorial-autora__photo"
+             width="320" height="320"
+             loading="lazy">
+      </div>
+
+      <div class="editorial-autora__content">
+        <h3 class="editorial-autora__name">{{ autora.name }}</h3>
+        <p class="editorial-autora__credential">{{ autora.credential_short }}</p>
+        <p class="editorial-autora__bio">{{ autora.bio }}</p>
+
+        <ul class="editorial-autora__credentials">
+          {% for credential in autora.credentials %}
+            <li class="editorial-autora__credential-item">
+              {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}
+              {{ credential }}
+            </li>
+          {% endfor %}
+        </ul>
+
+        {% if autora.social %}
+          <div class="editorial-autora__social">
+            {% if autora.social.linkedin %}
+              <a href="{{ autora.social.linkedin }}" target="_blank" rel="noopener noreferrer"
+                 class="editorial-autora__social-link" aria-label="LinkedIn">
+                {{ jaraba_icon('social', 'linkedin', { variant: 'duotone', size: '20px' }) }}
+              </a>
+            {% endif %}
+            {% if autora.social.instagram %}
+              <a href="{{ autora.social.instagram }}" target="_blank" rel="noopener noreferrer"
+                 class="editorial-autora__social-link" aria-label="Instagram">
+                {{ jaraba_icon('social', 'instagram', { variant: 'duotone', size: '20px' }) }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S6 — TESTIMONIOS ═══════════ #}
+<section class="editorial-section editorial-testimonios" id="testimonios" aria-labelledby="editorial-testimonios-title">
+  <div class="editorial-container">
+    <h2 id="editorial-testimonios-title" class="editorial-section__title">{{ testimonios.title }}</h2>
+    <p class="editorial-section__intro">{{ testimonios.intro }}</p>
+
+    <div class="editorial-testimonios__grid">
+      {% for item in testimonios.items %}
+        <div class="editorial-testimonios__card">
+          <div class="editorial-testimonios__avatar">
+            {{ jaraba_icon(item.icon.category, item.icon.name, { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
+          </div>
+          <blockquote class="editorial-testimonios__quote">
+            <p>{{ item.quote }}</p>
+          </blockquote>
+          <div class="editorial-testimonios__info">
+            <strong class="editorial-testimonios__name">{{ item.nombre }}</strong>
+            <span class="editorial-testimonios__rol">{{ item.rol }}</span>
+          </div>
+          <span class="editorial-testimonios__resultado">
+            {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
+            {{ item.resultado }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S7 — COMPARATIVA ═══════════ #}
+<section class="editorial-section editorial-comparativa" id="comparativa" aria-labelledby="editorial-comparativa-title">
+  <div class="editorial-container">
+    <h2 id="editorial-comparativa-title" class="editorial-section__title">{{ comparativa.title }}</h2>
+
+    <div class="editorial-comparativa__table-wrapper">
+      <table class="editorial-comparativa__table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans %}Caracteristica{% endtrans %}</th>
+            <th scope="col">{{ comparativa.columns.diy }}</th>
+            <th scope="col">{{ comparativa.columns.generic }}</th>
+            <th scope="col" class="editorial-comparativa__highlight">{{ comparativa.columns.book }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for feature in comparativa.features %}
+            <tr>
+              <td>{{ feature.label }}</td>
+              <td class="editorial-comparativa__check">
+                {% if feature.diy %}
+                  {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '20px', color: 'verde-innovacion' }) }}
+                {% elseif feature.diy == 'partial' %}
+                  {{ jaraba_icon('ui', 'minus-circle', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'x-circle', { variant: 'duotone', size: '20px', color: 'neutral' }) }}
+                {% endif %}
+              </td>
+              <td class="editorial-comparativa__check">
+                {% if feature.generic is same as(true) %}
+                  {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '20px', color: 'verde-innovacion' }) }}
+                {% elseif feature.generic == 'partial' %}
+                  {{ jaraba_icon('ui', 'minus-circle', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
+                {% else %}
+                  {{ jaraba_icon('ui', 'x-circle', { variant: 'duotone', size: '20px', color: 'neutral' }) }}
+                {% endif %}
+              </td>
+              <td class="editorial-comparativa__check editorial-comparativa__highlight">
+                {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '20px', color: 'verde-innovacion' }) }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S8 — FORMATOS (PRICING) ═══════════ #}
+<section class="editorial-section editorial-formatos" id="formatos" aria-labelledby="editorial-formatos-title">
+  <div class="editorial-container">
+    <h2 id="editorial-formatos-title" class="editorial-section__title">{{ formatos.title }}</h2>
+    <p class="editorial-section__intro">{{ formatos.intro }}</p>
+
+    <div class="editorial-formatos__cards">
+      {% for card in formatos.cards %}
+        <div class="editorial-formatos__card{% if card.highlighted %} editorial-formatos__card--highlighted{% endif %}">
+          {% if card.badge %}
+            <span class="editorial-formatos__badge">{{ card.badge }}</span>
+          {% endif %}
+
+          <div class="editorial-formatos__card-icon">
+            {{ jaraba_icon(card.icon.category, card.icon.name, { variant: 'duotone', size: '36px', color: card.highlighted ? 'naranja-impulso' : 'azul-corporativo' }) }}
+          </div>
+
+          <h3 class="editorial-formatos__card-title">{{ card.format }}</h3>
+
+          <div class="editorial-formatos__price">
+            <span class="editorial-formatos__price-amount">{{ card.price }} &euro;</span>
+            {% if card.price_regular is defined and card.price_regular %}
+              <span class="editorial-formatos__price-regular">{{ card.price_regular }} &euro;</span>
+            {% endif %}
+          </div>
+
+          <ul class="editorial-formatos__features">
+            {% for feature in card.features %}
+              <li>
+                {{ jaraba_icon('ui', 'check', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
+                {{ feature }}
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% if card.isbn %}
+            <p class="editorial-formatos__isbn">ISBN: {{ card.isbn }}</p>
+          {% endif %}
+
+          <a href="{{ card.cta_url }}"
+             class="editorial-btn{% if card.highlighted %} editorial-btn--primary{% else %} editorial-btn--secondary{% endif %}"
+             data-track-cta="{{ card.cta_track }}"
+             data-track-position="formatos"
+             {% if 'amazon' in card.cta_url %}target="_blank" rel="noopener noreferrer"{% endif %}>
+            {{ card.cta_text }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S9 — FAQ ═══════════ #}
+<section class="editorial-section editorial-faq" id="faq" aria-labelledby="editorial-faq-title">
+  <div class="editorial-container">
+    <h2 id="editorial-faq-title" class="editorial-section__title">{{ faq.title }}</h2>
+
+    <div class="editorial-faq__list">
+      {% for item in faq.items %}
+        <details class="editorial-faq__item">
+          <summary class="editorial-faq__question">
+            {{ item.q }}
+            {{ jaraba_icon('ui', 'chevron-down', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
+          </summary>
+          <div class="editorial-faq__answer">
+            <p>{{ item.a }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════ S10 — CTA FINAL ═══════════ #}
+<section class="editorial-section editorial-cta-final" id="descargar" aria-labelledby="editorial-cta-title">
+  <div class="editorial-container">
+    <h2 id="editorial-cta-title" class="editorial-section__title">{{ cta_final.title }}</h2>
+    <p class="editorial-section__intro">{{ cta_final.subtitle }}</p>
+
+    <form class="editorial-form" action="{{ cta_final.form_action }}" method="post">
+      {# Honeypot anti-spam #}
+      <input type="text" name="website" style="display: none;" tabindex="-1" autocomplete="off">
+
+      <div class="editorial-form__fields">
+        <div class="editorial-form__field">
+          <label for="editorial-nombre" class="visually-hidden">{{ cta_final.form_fields.nombre }}</label>
+          <input type="text" id="editorial-nombre" name="nombre"
+                 placeholder="{{ cta_final.form_fields.nombre }}"
+                 required class="editorial-form__input">
+        </div>
+        <div class="editorial-form__field">
+          <label for="editorial-email" class="visually-hidden">{{ cta_final.form_fields.email }}</label>
+          <input type="email" id="editorial-email" name="email"
+                 placeholder="{{ cta_final.form_fields.email }}"
+                 required class="editorial-form__input">
+        </div>
+      </div>
+
+      <div class="editorial-form__consent">
+        <label class="editorial-form__checkbox">
+          <input type="checkbox" name="rgpd" value="1" required>
+          <span>{{ cta_final.form_fields.rgpd }}</span>
+        </label>
+      </div>
+
+      <button type="submit" class="editorial-btn editorial-btn--primary editorial-form__submit"
+              data-track-cta="editorial_cta_lead_magnet"
+              data-track-position="cta_final">
+        {{ cta_final.form_fields.submit }}
+      </button>
+
+      <div class="editorial-form__message" role="alert" aria-live="polite"></div>
+    </form>
+
+    {% if cta_final.whatsapp %}
+      <div class="editorial-cta-final__whatsapp">
+        <a href="{{ cta_final.whatsapp.url }}"
+           class="editorial-btn editorial-btn--whatsapp"
+           data-track-cta="{{ cta_final.whatsapp.track }}"
+           data-track-position="cta_final"
+           target="_blank" rel="noopener noreferrer">
+          {{ jaraba_icon('social', 'whatsapp', { variant: 'duotone', size: '20px', color: 'white' }) }}
+          {{ cta_final.whatsapp.text }}
+        </a>
+      </div>
+    {% endif %}
+
+    <p class="editorial-cta-final__closing">{{ cta_final.closing }}</p>
+  </div>
+</section>

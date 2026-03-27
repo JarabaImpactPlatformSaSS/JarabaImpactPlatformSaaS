@@ -525,3 +525,12 @@ certificacion-form:
   dependencies:
     - core/drupal
     - core/drupalSettings
+
+# Formulario lead magnet + counters editorial (/editorial/*).
+editorial-form:
+  version: 1.0
+  js:
+    js/editorial-landing.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

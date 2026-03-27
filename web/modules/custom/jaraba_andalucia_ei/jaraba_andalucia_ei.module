@@ -354,6 +354,7 @@ function jaraba_andalucia_ei_theme(): array {
         'dashboard_url' => '',
         'module_path' => '',
         'incentivo' => 528,
+        'share_url' => '',
       ],
       'template' => 'solicitud-confirmada',
     ],
@@ -481,6 +482,16 @@ function jaraba_andalucia_ei_preprocess_prueba_gratuita_landing(array &$variable
  */
 function jaraba_andalucia_ei_preprocess_andalucia_ei_enlaces(array &$variables): void {
   $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for solicitud_confirmada.
+ *
+ * CONTACT-SSOT-001: Inyecta share_url desde ruta canonica (no hardcoded).
+ */
+function jaraba_andalucia_ei_preprocess_solicitud_confirmada(array &$variables): void {
+  $url = Url::fromRoute('jaraba_andalucia_ei.reclutamiento', [], ['absolute' => TRUE]);
+  $variables['share_url'] = $url->toString();
 }
 
 /**

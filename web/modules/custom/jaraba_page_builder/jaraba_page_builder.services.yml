@@ -289,3 +289,20 @@ services:
       - '@?ecosistema_jaraba_core.tenant_context'
     tags:
       - { name: ecosistema_jaraba_core.daily_action }
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EDITORIAL LANDING — Setup Wizard + Daily Action (__global__)
+  # Pagina editorial "Equilibrio Autonomo" de Remedios Estevez.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  jaraba_page_builder.setup_wizard.configurar_editorial:
+    class: Drupal\jaraba_page_builder\SetupWizard\ConfigurarEditorialStep
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_page_builder.daily_action.revisar_editorial:
+    class: Drupal\jaraba_page_builder\DailyActions\RevisarEditorialAction
+    arguments:
+      - '@current_user'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }

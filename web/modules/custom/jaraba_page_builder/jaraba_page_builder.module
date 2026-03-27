@@ -157,6 +157,23 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'certificacion-landing',
     ],
+    // Editorial Landing — Libro "Equilibrio Autonomo" de Remedios Estevez.
+    // 10 secciones de conversion clase mundial (LANDING-CONVERSION-SCORE-001).
+    'editorial_landing' => [
+      'variables' => [
+        'hero' => [],
+        'problema' => [],
+        'solucion' => [],
+        'contenido' => [],
+        'autora' => [],
+        'testimonios' => [],
+        'comparativa' => [],
+        'formatos' => [],
+        'faq' => [],
+        'cta_final' => [],
+      ],
+      'template' => 'editorial-landing',
+    ],
     // Dashboard de Analytics - Gap C.
     'analytics_dashboard' => [
       'variables' => [

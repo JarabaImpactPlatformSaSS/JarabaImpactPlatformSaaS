@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * page--editorial.html.twig - Landing Editorial Equilibrio Autonomo.
+ *
+ * ZERO-REGION-001: usa {{ clean_content }}, sin page.content ni bloques.
+ * RUTA: /editorial/equilibrio-autonomo
+ *
+ * @see EditorialLandingController::landing()
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_core/global') }}
+{{ attach_library('ecosistema_jaraba_theme/editorial-landing') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--landing page-wrapper--editorial">
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings,
+    available_languages: available_languages|default([]),
+    current_langcode: current_langcode|default('es'),
+    language_prefix: language_prefix|default(''),
+    language_links: language_links|default({}),
+    mega_menu_columns: mega_menu_columns|default([]),
+  } only %}
+
+  <main id="main-content" class="landing-main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {{ clean_content }}
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings,
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    logged_in: logged_in,
+    theme_settings: theme_settings,
+  } only %}
+
+</div>

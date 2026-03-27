@@ -121,7 +121,8 @@ class CheckoutController extends ControllerBase {
       '#promo_cta' => (string) ($this->config('ecosistema_jaraba_theme.settings')->get('promo_banner_cta') ?? ''),
       '#is_admin' => $isAdmin,
       '#admin_edit_url' => $adminEditUrl,
-      '#contact_email' => (string) (theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: ''),
+      '#contact_email' => (string) ($this->config('ecosistema_jaraba_theme.settings')->get('contact_email') ?? ''),
+      '#whatsapp_number' => (string) ($this->config('ecosistema_jaraba_theme.settings')->get('whatsapp_number') ?? ''),
       '#cache' => [
         'max-age' => 0,
       ],
