@@ -785,6 +785,9 @@ if [ "$MODE" = "full" ]; then
   run_check "BRAND-TERM-VALIDATOR-001" "Obsolete brand terms detection (Desarrollo Rural → Local)" \
     php "$PROJECT_ROOT/scripts/validation/validate-brand-terms.php"
 
+  run_check "CERTIFICATION-INTEGRITY-001" "Certification system integrity (entity, access, wizard, bridge)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-certification-integrity.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
