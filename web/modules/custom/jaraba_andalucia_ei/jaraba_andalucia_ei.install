@@ -2356,3 +2356,40 @@ function jaraba_andalucia_ei_update_10037(): string {
     throw new \RuntimeException('Error installing ClienteParticipanteEi: ' . $e->getMessage(), 0, $e);
   }
 }
+
+/**
+ * Add popup dual config keys (POPUP-DUAL-SELECTOR-001).
+ *
+ * CONFIG-INSTALL-DRIFT-001: Nuevas keys en config/install DEBEN tener
+ * hook_update_N() que las inyecte en instalaciones existentes.
+ * Sin este hook, la config activa en BD no tiene las keys y el popup
+ * dual no funciona — gap "código existe vs usuario experimenta".
+ */
+function jaraba_andalucia_ei_update_10038(): string {
+  try {
+    $config = \Drupal::configFactory()->getEditable('jaraba_andalucia_ei.settings');
+    $defaults = [
+      'popup_delay_ms' => 3000,
+      'tasa_insercion_1e' => 46,
+      'popup_negocio_enabled' => TRUE,
+      'popup_servicios_count' => 5,
+      'popup_valor_mercado_anual' => 2400,
+    ];
+    $added = [];
+    foreach ($defaults as $key => $value) {
+      if ($config->get($key) === NULL) {
+        $config->set($key, $value);
+        $added[] = $key;
+      }
+    }
+    $config->save();
+
+    if (empty($added)) {
+      return 'Popup dual config: all keys already exist.';
+    }
+    return 'Popup dual config: added ' . implode(', ', $added) . '.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Error adding popup dual config: ' . $e->getMessage(), 0, $e);
+  }
+}

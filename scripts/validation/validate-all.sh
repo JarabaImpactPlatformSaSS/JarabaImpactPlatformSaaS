@@ -582,6 +582,9 @@ if [ "$MODE" = "full" ]; then
   run_check "POPUP-DUAL-SELECTOR-001" "Popup dual integrity (participante+negocio)" \
     php "$SCRIPT_DIR/validate-popup-dual-integrity.php"
 
+  warn_check "CONFIG-INSTALL-DRIFT-001" "Config install vs schema drift" \
+    php "$SCRIPT_DIR/validate-config-install-drift.php"
+
   run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
     php "$SCRIPT_DIR/validate-copilot-response-quality.php"
 
