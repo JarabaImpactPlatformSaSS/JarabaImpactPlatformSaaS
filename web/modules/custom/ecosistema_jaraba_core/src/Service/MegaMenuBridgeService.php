@@ -496,8 +496,7 @@ class MegaMenuBridgeService {
             'icon_cat' => 'business',
             'icon_name' => 'rocket',
             'color' => 'azul-corporativo',
-            // URL absoluta cross-domain a jarabaimpact.com.
-            'url' => 'https://jarabaimpact.com',
+            'url' => '/',
           ],
         ],
       ],
