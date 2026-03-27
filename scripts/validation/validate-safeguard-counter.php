@@ -186,7 +186,7 @@ if (!empty($warnings)) {
 if (!empty($errors)) {
   echo "\nERRORES:\n";
   foreach ($errors as $e) {
-    echo "  x  {$e}\n";
+    echo "  [ERROR] {$e}\n";
   }
   exit(1);
 }
