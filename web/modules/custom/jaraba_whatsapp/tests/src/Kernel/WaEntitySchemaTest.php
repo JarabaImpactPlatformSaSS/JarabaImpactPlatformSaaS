@@ -52,7 +52,7 @@ class WaEntitySchemaTest extends TestCase {
     $ref = new \ReflectionClass($class);
     $doc = $ref->getDocComment();
     self::assertIsString($doc);
-    self::assertStringContainsString('@ContentEntityType', $doc);
+    self::assertStringContainsString('@ConfigEntityType', $doc);
     self::assertStringContainsString('wa_template', $doc);
   }
 
