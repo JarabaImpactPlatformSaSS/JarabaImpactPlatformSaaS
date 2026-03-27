@@ -1948,4 +1948,288 @@
     font-size: 0.78rem;
     padding: 0.4rem 1rem;
   }
+
+  // Comparativa: stack en móvil
+  .aei-rec__comparativa-table {
+    thead {
+      display: none;
+    }
+
+    tbody,
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+
+      &::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ej-text-secondary, #6B7280);
+        margin-bottom: 0.25rem;
+      }
+    }
+
+    .aei-rec__comparativa-td--feature {
+      background: var(--ej-azul-corporativo, #233D63);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    .aei-rec__comparativa-td--highlight {
+      background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 8%, transparent);
+      border-left: 4px solid var(--ej-verde-innovacion, #00A9A5);
+    }
+  }
+}
+
+// =============================================================================
+// COMPARATIVA TABLE — Premium class-world design
+// Patrón: Feature rows con columna destacada (Stripe/Linear inspired)
+// =============================================================================
+
+.aei-rec__comparativa {
+  padding: 4.5rem 1.5rem;
+  background: var(--ej-background, #FAFAFA);
+}
+
+.aei-rec__comparativa-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 2.5rem;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent),
+    0 8px 24px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 8%, transparent);
+  background: #fff;
+}
+
+.aei-rec__comparativa-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+// ─── Header ───
+.aei-rec__comparativa-th {
+  padding: 1.25rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  vertical-align: bottom;
+  background: var(--ej-azul-corporativo, #233D63);
+  color: #fff;
+  border-bottom: 2px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 80%, #000);
+  white-space: nowrap;
+
+  &--feature {
+    text-align: left;
+    width: 22%;
+    min-width: 160px;
+    border-top-left-radius: 16px;
+  }
+
+  &--highlight {
+    background: var(--ej-verde-innovacion, #00A9A5);
+    position: relative;
+    border-top-right-radius: 0;
+    min-width: 200px;
+    width: 30%;
+  }
+}
+
+.aei-rec__comparativa-badge {
+  display: inline-block;
+  background: #fff;
+  color: var(--ej-verde-innovacion, #00A9A5);
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  margin-bottom: 0.4rem;
+}
+
+// ─── Body rows ───
+.aei-rec__comparativa-row {
+  transition: background-color 200ms ease;
+
+  &:nth-child(even) {
+    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 2.5%, transparent);
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 6%, transparent);
+  }
+
+  &:last-child td:first-child {
+    border-bottom-left-radius: 16px;
+  }
+
+  &:last-child td:last-child {
+    border-bottom-right-radius: 16px;
+  }
+}
+
+.aei-rec__comparativa-td {
+  padding: 1rem;
+  vertical-align: middle;
+  text-align: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 6%, transparent);
+  color: var(--ej-text-primary, #1E293B);
+
+  span {
+    display: inline;
+    vertical-align: middle;
+  }
+
+  &--feature {
+    text-align: left;
+    font-weight: 600;
+    color: var(--ej-azul-corporativo, #233D63);
+    background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 3%, transparent);
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  &--highlight {
+    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent);
+    font-weight: 600;
+    color: var(--ej-text-primary, #1E293B);
+    border-left: 3px solid var(--ej-verde-innovacion, #00A9A5);
+    border-right: 3px solid var(--ej-verde-innovacion, #00A9A5);
+  }
+}
+
+// ─── Iconos semánticos (check / partial / cross) ───
+.aei-rec__comparativa-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+
+  &--check {
+    background: var(--ej-verde-innovacion, #00A9A5);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 7px;
+      width: 5px;
+      height: 9px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  &--partial {
+    background: var(--ej-naranja-impulso, #FF8C42);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 9px;
+      left: 5px;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+  }
+
+  &--cross {
+    background: color-mix(in srgb, #EF4444 85%, transparent);
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 9px;
+      left: 5px;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+
+    &::before {
+      transform: rotate(45deg);
+    }
+
+    &::after {
+      transform: rotate(-45deg);
+    }
+  }
+}
+
+// ─── CTA wrap bajo tabla ───
+.aei-rec__comparativa-cta-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+// ─── Fila de veredicto final ───
+.aei-rec__comparativa-row--verdict {
+  background: color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 4%, transparent) !important;
+
+  .aei-rec__comparativa-td--feature {
+    background: var(--ej-azul-corporativo, #233D63);
+    color: #fff;
+  }
+}
+
+.aei-rec__comparativa-td--verdict {
+  font-size: 0.82rem;
+  color: var(--ej-text-secondary, #6B7280);
+  border-bottom: none;
+}
+
+.aei-rec__comparativa-td--verdict-win {
+  background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 12%, transparent) !important;
+  color: var(--ej-verde-innovacion, #00A9A5);
+  border-bottom: none;
+  font-size: 0.95rem;
+
+  strong {
+    color: var(--ej-verde-innovacion, #00A9A5);
+  }
+}
+
+.aei-rec__comparativa-whatsapp {
+  font-size: 0.9rem;
 }

@@ -367,7 +367,7 @@
           ] %}
           {% for row in rows %}
             <tr class="aei-rec__comparativa-row">
-              <td class="aei-rec__comparativa-td aei-rec__comparativa-td--feature">{{ row.feature }}</td>
+              <td class="aei-rec__comparativa-td aei-rec__comparativa-td--feature" data-label="{{ 'Característica'|t }}">{{ row.feature }}</td>
               <td class="aei-rec__comparativa-td aei-rec__comparativa-td--highlight" data-label="{{ 'T-Acompañamos'|t }}">
                 <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.ours_icon }}" aria-hidden="true"></span>
                 <span>{{ row.ours }}</span>
@@ -376,12 +376,27 @@
                 <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.sae_icon }}" aria-hidden="true"></span>
                 <span>{{ row.sae }}</span>
               </td>
-              <td class="aei-rec__comparativa-td" data-label="{{ 'Academia'|t }}">
+              <td class="aei-rec__comparativa-td" data-label="{{ 'Academia privada'|t }}">
                 <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--{{ row.private_icon }}" aria-hidden="true"></span>
                 <span>{{ row.private }}</span>
               </td>
             </tr>
           {% endfor %}
+          <tr class="aei-rec__comparativa-row aei-rec__comparativa-row--verdict">
+            <td class="aei-rec__comparativa-td aei-rec__comparativa-td--feature" data-label="{{ 'Veredicto'|t }}">
+              <strong>{% trans %}Veredicto{% endtrans %}</strong>
+            </td>
+            <td class="aei-rec__comparativa-td aei-rec__comparativa-td--highlight aei-rec__comparativa-td--verdict-win" data-label="{{ 'T-Acompañamos'|t }}">
+              <span class="aei-rec__comparativa-icon aei-rec__comparativa-icon--check" aria-hidden="true"></span>
+              <strong>{% trans %}La opción más completa{% endtrans %}</strong>
+            </td>
+            <td class="aei-rec__comparativa-td aei-rec__comparativa-td--verdict" data-label="{{ 'Curso SAE'|t }}">
+              {% trans %}Solo formación básica{% endtrans %}
+            </td>
+            <td class="aei-rec__comparativa-td aei-rec__comparativa-td--verdict" data-label="{{ 'Academia privada'|t }}">
+              {% trans %}Alto coste, sin seguimiento{% endtrans %}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
