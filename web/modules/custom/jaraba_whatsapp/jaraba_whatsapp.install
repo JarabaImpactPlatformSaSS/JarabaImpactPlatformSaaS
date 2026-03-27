@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall hooks for jaraba_whatsapp.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * UPDATE-HOOK-REQUIRED-001: Install entity types on module install.
+ */
+function jaraba_whatsapp_install(): void {
+  $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+  // Install WaConversation entity type.
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  foreach (['wa_conversation', 'wa_message'] as $entityTypeId) {
+    if ($entityTypeManager->hasDefinition($entityTypeId)) {
+      $entityType = $entityTypeManager->getDefinition($entityTypeId);
+      if ($entityType !== NULL) {
+        $entityDefinitionUpdateManager->installEntityType($entityType);
+      }
+    }
+  }
+}
+
+/**
+ * Install WaConversation and WaMessage entity types.
+ */
+function jaraba_whatsapp_update_10001(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    foreach (['wa_conversation', 'wa_message'] as $entityTypeId) {
+      if ($entityTypeManager->hasDefinition($entityTypeId)) {
+        $entityType = $entityTypeManager->getDefinition($entityTypeId);
+        if ($entityType !== NULL) {
+          $entityDefinitionUpdateManager->installEntityType($entityType);
+        }
+      }
+    }
+
+    return 'WaConversation and WaMessage entity types installed.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to install WhatsApp entity types: ' . $e->getMessage(), 0, $e);
+  }
+}
+
+/**
+ * Install WaTemplate config entity type.
+ */
+function jaraba_whatsapp_update_10002(): string {
+  try {
+    $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if ($entityTypeManager->hasDefinition('wa_template')) {
+      $entityType = $entityTypeManager->getDefinition('wa_template');
+      if ($entityType !== NULL) {
+        $entityDefinitionUpdateManager->installEntityType($entityType);
+      }
+    }
+
+    return 'WaTemplate config entity type installed.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to install WaTemplate entity type: ' . $e->getMessage(), 0, $e);
+  }
+}

@@ -26,9 +26,11 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 MODULES_DIR="$PROJECT_ROOT/web/modules/custom"
 CORE_EXTENSION="$PROJECT_ROOT/config/sync/core.extension.yml"
 
-# Modulos DEPRECATED que se excluyen del check
+# Modulos DEPRECATED o PENDIENTES DE HABILITAR que se excluyen del check.
+# jaraba_whatsapp: Módulo nuevo pendiente de drush en tras configurar Meta Business Manager.
 DEPRECATED_MODULES=(
   "jaraba_blog"
+  "jaraba_whatsapp"
 )
 
 errors=0

@@ -1,0 +1,21 @@
+administer whatsapp:
+  title: 'Administrar WhatsApp'
+  description: 'Configurar integracion WhatsApp, templates y parametros del agente IA.'
+  restrict access: true
+
+access whatsapp panel:
+  title: 'Acceder al panel WhatsApp'
+  description: 'Ver conversaciones y estadisticas del agente WhatsApp.'
+
+manage whatsapp conversations:
+  title: 'Gestionar conversaciones WhatsApp'
+  description: 'Responder, escalar y cerrar conversaciones WhatsApp.'
+
+view whatsapp conversations:
+  title: 'Ver conversaciones WhatsApp'
+  description: 'Ver el listado y detalle de conversaciones WhatsApp.'
+
+delete whatsapp data:
+  title: 'Eliminar datos WhatsApp (RGPD)'
+  description: 'Ejecutar supresion y anonimizacion de datos de conversaciones.'
+  restrict access: true

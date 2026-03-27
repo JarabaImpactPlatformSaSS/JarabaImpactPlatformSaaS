@@ -1,0 +1,140 @@
+services:
+  logger.channel.jaraba_whatsapp:
+    parent: logger.channel_base
+    arguments: ['jaraba_whatsapp']
+
+  # =========================================================================
+  # Core Services
+  # =========================================================================
+
+  jaraba_whatsapp.api_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppApiService
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.conversation_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppConversationService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_whatsapp.api_service'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.escalation_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppEscalationService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_whatsapp.conversation_service'
+      - '@jaraba_whatsapp.api_service'
+      - '@plugin.manager.mail'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.crm_bridge_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppCrmBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.template_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppTemplateService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_whatsapp.api_service'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.follow_up_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppFollowUpService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_whatsapp.conversation_service'
+      - '@jaraba_whatsapp.template_service'
+      - '@logger.channel.jaraba_whatsapp'
+
+  jaraba_whatsapp.encryption_service:
+    class: Drupal\jaraba_whatsapp\Service\WhatsAppEncryptionService
+    arguments:
+      - '@logger.channel.jaraba_whatsapp'
+
+  # =========================================================================
+  # AI Agent — AGENT-GEN2-PATTERN-001
+  # =========================================================================
+
+  jaraba_whatsapp.conversation_agent:
+    class: Drupal\jaraba_whatsapp\Agent\WhatsAppConversationAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_whatsapp'
+      - '@?jaraba_ai_agents.tenant_brand_voice'
+      - '@?jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?jaraba_ai_agents.tool_registry'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_ai_agents.context_window_manager'
+
+  # =========================================================================
+  # AI Integration — CopilotBridge + GroundingProvider (AI-COVERAGE-001)
+  # =========================================================================
+
+  jaraba_whatsapp.copilot_bridge:
+    class: Drupal\jaraba_whatsapp\CopilotBridge\WhatsAppCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_whatsapp'
+    tags:
+      - { name: jaraba_copilot.bridge }
+
+  jaraba_whatsapp.grounding_provider:
+    class: Drupal\jaraba_whatsapp\Grounding\WhatsAppGroundingProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba_copilot_v2.grounding_provider }
+
+  # =========================================================================
+  # Setup Wizard + Daily Actions (SETUP-WIZARD-DAILY-001)
+  # =========================================================================
+
+  jaraba_whatsapp.setup_wizard.config_whatsapp:
+    class: Drupal\jaraba_whatsapp\SetupWizard\CoordinadorConfigWhatsAppStep
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+    tags:
+      - { name: ecosistema_jaraba_core.setup_wizard_step }
+
+  jaraba_whatsapp.daily_action.escalaciones:
+    class: Drupal\jaraba_whatsapp\DailyActions\WhatsAppEscalacionesPendientesAction
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_whatsapp.daily_action.conversaciones:
+    class: Drupal\jaraba_whatsapp\DailyActions\WhatsAppConversacionesActivasAction
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  jaraba_whatsapp.daily_action.nuevos_leads:
+    class: Drupal\jaraba_whatsapp\DailyActions\WhatsAppNuevosLeadsAction
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: ecosistema_jaraba_core.daily_action }
+
+  # =========================================================================
+  # Event Subscribers
+  # =========================================================================
+
+  jaraba_whatsapp.form_submit_subscriber:
+    class: Drupal\jaraba_whatsapp\EventSubscriber\FormSubmitWhatsAppSubscriber
+    arguments:
+      - '@jaraba_whatsapp.template_service'
+      - '@jaraba_whatsapp.conversation_service'
+      - '@logger.channel.jaraba_whatsapp'
+    tags:
+      - { name: event_subscriber }

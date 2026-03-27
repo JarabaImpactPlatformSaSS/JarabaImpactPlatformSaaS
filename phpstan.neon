@@ -3,6 +3,7 @@
 # Security-specific rules included via phpstan-security.neon.
 includes:
   - phpstan-baseline.neon
+  - phpstan-baseline-whatsapp.neon
   - phpstan-security.neon
 
 parameters:

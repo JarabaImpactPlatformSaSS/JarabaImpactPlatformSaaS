@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Hooks for jaraba_whatsapp module.
+ */
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds body classes for WhatsApp panel routes.
+ */
+function jaraba_whatsapp_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  if ($route_name !== NULL && str_starts_with($route_name, 'jaraba_whatsapp.')) {
+    $variables['attributes']['class'][] = 'page-whatsapp';
+    $variables['attributes']['class'][] = 'page-frontend-clean';
+    $variables['attributes']['class'][] = 'layout-full-width';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_whatsapp_theme(): array {
+  return [
+    'wa_panel_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'conversations' => [],
+        'escalated' => [],
+      ],
+      'template' => 'wa-panel-dashboard',
+    ],
+    'wa_conversation_detail' => [
+      'variables' => [
+        'conversation' => NULL,
+        'messages' => [],
+      ],
+      'template' => 'wa-conversation-detail',
+    ],
+    'wa_conversation_list_item' => [
+      'variables' => [
+        'conversation' => NULL,
+      ],
+      'template' => 'wa-conversation-list-item',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ */
+function jaraba_whatsapp_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  if ($route_name !== NULL && str_starts_with($route_name, 'jaraba_whatsapp.panel')) {
+    $suggestions[] = 'page__whatsapp';
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_whatsapp_mail(string $key, array &$message, array $params): void {
+  if ($key === 'escalation') {
+    $message['subject'] = $params['subject'] ?? 'WhatsApp Escalation';
+    $message['body'][] = $params['body'] ?? '';
+  }
+}
+
+/**
+ * Prepares variables for wa_panel_dashboard template.
+ *
+ * ENTITY-PREPROCESS-001: Required for all entities with view mode.
+ */
+function template_preprocess_wa_panel_dashboard(array &$variables): void {
+  // Stats and conversations are injected via hook_preprocess_page.
+}
+
+/**
+ * Prepares variables for wa_conversation_detail template.
+ */
+function template_preprocess_wa_conversation_detail(array &$variables): void {
+  $conversation = $variables['conversation'] ?? NULL;
+  if ($conversation === NULL) {
+    return;
+  }
+  $variables['phone'] = $conversation->getWaPhone();
+  $variables['lead_type'] = $conversation->getLeadType();
+  $variables['status'] = $conversation->getStatus();
+}
+
+/**
+ * Prepares variables for wa_conversation_list_item template.
+ */
+function template_preprocess_wa_conversation_list_item(array &$variables): void {
+  $conversation = $variables['conversation'] ?? NULL;
+  if ($conversation === NULL) {
+    return;
+  }
+  $variables['phone'] = $conversation->getWaPhone();
+  $variables['lead_type'] = $conversation->getLeadType();
+  $variables['status'] = $conversation->getStatus();
+  $variables['message_count'] = $conversation->getMessageCount();
+}

@@ -1,0 +1,481 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Access\\WaConversationAccessControlHandler\:\:checkCreateAccess\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Access/WaConversationAccessControlHandler.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Access\\WaMessageAccessControlHandler\:\:checkCreateAccess\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Access/WaMessageAccessControlHandler.php
+
+		-
+			message: '#^Cannot cast array to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_ai_agents\\Agent\\SmartBaseAgent\:\:callAiApi\(\) invoked with 5 parameters, 1\-2 required\.$#'
+			identifier: arguments.count
+			count: 3
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:buildConversationMessages\(\) has parameter \$history with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:classify\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:classify\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:doExecute\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:doExecute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:getAvailableActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:respond\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:respond\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:summarize\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Agent\\WhatsAppConversationAgent\:\:summarize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Parameter \#2 \$options of method Drupal\\jaraba_ai_agents\\Agent\\SmartBaseAgent\:\:callAiApi\(\) expects array, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: web/modules/custom/jaraba_whatsapp/src/Agent/WhatsAppConversationAgent.php
+
+		-
+			message: '#^Call to an undefined method Drupal\\Core\\Entity\\EntityInterface\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Controller\\WhatsAppPanelController\:\:conversationDetail\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Controller\\WhatsAppPanelController\:\:dashboard\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Offset ''error'' on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Offset ''success'' on array\{success\: bool, message_id\?\: string, error\?\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Parameter \#1 \$conversation of method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:addMessage\(\) expects Drupal\\jaraba_whatsapp\\Entity\\WaConversationInterface, Drupal\\Core\\Entity\\EntityInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Parameter \#1 \$conversation of method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getMessages\(\) expects Drupal\\jaraba_whatsapp\\Entity\\WaConversationInterface, Drupal\\Core\\Entity\\EntityInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppPanelController.php
+
+		-
+			message: '#^Call to an undefined method Drupal\\Core\\Entity\\EntityInterface\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: web/modules/custom/jaraba_whatsapp/src/Controller/WhatsAppRgpdController.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 3
+			path: web/modules/custom/jaraba_whatsapp/src/CopilotBridge/WhatsAppCopilotBridgeService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\CopilotBridge\\WhatsAppCopilotBridgeService\:\:getRelevantContext\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/CopilotBridge/WhatsAppCopilotBridgeService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\CopilotBridge\\WhatsAppCopilotBridgeService\:\:getSoftSuggestion\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/CopilotBridge/WhatsAppCopilotBridgeService.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/DailyActions/WhatsAppConversacionesActivasAction.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/DailyActions/WhatsAppEscalacionesPendientesAction.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/DailyActions/WhatsAppNuevosLeadsAction.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaConversation.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaMessage.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:getVariablesSchema\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$body_text \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$buttons type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$category \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$status_meta \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$variables_schema \(array\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Property Drupal\\jaraba_whatsapp\\Entity\\WaTemplate\:\:\$variables_schema type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplate.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Entity\\WaTemplateInterface\:\:getVariablesSchema\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Entity/WaTemplateInterface.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Event\\WhatsAppSendTemplateEvent\:\:__construct\(\) has parameter \$templateVars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Event/WhatsAppSendTemplateEvent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Event\\WhatsAppSendTemplateEvent\:\:__construct\(\) has parameter \$utmParams with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Event/WhatsAppSendTemplateEvent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Event\\WhatsAppSendTemplateEvent\:\:getTemplateVars\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Event/WhatsAppSendTemplateEvent.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Event\\WhatsAppSendTemplateEvent\:\:getUtmParams\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Event/WhatsAppSendTemplateEvent.php
+
+		-
+			message: '#^Offset ''error'' on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/EventSubscriber/FormSubmitWhatsAppSubscriber.php
+
+		-
+			message: '#^Offset ''success'' on array\{success\: bool, message_id\?\: string, error\?\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/EventSubscriber/FormSubmitWhatsAppSubscriber.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WaTemplateForm\:\:form\(\) has parameter \$form with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WaTemplateForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WaTemplateForm\:\:form\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WaTemplateForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WaTemplateForm\:\:save\(\) has parameter \$form with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WaTemplateForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WhatsAppSettingsForm\:\:buildForm\(\) has parameter \$form with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WhatsAppSettingsForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WhatsAppSettingsForm\:\:buildForm\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WhatsAppSettingsForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WhatsAppSettingsForm\:\:getEditableConfigNames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WhatsAppSettingsForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Form\\WhatsAppSettingsForm\:\:submitForm\(\) has parameter \$form with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Form/WhatsAppSettingsForm.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Grounding\\WhatsAppGroundingProvider\:\:searchContext\(\) has parameter \$keywords with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Grounding/WhatsAppGroundingProvider.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Grounding\\WhatsAppGroundingProvider\:\:searchContext\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Grounding/WhatsAppGroundingProvider.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Plugin\\QueueWorker\\WhatsAppProcessMessageWorker\:\:__construct\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Plugin/QueueWorker/WhatsAppProcessMessageWorker.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Plugin\\QueueWorker\\WhatsAppProcessMessageWorker\:\:create\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Plugin/QueueWorker/WhatsAppProcessMessageWorker.php
+
+		-
+			message: '#^Offset ''success'' on array\{success\: bool, message_id\?\: string, error\?\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Plugin/QueueWorker/WhatsAppProcessMessageWorker.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Plugin/QueueWorker/WhatsAppProcessMessageWorker.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppApiService\:\:parseIncomingPayload\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppApiService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppApiService\:\:sendTemplateMessage\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppApiService.php
+
+		-
+			message: '#^Casting to int something that''s already int\.$#'
+			identifier: cast.useless
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 4
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:addMessage\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:createConversation\(\) has parameter \$utmParams with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:createFromTemplate\(\) has parameter \$utmParams with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getActiveByPhone\(\) should return Drupal\\jaraba_whatsapp\\Entity\\WaConversationInterface\|null but returns Drupal\\Core\\Entity\\EntityInterface\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getConversationsByStatus\(\) has parameter \$statuses with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getConversationsByStatus\(\) should return array\<Drupal\\jaraba_whatsapp\\Entity\\WaConversationInterface\> but returns array\<Drupal\\Core\\Entity\\EntityInterface\>\.$#'
+			identifier: return.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getHistory\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppConversationService\:\:getMessages\(\) should return array\<Drupal\\jaraba_whatsapp\\Entity\\WaMessage\> but returns array\<Drupal\\Core\\Entity\\EntityInterface\>\.$#'
+			identifier: return.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppConversationService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppEncryptionService\:\:decrypt\(\) has parameter \$encrypted with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppEncryptionService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between int and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppEncryptionService.php
+
+		-
+			message: '#^Offset ''success'' on array\{success\: bool, message_id\?\: string, error\?\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppFollowUpService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppTemplateService\:\:getApprovedTemplates\(\) should return array\<Drupal\\jaraba_whatsapp\\Entity\\WaTemplateInterface\> but returns array\<Drupal\\Core\\Entity\\EntityInterface\>\.$#'
+			identifier: return.type
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppTemplateService.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\Service\\WhatsAppTemplateService\:\:sendTemplate\(\) has parameter \$vars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/Service/WhatsAppTemplateService.php
+
+		-
+			message: '#^Casting to int something that''s already int\<0, max\>\.$#'
+			identifier: cast.useless
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/SetupWizard/CoordinadorConfigWhatsAppStep.php
+
+		-
+			message: '#^Implicit array creation is not allowed \- variable \$header does not exist\.$#'
+			identifier: variable.implicitArray
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/WaTemplateListBuilder.php
+
+		-
+			message: '#^Implicit array creation is not allowed \- variable \$row does not exist\.$#'
+			identifier: variable.implicitArray
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/WaTemplateListBuilder.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\WaTemplateListBuilder\:\:buildHeader\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/WaTemplateListBuilder.php
+
+		-
+			message: '#^Method Drupal\\jaraba_whatsapp\\WaTemplateListBuilder\:\:buildRow\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: web/modules/custom/jaraba_whatsapp/src/WaTemplateListBuilder.php

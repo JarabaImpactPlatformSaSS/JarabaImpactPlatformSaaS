@@ -1,0 +1,10 @@
+jaraba_whatsapp.settings:
+  title: 'Configuracion'
+  route_name: jaraba_whatsapp.settings
+  base_route: jaraba_whatsapp.settings
+
+jaraba_whatsapp.templates:
+  title: 'Templates'
+  route_name: entity.wa_template.collection
+  base_route: jaraba_whatsapp.settings
+  weight: 10

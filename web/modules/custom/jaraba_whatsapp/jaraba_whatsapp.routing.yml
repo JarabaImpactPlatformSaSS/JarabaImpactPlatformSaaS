@@ -1,0 +1,117 @@
+# =============================================
+# Webhook — WhatsApp Cloud API (Meta)
+# =============================================
+
+jaraba_whatsapp.webhook:
+  path: '/api/v1/whatsapp/webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppWebhookController::handle'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+jaraba_whatsapp.webhook.verify:
+  path: '/api/v1/whatsapp/webhook'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppWebhookController::verify'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# =============================================
+# Panel de gestion (frontend)
+# =============================================
+
+jaraba_whatsapp.panel:
+  path: '/whatsapp'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppPanelController::dashboard'
+    _title: 'WhatsApp — Panel de Gestion'
+  requirements:
+    _permission: 'access whatsapp panel'
+
+jaraba_whatsapp.panel.conversation:
+  path: '/whatsapp/conversation/{wa_conversation}'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppPanelController::conversationDetail'
+    _title: 'Detalle de Conversacion'
+  requirements:
+    _permission: 'view whatsapp conversations'
+
+jaraba_whatsapp.panel.send:
+  path: '/whatsapp/conversation/{wa_conversation}/send'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppPanelController::sendMessage'
+  methods: [POST]
+  requirements:
+    _permission: 'manage whatsapp conversations'
+
+# =============================================
+# Configuracion admin
+# =============================================
+
+jaraba_whatsapp.settings:
+  path: '/admin/config/services/whatsapp'
+  defaults:
+    _form: '\Drupal\jaraba_whatsapp\Form\WhatsAppSettingsForm'
+    _title: 'Configuracion WhatsApp'
+  requirements:
+    _permission: 'administer whatsapp'
+
+# =============================================
+# RGPD endpoints
+# =============================================
+
+jaraba_whatsapp.rgpd.export:
+  path: '/api/v1/whatsapp/rgpd/export/{phone}'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppRgpdController::export'
+  methods: [GET]
+  requirements:
+    _permission: 'delete whatsapp data'
+
+jaraba_whatsapp.rgpd.delete:
+  path: '/api/v1/whatsapp/rgpd/delete/{phone}'
+  defaults:
+    _controller: '\Drupal\jaraba_whatsapp\Controller\WhatsAppRgpdController::delete'
+  methods: [DELETE]
+  requirements:
+    _permission: 'delete whatsapp data'
+
+# =============================================
+# WaTemplate config entity routes
+# =============================================
+
+entity.wa_template.collection:
+  path: '/admin/structure/wa-templates'
+  defaults:
+    _entity_list: 'wa_template'
+    _title: 'Templates WhatsApp'
+  requirements:
+    _permission: 'administer whatsapp'
+
+entity.wa_template.add_form:
+  path: '/admin/structure/wa-templates/add'
+  defaults:
+    _entity_form: 'wa_template.default'
+    _title: 'Nuevo Template WhatsApp'
+  requirements:
+    _permission: 'administer whatsapp'
+
+entity.wa_template.edit_form:
+  path: '/admin/structure/wa-templates/{wa_template}/edit'
+  defaults:
+    _entity_form: 'wa_template.default'
+    _title: 'Editar Template WhatsApp'
+  requirements:
+    _permission: 'administer whatsapp'
+
+entity.wa_template.delete_form:
+  path: '/admin/structure/wa-templates/{wa_template}/delete'
+  defaults:
+    _entity_form: 'wa_template.delete'
+    _title: 'Eliminar Template WhatsApp'
+  requirements:
+    _permission: 'administer whatsapp'

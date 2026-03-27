@@ -1,0 +1,15 @@
+# WhatsApp Cloud API settings.
+# Credentials via getenv() in settings.secrets.php (SECRET-MGMT-001).
+whatsapp_api_version: 'v21.0'
+whatsapp_phone_display: '+34 623 17 43 04'
+agent_enabled: true
+auto_classify: true
+max_messages_before_escalation: 8
+inactivity_hours_close: 48
+spam_threshold_messages: 3
+spam_threshold_seconds: 10
+off_hours_start: 22
+off_hours_end: 7
+escalation_email: 'jose@plataformadeecosistemas.com'
+escalation_whatsapp: '34623174304'
+rgpd_retention_months: 18

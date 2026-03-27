@@ -1,0 +1,11 @@
+panel:
+  version: VERSION
+  css:
+    theme:
+      css/whatsapp-panel.css: {}
+  js:
+    js/whatsapp-panel.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

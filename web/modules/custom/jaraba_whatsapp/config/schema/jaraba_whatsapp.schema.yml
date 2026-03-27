@@ -1,0 +1,105 @@
+jaraba_whatsapp.settings:
+  type: config_object
+  label: 'WhatsApp settings'
+  mapping:
+    whatsapp_api_version:
+      type: string
+      label: 'WhatsApp API version'
+    whatsapp_phone_display:
+      type: string
+      label: 'Display phone number'
+    agent_enabled:
+      type: boolean
+      label: 'Agent enabled'
+    auto_classify:
+      type: boolean
+      label: 'Auto classify leads'
+    max_messages_before_escalation:
+      type: integer
+      label: 'Max messages before escalation'
+    inactivity_hours_close:
+      type: integer
+      label: 'Hours of inactivity before close'
+    spam_threshold_messages:
+      type: integer
+      label: 'Spam threshold messages'
+    spam_threshold_seconds:
+      type: integer
+      label: 'Spam threshold seconds'
+    off_hours_start:
+      type: integer
+      label: 'Off hours start'
+    off_hours_end:
+      type: integer
+      label: 'Off hours end'
+    escalation_email:
+      type: string
+      label: 'Escalation email'
+    escalation_whatsapp:
+      type: string
+      label: 'Escalation WhatsApp number'
+    rgpd_retention_months:
+      type: integer
+      label: 'RGPD retention months'
+
+jaraba_whatsapp.wa_template.*:
+  type: config_entity
+  label: 'WhatsApp Template'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    langcode:
+      type: string
+      label: 'Language'
+    category:
+      type: string
+      label: 'Category'
+    status_meta:
+      type: string
+      label: 'Meta approval status'
+    header_type:
+      type: string
+      label: 'Header type'
+    body_text:
+      type: text
+      label: 'Body text'
+    footer_text:
+      type: string
+      label: 'Footer text'
+    buttons:
+      type: sequence
+      label: 'Buttons'
+      sequence:
+        type: mapping
+        mapping:
+          type:
+            type: string
+          text:
+            type: string
+          url:
+            type: string
+    variables_schema:
+      type: sequence
+      label: 'Variables schema'
+      sequence:
+        type: mapping
+        mapping:
+          name:
+            type: string
+          type:
+            type: string
+          example:
+            type: string
+    meta_template_id:
+      type: string
+      label: 'Meta template ID'
+    status:
+      type: boolean
+      label: 'Status'

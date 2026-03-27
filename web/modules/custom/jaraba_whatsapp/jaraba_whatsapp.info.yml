@@ -1,0 +1,9 @@
+name: Jaraba WhatsApp
+type: module
+description: 'Agente WhatsApp IA: captacion automatizada via WhatsApp Cloud API + Claude para programas de empleo y negocios piloto.'
+core_version_requirement: ^10 || ^11
+package: Jaraba Communication
+dependencies:
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_ai_agents:jaraba_ai_agents

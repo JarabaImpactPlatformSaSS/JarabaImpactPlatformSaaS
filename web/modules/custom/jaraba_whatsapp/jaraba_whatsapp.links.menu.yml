@@ -1,0 +1,13 @@
+jaraba_whatsapp.admin:
+  title: 'WhatsApp'
+  description: 'Configuracion del agente WhatsApp IA.'
+  route_name: jaraba_whatsapp.settings
+  parent: system.admin_config_services
+  weight: 50
+
+jaraba_whatsapp.templates:
+  title: 'Templates WhatsApp'
+  description: 'Gestionar templates pre-aprobados por Meta.'
+  route_name: entity.wa_template.collection
+  parent: system.admin_structure
+  weight: 60

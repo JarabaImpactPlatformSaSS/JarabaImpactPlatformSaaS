@@ -1,0 +1,39 @@
+{#
+  Parcial reutilizable: item de conversación en lista.
+  Usado en dashboard y DailyActions slide-panel.
+
+  Variables:
+  - conversation: {id, wa_phone, lead_type, status, message_count, last_message_at, escalation_reason}
+
+  TWIG-INCLUDE-ONLY-001: Siempre con 'only' en {% include %}.
+#}
+
+<article class="wa-conv-item wa-conv-item--{{ conversation.status }}"
+         data-conversation-id="{{ conversation.id }}"
+         role="article"
+         aria-label="{{ 'Conversación con %phone'|t({'%phone': conversation.wa_phone}) }}">
+  <div class="wa-conv-item__avatar">
+    {{ jaraba_icon('communication', 'whatsapp', { variant: 'duotone', color: 'verde-innovacion', size: '40px' }) }}
+  </div>
+  <div class="wa-conv-item__body">
+    <span class="wa-conv-item__phone">{{ conversation.wa_phone }}</span>
+    <span class="wa-conv-item__type badge badge--{{ conversation.lead_type }}">
+      {{ conversation.lead_type }}
+    </span>
+    {% if conversation.escalation_reason %}
+      <p class="wa-conv-item__reason">{{ conversation.escalation_reason }}</p>
+    {% endif %}
+  </div>
+  <div class="wa-conv-item__meta">
+    {% if conversation.last_message_at %}
+      <time class="wa-conv-item__time">
+        {{ conversation.last_message_at|date('H:i') }}
+      </time>
+    {% endif %}
+    {% if conversation.message_count > 0 %}
+      <span class="wa-conv-item__count" aria-label="{{ '%count mensajes'|t({'%count': conversation.message_count}) }}">
+        {{ conversation.message_count }}
+      </span>
+    {% endif %}
+  </div>
+</article>
