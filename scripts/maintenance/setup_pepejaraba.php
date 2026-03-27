@@ -30,7 +30,7 @@ $config->set('social_links', json_encode([
   'facebook' => 'https://www.facebook.com/PepeJaraba',
   'instagram' => 'https://www.instagram.com/pepejaraba_/',
   'youtube' => 'https://www.youtube.com/@PepeJaraba',
-  'whatsapp' => 'https://wa.me/34623174304',
+  'whatsapp' => 'https://wa.me/' . str_replace(['+', ' '], '', $config->get('contact_phone') ?: '34623174304'),
 ]));
 
 // Header config

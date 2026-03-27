@@ -54,9 +54,9 @@ $pages[79] = <<<'HTML'
           <div class="ped-contact-card__icon">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="12" y="4" width="16" height="32" rx="3" stroke="#233D63" stroke-width="2"/><circle cx="20" cy="30" r="2" fill="#233D63"/></svg>
           </div>
-          <div class="ped-contact-card__title">Telefono</div>
-          <a href="tel:+34623174304" class="ped-contact-card__detail">+34 623 174 304</a>
-          <div class="ped-contact-card__meta">Lunes a viernes, 9:00 – 18:00 CET</div>
+          <div class="ped-contact-card__title">WhatsApp</div>
+          <a href="https://wa.me/' . (theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '') . '" class="ped-contact-card__detail" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+          <div class="ped-contact-card__meta">Disponible 24/7 con IA</div>
         </div>
 
         <div class="ped-contact-card">
@@ -1057,9 +1057,9 @@ $pages[80] = <<<'HTML'
           <tr><td><strong>Nombre comercial</strong></td><td>Ecosistema Jaraba / PED</td></tr>
           <tr><td><strong>CIF</strong></td><td>B93750271</td></tr>
           <tr><td><strong>Domicilio social</strong></td><td>Calle Heroe de Sostoa 12, 29002 Malaga, Espana</td></tr>
-          <tr><td><strong>Telefono</strong></td><td>+34 623 174 304</td></tr>
-          <tr><td><strong>Email de contacto</strong></td><td>info@plataformadeecosistemas.es</td></tr>
-          <tr><td><strong>Email legal</strong></td><td>legal@plataformadeecosistemas.es</td></tr>
+          <tr><td><strong>Telefono</strong></td><td>' . (theme_get_setting('contact_phone', 'ecosistema_jaraba_theme') ?: '') . '</td></tr>
+          <tr><td><strong>Email de contacto</strong></td><td>' . (\Drupal::config('system.site')->get('mail') ?: '') . '</td></tr>
+          <tr><td><strong>Email legal</strong></td><td>' . (\Drupal::config('system.site')->get('mail') ?: '') . '</td></tr>
           <tr><td><strong>Registro Mercantil</strong></td><td>Inscrita en el Registro Mercantil de Malaga, Tomo 5947, Libro 4854, Folio 100, Inscripcion 1.ª, Hoja MA-156134</td></tr>
           <tr><td><strong>Actividad</strong></td><td>Desarrollo y explotacion de plataformas digitales SaaS (CNAE 6201)</td></tr>
         </tbody>
@@ -1124,8 +1124,8 @@ $pages[81] = <<<'HTML'
           <tr><td><strong>Identidad</strong></td><td>Plataforma de Ecosistemas Digitales S.L.</td></tr>
           <tr><td><strong>CIF</strong></td><td>B93750271</td></tr>
           <tr><td><strong>Direccion</strong></td><td>Calle Heroe de Sostoa 12, 29002 Malaga</td></tr>
-          <tr><td><strong>Email privacidad</strong></td><td>privacidad@plataformadeecosistemas.es</td></tr>
-          <tr><td><strong>Delegado de Proteccion de Datos (DPO)</strong></td><td>Jose Jaraba Munoz — Tel: +34 623 174 304 — Email: contacto@plataformadeecosistemas.es</td></tr>
+          <tr><td><strong>Email privacidad</strong></td><td>' . (\Drupal::config('system.site')->get('mail') ?: '') . '</td></tr>
+          <tr><td><strong>Delegado de Proteccion de Datos (DPO)</strong></td><td>Jose Jaraba Munoz — Email: ' . (\Drupal::config('system.site')->get('mail') ?: '') . '</td></tr>
         </tbody>
       </table>
 

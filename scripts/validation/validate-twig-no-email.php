@@ -86,6 +86,16 @@ foreach ($files as $file) {
         $errors[] = "$file:$lineNo — hardcoded email '$email' (EMAIL-NOEXPOSE-001)";
       }
     }
+
+    // Check 3: Hardcoded platform phone (CONTACT-NOHARD-001).
+    if (preg_match('/34623174304|\+34\s*623\s*174\s*304/', $line)) {
+      $errors[] = "$file:$lineNo — hardcoded platform phone (CONTACT-NOHARD-001)";
+    }
+
+    // Check 4: |default('34623174304') pattern.
+    if (preg_match("/\\|default\\(['\"]34623174304['\"]\\)/", $line)) {
+      $errors[] = "$file:$lineNo — |default('34623174304') pattern (CONTACT-NOHARD-001)";
+    }
   }
 }
 

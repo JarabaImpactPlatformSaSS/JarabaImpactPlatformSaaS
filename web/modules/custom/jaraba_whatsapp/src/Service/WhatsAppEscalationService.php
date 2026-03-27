@@ -122,6 +122,10 @@ class WhatsAppEscalationService {
     try {
       $config = \Drupal::config('jaraba_whatsapp.settings');
       $to = $config->get('escalation_email') ?? '';
+      // CONTACT-SSOT-001: Fallback a system.site.mail si no configurado.
+      if ($to === '') {
+        $to = \Drupal::config('system.site')->get('mail') ?? '';
+      }
       if ($to === '') {
         return;
       }
@@ -148,6 +152,10 @@ class WhatsAppEscalationService {
     try {
       $config = \Drupal::config('jaraba_whatsapp.settings');
       $supervisorPhone = $config->get('escalation_whatsapp') ?? '';
+      // CONTACT-SSOT-001: Fallback a whatsapp_number de theme_settings.
+      if ($supervisorPhone === '') {
+        $supervisorPhone = \Drupal::config('ecosistema_jaraba_theme.settings')->get('whatsapp_number') ?? '';
+      }
       if ($supervisorPhone === '') {
         return;
       }

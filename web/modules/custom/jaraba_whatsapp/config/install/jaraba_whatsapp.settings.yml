@@ -1,7 +1,7 @@
 # WhatsApp Cloud API settings.
 # Credentials via getenv() in settings.secrets.php (SECRET-MGMT-001).
 whatsapp_api_version: 'v21.0'
-whatsapp_phone_display: '+34 623 17 43 04'
+whatsapp_phone_display: ''
 agent_enabled: true
 auto_classify: true
 max_messages_before_escalation: 8
@@ -10,6 +10,8 @@ spam_threshold_messages: 3
 spam_threshold_seconds: 10
 off_hours_start: 22
 off_hours_end: 7
-escalation_email: 'jose@plataformadeecosistemas.com'
-escalation_whatsapp: '34623174304'
+# CONTACT-SSOT-001: Defaults vacíos — configurar en admin o Setup Wizard.
+# En runtime, EscalationService hace fallback a system.site.mail y whatsapp_number.
+escalation_email: ''
+escalation_whatsapp: ''
 rgpd_retention_months: 18

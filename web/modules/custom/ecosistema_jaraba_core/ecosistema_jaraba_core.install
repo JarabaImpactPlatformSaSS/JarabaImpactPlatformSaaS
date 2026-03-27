@@ -4040,14 +4040,15 @@ function ecosistema_jaraba_core_update_9050(): string {
     $config = \Drupal::configFactory()->getEditable('ecosistema_jaraba_theme.settings');
     $defaults = [
       'whatsapp_enabled' => TRUE,
-      'whatsapp_number' => '34623174304',
-      'whatsapp_default_message' => 'Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.',
+      // CONTACT-SSOT-001: Contact data empty — Setup Wizard guides configuration.
+      'whatsapp_number' => '',
+      'whatsapp_default_message' => '',
       'whatsapp_display' => 'both',
       'whatsapp_delay_seconds' => 5,
       'whatsapp_scroll_threshold' => 30,
       'whatsapp_position' => 'left',
-      'whatsapp_msg_default' => 'Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.',
-      'contact_schema_email' => 'hola@plataformadeecosistemas.es',
+      'whatsapp_msg_default' => '',
+      'contact_schema_email' => '',
     ];
     $updated = 0;
     foreach ($defaults as $key => $value) {
