@@ -53,6 +53,21 @@ jaraba_andalucia_ei.settings:
     popup_ttl_hours:
       type: integer
       label: 'Horas antes de re-mostrar popup'
+    popup_delay_ms:
+      type: integer
+      label: 'Delay de aparición del popup (ms)'
+    tasa_insercion_1e:
+      type: integer
+      label: 'Tasa inserción 1ª Edición (%)'
+    popup_negocio_enabled:
+      type: boolean
+      label: 'Activar path de negocio piloto en popup'
+    popup_servicios_count:
+      type: integer
+      label: 'Número de servicios gratuitos mostrados'
+    popup_valor_mercado_anual:
+      type: integer
+      label: 'Valor de mercado anual servicios (EUR)'
     sto_sync_enabled:
       type: boolean
       label: 'Sincronización STO habilitada'
