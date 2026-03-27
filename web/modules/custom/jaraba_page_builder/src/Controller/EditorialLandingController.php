@@ -76,9 +76,7 @@ class EditorialLandingController extends ControllerBase {
     $instance = parent::create($container);
     $instance->loggerChannel = $container->get('logger.factory')->get('jaraba_editorial');
     $instance->mailManager = $container->get('plugin.manager.mail');
-    $instance->leadCaptureService = $container->has('jaraba_copilot_v2.lead_capture')
-      ? $container->get('jaraba_copilot_v2.lead_capture')
-      : NULL;
+    $instance->leadCaptureService = $container->get('jaraba_copilot_v2.lead_capture', ContainerInterface::NULL_ON_INVALID_REFERENCE);
     return $instance;
   }
 
@@ -89,6 +87,9 @@ class EditorialLandingController extends ControllerBase {
    *
    * ZERO-REGION-001: El render array se renderiza dentro de clean_content.
    * NO-HARDCODE-PRICE-001: Precios vienen de constantes, no de Twig.
+   */
+  /**
+   * @return array<string, mixed>
    */
   public function landing(): array {
     return [
@@ -171,6 +172,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S1 HERO: Portada 3D + foto autora + tagline + dual CTA.
+   *
+   * @return array<string, mixed>
    */
   protected function buildHero(): array {
     return [
@@ -180,7 +183,7 @@ class EditorialLandingController extends ControllerBase {
       'title' => $this->t('Más ingresos. Menos estrés. Más vida.'),
       'subtitle' => $this->t('Descubre por qué la mochila invisible del autónomo pesa tanto — y cómo quitártela en 107 páginas.'),
       'book_cover' => '/themes/custom/ecosistema_jaraba_theme/images/editorial/portada-equilibrio-autonomo.webp',
-      'author_photo' => '/themes/custom/ecosistema_jaraba_theme/images/editorial/remedios-estevez.webp',
+      'author_photo' => '/themes/custom/ecosistema_jaraba_theme/images/equipo-remedios-estevez.webp',
       'cta_primary' => [
         'text' => $this->t('Comprar en Amazon'),
         'url' => 'https://www.amazon.es/s?k=equilibrio+autonomo+remedios+estevez',
@@ -200,6 +203,8 @@ class EditorialLandingController extends ControllerBase {
    * S2 PROBLEMA: La mochila invisible del autonomo.
    *
    * MARKETING-TRUTH-001: Stats con source para auditoria.
+   *
+   * @return array<string, mixed>
    */
   protected function buildProblema(): array {
     return [
@@ -240,6 +245,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S3 SOLUCION: Sistema, no motivacion. 3 pilares.
+   *
+   * @return array<string, mixed>
    */
   protected function buildSolucion(): array {
     return [
@@ -275,6 +282,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S4 CONTENIDO: Estructura del libro en 3 partes.
+   *
+   * @return array<string, mixed>
    */
   protected function buildContenido(): array {
     return [
@@ -327,6 +336,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S5 AUTORA: Remedios Estevez Palomino.
+   *
+   * @return array<string, mixed>
    */
   protected function buildAutora(): array {
     return [
@@ -342,7 +353,7 @@ class EditorialLandingController extends ControllerBase {
         $this->t('5.000+ horas de formación profesional'),
         $this->t('Co-fundadora de Plataforma de Ecosistemas Digitales S.L.'),
       ],
-      'photo' => '/themes/custom/ecosistema_jaraba_theme/images/editorial/remedios-estevez.webp',
+      'photo' => '/themes/custom/ecosistema_jaraba_theme/images/equipo-remedios-estevez.webp',
       'social' => [
         'linkedin' => 'https://linkedin.com/in/remedios-estevez',
         'instagram' => 'https://instagram.com/remediosestevezpalomino',
@@ -355,6 +366,8 @@ class EditorialLandingController extends ControllerBase {
    *
    * MARKETING-TRUTH-001: Personajes ficticios del libro, NO clientes reales.
    * Se presentan como "historias del libro" para evitar falsos testimonios.
+   *
+   * @return array<string, mixed>
    */
   protected function buildTestimonios(): array {
     return [
@@ -409,6 +422,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S7 COMPARATIVA: DIY vs Guias genericas vs Equilibrio Autonomo.
+   *
+   * @return array<string, mixed>
    */
   protected function buildComparativa(): array {
     return [
@@ -469,6 +484,8 @@ class EditorialLandingController extends ControllerBase {
    * S8 FORMATOS: 3 pricing cards.
    *
    * NO-HARDCODE-PRICE-001: Precios desde constantes de clase.
+   *
+   * @return array<string, mixed>
    */
   protected function buildFormatos(): array {
     return [
@@ -535,6 +552,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S9 FAQ: 6 preguntas frecuentes con Schema.org FAQPage.
+   *
+   * @return array<string, mixed>
    */
   protected function buildFaq(): array {
     return [
@@ -570,6 +589,8 @@ class EditorialLandingController extends ControllerBase {
 
   /**
    * S10 CTA FINAL: Lead magnet + WhatsApp.
+   *
+   * @return array<string, mixed>
    */
   protected function buildCtaFinal(): array {
     try {
