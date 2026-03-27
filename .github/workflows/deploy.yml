@@ -776,7 +776,7 @@ jobs:
           echo "❌ Health check failed!"
           exit 1
 
-      - name: Smoke test - Homepage
+      - name: Smoke test - All domains (SMOKE-TEST-MULTIDOMAIN-001)
         if: success()
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
@@ -785,11 +785,30 @@ jobs:
             echo "⚠️ PRODUCTION_URL not set — skipping"
             exit 0
           fi
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}")
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "⚠️ Homepage returned HTTP $HTTP_STATUS (non-blocking)"
+
+          # SMOKE-TEST-MULTIDOMAIN-001: Verify ALL 4 production domains.
+          # The 500 incident on pepejaraba.com/jarabaimpact.com was invisible
+          # because the old smoke test only checked PRODUCTION_URL.
+          DOMAINS="plataformadeecosistemas.com plataformadeecosistemas.es pepejaraba.com jarabaimpact.com"
+          FAILED=0
+          for DOMAIN in $DOMAINS; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "https://${DOMAIN}/es" 2>/dev/null || echo "000")
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "✅ ${DOMAIN} — HTTP 200"
+            elif [ "$HTTP_STATUS" = "000" ]; then
+              echo "⚠️ ${DOMAIN} — timeout/unreachable (non-blocking)"
+            else
+              echo "❌ ${DOMAIN} — HTTP ${HTTP_STATUS}"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo ""
+            echo "::warning::SMOKE-TEST-MULTIDOMAIN-001: ${FAILED} domain(s) returned non-200 status"
           else
-            echo "✅ Homepage OK (HTTP 200)"
+            echo ""
+            echo "✅ All ${#DOMAINS[@]} domains healthy"
           fi
 
       - name: Diagnose production error

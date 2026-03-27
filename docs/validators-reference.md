@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 180 |
+| Total scripts PHP | 182 |
 | run_check (CI blocker) | 127 |
-| warn_check (no blocker) | 56 |
+| warn_check (no blocker) | 58 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
@@ -138,7 +138,7 @@
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 | BRAND-TERM-VALIDATOR-001 | Obsolete brand terms in frontend (Desarrollo Rural → Local) |
 
-## Warn Checks — 56 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 58 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
@@ -148,6 +148,8 @@
 | I18N-DRIFT-001 | Custom translation drift .po vs DB (< 5%) | Detecta traducciones no exportadas |
 | CONTENT-DRIFT-DETECTION-001 | Content seed JSON vs DB drift detection | Post-lanzamiento |
 | CSP-DOMAIN-COMPLETENESS-001 | CSP external domain cross-reference | |
+| GIT-OBJECTS-OWNER-MONITOR | Git object ownership (no root-owned in .git) | Previene deploy bloqueado |
+| COMMIT-COMPLETENESS-001 | Caller/callee coherence (staged vs unstaged) | Previene 500 por métodos faltantes |
 | DEMO-COVERAGE-001 | Demo vertical coverage (13/13 profiles) | |
 | ENTITY-FIELD-DB-SYNC-001 | Entity field definitions match DB columns | Static check |
 | HOOK-REQUIREMENTS-COVERAGE-001 | Module hook_requirements() coverage | Target 95% |
