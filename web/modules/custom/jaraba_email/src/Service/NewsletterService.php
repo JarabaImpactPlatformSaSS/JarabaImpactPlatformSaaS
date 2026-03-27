@@ -111,7 +111,7 @@ class NewsletterService {
       'subject_line' => $options['subject'] ?? $name,
       'preview_text' => $options['preview_text'] ?? '',
       'from_name' => $options['from_name'] ?? 'Jaraba Newsletter',
-      'from_email' => $options['from_email'] ?? 'newsletter@jaraba.io',
+      'from_email' => $options['from_email'] ?? \Drupal::config('system.site')->get('mail'),
       'reply_to' => $options['reply_to'] ?? '',
       'list_ids' => array_map(fn($id) => ['target_id' => $id], $listIds),
       'article_ids' => array_map(fn($id) => ['target_id' => $id], $articleIds),

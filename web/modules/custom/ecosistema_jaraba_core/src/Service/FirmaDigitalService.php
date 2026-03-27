@@ -307,7 +307,7 @@ class FirmaDigitalService {
       'signer' => $signer_name,
       'reason' => $options['reason'] ?? 'Certificado de Trazabilidad',
       'location' => $options['location'] ?? 'España',
-      'contact' => $options['contact'] ?? 'info@jaraba.io',
+      'contact' => $options['contact'] ?? \Drupal::config('system.site')->get('mail'),
       'date' => date('Y-m-d H:i:s'),
       'signature_hash' => hash('sha256', $signature),
     ];

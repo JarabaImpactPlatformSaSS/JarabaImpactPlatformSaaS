@@ -568,7 +568,7 @@ class LeadMagnetController extends ControllerBase {
       }
 
       if (empty($email)) {
-        $email = 'visitante@ecosistemajaraba.org';
+        $email = 'visitante@plataformadeecosistemas.es';
       }
 
       $html = $this->leadMagnetPdf->generateGuiaAgroHtml($name, $email);
@@ -623,7 +623,7 @@ class LeadMagnetController extends ControllerBase {
       }
 
       if (empty($email)) {
-        $email = 'visitante@ecosistemajaraba.org';
+        $email = 'visitante@plataformadeecosistemas.es';
       }
 
       $serviceData = [

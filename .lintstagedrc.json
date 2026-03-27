@@ -14,7 +14,8 @@
   ],
   "web/**/*.html.twig": [
     "php scripts/validation/validate-twig-syntax.php",
-    "php scripts/validation/validate-twig-ortografia.php"
+    "php scripts/validation/validate-twig-ortografia.php",
+    "php scripts/validation/validate-twig-no-email.php"
   ],
   "web/modules/custom/**/*.services.yml": [
     "php scripts/validation/validate-phantom-args.php",
@@ -27,10 +28,12 @@
     "bash scripts/validation/validate-all.sh --fast"
   ],
   "web/modules/custom/**/*.js": [
-    "php scripts/validation/validate-js-syntax.php"
+    "php scripts/validation/validate-js-syntax.php",
+    "php scripts/validation/validate-twig-no-email.php"
   ],
   "web/themes/custom/**/*.js": [
-    "php scripts/validation/validate-js-syntax.php"
+    "php scripts/validation/validate-js-syntax.php",
+    "php scripts/validation/validate-twig-no-email.php"
   ],
   "CLAUDE.md": [
     "php scripts/validation/validate-claude-md-size.php"

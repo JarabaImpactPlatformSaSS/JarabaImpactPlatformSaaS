@@ -36,7 +36,7 @@ default_signer_info:
   name: 'Ecosistema Jaraba - Plataforma de Trazabilidad'
   location: 'España'
   reason: 'Certificado de Trazabilidad de Lote'
-  contact: 'info@jaraba.io'
+  contact: 'contacto@plataformadeecosistemas.es'
 
 # Habilitar/deshabilitar la firma automática
 # Si es FALSE, los PDFs se generan pero no se firman

@@ -31,6 +31,20 @@
         var currentContext = config.currentContext || 'default';
         var messages = config.messages || {};
         var number = config.number || '';
+        var position = config.position || 'left';
+
+        // AB-TESTING-001: Si hay variante asignada, aplicar override.
+        var abVariant = config.abVariant || null;
+        if (abVariant && abVariant.delay !== undefined) {
+          delay = abVariant.delay * 1000;
+        }
+        if (abVariant && abVariant.position) {
+          position = abVariant.position;
+          fab.setAttribute('data-wa-position', position);
+        }
+        if (abVariant && abVariant.display) {
+          fab.setAttribute('data-wa-display', abVariant.display);
+        }
 
         // Resolver mensaje contextual — fallback cascada.
         var message = messages[currentContext] || messages['default'] || '';

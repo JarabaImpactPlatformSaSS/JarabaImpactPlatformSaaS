@@ -372,6 +372,48 @@ function ecosistema_jaraba_core_requirements($phase) {
     }
   }
 
+    // ── CONTACT-SSOT-001 + WA-FAB-CONFIG-001: WhatsApp widget configurado ──
+    $wa_enabled = theme_get_setting('whatsapp_enabled', 'ecosistema_jaraba_theme');
+    $wa_number = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+    $schema_email = theme_get_setting('contact_schema_email', 'ecosistema_jaraba_theme') ?: '';
+
+    if ($wa_enabled && !empty($wa_number) && strlen($wa_number) >= 10) {
+      $requirements['ecosistema_jaraba_whatsapp_widget'] = [
+        'title' => t('Ecosistema Jaraba - WhatsApp Widget'),
+        'value' => t('Configurado (número: @num)', ['@num' => $wa_number]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_whatsapp_widget'] = [
+        'title' => t('Ecosistema Jaraba - WhatsApp Widget'),
+        'value' => $wa_enabled ? t('Activado pero sin número válido') : t('Desactivado'),
+        'description' => t('El widget de WhatsApp no está correctamente configurado. Configúralo en <a href="@url">Apariencia > Ecosistema Jaraba Theme > WhatsApp y Contacto</a>.', [
+          '@url' => '/admin/appearance/settings/ecosistema_jaraba_theme',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+
+    if (!empty($schema_email) && str_contains($schema_email, '@')) {
+      $requirements['ecosistema_jaraba_schema_email'] = [
+        'title' => t('Ecosistema Jaraba - Schema.org Email'),
+        'value' => t('Configurado (@email)', ['@email' => $schema_email]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_schema_email'] = [
+        'title' => t('Ecosistema Jaraba - Schema.org Email'),
+        'value' => t('No configurado'),
+        'description' => t('El email dedicado para Schema.org no está configurado (SCHEMA-CONTACT-CHANNEL-001). Configúralo en <a href="@url">Apariencia > Ecosistema Jaraba Theme > Contacto</a>.', [
+          '@url' => '/admin/appearance/settings/ecosistema_jaraba_theme',
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+  }
+
   return $requirements;
 }
 
@@ -3911,5 +3953,116 @@ function ecosistema_jaraba_core_update_9048(): string {
   }
   catch (\Throwable $e) {
     throw new \RuntimeException('Failed to create pii_detection_log: ' . $e->getMessage(), 0, $e);
+  }
+}
+
+/**
+ * Seed AB experiment for WhatsApp FAB widget (WA-CONTEXTUAL-001).
+ *
+ * Creates 3 variants to optimize delay, position and display mode.
+ * Requires jaraba_ab_testing module.
+ */
+function ecosistema_jaraba_core_update_9049(): string {
+  if (!\Drupal::moduleHandler()->moduleExists('jaraba_ab_testing')) {
+    return 'jaraba_ab_testing not installed — skipped.';
+  }
+
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('ab_experiment');
+
+    // Check idempotent.
+    $existing = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('machine_name', 'whatsapp_fab_widget')
+      ->count()
+      ->execute();
+    if ($existing > 0) {
+      return 'AB experiment whatsapp_fab_widget already exists — skipped.';
+    }
+
+    $experiment = $storage->create([
+      'label' => 'WhatsApp FAB Widget — Delay y Posición',
+      'machine_name' => 'whatsapp_fab_widget',
+      'experiment_type' => 'cta_variant',
+      'hypothesis' => 'Un delay menor (3s) y posición right aumenta la tasa de clic en el FAB de WhatsApp respecto al default (5s, left).',
+      'primary_metric' => 'click_rate',
+      'secondary_metrics' => '["conversion_rate","engagement"]',
+      'target_audience' => 'all_visitors',
+      'status' => TRUE,
+    ]);
+    $experiment->save();
+
+    // Create 3 variants.
+    $variant_storage = \Drupal::entityTypeManager()->getStorage('ab_variant');
+    $variants = [
+      [
+        'label' => 'Control: 5s delay, left',
+        'variant_key' => 'control',
+        'experiment_id' => $experiment->id(),
+        'weight' => 34,
+        'variant_data' => '{"delay":5,"position":"left","display":"both"}',
+        'is_control' => TRUE,
+      ],
+      [
+        'label' => 'Variante A: 3s delay, left',
+        'variant_key' => 'fast_left',
+        'experiment_id' => $experiment->id(),
+        'weight' => 33,
+        'variant_data' => '{"delay":3,"position":"left","display":"both"}',
+        'is_control' => FALSE,
+      ],
+      [
+        'label' => 'Variante B: 3s delay, right',
+        'variant_key' => 'fast_right',
+        'experiment_id' => $experiment->id(),
+        'weight' => 33,
+        'variant_data' => '{"delay":3,"position":"right","display":"both"}',
+        'is_control' => FALSE,
+      ],
+    ];
+
+    foreach ($variants as $data) {
+      $variant = $variant_storage->create($data);
+      $variant->save();
+    }
+
+    return 'Created AB experiment whatsapp_fab_widget with 3 variants.';
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to create WhatsApp AB experiment: ' . $e->getMessage(), 0, $e);
+  }
+}
+
+/**
+ * Initialize WhatsApp SSOT settings in theme config (CONTACT-SSOT-001).
+ */
+function ecosistema_jaraba_core_update_9050(): string {
+  try {
+    $config = \Drupal::configFactory()->getEditable('ecosistema_jaraba_theme.settings');
+    $defaults = [
+      'whatsapp_enabled' => TRUE,
+      'whatsapp_number' => '34623174304',
+      'whatsapp_default_message' => 'Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.',
+      'whatsapp_display' => 'both',
+      'whatsapp_delay_seconds' => 5,
+      'whatsapp_scroll_threshold' => 30,
+      'whatsapp_position' => 'left',
+      'whatsapp_msg_default' => 'Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.',
+      'contact_schema_email' => 'hola@plataformadeecosistemas.es',
+    ];
+    $updated = 0;
+    foreach ($defaults as $key => $value) {
+      if ($config->get($key) === NULL) {
+        $config->set($key, $value);
+        $updated++;
+      }
+    }
+    if ($updated > 0) {
+      $config->save();
+    }
+    return "WhatsApp SSOT: $updated new settings initialized (CONTACT-SSOT-001).";
+  }
+  catch (\Throwable $e) {
+    throw new \RuntimeException('Failed to init WhatsApp SSOT: ' . $e->getMessage(), 0, $e);
   }
 }
