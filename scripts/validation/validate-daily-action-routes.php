@@ -48,6 +48,7 @@ $coreRoutes = [
   'user.pass',
   'entity.user.canonical',
   'entity.user.edit_form',
+  'entity.user.collection',
   '<front>',
   '<nolink>',
   '<none>',
