@@ -240,14 +240,11 @@ PROMPT;
 
     try {
       $response = $this->callAiApi(
-        self::CLASSIFY_PROMPT,
-        $message,
-        'fast',
-        100,
-        0.0,
+        self::CLASSIFY_PROMPT . "\n\nMensaje del usuario:\n" . $message,
+        ['force_tier' => 'fast', 'max_tokens' => 100, 'temperature' => 0.0],
       );
 
-      $text = trim((string) $response);
+      $text = trim((string) ($response['text'] ?? ''));
       $decoded = json_decode($text, TRUE);
 
       if (is_array($decoded) && isset($decoded['type'])) {
@@ -299,15 +296,13 @@ PROMPT;
     $messages = $this->buildConversationMessages($history, $currentMessage);
 
     try {
+      $fullPrompt = $systemPrompt . "\n\n" . $messages;
       $response = $this->callAiApi(
-        $systemPrompt,
-        $messages,
-        'balanced',
-        500,
-        0.3,
+        $fullPrompt,
+        ['force_tier' => 'balanced', 'max_tokens' => 500, 'temperature' => 0.3],
       );
 
-      $text = trim((string) $response);
+      $text = trim((string) ($response['text'] ?? ''));
       $escalate = false;
       $escalateReason = '';
 
@@ -356,16 +351,13 @@ PROMPT;
 
     try {
       $response = $this->callAiApi(
-        $prompt,
-        $historyText,
-        'fast',
-        300,
-        0.0,
+        $prompt . "\n\nHistorial:\n" . $historyText,
+        ['force_tier' => 'fast', 'max_tokens' => 300, 'temperature' => 0.0],
       );
 
       return [
         'success' => true,
-        'summary' => trim((string) $response),
+        'summary' => trim((string) ($response['text'] ?? '')),
       ];
     }
     catch (\Throwable $e) {

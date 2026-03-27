@@ -43,12 +43,41 @@ class WhatsAppPanelController extends ControllerBase {
    *   Render array.
    */
   public function dashboard(): array {
+    $tenantId = $this->resolveTenantId();
+    $stats = $this->conversationService->getStats($tenantId);
+    $escalated = $this->conversationService->getEscalatedForTenant($tenantId);
+    $active = $this->conversationService->getActiveForTenant($tenantId);
+
     return [
       '#theme' => 'wa_panel_dashboard',
+      '#stats' => $stats,
+      '#conversations' => $active,
+      '#escalated' => $escalated,
       '#attached' => [
         'library' => ['jaraba_whatsapp/panel'],
+        'drupalSettings' => [
+          'jarabaWhatsApp' => [
+            'pollInterval' => 15000,
+            'statsUrl' => '/api/v1/whatsapp/stats',
+          ],
+        ],
       ],
     ];
+  }
+
+  /**
+   * Resolves current tenant ID.
+   */
+  private function resolveTenantId(): int {
+    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+      try {
+        return (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId();
+      }
+      catch (\Throwable) {
+        // Fallback.
+      }
+    }
+    return 0;
   }
 
   /**
