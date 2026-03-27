@@ -1696,6 +1696,20 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     }
   }
 
+  // Método Jaraba landing — body class para SCSS targeting.
+  if ($route === 'jaraba_page_builder.metodo_landing') {
+    $variables['attributes']['class'][] = 'landing-page';
+    $variables['attributes']['class'][] = 'page-metodo';
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
+  }
+
+  // Certificación landing — body class para SCSS targeting.
+  if ($route === 'jaraba_page_builder.certificacion_landing') {
+    $variables['attributes']['class'][] = 'landing-page';
+    $variables['attributes']['class'][] = 'page-certificacion';
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
+  }
+
   // Item 1 — Vertical Brand: inject CSS custom properties + body class.
   if (\Drupal::hasService('entity_type.manager')) {
     try {
@@ -3437,6 +3451,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
     else {
       $variables['theme_settings']['megamenu_button_label'] = t('Soluciones');
       $variables['theme_settings']['megamenu_direct_links'] = [
+        ['text' => (string) t('Metodología'), 'url' => $lp . '/metodo'],
         ['text' => (string) t('Precios'), 'url' => $lp . '/planes'],
         ['text' => (string) t('Casos de Éxito'), 'url' => $lp . '/casos-de-exito'],
       ];
@@ -5419,6 +5434,16 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // SaaS Plan → page--vertical-landing.html.twig (página pública de precios)
   if ($route === 'entity.saas_plan.canonical') {
     $suggestions[] = 'page__vertical_landing';
+  }
+
+  // Método Jaraba → page--metodo.html.twig (landing ZERO-REGION-001)
+  if ($route === 'jaraba_page_builder.metodo_landing') {
+    $suggestions[] = 'page__metodo';
+  }
+
+  // Certificación → page--certificacion.html.twig (landing ZERO-REGION-001)
+  if ($route === 'jaraba_page_builder.certificacion_landing') {
+    $suggestions[] = 'page__certificacion';
   }
 
   // Onboarding wizard → page--auth.html.twig (flujo de registro)

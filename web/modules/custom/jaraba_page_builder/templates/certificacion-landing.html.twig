@@ -1,0 +1,410 @@
+{#
+/**
+ * @file
+ * Template para la landing de Certificación y Franquicia Digital.
+ *
+ * 8 secciones: hero, 2 caminos, profesionales (rúbrica 4 niveles),
+ * entidades (licencia), comparativa, FAQ, formulario dual, trust signals.
+ *
+ * @see CertificacionLandingController::landing()
+ */
+#}
+
+{# ── Schema.org EducationalOrganization + FAQPage ── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "{{ 'Plataforma de Ecosistemas Digitales S.L.'|trans }}",
+  "description": "{{ 'Certificación profesional en Supervisión de Agentes IA — Método Jaraba'|trans }}",
+  "url": "https://plataformadeecosistemas.com",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "{{ 'Certificaciones Método Jaraba'|trans }}",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Course", "name": "{{ 'Certificación Profesional'|trans }}" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Course", "name": "{{ 'Certificación Especialista'|trans }}" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Course", "name": "{{ 'Certificación Formador'|trans }}" } }
+    ]
+  }
+}
+</script>
+
+{# ═══ SECCIÓN 1: HERO ═══ #}
+<section class="cert-hero" aria-label="{{ 'Certificación Método Jaraba'|trans }}">
+  <div class="metodo-container">
+    <h1 class="cert-hero__title">{{ hero.title }}</h1>
+    <p class="cert-hero__subtitle">{{ hero.subtitle }}</p>
+    <div class="cert-hero__actions">
+      <a href="{{ hero.cta_profesional.url }}" class="metodo-btn metodo-btn--primary metodo-btn--large"
+         data-track-cta="{{ hero.cta_profesional.track }}" data-track-position="cert_hero">
+        {{ hero.cta_profesional.text }} →
+      </a>
+      <a href="{{ hero.cta_entidad.url }}" class="metodo-btn metodo-btn--secondary metodo-btn--large"
+         data-track-cta="{{ hero.cta_entidad.track }}" data-track-position="cert_hero">
+        {{ hero.cta_entidad.text }} →
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 2: 2 CAMINOS (SPLIT) ═══ #}
+<section class="cert-section cert-caminos" aria-labelledby="cert-caminos-title">
+  <div class="metodo-container">
+    <h2 id="cert-caminos-title" class="sr-only">{% trans %}Elige tu camino{% endtrans %}</h2>
+    <div class="cert-split">
+      {% for key, camino in caminos %}
+        <div class="cert-split__card cert-split__card--{{ key }}">
+          <div class="metodo-card__icon metodo-card__icon--{{ key == 'profesional' ? 'naranja-impulso' : 'azul-corporativo' }}">
+            {{ jaraba_icon(camino.icon.category, camino.icon.name, { variant: 'duotone', size: '36px', color: key == 'profesional' ? 'naranja-impulso' : 'azul-corporativo' }) }}
+          </div>
+          <h3>{{ camino.title }}</h3>
+          <span class="cert-split__subtitle">{{ camino.subtitle }}</span>
+          <p>{{ camino.description }}</p>
+          <a href="{{ camino.url }}" class="metodo-btn metodo-btn--primary metodo-btn--sm">
+            {% trans %}Saber más{% endtrans %} ↓
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 3: PARA PROFESIONALES — RÚBRICA ═══ #}
+<section id="profesionales" class="cert-section cert-profesionales" aria-labelledby="cert-prof-title">
+  <div class="metodo-container">
+    <h2 id="cert-prof-title" class="metodo-section__title">{{ profesionales.title }}</h2>
+
+    {# Rúbrica stepper — 4 niveles con indicadores expandibles #}
+    <div class="cert-rubrica">
+      {% for nivel in profesionales.rubrica %}
+        <details class="cert-rubrica__nivel cert-rubrica__nivel--{{ nivel.level }}"{{ nivel.level == 3 ? ' open' : '' }}>
+          <summary class="cert-rubrica__header">
+            <span class="cert-rubrica__badge">{% trans %}Nivel{% endtrans %} {{ nivel.level }}</span>
+            <span class="cert-rubrica__name">{{ nivel.name }}</span>
+          </summary>
+          <div class="cert-rubrica__body">
+            <p>{{ nivel.description }}</p>
+            <h4>{% trans %}Indicadores observables:{% endtrans %}</h4>
+            <ul>
+              {% for indicator in nivel.indicators %}
+                <li>{{ indicator }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+
+    {# Tipos de certificación #}
+    <h3 class="cert-tipos-title">{% trans %}Tipos de certificación{% endtrans %}</h3>
+    <div class="metodo-cards metodo-cards--3">
+      {% for tipo in profesionales.tipos %}
+        <div class="metodo-card">
+          <h4 class="metodo-card__name">{{ tipo.name }}</h4>
+          <span class="cert-tipo__nivel">{% trans %}Nivel mínimo:{% endtrans %} {{ tipo.nivel_min }}</span>
+          <p class="metodo-card__text">{{ tipo.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="cert-cta-inline">
+      <a href="#formulario" class="metodo-btn metodo-btn--primary"
+         data-track-cta="cert_profesional_form" data-track-position="cert_profesionales">
+        {% trans %}Solicitar certificación{% endtrans %} →
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 4: PARA ENTIDADES ═══ #}
+<section id="entidades" class="cert-section cert-entidades" aria-labelledby="cert-ent-title">
+  <div class="metodo-container">
+    <h2 id="cert-ent-title" class="metodo-section__title">{{ entidades.title }}</h2>
+    <p class="metodo-section__intro">{{ entidades.subtitle }}</p>
+
+    <div class="cert-componentes">
+      <h3>{% trans %}La licencia incluye:{% endtrans %}</h3>
+      <ul class="cert-componentes__list">
+        {% for comp in entidades.componentes %}
+          <li>{{ comp }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="cert-entidades__stat">
+      <span class="metodo-evidencia__value">{{ entidades.stat_value }}<small>{{ entidades.stat_suffix }}</small></span>
+      <span>{{ entidades.stat_label }}</span>
+      <span class="cert-entidades__caso">{{ entidades.caso }}</span>
+    </div>
+
+    <div class="cert-cta-inline">
+      <a href="#formulario" class="metodo-btn metodo-btn--primary"
+         data-track-cta="cert_entidad_form" data-track-position="cert_entidades">
+        {% trans %}Solicitar información{% endtrans %} →
+      </a>
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 5: COMPARATIVA ═══ #}
+<section class="cert-section cert-comparativa" aria-labelledby="cert-comp-title">
+  <div class="metodo-container">
+    <h2 id="cert-comp-title" class="metodo-section__title">{{ comparativa.title }}</h2>
+
+    <div class="cert-table-wrapper">
+      <table class="cert-table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans %}Característica{% endtrans %}</th>
+            <th scope="col" class="cert-table__col-generic">{{ comparativa.columns.generic }}</th>
+            <th scope="col" class="cert-table__col-metodo">{{ comparativa.columns.metodo }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in comparativa.rows %}
+            <tr>
+              <td>{{ row.feature }}</td>
+              <td class="cert-table__check">
+                {% if row.generic %}
+                  <span class="cert-check cert-check--yes" aria-label="{% trans %}Sí{% endtrans %}">&#10003;</span>
+                {% else %}
+                  <span class="cert-check cert-check--no" aria-label="{% trans %}No{% endtrans %}">&#10007;</span>
+                {% endif %}
+              </td>
+              <td class="cert-table__check">
+                {% if row.metodo %}
+                  <span class="cert-check cert-check--yes" aria-label="{% trans %}Sí{% endtrans %}">&#10003;</span>
+                {% else %}
+                  <span class="cert-check cert-check--no" aria-label="{% trans %}No{% endtrans %}">&#10007;</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 6: FAQ ═══ #}
+<section class="cert-section cert-faq" aria-labelledby="cert-faq-title">
+  <div class="metodo-container">
+    <h2 id="cert-faq-title" class="metodo-section__title">{{ faq.title }}</h2>
+
+    <div class="cert-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+      {% for item in faq.items %}
+        <details class="cert-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <summary class="cert-faq__question" itemprop="name">{{ item.question }}</summary>
+          <div class="cert-faq__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text">{{ item.answer }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 7: FORMULARIO DUAL ═══ #}
+<section id="formulario" class="cert-section cert-formulario" aria-labelledby="cert-form-title">
+  <div class="metodo-container">
+    <h2 id="cert-form-title" class="metodo-section__title">{% trans %}¿Te interesa? Hablemos.{% endtrans %}</h2>
+    <p class="metodo-section__intro">{% trans %}Selecciona tu perfil y completa el formulario. Nos pondremos en contacto en menos de 24 horas.{% endtrans %}</p>
+
+    <form class="cert-form" id="cert-contact-form" method="post" action="{{ form_config.submit_url }}" novalidate>
+      {# Honeypot anti-spam #}
+      <div style="display:none" aria-hidden="true">
+        <input type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      {# Selector de tipo #}
+      <div class="cert-form__type-selector">
+        <label class="cert-form__type-option">
+          <input type="radio" name="tipo" value="profesional" checked>
+          <span>{% trans %}Soy profesional{% endtrans %}</span>
+        </label>
+        <label class="cert-form__type-option">
+          <input type="radio" name="tipo" value="entidad">
+          <span>{% trans %}Represento a una entidad{% endtrans %}</span>
+        </label>
+      </div>
+
+      {# Campos comunes #}
+      <div class="cert-form__fields">
+        <div class="cert-form__field">
+          <label for="cert-nombre">{% trans %}Nombre completo{% endtrans %} *</label>
+          <input type="text" id="cert-nombre" name="nombre" required>
+        </div>
+        <div class="cert-form__field">
+          <label for="cert-email">{% trans %}Email{% endtrans %} *</label>
+          <input type="email" id="cert-email" name="email" required>
+        </div>
+        <div class="cert-form__field">
+          <label for="cert-telefono">{% trans %}Teléfono{% endtrans %} *</label>
+          <input type="tel" id="cert-telefono" name="telefono" required>
+        </div>
+
+        {# Campos profesional (condicionales) #}
+        <div class="cert-form__conditional cert-form__conditional--profesional">
+          <div class="cert-form__field">
+            <label for="cert-situacion">{% trans %}Situación actual{% endtrans %} *</label>
+            <select id="cert-situacion" name="situacion">
+              <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+              {% for key, label in form_config.situaciones %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="cert-form__field">
+            <label for="cert-aplicacion">{% trans %}Aplicación de interés{% endtrans %} *</label>
+            <select id="cert-aplicacion" name="aplicacion">
+              <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+              {% for key, label in form_config.aplicaciones %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="cert-form__field">
+            <label for="cert-como">{% trans %}¿Cómo nos conoció?{% endtrans %} *</label>
+            <select id="cert-como" name="como_conocio">
+              <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+              {% for key, label in form_config.como_conocio %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        {# Campos entidad (condicionales) #}
+        <div class="cert-form__conditional cert-form__conditional--entidad" style="display:none">
+          <div class="cert-form__field">
+            <label for="cert-entidad-nombre">{% trans %}Nombre de la entidad{% endtrans %} *</label>
+            <input type="text" id="cert-entidad-nombre" name="entidad_nombre">
+          </div>
+          <div class="cert-form__field">
+            <label for="cert-entidad-tipo">{% trans %}Tipo de entidad{% endtrans %} *</label>
+            <select id="cert-entidad-tipo" name="entidad_tipo">
+              <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+              {% for key, label in form_config.tipos_entidad %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="cert-form__field">
+            <label for="cert-cargo">{% trans %}Cargo{% endtrans %} *</label>
+            <input type="text" id="cert-cargo" name="cargo">
+          </div>
+          <div class="cert-form__field cert-form__field--full">
+            <label for="cert-programa">{% trans %}Programa que ejecuta o quiere ejecutar{% endtrans %}</label>
+            <textarea id="cert-programa" name="programa" rows="3"></textarea>
+          </div>
+          <div class="cert-form__field">
+            <label for="cert-participantes">{% trans %}Nº aproximado de participantes/año{% endtrans %} *</label>
+            <select id="cert-participantes" name="num_participantes">
+              <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+              {% for key, label in form_config.num_participantes %}
+                <option value="{{ key }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        {# Provincia (común) #}
+        <div class="cert-form__field">
+          <label for="cert-provincia">{% trans %}Provincia{% endtrans %} *</label>
+          <select id="cert-provincia" name="provincia">
+            <option value="">{% trans %}Selecciona...{% endtrans %}</option>
+            {% for key, label in form_config.provincias %}
+              <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        {# RGPD #}
+        <div class="cert-form__field cert-form__field--full">
+          <label class="cert-form__checkbox">
+            <input type="checkbox" name="rgpd" value="1" required>
+            <span>{% trans %}He leído y acepto la <a href="/politica-privacidad" target="_blank" rel="noopener">política de privacidad</a>{% endtrans %} *</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="metodo-btn metodo-btn--primary metodo-btn--large cert-form__submit"
+              data-track-cta="cert_form_submit" data-track-position="cert_formulario">
+        {% trans %}Enviar solicitud{% endtrans %} →
+      </button>
+
+      <div class="cert-form__message" role="alert" aria-live="polite" style="display:none"></div>
+    </form>
+  </div>
+</section>
+
+{# ═══ SECCIÓN 8: TRUST SIGNALS ═══ #}
+<section class="cert-section cert-trust" aria-label="{{ 'Evidencia y confianza'|trans }}">
+  <div class="metodo-container">
+    <div class="metodo-evidencia__stat">
+      <span class="metodo-evidencia__value">{{ trust.stat_value }}<small>{{ trust.stat_suffix }}</small></span>
+      <span class="metodo-evidencia__label">{{ trust.stat_label }}</span>
+      <span class="metodo-evidencia__source">{{ trust.stat_source }}</span>
+    </div>
+    <p class="cert-trust__quote">{{ trust.quote_text }}</p>
+
+    {% if trust.trust_logos %}
+      {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+        context: 'certificacion',
+      } only %}
+    {% endif %}
+  </div>
+</section>
+
+{# ── JS para formulario condicional ── #}
+<script>
+(function() {
+  'use strict';
+  var form = document.getElementById('cert-contact-form');
+  if (!form) return;
+
+  var radios = form.querySelectorAll('input[name="tipo"]');
+  var profFields = form.querySelector('.cert-form__conditional--profesional');
+  var entFields = form.querySelector('.cert-form__conditional--entidad');
+
+  function toggle() {
+    var tipo = form.querySelector('input[name="tipo"]:checked').value;
+    profFields.style.display = tipo === 'profesional' ? '' : 'none';
+    entFields.style.display = tipo === 'entidad' ? '' : 'none';
+  }
+
+  radios.forEach(function(r) { r.addEventListener('change', toggle); });
+  toggle();
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = form.querySelector('.cert-form__submit');
+    var msg = form.querySelector('.cert-form__message');
+    btn.disabled = true;
+    btn.textContent = Drupal.t('Enviando...');
+
+    var data = new FormData(form);
+    fetch(form.action, { method: 'POST', body: data })
+      .then(function(r) { return r.json(); })
+      .then(function(json) {
+        msg.style.display = 'block';
+        msg.className = 'cert-form__message cert-form__message--' + (json.success ? 'success' : 'error');
+        msg.textContent = json.message;
+        if (json.success) {
+          form.reset();
+          toggle();
+        }
+        btn.disabled = false;
+        btn.textContent = Drupal.t('Enviar solicitud') + ' →';
+      })
+      .catch(function() {
+        msg.style.display = 'block';
+        msg.className = 'cert-form__message cert-form__message--error';
+        msg.textContent = Drupal.t('Error al enviar. Inténtalo de nuevo.');
+        btn.disabled = false;
+        btn.textContent = Drupal.t('Enviar solicitud') + ' →';
+      });
+  });
+})();
+</script>

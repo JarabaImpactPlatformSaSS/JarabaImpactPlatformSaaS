@@ -202,6 +202,62 @@ class CertificationProgram extends ContentEntityBase implements EntityChangedInt
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // === CAMPOS MÉTODO JARABA ===
+    // Extensión para las 3 capas, 4 competencias y CID del Método Jaraba.
+    // @see docs/implementacion/20260327c-Plan_Implementacion_Metodo_Jaraba_SaaS_Clase_Mundial_v1_Claude.md
+
+    $fields['method_layers'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Capas del Método'))
+      ->setDescription(t('Capas del Método Jaraba que cubre este programa: Criterio, Supervisión IA, Posicionamiento.'))
+      ->setSetting('allowed_values', [
+        'criterio' => 'Criterio',
+        'supervision_ia' => 'Supervisión IA',
+        'posicionamiento' => 'Posicionamiento',
+      ])
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['method_competencies'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Competencias'))
+      ->setDescription(t('Competencias de supervisión IA evaluadas: Pedir, Evaluar, Iterar, Integrar.'))
+      ->setSetting('allowed_values', [
+        'pedir' => 'Pedir',
+        'evaluar' => 'Evaluar',
+        'iterar' => 'Iterar',
+        'integrar' => 'Integrar',
+      ])
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['cid_duration_days'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Duración CID (días)'))
+      ->setDescription(t('Duración del Ciclo de Impacto Digital en días.'))
+      ->setDefaultValue(90)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['min_portfolio_items'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Mínimo evidencias'))
+      ->setDescription(t('Número mínimo de evidencias de portfolio por competencia para aprobar.'))
+      ->setDefaultValue(5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['rubric_config'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Configuración de rúbrica'))
+      ->setDescription(t('JSON con indicadores observables por nivel y competencia. Editable desde admin.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['renewal_requires_evidence'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Renovación requiere evidencias'))
+      ->setDescription(t('Si la renovación de la certificación requiere añadir nuevas evidencias al portfolio.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // === CAMPOS DE SISTEMA ===
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Activo'))

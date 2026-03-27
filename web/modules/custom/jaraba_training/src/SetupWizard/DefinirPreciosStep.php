@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\jaraba_training\SetupWizard;
+
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\ecosistema_jaraba_core\SetupWizard\SetupWizardStepInterface;
+
+/**
+ * Wizard step: Definir precios de certificación.
+ */
+class DefinirPreciosStep implements SetupWizardStepInterface {
+
+  use StringTranslationTrait;
+
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+  ) {}
+
+  public function getId(): string {
+    return 'certificacion.definir_precios';
+  }
+
+  public function getWizardId(): string {
+    return '__global__';
+  }
+
+  public function getLabel(): TranslatableMarkup {
+    return $this->t('Definir precios de certificación');
+  }
+
+  public function getDescription(): TranslatableMarkup {
+    return $this->t('Configura el precio por tipo de certificación o márcalo como gratuito para participantes de programas públicos.');
+  }
+
+  public function getWeight(): int {
+    return 84;
+  }
+
+  public function getIcon(): array {
+    return ['category' => 'business', 'name' => 'building', 'variant' => 'duotone'];
+  }
+
+  public function getRoute(): string {
+    return 'entity.certification_program.collection';
+  }
+
+  public function getRouteParameters(): array {
+    return [];
+  }
+
+  public function useSlidePanel(): bool {
+    return FALSE;
+  }
+
+  public function getSlidePanelSize(): string {
+    return 'medium';
+  }
+
+  public function isComplete(int $tenantId): bool {
+    try {
+      $count = $this->entityTypeManager->getStorage('certification_program')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->count()
+        ->execute();
+      return $count > 0;
+    }
+    catch (\Throwable) {
+      return FALSE;
+    }
+  }
+
+  public function getCompletionData(int $tenantId): array {
+    return [
+      'count' => $this->isComplete($tenantId) ? 1 : 0,
+      'label' => (string) $this->t('programas de certificación con precio'),
+      'progress' => $this->isComplete($tenantId) ? 100 : 0,
+    ];
+  }
+
+  public function isOptional(): bool {
+    return TRUE;
+  }
+
+}

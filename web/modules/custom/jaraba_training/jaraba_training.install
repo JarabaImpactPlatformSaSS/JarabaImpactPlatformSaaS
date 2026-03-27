@@ -67,6 +67,39 @@ function jaraba_training_update_10001(): string {
 }
 
 /**
+ * Add Método Jaraba fields to CertificationProgram + UserCertification.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New base field definitions require update hook.
+ * CertificationProgram: method_layers, method_competencies, cid_duration_days,
+ *   min_portfolio_items, rubric_config, renewal_requires_evidence.
+ * UserCertification: comp_*_score (4), layer_*_score (3), overall_level.
+ */
+function jaraba_training_update_10002(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+  // Actualizar ambas entities con los nuevos campos.
+  $entityTypes = ['certification_program', 'user_certification'];
+  foreach ($entityTypes as $entityTypeId) {
+    try {
+      $entityType = \Drupal::entityTypeManager()->getDefinition($entityTypeId, FALSE);
+      if (!$entityType) {
+        throw new \RuntimeException("Entity type $entityTypeId not found");
+      }
+      $fieldStorageDefinitions = \Drupal::service('entity_field.manager')
+        ->getFieldStorageDefinitions($entityTypeId);
+      $updateManager->updateFieldableEntityType($entityType, $fieldStorageDefinitions);
+      $messages[] = "Updated $entityTypeId with Método Jaraba fields.";
+    }
+    catch (\Throwable $e) {
+      throw new \RuntimeException("Error updating $entityTypeId: " . $e->getMessage(), 0, $e);
+    }
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
  * Implements hook_requirements().
  */
 function jaraba_training_requirements(string $phase): array {

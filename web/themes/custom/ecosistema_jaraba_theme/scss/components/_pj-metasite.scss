@@ -1,0 +1,111 @@
+// @file scss/components/_pj-metasite.scss
+// Overrides de header y mega menú para el meta-sitio Pepe Jaraba (tenant-5).
+// pepejaraba.com — Marca personal del fundador, funnel de consultoría.
+//
+// Paleta: naranja-impulso (#FF8C42) primario, azul-corporativo (#233D63) fondo.
+// Patrón idéntico a _ped-metasite.scss y _ji-metasite.scss:
+// header oscuro → mega panel claro → botones adaptados.
+
+// ─── Variables locales Pepe Jaraba ────────────────────────────────────
+$pj-naranja: #FF8C42;
+$pj-naranja-light: #FFA366;
+$pj-navy: #233D63;
+
+// ═══════════════════════════════════════════════════════════════════════
+// META-SITE TENANT-5 BODY CLASS OVERRIDES
+// ═══════════════════════════════════════════════════════════════════════
+.meta-site-tenant-5 {
+  .landing-header {
+    background: rgba($pj-navy, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba($pj-naranja, 0.15);
+
+    // Logo en negativo (blanco) para contraste sobre fondo oscuro
+    &__logo {
+      filter: brightness(0) invert(1);
+    }
+
+    &__name { color: var(--ej-bg-surface, #fff); }
+    &__slogan { color: rgba(255, 255, 255, 0.6); }
+    a { color: rgba(255, 255, 255, 0.85); }
+    a:hover { color: $pj-naranja-light; }
+  }
+
+  // ── Mega menu nav links (botón "Explora" + direct links) ───────────
+  .header__menu-link {
+    color: rgba(255, 255, 255, 0.85);
+
+    &:hover {
+      color: $pj-naranja-light;
+    }
+
+    svg {
+      opacity: 0.7;
+    }
+  }
+
+  // ── Mega panel dropdown: fondo claro + texto oscuro ────────────────
+  // Especificidad para resetear herencia de color blanco del header.
+  .header__mega-panel {
+    background: var(--ej-bg-surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--ej-border-color, #e5e7eb) 60%, transparent);
+
+    a {
+      color: var(--ej-text-primary, #1a1d29);
+
+      &:hover {
+        color: $pj-naranja;
+      }
+    }
+
+    .mega-panel__title {
+      color: var(--ej-text-muted, #6b7280);
+    }
+
+    .mega-panel__link-text strong {
+      color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+    }
+
+    .mega-panel__link-text small {
+      color: var(--ej-text-muted, #6b7280);
+    }
+
+    // Promo card: naranja Pepe Jaraba como acento de conversión
+    .mega-panel__promo {
+      a {
+        color: $pj-naranja;
+      }
+    }
+  }
+
+  // ── Botones de acción: fondo oscuro ────────────────────────────────
+  .btn-ghost {
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.25);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ej-bg-surface, #fff);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: none;
+    }
+  }
+
+  // CTA header: naranja impulso para máximo contraste sobre navy
+  .btn-primary--glow {
+    background: linear-gradient(135deg, $pj-naranja 0%, $pj-naranja-light 100%);
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+
+  .landing-footer {
+    background: darken($pj-navy, 8%);
+    color: rgba(255, 255, 255, 0.7);
+
+    a { color: $pj-naranja-light; }
+    a:hover { color: $pj-naranja; }
+  }
+}

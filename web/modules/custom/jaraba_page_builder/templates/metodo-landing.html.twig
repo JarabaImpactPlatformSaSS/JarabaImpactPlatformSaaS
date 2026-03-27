@@ -1,279 +1,260 @@
 {#
- # @file
- # Template for the Método Impacto Jaraba landing page.
- #
- # Variables:
- #   - hero: Hero section data (title, subtitle, description, cta_primary, cta_secondary).
- #   - fases: Array of 3 method phases.
- #   - packs: Array of 5 service packs.
- #   - resultados: Case study data and global metrics.
- #   - certificaciones: 3 certification levels.
- #   - faq: Array of FAQ items.
- #   - cta_final: Final conversion CTA data.
- #}
+/**
+ * @file
+ * Template para la landing del Método Jaraba v2.
+ *
+ * 8 secciones: hero, problema, solución, 3 capas, 4 competencias,
+ * CID 90 días, 3 caminos, evidencia + CTA final.
+ *
+ * Variables (inyectadas desde MetodoLandingController):
+ * - hero: badge, title, subtitle, stat_*, cta_primary, cta_secondary
+ * - problema: title, intro, pain_points[]
+ * - solucion: title, intro, steps[], metaphor_*
+ * - capas: title, items[] (name, question, description, icon, color)
+ * - competencias: title, items[] (name, description, example, icon, color)
+ * - cid: title, phases[] (number, name, days, deliverable, color)
+ * - caminos: title, paths[] (audience, description, cta_*, icon, color)
+ * - evidencia: stat_*, quote, trust_logos, cta, cta_secondary
+ *
+ * @see MetodoLandingController::landing()
+ */
+#}
 
-{# Schema.org Organization structured data for the method #}
+{# ── Schema.org Course ── #}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Jaraba Impact Platform",
-  "description": "{{ hero.description|e('js') }}",
-  "url": "https://jarabaimpact.com/metodo",
-  "knowsAbout": [
-    "Transformación Digital",
-    "Digitalización PYME",
-    "Inteligencia Artificial aplicada",
-    "Economía Social"
+  "@type": "Course",
+  "name": "{{ 'Método Jaraba: Supervisión de Agentes IA'|trans }}",
+  "description": "{{ 'Sistema de capacitación profesional en 90 días para generar impacto económico supervisando agentes de inteligencia artificial.'|trans }}",
+  "provider": {
+    "@type": "Organization",
+    "name": "Plataforma de Ecosistemas Digitales S.L.",
+    "url": "https://plataformadeecosistemas.com"
+  },
+  "hasCourseInstance": [
+    { "@type": "CourseInstance", "name": "{{ 'Empleabilidad'|trans }}", "courseMode": "blended" },
+    { "@type": "CourseInstance", "name": "{{ 'Emprendimiento'|trans }}", "courseMode": "blended" },
+    { "@type": "CourseInstance", "name": "{{ 'Digitalización'|trans }}", "courseMode": "blended" }
   ]
 }
 </script>
 
-{# ══════════════════════════════════════════════════════════════
-   HERO SECTION
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-hero" aria-label="{% trans %}Presentación del Método Impacto Jaraba{% endtrans %}">
-  <div class="metodo-hero__container">
-    <div class="metodo-hero__badge">
-      {{ jaraba_icon('business', 'star', { variant: 'duotone', size: '20px', color: 'naranja-impulso' }) }}
-      <span>{% trans %}Método Probado{% endtrans %}</span>
-    </div>
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 1: HERO                                                    #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-hero" aria-label="{{ 'Método Jaraba'|trans }}">
+  <div class="metodo-container">
+    {% if hero.badge %}
+      <span class="metodo-hero__badge">{{ hero.badge }}</span>
+    {% endif %}
     <h1 class="metodo-hero__title">{{ hero.title }}</h1>
     <p class="metodo-hero__subtitle">{{ hero.subtitle }}</p>
-    <p class="metodo-hero__description">{{ hero.description }}</p>
+
+    {% if hero.stat_value %}
+      <div class="metodo-hero__stat" aria-label="{{ hero.stat_label }}">
+        <span class="metodo-hero__stat-value">{{ hero.stat_value }}<small>{{ hero.stat_suffix }}</small></span>
+        <span class="metodo-hero__stat-label">{{ hero.stat_label }}</span>
+        <span class="metodo-hero__stat-source">{{ hero.stat_source }}</span>
+      </div>
+    {% endif %}
+
     <div class="metodo-hero__actions">
-      <a href="{{ hero.cta_primary.url }}"
-         class="metodo-btn metodo-btn--primary"
-         data-track-cta="metodo-hero-primary"
-         data-track-position="hero"
-         aria-label="{{ hero.cta_primary.text }}">
-        {{ hero.cta_primary.text }}
-      </a>
-      <a href="{{ hero.cta_secondary.url }}"
-         class="metodo-btn metodo-btn--secondary"
-         data-track-cta="metodo-hero-secondary"
-         data-track-position="hero"
-         aria-label="{{ hero.cta_secondary.text }}">
-        {{ hero.cta_secondary.text }}
-      </a>
+      {% if hero.cta_primary %}
+        <a href="{{ hero.cta_primary.url }}" class="metodo-btn metodo-btn--primary metodo-btn--large"
+           data-track-cta="{{ hero.cta_primary.track }}" data-track-position="metodo_hero">
+          {{ hero.cta_primary.text }} ↓
+        </a>
+      {% endif %}
+      {% if hero.cta_secondary %}
+        <a href="{{ hero.cta_secondary.url }}" class="metodo-btn metodo-btn--secondary"
+           data-track-cta="{{ hero.cta_secondary.track }}" data-track-position="metodo_hero">
+          {{ hero.cta_secondary.text }} →
+        </a>
+      {% endif %}
     </div>
   </div>
 </section>
 
-{# ══════════════════════════════════════════════════════════════
-   3 FASES DEL MÉTODO
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-fases" aria-label="{% trans %}Las 3 fases del método{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-section__header">
-      <h2 class="metodo-section__title">{% trans %}3 Fases, 90 Días, Resultados Reales{% endtrans %}</h2>
-      <p class="metodo-section__subtitle">{% trans %}Un proceso estructurado que te lleva de la idea a la acción con acompañamiento en cada paso.{% endtrans %}</p>
-    </div>
-    <div class="metodo-fases__grid">
-      {% for fase in fases %}
-        <article class="metodo-fase-card" aria-label="{{ fase.title }}">
-          <div class="metodo-fase-card__number">
-            <span>{{ fase.number }}</span>
-          </div>
-          <div class="metodo-fase-card__icon">
-            {{ jaraba_icon(fase.icon.category, fase.icon.name, { variant: 'duotone', size: '40px', color: 'azul-corporativo' }) }}
-          </div>
-          <h3 class="metodo-fase-card__title">{{ fase.title }}</h3>
-          <p class="metodo-fase-card__duration">
-            {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px', color: 'naranja-impulso' }) }}
-            {{ fase.duration }}
-          </p>
-          <p class="metodo-fase-card__description">{{ fase.description }}</p>
-          {% if fase.deliverables %}
-            <ul class="metodo-fase-card__deliverables" aria-label="{% trans %}Entregables{% endtrans %}">
-              {% for deliverable in fase.deliverables %}
-                <li>
-                  {{ jaraba_icon('ui', 'check', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
-                  {{ deliverable }}
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </article>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 2: EL PROBLEMA                                            #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-problema" aria-labelledby="metodo-problema-title">
+  <div class="metodo-container">
+    <h2 id="metodo-problema-title" class="metodo-section__title">{{ problema.title }}</h2>
+    <p class="metodo-section__intro">{{ problema.intro }}</p>
 
-{# ══════════════════════════════════════════════════════════════
-   5 PACKS DE SERVICIO
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-packs" aria-label="{% trans %}Los 5 packs del método{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-section__header">
-      <h2 class="metodo-section__title">{% trans %}5 Módulos que se Adaptan a tu Negocio{% endtrans %}</h2>
-      <p class="metodo-section__subtitle">{% trans %}Elige los packs que necesitas. Empieza con uno y amplía según crezcas.{% endtrans %}</p>
-    </div>
-    <div class="metodo-packs__grid">
-      {% for pack in packs %}
-        <article class="metodo-pack-card" aria-label="{{ pack.nombre }}">
-          <div class="metodo-pack-card__icon">
-            {{ jaraba_icon(pack.icon.category, pack.icon.name, { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
+    <div class="metodo-cards metodo-cards--3">
+      {% for point in problema.pain_points %}
+        <div class="metodo-card metodo-card--pain">
+          <div class="metodo-card__icon metodo-card__icon--{{ point.color }}">
+            {{ jaraba_icon(point.icon.category, point.icon.name, { variant: 'duotone', size: '32px', color: point.color }) }}
           </div>
-          <h3 class="metodo-pack-card__title">{{ pack.nombre }}</h3>
-          <p class="metodo-pack-card__description">{{ pack.descripcion }}</p>
-          <div class="metodo-pack-card__price">
-            <span class="metodo-pack-card__price-label">{% trans %}Desde{% endtrans %}</span>
-            <span class="metodo-pack-card__price-value">{{ pack.precio_desde }}&nbsp;€<small>/{% trans %}mes{% endtrans %}</small></span>
-          </div>
-        </article>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-{# ══════════════════════════════════════════════════════════════
-   RESULTADOS — CASO PED S.L.
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-resultados" aria-label="{% trans %}Resultados del método{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-section__header">
-      <h2 class="metodo-section__title">{% trans %}Resultados Reales, No Promesas{% endtrans %}</h2>
-      <p class="metodo-section__subtitle">
-        {% trans %}Caso real: {{ resultados.case_study.empresa }} — Programa {{ resultados.case_study.programa }}{% endtrans %}
-      </p>
-    </div>
-    <div class="metodo-resultados__metrics">
-      {% for metrica in resultados.metricas_globales %}
-        <div class="metodo-metric-card">
-          <span class="metodo-metric-card__value">{{ metrica.valor }}<small>{{ metrica.sufijo }}</small></span>
-          <span class="metodo-metric-card__label">{{ metrica.label }}</span>
+          <blockquote class="metodo-card__quote">{{ point.quote }}</blockquote>
+          <p class="metodo-card__text">{{ point.description }}</p>
         </div>
       {% endfor %}
     </div>
-    <div class="metodo-resultados__detail">
-      <div class="metodo-resultados__case-badge">
-        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '20px', color: 'verde-innovacion' }) }}
-        <span>{% trans %}Datos verificados del programa PIIL Andalucía 2023{% endtrans %}</span>
-      </div>
-      <div class="metodo-resultados__case-stats">
-        <div class="metodo-resultados__stat">
-          <strong>{{ resultados.case_study.participantes }}</strong>
-          <span>{% trans %}participantes{% endtrans %}</span>
-        </div>
-        <div class="metodo-resultados__stat">
-          <strong>{{ resultados.case_study.negocios_creados }}</strong>
-          <span>{% trans %}negocios creados{% endtrans %}</span>
-        </div>
-        <div class="metodo-resultados__stat">
-          <strong>{{ resultados.case_study.satisfaccion }}/5</strong>
-          <span>{% trans %}satisfacción{% endtrans %}</span>
-        </div>
-      </div>
+  </div>
+</section>
+
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 3: LA SOLUCIÓN — FLUJO INVERTIDO                          #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section id="solucion" class="metodo-section metodo-solucion" aria-labelledby="metodo-solucion-title">
+  <div class="metodo-container">
+    <h2 id="metodo-solucion-title" class="metodo-section__title">{{ solucion.title }}</h2>
+    <p class="metodo-section__intro">{{ solucion.intro }}</p>
+
+    <ol class="metodo-steps">
+      {% for step in solucion.steps %}
+        <li class="metodo-step">
+          <span class="metodo-step__number">{{ step.number }}</span>
+          <div class="metodo-step__content">
+            <strong class="metodo-step__title">{{ step.title }}</strong>
+            <p class="metodo-step__desc">{{ step.description }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+
+    <div class="metodo-metaphor">
+      <h3 class="metodo-metaphor__title">{{ solucion.metaphor_title }}</h3>
+      <p class="metodo-metaphor__text">{{ solucion.metaphor_text }}</p>
     </div>
   </div>
 </section>
 
-{# ══════════════════════════════════════════════════════════════
-   3 NIVELES DE CERTIFICACIÓN
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-certificaciones" aria-label="{% trans %}Niveles de certificación{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-section__header">
-      <h2 class="metodo-section__title">{% trans %}Certifícate en el Método Jaraba{% endtrans %}</h2>
-      <p class="metodo-section__subtitle">{% trans %}Tres niveles de colaboración para profesionales que quieran aplicar el método.{% endtrans %}</p>
-    </div>
-    <div class="metodo-certificaciones__grid">
-      {% for cert in certificaciones %}
-        <article class="metodo-cert-card" aria-label="{{ cert.title }}">
-          {% if cert.proximamente %}
-            <div class="metodo-cert-card__badge metodo-cert-card__badge--soon">
-              {% trans %}Próximamente{% endtrans %}
-            </div>
-          {% endif %}
-          <div class="metodo-cert-card__level">
-            {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '32px', color: 'naranja-impulso' }) }}
-            <span>{% trans %}Nivel{% endtrans %} {{ cert.level }}</span>
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 4: LAS 3 CAPAS                                            #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-capas" aria-labelledby="metodo-capas-title">
+  <div class="metodo-container">
+    <h2 id="metodo-capas-title" class="metodo-section__title">{{ capas.title }}</h2>
+
+    <div class="metodo-cards metodo-cards--3">
+      {% for capa in capas.items %}
+        <div class="metodo-card metodo-card--capa metodo-card--{{ capa.color }}">
+          <div class="metodo-card__icon metodo-card__icon--{{ capa.color }}">
+            {{ jaraba_icon(capa.icon.category, capa.icon.name, { variant: 'duotone', size: '40px', color: capa.color }) }}
           </div>
-          <h3 class="metodo-cert-card__title">{{ cert.title }}</h3>
-          <p class="metodo-cert-card__description">{{ cert.description }}</p>
-          {% if cert.requisitos %}
-            <ul class="metodo-cert-card__requirements" aria-label="{% trans %}Requisitos{% endtrans %}">
-              {% for requisito in cert.requisitos %}
-                <li>
-                  {{ jaraba_icon('ui', 'check', { variant: 'duotone', size: '14px', color: 'verde-innovacion' }) }}
-                  {{ requisito }}
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </article>
+          <h3 class="metodo-card__name">{{ capa.name }}</h3>
+          <span class="metodo-card__question">{{ capa.question }}</span>
+          <p class="metodo-card__text">{{ capa.description }}</p>
+        </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
-{# ══════════════════════════════════════════════════════════════
-   FAQ — PREGUNTAS FRECUENTES
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-faq" aria-label="{% trans %}Preguntas frecuentes{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-section__header">
-      <h2 class="metodo-section__title">{% trans %}Preguntas Frecuentes{% endtrans %}</h2>
-    </div>
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 5: LAS 4 COMPETENCIAS                                     #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-competencias" aria-labelledby="metodo-comp-title">
+  <div class="metodo-container">
+    <h2 id="metodo-comp-title" class="metodo-section__title">{{ competencias.title }}</h2>
 
-    {# Schema.org FAQPage structured data #}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {% for item in faq %}
-        {
-          "@type": "Question",
-          "name": "{{ item.question|e('js') }}",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "{{ item.answer|e('js') }}"
-          }
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
-      ]
-    }
-    </script>
-
-    <div class="metodo-faq__accordion" role="list">
-      {% for item in faq %}
-        <details class="metodo-faq__item" role="listitem">
-          <summary class="metodo-faq__question" aria-label="{{ item.question }}">
-            <span>{{ item.question }}</span>
-            <span class="metodo-faq__chevron" aria-hidden="true">
-              {{ jaraba_icon('ui', 'chevron-down', { variant: 'duotone', size: '20px', color: 'azul-corporativo' }) }}
-            </span>
-          </summary>
-          <div class="metodo-faq__answer">
-            <p>{{ item.answer }}</p>
+    <div class="metodo-competencia-grid">
+      {% for comp in competencias.items %}
+        <div class="metodo-competencia">
+          <div class="metodo-competencia__icon metodo-competencia__icon--{{ comp.color }}">
+            {{ jaraba_icon(comp.icon.category, comp.icon.name, { variant: 'duotone', size: '28px', color: comp.color }) }}
           </div>
-        </details>
+          <div class="metodo-competencia__content">
+            <h3 class="metodo-competencia__name">{{ comp.name }}</h3>
+            <p class="metodo-competencia__desc">{{ comp.description }}</p>
+            <p class="metodo-competencia__example"><em>{{ comp.example }}</em></p>
+          </div>
+        </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
-{# ══════════════════════════════════════════════════════════════
-   CTA FINAL — CONVERSIÓN
-   ══════════════════════════════════════════════════════════════ #}
-<section class="metodo-cta-final" aria-label="{% trans %}Llamada a la acción{% endtrans %}">
-  <div class="metodo-section__container">
-    <div class="metodo-cta-final__content">
-      <h2 class="metodo-cta-final__title">{{ cta_final.title }}</h2>
-      <p class="metodo-cta-final__subtitle">{{ cta_final.subtitle }}</p>
-      <a href="{{ cta_final.cta_url }}"
-         class="metodo-btn metodo-btn--primary metodo-btn--large"
-         data-track-cta="metodo-final-cta"
-         data-track-position="footer-cta"
-         aria-label="{{ cta_final.cta_text }}">
-        {{ cta_final.cta_text }}
-      </a>
-      <p class="metodo-cta-final__trust">
-        {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '16px', color: 'verde-innovacion' }) }}
-        {% trans %}Sin tarjeta de crédito. Cancela cuando quieras.{% endtrans %}
-      </p>
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 6: CID — CICLO DE IMPACTO DIGITAL 90 DÍAS                 #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-cid" aria-labelledby="metodo-cid-title">
+  <div class="metodo-container">
+    <h2 id="metodo-cid-title" class="metodo-section__title">{{ cid.title }}</h2>
+
+    <div class="metodo-timeline">
+      {% for phase in cid.phases %}
+        <div class="metodo-timeline__phase metodo-timeline__phase--{{ phase.color }}">
+          <div class="metodo-timeline__marker">
+            <span class="metodo-timeline__number">{{ phase.number }}</span>
+          </div>
+          <div class="metodo-timeline__content">
+            <span class="metodo-timeline__days">{{ phase.days }}</span>
+            <h3 class="metodo-timeline__name">{{ phase.name }}</h3>
+            <p class="metodo-timeline__deliverable">
+              <strong>{% trans %}Entregable:{% endtrans %}</strong> {{ phase.deliverable }}
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 7: 3 CAMINOS                                              #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-caminos" aria-labelledby="metodo-caminos-title">
+  <div class="metodo-container">
+    <h2 id="metodo-caminos-title" class="metodo-section__title">{{ caminos.title }}</h2>
+
+    <div class="metodo-cards metodo-cards--3">
+      {% for path in caminos.paths %}
+        <div class="metodo-card metodo-card--camino metodo-card--{{ path.color }}">
+          <div class="metodo-card__icon metodo-card__icon--{{ path.color }}">
+            {{ jaraba_icon(path.icon.category, path.icon.name, { variant: 'duotone', size: '40px', color: path.color }) }}
+          </div>
+          <h3 class="metodo-card__name">{{ path.audience }}</h3>
+          <p class="metodo-card__text">{{ path.description }}</p>
+          <a href="{{ path.cta_url }}" class="metodo-btn metodo-btn--primary metodo-btn--sm"
+             data-track-cta="{{ path.track }}" data-track-position="metodo_caminos"
+             target="_blank" rel="noopener">
+            {{ path.cta_text }} →
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ═══════════════════════════════════════════════════════════════════ #}
+{# SECCIÓN 8: EVIDENCIA + CTA FINAL                                  #}
+{# ═══════════════════════════════════════════════════════════════════ #}
+<section class="metodo-section metodo-evidencia" aria-labelledby="metodo-evidencia-title">
+  <div class="metodo-container">
+    <div class="metodo-evidencia__stat">
+      <span class="metodo-evidencia__value">{{ evidencia.stat_value }}<small>{{ evidencia.stat_suffix }}</small></span>
+      <span class="metodo-evidencia__label" id="metodo-evidencia-title">{{ evidencia.stat_label }}</span>
+      <span class="metodo-evidencia__source">{{ evidencia.stat_source }}</span>
+    </div>
+
+    <p class="metodo-evidencia__quote">{{ evidencia.quote }}</p>
+
+    {% if evidencia.trust_logos %}
+      {% include '@ecosistema_jaraba_theme/partials/_trust-strip.html.twig' with {
+        context: 'metodo',
+      } only %}
+    {% endif %}
+
+    <div class="metodo-evidencia__actions">
+      {% if evidencia.cta %}
+        <a href="{{ evidencia.cta.url }}" class="metodo-btn metodo-btn--primary metodo-btn--large"
+           data-track-cta="{{ evidencia.cta.track }}" data-track-position="metodo_evidencia">
+          {{ evidencia.cta.text }} →
+        </a>
+      {% endif %}
+      {% if evidencia.cta_secondary %}
+        <a href="{{ evidencia.cta_secondary.url }}" class="metodo-btn metodo-btn--secondary"
+           data-track-cta="{{ evidencia.cta_secondary.track }}" data-track-position="metodo_evidencia">
+          {{ evidencia.cta_secondary.text }}
+        </a>
+      {% endif %}
     </div>
   </div>
 </section>

@@ -550,6 +550,22 @@ route-landing:
   dependencies:
     - ecosistema_jaraba_theme/global-styling
 
+metodo-landing:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/metodo-landing.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+certificacion-landing:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/certificacion-landing.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 route-empleabilidad:
   version: 1.0.0
   css:

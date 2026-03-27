@@ -147,6 +147,57 @@ class UserCertification extends ContentEntityBase implements EntityChangedInterf
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // === CAMPOS MÉTODO JARABA — Puntuaciones de rúbrica ===
+    // Puntuación 1-4 por competencia y capa. NULL hasta evaluación.
+
+    $fields['comp_pedir_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Pedir'))
+      ->setDescription(t('Puntuación 1-4 en la competencia Pedir.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['comp_evaluar_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Evaluar'))
+      ->setDescription(t('Puntuación 1-4 en la competencia Evaluar.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['comp_iterar_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Iterar'))
+      ->setDescription(t('Puntuación 1-4 en la competencia Iterar.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['comp_integrar_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Integrar'))
+      ->setDescription(t('Puntuación 1-4 en la competencia Integrar.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['layer_criterio_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Criterio'))
+      ->setDescription(t('Puntuación 1-4 en la capa Criterio.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['layer_supervision_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Supervisión IA'))
+      ->setDescription(t('Puntuación 1-4 en la capa Supervisión IA.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['layer_posicionamiento_score'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Puntuación: Posicionamiento'))
+      ->setDescription(t('Puntuación 1-4 en la capa Posicionamiento.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['overall_level'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Nivel global'))
+      ->setDescription(t('Nivel global 1-4. Calculado como el mínimo de las 4 competencias.'))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // === CAMPOS DE SISTEMA ===
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));

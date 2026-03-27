@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-27
-**Versión:** 200.0.0 (BRAND-TERM-VALIDATOR-001 — rebrand Desarrollo Local + 3 salvaguardas deploy + aprendizaje #230)
+**Versión:** 201.0.0 (POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 + DEPLOY-COHERENCE-001 — popup dual captación + safeguards deploy, aprendizaje #231)
 
 > **📋 MEGAMENU-PED-CORPORATE-001 — v168 DIRECTRICES + v151 ARQUITECTURA + v199 INDICE** (2026-03-26)
 >
@@ -1554,12 +1554,12 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v166.0.0** — Redis ACL + Andalucía 2E + Status Report Proactivo | 2026-03-25 (v166.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v150.0.0** — Safeguard 148 scripts, Madurez 5.0/5.0 | 2026-03-25 (v150.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v195.0.0** | 2026-03-25 (v195.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v115.0.0** — Implementation patterns 49 | 2026-03-25 (v115.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v169.0.0** — BRAND-TERM-VALIDATOR-001 + 3 salvaguardas deploy | 2026-03-27 (v169.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v151.0.0** — Safeguard 180 scripts, Madurez 5.0/5.0 | 2026-03-27 (v151.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v201.0.0** | 2026-03-27 (v201.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v120.0.0** — POPUP-DUAL-SELECTOR-001 + CONFIG-INSTALL-DRIFT-001 | 2026-03-27 (v120.0.0) |
 | [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones de customización por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
-| [validators-reference.md](./validators-reference.md) | 🛡️ SSOT lista completa 104 validators (88 run + 16 warn) | 2026-03-23 |
+| [validators-reference.md](./validators-reference.md) | 🛡️ SSOT lista completa 180 validators (127 run + 56 warn) | 2026-03-27 |
 
 ---
 

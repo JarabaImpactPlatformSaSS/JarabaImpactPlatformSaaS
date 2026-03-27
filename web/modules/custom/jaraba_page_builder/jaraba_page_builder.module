@@ -127,18 +127,35 @@ function jaraba_page_builder_theme($existing, $type, $theme, $path) {
       ],
       'template' => 'page-builder-dashboard',
     ],
-    // Landing page del Método Impacto Jaraba (/metodo).
+    // Landing page del Método Jaraba v2 (/metodo).
+    // 8 secciones: hero, problema, solución, 3 capas, 4 competencias,
+    // CID 90 días, 3 caminos, evidencia+CTA.
     'metodo_landing' => [
       'variables' => [
         'hero' => [],
-        'fases' => [],
-        'packs' => [],
-        'resultados' => [],
-        'certificaciones' => [],
-        'faq' => [],
-        'cta_final' => [],
+        'problema' => [],
+        'solucion' => [],
+        'capas' => [],
+        'competencias' => [],
+        'cid' => [],
+        'caminos' => [],
+        'evidencia' => [],
       ],
       'template' => 'metodo-landing',
+    ],
+    // Landing de Certificación y Franquicia Digital (/certificacion).
+    'certificacion_landing' => [
+      'variables' => [
+        'hero' => [],
+        'caminos' => [],
+        'profesionales' => [],
+        'entidades' => [],
+        'comparativa' => [],
+        'faq' => [],
+        'trust' => [],
+        'form_config' => [],
+      ],
+      'template' => 'certificacion-landing',
     ],
     // Dashboard de Analytics - Gap C.
     'analytics_dashboard' => [

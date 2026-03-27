@@ -15,7 +15,7 @@
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 121 (bloquean CI)
+## Run Checks — 127 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -138,7 +138,7 @@
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 | BRAND-TERM-VALIDATOR-001 | Obsolete brand terms in frontend (Desarrollo Rural → Local) |
 
-## Warn Checks — 44 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 56 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|

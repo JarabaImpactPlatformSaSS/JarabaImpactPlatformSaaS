@@ -392,11 +392,88 @@ $ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
   .landing-header {
     background: rgba($ji-navy, 0.95);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba($ji-teal, 0.15);
 
+    // Logo en negativo (blanco) para contraste sobre fondo oscuro
+    &__logo {
+      filter: brightness(0) invert(1);
+    }
+
     &__name { color: var(--ej-bg-surface, #fff); }
+    &__slogan { color: rgba(255, 255, 255, 0.6); }
     a { color: rgba(255, 255, 255, 0.85); }
     a:hover { color: $ji-teal-light; }
+  }
+
+  // ── Mega menu nav links (botón "Descubre" + direct links) ──────────
+  .header__menu-link {
+    color: rgba(255, 255, 255, 0.85);
+
+    &:hover {
+      color: $ji-teal-light;
+    }
+
+    svg {
+      opacity: 0.7;
+    }
+  }
+
+  // ── Mega panel dropdown: fondo claro + texto oscuro ────────────────
+  // Especificidad necesaria para resetear el `a { color: white }`
+  // heredado del header oscuro (0-4-1 > 0-3-1).
+  .header__mega-panel {
+    background: var(--ej-bg-surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--ej-border-color, #e5e7eb) 60%, transparent);
+
+    a {
+      color: var(--ej-text-primary, #1a1d29);
+
+      &:hover {
+        color: $ji-teal;
+      }
+    }
+
+    .mega-panel__title {
+      color: var(--ej-text-muted, #6b7280);
+    }
+
+    .mega-panel__link-text strong {
+      color: var(--ej-text-heading, var(--ej-text-primary, #1a1d29));
+    }
+
+    .mega-panel__link-text small {
+      color: var(--ej-text-muted, #6b7280);
+    }
+
+    // Promo card: teal Jaraba Impact en lugar de naranja SaaS
+    .mega-panel__promo {
+      a {
+        color: $ji-teal;
+      }
+    }
+  }
+
+  // ── Botones de acción: fondo oscuro ────────────────────────────────
+  .btn-ghost {
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.25);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ej-bg-surface, #fff);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: none;
+    }
+  }
+
+  // CTA header: teal gradiente para máximo contraste sobre navy
+  .btn-primary--glow {
+    background: $ji-gradient-teal;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
   }
 
   .landing-footer {

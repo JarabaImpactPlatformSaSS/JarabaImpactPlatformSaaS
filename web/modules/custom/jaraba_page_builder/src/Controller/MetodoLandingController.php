@@ -6,305 +6,376 @@ namespace Drupal\jaraba_page_builder\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
-use Drupal\jaraba_site_builder\Service\MetaSiteResolverService;
+use Drupal\ecosistema_jaraba_core\Service\MegaMenuBridgeService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Landing page para el Método Impacto Jaraba.
+ * Landing page del Método Jaraba™ v2 para plataformadeecosistemas.com.
  *
- * Ruta pública /metodo orientada a jarabaimpact.com.
- * Presenta las 3 fases, 5 packs, resultados reales y certificaciones.
+ * 8 secciones que presentan el framework pedagógico central del ecosistema:
+ * 3 capas (Criterio, Supervisión IA, Posicionamiento), 4 competencias
+ * (Pedir, Evaluar, Iterar, Integrar), y el CID de 90 días.
  *
- * MARKETING-TRUTH-001: Certificaciones marcadas como "Próximamente"
- * porque el backend de certificación no existe todavía.
+ * Audiencia: usuarios SaaS, prospects B2C/B2B, evaluadores de programas.
+ * Tono: profesional, orientado a producto (3ª persona).
+ *
+ * @see docs/implementacion/20260327c-Plan_Implementacion_Metodo_Jaraba_SaaS_Clase_Mundial_v1_Claude.md
  */
 class MetodoLandingController extends ControllerBase {
 
   /**
-   * The MetaSite resolver service (optional, cross-module).
+   * MegaMenuBridgeService para catálogo de verticales (optional cross-module).
    */
-  protected ?MetaSiteResolverService $metaSiteResolver = NULL;
+  protected ?MegaMenuBridgeService $megaMenuBridge = NULL;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     $instance = parent::create($container);
-    if ($container->has('jaraba_site_builder.metasite_resolver')) {
-      $instance->metaSiteResolver = $container->get('jaraba_site_builder.metasite_resolver');
-    }
+    $instance->megaMenuBridge = $container->get('ecosistema_jaraba_core.mega_menu_bridge');
     return $instance;
   }
 
   /**
-   * Renders the Método Impacto Jaraba landing page.
+   * Renders the Método Jaraba landing page (v2).
    *
    * @return array
    *   Render array with #theme 'metodo_landing'.
+   */
+  /**
+   * @return array<string, mixed>
    */
   public function landing(): array {
     return [
       '#theme' => 'metodo_landing',
       '#hero' => $this->buildHero(),
-      '#fases' => $this->buildFases(),
-      '#packs' => $this->buildPacks(),
-      '#resultados' => $this->buildResultados(),
-      '#certificaciones' => $this->buildCertificaciones(),
-      '#faq' => $this->buildFaq(),
-      '#cta_final' => $this->buildCtaFinal(),
+      '#problema' => $this->buildProblema(),
+      '#solucion' => $this->buildSolucion(),
+      '#capas' => $this->buildCapas(),
+      '#competencias' => $this->buildCompetencias(),
+      '#cid' => $this->buildCid(),
+      '#caminos' => $this->buildCaminos(),
+      '#evidencia' => $this->buildEvidencia(),
+      '#attached' => [
+        'library' => [
+          'ecosistema_jaraba_theme/metodo-landing',
+        ],
+      ],
       '#cache' => [
-        'contexts' => ['url.path'],
+        'contexts' => ['url.path', 'languages:language_content'],
+        'tags' => ['config:saas_plan_tier_list'],
         'max-age' => 3600,
       ],
     ];
   }
 
   /**
-   * Builds hero section data.
+   * Sección 1: Hero — Propuesta de valor.
+   */
+  /**
+   * @return array<string, mixed>
    */
   protected function buildHero(): array {
-    $register_url = '';
-    $login_url = '';
-    try {
-      $register_url = Url::fromRoute('user.register')->toString();
-    }
-    catch (\Exception $e) {
-      $register_url = '/user/register';
-    }
-    try {
-      $login_url = Url::fromRoute('user.login')->toString();
-    }
-    catch (\Exception $e) {
-      $login_url = '/user/login';
-    }
-
     return [
-      'title' => $this->t('El Método Impacto Jaraba'),
-      'subtitle' => $this->t('Tu Plan de Transformación Digital en 90 Días'),
-      'description' => $this->t('Un método probado en 3 fases que combina tecnología SaaS, acompañamiento experto e inteligencia artificial para digitalizar tu negocio con resultados medibles.'),
+      'badge' => $this->t('Método Jaraba™'),
+      'title' => $this->t('Aprende a supervisar agentes de IA. Y que eso se convierta en tu profesión.'),
+      'subtitle' => $this->t('Un sistema de capacitación en 90 días que te enseña a generar impacto económico real dirigiendo inteligencia artificial. Sin humo. Sin tecnicismos. Con resultados medibles.'),
+      'stat_value' => '46',
+      'stat_suffix' => '%',
+      'stat_label' => $this->t('de inserción laboral'),
+      'stat_source' => $this->t('Programa Andalucía +ei, 1ª Edición'),
       'cta_primary' => [
-        'text' => $this->t('Empieza tu transformación'),
-        'url' => $register_url,
+        'text' => $this->t('Ver cómo funciona'),
+        'url' => '#solucion',
+        'track' => 'metodo_hero_scroll',
       ],
       'cta_secondary' => [
-        'text' => $this->t('Ya tengo cuenta'),
-        'url' => $login_url,
+        'text' => $this->t('Empezar gratis'),
+        'url' => $this->getRegisterUrl(),
+        'track' => 'metodo_hero_register',
       ],
     ];
   }
 
   /**
-   * Builds the 3 phases of the method.
+   * Sección 2: El problema — Pain points.
    */
-  protected function buildFases(): array {
-    return [
-      [
-        'number' => 1,
-        'title' => $this->t('Diagnóstico'),
-        'description' => $this->t('Analizamos tu negocio con herramientas de IA para identificar oportunidades de digitalización, puntos de dolor y quick wins. Recibes un informe personalizado con tu hoja de ruta.'),
-        'icon' => ['category' => 'ui', 'name' => 'search'],
-        'duration' => $this->t('Semanas 1-2'),
-        'deliverables' => [
-          $this->t('Auditoría digital completa'),
-          $this->t('Mapa de oportunidades'),
-          $this->t('Hoja de ruta personalizada'),
-        ],
-      ],
-      [
-        'number' => 2,
-        'title' => $this->t('Implementación'),
-        'description' => $this->t('Configuramos tu ecosistema digital: plataforma SaaS, automatizaciones, presencia online y herramientas de gestión. Tu equipo recibe formación práctica.'),
-        'icon' => ['category' => 'ui', 'name' => 'settings'],
-        'duration' => $this->t('Semanas 3-8'),
-        'deliverables' => [
-          $this->t('Plataforma configurada y operativa'),
-          $this->t('Automatizaciones activas'),
-          $this->t('Equipo formado'),
-        ],
-      ],
-      [
-        'number' => 3,
-        'title' => $this->t('Optimización'),
-        'description' => $this->t('Medimos resultados, ajustamos estrategias con datos reales y escalamos lo que funciona. El Copilot IA te acompaña en la toma de decisiones diaria.'),
-        'icon' => ['category' => 'ui', 'name' => 'chart'],
-        'duration' => $this->t('Semanas 9-12'),
-        'deliverables' => [
-          $this->t('Dashboard de métricas en tiempo real'),
-          $this->t('Copilot IA configurado'),
-          $this->t('Plan de escalado'),
-        ],
-      ],
-    ];
-  }
-
   /**
-   * Builds the 5 service packs as method modules.
+   * @return array<string, mixed>
    */
-  protected function buildPacks(): array {
+  protected function buildProblema(): array {
     return [
-      [
-        'nombre' => $this->t('Pack Presencia Digital'),
-        'descripcion' => $this->t('Web profesional, SEO local, Google Business Profile y redes sociales integradas. Tu negocio visible en internet en 48 horas.'),
-        'icon' => ['category' => 'business', 'name' => 'globe'],
-        'precio_desde' => 29,
-      ],
-      [
-        'nombre' => $this->t('Pack Gestión Inteligente'),
-        'descripcion' => $this->t('CRM, facturación, agenda y gestión de clientes con automatizaciones. Reduce 10 horas semanales de trabajo administrativo.'),
-        'icon' => ['category' => 'business', 'name' => 'briefcase'],
-        'precio_desde' => 49,
-      ],
-      [
-        'nombre' => $this->t('Pack Comercio Digital'),
-        'descripcion' => $this->t('Tienda online, catálogo de productos, cobro con Stripe, logística y trazabilidad. Vende online desde el primer día.'),
-        'icon' => ['category' => 'business', 'name' => 'cart'],
-        'precio_desde' => 59,
-      ],
-      [
-        'nombre' => $this->t('Pack Formación y Talento'),
-        'descripcion' => $this->t('LMS propio, itinerarios formativos, certificaciones y gestión del equipo. Forma a tu equipo sin depender de plataformas externas.'),
-        'icon' => ['category' => 'verticals', 'name' => 'graduation'],
-        'precio_desde' => 39,
-      ],
-      [
-        'nombre' => $this->t('Pack IA y Automatización'),
-        'descripcion' => $this->t('Copilot IA, análisis predictivo, automatización de procesos y asistente inteligente. La IA trabaja para tu negocio 24/7.'),
-        'icon' => ['category' => 'ai', 'name' => 'brain'],
-        'precio_desde' => 69,
+      'title' => $this->t('Vi un puente roto y decidí construirlo.'),
+      'intro' => $this->t('Durante 30 años gestioné más de 100 millones de euros en fondos europeos. Diseñé planes estratégicos para provincias enteras. Y vi cómo esos recursos no llegaban a quien más los necesitaba.'),
+      'pain_points' => [
+        [
+          'quote' => $this->t('Me dicen que use IA, pero no sé por dónde empezar'),
+          'description' => $this->t('Hay miles de herramientas. Ninguna te enseña a pensar.'),
+          'icon' => ['category' => 'ai', 'name' => 'challenge'],
+          'color' => 'naranja-impulso',
+        ],
+        [
+          'quote' => $this->t('Hice un curso y sigo sin saber cómo cobrar por esto'),
+          'description' => $this->t('La formación tradicional enseña teoría. El método enseña a facturar.'),
+          'icon' => ['category' => 'verticals', 'name' => 'formacion'],
+          'color' => 'azul-corporativo',
+        ],
+        [
+          'quote' => $this->t('Mi negocio es invisible en internet'),
+          'description' => $this->t('No necesitas un experto. Necesitas aprender a dirigir uno (de IA).'),
+          'icon' => ['category' => 'business', 'name' => 'store-digital'],
+          'color' => 'verde-innovacion',
+        ],
       ],
     ];
   }
 
   /**
-   * Builds the results section with PED S.L. case study data.
+   * Sección 3: La solución — Flujo invertido.
    */
-  protected function buildResultados(): array {
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildSolucion(): array {
     return [
-      'case_study' => [
-        'empresa' => 'PED S.L.',
-        'programa' => $this->t('PIIL Andalucía 2023'),
-        'participantes' => 50,
-        'insercion_rate' => 46,
-        'negocios_creados' => 12,
-        'facturacion_media' => 2800,
-        'satisfaccion' => 4.7,
-        'duracion_meses' => 6,
+      'title' => $this->t('No aprendes a hacer las cosas. Aprendes a dirigir a quien las hace.'),
+      'intro' => $this->t('En la formación tradicional, primero te explican la teoría, luego practicas, y meses después (si llegas) lo aplicas. El Método Jaraba lo invierte:'),
+      'steps' => [
+        [
+          'number' => 1,
+          'title' => $this->t('Haces la tarea con un agente de IA'),
+          'description' => $this->t('Desde el día 1. Sin esperar a que alguien te dé permiso.'),
+        ],
+        [
+          'number' => 2,
+          'title' => $this->t('Supervisas el resultado'),
+          'description' => $this->t('¿Está bien? ¿Falta algo? ¿Suena a ti?'),
+        ],
+        [
+          'number' => 3,
+          'title' => $this->t('Entiendes el concepto'),
+          'description' => $this->t('Sin que nadie te dé clase. Aprendes haciendo.'),
+        ],
       ],
-      'metricas_globales' => [
+      'metaphor_title' => $this->t('Tú eres el director de obra.'),
+      'metaphor_text' => $this->t('La IA es tu equipo especializado. Tú decides qué se construye y cómo. Ellos ejecutan bajo tu supervisión.'),
+    ];
+  }
+
+  /**
+   * Sección 4: Las 3 capas del método.
+   */
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildCapas(): array {
+    return [
+      'title' => $this->t('Tres capas. Una competencia profesional completa.'),
+      'items' => [
         [
-          'valor' => '90',
-          'sufijo' => $this->t('días'),
-          'label' => $this->t('Tiempo medio de transformación'),
+          'name' => $this->t('Criterio'),
+          'question' => $this->t('¿Para qué?'),
+          'description' => $this->t('Saber lo que quieres. Entender tu mercado. Tomar decisiones. Esto no lo sustituye ninguna IA.'),
+          'icon' => ['category' => 'ai', 'name' => 'lightbulb'],
+          'color' => 'naranja-impulso',
         ],
         [
-          'valor' => '46',
-          'sufijo' => '%',
-          'label' => $this->t('Tasa de inserción laboral'),
+          'name' => $this->t('Supervisión IA'),
+          'question' => $this->t('¿Cómo con IA?'),
+          'description' => $this->t('Pedir. Evaluar. Iterar. Integrar. Las 4 competencias que convierten a cualquier persona en director/a de un equipo de agentes de IA.'),
+          'icon' => ['category' => 'ai', 'name' => 'copilot'],
+          'color' => 'azul-corporativo',
         ],
         [
-          'valor' => '4.7',
-          'sufijo' => '/5',
-          'label' => $this->t('Satisfacción media'),
-        ],
-        [
-          'valor' => '+2.800',
-          'sufijo' => '€',
-          'label' => $this->t('Facturación media mensual'),
+          'name' => $this->t('Posicionamiento'),
+          'question' => $this->t('¿Cómo cobro?'),
+          'description' => $this->t('Propuesta de valor. Presencia digital. Embudo de captación. Porque de nada sirve saber si no facturas.'),
+          'icon' => ['category' => 'analytics', 'name' => 'target'],
+          'color' => 'verde-innovacion',
         ],
       ],
     ];
   }
 
   /**
-   * Builds certification levels.
+   * Sección 5: Las 4 competencias.
+   */
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildCompetencias(): array {
+    return [
+      'title' => $this->t('4 competencias que se entrenan, se miden y se certifican.'),
+      'items' => [
+        [
+          'name' => $this->t('Pedir'),
+          'description' => $this->t('Formular instrucciones claras al agente IA.'),
+          'example' => $this->t('«Calcula el punto de equilibrio de una cafetería con estos datos...»'),
+          'icon' => ['category' => 'ai', 'name' => 'chat'],
+          'color' => 'naranja-impulso',
+        ],
+        [
+          'name' => $this->t('Evaluar'),
+          'description' => $this->t('Determinar si el resultado es correcto y útil.'),
+          'example' => $this->t('«La IA dice que la tarifa plana es 60 €. ¿Sigue siendo así en 2026?»'),
+          'icon' => ['category' => 'compliance', 'name' => 'shield-check'],
+          'color' => 'azul-corporativo',
+        ],
+        [
+          'name' => $this->t('Iterar'),
+          'description' => $this->t('Ajustar las instrucciones para mejorar el output.'),
+          'example' => $this->t('«Suena demasiado formal. Reescríbelo como si hablaras con un vecino.»'),
+          'icon' => ['category' => 'ai', 'name' => 'sparkles'],
+          'color' => 'verde-innovacion',
+        ],
+        [
+          'name' => $this->t('Integrar'),
+          'description' => $this->t('Combinar outputs de varios agentes en un resultado final.'),
+          'example' => $this->t('«Une el plan financiero, el Lean Canvas y el pitch en un solo documento.»'),
+          'icon' => ['category' => 'verticals', 'name' => 'ecosystem'],
+          'color' => 'naranja-impulso',
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Sección 6: CID — Ciclo de Impacto Digital de 90 días.
+   */
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildCid(): array {
+    return [
+      'title' => $this->t('3 fases. 90 días. Resultados que puedes medir.'),
+      'phases' => [
+        [
+          'number' => 1,
+          'name' => $this->t('Criterio y primeras tareas con IA'),
+          'days' => $this->t('Días 1-30'),
+          'deliverable' => $this->t('Diagnóstico + hipótesis + primeras tareas productivas.'),
+          'color' => 'naranja-impulso',
+        ],
+        [
+          'number' => 2,
+          'name' => $this->t('Supervisión y construcción'),
+          'days' => $this->t('Días 31-60'),
+          'deliverable' => $this->t('Portfolio con 5+ outputs profesionales reales.'),
+          'color' => 'azul-corporativo',
+        ],
+        [
+          'number' => 3,
+          'name' => $this->t('Posicionamiento e impacto'),
+          'days' => $this->t('Días 61-90'),
+          'deliverable' => $this->t('Presencia digital + proyecto piloto + primer ingreso.'),
+          'color' => 'verde-innovacion',
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Sección 7: 3 caminos — Aplicaciones del método.
    *
-   * MARKETING-TRUTH-001: All marked as "Próximamente" since the
-   * certification backend does not exist yet.
+   * Links cross-domain al SaaS con UTM para tracking de campañas.
+   * Reutiliza getVerticalCatalog() como SSOT de verticales.
    */
-  protected function buildCertificaciones(): array {
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildCaminos(): array {
+    $saasBaseUrl = \Drupal\Core\Site\Settings::get('jaraba_base_domain', 'plataformadeecosistemas.com');
+    $baseUrl = 'https://' . $saasBaseUrl;
+    $langPrefix = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $lp = ($langPrefix !== 'es') ? '/' . $langPrefix : '/es';
+
     return [
-      [
-        'level' => 1,
-        'title' => $this->t('Consultor Certificado'),
-        'description' => $this->t('Domina el Método Jaraba y aplícalo con tus propios clientes. Acceso a herramientas, formación continua y soporte técnico.'),
-        'requisitos' => [
-          $this->t('Completar formación de 40 horas'),
-          $this->t('Caso práctico aprobado'),
-          $this->t('Examen de certificación'),
+      'title' => $this->t('Un método. Tres aplicaciones. Tu elección.'),
+      'paths' => [
+        [
+          'audience' => $this->t('Busco trabajo'),
+          'description' => $this->t('CV con IA, entrevistas simuladas, perfil digital profesional.'),
+          'cta_text' => $this->t('Impulsar mi carrera'),
+          'cta_url' => $baseUrl . $lp . '/empleabilidad?utm_source=metodo&utm_medium=landing&utm_content=empleabilidad',
+          'icon' => ['category' => 'verticals', 'name' => 'empleabilidad'],
+          'color' => 'verde-innovacion',
+          'track' => 'metodo_camino_empleabilidad',
         ],
-        'proximamente' => TRUE,
-      ],
-      [
-        'level' => 2,
-        'title' => $this->t('Partner Oficial'),
-        'description' => $this->t('Acceso exclusivo a la plataforma white-label, leads cualificados y comisiones recurrentes. Construye tu negocio sobre el método.'),
-        'requisitos' => [
-          $this->t('Certificación de Consultor activa'),
-          $this->t('Mínimo 5 clientes gestionados'),
-          $this->t('Acuerdo de partner firmado'),
+        [
+          'audience' => $this->t('Quiero emprender'),
+          'description' => $this->t('Lean Canvas con IA, packs de servicios, primeros clientes, facturación.'),
+          'cta_text' => $this->t('Lanzar mi negocio'),
+          'cta_url' => $baseUrl . $lp . '/emprendimiento?utm_source=metodo&utm_medium=landing&utm_content=emprendimiento',
+          'icon' => ['category' => 'verticals', 'name' => 'emprendimiento'],
+          'color' => 'naranja-impulso',
+          'track' => 'metodo_camino_emprendimiento',
         ],
-        'proximamente' => TRUE,
-      ],
-      [
-        'level' => 3,
-        'title' => $this->t('Franquicia Jaraba'),
-        'description' => $this->t('Modelo de negocio completo con marca, territorio exclusivo, formación de equipo y soporte integral. Emprende con un método probado.'),
-        'requisitos' => [
-          $this->t('Experiencia como Partner (12+ meses)'),
-          $this->t('Equipo de mínimo 3 personas'),
-          $this->t('Plan de negocio aprobado'),
+        [
+          'audience' => $this->t('Tengo negocio'),
+          'description' => $this->t('Web profesional, redes sociales, reseñas, embudo de captación digital.'),
+          'cta_text' => $this->t('Digitalizar mi negocio'),
+          'cta_url' => $baseUrl . $lp . '/comercioconecta?utm_source=metodo&utm_medium=landing&utm_content=digitalizacion',
+          'icon' => ['category' => 'verticals', 'name' => 'comercioconecta'],
+          'color' => 'azul-corporativo',
+          'track' => 'metodo_camino_digitalizacion',
         ],
-        'proximamente' => TRUE,
       ],
     ];
   }
 
   /**
-   * Builds FAQ items.
+   * Sección 8: Evidencia + CTA final.
+   *
+   * MARKETING-TRUTH-001: El dato 46% proviene del caso real PED S.L.
+   * Programa PIIL Andalucía 2023, 50 participantes.
    */
-  protected function buildFaq(): array {
+  /**
+   * @return array<string, mixed>
+   */
+  protected function buildEvidencia(): array {
     return [
-      [
-        'question' => $this->t('¿Qué incluye el Método Impacto Jaraba?'),
-        'answer' => $this->t('El método incluye 3 fases (Diagnóstico, Implementación y Optimización) durante 90 días, con acceso a la plataforma SaaS, acompañamiento de un consultor y Copilot IA integrado.'),
+      'stat_value' => '46',
+      'stat_suffix' => '%',
+      'stat_label' => $this->t('inserción laboral'),
+      'stat_source' => $this->t('Programa Andalucía +ei, 1ª Edición. Colectivos vulnerables.'),
+      'quote' => $this->t('Si funciona con el colectivo más difícil, funciona contigo.'),
+      'trust_logos' => TRUE,
+      'cta' => [
+        'text' => $this->t('Empieza gratis'),
+        'url' => $this->getRegisterUrl(),
+        'track' => 'metodo_evidencia_register',
       ],
-      [
-        'question' => $this->t('¿Para qué tipo de negocios es adecuado?'),
-        'answer' => $this->t('Está diseñado para PYMEs, autónomos, cooperativas y emprendedores que quieran digitalizar su negocio. Funciona especialmente bien en comercio local, servicios profesionales, agroalimentación y formación.'),
-      ],
-      [
-        'question' => $this->t('¿Cuánto cuesta el método completo?'),
-        'answer' => $this->t('Depende de los packs que necesites. Puedes empezar con un solo pack desde 29 €/mes y ampliar según crezcas. Ofrecemos 14 días de prueba gratuita sin compromiso.'),
-      ],
-      [
-        'question' => $this->t('¿Necesito conocimientos técnicos?'),
-        'answer' => $this->t('No. La plataforma está diseñada para personas sin conocimientos técnicos. Incluye formación práctica, tutoriales paso a paso y un Copilot IA que te guía en cada decisión.'),
-      ],
-      [
-        'question' => $this->t('¿Qué resultados puedo esperar en 90 días?'),
-        'answer' => $this->t('Basándonos en el caso real de PED S.L. con 50 participantes: presencia digital completa, procesos automatizados, primeros clientes digitales y un 46%% de tasa de inserción laboral en programas de empleo.'),
+      'cta_secondary' => [
+        'text' => $this->t('Ver planes y precios'),
+        'url' => $this->getPlanesUrl(),
+        'track' => 'metodo_evidencia_planes',
       ],
     ];
   }
 
   /**
-   * Builds the final CTA section.
+   * Obtiene la URL de registro con fallback seguro.
    */
-  protected function buildCtaFinal(): array {
-    $register_url = '';
+  protected function getRegisterUrl(): string {
     try {
-      $register_url = Url::fromRoute('user.register')->toString();
+      return Url::fromRoute('user.register')->toString();
     }
     catch (\Exception $e) {
-      $register_url = '/user/register';
+      return '/user/register';
     }
+  }
 
-    return [
-      'title' => $this->t('¿Listo para transformar tu negocio?'),
-      'subtitle' => $this->t('Empieza hoy con 14 días de prueba gratuita. Sin tarjeta, sin compromiso.'),
-      'cta_text' => $this->t('Comenzar prueba gratuita'),
-      'cta_url' => $register_url,
-    ];
+  /**
+   * Obtiene la URL de planes con fallback seguro.
+   */
+  protected function getPlanesUrl(): string {
+    try {
+      return Url::fromRoute('jaraba_billing.pricing_page')->toString();
+    }
+    catch (\Exception $e) {
+      return '/planes';
+    }
   }
 
 }
