@@ -1,33 +1,57 @@
 {#
-  Panel WhatsApp IA — Dashboard de conversaciones.
-
-  Variables (inyectadas por hook_preprocess_page):
-  - wa_stats: array de KPIs [{label, value, icon_category, icon_name, icon_color}]
-  - wa_escalated: array de conversaciones escaladas
-  - wa_active: array de conversaciones activas
+/**
+ * @file
+ * WhatsApp panel dashboard template — clase mundial.
+ *
+ * Variables (from hook_theme + controller render array):
+ * - stats: Array with total, active, escalated, closed, leads_today counts.
+ * - conversations: Active conversations list.
+ * - escalated: Escalated conversations list.
+ *
+ * ICON-CONVENTION-001: jaraba_icon() con category/name/variant/color.
+ * ICON-DUOTONE-001: Variante duotone por defecto.
+ * TWIG-INCLUDE-ONLY-001: Includes con 'only'.
+ */
 #}
-
 <div class="wa-panel">
-  {# KPIs #}
+  <div class="wa-panel__header">
+    <h1>{% trans %}Panel WhatsApp — Agente IA{% endtrans %}</h1>
+    <p class="wa-panel__subtitle">{% trans %}Gestión de conversaciones automatizadas{% endtrans %}</p>
+  </div>
+
+  {# KPIs con card--premium #}
   <div class="wa-panel__kpis">
-    {% for kpi in wa_stats %}
-      <div class="wa-panel__kpi card--premium card--premium--subtle">
-        {{ jaraba_icon(kpi.icon_category, kpi.icon_name, { variant: 'duotone', color: kpi.icon_color, size: '32px' }) }}
-        <span class="wa-panel__kpi-value">{{ kpi.value }}</span>
-        <span class="wa-panel__kpi-label">{{ kpi.label }}</span>
-      </div>
-    {% endfor %}
+    <div class="wa-panel__kpi card--premium card--premium--subtle">
+      {{ jaraba_icon('communication', 'chat', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
+      <span class="wa-panel__kpi-value">{{ stats.active|default(0) }}</span>
+      <span class="wa-panel__kpi-label">{% trans %}Activas{% endtrans %}</span>
+    </div>
+    <div class="wa-panel__kpi card--premium card--premium--subtle">
+      {{ jaraba_icon('status', 'alert', { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
+      <span class="wa-panel__kpi-value">{{ stats.escalated|default(0) }}</span>
+      <span class="wa-panel__kpi-label">{% trans %}Escaladas{% endtrans %}</span>
+    </div>
+    <div class="wa-panel__kpi card--premium card--premium--subtle">
+      {{ jaraba_icon('users', 'lead', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+      <span class="wa-panel__kpi-value">{{ stats.leads_today|default(0) }}</span>
+      <span class="wa-panel__kpi-label">{% trans %}Leads hoy{% endtrans %}</span>
+    </div>
+    <div class="wa-panel__kpi card--premium card--premium--subtle">
+      {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'azul-corporativo', size: '32px' }) }}
+      <span class="wa-panel__kpi-value">{{ stats.total|default(0) }}</span>
+      <span class="wa-panel__kpi-label">{% trans %}Total{% endtrans %}</span>
+    </div>
   </div>
 
   {# Escalaciones pendientes #}
-  {% if wa_escalated is not empty %}
+  {% if escalated is not empty %}
     <section class="wa-panel__section wa-panel__section--escalated">
       <h2 class="wa-panel__section-title">
         {{ jaraba_icon('status', 'alert', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
         {% trans %}Escalaciones pendientes{% endtrans %}
       </h2>
       <div class="wa-panel__list">
-        {% for conv in wa_escalated %}
+        {% for conv in escalated %}
           {% include '@jaraba_whatsapp/wa-conversation-list-item.html.twig' with {
             conversation: conv
           } only %}
@@ -37,27 +61,24 @@
   {% endif %}
 
   {# Conversaciones activas #}
-  {% if wa_active is not empty %}
-    <section class="wa-panel__section">
-      <h2 class="wa-panel__section-title">
-        {{ jaraba_icon('communication', 'chat', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
-        {% trans %}Conversaciones activas{% endtrans %}
-      </h2>
+  <section class="wa-panel__section wa-panel__section--active">
+    <h2 class="wa-panel__section-title">
+      {{ jaraba_icon('communication', 'chat', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+      {% trans %}Conversaciones activas{% endtrans %}
+    </h2>
+    {% if conversations is not empty %}
       <div class="wa-panel__list">
-        {% for conv in wa_active %}
+        {% for conv in conversations %}
           {% include '@jaraba_whatsapp/wa-conversation-list-item.html.twig' with {
             conversation: conv
           } only %}
         {% endfor %}
       </div>
-    </section>
-  {% endif %}
-
-  {# Estado vacío #}
-  {% if wa_escalated is empty and wa_active is empty %}
-    <div class="wa-panel__empty">
-      {{ jaraba_icon('communication', 'whatsapp', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
-      <p>{% trans %}No hay conversaciones activas en este momento.{% endtrans %}</p>
-    </div>
-  {% endif %}
+    {% else %}
+      <div class="wa-panel__empty">
+        {{ jaraba_icon('communication', 'whatsapp', { variant: 'duotone', color: 'neutral', size: '48px' }) }}
+        <p>{% trans %}No hay conversaciones activas en este momento.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </section>
 </div>

@@ -1,68 +1,58 @@
 {#
-  Detalle de conversación individual (slide-panel).
-
-  Variables:
-  - conversation: {id, wa_phone, lead_type, status, escalation_reason, escalation_summary}
-  - messages: [{direction, sender_type, body, created}, ...]
-
-  SLIDE-PANEL-RENDER-001: Este template se renderiza con renderPlain().
+/**
+ * @file
+ * WhatsApp conversation detail template.
+ *
+ * Variables:
+ * - conversation: WaConversation entity.
+ * - messages: Array of WaMessage entities.
+ * - phone: Phone number string.
+ * - lead_type: Lead classification.
+ * - status: Conversation status.
+ */
 #}
-
-<div class="wa-chat" data-conversation-id="{{ conversation.id }}">
-  {# Header de la conversación #}
-  <div class="wa-chat__header">
-    <div class="wa-chat__contact">
-      {{ jaraba_icon('communication', 'whatsapp', { variant: 'duotone', color: 'verde-innovacion', size: '32px' }) }}
-      <div>
-        <strong class="wa-chat__phone">{{ conversation.wa_phone }}</strong>
-        <span class="badge badge--{{ conversation.lead_type }}">{{ conversation.lead_type }}</span>
-        <span class="badge badge--{{ conversation.status }}">{{ conversation.status }}</span>
-      </div>
+<div class="wa-conversation">
+  <div class="wa-conversation__header">
+    <h2>{% trans %}Conversación{% endtrans %} #{{ conversation.id }}</h2>
+    <div class="wa-conversation__meta">
+      <span class="wa-badge wa-badge--{{ status }}">{{ status }}</span>
+      <span class="wa-badge wa-badge--lead">{{ lead_type }}</span>
+      <span class="wa-conversation__phone">{{ phone }}</span>
     </div>
-    {% if conversation.escalation_summary %}
-      <div class="wa-chat__escalation-summary">
-        {{ jaraba_icon('status', 'alert', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
-        <p>{{ conversation.escalation_summary }}</p>
-      </div>
-    {% endif %}
   </div>
 
-  {# Burbujas de mensajes #}
-  <div class="wa-chat__messages">
-    {% for msg in messages %}
-      <div class="wa-chat__bubble wa-chat__bubble--{{ msg.direction }} wa-chat__bubble--{{ msg.sender_type }}">
-        <p class="wa-chat__text">{{ msg.body }}</p>
-        <time class="wa-chat__timestamp">{{ msg.created|date('H:i') }}</time>
-        {% if msg.sender_type == 'agent_ia' %}
-          <span class="wa-chat__sender-badge">{% trans %}IA{% endtrans %}</span>
-        {% elseif msg.sender_type == 'agent_human' %}
-          <span class="wa-chat__sender-badge wa-chat__sender-badge--human">{% trans %}Humano{% endtrans %}</span>
-        {% endif %}
+  <div class="wa-conversation__messages" id="wa-messages">
+    {% for message in messages %}
+      <div class="wa-message wa-message--{{ message.getDirection() }}">
+        <div class="wa-message__bubble">
+          <span class="wa-message__sender">
+            {% if message.getSenderType() == 'user' %}
+              {% trans %}Usuario{% endtrans %}
+            {% elseif message.getSenderType() == 'agent_ia' %}
+              {% trans %}Agente IA{% endtrans %}
+            {% elseif message.getSenderType() == 'agent_human' %}
+              {% trans %}Agente Humano{% endtrans %}
+            {% else %}
+              {% trans %}Sistema{% endtrans %}
+            {% endif %}
+          </span>
+          <p class="wa-message__body">{{ message.getBody() }}</p>
+        </div>
       </div>
     {% endfor %}
   </div>
 
-  {# Input de respuesta manual #}
-  {% if conversation.status == 'escalated' or conversation.status == 'active' %}
-    <div class="wa-chat__input">
-      <textarea class="wa-chat__textarea"
-                placeholder="{{ 'Escribe un mensaje...'|t }}"
-                rows="2"
-                aria-label="{{ 'Mensaje de respuesta'|t }}"></textarea>
-      <button class="wa-chat__send btn btn--primary"
-              data-conversation-id="{{ conversation.id }}"
-              aria-label="{{ 'Enviar mensaje'|t }}">
-        {{ jaraba_icon('actions', 'send', { variant: 'duotone', color: 'white', size: '20px' }) }}
-        {% trans %}Enviar{% endtrans %}
-      </button>
-      {% if conversation.status == 'escalated' %}
-        <button class="wa-chat__return-ia btn btn--secondary"
-                data-conversation-id="{{ conversation.id }}"
-                aria-label="{{ 'Devolver al agente IA'|t }}">
-          {{ jaraba_icon('ai', 'sparkles', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
-          {% trans %}Devolver a IA{% endtrans %}
+  {% if status == 'escalated' or status == 'active' %}
+    <div class="wa-conversation__input">
+      <form id="wa-send-form" data-conversation-id="{{ conversation.id }}">
+        <input type="text"
+               id="wa-message-input"
+               placeholder="{{ 'Escribe un mensaje...'|trans }}"
+               autocomplete="off" />
+        <button type="submit" class="button button--primary">
+          {% trans %}Enviar{% endtrans %}
         </button>
-      {% endif %}
+      </form>
     </div>
   {% endif %}
 </div>

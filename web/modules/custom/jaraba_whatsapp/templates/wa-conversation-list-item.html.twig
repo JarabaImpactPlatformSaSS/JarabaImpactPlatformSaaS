@@ -1,39 +1,28 @@
 {#
-  Parcial reutilizable: item de conversación en lista.
-  Usado en dashboard y DailyActions slide-panel.
-
-  Variables:
-  - conversation: {id, wa_phone, lead_type, status, message_count, last_message_at, escalation_reason}
-
-  TWIG-INCLUDE-ONLY-001: Siempre con 'only' en {% include %}.
+/**
+ * @file
+ * WhatsApp conversation list item template.
+ *
+ * Variables:
+ * - conversation: WaConversation entity.
+ * - phone: Phone number.
+ * - lead_type: Lead classification.
+ * - status: Conversation status.
+ * - message_count: Number of messages.
+ */
 #}
-
-<article class="wa-conv-item wa-conv-item--{{ conversation.status }}"
-         data-conversation-id="{{ conversation.id }}"
-         role="article"
-         aria-label="{{ 'Conversación con %phone'|t({'%phone': conversation.wa_phone}) }}">
-  <div class="wa-conv-item__avatar">
-    {{ jaraba_icon('communication', 'whatsapp', { variant: 'duotone', color: 'verde-innovacion', size: '40px' }) }}
+<div class="wa-list-item wa-list-item--{{ status|default('active') }}">
+  <div class="wa-list-item__info">
+    <span class="wa-list-item__phone">{{ phone|default('') }}</span>
+    <span class="wa-badge wa-badge--{{ lead_type|default('otro') }}">{{ lead_type|default('sin_clasificar') }}</span>
   </div>
-  <div class="wa-conv-item__body">
-    <span class="wa-conv-item__phone">{{ conversation.wa_phone }}</span>
-    <span class="wa-conv-item__type badge badge--{{ conversation.lead_type }}">
-      {{ conversation.lead_type }}
-    </span>
-    {% if conversation.escalation_reason %}
-      <p class="wa-conv-item__reason">{{ conversation.escalation_reason }}</p>
-    {% endif %}
+  <div class="wa-list-item__meta">
+    <span class="wa-list-item__count">{{ message_count|default(0) }} {% trans %}msgs{% endtrans %}</span>
+    <span class="wa-badge wa-badge--{{ status|default('active') }}">{{ status|default('active') }}</span>
   </div>
-  <div class="wa-conv-item__meta">
-    {% if conversation.last_message_at %}
-      <time class="wa-conv-item__time">
-        {{ conversation.last_message_at|date('H:i') }}
-      </time>
-    {% endif %}
-    {% if conversation.message_count > 0 %}
-      <span class="wa-conv-item__count" aria-label="{{ '%count mensajes'|t({'%count': conversation.message_count}) }}">
-        {{ conversation.message_count }}
-      </span>
-    {% endif %}
-  </div>
-</article>
+  {% if conversation is defined and conversation is not null %}
+    <a href="{{ path('jaraba_whatsapp.panel.conversation', {wa_conversation: conversation.id}) }}" class="wa-list-item__link">
+      {% trans %}Ver{% endtrans %}
+    </a>
+  {% endif %}
+</div>
