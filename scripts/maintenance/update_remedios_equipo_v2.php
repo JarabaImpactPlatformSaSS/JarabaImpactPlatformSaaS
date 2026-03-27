@@ -84,19 +84,27 @@ $newSection = <<<'HTML'
         <h3 style="font-size: 1.25rem; color: var(--ej-azul-corporativo, #233D63); margin-bottom: 1.5rem;">Trayectoria profesional</h3>
         <div style="border-left: 3px solid var(--ej-naranja-impulso, #FF8C42); padding-left: 1.5rem;">
           <div style="margin-bottom: 1.5rem;">
-            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Gerente — Sociedad Municipal de Desarrollo de Monturque S.L.</div>
-            <div style="font-size: 0.9rem; color: #6B7280;">2005 – actualidad &middot; Monturque, Córdoba</div>
-            <p style="margin-top: 0.5rem; color: #374151;">Dirección integral de empresa pública municipal. Diseño y ejecución de programas de empleo, emprendimiento y formación para el empleo. Gestión de subvenciones de la Junta de Andalucía, FSE+ y Diputación Provincial.</p>
+            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Cofundadora y COO — Plataforma de Ecosistemas Digitales S.L. (PED)</div>
+            <div style="font-size: 0.9rem; color: #6B7280;">2020 – Presente &middot; Andalucía</div>
+            <p style="margin-top: 0.5rem; color: #374151;">Cofundación y dirección operativa de empresa especializada en empleabilidad y emprendimiento digital. Diseño de procesos y metodologías de empleabilidad. Gestión de equipos multidisciplinares. Supervisión de programas de empleo e impacto social. Puesta en marcha y coordinación del vertical Andalucía +ei.</p>
           </div>
           <div style="margin-bottom: 1.5rem;">
-            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Contable — Ayuntamiento de Santaella</div>
-            <div style="font-size: 0.9rem; color: #6B7280;">2000 – 2005 &middot; Santaella, Córdoba</div>
-            <p style="margin-top: 0.5rem; color: #374151;">Contabilidad pública municipal y gestión administrativa.</p>
+            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Especialista en gestión pública y en la gestión directa de servicios públicos</div>
+            <div style="font-size: 0.9rem; color: #6B7280;">2005 – Presente &middot; Sector público municipal, Córdoba</div>
+            <p style="margin-top: 0.5rem; color: #374151;">Dirección y gestión en entidad pública local. Gestión y justificación de subvenciones cofinanciadas por el FSE+ y administraciones autonómicas y provinciales. Dirección de equipos y coordinación con entidades públicas y privadas.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem; background: var(--ej-bg-subtle, #F8FAFC); border-radius: 0.75rem; padding: 1rem; border-left: 3px solid var(--ej-verde-innovacion, #00A9A5);">
+            <p style="margin: 0; color: #374151;">📖 Autora: <em>Equilibrio Autónomo — Más ingresos &middot; Menos estrés &middot; Más vida. El plan para conseguirlo.</em> ISBN: 979-13-991329-0-8 (2025)</p>
           </div>
           <div style="margin-bottom: 1.5rem;">
-            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Asesora Fiscal, Laboral y Contable — E.J. & J.E. Consultores Reunidos</div>
+            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Colaboración en área contable</div>
+            <div style="font-size: 0.9rem; color: #6B7280;">2000 – 2005 &middot; Varias empresas e instituciones, Córdoba</div>
+            <p style="margin-top: 0.5rem; color: #374151;">Apoyo contable y administrativo en distintos contextos. Contabilidad pública municipal, gestión presupuestaria y administrativa en administración local. Contabilidad y gestión administrativa en empresas del sector privado.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <div style="font-weight: 700; color: var(--ej-azul-corporativo, #233D63);">Asesora Fiscal, Laboral y Contable — E.J. &amp; J.E. Consultores Reunidos</div>
             <div style="font-size: 0.9rem; color: #6B7280;">1993 – 2000 &middot; Córdoba</div>
-            <p style="margin-top: 0.5rem; color: #374151;">Asesoramiento fiscal, laboral y contable a empresas y autónomos.</p>
+            <p style="margin-top: 0.5rem; color: #374151;">Asesoramiento integral a empresas y autónomos. Gestión fiscal, laboral y contable para pymes y autónomos. Primera experiencia profesional en el sector privado.</p>
           </div>
         </div>
       </div>

@@ -86,26 +86,29 @@ $newRemedios = <<<HEREDOC
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">2020 &ndash; Presente</div>
           <div class="ped-founder__timeline-title">Cofundadora y COO</div>
-          <div class="ped-founder__timeline-org">Plataforma de Ecosistemas Digitales S.L. (PED)</div>
-          <p class="ped-founder__timeline-desc">Cofundación y dirección operativa. Diseño de procesos de empleabilidad, gestión de equipos multidisciplinares, supervisión de programas de empleo e impacto social y puesta en marcha del vertical Andalucía +ei.</p>
+          <div class="ped-founder__timeline-org">Plataforma de Ecosistemas Digitales S.L. (PED) &mdash; Andalucía</div>
+          <p class="ped-founder__timeline-desc">Cofundación y dirección operativa de empresa especializada en empleabilidad y emprendimiento digital. Diseño de procesos y metodologías de empleabilidad. Gestión de equipos multidisciplinares. Supervisión de programas de empleo e impacto social. Puesta en marcha y coordinación del vertical Andalucía +ei.</p>
         </div>
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">2005 &ndash; Presente</div>
-          <div class="ped-founder__timeline-title">Gerente</div>
-          <div class="ped-founder__timeline-org">Sociedad Municipal de Desarrollo de Monturque S.L. &mdash; Monturque, Córdoba</div>
-          <p class="ped-founder__timeline-desc">Dirección integral de empresa pública municipal dedicada a la prestación de servicios públicos locales. Diseño y ejecución de programas de empleo, emprendimiento y formación para el empleo. Gestión de subvenciones de la Junta de Andalucía, FSE+ y Diputación Provincial. Acompañamiento directo a cientos de personas desempleadas y emprendedoras.</p>
+          <div class="ped-founder__timeline-title">Especialista en gestión pública y en la gestión directa de servicios públicos</div>
+          <div class="ped-founder__timeline-org">Sector público municipal &mdash; Córdoba</div>
+          <p class="ped-founder__timeline-desc">Dirección y gestión en entidad pública local. Gestión y justificación de subvenciones cofinanciadas por el FSE+ y administraciones autonómicas y provinciales. Dirección de equipos y coordinación con entidades públicas y privadas.</p>
+        </div>
+        <div class="ped-founder__timeline-item ped-founder__timeline-item--book">
+          <p class="ped-founder__timeline-desc">📖 Autora: <em>Equilibrio Autónomo &mdash; Más ingresos &middot; Menos estrés &middot; Más vida. El plan para conseguirlo.</em> ISBN: 979-13-991329-0-8 (2025)</p>
         </div>
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">2000 &ndash; 2005</div>
-          <div class="ped-founder__timeline-title">Contable</div>
-          <div class="ped-founder__timeline-org">Ayuntamiento de Santaella &mdash; Santaella, Córdoba</div>
-          <p class="ped-founder__timeline-desc">Contabilidad pública municipal, gestión presupuestaria y administrativa en la administración local.</p>
+          <div class="ped-founder__timeline-title">Colaboración en área contable</div>
+          <div class="ped-founder__timeline-org">Varias empresas e instituciones &mdash; Córdoba</div>
+          <p class="ped-founder__timeline-desc">Apoyo contable y administrativo en distintos contextos. Contabilidad pública municipal, gestión presupuestaria y administrativa en administración local. Contabilidad y gestión administrativa en empresas del sector privado.</p>
         </div>
         <div class="ped-founder__timeline-item">
           <div class="ped-founder__timeline-date">1993 &ndash; 2000</div>
           <div class="ped-founder__timeline-title">Asesora Fiscal, Laboral y Contable</div>
           <div class="ped-founder__timeline-org">E.J. &amp; J.E. Consultores Reunidos &mdash; Córdoba</div>
-          <p class="ped-founder__timeline-desc">Asesoramiento integral a empresas y autónomos en materia fiscal, laboral y contable. Primera experiencia profesional en el sector privado.</p>
+          <p class="ped-founder__timeline-desc">Asesoramiento integral a empresas y autónomos. Gestión fiscal, laboral y contable para pymes y autónomos. Primera experiencia profesional en el sector privado.</p>
         </div>
       </div>
     </div>
