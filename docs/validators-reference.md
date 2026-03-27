@@ -111,6 +111,7 @@
 | TEMPLATE-CONTRACT-001 | Page template include-only contract compliance (theme_settings required) |
 | DOMAIN-DEFAULT-GUARD-001 | Default domain protected from meta-site resolution |
 | SAFEGUARD-AEI-CAMPAIGN-001 | Andalucia +ei reclutamiento landing readiness |
+| POPUP-DUAL-SELECTOR-001 | Popup dual integrity (participante+negocio) |
 | SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
 | SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |
 | SEO-MULTIDOMAIN-001 | SEO multi-domain integrity (10 checks) |

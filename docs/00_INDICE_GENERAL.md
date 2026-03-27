@@ -2502,6 +2502,7 @@
 | **Operativos (g, j, k-m)** | Sesión informativa (pptx), propuesta negocios piloto (pptx), plan activación Semana Santa, briefing creativo, manual operativo final | 5 |
 | **Sesiones aula (n×23)** | Presentaciones OI-1.1 a M5-3 (23 sesiones, material didáctico) | 23 |
 | **Campaña (n×3)** | Landing negocio piloto, carrusel 5 packs, pub1 Semana Santa | 3 |
+| **Popup dual (20260327a-b)** | Auditoría conversión popup 7.4→9.5/10, plan implementación popup dual participante+negocio, POPUP-DUAL-SELECTOR-001 | 2 |
 
 ### docs/implementacion/20260324b — Plan Implementación Andalucía +ei 2ª Edición
 
