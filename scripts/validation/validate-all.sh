@@ -773,6 +773,9 @@ if [ "$MODE" = "full" ]; then
   run_check "AUTONOMOUS-AGENT-HEALTH-001" "Autonomous agent infrastructure (workers, queues, types)" \
     php "$PROJECT_ROOT/scripts/validation/validate-autonomous-agent-health.php"
 
+  run_check "BRAND-TERM-VALIDATOR-001" "Obsolete brand terms detection (Desarrollo Rural → Local)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-brand-terms.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"

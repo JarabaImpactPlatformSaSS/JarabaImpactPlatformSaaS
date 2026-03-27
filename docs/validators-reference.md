@@ -9,8 +9,8 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 179 |
-| run_check (CI blocker) | 126 |
+| Total scripts PHP | 180 |
+| run_check (CI blocker) | 127 |
 | warn_check (no blocker) | 56 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
@@ -136,6 +136,7 @@
 | VERTICAL-COVERAGE-001 | All 9 commercial verticals in discovery points |
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
+| BRAND-TERM-VALIDATOR-001 | Obsolete brand terms in frontend (Desarrollo Rural → Local) |
 
 ## Warn Checks — 44 (no bloquean, baseline violations aceptadas)
 

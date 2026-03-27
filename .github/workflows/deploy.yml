@@ -418,6 +418,33 @@ jobs:
             echo "✅ PHP-FPM reloaded"
           EOF
 
+      - name: Sync metasite content and translations (CONTENT-SEED-DEPLOY-001)
+        if: always()
+        run: |
+          ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            cd /var/www/jaraba
+
+            # CONTENT-SEED-DEPLOY-001: Import canvas_data from versioned JSONs
+            echo "=== Importing metasite content (UUID-anchored, idempotent) ==="
+            drush php:script scripts/content-seed/import-metasite-content.php -- --all 2>&1 || echo "⚠️ Content seed had issues (non-blocking)"
+
+            # TRANSLATION-SYNC-DEPLOY-001: Sync .po translations to DB
+            echo "=== Syncing locale translations ==="
+            drush locale:check 2>&1 || true
+            drush locale:update 2>&1 || true
+
+            # Populate metasite translations (EN/PT-BR canvas_data)
+            echo "=== Populating metasite translations ==="
+            drush scr scripts/i18n/populate-metasite-translations.php 2>&1 || echo "⚠️ Metasite translations had issues (non-blocking)"
+
+            # Validate content integrity post-import
+            echo "=== Validating content sync integrity ==="
+            drush php:script scripts/content-seed/validate-content-sync.php 2>&1 || echo "⚠️ Content validation had issues"
+
+            drush cache:rebuild 2>&1
+            echo "✅ Content seed + translations synced"
+          EOF
+
       - name: Auto-import missing config/install defaults (CONFIG-INSTALL-001)
         run: |
           ssh -p ${{ env.DEPLOY_PORT }} ${{ env.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
