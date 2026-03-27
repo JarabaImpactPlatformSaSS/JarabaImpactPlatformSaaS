@@ -76,6 +76,22 @@ function jaraba_training_theme(): array {
       ],
       'template' => 'certificate-verification',
     ],
+    // Mi certificado — frontend usuario (CERT-04).
+    'my_certificates' => [
+      'variables' => [
+        'certificates' => [],
+        'user_name' => '',
+      ],
+      'template' => 'my-certificates',
+    ],
+    // Directorio público de certificados (CERT-12).
+    'certificate_directory' => [
+      'variables' => [
+        'certificates' => [],
+        'search_code' => '',
+      ],
+      'template' => 'certificate-directory',
+    ],
   ];
 }
 
@@ -377,4 +393,15 @@ function jaraba_training_preprocess_user_certification(array &$variables): void 
     return;
   }
   $variables['user_certification'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_method_portfolio_item().
+ */
+function template_preprocess_method_portfolio_item(array &$variables): void {
+  $entity = $variables['elements']['#method_portfolio_item'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['method_portfolio_item'] = $entity;
 }

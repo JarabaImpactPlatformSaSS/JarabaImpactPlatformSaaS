@@ -105,3 +105,25 @@ function template_preprocess_wa_conversation_list_item(array &$variables): void 
   $variables['status'] = $conversation->getStatus();
   $variables['message_count'] = $conversation->getMessageCount();
 }
+
+/**
+ * Implements template_preprocess_wa_conversation().
+ */
+function template_preprocess_wa_conversation(array &$variables): void {
+  $entity = $variables['elements']['#wa_conversation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['wa_conversation'] = $entity;
+}
+
+/**
+ * Implements template_preprocess_wa_message().
+ */
+function template_preprocess_wa_message(array &$variables): void {
+  $entity = $variables['elements']['#wa_message'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['wa_message'] = $entity;
+}
