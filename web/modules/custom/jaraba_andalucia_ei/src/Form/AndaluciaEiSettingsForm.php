@@ -191,6 +191,61 @@ class AndaluciaEiSettingsForm extends ConfigFormBase {
       '#max' => 720,
     ];
 
+    $form['campana']['popup_delay_ms'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Delay de aparición del popup (milisegundos)'),
+      '#description' => $this->t('Milisegundos que el visitante navega antes de que aparezca el popup. Recomendado: 3000.'),
+      '#default_value' => $config->get('popup_delay_ms') ?? 3000,
+      '#min' => 1000,
+      '#max' => 15000,
+      '#step' => 500,
+    ];
+
+    $form['campana']['tasa_insercion_1e'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Tasa de inserción 1ª Edición (%)'),
+      '#description' => $this->t('Dato de prueba social mostrado en el popup. 46% es el resultado real de la 1ª Edición.'),
+      '#default_value' => $config->get('tasa_insercion_1e') ?? 46,
+      '#min' => 0,
+      '#max' => 100,
+    ];
+
+    $form['campana']['popup_negocio_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Activar path de negocio piloto en el popup'),
+      '#description' => $this->t('Muestra el selector dual participante/negocio. Si se desactiva, solo aparece el path de participante.'),
+      '#default_value' => $config->get('popup_negocio_enabled') ?? TRUE,
+    ];
+
+    $form['campana']['popup_servicios_count'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Número de servicios gratuitos mostrados'),
+      '#description' => $this->t('Cantidad de servicios de digitalización que se listan en el path de negocio piloto.'),
+      '#default_value' => $config->get('popup_servicios_count') ?? 5,
+      '#min' => 3,
+      '#max' => 8,
+      '#states' => [
+        'visible' => [
+          ':input[name="popup_negocio_enabled"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['campana']['popup_valor_mercado_anual'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Valor de mercado anual de los servicios (EUR)'),
+      '#description' => $this->t('Precio de mercado estimado que se muestra tachado como anclaje de precio. NO-HARDCODE-PRICE-001.'),
+      '#default_value' => $config->get('popup_valor_mercado_anual') ?? 2400,
+      '#min' => 500,
+      '#max' => 10000,
+      '#step' => 100,
+      '#states' => [
+        'visible' => [
+          ':input[name="popup_negocio_enabled"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
     $form['sto'] = [
       '#type' => 'details',
       '#title' => $this->t('Integración STO'),
@@ -240,6 +295,11 @@ class AndaluciaEiSettingsForm extends ConfigFormBase {
       ->set('mostrar_popup_saas', (bool) $form_state->getValue('mostrar_popup_saas'))
       ->set('popup_campaign_utm', $form_state->getValue('popup_campaign_utm'))
       ->set('popup_ttl_hours', (int) $form_state->getValue('popup_ttl_hours'))
+      ->set('popup_delay_ms', (int) $form_state->getValue('popup_delay_ms'))
+      ->set('tasa_insercion_1e', (int) $form_state->getValue('tasa_insercion_1e'))
+      ->set('popup_negocio_enabled', (bool) $form_state->getValue('popup_negocio_enabled'))
+      ->set('popup_servicios_count', (int) $form_state->getValue('popup_servicios_count'))
+      ->set('popup_valor_mercado_anual', (int) $form_state->getValue('popup_valor_mercado_anual'))
       ->set('sto_sync_enabled', $form_state->getValue('sto_sync_enabled'))
       ->set('sto_endpoint', $form_state->getValue('sto_endpoint'))
       ->save();

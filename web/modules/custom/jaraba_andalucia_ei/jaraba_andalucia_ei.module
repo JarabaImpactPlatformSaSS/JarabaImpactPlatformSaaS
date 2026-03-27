@@ -2202,16 +2202,27 @@ function _jaraba_andalucia_ei_og_meta_attachments(array &$attachments, ?string $
 }
 
 /**
- * Popup de reclutamiento en la home de meta-sitios corporativos.
+ * Popup dual de captación Andalucía +ei para meta-sitios corporativos.
+ *
+ * POPUP-DUAL-SELECTOR-001: Selector participante/negocio piloto.
+ * POPUP-ANON-ONLY-001: Solo para usuarios anónimos.
+ * POPUP-SHARED-DISMISS-001: localStorage key unificada entre metasitios.
  *
  * Se inyecta solo en:
  * - plataformadeecosistemas.es / plataformadeecosistemas.jaraba-saas.lndo.site
  * - pepejaraba.com / pepejaraba.jaraba-saas.lndo.site
- * - jarabaimpact.com / jarabaimpact.jaraba-saas.lndo.site.
+ * - jarabaimpact.com / jarabaimpact.jaraba-saas.lndo.site
+ * - plataformadeecosistemas.com / jaraba-saas.lndo.site (si mostrar_popup_saas=true)
  *
  * Solo en la home (ruta de front page), no en la propia landing de reclutamiento.
  */
 function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $route): void {
+  // POPUP-ANON-ONLY-001: Solo mostrar a usuarios anónimos.
+  // Usuarios autenticados ya tienen su dashboard — no interrumpir.
+  if (\Drupal::currentUser()->isAuthenticated()) {
+    return;
+  }
+
   // No mostrar en las propias páginas de Andalucía +ei.
   if ($route !== NULL && str_starts_with($route, 'jaraba_andalucia_ei.')) {
     return;
@@ -2240,15 +2251,17 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
   $config = \Drupal::config('jaraba_andalucia_ei.settings');
   if ($config->get('mostrar_popup_saas')) {
     $metaSiteHosts[] = 'jaraba-saas.lndo.site';
-    // Production SaaS hostname would be added here when deploying.
+    $metaSiteHosts[] = 'plataformadeecosistemas.com';
   }
 
   if (!in_array($host, $metaSiteHosts, TRUE)) {
     return;
   }
 
+  // ROUTE-LANGPREFIX-001: URLs siempre via Url::fromRoute().
   $solicitarUrl = Url::fromRoute('jaraba_andalucia_ei.solicitar')->toString();
   $landingUrl = Url::fromRoute('jaraba_andalucia_ei.reclutamiento')->toString();
+  $pruebaGratuitaUrl = Url::fromRoute('jaraba_andalucia_ei.prueba_gratuita')->toString();
 
   // UTM campaign params for attribution.
   $utmCampaign = $config->get('popup_campaign_utm') ?? 'aei_reclutamiento_2026';
@@ -2263,11 +2276,17 @@ function _jaraba_andalucia_ei_popup_attachments(array &$attachments, ?string $ro
   $attachments['#attached']['drupalSettings']['aeiRecPopup'] = [
     'solicitarUrl' => $solicitarUrl,
     'landingUrl' => $landingUrl,
+    'pruebaGratuitaUrl' => $pruebaGratuitaUrl,
     'modulePath' => $modulePath,
     'utmParams' => $utmParams,
     'ttlHours' => (int) ($config->get('popup_ttl_hours') ?? 48),
+    'delayMs' => (int) ($config->get('popup_delay_ms') ?? 3000),
     'plazasRestantes' => (int) ($config->get('plazas_restantes') ?? 45),
     'incentivoEuros' => (int) ($config->get('incentivo_euros') ?? 528),
+    'tasaInsercion' => (int) ($config->get('tasa_insercion_1e') ?? 46),
+    'negocioEnabled' => (bool) ($config->get('popup_negocio_enabled') ?? TRUE),
+    'serviciosCount' => (int) ($config->get('popup_servicios_count') ?? 5),
+    'valorMercadoAnual' => (int) ($config->get('popup_valor_mercado_anual') ?? 2400),
   ];
 }
 

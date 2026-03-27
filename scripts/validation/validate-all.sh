@@ -579,6 +579,9 @@ if [ "$MODE" = "full" ]; then
   run_check "SAFEGUARD-AEI-CAMPAIGN-001" "Andalucia +ei reclutamiento landing readiness" \
     php "$SCRIPT_DIR/validate-aei-reclutamiento-campaign.php"
 
+  run_check "POPUP-DUAL-SELECTOR-001" "Popup dual integrity (participante+negocio)" \
+    php "$SCRIPT_DIR/validate-popup-dual-integrity.php"
+
   run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
     php "$SCRIPT_DIR/validate-copilot-response-quality.php"
 

@@ -1,8 +1,10 @@
 /**
  * @file
- * Popup de reclutamiento Andalucía +ei para meta-sitios corporativos.
+ * Popup dual de captación Andalucía +ei — participantes y negocios piloto.
  *
- * DIRECTRIZ: CSS-VAR-ALL-COLORS-001 — Solo var(--ej-*).
+ * POPUP-DUAL-SELECTOR-001: Selector dual participante/negocio.
+ * CSS-VAR-ALL-COLORS-001: Solo var(--ej-*, fallback). NUNCA hex hardcodeado.
+ * SCSS-COLORMIX-001: color-mix() para alpha en lugar de rgba().
  */
 
 // =============================================================================
@@ -35,13 +37,15 @@
   position: relative;
   width: 100%;
   max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: var(--ej-color-surface, #fff);
   border-radius: 16px;
   padding: 2.5rem 2rem 2rem;
   box-shadow: 0 24px 48px color-mix(in srgb, var(--ej-azul-corporativo, #233D63) 25%, transparent);
   text-align: center;
   transform: translateY(20px) scale(0.96);
-  transition: transform 300ms ease;
+  transition: transform 300ms ease, opacity 200ms ease;
 
   .aei-popup__overlay--visible & {
     transform: translateY(0) scale(1);
@@ -254,5 +258,274 @@
 
   .aei-popup__stat-value {
     font-size: 1.25rem;
+  }
+}
+
+// =============================================================================
+// SUBTITLE (SELECTOR STEP)
+// =============================================================================
+
+.aei-popup__subtitle {
+  font-size: 0.85rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin: -0.5rem 0 1rem;
+  font-weight: 500;
+}
+
+// =============================================================================
+// DUAL SELECTOR — POPUP-DUAL-SELECTOR-001
+// =============================================================================
+
+.aei-popup__selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.aei-popup__selector-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border: 2px solid var(--ej-color-border-light, #E5E7EB);
+  border-radius: 12px;
+  background: var(--ej-color-surface, #fff);
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease, transform 100ms ease;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-naranja-impulso, #FF8C42);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &--participante:hover {
+    border-color: var(--ej-verde-innovacion, #00A9A5);
+    background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 5%, transparent);
+  }
+
+  &--negocio:hover {
+    border-color: var(--ej-naranja-impulso, #FF8C42);
+    background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 5%, transparent);
+  }
+}
+
+.aei-popup__selector-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.aei-popup__selector-label {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ej-azul-corporativo, #233D63);
+}
+
+.aei-popup__selector-hint {
+  font-size: 0.75rem;
+  color: var(--ej-color-text-muted, #9CA3AF);
+  line-height: 1.3;
+}
+
+// =============================================================================
+// SOCIAL PROOF (SELECTOR STEP)
+// =============================================================================
+
+.aei-popup__social-proof {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ej-color-border-light, #E5E7EB);
+}
+
+.aei-popup__social-proof-value {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ej-verde-innovacion, #00A9A5);
+}
+
+.aei-popup__social-proof-label {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// =============================================================================
+// BACK BUTTON
+// =============================================================================
+
+.aei-popup__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.75rem;
+  border: none;
+  background: none;
+  color: var(--ej-color-text-secondary, #6B7280);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 150ms ease;
+  border-radius: 6px;
+  position: relative;
+  z-index: 2;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ej-azul-corporativo, #233D63);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-naranja-impulso, #FF8C42);
+    outline-offset: 2px;
+  }
+}
+
+// =============================================================================
+// STAT HIGHLIGHT (46% inserción — verde en lugar de naranja)
+// =============================================================================
+
+.aei-popup__stat--highlight .aei-popup__stat-value {
+  color: var(--ej-verde-innovacion, #00A9A5);
+}
+
+// =============================================================================
+// PATH NEGOCIO — HEADER
+// =============================================================================
+
+.aei-popup__negocio-header {
+  margin-bottom: 1rem;
+}
+
+// =============================================================================
+// PATH NEGOCIO — SERVICIOS LIST
+// =============================================================================
+
+.aei-popup__servicios {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.aei-popup__servicio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--ej-verde-innovacion, #00A9A5) 6%, transparent);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--ej-azul-corporativo, #233D63);
+  font-weight: 500;
+  text-align: left;
+}
+
+.aei-popup__servicio-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// =============================================================================
+// PATH NEGOCIO — VALOR / PRECIO TACHADO
+// =============================================================================
+
+.aei-popup__negocio-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--ej-naranja-impulso, #FF8C42) 8%, transparent);
+  border-radius: 10px;
+}
+
+.aei-popup__negocio-value-crossed {
+  font-size: 0.9rem;
+  color: var(--ej-color-text-muted, #9CA3AF);
+  text-decoration: line-through;
+}
+
+.aei-popup__negocio-value-free {
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ej-naranja-impulso, #FF8C42);
+}
+
+// =============================================================================
+// RESPONSIVE — SELECTOR + NEGOCIO MOBILE
+// =============================================================================
+
+@media (max-width: 480px) {
+  .aei-popup__selector {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .aei-popup__selector-option {
+    flex-direction: row;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    gap: 0.75rem;
+  }
+
+  .aei-popup__selector-icon {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .aei-popup__negocio-value {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .aei-popup__servicio {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
   }
 }

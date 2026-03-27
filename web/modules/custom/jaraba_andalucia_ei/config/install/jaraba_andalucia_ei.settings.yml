@@ -24,6 +24,11 @@ mostrar_countdown: true
 mostrar_popup_saas: false
 popup_campaign_utm: 'aei_reclutamiento_2026'
 popup_ttl_hours: 48
+popup_delay_ms: 3000
+tasa_insercion_1e: 46
+popup_negocio_enabled: true
+popup_servicios_count: 5
+popup_valor_mercado_anual: 2400
 
 # Integración STO
 sto_sync_enabled: false
