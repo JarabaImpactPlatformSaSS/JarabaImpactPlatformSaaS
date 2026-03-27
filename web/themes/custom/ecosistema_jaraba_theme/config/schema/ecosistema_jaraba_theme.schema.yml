@@ -360,7 +360,7 @@ ecosistema_jaraba_theme.settings:
       label: 'Contenido página sobre nosotros'
     contact_email:
       type: string
-      label: 'Email de contacto'
+      label: 'Email de contacto (admin interno, NO se muestra en frontend)'
     contact_phone:
       type: string
       label: 'Teléfono de contacto'
@@ -370,6 +370,65 @@ ecosistema_jaraba_theme.settings:
     contact_content:
       type: string
       label: 'Contenido página de contacto'
+    contact_schema_email:
+      type: string
+      label: 'Email dedicado para Schema.org (no visible en UI)'
+
+    # ── WhatsApp Widget (CONTACT-SSOT-001, WA-FAB-CONFIG-001) ──
+    whatsapp_enabled:
+      type: boolean
+      label: 'WhatsApp widget habilitado'
+    whatsapp_number:
+      type: string
+      label: 'Número WhatsApp (formato internacional sin +, ej: 34623174304)'
+    whatsapp_default_message:
+      type: string
+      label: 'Mensaje predeterminado de WhatsApp'
+    whatsapp_display:
+      type: string
+      label: 'Mostrar widget en (mobile|desktop|both)'
+    whatsapp_delay_seconds:
+      type: integer
+      label: 'Segundos de delay antes de mostrar el widget'
+    whatsapp_scroll_threshold:
+      type: integer
+      label: 'Porcentaje de scroll para mostrar el widget (0-100)'
+    whatsapp_position:
+      type: string
+      label: 'Posición del widget (left|right)'
+    whatsapp_msg_empleabilidad:
+      type: string
+      label: 'Mensaje contextual para vertical empleabilidad'
+    whatsapp_msg_emprendimiento:
+      type: string
+      label: 'Mensaje contextual para vertical emprendimiento'
+    whatsapp_msg_comercioconecta:
+      type: string
+      label: 'Mensaje contextual para vertical comercio'
+    whatsapp_msg_agroconecta:
+      type: string
+      label: 'Mensaje contextual para vertical agroconecta'
+    whatsapp_msg_jarabalex:
+      type: string
+      label: 'Mensaje contextual para vertical jarabalex'
+    whatsapp_msg_serviciosconecta:
+      type: string
+      label: 'Mensaje contextual para vertical servicios'
+    whatsapp_msg_formacion:
+      type: string
+      label: 'Mensaje contextual para vertical formación'
+    whatsapp_msg_andalucia_ei:
+      type: string
+      label: 'Mensaje contextual para vertical Andalucía +ei'
+    whatsapp_msg_pricing:
+      type: string
+      label: 'Mensaje contextual para páginas de precios'
+    whatsapp_msg_checkout:
+      type: string
+      label: 'Mensaje contextual para checkout'
+    whatsapp_msg_default:
+      type: string
+      label: 'Mensaje contextual por defecto'
 
     # ── Metasite Content per-variant (METASITE-CONTENT-001) ──
     # 4 variantes × 24 campos = 96 config keys

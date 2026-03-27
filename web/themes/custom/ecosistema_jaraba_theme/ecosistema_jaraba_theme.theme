@@ -1017,6 +1017,132 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#rows' => 6,
     '#description' => t('Contenido libre adicional para la página de contacto.'),
   ];
+  $form['legal_pages']['contact']['contact_schema_email'] = [
+    '#type' => 'email',
+    '#title' => t('Email dedicado para Schema.org'),
+    '#default_value' => $config->get('contact_schema_email') ?: '',
+    '#placeholder' => 'hola@plataformadeecosistemas.es',
+    '#description' => t('Email trampa para datos estructurados. NO se muestra en la UI. Usar un email dedicado con autoresponder que redirige a WhatsApp (SCHEMA-CONTACT-CHANNEL-001).'),
+  ];
+
+  // =========================================================================
+  // TAB: WhatsApp y Contacto (CONTACT-SSOT-001, WA-FAB-CONFIG-001)
+  // =========================================================================
+  $form['whatsapp_contact'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('navigation', t('WhatsApp y Contacto'), '#25d366'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -22,
+  ];
+
+  // --- Configuración general ---
+  $form['whatsapp_contact']['wa_general'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Configuración general del widget'),
+  ];
+  $form['whatsapp_contact']['wa_general']['whatsapp_enabled'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Activar widget WhatsApp'),
+    '#default_value' => $config->get('whatsapp_enabled') ?? TRUE,
+    '#description' => t('Muestra el botón flotante de WhatsApp en el frontend público.'),
+  ];
+  $form['whatsapp_contact']['wa_general']['whatsapp_number'] = [
+    '#type' => 'textfield',
+    '#title' => t('Número de WhatsApp'),
+    '#default_value' => $config->get('whatsapp_number') ?: '34623174304',
+    '#description' => t('Formato internacional sin +. Ejemplo: 34623174304 (NAP-NORMALIZATION-001).'),
+    '#maxlength' => 20,
+  ];
+  $form['whatsapp_contact']['wa_general']['whatsapp_default_message'] = [
+    '#type' => 'textarea',
+    '#title' => t('Mensaje predeterminado'),
+    '#default_value' => $config->get('whatsapp_default_message') ?: t('Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.'),
+    '#rows' => 2,
+    '#description' => t('Mensaje pre-rellenado cuando no hay contexto de vertical específico.'),
+  ];
+
+  // --- Apariencia y comportamiento ---
+  $form['whatsapp_contact']['wa_appearance'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Apariencia y comportamiento'),
+  ];
+  $form['whatsapp_contact']['wa_appearance']['whatsapp_display'] = [
+    '#type' => 'select',
+    '#title' => t('Mostrar en'),
+    '#options' => [
+      'both' => t('Móvil y escritorio'),
+      'mobile' => t('Solo móvil'),
+      'desktop' => t('Solo escritorio'),
+    ],
+    '#default_value' => $config->get('whatsapp_display') ?: 'both',
+  ];
+  $form['whatsapp_contact']['wa_appearance']['whatsapp_delay_seconds'] = [
+    '#type' => 'number',
+    '#title' => t('Delay de aparición (segundos)'),
+    '#default_value' => $config->get('whatsapp_delay_seconds') ?? 5,
+    '#min' => 0,
+    '#max' => 60,
+    '#description' => t('Segundos antes de mostrar el widget. 0 = inmediato.'),
+  ];
+  $form['whatsapp_contact']['wa_appearance']['whatsapp_scroll_threshold'] = [
+    '#type' => 'number',
+    '#title' => t('Umbral de scroll (%)'),
+    '#default_value' => $config->get('whatsapp_scroll_threshold') ?? 30,
+    '#min' => 0,
+    '#max' => 100,
+    '#description' => t('Porcentaje de scroll necesario para mostrar. 0 = sin requisito de scroll.'),
+  ];
+  $form['whatsapp_contact']['wa_appearance']['whatsapp_position'] = [
+    '#type' => 'select',
+    '#title' => t('Posición del widget'),
+    '#options' => [
+      'left' => t('Esquina inferior izquierda'),
+      'right' => t('Esquina inferior derecha'),
+    ],
+    '#default_value' => $config->get('whatsapp_position') ?: 'left',
+    '#description' => t('La derecha suele estar ocupada por el Copilot FAB.'),
+  ];
+
+  // --- Mensajes contextuales por vertical (WA-CONTEXTUAL-001) ---
+  $form['whatsapp_contact']['wa_messages'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Mensajes contextuales por vertical'),
+    '#description' => t('El widget mostrará un mensaje personalizado según la vertical o página que el visitante esté viendo. Dejar vacío para usar el mensaje predeterminado.'),
+  ];
+  $wa_verticals = [
+    'empleabilidad' => t('Empleabilidad'),
+    'emprendimiento' => t('Emprendimiento'),
+    'comercioconecta' => t('ComercioConecta'),
+    'agroconecta' => t('AgroConecta'),
+    'jarabalex' => t('JarabaLex'),
+    'serviciosconecta' => t('ServiciosConecta'),
+    'formacion' => t('Formación'),
+    'andalucia_ei' => t('Andalucía +EI'),
+    'pricing' => t('Páginas de precios'),
+    'checkout' => t('Checkout / Pago'),
+    'default' => t('Por defecto (fallback)'),
+  ];
+  $wa_defaults = [
+    'empleabilidad' => t('Hola, me interesa saber más sobre búsqueda de empleo y orientación laboral.'),
+    'emprendimiento' => t('Hola, me gustaría validar mi idea de negocio con el método Jaraba.'),
+    'comercioconecta' => t('Hola, quiero digitalizar mi tienda y vender online.'),
+    'agroconecta' => t('Hola, me interesa la gestión digital de mi finca y trazabilidad.'),
+    'jarabalex' => t('Hola, necesito asesoramiento legal para mi negocio.'),
+    'serviciosconecta' => t('Hola, quiero gestionar mi despacho profesional de forma digital.'),
+    'formacion' => t('Hola, me interesan los cursos y certificaciones disponibles.'),
+    'andalucia_ei' => t('Hola, quiero información sobre el programa Andalucía +EI de inserción laboral.'),
+    'pricing' => t('Hola, tengo dudas sobre los planes y precios de la plataforma.'),
+    'checkout' => t('Hola, necesito ayuda con el proceso de pago.'),
+    'default' => t('Hola, me gustaría saber más sobre la Plataforma de Ecosistemas.'),
+  ];
+  foreach ($wa_verticals as $key => $label) {
+    $form['whatsapp_contact']['wa_messages']['whatsapp_msg_' . $key] = [
+      '#type' => 'textarea',
+      '#title' => $label,
+      '#default_value' => $config->get('whatsapp_msg_' . $key) ?: ($wa_defaults[$key] ?? ''),
+      '#rows' => 2,
+    ];
+  }
 
   // =========================================================================
   // TABS 15-18: METASITIOS PER-DOMINIO (METASITE-CONTENT-001)
@@ -1373,6 +1499,44 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
  * El campo 'map' solo almacena un mapa plano (no array de mapas).
  * Esta función detecta si es un mapa plano y lo envuelve en array.
  */
+/**
+ * Resolve WhatsApp context from route name (WA-CONTEXTUAL-001).
+ *
+ * Maps the current route to a vertical/page key used to select
+ * the contextual message for the WhatsApp FAB widget.
+ */
+function _ecosistema_jaraba_theme_resolve_whatsapp_context(string $route_name): string {
+  // Páginas de conversión — prioridad alta.
+  if (str_contains($route_name, 'pricing') || str_contains($route_name, 'planes')) {
+    return 'pricing';
+  }
+  if (str_contains($route_name, 'checkout')) {
+    return 'checkout';
+  }
+  // Verticales — matching por substring en nombre de ruta.
+  $vertical_map = [
+    'empleabilidad' => 'empleabilidad',
+    'empleo' => 'empleabilidad',
+    'talento' => 'empleabilidad',
+    'emprendimiento' => 'emprendimiento',
+    'emprender' => 'emprendimiento',
+    'comercio' => 'comercioconecta',
+    'agro' => 'agroconecta',
+    'legal' => 'jarabalex',
+    'jarabalex' => 'jarabalex',
+    'servicios' => 'serviciosconecta',
+    'formacion' => 'formacion',
+    'training' => 'formacion',
+    'andalucia' => 'andalucia_ei',
+  ];
+  foreach ($vertical_map as $needle => $context) {
+    if (str_contains($route_name, $needle)) {
+      return $context;
+    }
+  }
+  return 'default';
+}
+
 function _ecosistema_jaraba_theme_normalize_quiz_alternatives($result): array {
   $raw = $result->get('alternative_verticals')->first()?->getValue() ?? [];
   if (empty($raw)) {
@@ -4127,6 +4291,51 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   ];
   if (isset($landing_vertical_map[$route])) {
     $variables['vertical_key'] = $landing_vertical_map[$route];
+  }
+
+  // =========================================================================
+  // CONTACT-SSOT-001 + WA-CONTEXTUAL-001: WhatsApp widget drupalSettings.
+  // Inyectar configuración de WhatsApp para el JS contextual.
+  // ZERO-REGION-003: drupalSettings via $variables['#attached'].
+  // =========================================================================
+  $wa_enabled = theme_get_setting('whatsapp_enabled', 'ecosistema_jaraba_theme') ?? TRUE;
+  $wa_number = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '34623174304';
+
+  // Actualizar theme_settings para que templates lean de ahí (CONTACT-SSOT-001).
+  $variables['theme_settings']['whatsapp_enabled'] = $wa_enabled;
+  $variables['theme_settings']['whatsapp_number'] = $wa_number;
+  $variables['theme_settings']['whatsapp_display'] = theme_get_setting('whatsapp_display', 'ecosistema_jaraba_theme') ?: 'both';
+  $variables['theme_settings']['contact_schema_email'] = theme_get_setting('contact_schema_email', 'ecosistema_jaraba_theme') ?: '';
+
+  if ($wa_enabled) {
+    // Mapa de mensajes contextuales.
+    $wa_messages = [];
+    $wa_keys = [
+      'empleabilidad', 'emprendimiento', 'comercioconecta', 'agroconecta',
+      'jarabalex', 'serviciosconecta', 'formacion', 'andalucia_ei',
+      'pricing', 'checkout', 'default',
+    ];
+    foreach ($wa_keys as $key) {
+      $msg = theme_get_setting('whatsapp_msg_' . $key, 'ecosistema_jaraba_theme');
+      if ($msg) {
+        $wa_messages[$key] = $msg;
+      }
+    }
+
+    // Resolver contexto actual desde la ruta.
+    $wa_context = _ecosistema_jaraba_theme_resolve_whatsapp_context($route);
+
+    $variables['#attached']['drupalSettings']['jarabaWhatsApp'] = [
+      'enabled' => TRUE,
+      'number' => $wa_number,
+      'delay' => (int) (theme_get_setting('whatsapp_delay_seconds', 'ecosistema_jaraba_theme') ?? 5),
+      'scrollThreshold' => (int) (theme_get_setting('whatsapp_scroll_threshold', 'ecosistema_jaraba_theme') ?? 30),
+      'position' => theme_get_setting('whatsapp_position', 'ecosistema_jaraba_theme') ?: 'left',
+      'display' => theme_get_setting('whatsapp_display', 'ecosistema_jaraba_theme') ?: 'both',
+      'currentContext' => $wa_context,
+      'messages' => $wa_messages,
+    ];
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/whatsapp-fab-contextual';
   }
 }
 
