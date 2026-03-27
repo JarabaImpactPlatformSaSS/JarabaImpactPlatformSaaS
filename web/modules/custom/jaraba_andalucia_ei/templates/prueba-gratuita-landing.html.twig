@@ -119,7 +119,7 @@
         {{ jaraba_icon('actions', 'arrow-down', { variant: 'outline', color: 'white', size: '18px' }) }}
         {% trans %}Solicitar prueba gratuita{% endtrans %}
       </a>
-      <a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+      <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
          class="prueba-gratuita__cta-whatsapp"
          target="_blank"
          rel="noopener noreferrer"
@@ -419,13 +419,13 @@
           <h2>{% trans %}¡Solicitud recibida!{% endtrans %}</h2>
           <p>{% trans %}Le contactaremos en un máximo de 3 días laborables con una propuesta personalizada para su negocio.{% endtrans %}</p>
           <p class="prueba-gratuita__success-sub">{% trans %}Mientras tanto, puede contactarnos por WhatsApp para resolver cualquier duda.{% endtrans %}</p>
-          <a href="https://wa.me/34623174304?text=Hola%2C%20acabo%20de%20solicitar%20la%20prueba%20gratuita"
+          <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20acabo%20de%20solicitar%20la%20prueba%20gratuita"
              class="prueba-gratuita__cta prueba-gratuita__cta--whatsapp"
              target="_blank"
              rel="noopener noreferrer"
              data-track-cta="success_whatsapp"
              data-track-position="success">
-            {% trans %}WhatsApp: +34 623 174 304{% endtrans %}
+            {% trans %}Escribir por WhatsApp{% endtrans %}
           </a>
         </div>
       </div>
@@ -612,7 +612,7 @@
          data-track-position="final">
         {% trans %}Solicitar prueba gratuita{% endtrans %}
       </a>
-      <a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+      <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
          class="prueba-gratuita__cta prueba-gratuita__cta--whatsapp"
          target="_blank"
          rel="noopener noreferrer"
@@ -633,7 +633,7 @@
 {# ============================================================ #}
 {# === SECTION 15: WHATSAPP FAB === #}
 {# ============================================================ #}
-<a href="https://wa.me/34623174304?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
+<a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20quiero%20una%20prueba%20gratuita%20para%20mi%20negocio"
    class="prueba-gratuita__whatsapp-fab"
    target="_blank"
    rel="noopener noreferrer"

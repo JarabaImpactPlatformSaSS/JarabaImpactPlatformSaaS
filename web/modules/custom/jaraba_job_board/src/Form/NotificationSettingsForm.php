@@ -57,7 +57,7 @@ class NotificationSettingsForm extends ConfigFormBase {
     $form['push']['vapid_subject'] = [
       '#type' => 'email',
       '#title' => $this->t('VAPID Subject (Email)'),
-      '#default_value' => $config->get('vapid_subject') ?: 'mailto:admin@jaraba.es',
+      '#default_value' => $config->get('vapid_subject') ?: '',
       '#description' => $this->t('Email de contacto para el servidor push (formato mailto:).'),
     ];
 

@@ -112,9 +112,10 @@
         <div class="aei-solicitud-page__info-card aei-solicitud-page__info-card--contact">
           <h3>{% trans %}¿Tienes dudas?{% endtrans %}</h3>
           <p>{% trans %}Escríbenos por WhatsApp y te ayudamos con el proceso de solicitud.{% endtrans %}</p>
-          <a href="https://wa.me/34623174304?text=Hola%2C%20me%20interesa%20el%20programa%20Andaluc%C3%ADa%20%2Bei" target="_blank" rel="noopener" class="aei-solicitud-page__contact-link">
+          <a href="https://wa.me/{{ whatsapp_number }}?text=Hola%2C%20me%20interesa%20el%20programa%20Andaluc%C3%ADa%20%2Bei" target="_blank" rel="noopener" class="aei-solicitud-page__contact-link"
+             data-track-cta="solicitud_whatsapp" data-track-position="contact_card">
             {{ jaraba_icon('ui', 'chat', { color: 'verde-innovacion', size: '20px' }) }}
-            {% trans %}WhatsApp +34 623 174 304{% endtrans %}
+            {% trans %}Consultar por WhatsApp{% endtrans %}
           </a>
         </div>
       </div>

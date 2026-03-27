@@ -316,7 +316,7 @@ class PedContactForm extends FormBase {
       $mailManager->mail(
         'ecosistema_jaraba_core',
         'ped_contact_notification',
-        'info@plataformadeecosistemas.es',
+        \Drupal::config('system.site')->get('mail') ?? 'noreply@plataformadeecosistemas.es',
         'es',
         [
           'contact_name' => $name,

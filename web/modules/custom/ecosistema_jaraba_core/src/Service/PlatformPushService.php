@@ -400,7 +400,7 @@ class PlatformPushService {
     return [
       'public_key' => $config->get('vapid_public_key') ?? '',
       'private_key' => $config->get('vapid_private_key') ?? '',
-      'subject' => $config->get('vapid_subject') ?? 'mailto:admin@plataformadeecosistemas.es',
+      'subject' => $config->get('vapid_subject') ?? ('mailto:' . (\Drupal::config('system.site')->get('mail') ?? 'noreply@plataformadeecosistemas.es')),
     ];
   }
 

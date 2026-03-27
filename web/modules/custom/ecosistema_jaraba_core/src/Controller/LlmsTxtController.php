@@ -429,7 +429,7 @@ SECTION;
 
 - **Web**: $base_url
 - **Contact form**: $base_url/contacto
-- **WhatsApp**: https://wa.me/34623174304
+- **WhatsApp**: https://wa.me/" . (theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '') . "
 - **Support**: $base_url/contacto
 
 ## Complementary Files

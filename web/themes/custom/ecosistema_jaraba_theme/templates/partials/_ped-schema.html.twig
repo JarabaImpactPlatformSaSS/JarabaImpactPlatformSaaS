@@ -85,7 +85,7 @@
     "longitude": -4.4198
   },
   "hasMap": "https://maps.google.com/?q=Centro+de+Negocios+Málaga,+C.+Palma+del+Río+19,+29004+Málaga",
-  "telephone": "+34 623 174 304",
+  {% if ts.contact_phone %}"telephone": "{{ ts.contact_phone }}",{% endif %}
   "numberOfEmployees": {
     "@type": "QuantitativeValue",
     "minValue": 2,
@@ -114,7 +114,7 @@
     {
       "@type": "ContactPoint",
       "contactType": "{{ 'Contacto institucional'|t }}",
-      "telephone": "+34 623 174 304",
+      {% if ts.contact_phone %}"telephone": "{{ ts.contact_phone }}",{% endif %}
       {% if ts.contact_schema_email %}"email": "{{ ts.contact_schema_email }}",{% endif %}
       "url": "{{ path('ecosistema_jaraba_core.contact') }}",
       "availableLanguage": ["Spanish", "English"]

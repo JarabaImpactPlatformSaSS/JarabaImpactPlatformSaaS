@@ -133,9 +133,9 @@ class EnlacesController extends ControllerBase {
         'track_cta' => 'info_link',
       ],
       [
-        'label' => $this->t('WhatsApp: +34 623 174 304'),
+        'label' => $this->t('Consultar por WhatsApp'),
         'sublabel' => $this->t('Respuesta en menos de 2 horas'),
-        'href' => 'https://wa.me/34623174304?text=Hola%2C%20quiero%20información%20sobre%20Andalucía%20%2Bei',
+        'href' => 'https://wa.me/' . (\Drupal::config('ecosistema_jaraba_theme.settings')->get('whatsapp_number') ?? '') . '?text=Hola%2C%20quiero%20información%20sobre%20Andalucía%20%2Bei',
         'icon' => 'social/whatsapp',
         'color' => 'whatsapp',
         'track_cta' => 'whatsapp_link',

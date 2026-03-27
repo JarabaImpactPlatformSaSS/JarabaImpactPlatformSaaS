@@ -49,27 +49,8 @@ class StaticPageController extends ControllerBase {
     return Xss::filterAdmin($content);
   }
 
-  /**
-   * Renders the /contacto page.
-   *
-   * @return array
-   *   Render array using info_page_contact theme hook.
-   */
-  public function contacto(): array {
-    $config = $this->getThemeConfig();
-
-    return [
-      '#theme' => 'info_page_contact',
-      '#content' => $this->sanitizeContent($config['contact_content'] ?? ''),
-      '#contact_email' => $config['contact_email'] ?? theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: \Drupal::config('system.site')->get('mail'),
-      '#contact_phone' => $config['contact_phone'] ?? '+34 623 174 304',
-      '#contact_address' => $config['contact_address'] ?? '',
-      '#cache' => [
-        'tags' => ['config:ecosistema_jaraba_theme.settings'],
-        'max-age' => 3600,
-      ],
-    ];
-  }
+  // contacto() ELIMINADO: ruta consolidada en InfoPagesController::contact()
+  // EMAIL-NOEXPOSE-001, CONTACT-SSOT-001
 
   /**
    * Renders the /sobre-nosotros page.

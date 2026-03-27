@@ -58,7 +58,7 @@
       <p class="pb-section__subtitle">{{ subtitle|default('Formación presencial y online en toda la comunidad autónoma.')|t }}</p>
 
       {# Accept both contact_phone and phone #}
-      {% set phone_val = contact_phone|default(phone|default('+34 623 174 304')) %}
+      {% set phone_val = contact_phone|default(phone|default('')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="100">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'impulse' }) }}
@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      {% set wa_val = contact_whatsapp|default(whatsapp|default('+34 623 174 304')) %}
+      {% set wa_val = contact_whatsapp|default(whatsapp|default('')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="300">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '24px', color: 'impulse' }) }}

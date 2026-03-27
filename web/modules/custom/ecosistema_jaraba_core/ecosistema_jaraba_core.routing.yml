@@ -2362,13 +2362,9 @@ ecosistema_jaraba_core.email_verify:
     _access: 'TRUE'
     token: '[a-f0-9]{64}'
 
-ecosistema_jaraba_core.static.contacto:
-  path: '/contacto'
-  defaults:
-    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::contacto'
-    _title: 'Contacto'
-  requirements:
-    _access: 'TRUE'
+# ELIMINADA: ecosistema_jaraba_core.static.contacto (ruta duplicada)
+# Consolidada en ecosistema_jaraba_core.contact → InfoPagesController::contact()
+# Refs migradas: info-page-about.html.twig, legal-page.html.twig
 
 ecosistema_jaraba_core.static.sobre_nosotros:
   path: '/sobre-nosotros'

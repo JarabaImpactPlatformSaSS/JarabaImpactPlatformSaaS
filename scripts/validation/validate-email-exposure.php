@@ -247,6 +247,73 @@ if (file_exists($llms_controller)) {
   echo "  [WARN] LlmsTxtController not found\n";
 }
 
+// ── Check 9: Hardcoded platform phone in Twig templates (CONTACT-NOHARD-001) ──
+$checks++;
+$phone_pattern = '/34623174304|\+34\s*623\s*174\s*304/';
+$phone_count = 0;
+foreach ($twig_files as $file) {
+  $skip = false;
+  foreach ($whitelist_paths as $wp) {
+    if (str_contains($file, $wp)) { $skip = true; break; }
+  }
+  if ($skip) continue;
+
+  $content = file_get_contents($file);
+  // Skip comments.
+  $content_no_comments = preg_replace('/\{#.*?#\}/s', '', $content);
+  if (preg_match_all($phone_pattern, $content_no_comments, $matches)) {
+    $rel = str_replace($base_dir, '', $file);
+    $phone_count += count($matches[0]);
+    $errors[] = "CONTACT-NOHARD-001: Hardcoded phone in $rel (" . count($matches[0]) . " occurrences)";
+  }
+}
+if ($phone_count === 0) {
+  echo "  [PASS] No hardcoded platform phone in Twig templates\n";
+} else {
+  echo "  [FAIL] $phone_count hardcoded phone occurrences in templates\n";
+}
+
+// ── Check 10: |default('34623174304') pattern in Twig templates ──
+$checks++;
+$default_phone_count = 0;
+foreach ($twig_files as $file) {
+  $skip = false;
+  foreach ($whitelist_paths as $wp) {
+    if (str_contains($file, $wp)) { $skip = true; break; }
+  }
+  if ($skip) continue;
+
+  $content = file_get_contents($file);
+  if (preg_match_all("/\|default\(['\"]34623174304['\"]\)/", $content, $matches)) {
+    $rel = str_replace($base_dir, '', $file);
+    $default_phone_count += count($matches[0]);
+    $errors[] = "CONTACT-NOHARD-001: |default('34623174304') in $rel";
+  }
+}
+if ($default_phone_count === 0) {
+  echo "  [PASS] No |default('34623174304') patterns in templates\n";
+} else {
+  echo "  [FAIL] $default_phone_count |default phone patterns found\n";
+}
+
+// ── Check 11: Schema.org templates — no hardcoded telephone ──
+$checks++;
+$schema_phone_issues = 0;
+foreach ($schema_templates as $sf) {
+  if (!file_exists($sf)) continue;
+  $content = file_get_contents($sf);
+  if (preg_match_all('/"telephone":\s*"\+?34/', $content, $m)) {
+    $rel = str_replace($base_dir, '', $sf);
+    $schema_phone_issues += count($m[0]);
+    $errors[] = "Hardcoded telephone in Schema.org template $rel";
+  }
+}
+if ($schema_phone_issues === 0) {
+  echo "  [PASS] Schema.org templates use dynamic telephone variables\n";
+} else {
+  echo "  [FAIL] $schema_phone_issues hardcoded telephones in Schema.org\n";
+}
+
 // ── Summary ──
 echo "\n";
 echo "validate-email-exposure: $checks checks";

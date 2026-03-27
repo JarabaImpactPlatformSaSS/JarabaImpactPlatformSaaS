@@ -96,12 +96,12 @@ if ($moduleFile !== false && strpos($moduleFile, "'confirmacion_solicitud'") !==
     $errors[] = 'CHECK 8: Missing email templates in hook_mail';
 }
 
-// ─── CHECK 9: WhatsApp link uses correct number ───
-if ($template !== false && strpos($template, 'wa.me/34623174304') !== false) {
+// ─── CHECK 9: WhatsApp link uses dynamic variable (CONTACT-SSOT-001) ───
+if ($template !== false && strpos($template, 'wa.me/{{ whatsapp_number }}') !== false) {
     $passed++;
-    echo "  ✓ CHECK 9: WhatsApp link uses NAP number (34623174304)\n";
+    echo "  ✓ CHECK 9: WhatsApp link uses dynamic whatsapp_number variable\n";
 } else {
-    $errors[] = 'CHECK 9: WhatsApp link missing or wrong number';
+    $errors[] = 'CHECK 9: WhatsApp link missing or not using {{ whatsapp_number }}';
 }
 
 // ─── CHECK 10: Testimonial images exist ───

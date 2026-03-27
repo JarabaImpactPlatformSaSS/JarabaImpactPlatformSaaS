@@ -50,7 +50,7 @@
             <span>{{ package.duration_minutes }} {% trans %}min/sesión{% endtrans %}</span>
           </div>
 
-          <a href="https://wa.me/{{ whatsapp_number|default('34623174304') }}" class="ej-whatsapp-contact-btn" target="_blank" rel="noopener noreferrer">{% trans %}Reservar por WhatsApp{% endtrans %}</a>
+          <a href="https://wa.me/{{ whatsapp_number|default('') }}" class="ej-whatsapp-contact-btn" target="_blank" rel="noopener noreferrer">{% trans %}Reservar por WhatsApp{% endtrans %}</a>
         </div>
       {% endfor %}
     </div>

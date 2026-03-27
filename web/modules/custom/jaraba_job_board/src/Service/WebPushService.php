@@ -269,7 +269,7 @@ class WebPushService {
     $payload = base64_encode(json_encode([
       'aud' => $audience,
       'exp' => time() + 86400,
-      'sub' => 'mailto:admin@jaraba.es',
+      'sub' => 'mailto:' . (\Drupal::config('system.site')->get('mail') ?? 'noreply@plataformadeecosistemas.es'),
     ]));
 
     // En producción, firmar con clave privada ECDSA

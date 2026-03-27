@@ -19,7 +19,7 @@
 #}
 
 {% set front = path('<front>') %}
-{% set phone = ts.contact_phone|default('+34 623 174 304') %}
+{% set phone = ts.contact_phone|default('') %}
 {% set schema_email = ts.contact_schema_email|default('') %}
 {% set wa_number = ts.whatsapp_number|default('') %}
 

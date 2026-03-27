@@ -275,7 +275,8 @@
       if (cta) {
         cta.textContent = window.Drupal ? Drupal.t('Pregúntanos por WhatsApp') : 'Pregúntanos por WhatsApp';
         cta.className = 'aei-rec__cta aei-rec__cta--whatsapp';
-        cta.href = 'https://wa.me/34623174304?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F';
+        var waNum = (drupalSettings.jarabaWhatsApp && drupalSettings.jarabaWhatsApp.number) || '';
+        cta.href = 'https://wa.me/' + waNum + '?text=%C2%BFPuedo%20participar%20en%20el%20programa%20T-Acompa%C3%B1amos%3F';
         cta.target = '_blank';
         cta.rel = 'noopener noreferrer';
       }

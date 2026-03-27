@@ -54,6 +54,7 @@ function jaraba_andalucia_ei_theme(): array {
       'variables' => [
         'form' => NULL,
         'messages' => NULL,
+        'whatsapp_number' => '',
       ],
       'template' => 'solicitud-ei-page',
     ],
@@ -69,6 +70,7 @@ function jaraba_andalucia_ei_theme(): array {
         'guia_url' => NULL,
         'programa' => [],
         'module_path' => NULL,
+        'whatsapp_number' => '',
       ],
       'template' => 'andalucia-ei-reclutamiento',
     ],
@@ -87,6 +89,7 @@ function jaraba_andalucia_ei_theme(): array {
         'urgency' => [],
         'solicitar_url' => NULL,
         'prueba_url' => NULL,
+        'whatsapp_number' => '',
       ],
       'template' => 'enlaces-andalucia-ei',
     ],
@@ -434,6 +437,7 @@ function jaraba_andalucia_ei_theme(): array {
         'pricing_context' => [],
         'guarantees' => [],
         'show_success' => FALSE,
+        'whatsapp_number' => '',
       ],
       'template' => 'prueba-gratuita-landing',
     ],
@@ -448,6 +452,35 @@ function jaraba_andalucia_ei_theme(): array {
  */
 function jaraba_andalucia_ei_preprocess_solicitud_ei_page(array &$variables): void {
   $variables['messages'] = ['#type' => 'status_messages'];
+  // CONTACT-SSOT-001: WhatsApp number from theme_settings SSOT.
+  $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_reclutamiento.
+ *
+ * CONTACT-SSOT-001: Inyecta whatsapp_number desde theme_settings.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_reclutamiento(array &$variables): void {
+  $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for prueba_gratuita_landing.
+ *
+ * CONTACT-SSOT-001: Inyecta whatsapp_number desde theme_settings.
+ */
+function jaraba_andalucia_ei_preprocess_prueba_gratuita_landing(array &$variables): void {
+  $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_enlaces.
+ *
+ * CONTACT-SSOT-001: Inyecta whatsapp_number desde theme_settings.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_enlaces(array &$variables): void {
+  $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
 }
 
 /**
@@ -970,7 +1003,7 @@ function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): 
       '</table>' .
       // WhatsApp note.
       '<p style="margin:0 0 4px;font-size:14px;line-height:1.5;color:#64748B;">' .
-        t('Si tienes cualquier duda, escríbenos por WhatsApp al <strong>+34 623 174 304</strong>.') .
+        t('Si tienes cualquier duda, escríbenos por <strong>WhatsApp</strong>: <a href="https://wa.me/@wa_number" style="color:#25d366">wa.me/@wa_number</a>.', ['@wa_number' => theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '']) .
       '</p>' .
       '<p style="margin:16px 0 0;font-size:14px;color:#64748B;">— ' . t('Equipo Andalucía +ei') . '</p>';
 
@@ -1042,7 +1075,7 @@ function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): 
       '</table>' .
       // WhatsApp.
       '<p style="margin:0 0 4px;font-size:14px;line-height:1.5;color:#64748B;">' .
-        t('¿Tienes dudas? Escríbenos por WhatsApp al <strong>+34 623 174 304</strong>.') .
+        t('¿Tienes dudas? Escríbenos por <strong>WhatsApp</strong>: <a href="https://wa.me/@wa_number" style="color:#25d366">wa.me/@wa_number</a>.', ['@wa_number' => theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '']) .
       '</p>' .
       '<p style="margin:16px 0 0;font-size:14px;color:#64748B;">— ' . t('Equipo Andalucía +ei') . '</p>';
 
@@ -1868,8 +1901,8 @@ function _jaraba_andalucia_ei_reclutamiento_attachments(array &$attachments): vo
       '@type' => 'Organization',
       'name' => 'Plataforma de Ecosistemas Digitales S.L.',
       'url' => $baseUrl,
-      'telephone' => '+34 623 174 304',
-      'email' => 'contacto@plataformadeecosistemas.es',
+      'telephone' => theme_get_setting('contact_phone', 'ecosistema_jaraba_theme') ?: '',
+      'email' => theme_get_setting('contact_schema_email', 'ecosistema_jaraba_theme') ?: '',
     ],
     'programType' => 'Professional training',
     'occupationalCategory' => 'Insercion laboral',
