@@ -428,9 +428,9 @@ SECTION;
 ## Contact
 
 - **Web**: $base_url
-- **Email**: info@jaraba.io
-- **Support**: soporte@jaraba.io
-- **Technical**: tech@jarabaosc.com
+- **Contact form**: $base_url/contacto
+- **WhatsApp**: https://wa.me/34623174304
+- **Support**: $base_url/contacto
 
 ## Complementary Files
 

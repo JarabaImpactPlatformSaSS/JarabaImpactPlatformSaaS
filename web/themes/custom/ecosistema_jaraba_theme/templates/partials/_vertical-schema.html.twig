@@ -19,8 +19,9 @@
 #}
 
 {% set front = path('<front>') %}
-{% set phone = '+34 623 174 304' %}
-{% set email = 'contacto@plataformadeecosistemas.es' %}
+{% set phone = ts.contact_phone|default('+34 623 174 304') %}
+{% set schema_email = ts.contact_schema_email|default('') %}
+{% set wa_number = ts.whatsapp_number|default('') %}
 
 {% if vertical_key == 'agroconecta' %}
 <script type="application/ld+json">

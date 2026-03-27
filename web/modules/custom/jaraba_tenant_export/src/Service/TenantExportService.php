@@ -521,7 +521,7 @@ class TenantExportService {
       '',
       'SOPORTE:',
       'Para cualquier duda sobre esta exportación, contacta con',
-      'soporte@plataformadeecosistemas.com',
+      theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: \Drupal::config('system.site')->get('mail'),
     ];
 
     return implode("\n", $lines);

@@ -389,4 +389,30 @@
   </div>
 </section>
 
+{# ═══ EXIT-INTENT LEAD MAGNET ═══ #}
+{# LANDING-CONVERSION-SCORE-001 criterio #15: exit-intent con descargable #}
+<div class="cert-exit-intent" id="cert-exit-intent" role="dialog" aria-hidden="true" aria-label="{% trans %}Descarga gratuita{% endtrans %}">
+  <div class="cert-exit-intent__backdrop"></div>
+  <div class="cert-exit-intent__content">
+    <button class="cert-exit-intent__close" aria-label="{% trans %}Cerrar{% endtrans %}">&times;</button>
+    <h3>{% trans %}¿Te vas? Llévate esto gratis.{% endtrans %}</h3>
+    <p>{% trans %}Descarga la «Guía: Las 4 Competencias de Supervisión IA» — el resumen ejecutivo del Método Jaraba en 10 páginas.{% endtrans %}</p>
+    <form class="cert-exit-intent__form" method="post" action="{{ form_config.submit_url }}">
+      <input type="hidden" name="tipo" value="profesional">
+      <input type="hidden" name="como_conocio" value="exit_intent">
+      <div style="display:none" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+      <input type="email" name="email" placeholder="{{ 'Tu email'|trans }}" required class="cert-exit-intent__input">
+      <input type="text" name="nombre" placeholder="{{ 'Tu nombre'|trans }}" required class="cert-exit-intent__input">
+      <label class="cert-exit-intent__checkbox">
+        <input type="checkbox" name="rgpd" value="1" required>
+        <span>{% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a>{% endtrans %}</span>
+      </label>
+      <button type="submit" class="metodo-btn metodo-btn--primary metodo-btn--large" style="width:100%"
+              data-track-cta="cert_exit_intent_download" data-track-position="exit_intent">
+        {% trans %}Descargar guía gratuita{% endtrans %} →
+      </button>
+    </form>
+  </div>
+</div>
+
 {# JS cargado via library jaraba_page_builder/certificacion-form (Drupal.behaviors) #}

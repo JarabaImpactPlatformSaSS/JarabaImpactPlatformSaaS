@@ -43,16 +43,16 @@ class InfoPagesController extends ControllerBase {
    */
   public function contact(): array {
     $content = Xss::filterAdmin(theme_get_setting('contact_content', 'ecosistema_jaraba_theme') ?: '');
-    $email = theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: '';
     $phone = theme_get_setting('contact_phone', 'ecosistema_jaraba_theme') ?: '';
     $address = theme_get_setting('contact_address', 'ecosistema_jaraba_theme') ?: '';
+    $wa_number = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
 
     return [
       '#theme' => 'info_page_contact',
       '#content' => $content,
-      '#contact_email' => $email,
       '#contact_phone' => $phone,
       '#contact_address' => $address,
+      '#whatsapp_number' => $wa_number,
       '#cache' => [
         'tags' => ['config:ecosistema_jaraba_theme.settings'],
         'max-age' => 3600,

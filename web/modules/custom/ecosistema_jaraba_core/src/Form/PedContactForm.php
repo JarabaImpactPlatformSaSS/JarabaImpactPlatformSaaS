@@ -7,6 +7,7 @@ namespace Drupal\ecosistema_jaraba_core\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -163,7 +164,9 @@ class PedContactForm extends FormBase {
 
     $form['gdpr_consent'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('He leido y acepto la <a href="/politica-privacidad" target="_blank">politica de privacidad</a>. Plataforma de Ecosistemas Digitales S.L. tratara mis datos para gestionar esta consulta y responderme por email. Puedo ejercer mis derechos ARCO en info@plataformadeecosistemas.es.'),
+      '#title' => $this->t('He leido y acepto la <a href="/politica-privacidad" target="_blank">politica de privacidad</a>. Plataforma de Ecosistemas Digitales S.L. tratara mis datos para gestionar esta consulta y responderme por email. Puedo ejercer mis derechos ARCO a traves del <a href="@contact_url">formulario de contacto</a>.', [
+        '@contact_url' => Url::fromRoute('ecosistema_jaraba_core.contact')->toString(),
+      ]),
       '#required' => TRUE,
       '#attributes' => [
         'class' => ['ped-contact-form__checkbox'],

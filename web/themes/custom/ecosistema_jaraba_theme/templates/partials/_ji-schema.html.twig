@@ -57,13 +57,13 @@
     {
       "@type": "ContactPoint",
       "contactType": "{{ 'Contacto institucional'|t }}",
-      "email": "institucional@jarabaimpact.com",
+      {% if ts.contact_schema_email %}"email": "{{ ts.contact_schema_email }}",{% endif %}
       "availableLanguage": ["Spanish", "English"]
     },
     {
       "@type": "ContactPoint",
       "contactType": "{{ 'Solicitar demo'|t }}",
-      "email": "demo@jarabaimpact.com",
+      {% if ts.contact_schema_email %}"email": "{{ ts.contact_schema_email }}",{% endif %}
       "availableLanguage": ["Spanish", "English"]
     }
   ],

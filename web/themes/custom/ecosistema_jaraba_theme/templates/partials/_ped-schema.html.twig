@@ -115,15 +115,16 @@
       "@type": "ContactPoint",
       "contactType": "{{ 'Contacto institucional'|t }}",
       "telephone": "+34 623 174 304",
-      "email": "contacto@plataformadeecosistemas.es",
+      {% if ts.contact_schema_email %}"email": "{{ ts.contact_schema_email }}",{% endif %}
+      "url": "{{ path('ecosistema_jaraba_core.contact') }}",
       "availableLanguage": ["Spanish", "English"]
-    },
+    }{% if ts.whatsapp_number %},
     {
       "@type": "ContactPoint",
-      "contactType": "{{ 'Inversores y partners'|t }}",
-      "email": "inversores@plataformadeecosistemas.es",
+      "contactType": "{{ 'Atención por WhatsApp'|t }}",
+      "url": "https://wa.me/{{ ts.whatsapp_number }}",
       "availableLanguage": ["Spanish", "English"]
-    }
+    }{% endif %}
   ],
   "sameAs": [
     "https://pepejaraba.com",

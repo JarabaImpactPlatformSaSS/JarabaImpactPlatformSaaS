@@ -658,6 +658,9 @@ if [ "$MODE" = "full" ]; then
   run_check "EMAIL-SENDER-001" "Email sender vs SMTP allowed domain" \
     php "$SCRIPT_DIR/validate-email-sender.php"
 
+  run_check "EMAIL-NOEXPOSE-001" "Email exposure in frontend templates" \
+    php "$SCRIPT_DIR/validate-email-exposure.php"
+
   run_check "DEPLOY-MAINTENANCE-SAFETY-001" "Deploy maintenance mode safety gate" \
     php "$SCRIPT_DIR/validate-deploy-safety.php"
 

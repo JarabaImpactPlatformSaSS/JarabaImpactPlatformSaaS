@@ -890,9 +890,9 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     'info_page_contact' => [
       'variables' => [
         'content' => '',
-        'contact_email' => '',
         'contact_phone' => '',
         'contact_address' => '',
+        'whatsapp_number' => '',
         'theme_settings' => [],
       ],
       'template' => 'info-page-contact',

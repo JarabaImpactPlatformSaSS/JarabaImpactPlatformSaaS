@@ -174,7 +174,7 @@ class ContactApiController extends ControllerBase {
    */
   protected function sendNotification(string $name, string $email, string $subject, string $message): void {
     $config = \Drupal::config('ecosistema_jaraba_theme.settings');
-    $adminEmail = $config->get('contact_email') ?: 'info@jarabaimpact.com';
+    $adminEmail = $config->get('contact_email') ?: \Drupal::config('system.site')->get('mail');
 
     try {
       $this->mailManager->mail(

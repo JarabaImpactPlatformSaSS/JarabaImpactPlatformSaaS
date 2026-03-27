@@ -1248,6 +1248,16 @@ function jaraba_page_builder_mail(string $key, array &$message, array $params): 
       $message['subject'] = $params['subject'] ?? t('Notificacion del Workflow Editorial');
       $message['body'][] = $params['body'] ?? '';
       break;
+
+    case 'certificacion_lead':
+      // Lead de certificación Método Jaraba (profesional o entidad).
+      $message['subject'] = $params['subject'] ?? t('Nuevo lead de certificación');
+      if (is_array($params['body'] ?? NULL)) {
+        foreach ($params['body'] as $line) {
+          $message['body'][] = $line;
+        }
+      }
+      break;
   }
 }
 

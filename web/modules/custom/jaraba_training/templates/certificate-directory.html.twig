@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * CERT-12: Directorio público de certificados verificados.
+ *
+ * Variables:
+ * - certificates: array de certificados activos
+ * - search_code: término de búsqueda actual
+ */
+#}
+
+<div class="cert-directory">
+  <h2>{% trans %}Directorio de Profesionales Certificados{% endtrans %}</h2>
+  <p>{% trans %}Verifica la autenticidad de las certificaciones del Método Jaraba.{% endtrans %}</p>
+
+  <form method="get" action="" class="cert-directory__search">
+    <label for="cert-search" class="sr-only">{% trans %}Buscar por código{% endtrans %}</label>
+    <input type="text" id="cert-search" name="code" value="{{ search_code }}"
+           placeholder="{{ 'Buscar por código (ej: MJ-2026-00001)'|trans }}"
+           class="cert-directory__input">
+    <button type="submit" class="btn-primary btn-primary--sm">{% trans %}Buscar{% endtrans %}</button>
+  </form>
+
+  {% if certificates|length > 0 %}
+    <div class="cert-directory__table-wrapper">
+      <table class="cert-directory__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Profesional{% endtrans %}</th>
+            <th>{% trans %}Código{% endtrans %}</th>
+            <th>{% trans %}Nivel{% endtrans %}</th>
+            <th>{% trans %}Fecha{% endtrans %}</th>
+            <th>{% trans %}Verificar{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cert in certificates %}
+            <tr>
+              <td>{{ cert.holder_name }}</td>
+              <td><code>{{ cert.code }}</code></td>
+              <td>{% trans %}Nivel{% endtrans %} {{ cert.level }} — {{ cert.level_name }}</td>
+              <td>{{ cert.date }}</td>
+              <td><a href="{{ cert.verify_url }}">{% trans %}Ver{% endtrans %} →</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% elseif search_code %}
+    <p class="cert-directory__no-results">
+      {% trans %}No se encontraron certificados con el código «{{ search_code }}».{% endtrans %}
+    </p>
+  {% else %}
+    <p class="cert-directory__empty">
+      {% trans %}Aún no hay certificados emitidos.{% endtrans %}
+    </p>
+  {% endif %}
+</div>

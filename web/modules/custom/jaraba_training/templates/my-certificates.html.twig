@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * CERT-04: Página "Mi certificado" para el participante.
+ *
+ * Variables:
+ * - certificates: array de certificaciones del usuario
+ * - user_name: nombre del usuario
+ */
+#}
+
+<div class="my-certificates">
+  <h2>{% trans %}Mis certificaciones{% endtrans %}</h2>
+
+  {% if certificates|length > 0 %}
+    <div class="my-certificates__grid">
+      {% for cert in certificates %}
+        <div class="my-certificates__card my-certificates__card--{{ cert.status }}">
+          <div class="my-certificates__header">
+            <span class="my-certificates__status my-certificates__status--{{ cert.status }}">
+              {{ cert.status_label }}
+            </span>
+            {% if cert.certificate_number %}
+              <span class="my-certificates__code">{{ cert.certificate_number }}</span>
+            {% endif %}
+          </div>
+
+          {% if cert.level > 0 %}
+            <div class="my-certificates__level">
+              <strong>{% trans %}Nivel{% endtrans %} {{ cert.level }}</strong> — {{ cert.level_name }}
+            </div>
+          {% endif %}
+
+          {% if cert.program_name %}
+            <p class="my-certificates__program">{{ cert.program_name }}</p>
+          {% endif %}
+
+          <dl class="my-certificates__details">
+            {% if cert.certification_date %}
+              <dt>{% trans %}Fecha{% endtrans %}</dt>
+              <dd>{{ cert.certification_date }}</dd>
+            {% endif %}
+            {% if cert.valid_until %}
+              <dt>{% trans %}Válido hasta{% endtrans %}</dt>
+              <dd>{{ cert.valid_until }}</dd>
+            {% endif %}
+          </dl>
+
+          <div class="my-certificates__actions">
+            {% if cert.verify_url %}
+              <a href="{{ cert.verify_url }}" class="btn-primary btn-primary--sm" target="_blank" rel="noopener">
+                {% trans %}Verificar{% endtrans %}
+              </a>
+            {% endif %}
+            {% if cert.has_pdf %}
+              <a href="/admin/content/user-certifications/{{ cert.id }}" class="btn-ghost btn-ghost--sm">
+                {% trans %}Descargar PDF{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="my-certificates__empty">
+      <p>{% trans %}Aún no tienes certificaciones. Solicita tu primera certificación del Método Jaraba.{% endtrans %}</p>
+      <a href="/metodologia" class="btn-primary">{% trans %}Conocer el Método{% endtrans %} →</a>
+    </div>
+  {% endif %}
+</div>

@@ -252,3 +252,23 @@ jaraba_training.certificate_verify:
   requirements:
     _access: 'TRUE'
     code: '[A-Z]{2}-\d{4}-\d{5}'
+
+# === MI CERTIFICACIÓN (frontend usuario autenticado) ===
+
+jaraba_training.my_certificates:
+  path: '/mi-certificacion'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\MyCertificateController::myCertificates'
+    _title: 'Mis Certificaciones'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# === DIRECTORIO PÚBLICO DE CERTIFICADOS ===
+
+jaraba_training.certificate_directory:
+  path: '/certificados'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\MyCertificateController::publicDirectory'
+    _title: 'Directorio de Profesionales Certificados'
+  requirements:
+    _access: 'TRUE'

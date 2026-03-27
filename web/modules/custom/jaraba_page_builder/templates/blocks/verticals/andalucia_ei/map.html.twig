@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      {% set email_val = contact_email|default(email|default('contacto@plataformadeecosistemas.es')) %}
+      {% set email_val = contact_email|default(email|default('')) %}
       <div class="pb-section__contact-item" data-effect="fade-up" data-delay="200">
         <div class="pb-section__contact-icon" aria-hidden="true">
           {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'impulse' }) }}

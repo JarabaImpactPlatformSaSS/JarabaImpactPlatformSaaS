@@ -202,7 +202,7 @@ class LeadAutoResponderService {
       . "Para agendar su reunión, puede:\n"
       . "- Responder a este correo indicando su disponibilidad\n"
       . "- Llamar al +34 623 174 304\n"
-      . "- Escribir a contacto@plataformadeecosistemas.es\n\n"
+      . "- Escribir a " . (theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: \Drupal::config('system.site')->get('mail')) . "\n\n"
       . "Quedamos a su disposición.\n\n"
       . "Un cordial saludo,\n"
       . "Equipo Andalucía +ei\n"

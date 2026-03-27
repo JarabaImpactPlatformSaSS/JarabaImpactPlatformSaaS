@@ -36,9 +36,12 @@
   {% set logo_url = '/' ~ directory ~ '/logo.svg' %}
 {% endif %}
 
-{# Datos de contacto desde Theme Settings TAB 14 (Paginas Legales) #}
-{% set contact_email = ts.contact_email|default('contacto@plataformadeecosistemas.es') %}
+{# Datos de contacto desde Theme Settings (CONTACT-SSOT-001, SCHEMA-CONTACT-CHANNEL-001).
+   contact_schema_email: email dedicado trampa para Schema.org (NO el email operativo).
+   contact_phone: teléfono de contacto (NAP-NORMALIZATION-001). #}
+{% set contact_email = ts.contact_schema_email|default('') %}
 {% set contact_phone = ts.contact_phone|default('+34 623 174 304') %}
+{% set wa_number = ts.whatsapp_number|default('') %}
 
 {# RRSS desde Theme Settings TAB 6 (Footer > Social) #}
 {% set social_urls = [] %}
@@ -83,14 +86,24 @@
   {% if social_urls|length > 0 %}
   "sameAs": {{ same_as_json }},
   {% endif %}
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "email": "{{ contact_email }}",
-    "telephone": "{{ contact_phone }}",
-    "contactType": "customer service",
-    "areaServed": "ES",
-    "availableLanguage": ["Spanish", "English"]
-  }
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      {% if contact_email %}"email": "{{ contact_email }}",{% endif %}
+      "telephone": "{{ contact_phone }}",
+      "contactType": "customer service",
+      "url": "{{ path('ecosistema_jaraba_core.contact') }}",
+      "areaServed": "ES",
+      "availableLanguage": ["Spanish", "English"]
+    }{% if wa_number %},
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "url": "https://wa.me/{{ wa_number }}",
+      "areaServed": "ES",
+      "availableLanguage": ["Spanish", "English"]
+    }{% endif %}
+  ]
 }
 </script>
 

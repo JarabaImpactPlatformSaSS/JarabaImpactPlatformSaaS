@@ -1948,7 +1948,7 @@
                     classes: ['jaraba-contact', 'jaraba-contact--form'],
                     contactTitle: Drupal.t('Contáctanos'),
                     contactSubtitle: Drupal.t('Te responderemos en menos de 24 horas'),
-                    contactEmail: 'contacto@ejemplo.com',
+                    contactEmail: '',
                     showName: true,
                     showPhone: false,
                     buttonText: Drupal.t('Enviar Mensaje'),
@@ -2816,8 +2816,8 @@
                         <div style="width: 64px; height: 64px; background: var(--ej-color-innovation, #00A9A5); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
                             <span style="font-size: 1.5rem; color: white;">${Drupal.jarabaIcons.get('mail', '✉️')}</span>
                         </div>
-                        <h4 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Email')}</h4>
-                        <p style="color: var(--ej-text-muted, #64748b); font-size: 0.9rem; margin: 0;">hola@ejemplo.com</p>
+                        <h4 style="color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('WhatsApp')}</h4>
+                        <p style="color: var(--ej-text-muted, #64748b); font-size: 0.9rem; margin: 0;">${Drupal.t('Escríbenos por WhatsApp')}</p>
                     </div>
                 </section>`,
                 media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -61,7 +61,7 @@ class StaticPageController extends ControllerBase {
     return [
       '#theme' => 'info_page_contact',
       '#content' => $this->sanitizeContent($config['contact_content'] ?? ''),
-      '#contact_email' => $config['contact_email'] ?? 'info@jarabaimpact.com',
+      '#contact_email' => $config['contact_email'] ?? theme_get_setting('contact_email', 'ecosistema_jaraba_theme') ?: \Drupal::config('system.site')->get('mail'),
       '#contact_phone' => $config['contact_phone'] ?? '+34 623 174 304',
       '#contact_address' => $config['contact_address'] ?? '',
       '#cache' => [

@@ -452,7 +452,7 @@ REGLAS:
 - Si el usuario quiere emprender, destaca el Canvas, copiloto y mentoring
 - Si el usuario quiere vender, destaca el comercio digital
 - Termina con una pregunta de seguimiento cuando sea natural
-- Para soporte técnico específico, sugiere escribir a soporte@jaraba.com
+- Para soporte técnico específico, sugiere contactar por WhatsApp o a través de /contacto
 PROMPT;
   }
 
