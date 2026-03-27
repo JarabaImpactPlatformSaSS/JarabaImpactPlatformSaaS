@@ -9,7 +9,7 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 190 |
+| Total scripts PHP | 191 |
 | run_check (CI blocker) | 131 |
 | warn_check (no blocker) | 61 |
 | skip_check (fast mode) | 48 |
@@ -178,12 +178,21 @@
 | TRANSLATION-QUALITY-001 | Calidad semantica traducciones (identico al original, vacios, longitud anomala, hallucination) | 5 checks multi-entity |
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 
-## Pre-commit lint-staged (10 hooks)
+## Pre-commit only validators (no validate-all.sh)
+
+| Validator | Rule | Description |
+|-----------|------|-------------|
+| validate-compiled-assets.php | ASSET-FRESHNESS-001 | CSS timestamp >= SCSS timestamp |
+| validate-scss-css-costageing.php | SCSS-CSS-COSTAGE-001 | SCSS staged → compiled CSS must also be staged |
+| validate-twig-no-email.php | EMAIL-NOEXPOSE-001 | No hardcoded emails/phones in staged Twig/JS |
+| validate-module-scss-freshness.php | SCSS-MODULE-COMPILE-001 | Module SCSS freshness check |
+
+## Pre-commit lint-staged (11 hooks)
 
 | Pattern | Validator(s) |
 |---------|-------------|
 | `**/*.php` | PHPStan Level 6 + Drupal CodeSniffer |
-| `**/*.scss` | validate-compiled-assets.php |
+| `**/*.scss` | validate-compiled-assets.php + validate-scss-css-costageing.php (SCSS-CSS-COSTAGE-001) |
 | `docs/00_*.md` | verify-doc-integrity.sh (DOC-GUARD-001) |
 | `**/*.html.twig` | validate-twig-syntax.php + validate-twig-ortografia.php + validate-twig-no-email.php |
 | `**/*.js` (modules+theme) | validate-js-syntax.php + validate-twig-no-email.php |
