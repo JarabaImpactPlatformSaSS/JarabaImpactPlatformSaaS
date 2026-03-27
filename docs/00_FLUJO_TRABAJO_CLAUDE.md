@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-27
-**Version:** 121.0.0 (DEPLOY-COHERENCE-001 — caller+callee en mismo commit + deploy git chown fix, aprendizaje #231)
+**Version:** 122.0.0 (CONTACT-SSOT-001 + EMAIL-NOEXPOSE-001 — WhatsApp-First email protection + 8 reglas + AB testing, aprendizaje #232)
 
 ---
 ## 1. Inicio de Sesion
@@ -878,6 +878,7 @@ Antes de escribir CTAs o textos de conversión en templates:
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-03-27 | **122.0.0** | **WhatsApp-First Email Protection (CONTACT-SSOT-001 + EMAIL-NOEXPOSE-001). Aprendizaje #232:** Estrategia clase mundial para eliminar exposición de email en frontend SaaS. 8 reglas nuevas. Patrón clave: (1) CONTACT-SSOT-001 — todos los datos de contacto desde theme_settings con 20+ claves configurable desde UI, NUNCA hardcodear ni usar defaults tipo `|default('email@dominio.com')`. (2) WA-CONTEXTUAL-001 — widget WhatsApp contextual con mensajes por vertical resueltos en PHP (`_resolve_whatsapp_context()`) e inyectados via drupalSettings. Aparición progresiva (delay+scroll) para evitar banner blindness. Panel expandido en desktop con close-on-escape y click-outside. (3) EMAIL-NOEXPOSE-001 — validator 8 checks (twig mailto, hardcoded emails, default patterns, JS, schema.yml, library, Schema.org, llms.txt) + pre-commit hook `validate-twig-no-email.php`. (4) SCHEMA-CONTACT-CHANNEL-001 — Schema.org usa `contact_schema_email` (email trampa dedicado) + WhatsApp como contactType adicional. (5) AB-TESTING-001 — ABExperiment `whatsapp_fab_widget` con 3 variantes (delay/posición), JS lee `abVariant` de drupalSettings para override dinámico. Regla de oro #164 (NUNCA exponer emails en frontend; WhatsApp 98% penetración España > email como canal de contacto SaaS). |
 | 2026-03-23 | **115.0.0** | **MEGAMENU-INJECT-001 + Caso Éxito PED S.L.:** Canal secundario theme_settings._mega_menu_columns para mega menú (35 templates protegidos). Checklist page template: verificar variables criticas header. Caso de éxito reescrito con datos reales PIIL. "Desarrollo Local" en mega menú. validate-megamenu-inject.php. Aprendizaje #216. |
 | 2026-03-21 | **108.0.0** | LANDING-ELEVATION-10/10 Workflow: 5 fases (F0-F5) con plan doc previo, implementación paralela con agentes (partner logos + counter JS), video generation Veo AI, SCSS dual-architecture (módulo + tema importado via @use), lead magnet pipeline fix (3 bugs) + CRM auto-creation. Patrón: PublicSubscribeController como gateway de lead capture con servicios CRM opcionales. Regla de oro #146. Aprendizaje #208. |
 | 2026-03-20 | **104.0.0** | **TWIG-SYNTAX-LINT-001 Workflow**: Patrón de diagnóstico multi-tenant: cuando subdominios devuelven 500 pero otros funcionan, el template Twig específico de esa ruta tiene error de sintaxis — curl desde dentro del container con Host header revela el SyntaxError exacto. Patrón de validador estático: (1) stripping de zonas no-Twig (script, style, verbatim, comments), (2) balance global por archivo (no línea por línea) para evitar falsos positivos en tags multilínea, (3) iterative comment stripping para `{#` anidados, (4) diseño zero-false-positive prioriza precisión sobre exhaustividad. Integración safeguard en 3 capas: pre-commit lint-staged, validate-all.sh, CLAUDE.md. Regla de oro #142 (doble coma Twig). Aprendizaje #204. |

@@ -791,9 +791,6 @@ if [ "$MODE" = "full" ]; then
   run_check "CERTIFICATION-INTEGRITY-001" "Certification system integrity (entity, access, wizard, bridge)" \
     php "$PROJECT_ROOT/scripts/validation/validate-certification-integrity.php"
 
-  run_check "EMAIL-NOEXPOSE-001" "Email exposure detection in frontend (no hardcoded emails)" \
-    php "$PROJECT_ROOT/scripts/validation/validate-email-exposure.php"
-
   run_check "METODO-LANDING-001" "Metodo Jaraba landing integrity (controller, template, SCSS, schema)" \
     php "$PROJECT_ROOT/scripts/validation/validate-metodo-landing.php"
 

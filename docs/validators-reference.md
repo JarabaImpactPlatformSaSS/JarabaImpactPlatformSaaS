@@ -10,12 +10,12 @@
 | Metrica | Valor |
 |---------|-------|
 | Total scripts PHP | 189 |
-| run_check (CI blocker) | 133 |
+| run_check (CI blocker) | 132 |
 | warn_check (no blocker) | 59 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 134 (bloquean CI)
+## Run Checks — 132 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -55,6 +55,7 @@
 | DIACRITICS-ES-001 | Spanish diacritics in page_content canvas_data |
 | DOC-VERSION-DRIFT-001 | Master docs version coherence |
 | DUPLICATE-HOOK-001 | Duplicate function definitions in .module files |
+| EMAIL-NOEXPOSE-001 | Email exposure in frontend templates (8 checks) |
 | EMAIL-SENDER-001 | Email sender vs SMTP allowed domain |
 | ENTITY-INTEG-001 | Entity convention compliance |
 | ENTITY-SCHEMA-SYNC-001 | Entity schema sync (computed orphans, translatable fields) |
@@ -177,15 +178,15 @@
 | TRANSLATION-QUALITY-001 | Calidad semantica traducciones (identico al original, vacios, longitud anomala, hallucination) | 5 checks multi-entity |
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 
-## Pre-commit lint-staged (9 hooks)
+## Pre-commit lint-staged (10 hooks)
 
 | Pattern | Validator(s) |
 |---------|-------------|
 | `**/*.php` | PHPStan Level 6 + Drupal CodeSniffer |
 | `**/*.scss` | validate-compiled-assets.php |
 | `docs/00_*.md` | verify-doc-integrity.sh (DOC-GUARD-001) |
-| `**/*.html.twig` | validate-twig-syntax.php + validate-twig-ortografia.php |
-| `**/*.js` (modules+theme) | validate-js-syntax.php |
+| `**/*.html.twig` | validate-twig-syntax.php + validate-twig-ortografia.php + validate-twig-no-email.php |
+| `**/*.js` (modules+theme) | validate-js-syntax.php + validate-twig-no-email.php |
 | `**/*.libraries.yml` | validate-library-attachments.php |
 | `**/*.services.yml` | phantom-args + optional-deps + circular-deps + logger-injection |
 | `**/*.routing.yml` | validate-all.sh --fast |
