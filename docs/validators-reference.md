@@ -3,19 +3,19 @@
 > Fuente de verdad: `scripts/validation/validate-all.sh`
 > Orchestrator: `bash scripts/validation/validate-all.sh [--full|--fast|--checklist web/modules/custom/{modulo}]`
 > Meta-safeguard: VALIDATOR-COVERAGE-001 detecta orphaned validators
-> Ultima actualizacion: 2026-03-26
+> Ultima actualizacion: 2026-03-27
 
 ## Estadisticas
 
 | Metrica | Valor |
 |---------|-------|
 | Total scripts PHP | 185 |
-| run_check (CI blocker) | 129 |
+| run_check (CI blocker) | 131 |
 | warn_check (no blocker) | 58 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 128 (bloquean CI)
+## Run Checks — 134 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -140,7 +140,7 @@
 | BRAND-TERM-VALIDATOR-001 | Obsolete brand terms in frontend (Desarrollo Rural → Local) |
 | CERTIFICATION-INTEGRITY-001 | Certification system integrity (entity, access, wizard, bridge) |
 
-## Warn Checks — 58 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 62 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|

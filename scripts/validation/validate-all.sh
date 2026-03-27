@@ -791,6 +791,9 @@ if [ "$MODE" = "full" ]; then
   run_check "CERTIFICATION-INTEGRITY-001" "Certification system integrity (entity, access, wizard, bridge)" \
     php "$PROJECT_ROOT/scripts/validation/validate-certification-integrity.php"
 
+  run_check "EMAIL-NOEXPOSE-001" "Email exposure detection in frontend (no hardcoded emails)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-email-exposure.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
