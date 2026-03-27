@@ -13,7 +13,8 @@
         "build:js": "node scripts/minify-js.js",
         "build:images": "node scripts/optimize-images.js",
         "build:components": "sass scss/components/_pricing-page.scss css/components/pricing-page.css --style=compressed && sass scss/components/_pricing-hub.scss css/components/pricing-hub.css --style=compressed",
-        "build": "npm run lint:scss && npm run build:css && npm run build:admin && npm run build:routes && npm run build:bundles && npm run build:components && npm run build:js",
+        "strip-bom": "perl -pi -e 's/^\\x{FEFF}//' css/*.css css/routes/*.css css/bundles/*.css css/components/*.css 2>/dev/null || true",
+        "build": "npm run lint:scss && npm run build:css && npm run build:admin && npm run build:routes && npm run build:bundles && npm run build:components && npm run strip-bom && npm run build:js",
         "build:all": "npm run build && npm run build:images && npm run build:critical",
         "watch": "sass --watch scss/main.scss css/ecosistema-jaraba-theme.css"
     },

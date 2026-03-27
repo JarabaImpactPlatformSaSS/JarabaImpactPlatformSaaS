@@ -598,6 +598,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "EMAIL-REPUTATION-SAFEGUARDS-001" "Email reputation safeguards (monitor+failover+audit)" \
     php "$SCRIPT_DIR/validate-email-reputation-safeguards.php"
 
+  warn_check "WHATSAPP-CAMPAIGN-RGPD-001" "WhatsApp campaign RGPD compliance (consent, templates, retention)" \
+    php "$SCRIPT_DIR/validate-whatsapp-campaign-rgpd.php"
+
   run_check "COPILOT-RESPONSE-QUALITY-001" "Copilot context quality (10 queries)" \
     php "$SCRIPT_DIR/validate-copilot-response-quality.php"
 
