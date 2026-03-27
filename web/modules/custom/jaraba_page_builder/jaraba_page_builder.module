@@ -799,13 +799,23 @@ function _jaraba_page_builder_generate_cofounders_schema(string $baseUrl): strin
         'sameAs' => [
           'https://www.linkedin.com/in/remedios-est%C3%A9vez-palomino/',
         ],
-        'knowsAbout' => [
-          'Desarrollo Economico Local',
-          'Gestion de Servicios Publicos',
-          'Formacion Profesional',
-          'Emprendimiento',
+        'alumniOf' => [
+          ['@type' => 'CollegeOrUniversity', 'name' => 'UNED'],
+          ['@type' => 'EducationalOrganization', 'name' => 'IEEE (Instituto de Estudios Empresariales)'],
         ],
-        'description' => 'Economista con mas de 20 anos de experiencia en gestion de servicios publicos, desarrollo economico local y formacion profesional. Gerencia una empresa municipal de desarrollo economico local.',
+        'knowsAbout' => [
+          'Emprendimiento y Empleo',
+          'Docencia para el Empleo',
+          'Gestion Publica Local',
+          'Economia Social',
+        ],
+        'description' => 'Economista y formadora con mas de 20 anos de experiencia en gestion de politicas activas de empleo, emprendimiento y servicios publicos locales. Autora de Equilibrio Autonomo (ISBN 979-13-991329-0-8).',
+        'authorOf' => [
+          '@type' => 'Book',
+          'name' => 'Equilibrio Autonomo — Mas ingresos, menos estres, mas vida',
+          'isbn' => '979-13-991329-0-8',
+          'datePublished' => '2025',
+        ],
       ],
     ],
   ];
