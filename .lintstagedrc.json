@@ -4,7 +4,8 @@
     "php scripts/validation/validate-optional-param-order.php"
   ],
   "web/themes/custom/**/*.scss": [
-    "php scripts/validation/validate-compiled-assets.php"
+    "php scripts/validation/validate-compiled-assets.php",
+    "php scripts/validation/validate-scss-css-costageing.php"
   ],
   "web/modules/custom/**/*.scss": [
     "php scripts/validation/validate-module-scss-freshness.php"
