@@ -2062,6 +2062,13 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
       'og_type' => 'article',
       'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/og/og-default.jpg',
     ],
+    // Editorial Landing — Libro Equilibrio Autonomo de Remedios Estevez.
+    'jaraba_page_builder.editorial_equilibrio_autonomo' => [
+      'title' => 'Equilibrio Autónomo: Vida y Trabajo con Sentido — Remedios Estévez Palomino',
+      'description' => 'El libro que todo autónomo necesita. Más ingresos, menos estrés, más vida. 107 páginas prácticas con plan de acción de 4 semanas. ISBN 979-13-991329-0-8. Desde 4,99€.',
+      'og_type' => 'book',
+      'og_image' => '/themes/custom/ecosistema_jaraba_theme/images/editorial/portada-equilibrio-autonomo.webp',
+    ],
   ];
   if (isset($landing_meta[$route])) {
     $meta = $landing_meta[$route];
