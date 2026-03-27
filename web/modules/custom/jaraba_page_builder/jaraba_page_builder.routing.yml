@@ -1030,7 +1030,7 @@ jaraba_page_builder.metodo_landing:
     _access: 'TRUE'
 
 jaraba_page_builder.certificacion_landing:
-  path: '/certificacion'
+  path: '/metodo/certificacion'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\CertificacionLandingController::landing'
     _title: 'Certificación Método Jaraba — Supervisión de Agentes IA'
@@ -1038,7 +1038,7 @@ jaraba_page_builder.certificacion_landing:
     _access: 'TRUE'
 
 jaraba_page_builder.certificacion_submit:
-  path: '/certificacion/enviar'
+  path: '/metodo/certificacion/enviar'
   defaults:
     _controller: '\Drupal\jaraba_page_builder\Controller\CertificacionLandingController::submit'
   methods: [POST]
