@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * Verificación pública de certificado Método Jaraba.
+ *
+ * CERT-11: URL pública /certificado/{codigo}.
+ * Muestra: nombre, tipo, nivel, fecha, estado. Sin datos sensibles.
+ *
+ * Variables:
+ * - certificate.code: Código de verificación
+ * - certificate.holder_name: Nombre del titular
+ * - certificate.status: Estado (completed, expired, in_progress)
+ * - certificate.status_label: Etiqueta traducida del estado
+ * - certificate.level: Nivel numérico (1-4)
+ * - certificate.level_name: Nombre del nivel (Novel, Aprendiz, etc.)
+ * - certificate.certification_date: Fecha de certificación
+ * - certificate.valid_until: Fecha de expiración
+ * - certificate.program_name: Nombre del programa
+ */
+#}
+
+<div class="cert-verify">
+  <div class="cert-verify__card">
+    <div class="cert-verify__header">
+      <h1 class="cert-verify__title">{% trans %}Certificado Verificado{% endtrans %}</h1>
+      <span class="cert-verify__code">{{ certificate.code }}</span>
+    </div>
+
+    <div class="cert-verify__status cert-verify__status--{{ certificate.status }}">
+      {{ certificate.status_label }}
+    </div>
+
+    <dl class="cert-verify__details">
+      <dt>{% trans %}Titular{% endtrans %}</dt>
+      <dd>{{ certificate.holder_name }}</dd>
+
+      {% if certificate.level > 0 %}
+        <dt>{% trans %}Nivel alcanzado{% endtrans %}</dt>
+        <dd>{% trans %}Nivel{% endtrans %} {{ certificate.level }} — {{ certificate.level_name }}</dd>
+      {% endif %}
+
+      {% if certificate.program_name %}
+        <dt>{% trans %}Programa{% endtrans %}</dt>
+        <dd>{{ certificate.program_name }}</dd>
+      {% endif %}
+
+      {% if certificate.certification_date %}
+        <dt>{% trans %}Fecha de certificación{% endtrans %}</dt>
+        <dd>{{ certificate.certification_date }}</dd>
+      {% endif %}
+
+      {% if certificate.valid_until %}
+        <dt>{% trans %}Válido hasta{% endtrans %}</dt>
+        <dd>{{ certificate.valid_until }}</dd>
+      {% endif %}
+    </dl>
+
+    <p class="cert-verify__footer">
+      {% trans %}Certificado emitido por Plataforma de Ecosistemas Digitales S.L. — Método Jaraba™{% endtrans %}
+    </p>
+  </div>
+</div>

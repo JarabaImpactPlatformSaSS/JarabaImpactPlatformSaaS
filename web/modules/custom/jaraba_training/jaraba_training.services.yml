@@ -34,6 +34,15 @@ services:
     arguments:
       - '@logger.channel.default'
 
+  # Emisión de certificados (CERT-10/11).
+  jaraba_training.certificate_issuance:
+    class: Drupal\jaraba_training\Service\CertificateIssuanceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.default'
+      - '@?jaraba_credentials.credential_pdf'
+      - '@?ecosistema_jaraba_core.firma_digital'
+
   # === Setup Wizard Steps (SETUP-WIZARD-DAILY-001) ===
   jaraba_training.wizard.configurar_rubrica:
     class: Drupal\jaraba_training\SetupWizard\ConfigurarRubricaStep

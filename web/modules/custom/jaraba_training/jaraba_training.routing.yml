@@ -221,3 +221,34 @@ jaraba_training.evaluacion_dashboard:
     _title: 'Panel de Evaluación — Método Jaraba'
   requirements:
     _permission: 'evaluate method portfolio'
+
+# === EVALUACIÓN CON RÚBRICA ===
+
+jaraba_training.rubric_evaluate:
+  path: '/admin/content/user-certifications/{user_certification}/evaluate'
+  defaults:
+    _entity_form: 'user_certification.evaluate'
+    _title: 'Evaluar con Rúbrica'
+  requirements:
+    _permission: 'evaluate method portfolio'
+
+# === CONFIGURACIÓN DE RÚBRICA (ADMIN) ===
+
+jaraba_training.rubric_config:
+  path: '/admin/structure/training/rubric'
+  defaults:
+    _form: 'Drupal\jaraba_training\Form\RubricConfigForm'
+    _title: 'Configuración de Rúbrica — Método Jaraba'
+  requirements:
+    _permission: 'administer certification programs'
+
+# === VERIFICACIÓN PÚBLICA DE CERTIFICADOS ===
+
+jaraba_training.certificate_verify:
+  path: '/certificado/{code}'
+  defaults:
+    _controller: 'Drupal\jaraba_training\Controller\CertificateVerificationController::verify'
+    _title: 'Verificar Certificado'
+  requirements:
+    _access: 'TRUE'
+    code: '[A-Z]{2}-\d{4}-\d{5}'

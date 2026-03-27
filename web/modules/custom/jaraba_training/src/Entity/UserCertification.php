@@ -31,6 +31,7 @@ use Drupal\user\EntityOwnerTrait;
  *       "add" = "Drupal\Core\Entity\ContentEntityForm",
  *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *       "evaluate" = "Drupal\jaraba_training\Form\RubricEvaluationForm",
  *     },
  *     "access" = "Drupal\jaraba_training\UserCertificationAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",

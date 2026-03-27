@@ -69,6 +69,13 @@ function jaraba_training_theme(): array {
       ],
       'template' => 'evaluation-dashboard',
     ],
+    // Verificación pública de certificados (CERT-11).
+    'certificate_verification' => [
+      'variables' => [
+        'certificate' => [],
+      ],
+      'template' => 'certificate-verification',
+    ],
   ];
 }
 
