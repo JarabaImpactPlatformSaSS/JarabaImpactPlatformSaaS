@@ -594,9 +594,23 @@ if [ "$MODE" = "full" ]; then
   run_check "EMAIL-SES-TRANSPORT-001" "Amazon SES transport integrity" \
     php "$SCRIPT_DIR/validate-ses-transport-integrity.php"
 
-  # Degradado a warn_check: requiere Drupal bootstrap (servicios PHP) que CI no tiene.
-  warn_check "EMAIL-REPUTATION-SAFEGUARDS-001" "Email reputation safeguards (monitor+failover+audit)" \
+  run_check "EMAIL-REPUTATION-SAFEGUARDS-001" "Email reputation safeguards (monitor+failover+audit)" \
     php "$SCRIPT_DIR/validate-email-reputation-safeguards.php"
+
+  run_check "SECRET-MGMT-001" "Secret management integrity (no hardcoded secrets in config/sync)" \
+    php "$SCRIPT_DIR/validate-secret-mgmt.php"
+
+  run_check "ENTITY-ACCESS-HANDLER-001" "Entity AccessControlHandler coverage (AUDIT-CONS-001)" \
+    php "$SCRIPT_DIR/validate-entity-access-handler.php"
+
+  warn_check "CSS-VAR-ALL-COLORS-001" "SCSS custom property usage (--ej-* prefix)" \
+    php "$SCRIPT_DIR/validate-css-var-colors.php"
+
+  warn_check "TRANSLATABLE-FIELDDATA-001" "Translatable entity table usage (_field_data)" \
+    php "$SCRIPT_DIR/validate-translatable-fielddata.php"
+
+  warn_check "SCSS-ENTRY-CONSOLIDATION-001" "SCSS entry point conflicts (name + _name)" \
+    php "$SCRIPT_DIR/validate-scss-entry-consolidation.php"
 
   warn_check "WHATSAPP-CAMPAIGN-RGPD-001" "WhatsApp campaign RGPD compliance (consent, templates, retention)" \
     php "$SCRIPT_DIR/validate-whatsapp-campaign-rgpd.php"

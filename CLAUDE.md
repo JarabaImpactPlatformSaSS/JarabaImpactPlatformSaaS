@@ -111,8 +111,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Sin logica de negocio (solo presentacion). Usar preprocess para preparar variables
 - TWIG-URL-RENDER-ARRAY-001: `url()` en Drupal 11 devuelve **render array** (NO string). NUNCA concatenar con `~`. Solo usar dentro de `{{ }}` donde escapeFilter maneja el render array. Para construir URLs concatenadas, pasar la URL como string desde preprocess PHP o usar path relativo (`'/' ~ directory ~ '/logo.svg'`)
 - TWIG-INCLUDE-ONLY-001: Usar `only` en `{% include %}` de parciales para aislar el contexto. Sin `only`, TODAS las variables del template padre se filtran al parcial (incluyendo render arrays que colisionan con variables esperadas como strings). Pasar explicitamente solo las variables necesarias
-- MEGAMENU-INJECT-001: Variables criticas de layout (mega_menu_columns) DEBEN viajar por canal secundario en theme_settings (`_mega_menu_columns`) para sobrevivir `{% include ... only %}`. _header.html.twig resuelve `resolved_mega_columns` con fallback a `ts._mega_menu_columns`. Validacion: `validate-megamenu-inject.php`
-- TWIG-SYNTAX-LINT-001: NUNCA doble coma `,,` en mappings Twig (causa SyntaxError en Twig 3.x → 500 en runtime). NUNCA `{#` anidado dentro de comentarios Twig (cierra prematuramente). Usar estilo consistente de keys en mappings (sin comillas preferido). Validacion: `php scripts/validation/validate-twig-syntax.php` + pre-commit lint-staged
+- MEGAMENU-INJECT-001: Variables criticas de layout via canal secundario theme_settings (`_mega_menu_columns`) para sobrevivir `{% include ... only %}`
+- TWIG-SYNTAX-LINT-001: NUNCA doble coma `,,` ni `{#` anidado en Twig. Pre-commit lint-staged + validate-twig-syntax.php
 
 ## THEMING — ecosistema_jaraba_theme
 
@@ -220,7 +220,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - ACCESS-STRICT-001: Comparaciones ownership con (int)..===(int), NUNCA ==
 - STRIPE_WEBHOOK_SECRET: Variable obligatoria en settings.secrets.php para verificacion HMAC de webhooks Stripe (AUDIT-SEC-001)
 - CSRF-LOGIN-FIX-001 v2: IONOS termina SSL; Apache/PHP recibe HTTP. Fix: `$_SERVER['HTTPS']='on'` desde X-Forwarded-Proto ANTES del bootstrap Drupal. Aplicado por `patch-settings-csrf.php` (ejecutar en cada deploy). Sin esto, SessionConfiguration.php override cookie_secure → session perdida → CSRF falla
-- REDIS-ACL-001: Redis 8.0 usa ACL file (`users.acl`) en lugar de `rename-command` + `requirepass`. 3 usuarios: default (Drupal, ~jaraba_* keys, -@dangerous -@admin), admin (mantenimiento, +@all), monitor (read-only, futuro). Variables: REDIS_PASSWORD, REDIS_ADMIN_PASSWORD, REDIS_MONITOR_PASSWORD. Validacion: `php scripts/validation/validate-redis-config.php`
+- REDIS-ACL-001: Redis 8.0 ACL file, 3 usuarios (default/admin/monitor), key-pattern `~jaraba_*`. Validacion: `validate-redis-config.php`
 
 ### Rutas y URLs
 - ROUTE-LANGPREFIX-001: URLs SIEMPRE via Url::fromRoute(). El sitio usa /es/ prefix. Paths hardcoded causan 404

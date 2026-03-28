@@ -3,19 +3,19 @@
 > Fuente de verdad: `scripts/validation/validate-all.sh`
 > Orchestrator: `bash scripts/validation/validate-all.sh [--full|--fast|--checklist web/modules/custom/{modulo}]`
 > Meta-safeguard: VALIDATOR-COVERAGE-001 detecta orphaned validators
-> Ultima actualizacion: 2026-03-27
+> Ultima actualizacion: 2026-03-28
 
 ## Estadisticas
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 195 |
-| run_check (CI blocker) | 132 |
-| warn_check (no blocker) | 64 |
+| Total scripts PHP | 201 |
+| run_check (CI blocker) | 139 |
+| warn_check (no blocker) | 73 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
-## Run Checks — 133 (bloquean CI)
+## Run Checks — 139 (bloquean CI)
 
 | Rule ID | Descripcion |
 |---------|-------------|
@@ -115,6 +115,9 @@
 | POPUP-DUAL-SELECTOR-001 | Popup dual integrity (participante+negocio) |
 | CONFIG-INSTALL-DRIFT-001 | Config install vs schema drift detection |
 | EMAIL-SES-TRANSPORT-001 | Amazon SES transport module integrity |
+| EMAIL-REPUTATION-SAFEGUARDS-001 | Email reputation safeguards (monitor+failover+audit, 8 checks) |
+| SECRET-MGMT-001 | Secret management integrity (no hardcoded secrets in config/sync, 5 checks) |
+| ENTITY-ACCESS-HANDLER-001 | Entity AccessControlHandler coverage (AUDIT-CONS-001, 3 checks) |
 | SCHEMA-PRICING-001 | Schema.org pricing dynamic (no hardcoded EUR) |
 | SCSS-VARIABLE-EXIST-001 | SCSS variables defined before use |
 | SEO-MULTIDOMAIN-001 | SEO multi-domain integrity (10 checks) |
@@ -180,6 +183,9 @@
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 | NOWRAP-OVERFLOW-001 | white-space: nowrap with overflow protection | 35 pre-existing |
 | IMG-DIMENSIONS-001 | Image dimensions (width/height) in Twig templates | 121 pre-existing |
+| CSS-VAR-ALL-COLORS-001 | SCSS custom property usage (--ej-* prefix) | 143 baseline |
+| TRANSLATABLE-FIELDDATA-001 | Translatable entity _field_data table usage | 10 baseline |
+| SCSS-ENTRY-CONSOLIDATION-001 | SCSS entry point conflicts (name + _name) | |
 
 ## Pre-commit only validators (no validate-all.sh)
 
