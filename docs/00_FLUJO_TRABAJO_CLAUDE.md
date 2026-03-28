@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-03-28
-**Version:** 125.0.0 (TWIG-URL-RESOLVE-PHP-001 — URLs caso de éxito via Url::fromRoute(), 198 validators, aprendizaje #235)
+**Version:** 127.0.0 (WhatsApp Cloud API produccion — WHATSAPP-WEBHOOK-SSOT-001, 6 Supervisor workers, aprendizaje #237)
 
 ---
 ## 1. Inicio de Sesion
@@ -631,6 +631,17 @@ echo "L2:" && grep -c "getStepsForWizard\|getActionsForDashboard" web/modules/cu
 echo "L3:" && grep -c "setup_wizard" web/modules/custom/$MODULE/$MODULE.module
 echo "L4:" && grep -c "setup-wizard.html.twig" web/modules/custom/$MODULE/templates/*.twig
 ```
+
+### Checklist VIEWPORT-DVH-001 — Mobile-First Post-Implementación
+
+Tras editar CUALQUIER archivo SCSS con `100vh`:
+
+1. **Agregar dvh fallback**: `min-height: 100vh; min-height: 100dvh;` (progressive enhancement)
+2. **Verificar nowrap**: Toda `white-space: nowrap` debe tener overflow protection o `// NOWRAP-SAFE:`
+3. **Compilar**: `npm run build` en el tema
+4. **Validar**: `php scripts/validation/validate-viewport-dvh.php` (debe ser PASS)
+
+**Anti-patrón detectado (2026-03-28):** 41 usos de `100vh` sin dvh acumulados en 18 archivos. En iOS Safari y Android Chrome, `100vh` incluye la barra del navegador — CTAs de conversión quedaban ocultas debajo del viewport. Score mobile: 7.2/10 → 10/10 tras corrección.
 
 ---
 ## 4. Despues de Implementar

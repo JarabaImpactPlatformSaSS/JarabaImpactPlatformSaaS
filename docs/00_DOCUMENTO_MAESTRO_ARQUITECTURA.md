@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 153.0.0 (TWIG-URL-RESOLVE-PHP-001 — URLs caso de éxito via ruta unificada, 0 paths hardcodeados)
+**Versión:** 154.0.0 (WhatsApp Cloud API activado producción — jaraba_whatsapp SSOT webhook, 6 Supervisor workers)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2287,7 +2287,7 @@ Auditoría full-stack (infraestructura + aplicación + safeguard) del servidor I
 │   ┌─────────────────────────────────────────────────────────────────┐  │
 │   │              PRODUCCIÓN (IONOS Dedicated AE12-128)              │  │
 │   │  • Nginx + PHP 8.4 FPM + MariaDB 10.11 + Redis 8.0 (ACL)       │  │
-│   │  • Supervisor (4 AI workers con sleep) + Tika (Docker)           │  │
+│   │  • Supervisor (6 workers: 4 AI + i18n + WhatsApp) + Tika         │  │
 │   │  • 4 dominios SSL, SSH :2222, Let's Encrypt                     │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
