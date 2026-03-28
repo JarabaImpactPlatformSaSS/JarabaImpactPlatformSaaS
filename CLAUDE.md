@@ -10,7 +10,7 @@
 - Pagos: Stripe Connect (destination charges)
 - IA: Claude API + Gemini API con strict grounding, 11 agentes Gen 2
 - Servidor: IONOS Dedicated (AMD EPYC 12c/24t, 128GB DDR5, 2x1TB NVMe RAID1, Ubuntu 24.04). IP: 82.223.204.169, SSH: 2222
-- Stack nativo: Nginx + PHP-FPM 8.4 + MariaDB 10.11 + Redis 8.0 + Supervisor (4 AI workers) + Tika
+- Stack nativo: Nginx + PHP-FPM 8.4 + MariaDB 10.11 + Redis 8.0 + Supervisor (6 workers) + Tika
 - Email: SMTP IONOS (smtp.ionos.es:587), From: contacto@plataformadeecosistemas.com
 - Dev local: Lando (.lando.yml), NO docker-compose.yml
 - URL dev: https://jaraba-saas.lndo.site/

@@ -850,6 +850,15 @@ if [ "$MODE" = "full" ]; then
   warn_check "IMG-DIMENSIONS-001" "Image dimensions (width/height) in Twig templates" \
     php "$PROJECT_ROOT/scripts/validation/validate-img-dimensions.php"
 
+  run_check "SUPERVISOR-QUEUE-SYNC-001" "Supervisor workers vs Redis queue routing consistency" \
+    php "$PROJECT_ROOT/scripts/validation/validate-supervisor-queue-consistency.php"
+
+  warn_check "ROUTE-DUP-CROSSMODULE-001" "Duplicate route paths across modules (33 pre-existing)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-duplicate-route-paths.php"
+
+  warn_check "SETTINGS-PERMS-PROD-001" "Settings files security (permissions + committed secrets)" \
+    php "$PROJECT_ROOT/scripts/validation/validate-settings-permissions.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
