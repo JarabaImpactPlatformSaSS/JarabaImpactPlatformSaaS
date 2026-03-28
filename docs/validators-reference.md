@@ -132,6 +132,11 @@
 | TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables (warn, 80 pre-existing) |
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
 | TWIG-HARDCODED-ROUTES-001 | Twig hardcoded route paths (caso-de-exito, planes, registro, etc.) |
+| SLUG-ENTITY-PARITY-001 | SuccessCase slugs referenced in PHP match seed script |
+| ROUTE-REFERENCE-LIVE-001 | Url::fromRoute() references existing routes (warn, 10 pre-existing) |
+| PREPROCESS-VAR-DECLARED-001 | Preprocess variables declared in hook_theme() (warn, 10 pre-existing) |
+| HOOK-THEME-TEMPLATE-PARITY-001 | hook_theme() template ↔ .html.twig file parity (warn, 47+275 pre-existing) |
+| INCLUDE-ONLY-VAR-PASS-001 | Include-only passes all required partial variables (warn, 186 pre-existing) |
 | THEME-SETTINGS-INTEGRITY-001 | Theme settings form-schema-consumer coherence (dead fields, PLG schema, CSS vars) |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |

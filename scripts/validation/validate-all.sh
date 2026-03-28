@@ -470,6 +470,21 @@ if [ "$MODE" = "full" ]; then
   warn_check "TWIG-INCLUDE-VARS-001" "Twig include with only passes required variables" \
     php "$SCRIPT_DIR/validate-twig-include-vars.php"
 
+  run_check "SLUG-ENTITY-PARITY-001" "SuccessCase slugs referenced in PHP match seed script" \
+    php "$SCRIPT_DIR/validate-slug-entity-parity.php"
+
+  warn_check "ROUTE-REFERENCE-LIVE-001" "Url::fromRoute() references existing routes" \
+    php "$SCRIPT_DIR/validate-route-reference-live.php"
+
+  warn_check "PREPROCESS-VAR-DECLARED-001" "Preprocess variables declared in hook_theme()" \
+    php "$SCRIPT_DIR/validate-preprocess-var-declared.php"
+
+  warn_check "HOOK-THEME-TEMPLATE-PARITY-001" "hook_theme() template ↔ .html.twig file parity" \
+    php "$SCRIPT_DIR/validate-hook-theme-template-parity.php"
+
+  warn_check "INCLUDE-ONLY-VAR-PASS-001" "Include-only passes required partial variables" \
+    php "$SCRIPT_DIR/validate-include-only-var-pass.php"
+
   run_check "SETUP-WIZARD-DAILY-001" "Setup Wizard + Daily Actions coverage per vertical" \
     php "$SCRIPT_DIR/validate-wizard-daily-coverage.php"
 
