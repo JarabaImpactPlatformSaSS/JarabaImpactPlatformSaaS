@@ -18,6 +18,7 @@
 
 .analytics-dashboard {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-bg-body, $ej-bg-body);
     font-family: $ej-font-body;
     padding: 0; // Full-width, padding en secciones internas

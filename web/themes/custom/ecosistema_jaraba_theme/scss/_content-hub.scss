@@ -27,6 +27,7 @@
 .content-hub-page {
     background: var(--ej-bg-body, $ej-bg-body);
     min-height: 100vh;
+    min-height: 100dvh;
     padding: $ej-spacing-md $ej-spacing-lg;
     max-width: 1400px;
     margin-inline: auto;
@@ -79,6 +80,7 @@
 // ===============================================
 .dashboard-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-bg-body, $ej-bg-body);
 
     // IMPORTANTE: Override hero--split grid que restringe el ancho
@@ -93,6 +95,7 @@
     // Full-width principal sin restricciones
     width: 100%;
     min-height: calc(100vh - 160px); // Espacio para header + footer
+    min-height: calc(100dvh - 160px);
 }
 
 .dashboard-wrapper {
@@ -418,6 +421,7 @@
 
 .blog-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-bg-body, $ej-bg-body);
 }
 
@@ -971,6 +975,11 @@
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         white-space: nowrap;
+
+        @media (max-width: 479px) {
+            white-space: normal;
+            word-break: break-word;
+        }
 
         &:hover {
             transform: translateY(-2px) scale(1.03);
@@ -2058,6 +2067,7 @@
 
 .article-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-bg-body, $ej-bg-body);
     padding: $ej-spacing-xl 0;
 
@@ -2476,6 +2486,7 @@
 
 .content-hub-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-bg-body, $ej-bg-body);
 }
 
@@ -2881,6 +2892,7 @@
 .content-hub-page {
     background: var(--ej-bg-body, $ej-bg-body);
     min-height: 100vh;
+    min-height: 100dvh;
     padding: $ej-spacing-xl $ej-spacing-lg;
     max-width: 1400px;
     margin-inline: auto;
@@ -3055,6 +3067,11 @@
         text-align: right;
         white-space: nowrap;
 
+        @media (max-width: 479px) {
+            white-space: normal;
+            word-break: break-word;
+        }
+
         .btn {
             margin-left: $ej-spacing-xs;
         }
@@ -3176,6 +3193,7 @@
 .content-hub-form {
     background: var(--ej-bg-body, $ej-bg-body);
     min-height: 100vh;
+    min-height: 100dvh;
     padding: $ej-spacing-xl $ej-spacing-lg;
     max-width: 900px;
     margin-inline: auto;
@@ -3231,6 +3249,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     background: var(--ej-bg-body, $ej-bg-body);
 }
@@ -3727,6 +3746,7 @@ body.page-article-canvas-editor {
 .author-page {
     background: var(--ej-bg-body, $ej-bg-body);
     min-height: 100vh;
+    min-height: 100dvh;
 
     &__back {
         padding: $ej-spacing-xl 0 $ej-spacing-xl * 2;

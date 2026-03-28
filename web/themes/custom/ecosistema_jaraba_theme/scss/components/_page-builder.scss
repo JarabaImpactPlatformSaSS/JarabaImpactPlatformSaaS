@@ -1273,6 +1273,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    min-height: 100dvh;
 
     &--large {
         min-height: 80vh;
@@ -5012,6 +5013,7 @@
 
     &--fullscreen {
         min-height: 100vh;
+        min-height: 100dvh;
     }
 
     &__particles {
@@ -5396,6 +5398,7 @@
 
     &--fullscreen {
         min-height: 100vh;
+        min-height: 100dvh;
     }
 
     &__background {
@@ -6075,6 +6078,7 @@
 
     &--fullscreen {
         min-height: 100vh;
+        min-height: 100dvh;
     }
 
     &__canvas {
@@ -6126,6 +6130,7 @@
 
     &--fullscreen {
         min-height: 100vh;
+        min-height: 100dvh;
     }
 
     &--50-50 {

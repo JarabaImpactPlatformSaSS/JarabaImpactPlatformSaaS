@@ -17,6 +17,7 @@
 // ============================================
 .pb-dashboard {
     min-height: calc(100vh - 160px);
+    min-height: calc(100dvh - 160px);
     background: var(--ej-bg-body, $ej-bg-body);
 }
 

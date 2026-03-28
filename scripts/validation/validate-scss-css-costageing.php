@@ -48,12 +48,20 @@ $entryPoints = [
 ];
 
 // Route, bundle, component SCSS → CSS.
+// Only non-partial files (without _ prefix) are direct entry points.
+// Partials (_name.scss) are compiled via main.scss and handled below.
 foreach (['routes', 'bundles', 'components'] as $subdir) {
   foreach (glob("$scssDir/$subdir/*.scss") ?: [] as $scss) {
     $basename = basename($scss, '.scss');
-    // Skip partials (_name.scss) — they compile via their entry point.
     if (str_starts_with($basename, '_')) {
-      $basename = substr($basename, 1);
+      // Partials: only map if the compiled CSS actually exists in the build pipeline.
+      $cssBasename = substr($basename, 1);
+      $expectedCss = "$cssDir/$subdir/$cssBasename.css";
+      if (file_exists($expectedCss)) {
+        $entryPoints[$scss] = $expectedCss;
+      }
+      // Otherwise, partial is compiled via main.scss — handled by line 73-74.
+      continue;
     }
     $entryPoints[$scss] = "$cssDir/$subdir/$basename.css";
   }

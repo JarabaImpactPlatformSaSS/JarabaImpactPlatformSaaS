@@ -80,6 +80,8 @@
     font-weight: 500;
     color: var(--ej-color-text-muted, #6b7280);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     @media (min-width: 640px) {
       display: flex;
@@ -100,6 +102,8 @@
     text-decoration: none;
     transition: color 0.2s ease;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     justify-self: end;
 
     &:hover {
@@ -148,6 +152,8 @@
     color: var(--ej-color-text-muted, #6b7280);
     letter-spacing: 0.02em;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     @media (min-width: 768px) {
       font-size: 0.75rem;

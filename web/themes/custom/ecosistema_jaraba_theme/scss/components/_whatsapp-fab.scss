@@ -13,6 +13,11 @@
   z-index: 998;
   bottom: var(--ej-space-lg, 2rem);
 
+  // FIXED-STACKING-MOBILE-001: Subir FAB cuando bottom-nav esta activa
+  .has-bottom-nav & {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0) + var(--ej-spacing-md, 1rem));
+  }
+
   // Posición dinámica via data-attribute.
   &[data-wa-position="left"] { left: var(--ej-space-md, 1rem); }
   &[data-wa-position="right"] { right: var(--ej-space-md, 1rem); }

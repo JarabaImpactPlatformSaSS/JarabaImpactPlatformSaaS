@@ -273,6 +273,8 @@
         padding: 0.4rem 1.25rem;
         border-radius: 100px;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     // ── Header ──
@@ -1036,5 +1038,10 @@
         padding: 0.625rem 1.25rem;
         font-size: 0.875rem;
         white-space: nowrap;
+
+        @media (max-width: 479px) {
+            white-space: normal;
+            word-break: break-word;
+        }
     }
 }

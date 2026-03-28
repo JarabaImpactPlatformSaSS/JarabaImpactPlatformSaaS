@@ -308,7 +308,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 0.875rem;
         font-weight: bold;
         animation: fadeInUp 0.3s ease;
     }
@@ -417,7 +417,7 @@ input[type="checkbox"] {
             left: 50%;
             transform: translate(-50%, -50%);
             color: var(--ej-bg-surface, #fff);
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: bold;
         }
     }

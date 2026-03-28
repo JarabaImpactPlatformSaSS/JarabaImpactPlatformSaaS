@@ -207,6 +207,8 @@
     font-weight: 600;
     color: var(--ej-color-primary, #FF8C42);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   // Usage bars
@@ -335,6 +337,8 @@
   border-radius: 100px;
   font-family: var(--ej-font-headings, 'Outfit', sans-serif);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &--starter {
     color: var(--ej-color-corporate, #233D63);
@@ -407,6 +411,8 @@
   color: var(--ej-color-impulse, #FF8C42);
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // === ADD-ONS RECOMENDADOS ===
@@ -464,6 +470,8 @@
   color: var(--ej-text-muted, #94a3b8);
   font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .subscription-card__recommended-badge {
@@ -478,6 +486,8 @@
   letter-spacing: 0.05em;
   border-radius: var(--ej-radius-full, 9999px);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // === RESUMEN FACTURACION ===

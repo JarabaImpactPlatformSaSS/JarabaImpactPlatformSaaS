@@ -1173,6 +1173,8 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .landing-comparison__name {
@@ -1287,6 +1289,8 @@
   padding: 0.3rem 1rem;
   border-radius: 999px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -1338,6 +1342,8 @@
     font-weight: 500;
     color: var(--ej-text-muted, #64748b);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   @media (max-width: 640px) {

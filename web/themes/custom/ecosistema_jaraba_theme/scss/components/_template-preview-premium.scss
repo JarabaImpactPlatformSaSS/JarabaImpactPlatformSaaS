@@ -29,6 +29,7 @@ $preview-radius: 16px;
 
 .template-preview-premium {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--ej-color-bg-dark, #0f0f1a);
     color: var(--ej-color-text-light, #fff);
     display: grid;
@@ -311,6 +312,7 @@ $preview-radius: 16px;
         .template-preview-premium__frame {
             max-width: none;
             height: calc(100vh - 2rem);
+            height: calc(100dvh - 2rem);
         }
     }
 }

@@ -132,8 +132,9 @@ nav.mobile-menu-nav ul li {
     right: -100%;
     width: min(280px, 85vw);
     height: 100vh;
+    height: 100dvh;
     background: var(--ej-bg-surface, #fff);
-    padding: 80px 24px 100px;
+    padding: 72px 24px 24px;
     box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
     z-index: 1001;
     overflow-y: auto;
@@ -141,6 +142,11 @@ nav.mobile-menu-nav ul li {
 
     .is-open & {
         right: 0;
+    }
+
+    // Landscape phones y pantallas muy cortas
+    @media (max-height: 500px) {
+        padding: 56px 16px 16px;
     }
 }
 

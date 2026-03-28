@@ -10,6 +10,11 @@
     bottom: var(--ej-spacing-md);
     right: var(--ej-spacing-md);
     z-index: 998;
+
+    // FIXED-STACKING-MOBILE-001: Subir cuando bottom-nav esta activa
+    .has-bottom-nav & {
+        bottom: calc(56px + env(safe-area-inset-bottom, 0) + var(--ej-spacing-md, 1rem));
+    }
     width: 48px;
     height: 48px;
     border-radius: 50%;

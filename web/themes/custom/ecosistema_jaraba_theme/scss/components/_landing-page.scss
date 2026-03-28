@@ -235,6 +235,7 @@ body.page-front {
         right: 0;
         width: 280px;
         height: 100vh;
+        height: 100dvh;
         background: var(--ej-bg-surface, #fff);
         padding: 80px 24px 24px;
         box-shadow: -4px 0 30px rgba(0, 0, 0, 0.15);
@@ -383,6 +384,11 @@ body.menu-open {
     border-radius: var(--ej-radius-pill, 50rem);
     transition: all 0.2s ease;
 
+    @media (max-width: 479px) {
+        white-space: normal;
+        word-break: break-word;
+    }
+
     &:hover {
         background: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 8%, transparent);
         border-color: color-mix(in srgb, var(--ej-color-primary, #FF8C42) 30%, transparent);
@@ -496,6 +502,7 @@ body.menu-open {
 .hero-landing {
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -615,6 +622,8 @@ body.menu-open {
         color: var(--ej-bg-surface, #fff);
         letter-spacing: 0.02em;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         svg {
             flex-shrink: 0;
@@ -1572,6 +1581,8 @@ body.menu-open {
         font-weight: 600;
         color: rgba(255, 255, 255, 0.7);
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -1590,6 +1601,8 @@ body.menu-open {
         text-decoration: none;
         transition: color 0.2s ease;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &:hover {
             color: var(--ej-bg-surface, #fff);
@@ -1678,6 +1691,7 @@ body.menu-open {
             width: 80%;
             max-width: 320px;
             height: 100vh;
+            height: 100dvh;
             background: var(--ej-bg-surface, #fff);
             padding: 5rem 2rem 2rem;
             z-index: 1001;
@@ -2119,7 +2133,7 @@ body.menu-open {
         align-items: center;
         justify-content: center;
         position: relative;
-        font-size: 24px;
+        font-size: 1.5rem;
 
         &:hover {
             transform: scale(1.1);
@@ -2127,7 +2141,7 @@ body.menu-open {
         }
 
         .fab-icon {
-            font-size: 24px;
+            font-size: 1.5rem;
         }
 
         .fab-pulse {
@@ -2183,7 +2197,7 @@ body.menu-open {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 1.5rem;
     }
 
     .agent-info {
@@ -2192,12 +2206,12 @@ body.menu-open {
 
     .agent-name {
         margin: 0 0 4px;
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 600;
     }
 
     .agent-status {
-        font-size: 12px;
+        font-size: 0.75rem;
         opacity: 0.9;
     }
 
@@ -2208,7 +2222,7 @@ body.menu-open {
         background: rgba(255, 255, 255, 0.2);
         border-radius: 50%;
         color: var(--ej-bg-surface, #fff);
-        font-size: 20px;
+        font-size: 1.25rem;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -2235,7 +2249,7 @@ body.menu-open {
         p {
             margin: 0;
             color: var(--ej-text-primary, #1f2937);
-            font-size: 14px;
+            font-size: 0.875rem;
             line-height: 1.5;
         }
     }
@@ -2272,11 +2286,11 @@ body.menu-open {
         }
 
         .action-icon {
-            font-size: 20px;
+            font-size: 1.25rem;
         }
 
         .action-label {
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 500;
             color: var(--ej-text-primary, #1f2937);
             text-align: center;
@@ -2300,7 +2314,7 @@ body.menu-open {
     .chat-message {
         padding: 10px 12px;
         border-radius: 12px;
-        font-size: 14px;
+        font-size: 0.875rem;
         line-height: 1.5;
         max-width: 85%;
         animation: messageIn 0.3s ease;
@@ -2346,7 +2360,7 @@ body.menu-open {
         padding: 10px 14px;
         border: 1px solid var(--ej-border-color, #e5e7eb);
         border-radius: 24px;
-        font-size: 14px;
+        font-size: 0.875rem;
         outline: none;
         transition: border-color 0.2s;
 
@@ -2389,7 +2403,7 @@ body.menu-open {
     }
 
     .rating-label {
-        font-size: 12px;
+        font-size: 0.75rem;
         color: var(--ej-text-muted, #6b7280);
     }
 
@@ -2400,7 +2414,7 @@ body.menu-open {
         border-radius: 50%;
         background: var(--ej-bg-surface, #fff);
         cursor: pointer;
-        font-size: 14px;
+        font-size: 0.875rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2422,7 +2436,7 @@ body.menu-open {
     }
 
     .rating-thanks {
-        font-size: 12px;
+        font-size: 0.75rem;
         color: var(--ej-color-success, #10B981);
         font-weight: 500;
     }
@@ -2454,7 +2468,7 @@ body.menu-open {
         }
 
         .cta-icon {
-            font-size: 14px;
+            font-size: 0.875rem;
         }
     }
 
@@ -3071,10 +3085,11 @@ body.footer-layout-split {
 // Responden a clases body: hero-layout-*
 // =============================================
 
-// FULLSCREEN - 100vh con overlay (default)
+// FULLSCREEN - 100dvh con overlay (default)
 body.hero-layout-fullscreen {
     .hero-landing {
         min-height: 100vh;
+        min-height: 100dvh;
     }
 }
 

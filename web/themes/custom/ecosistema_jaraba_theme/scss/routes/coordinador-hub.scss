@@ -715,7 +715,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 20px;
   color: var(--ej-color-text, #1F2937);
@@ -728,7 +728,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 
   &--ok {
@@ -854,6 +854,11 @@
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  @media (max-width: 479px) {
+    white-space: normal;
+    word-break: break-word;
+  }
 
   &:hover {
     color: var(--ej-color-azul-corporativo, #233D63);
@@ -1091,6 +1096,11 @@
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   text-decoration: none;
   white-space: nowrap;
+
+  @media (max-width: 479px) {
+    white-space: normal;
+    word-break: break-word;
+  }
 
   &:hover {
     background: var(--ej-color-surface-alt, #F9FAFB);
@@ -1584,6 +1594,11 @@
   transition: background 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 
+  @media (max-width: 479px) {
+    white-space: normal;
+    word-break: break-word;
+  }
+
   &:hover {
     background: var(--ej-color-surface-alt, #F9FAFB);
     border-color: var(--ej-color-azul-corporativo, #233D63);
@@ -1744,6 +1759,8 @@
 .hub-coordinador__leaderboard-points {
   text-align: right;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   strong {
     font-size: var(--ej-font-size-md, 1rem);
@@ -2658,6 +2675,8 @@
   font-weight: 600;
   color: var(--ej-color-text-muted, #64748b);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // Badge variants for emprendimiento fases.
@@ -3528,6 +3547,8 @@
       font-size: 0.75rem;
       font-weight: 600;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
