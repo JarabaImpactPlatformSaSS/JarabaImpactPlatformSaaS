@@ -1029,6 +1029,9 @@ jaraba_page_builder.metodo_landing:
   requirements:
     _access: 'TRUE'
 
+# /metodo route REMOVED — ROUTE-ALIAS-COLLISION-001 (collides with page_content alias).
+# Use /metodologia instead (jaraba_page_builder.metodo_landing).
+
 jaraba_page_builder.certificacion_landing:
   path: '/metodo/certificacion'
   defaults:
