@@ -131,6 +131,7 @@
 | TRANSLATION-INTEG-001 | Translation integrity (cross-page dup, NULL titles, AI fences) |
 | TWIG-INCLUDE-VARS-001 | Twig include with only passes required variables (warn, 80 pre-existing) |
 | TWIG-LANGPREFIX-001 | Twig hardcoded URLs without language prefix |
+| TWIG-HARDCODED-ROUTES-001 | Twig hardcoded route paths (caso-de-exito, planes, registro, etc.) |
 | THEME-SETTINGS-INTEGRITY-001 | Theme settings form-schema-consumer coherence (dead fields, PLG schema, CSS vars) |
 | TWIG-SYNTAX-LINT-001 | Twig static syntax lint |
 | CONTENT-SEED-INTEGRITY-001 | Metasite content seed JSON integrity (3 metasites, 6 checks each) |

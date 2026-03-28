@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-28
-**Versión:** 204.0.0 (VIEWPORT-DVH-001 + NOWRAP-OVERFLOW-001 + IMG-SEED-001 — mobile-first 10/10, 197 validators, aprendizaje #234)
+**Versión:** 205.0.0 (TWIG-URL-RESOLVE-PHP-001 — cero URLs hardcodeadas en Twig, 198 validators, aprendizaje #235)
 
 > **📋 WhatsApp-First Email Protection — v168 DIRECTRICES + v151 ARQUITECTURA + v202 INDICE** (2026-03-27)
 >
@@ -1554,10 +1554,10 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras — **v173.0.0** — SES operativo + circuit breaker | 2026-03-28 (v173.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v152.0.0** — EMAIL-FAILOVER-001, reputation monitor | 2026-03-28 (v152.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Índice general — **v204.0.0** | 2026-03-28 (v204.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo — **v124.0.0** — SES + CONFIG-ENTITY-OVERRIDE-001 | 2026-03-28 (v124.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras — **v174.0.0** — TWIG-URL-RESOLVE-PHP-001 | 2026-03-28 (v174.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v153.0.0** — Case study URL routing unificado | 2026-03-28 (v153.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Índice general — **v205.0.0** | 2026-03-28 (v205.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo — **v125.0.0** — TWIG-URL-RESOLVE-PHP-001 | 2026-03-28 (v125.0.0) |
 | [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
 | [validators-reference.md](./validators-reference.md) | 🛡️ SSOT 190 validators (133 run + 59 warn) | 2026-03-27 |
 
@@ -1628,19 +1628,21 @@
 
 | Vertical | Protagonista | Ruta | Módulo |
 |----------|-------------|------|--------|
-| JarabaLex | Despacho Martínez, Sevilla | `/jarabalex/caso-de-exito/despacho-martinez` | jaraba_legal_billing |
-| AgroConecta | (agricultor Jaén) | `/agroconecta/caso-de-exito/...` | jaraba_agro_catalog |
-| Emprendimiento | Carlos Etxebarria, Bilbao | `/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao` | jaraba_business_tools |
-| Empleabilidad | Rosa Fernández, Málaga | `/empleabilidad/caso-de-exito/rosa-fernandez-malaga` | jaraba_candidate |
-| ComercioConecta | Boutique La Mariposa | `/comercioconecta/caso-de-exito/boutique-la-mariposa` | jaraba_comercio_conecta |
-| ServiciosConecta | Carmen Navarro, Madrid | `/serviciosconecta/caso-de-exito/carmen-navarro-madrid` | jaraba_servicios_conecta |
-| Formación | María López, Madrid | `/formacion/caso-de-exito/maria-lopez-madrid` | jaraba_lms |
-| Andalucía EI | PED S.L. | `/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales` | jaraba_andalucia_ei |
-| Content Hub | Bodega Montilla, Córdoba | `/content-hub/caso-de-exito/bodega-montilla-cordoba` | jaraba_content_hub |
+| JarabaLex | Despacho Martínez, Sevilla | `/jarabalex/caso-de-exito/despacho-martinez` | jaraba_success_cases |
+| AgroConecta | Cooperativa Sierra de Cazorla | `/agroconecta/caso-de-exito/cooperativa-sierra-cazorla` | jaraba_success_cases |
+| Emprendimiento | Carlos Etxebarria, Bilbao | `/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao` | jaraba_success_cases |
+| Empleabilidad | Luis Miguel Criado | `/empleabilidad/caso-de-exito/luis-miguel-criado` | jaraba_success_cases |
+| ComercioConecta | Boutique La Mariposa | `/comercioconecta/caso-de-exito/boutique-la-mariposa` | jaraba_success_cases |
+| ServiciosConecta | Carmen Navarro, Madrid | `/serviciosconecta/caso-de-exito/carmen-navarro-madrid` | jaraba_success_cases |
+| Formación | María López, Madrid | `/formacion/caso-de-exito/maria-lopez-madrid` | jaraba_success_cases |
+| Andalucía EI | PED S.L. | `/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales` | jaraba_success_cases |
+| Content Hub | Bodega Montilla, Córdoba | `/content-hub/caso-de-exito/bodega-montilla-cordoba` | jaraba_success_cases |
 
-**Patrón:** 10 secciones, 6 imágenes WebP, CSS compartido `jarabalex-case-study.css`, Schema.org JSON-LD, precios desde controller (NO-HARDCODE-PRICE-001), CTAs con data-track-cta (FUNNEL-COMPLETENESS-001). Demo excluido (vertical interno).
+**Arquitectura:** Ruta unificada `jaraba_success_cases.case_study_landing` con `CaseStudyLandingController`. URLs SIEMPRE via `Url::fromRoute()` (ROUTE-LANGPREFIX-001). Datos desde SuccessCase entity (SUCCESS-CASES-001). 10 secciones, 6 imágenes WebP, Schema.org JSON-LD, precios desde MetaSitePricingService (NO-HARDCODE-PRICE-001), CTAs con data-track-cta (FUNNEL-COMPLETENESS-001). Demo excluido (vertical interno).
 
-**Total case studies:** 9/9 verticales comerciales
+**Casos reales Andalucía +ei 1ª Ed:** 5 adicionales (Marcela Calabia, Ángel Martínez, Adrián Capatina, Cristina Martín, Maia Tolomeo) + Luis Miguel Criado.
+
+**Total case studies:** 14 SuccessCase entities (9 SaaS pre-launch + 5 reales Andalucía +ei)
 
 ---
 
@@ -2598,6 +2600,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-28 | **205.0.0** | **TWIG-URL-RESOLVE-PHP-001 — Eliminación total URLs hardcodeadas en Twig (ROUTE-LANGPREFIX-001):** 2 commits corrigen 404 en enlaces caso de éxito de landings verticales. Causa raíz: `caseStudyUrl()` usaba rutas legacy inexistentes → fallback sin prefijo `/es/`. Fix: ruta unificada `jaraba_success_cases.case_study_landing` via `Url::fromRoute()`. 8 landings + cross-case + lista + 6 testimonios reclutamiento + enlaces + pricing social proof — 0 URLs hardcodeadas restantes. Slug empleabilidad: `rosa-fernandez-malaga` (ficticio) → `luis-miguel-criado` (caso real). Nuevo patrón: `testimonial_urls` inyectado desde preprocess, `case_study_url` via include chain con `only`. Tabla case studies actualizada (14 entities, módulo unificado jaraba_success_cases). Nuevo validator: TWIG-HARDCODED-ROUTES-001. Regla de oro #166. Aprendizaje #235. |
 | 2026-03-27 | **203.0.0** | **AWS SES Email Transport + Bounce Suppression (EMAIL-DEDICATED-IP-001):** Transporte email transaccional dedicado via Amazon SES SMTP eu-central-1. 3 reglas nuevas: EMAIL-DEDICATED-IP-001 (P0, dual SMTP IONOS+SES), EMAIL-BOUNCE-SYNC-001 (P0, SNS webhook→EmailSuppressionService), EMAIL-SES-TRANSPORT-001 (P1, validador 10 checks). Módulo jaraba_ses_transport con SesWebhookController + EmailSuppressionService (tabla email_suppression). DKIM RSA 2048, MAIL FROM mail.plataformadeecosistemas.com. 2 registros DNS IONOS (MX+SPF subdominio mail). SNS topic jaraba-ses-notifications. Config: symfony_mailer.mailer_transport.smtp_ses.yml + settings.secrets.php (SES_SMTP_*). DIRECTRICES v172. ARQUITECTURA actualizada sección 10.9. Regla de oro #164. Aprendizaje #233. |
 | 2026-03-27 | **202.0.0** | **WhatsApp-First Email Protection (CONTACT-SSOT-001 + EMAIL-NOEXPOSE-001):** Estrategia WhatsApp-First elimina 28+ emails expuestos del frontend (3.5→9.8/10). 8 reglas nuevas: CONTACT-SSOT-001 (SSOT theme_settings 20+ claves), EMAIL-NOEXPOSE-001 (cero emails en UI), CONTACT-NOHARD-001 (sin defaults hardcoded), WA-FAB-CONFIG-001 (widget configurable admin), WA-CONTEXTUAL-001 (mensajes por vertical), SCHEMA-CONTACT-CHANNEL-001 (email trampa + WhatsApp contactType), LLMS-CONTACT-FORM-001, FORM-EMAIL-DYNAMIC-001. Widget FAB contextual desktop+movil con aparicion progresiva (delay+scroll), panel expandido, 11 mensajes contextuales por vertical. AB experiment `whatsapp_fab_widget` (3 variantes). Validator validate-email-exposure.php (8/8 PASS) + validate-twig-no-email.php (pre-commit). Monitoring proactivo hook_requirements (WhatsApp + Schema email). Dominios fantasma consolidados (jaraba.io, jarabaosc.com → plataformadeecosistemas.es). 30+ ficheros modificados en 10 modulos + 1 tema. hook_update 9049-9050. Docs: 20260327e (auditoria), 20260327f (plan). Aprendizaje #232. |
 | 2026-03-24 | **194.0.0** | **Trust Strip Clase Mundial (TRUST-STRIP-001):** Parcial unificado `_trust-strip.html.twig` reemplaza `_landing-partner-logos` + `_trust-bar` (deprecados). 9 logos wordmark PNG (Nano Banana): Stripe, Google, Anthropic, Drupal, Qdrant, LinkedIn, WhatsApp, Bizum, Firma Digital. Partners per-vertical via `getPartnersForVertical()` (base 5 + extras: LinkedIn en empleabilidad, WhatsApp/Bizum en comercio/agro, Firma Digital en jarabalex). MARKETING-TRUTH-001: MRW/SEUR eliminados de 7 textos landing (sin integracion real). SCSS premium (marquee mobile, grayscale hover, 2 tiers). Homepage 4 variantes actualizadas. Validator TRUST-STRIP-INTEGRITY-001. Regla de oro #154. Aprendizaje #217. |

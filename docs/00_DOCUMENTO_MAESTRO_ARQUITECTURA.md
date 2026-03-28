@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 152.0.0 (EMAIL-FAILOVER-001 — SES default transport + circuit breaker + reputation monitor + CONFIG-ENTITY-OVERRIDE-001)
+**Versión:** 153.0.0 (TWIG-URL-RESOLVE-PHP-001 — URLs caso de éxito via ruta unificada, 0 paths hardcodeados)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -3329,6 +3329,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-28 | **153.0.0** | **TWIG-URL-RESOLVE-PHP-001 — Case Study URL Routing Unificado:** Ruta unificada `jaraba_success_cases.case_study_landing` resuelve 404 en enlaces caso de éxito (rutas legacy eliminadas en LEGACY-CONTROLLER-CLEANUP-001 causaban fallback sin prefijo `/es/`). `caseStudyUrl()` refactorizado con `Url::fromRoute()`. Patrón `testimonial_urls` en preprocess para reclutamiento (6 URLs). `case_study_url` via include chain con `only` en pricing. 14 SuccessCase entities (9 SaaS + 5 reales). Nuevo validator TWIG-HARDCODED-ROUTES-001. Aprendizaje #235. |
 | 2026-03-23 | **149.0.0** | **MEGAMENU-INJECT-001 + Caso Éxito PED S.L.:** Canal secundario theme_settings._mega_menu_columns para mega menú (35 templates protegidos). isDefault() guard en MetaSiteResolverService Strategy 1. Caso de éxito Andalucía EI reescrito con datos reales PIIL (PED S.L., 50 participantes, 23 inserciones). "Desarrollo Local" en mega menú instituciones. validate-megamenu-inject.php (3 checks). 106 scripts (89 run + 17 warn). Aprendizaje #216. |
 | 2026-03-23 | **148.0.0** | **Content Seeding Pipeline CONTENT-SEED-PIPELINE-001:** 33 pages × 3 metasitios migrados a producción. Export/import UUID-anchored idempotente. 105 scripts (88 run + 17 warn). Aprendizaje #215. |
 | 2026-03-23 | **147.0.0** | **Migración Dedicado 10/10 + SEO Multi-Dominio + Safeguard 104 scripts:** IONOS AE12-128 NVMe (EPYC 12c/24t, 128GB DDR5, RAID1 NVMe). Backup 3 capas (local+Hetzner S3+NAS GoodSync). OPcache validate_timestamps=0, Supervisor 4 workers sleep. CSRF-LOGIN-FIX-001 v2. SEO: hreflang front fix, robots.txt dinámico, Theme Settings TAB 17, seo_active_languages. 104 validators (88 run + 16 warn), 0 orphans. CLAUDE.md optimizado 43.8k→34.4k (-21.5%). docs/validators-reference.md (SSOT lista completa). Regla de oro #151. Aprendizaje #214. |

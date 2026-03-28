@@ -255,6 +255,9 @@ if [ "$MODE" = "full" ]; then
   run_check "TWIG-LANGPREFIX-001" "Twig hardcoded URLs without language prefix" \
     php "$SCRIPT_DIR/validate-twig-langprefix.php"
 
+  run_check "TWIG-HARDCODED-ROUTES-001" "Twig hardcoded route paths (caso-de-exito, planes, etc.)" \
+    php "$SCRIPT_DIR/validate-twig-hardcoded-routes.php"
+
   run_check "CTA-LOGGED-IN-001" "Conversion CTAs with logged_in conditional" \
     php "$SCRIPT_DIR/validate-cta-logged-in.php"
 
