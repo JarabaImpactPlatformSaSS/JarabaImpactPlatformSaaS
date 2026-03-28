@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-23
-**Versión:** 151.0.0 (SEC-AUDIT-IONOS-001 — 29 hallazgos remediados, PII-INPUT-GUARD-001 bidireccional, 158 scripts validacion, 7 reglas nuevas)
+**Versión:** 152.0.0 (EMAIL-FAILOVER-001 — SES default transport + circuit breaker + reputation monitor + CONFIG-ENTITY-OVERRIDE-001)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1464,6 +1464,7 @@ Toda integración Setup Wizard + Daily Actions DEBE verificar 4 capas:
 │   ├── 14 $config overrides desde getenv()                              │
 │   ├── OAuth: Google (2), LinkedIn (2), Microsoft (2)                   │
 │   ├── SMTP IONOS: user, pass, host                                    │
+│   ├── SMTP SES: SES_SMTP_USER, SES_SMTP_PASS, SES_SMTP_HOST, PORT   │
 │   ├── reCAPTCHA v3: site_key, secret_key                              │
 │   ├── Stripe: secret_key, webhook_secret, publishable_key             │
 │   └── Incluido en settings.php ANTES de settings.local.php            │
@@ -2698,6 +2699,47 @@ Auditoría full-stack (infraestructura + aplicación + safeguard) del servidor I
 │                                                                         │
 │   SERVICIO: jaraba_email.template_loader                               │
 │   COMPILER: jaraba_email.mjml_compiler                                 │
+│                                                                         │
+│   TRANSPORTE DUAL (EMAIL-DEDICATED-IP-001):                            │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  smtp_ionos  → SMTP IONOS (smtp.ionos.es:587)                  │  │
+│   │               Correo empresarial personal (MX @ → IONOS)       │  │
+│   │  smtp_ses    → AWS SES SMTP (eu-central-1, Frankfurt)          │  │
+│   │               Email transaccional Drupal (notificaciones,      │  │
+│   │               resets, onboarding). DKIM RSA 2048. MAIL FROM    │  │
+│   │               mail.plataformadeecosistemas.com                 │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   BOUNCE SUPPRESSION (EMAIL-BOUNCE-SYNC-001):                          │
+│   jaraba_ses_transport module:                                         │
+│   ├── SesWebhookController: /api/v1/ses/webhook (SNS HTTPS)          │
+│   ├── EmailSuppressionService: suppress/unsuppress/isSuppressed       │
+│   ├── hook_mail_alter: check suppression before every send            │
+│   └── SNS topic: jaraba-ses-notifications (Bounce+Complaint+Delivery) │
+│                                                                         │
+│   CIRCUIT BREAKER (EMAIL-FAILOVER-001):                                │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  EmailFailoverService (state-based circuit breaker):            │  │
+│   │  CLOSED → 3 failures → OPEN (15min cooldown) → HALF-OPEN       │  │
+│   │                                                                 │  │
+│   │  hook_mailer_post_render: dynamic transport routing via DSN     │  │
+│   │  hook_mailer_post_send: record success → reset breaker          │  │
+│   │  _jaraba_ses_transport_build_dsn(): credentials from getenv()   │  │
+│   │                                                                 │  │
+│   │  CONFIG-ENTITY-OVERRIDE-001: $config[] overrides in             │  │
+│   │  settings.php do NOT apply to ConfigEntity::load(). DSN must    │  │
+│   │  be built from getenv() directly, not from transport entity.    │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   REPUTATION MONITOR (EMAIL-REPUTATION-MONITOR-001):                   │
+│   ├── EmailReputationMonitorService: cron 6h check                    │
+│   │   Thresholds: bounce >5% WARNING, complaint >0.1% CRITICAL       │
+│   ├── hook_requirements: surfaces metrics in Drupal status report     │
+│   └── Weekly suppression audit via cron (EMAIL-SUPPRESSION-AUDIT-001) │
+│                                                                         │
+│   DEFAULT TRANSPORT: smtp_ses (changed 2026-03-28)                     │
+│   FALLBACK: smtp_ionos (via circuit breaker)                           │
+│   PREMIUM TEMPLATE: email-wrap.html.twig (branded header/footer)       │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

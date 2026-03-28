@@ -768,7 +768,7 @@ if [ "$MODE" = "full" ]; then
     php "$SCRIPT_DIR/validate-translation-quality.php"
 
   warn_check "SAFEGUARD-DEPLOY-PERSISTENCE-001" "Deploy env persistence (secrets vs deploy.yml)" \
-    php "$PROJECT_ROOT/scripts/validation/validate-deploy-persistence.php"
+    php "$PROJECT_ROOT/scripts/validation/validate-deploy-env-persistence.php"
 
   run_check "AI-COVERAGE-001" "AI integration coverage (16 bridges, 17 groundings, 10 agents)" \
     php "$PROJECT_ROOT/scripts/validation/validate-ai-coverage.php"

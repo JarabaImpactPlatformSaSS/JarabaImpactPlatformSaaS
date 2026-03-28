@@ -265,6 +265,16 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DRUSH-URI-CLI-001: `drush/drush.yml` con `options.uri: https://plataformadeecosistemas.com`. Sin esto, `$GLOBALS['base_url']='http://default'` y URLs en emails/tokens/cron son inaccesibles
 - EMAIL-SENDER-MATCH-001: `system.site.mail` DEBE coincidir con sender SMTP permitido. IONOS rechaza remitentes sin buzon configurado
 
+### Email Transport Dual (EMAIL-DEDICATED-IP-001)
+- Default transport: `smtp_ses` (transaccional Drupal via AWS SES eu-central-1). Fallback: `smtp_ionos`
+- EMAIL-DEDICATED-IP-001: IP SES separada de IONOS. Spike bounces NO contamina correo personal
+- EMAIL-BOUNCE-SYNC-001: Auto-suppress via SNS webhook `/api/v1/ses/webhook`. Hard bounce=permanente, complaint=permanente, transient=24h cooldown
+- EMAIL-FAILOVER-001: Circuit breaker SES→IONOS (3 failures→15min cooldown). hook_mailer_post_render() routing dinámico. _jaraba_ses_transport_build_dsn() desde getenv()
+- CONFIG-ENTITY-OVERRIDE-001: $config[] overrides NO aplican a ConfigEntity::load(). DSN DEBE construirse desde getenv() directo
+- EMAIL-REPUTATION-MONITOR-001: Cron 6h, bounce >5% WARNING, complaint >0.1% CRITICAL. hook_requirements()
+- DKIM RSA 2048. MAIL FROM: `mail.plataformadeecosistemas.com`. SNS topic: `arn:aws:sns:eu-central-1:152645331237:jaraba-ses-notifications`
+- Validador: `validate-ses-transport-integrity.php` (10 checks)
+
 ### Monitoring
 - UptimeRobot: 4 dominios (5min) + API status (5min) + SSL expiry (14 dias alerta)
 - Email alertas CI: `scripts/ci-notify-email.php` via SMTP (reemplaza Slack)

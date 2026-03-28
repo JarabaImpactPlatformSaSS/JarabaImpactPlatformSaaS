@@ -1554,10 +1554,10 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras — **v171.0.0** — EMAIL-SES + Método Jaraba + WhatsApp | 2026-03-27 (v171.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v151.0.0** — Safeguard 190 scripts, Madurez 5.0/5.0 | 2026-03-27 (v151.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Índice general — **v203.0.0** | 2026-03-27 (v203.0.0) |
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo — **v122.0.0** — Método Jaraba + WhatsApp IA + SES | 2026-03-27 (v122.0.0) |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras — **v173.0.0** — SES operativo + circuit breaker | 2026-03-28 (v173.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v152.0.0** — EMAIL-FAILOVER-001, reputation monitor | 2026-03-28 (v152.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Índice general — **v204.0.0** | 2026-03-28 (v204.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo — **v124.0.0** — SES + CONFIG-ENTITY-OVERRIDE-001 | 2026-03-28 (v124.0.0) |
 | [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
 | [validators-reference.md](./validators-reference.md) | 🛡️ SSOT 190 validators (133 run + 59 warn) | 2026-03-27 |
 
