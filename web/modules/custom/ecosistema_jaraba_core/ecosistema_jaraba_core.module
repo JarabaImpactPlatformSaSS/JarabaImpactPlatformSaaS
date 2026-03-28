@@ -854,6 +854,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'social_proof_stats' => [],
         'social_proof_logos' => [],
         'social_proof_testimonials' => [],
+        'case_study_url' => '',
       ],
       'template' => 'pricing-page',
       'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',

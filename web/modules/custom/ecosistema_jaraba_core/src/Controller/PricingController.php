@@ -430,6 +430,7 @@ class PricingController extends ControllerBase {
       '#social_proof_stats' => $socialProof['stats'],
       '#social_proof_logos' => $socialProof['logos'],
       '#social_proof_testimonials' => $socialProof['testimonials'],
+      '#case_study_url' => $this->buildCaseStudyUrl(),
       '#attached' => [
         'library' => [
           'ecosistema_jaraba_core/global',
@@ -846,6 +847,23 @@ class PricingController extends ControllerBase {
             'answer' => $this->t('Sí. Todos los planes de pago ofrecen 14 días de prueba gratis. Puedes cancelar en cualquier momento antes de que termine la prueba sin ningún cargo.'),
           ],
     ];
+  }
+
+  /**
+   * Builds featured case study URL for social proof section.
+   *
+   * ROUTE-LANGPREFIX-001: URLs via Url::fromRoute().
+   */
+  protected function buildCaseStudyUrl(): string {
+    try {
+      return Url::fromRoute('jaraba_success_cases.case_study_landing', [
+        'vertical_path' => 'jarabalex',
+        'slug' => 'despacho-martinez',
+      ])->toString();
+    }
+    catch (\Throwable) {
+      return '/jarabalex/caso-de-exito/despacho-martinez';
+    }
   }
 
 }

@@ -71,6 +71,7 @@ function jaraba_andalucia_ei_theme(): array {
         'programa' => [],
         'module_path' => NULL,
         'whatsapp_number' => '',
+        'testimonial_urls' => [],
       ],
       'template' => 'andalucia-ei-reclutamiento',
     ],
@@ -464,6 +465,26 @@ function jaraba_andalucia_ei_preprocess_solicitud_ei_page(array &$variables): vo
  */
 function jaraba_andalucia_ei_preprocess_andalucia_ei_reclutamiento(array &$variables): void {
   $variables['whatsapp_number'] = theme_get_setting('whatsapp_number', 'ecosistema_jaraba_theme') ?: '';
+
+  // ROUTE-LANGPREFIX-001: Resolve testimonial URLs via routing system.
+  $slugs = [
+    'marcela-calabia',
+    'angel-martinez-camino-viejo',
+    'cristina-martin-pereira-de-cris-moda',
+    'adrian-capatina-tudor-novavid',
+    'luis-miguel-criado',
+    'maia-tolomeo',
+  ];
+  $urls = [];
+  foreach ($slugs as $slug) {
+    try {
+      $urls[$slug] = Url::fromRoute('jaraba_success_cases.detail', ['slug' => $slug])->toString();
+    }
+    catch (\Throwable) {
+      $urls[$slug] = '/caso-de-exito/' . $slug;
+    }
+  }
+  $variables['testimonial_urls'] = $urls;
 }
 
 /**

@@ -166,6 +166,7 @@ class EnlacesController extends ControllerBase {
         'quote' => $this->t('Este curso es oro puro. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este.'),
         'foto' => 'testimonio-marcela.webp',
         'slug' => 'marcela-calabia',
+        'url' => Url::fromRoute('jaraba_success_cases.detail', ['slug' => 'marcela-calabia'])->toString(),
         'resultado' => $this->t('Libros en 4 idiomas, tarifa desde 75 €/h'),
       ],
       [
@@ -175,6 +176,7 @@ class EnlacesController extends ControllerBase {
         'quote' => $this->t('La formación de PED es oro puro. Ahora tengo conciencia de que ES POSIBLE.'),
         'foto' => 'testimonio-angel.webp',
         'slug' => 'angel-martinez-camino-viejo',
+        'url' => Url::fromRoute('jaraba_success_cases.detail', ['slug' => 'angel-martinez-camino-viejo'])->toString(),
         'resultado' => $this->t('Cicloturismo premium en Sierra Morena'),
       ],
       [
@@ -184,6 +186,7 @@ class EnlacesController extends ControllerBase {
         'quote' => $this->t('Hay un seguimiento real, que en muchos sitios se queda en el aire. Aquí funciona.'),
         'foto' => 'testimonio-cristina.webp',
         'slug' => 'cristina-martin-pereira-de-cris-moda',
+        'url' => Url::fromRoute('jaraba_success_cases.detail', ['slug' => 'cristina-martin-pereira-de-cris-moda'])->toString(),
         'resultado' => $this->t('Tienda online con ventas en 6 países'),
       ],
       [
@@ -193,6 +196,7 @@ class EnlacesController extends ControllerBase {
         'quote' => $this->t('La vida me ha cambiado, te lo aseguro. Todo lo que aprendí lo repartí a otros emprendedores.'),
         'foto' => 'testimonio-adrian.webp',
         'slug' => 'adrian-capatina-tudor-novavid',
+        'url' => Url::fromRoute('jaraba_success_cases.detail', ['slug' => 'adrian-capatina-tudor-novavid'])->toString(),
         'resultado' => $this->t('Agencia audiovisual, clientes sector lujo'),
       ],
     ];

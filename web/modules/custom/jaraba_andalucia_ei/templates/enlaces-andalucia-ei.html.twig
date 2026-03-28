@@ -185,7 +185,7 @@
         {# Scrollable track #}
         <div class="aei-enlaces__testimonials-scroll">
           {% for testimonio in testimonials %}
-            <a href="/es/caso-de-exito/{{ testimonio.slug }}"
+            <a href="{{ testimonio.url }}"
                class="aei-enlaces__testimonial-card"
                data-track-cta="testimonial_{{ testimonio.slug|split('-')[0] }}"
                data-track-position="social_proof"
