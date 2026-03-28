@@ -111,6 +111,11 @@
     white-space: nowrap;
     border: none;
 
+    @media (max-width: 479px) {
+      white-space: normal;
+      word-break: break-word;
+    }
+
     &--primary {
         background: linear-gradient(135deg, $ej-color-impulse 0%, color.adjust($ej-color-impulse, $lightness: -10%) 100%);
         color: var(--ej-bg-surface, #fff);

@@ -1861,7 +1861,8 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // Método Jaraba landing — body class para SCSS targeting.
-  if ($route === 'jaraba_page_builder.metodo_landing') {
+  // Ambas rutas (/metodologia y /metodo) usan el mismo controller y template.
+  if ($route === 'jaraba_page_builder.metodo_landing' || $route === 'jaraba_page_builder.metodo') {
     $variables['attributes']['class'][] = 'landing-page';
     $variables['attributes']['class'][] = 'page-metodo';
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
@@ -5660,7 +5661,8 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
 
   // Método Jaraba → page--metodo.html.twig (landing ZERO-REGION-001)
-  if ($route === 'jaraba_page_builder.metodo_landing') {
+  // Ambas rutas (/metodologia y /metodo) comparten controller y template.
+  if ($route === 'jaraba_page_builder.metodo_landing' || $route === 'jaraba_page_builder.metodo') {
     $suggestions[] = 'page__metodo';
   }
 

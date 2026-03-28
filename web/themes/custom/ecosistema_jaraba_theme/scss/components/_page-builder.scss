@@ -3038,6 +3038,8 @@
         cursor: pointer;
         transition: all 0.3s ease;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &.is-active {
             color: var(--ej-color-primary, $ej-color-primary);
@@ -4728,6 +4730,8 @@
         font-weight: 600;
         text-decoration: underline;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__close {

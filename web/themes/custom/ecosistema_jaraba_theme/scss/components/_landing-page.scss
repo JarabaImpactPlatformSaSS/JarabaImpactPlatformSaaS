@@ -374,6 +374,8 @@ body.menu-open {
     justify-content: center;
     gap: 0.5rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-family: var(--ej-font-body, 'Outfit', sans-serif);
     font-size: 0.9375rem;
     font-weight: 600;
@@ -383,6 +385,11 @@ body.menu-open {
     border: 1px solid color-mix(in srgb, var(--ej-text-primary, #1A1A2E) 15%, transparent);
     border-radius: var(--ej-radius-pill, 50rem);
     transition: all 0.2s ease;
+
+    @media (max-width: 479px) {
+        white-space: normal;
+        word-break: break-word;
+    }
 
     @media (max-width: 479px) {
         white-space: normal;

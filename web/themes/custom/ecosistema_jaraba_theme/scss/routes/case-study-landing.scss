@@ -386,6 +386,8 @@
     padding: 0.25rem 0.625rem;
     border-radius: 1rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &--positive {
       background: color-mix(in srgb, var(--ej-color-success, #22c55e) 10%, transparent);
@@ -525,6 +527,8 @@
     padding: 0.25rem 0.625rem;
     border-radius: 1rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     position: relative;
     z-index: 1;
   }
@@ -976,6 +980,11 @@
   &__btn {
     white-space: nowrap;
     min-height: 44px;
+
+    @media (max-width: 479px) {
+      white-space: normal;
+      word-break: break-word;
+    }
   }
 
   &__disclaimer {
@@ -1043,6 +1052,8 @@
     padding: 0.25rem 1rem;
     border-radius: 1rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__plan-name {

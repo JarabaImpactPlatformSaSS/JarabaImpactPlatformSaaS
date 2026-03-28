@@ -263,6 +263,7 @@ $tier-premium: var(--ej-color-primary, #FF8C42);
 // === AGENT TABLE ===
 .ai-dashboard__agent-table {
     overflow-x: auto;
+    touch-action: pan-x;
 
     table {
         width: 100%;

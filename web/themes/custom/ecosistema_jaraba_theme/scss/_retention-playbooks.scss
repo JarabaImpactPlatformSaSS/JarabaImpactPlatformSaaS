@@ -143,6 +143,7 @@
   margin-bottom: $ej-spacing-xl;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
+  touch-action: pan-x;
 
   &__title {
     font-size: 1.25rem;

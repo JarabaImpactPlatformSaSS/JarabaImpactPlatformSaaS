@@ -403,6 +403,11 @@ body.page-self-service {
   white-space: nowrap;
   flex-shrink: 0;
 
+  @media (max-width: 479px) {
+    white-space: normal;
+    word-break: break-word;
+  }
+
   &,
   &:visited,
   &:hover,

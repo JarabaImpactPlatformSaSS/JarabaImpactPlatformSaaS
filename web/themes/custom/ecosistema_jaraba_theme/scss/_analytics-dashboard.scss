@@ -320,6 +320,7 @@
     border-radius: $ej-border-radius;
     box-shadow: $ej-shadow-sm;
     overflow-x: auto;
+    touch-action: pan-x;
 }
 
 .analytics-dashboard__table {

@@ -803,6 +803,8 @@
   font-weight: 700;
   color: var(--ej-color-primary, #FF8C42) !important;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .product-demo__payment-methods {

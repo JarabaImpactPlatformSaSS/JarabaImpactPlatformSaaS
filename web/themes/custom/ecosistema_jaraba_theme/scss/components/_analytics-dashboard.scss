@@ -376,7 +376,7 @@
     letter-spacing: 0.5px;
     text-align: left;
     border-bottom: 1px solid var(--ej-card-border, $ej-border-color);
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: scrollable container (.analytics-dashboard__table-wrapper overflow-x: auto)
 
     &--center {
         text-align: center;

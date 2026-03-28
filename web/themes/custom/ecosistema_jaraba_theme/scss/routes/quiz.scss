@@ -509,10 +509,15 @@ body.page-quiz {
   // El botón dentro del form NO debe expandirse.
   .btn-primary--sm {
     flex-shrink: 0;
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: responsive wrap below
     min-width: auto;
     width: auto;
     max-width: 200px;
+
+    @media (max-width: 479px) {
+      white-space: normal;
+      word-break: break-word;
+    }
   }
 }
 

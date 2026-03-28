@@ -138,6 +138,8 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     flex-shrink: 0;
   }
 

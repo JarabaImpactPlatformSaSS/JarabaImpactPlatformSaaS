@@ -118,6 +118,11 @@
   transition: background $ej-transition-fast;
   white-space: nowrap;
 
+  @media (max-width: 479px) {
+    white-space: normal;
+    word-break: break-word;
+  }
+
   &:hover {
     opacity: $ej-hover-opacity;
   }

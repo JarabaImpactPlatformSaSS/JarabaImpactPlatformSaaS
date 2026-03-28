@@ -177,7 +177,7 @@
     margin: 0 0 2px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: overflow protection above
   }
 
   &__item-message {

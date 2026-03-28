@@ -234,7 +234,7 @@ body.page-revisions {
 .revision-list__cell--date {
     font-family: var(--ej-font-mono, 'Fira Code', monospace);
     font-size: var(--ej-font-size-sm, 0.875rem);
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: fixed-width date content in table
 }
 
 .revision-list__cell--user {

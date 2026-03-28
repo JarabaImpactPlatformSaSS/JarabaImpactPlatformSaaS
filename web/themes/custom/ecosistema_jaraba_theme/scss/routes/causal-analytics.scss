@@ -149,6 +149,8 @@
     text-align: left;
     border-bottom: 2px solid var(--ej-card-border, $ej-border-color);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   td {
@@ -170,7 +172,7 @@
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap; // NOWRAP-SAFE: overflow protection above
 }
 
 // ============================================================

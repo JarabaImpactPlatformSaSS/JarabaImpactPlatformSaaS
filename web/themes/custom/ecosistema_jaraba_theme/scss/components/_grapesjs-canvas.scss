@@ -668,7 +668,7 @@
     // Limitar texto largo
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: overflow protection above
     max-width: 100%;
 }
 

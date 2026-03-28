@@ -649,6 +649,8 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   // Colores por vertical
@@ -841,6 +843,8 @@
   font-size: 0.8125rem;
   color: var(--ej-color-text-muted, #94a3b8);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .auth-social__buttons {

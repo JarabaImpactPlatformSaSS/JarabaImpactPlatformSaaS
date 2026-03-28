@@ -132,7 +132,7 @@
     font-family: $ej-font-body;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: nowrap; // NOWRAP-SAFE: overflow protection above
   }
 
   &__meta {

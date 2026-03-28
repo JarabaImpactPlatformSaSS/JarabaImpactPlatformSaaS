@@ -764,6 +764,8 @@
     padding: 0.25rem 1rem;
     border-radius: 50px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }

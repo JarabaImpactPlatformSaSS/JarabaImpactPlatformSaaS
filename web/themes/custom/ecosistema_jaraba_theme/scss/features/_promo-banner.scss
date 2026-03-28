@@ -101,6 +101,11 @@
     white-space: nowrap;
     transition: opacity 0.15s ease;
 
+    @media (max-width: 479px) {
+        white-space: normal;
+        word-break: break-word;
+    }
+
     &:hover { opacity: 0.85; }
 
     &:focus-visible {
@@ -139,6 +144,8 @@
     font-weight: 600;
     color: var(--ej-color-success, #10b981);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 // Header highlight link.

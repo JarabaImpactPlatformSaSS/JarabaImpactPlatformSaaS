@@ -639,6 +639,7 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
 
     &::-webkit-scrollbar {
         height: 4px;

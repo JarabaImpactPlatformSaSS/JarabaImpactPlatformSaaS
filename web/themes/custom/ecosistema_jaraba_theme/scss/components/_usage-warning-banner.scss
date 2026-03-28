@@ -73,6 +73,11 @@
     transition: opacity 0.15s ease;
     white-space: nowrap;
 
+    @media (max-width: 479px) {
+      white-space: normal;
+      word-break: break-word;
+    }
+
     &:hover {
       opacity: 0.85;
     }

@@ -106,6 +106,53 @@
       background: #F8FAFC !important;
     }
     
+    /* Mobile redirect — solo visible en pantallas < 768px */
+    .canvas-editor-mobile-redirect {
+      display: none;
+    }
+    @media (max-width: 767px) {
+      .canvas-editor-mobile-redirect {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 2rem;
+        text-align: center;
+        gap: 1.5rem;
+        background: var(--ej-bg-body, #f8fafc);
+      }
+      .canvas-editor-mobile-redirect__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ej-color-headings, #1a1a2e);
+        margin: 0;
+      }
+      .canvas-editor-mobile-redirect__text {
+        font-size: 1rem;
+        color: var(--ej-color-muted, #64748B);
+        margin: 0;
+        max-width: 320px;
+      }
+      .canvas-editor-mobile-redirect__cta {
+        display: inline-flex;
+        padding: 0.75rem 2rem;
+        background: var(--ej-color-primary, #FF8C42);
+        color: #fff;
+        border-radius: 50rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      body.canvas-editor-page .canvas-editor-main {
+        display: none !important;
+      }
+    }
+
     /* Desactivar contenedores intermedios */
     body.canvas-editor-page .page-wrapper,
     body.canvas-editor-page .layout-container,
@@ -128,6 +175,26 @@
   <a href="#main-content" class="visually-hidden focusable skip-link">
     {% trans %}Skip to main content{% endtrans %}
   </a>
+
+  {# Mobile redirect — el editor visual no es usable en pantallas <768px #}
+  <div class="canvas-editor-mobile-redirect" role="alert">
+    <div class="canvas-editor-mobile-redirect__icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ej-color-corporate, #233D63)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+    </div>
+    <h2 class="canvas-editor-mobile-redirect__title">
+      {% trans %}El editor visual funciona mejor en pantallas grandes{% endtrans %}
+    </h2>
+    <p class="canvas-editor-mobile-redirect__text">
+      {% trans %}Para la mejor experiencia de edición, accede desde un ordenador o tablet en horizontal.{% endtrans %}
+    </p>
+    <a href="{{ path('<front>') }}" class="canvas-editor-mobile-redirect__cta">
+      {% trans %}Volver al inicio{% endtrans %}
+    </a>
+  </div>
 
   {# MAIN CONTENT - Full-viewport, solo el Canvas Editor #}
   <main id="main-content" class="canvas-editor-main">

@@ -820,6 +820,8 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     padding: 0.3rem 1rem;
     border-radius: 50rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     box-shadow: 0 4px 12px color-mix(in srgb, $ped-azul 40%, transparent);
   }
 
@@ -1482,6 +1484,8 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     border: 1px solid color-mix(in srgb, $ped-azul 12%, transparent);
     border-radius: var(--ej-radius-pill, 50rem);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

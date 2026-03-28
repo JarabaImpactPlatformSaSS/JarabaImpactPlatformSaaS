@@ -112,6 +112,8 @@
     padding: 0.3rem 1rem;
     border-radius: 20px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__card-header {

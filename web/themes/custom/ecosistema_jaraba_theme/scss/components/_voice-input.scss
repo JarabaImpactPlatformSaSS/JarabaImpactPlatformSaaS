@@ -108,7 +108,7 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap; // NOWRAP-SAFE: overflow protection above
 
   &:hover {
     background: var(--ej-color-impulse, #{$ej-color-impulse});

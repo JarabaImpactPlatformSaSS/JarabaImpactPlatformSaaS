@@ -2718,7 +2718,7 @@
         text-decoration: none;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: nowrap; // NOWRAP-SAFE: overflow protection above
 
         &:hover {
             color: var(--ej-color-primary, $ej-color-primary);
