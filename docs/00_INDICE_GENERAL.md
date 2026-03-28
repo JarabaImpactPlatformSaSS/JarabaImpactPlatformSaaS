@@ -3,8 +3,8 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-03-27
-**Versión:** 203.0.0 (EMAIL-SES-TRANSPORT-001 — Amazon SES producción + sync cross-refs 190 validators, aprendizaje #232)
+**Última actualización:** 2026-03-28
+**Versión:** 204.0.0 (VIEWPORT-DVH-001 + NOWRAP-OVERFLOW-001 + IMG-SEED-001 — mobile-first 10/10, 197 validators, aprendizaje #234)
 
 > **📋 WhatsApp-First Email Protection — v168 DIRECTRICES + v151 ARQUITECTURA + v202 INDICE** (2026-03-27)
 >
