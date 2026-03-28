@@ -67,15 +67,58 @@ function jaraba_ses_transport_mailer_post_render(\Drupal\symfony_mailer\EmailInt
     $failover = \Drupal::service('jaraba_ses_transport.failover');
     $activeTransport = $failover->getActiveTransport();
 
-    // Load the transport entity and set DSN on the email.
-    $transport = \Drupal\symfony_mailer\Entity\MailerTransport::load($activeTransport);
-    if ($transport) {
-      $email->setTransportDsn($transport->getDsn());
+    // Build DSN with credentials from env vars.
+    // ConfigEntity overrides ($config[] in settings.secrets.php) are NOT applied
+    // to entities loaded via ::load() — only to \Drupal::config() reads.
+    // Therefore we must construct the DSN with credentials from getenv() directly.
+    $dsn = _jaraba_ses_transport_build_dsn($activeTransport);
+    if ($dsn) {
+      $email->setTransportDsn($dsn);
     }
   }
   catch (\Throwable $e) {
     // PRESAVE-RESILIENCE-001: Never block email sending due to failover errors.
   }
+}
+
+/**
+ * Builds a fully authenticated SMTP DSN for the given transport.
+ *
+ * @param string $transport_id
+ *   Transport machine name: 'smtp_ses' or 'smtp_ionos'.
+ *
+ * @return string|null
+ *   The DSN string with credentials, or NULL if transport cannot be built.
+ */
+function _jaraba_ses_transport_build_dsn(string $transport_id): ?string {
+  if ($transport_id === 'smtp_ses') {
+    $user = getenv('SES_SMTP_USER');
+    $pass = getenv('SES_SMTP_PASS');
+    $host = getenv('SES_SMTP_HOST') ?: 'email-smtp.eu-central-1.amazonaws.com';
+    $port = getenv('SES_SMTP_PORT') ?: '587';
+
+    if (!$user || !$pass) {
+      return NULL;
+    }
+
+    return 'smtp://' . urlencode($user) . ':' . urlencode($pass) . '@' . $host . ':' . $port;
+  }
+
+  if ($transport_id === 'smtp_ionos') {
+    $user = getenv('SMTP_USER');
+    $pass = getenv('SMTP_PASS');
+    $host = getenv('SMTP_HOST') ?: 'smtp.ionos.es';
+
+    if (!$user || !$pass) {
+      return NULL;
+    }
+
+    return 'smtp://' . urlencode($user) . ':' . urlencode($pass) . '@' . $host . ':587';
+  }
+
+  // Unknown transport — fallback to entity DSN.
+  $transport = \Drupal\symfony_mailer\Entity\MailerTransport::load($transport_id);
+  return $transport?->getDsn();
 }
 
 /**
