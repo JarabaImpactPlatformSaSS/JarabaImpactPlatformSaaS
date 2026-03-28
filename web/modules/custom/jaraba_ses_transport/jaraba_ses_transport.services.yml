@@ -5,6 +5,19 @@ services:
       - '@database'
       - '@logger.channel.jaraba_ses'
 
+  jaraba_ses_transport.reputation_monitor:
+    class: Drupal\jaraba_ses_transport\Service\EmailReputationMonitorService
+    arguments:
+      - '@database'
+      - '@state'
+      - '@logger.channel.jaraba_ses'
+
+  jaraba_ses_transport.failover:
+    class: Drupal\jaraba_ses_transport\Service\EmailFailoverService
+    arguments:
+      - '@state'
+      - '@logger.channel.jaraba_ses'
+
   logger.channel.jaraba_ses:
     parent: logger.channel_base
     arguments: ['jaraba_ses']

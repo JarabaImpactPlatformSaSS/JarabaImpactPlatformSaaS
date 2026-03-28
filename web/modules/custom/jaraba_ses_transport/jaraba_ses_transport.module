@@ -8,9 +8,10 @@ declare(strict_types=1);
  *
  * EMAIL-DEDICATED-IP-001: Dedicated transport via Amazon SES (no shared IP).
  * EMAIL-BOUNCE-SYNC-001: Auto-suppress bounced/complained addresses.
+ * EMAIL-REPUTATION-MONITOR-001: Cron-based reputation monitoring.
+ * EMAIL-FAILOVER-001: Circuit breaker SES→IONOS fallback.
+ * EMAIL-SUPPRESSION-AUDIT-001: Weekly suppression audit via cron.
  */
-
-use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_mail_alter().
@@ -47,4 +48,193 @@ function jaraba_ses_transport_mail_alter(array &$message): void {
   catch (\Throwable $e) {
     // PRESAVE-RESILIENCE-001: Never block email sending due to suppression errors.
   }
+}
+
+/**
+ * Implements hook_mailer_post_render().
+ *
+ * EMAIL-FAILOVER-001: Dynamic transport routing via circuit breaker.
+ * If SES circuit is OPEN (failures exceeded threshold), override the transport
+ * DSN to use IONOS fallback. Runs after DefaultsEmailAdjuster sets default.
+ */
+function jaraba_ses_transport_mailer_post_render(\Drupal\symfony_mailer\EmailInterface $email): void {
+  if (!\Drupal::hasService('jaraba_ses_transport.failover')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_ses_transport\Service\EmailFailoverService $failover */
+    $failover = \Drupal::service('jaraba_ses_transport.failover');
+    $activeTransport = $failover->getActiveTransport();
+
+    // Load the transport entity and set DSN on the email.
+    $transport = \Drupal\symfony_mailer\Entity\MailerTransport::load($activeTransport);
+    if ($transport) {
+      $email->setTransportDsn($transport->getDsn());
+    }
+  }
+  catch (\Throwable $e) {
+    // PRESAVE-RESILIENCE-001: Never block email sending due to failover errors.
+  }
+}
+
+/**
+ * Implements hook_mailer_post_send().
+ *
+ * EMAIL-FAILOVER-001: Record successful send to reset circuit breaker.
+ */
+function jaraba_ses_transport_mailer_post_send(\Drupal\symfony_mailer\EmailInterface $email): void {
+  if (!\Drupal::hasService('jaraba_ses_transport.failover')) {
+    return;
+  }
+
+  try {
+    \Drupal::service('jaraba_ses_transport.failover')->recordSuccess();
+  }
+  catch (\Throwable $e) {
+    // Silent — don't break post-send flow.
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * EMAIL-REPUTATION-MONITOR-001: Check reputation metrics every 6 hours.
+ * EMAIL-SUPPRESSION-AUDIT-001: Log weekly suppression summary.
+ */
+function jaraba_ses_transport_cron(): void {
+  // Reputation check (rate-limited internally to every 6h).
+  if (\Drupal::hasService('jaraba_ses_transport.reputation_monitor')) {
+    try {
+      \Drupal::service('jaraba_ses_transport.reputation_monitor')->checkReputation();
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_ses')->error('Reputation check cron failed: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // EMAIL-SUPPRESSION-AUDIT-001: Weekly suppression summary (every Monday).
+  if (\Drupal::hasService('jaraba_ses_transport.email_suppression')) {
+    try {
+      $lastAudit = \Drupal::state()->get('jaraba_ses.last_suppression_audit', 0);
+      $now = \Drupal::time()->getRequestTime();
+      // Run weekly (604800 seconds).
+      if (($now - $lastAudit) >= 604800) {
+        $stats = \Drupal::service('jaraba_ses_transport.email_suppression')->getStats();
+        if ($stats['total'] > 0) {
+          \Drupal::logger('jaraba_ses')->notice(
+            'Weekly suppression audit: @total suppressed (@bounces bounces, @complaints complaints, @manual manual).',
+            [
+              '@total' => $stats['total'],
+              '@bounces' => $stats['bounces'],
+              '@complaints' => $stats['complaints'],
+              '@manual' => $stats['manual'],
+            ]
+          );
+        }
+        \Drupal::state()->set('jaraba_ses.last_suppression_audit', $now);
+      }
+    }
+    catch (\Throwable $e) {
+      // PRESAVE-RESILIENCE-001: Never let audit errors break cron.
+    }
+  }
+}
+
+/**
+ * Implements hook_requirements().
+ *
+ * EMAIL-REPUTATION-MONITOR-001: Surfaces reputation metrics in status report.
+ * EMAIL-FAILOVER-001: Shows circuit breaker state.
+ */
+function jaraba_ses_transport_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // SES Transport status.
+  $sesUser = getenv('SES_SMTP_USER');
+  $requirements['jaraba_ses_credentials'] = [
+    'title' => t('SES SMTP Credentials'),
+    'value' => $sesUser ? t('Configured (user: @user)', ['@user' => substr($sesUser, 0, 8) . '...']) : t('Not configured'),
+    'severity' => $sesUser ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    'description' => $sesUser ? NULL : t('SES_SMTP_USER and SES_SMTP_PASS environment variables are not set. Email will use fallback transport.'),
+  ];
+
+  // Reputation monitor.
+  if (\Drupal::hasService('jaraba_ses_transport.reputation_monitor')) {
+    try {
+      $reputation = \Drupal::service('jaraba_ses_transport.reputation_monitor')->getCachedReputation();
+      $checkedAt = $reputation['checked_at'] ?? 0;
+      $checkedAgo = $checkedAt > 0 ? \Drupal::time()->getRequestTime() - $checkedAt : 0;
+
+      $severityMap = [
+        'healthy' => REQUIREMENT_OK,
+        'warning' => REQUIREMENT_WARNING,
+        'critical' => REQUIREMENT_ERROR,
+        'unknown' => REQUIREMENT_INFO,
+      ];
+
+      $status = $reputation['status'] ?? 'unknown';
+
+      $requirements['jaraba_ses_reputation'] = [
+        'title' => t('SES Email Reputation'),
+        'value' => t('@status — @total suppressed (@b24h bounces, @c24h complaints last 24h)', [
+          '@status' => ucfirst($status),
+          '@total' => $reputation['total_suppressed'] ?? 0,
+          '@b24h' => $reputation['bounces_24h'] ?? 0,
+          '@c24h' => $reputation['complaints_24h'] ?? 0,
+        ]),
+        'severity' => $severityMap[$status] ?? REQUIREMENT_INFO,
+      ];
+
+      if ($status === 'critical') {
+        $requirements['jaraba_ses_reputation']['description'] = t('Complaint rate exceeds 0.1%. AWS SES may suspend sending at 0.5%. Investigate immediately.');
+      }
+      elseif ($status === 'warning') {
+        $requirements['jaraba_ses_reputation']['description'] = t('Bounce rate exceeds 5%. AWS SES may suspend sending at 10%. Review recipient lists.');
+      }
+    }
+    catch (\Throwable $e) {
+      // Don't break status page.
+    }
+  }
+
+  // Circuit breaker state.
+  if (\Drupal::hasService('jaraba_ses_transport.failover')) {
+    try {
+      $failoverState = \Drupal::service('jaraba_ses_transport.failover')->getState();
+      $circuitState = $failoverState['state'] ?? 'closed';
+
+      $severityMap = [
+        'closed' => REQUIREMENT_OK,
+        'half-open' => REQUIREMENT_WARNING,
+        'open' => REQUIREMENT_ERROR,
+      ];
+
+      $requirements['jaraba_ses_failover'] = [
+        'title' => t('SES Transport Failover'),
+        'value' => t('Circuit @state — Active transport: @transport', [
+          '@state' => $circuitState,
+          '@transport' => $failoverState['active_transport'] ?? 'unknown',
+        ]),
+        'severity' => $severityMap[$circuitState] ?? REQUIREMENT_INFO,
+      ];
+
+      if ($circuitState === 'open') {
+        $requirements['jaraba_ses_failover']['description'] = t('SES transport is DOWN. Using IONOS fallback. @failures consecutive failures. Will retry after cooldown.', [
+          '@failures' => $failoverState['failures'] ?? 0,
+        ]);
+      }
+    }
+    catch (\Throwable $e) {
+      // Don't break status page.
+    }
+  }
+
+  return $requirements;
 }

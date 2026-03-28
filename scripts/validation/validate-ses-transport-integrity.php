@@ -5,7 +5,10 @@
  * EMAIL-SES-TRANSPORT-001: Validates Amazon SES transport module integrity.
  *
  * Verifies that the jaraba_ses_transport module is correctly implemented
- * with all required components for email delivery via Amazon SES.
+ * with all required components for email delivery via Amazon SES SMTP.
+ *
+ * Architecture: SMTP transport (NOT DSN/API). SES credentials via getenv().
+ * Bounce/complaint handling via SNS webhook → EmailSuppressionService.
  *
  * Usage: php scripts/validation/validate-ses-transport-integrity.php
  * Exit code: 0 = all checks pass, 1 = failures found.
@@ -28,7 +31,7 @@ $requiredFiles = [
   'jaraba_ses_transport.routing.yml',
   'src/Service/EmailSuppressionService.php',
   'src/Controller/SesWebhookController.php',
-  'config/install/symfony_mailer.mailer_transport.ses.yml',
+  'config/schema/jaraba_ses_transport.schema.yml',
 ];
 $missingFiles = [];
 foreach ($requiredFiles as $file) {
@@ -42,17 +45,17 @@ if (empty($missingFiles)) {
     $errors[] = 'CHECK 1: Missing module files: ' . implode(', ', $missingFiles);
 }
 
-// ─── CHECK 2: Transport config uses DSN plugin ───
-$transportConfig = $moduleBase . '/config/install/symfony_mailer.mailer_transport.ses.yml';
+// ─── CHECK 2: SMTP transport config in config/sync ───
+$transportConfig = __DIR__ . '/../../config/sync/symfony_mailer.mailer_transport.smtp_ses.yml';
 if (file_exists($transportConfig)) {
     $content = file_get_contents($transportConfig);
-    if (str_contains($content, 'plugin: dsn') && str_contains($content, 'ses+api://')) {
+    if (str_contains($content, "id: smtp_ses") && str_contains($content, 'plugin: smtp')) {
         $passed++;
     } else {
-        $errors[] = 'CHECK 2: Transport config must use plugin: dsn with ses+api:// DSN';
+        $errors[] = 'CHECK 2: Transport config must use id: smtp_ses with plugin: smtp';
     }
 } else {
-    $errors[] = 'CHECK 2: Transport config file missing';
+    $errors[] = 'CHECK 2: Transport config symfony_mailer.mailer_transport.smtp_ses.yml missing from config/sync/';
 }
 
 // ─── CHECK 3: Webhook route exists ───
@@ -66,17 +69,18 @@ if (file_exists($routingFile)) {
     }
 }
 
-// ─── CHECK 4: EmailSuppressionService has isSuppressed + suppress ───
+// ─── CHECK 4: EmailSuppressionService has required methods ───
 $suppressionFile = $moduleBase . '/src/Service/EmailSuppressionService.php';
 if (file_exists($suppressionFile)) {
     $content = file_get_contents($suppressionFile);
     $hasMethods = str_contains($content, 'function isSuppressed') &&
         str_contains($content, 'function suppress') &&
-        str_contains($content, 'function unsuppress');
+        str_contains($content, 'function unsuppress') &&
+        str_contains($content, 'function getStats');
     if ($hasMethods) {
         $passed++;
     } else {
-        $errors[] = 'CHECK 4: EmailSuppressionService must have isSuppressed(), suppress(), unsuppress()';
+        $errors[] = 'CHECK 4: EmailSuppressionService must have isSuppressed(), suppress(), unsuppress(), getStats()';
     }
 }
 
@@ -102,25 +106,51 @@ if (file_exists($installFile)) {
     }
 }
 
-// ─── CHECK 7: symfony/amazon-mailer in composer ───
-$composerLock = __DIR__ . '/../../composer.lock';
-if (file_exists($composerLock)) {
-    $lockContent = file_get_contents($composerLock);
-    if (str_contains($lockContent, 'symfony/amazon-mailer')) {
+// ─── CHECK 7: SesWebhookController handles SNS message types ───
+$controllerFile = $moduleBase . '/src/Controller/SesWebhookController.php';
+if (file_exists($controllerFile)) {
+    $content = file_get_contents($controllerFile);
+    $hasTypes = str_contains($content, 'SubscriptionConfirmation') &&
+        str_contains($content, 'handleBounce') &&
+        str_contains($content, 'handleComplaint') &&
+        str_contains($content, 'SNS_TOPIC_PREFIX');
+    if ($hasTypes) {
         $passed++;
     } else {
-        $errors[] = 'CHECK 7: symfony/amazon-mailer not in composer.lock. Run: composer require symfony/amazon-mailer';
+        $errors[] = 'CHECK 7: SesWebhookController must handle SubscriptionConfirmation, Bounce, Complaint with TopicArn validation';
     }
 }
 
-// ─── CHECK 8: settings.secrets.php has SES block ───
+// ─── CHECK 8: settings.secrets.php has SES SMTP block ───
 $secretsFile = __DIR__ . '/../../config/deploy/settings.secrets.php';
 if (file_exists($secretsFile)) {
     $content = file_get_contents($secretsFile);
-    if (str_contains($content, 'AWS_SES_ACCESS_KEY') && str_contains($content, 'ses+api://')) {
+    if (str_contains($content, 'SES_SMTP_USER') && str_contains($content, 'smtp_ses')) {
         $passed++;
     } else {
-        $warnings[] = 'CHECK 8: settings.secrets.php missing AWS_SES block. User must add manually (protected file).';
+        $warnings[] = 'CHECK 8: settings.secrets.php missing SES_SMTP_USER/smtp_ses block (SECRET-MGMT-001).';
+    }
+}
+
+// ─── CHECK 9: Module enabled in core.extension.yml ───
+$extensionFile = __DIR__ . '/../../config/sync/core.extension.yml';
+if (file_exists($extensionFile)) {
+    $content = file_get_contents($extensionFile);
+    if (str_contains($content, 'jaraba_ses_transport:')) {
+        $passed++;
+    } else {
+        $errors[] = 'CHECK 9: jaraba_ses_transport not in core.extension.yml (module not enabled)';
+    }
+}
+
+// ─── CHECK 10: .env.example documents SES variables ───
+$envExample = __DIR__ . '/../../.env.example';
+if (file_exists($envExample)) {
+    $content = file_get_contents($envExample);
+    if (str_contains($content, 'SES_SMTP_HOST') && str_contains($content, 'SES_SMTP_USER')) {
+        $passed++;
+    } else {
+        $warnings[] = 'CHECK 10: .env.example missing SES_SMTP_* variable documentation';
     }
 }
 
