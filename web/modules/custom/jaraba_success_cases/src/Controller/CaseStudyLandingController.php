@@ -336,7 +336,10 @@ final class CaseStudyLandingController extends ControllerBase {
       return [
         'title' => $crossCase->get('protagonist_name')->value ?: $crossCase->get('name')->value,
         'subtitle' => self::VERTICAL_LABELS[$crossVertical] ?? $crossVertical,
-        'url' => '/' . $crossPath . '/caso-de-exito/' . ($crossCase->get('slug')->value ?? ''),
+        'url' => Url::fromRoute('jaraba_success_cases.case_study_landing', [
+          'vertical_path' => $crossPath,
+          'slug' => $crossCase->get('slug')->value ?? '',
+        ])->toString(),
         'image' => '',
       ];
     }

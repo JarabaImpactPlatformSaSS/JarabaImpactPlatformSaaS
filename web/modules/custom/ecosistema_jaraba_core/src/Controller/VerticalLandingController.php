@@ -160,7 +160,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('Caso de éxito: Cooperativa Sierra de Cazorla'),
           'subtitle' => $this->t('De vender a granel a Italia a facturar 30.000 €/mes en venta directa con un QR en cada botella'),
-          'url' => $this->caseStudyUrl('jaraba_agroconecta_core.case_study.sierra_cazorla', '/agroconecta/caso-de-exito/cooperativa-sierra-cazorla'),
+          'url' => $this->caseStudyUrl('agroconecta', 'cooperativa-sierra-cazorla'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -372,7 +372,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('Caso de éxito: Boutique La Mariposa'),
           'subtitle' => $this->t('+47% de facturación con un QR en el escaparate. De 68 a 157 clientas en 3 meses'),
-          'url' => $this->caseStudyUrl('jaraba_comercio_conecta.case_study.boutique_mariposa', '/comercioconecta/caso-de-exito/boutique-la-mariposa'),
+          'url' => $this->caseStudyUrl('comercioconecta', 'boutique-la-mariposa'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -580,7 +580,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('Carmen automatizó su clínica en 90 días'),
           'subtitle' => $this->t('De gestionar citas por WhatsApp a 60% más reservas con agenda online y cobro automático'),
-          'url' => $this->caseStudyUrl('jaraba_servicios_conecta.case_study.carmen_navarro', '/serviciosconecta/caso-de-exito/carmen-navarro-madrid'),
+          'url' => $this->caseStudyUrl('serviciosconecta', 'carmen-navarro-madrid'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -794,9 +794,9 @@ class VerticalLandingController extends ControllerBase {
           ['value' => '4', 'label' => $this->t('plantillas CV profesional')],
         ],
         'case_study' => [
-          'title' => $this->t('Caso de éxito: Rosa Fernández, 52 años'),
-          'subtitle' => $this->t('De 87 CVs sin respuesta a contratada en 21 días. Un diagnóstico de 3 minutos le cambió la vida'),
-          'url' => $this->caseStudyUrl('jaraba_candidate.case_study.rosa_fernandez', '/empleabilidad/caso-de-exito/rosa-fernandez-malaga'),
+          'title' => $this->t('Caso de éxito: Luis Miguel Criado'),
+          'subtitle' => $this->t('De la parálisis administrativa a terapeuta autónomo con ayuda pública de la Junta de Andalucía'),
+          'url' => $this->caseStudyUrl('empleabilidad', 'luis-miguel-criado'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1014,7 +1014,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('Caso de éxito: Carlos Etxebarria, Bilbao'),
           'subtitle' => $this->t('De 2 años de parálisis a un MVP con 5 pilotos y 47.000 € ENISA en 60 días'),
-          'url' => $this->caseStudyUrl('jaraba_business_tools.case_study.carlos_etxebarria', '/emprendimiento/caso-de-exito/carlos-etxebarria-bilbao'),
+          'url' => $this->caseStudyUrl('emprendimiento', 'carlos-etxebarria-bilbao'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1231,7 +1231,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('Caso de éxito: Martínez & Asociados'),
           'subtitle' => $this->t('Cómo un despacho de 2 abogados en Málaga redujo un 75% el tiempo de búsqueda jurídica'),
-          'url' => $this->caseStudyUrl('jaraba_legal.case_study.martinez', '/jarabalex/caso-de-exito/despacho-martinez'),
+          'url' => $this->caseStudyUrl('jarabalex', 'despacho-martinez'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1668,7 +1668,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('PED S.L. gestiona su programa de inserción laboral con su propio SaaS'),
           'subtitle' => $this->t('Cómo la empresa que construye Andalucía +ei lo usa para gestionar 50 itinerarios de inserción con IA'),
-          'url' => $this->caseStudyUrl('jaraba_andalucia_ei.case_study.ped', '/andalucia-ei/caso-de-exito/plataforma-ecosistemas-digitales'),
+          'url' => $this->caseStudyUrl('andalucia-ei', 'plataforma-ecosistemas-digitales'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -1815,7 +1815,7 @@ class VerticalLandingController extends ControllerBase {
         'case_study' => [
           'title' => $this->t('María pasó de 12 alumnos a 340 en 4 meses'),
           'subtitle' => $this->t('De dar clases presenciales a 12 alumnos a vender cursos online a 340 con IA generando quizzes automáticos'),
-          'url' => $this->caseStudyUrl('jaraba_lms.case_study.maria_lopez', '/formacion/caso-de-exito/maria-lopez-madrid'),
+          'url' => $this->caseStudyUrl('formacion', 'maria-lopez-madrid'),
           'cta_text' => $this->t('Leer la historia completa'),
         ],
       ],
@@ -2035,25 +2035,29 @@ class VerticalLandingController extends ControllerBase {
   }
 
   /**
-   * Resolves a case study URL via Url::fromRoute() with fallback.
+   * Resolves a case study URL via the unified route.
    *
-   * Complies with ROUTE-LANGPREFIX-001: URLs MUST go through the routing
-   * system so the language prefix (/es/) is applied correctly.
+   * ROUTE-LANGPREFIX-001: URLs MUST go through Url::fromRoute() so the
+   * language prefix (/es/) is applied correctly. Uses the unified route
+   * jaraba_success_cases.case_study_landing (LEGACY-CONTROLLER-CLEANUP-001).
    *
-   * @param string $routeName
-   *   The route name (e.g. 'jaraba_agroconecta_core.case_study.sierra_cazorla').
-   * @param string $fallbackPath
-   *   Hardcoded path used only if the route does not exist.
+   * @param string $verticalPath
+   *   The vertical URL segment (e.g. 'emprendimiento', 'andalucia-ei').
+   * @param string $slug
+   *   The success case slug (e.g. 'carlos-etxebarria-bilbao').
    *
    * @return string
    *   The resolved URL string.
    */
-  private function caseStudyUrl(string $routeName, string $fallbackPath): string {
+  private function caseStudyUrl(string $verticalPath, string $slug): string {
     try {
-      return Url::fromRoute($routeName)->toString();
+      return Url::fromRoute('jaraba_success_cases.case_study_landing', [
+        'vertical_path' => $verticalPath,
+        'slug' => $slug,
+      ])->toString();
     }
     catch (\Exception $e) {
-      return $fallbackPath;
+      return '/' . $verticalPath . '/caso-de-exito/' . $slug;
     }
   }
 

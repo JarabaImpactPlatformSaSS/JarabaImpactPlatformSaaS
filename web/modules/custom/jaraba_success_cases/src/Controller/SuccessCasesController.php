@@ -7,6 +7,7 @@ namespace Drupal\jaraba_success_cases\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\image\Entity\ImageStyle;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -264,7 +265,9 @@ class SuccessCasesController extends ControllerBase {
       'featured' => (bool) $case->get('featured')->value,
       'program_name' => $case->get('program_name')->value,
       'metrics' => $metrics,
-      'url' => '/caso-de-exito/' . $case->get('slug')->value,
+      'url' => Url::fromRoute('jaraba_success_cases.detail', [
+        'slug' => $case->get('slug')->value,
+      ])->toString(),
       'image_url' => $imageUrl,
       'image_url_card' => $imageUrlCard,
     ];
