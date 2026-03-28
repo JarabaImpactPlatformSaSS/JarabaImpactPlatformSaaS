@@ -9,9 +9,9 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Total scripts PHP | 192 |
-| run_check (CI blocker) | 131 |
-| warn_check (no blocker) | 62 |
+| Total scripts PHP | 195 |
+| run_check (CI blocker) | 132 |
+| warn_check (no blocker) | 64 |
 | skip_check (fast mode) | 48 |
 | Orphaned validators | 0 |
 
@@ -139,9 +139,10 @@
 | VERTICAL-CROSS-LINK-001 | Case study cross-links in VerticalLandingController |
 | VIDEO-HERO-001 | Video hero asset completeness (9 verticals) |
 | BRAND-TERM-VALIDATOR-001 | Obsolete brand terms in frontend (Desarrollo Rural → Local) |
+| VIEWPORT-DVH-001 | Viewport 100vh with dvh fallback in SCSS |
 | CERTIFICATION-INTEGRITY-001 | Certification system integrity (entity, access, wizard, bridge) |
 
-## Warn Checks — 62 (no bloquean, baseline violations aceptadas)
+## Warn Checks — 64 (no bloquean, baseline violations aceptadas)
 
 | Rule ID | Descripcion | Notas |
 |---------|-------------|-------|
@@ -177,6 +178,8 @@
 | TRANSLATION-COVERAGE-001 | Cobertura traduccion automatica (>80% por entity type/idioma, Redis queue, Supervisor worker) | 5 checks |
 | TRANSLATION-QUALITY-001 | Calidad semantica traducciones (identico al original, vacios, longitud anomala, hallucination) | 5 checks multi-entity |
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
+| NOWRAP-OVERFLOW-001 | white-space: nowrap with overflow protection | 35 pre-existing |
+| IMG-DIMENSIONS-001 | Image dimensions (width/height) in Twig templates | 121 pre-existing |
 
 ## Pre-commit only validators (no validate-all.sh)
 

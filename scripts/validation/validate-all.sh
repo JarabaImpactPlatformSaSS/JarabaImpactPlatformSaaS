@@ -809,6 +809,15 @@ if [ "$MODE" = "full" ]; then
   warn_check "CONTENT-SEED-SYNC-001" "Content seed JSON structure and canvas_data integrity" \
     php "$PROJECT_ROOT/scripts/validation/validate-content-seed-sync.php"
 
+  run_check "VIEWPORT-DVH-001" "Viewport 100vh with dvh fallback" \
+    php "$PROJECT_ROOT/scripts/validation/validate-viewport-dvh.php"
+
+  warn_check "NOWRAP-OVERFLOW-001" "white-space: nowrap with overflow protection" \
+    php "$PROJECT_ROOT/scripts/validation/validate-nowrap-overflow.php"
+
+  warn_check "IMG-DIMENSIONS-001" "Image dimensions (width/height) in Twig templates" \
+    php "$PROJECT_ROOT/scripts/validation/validate-img-dimensions.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
