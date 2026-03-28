@@ -44,12 +44,12 @@
 // Replace PLACEHOLDER values with real credentials from Meta Business Manager.
 // =============================================================================
 putenv('WHATSAPP_VERIFY_TOKEN=andalucia_ei_wa_24a8477f10cf092c');
-putenv('WHATSAPP_APP_SECRET=PLACEHOLDER_obtener_de_meta_configuracion_basica');
-putenv('WHATSAPP_ACCESS_TOKEN=PLACEHOLDER_obtener_de_meta_getting_started');
-putenv('WHATSAPP_PHONE_NUMBER_ID=PLACEHOLDER_obtener_tras_migrar_numero');
-putenv('WHATSAPP_BUSINESS_ACCOUNT_ID=PLACEHOLDER_obtener_de_meta_getting_started');
+putenv('WHATSAPP_APP_SECRET=PLACEHOLDER_set_via_deploy_or_server');
+putenv('WHATSAPP_ACCESS_TOKEN=PLACEHOLDER_set_via_deploy_or_server');
+putenv('WHATSAPP_PHONE_NUMBER_ID=963472856859968');
+putenv('WHATSAPP_BUSINESS_ACCOUNT_ID=2433356897133166');
 putenv('WA_ENCRYPTION_KEY=sDC22lM5cGB+6TLO/wxRioCOtcZ+4Ta8SS3OZpYkc7I=');
-putenv('WA_JOSE_PHONE=+34623174304');
+putenv('WA_JOSE_PHONE=+34623274304');
 putenv('WA_JOSE_EMAIL=contacto@plataformadeecosistemas.com');
 
 // =============================================================================

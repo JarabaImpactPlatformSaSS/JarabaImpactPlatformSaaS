@@ -273,6 +273,7 @@ jobs:
           KEY_JARABA_PMK: ${{ secrets.JARABA_PMK }}
           KEY_REDSYS_SECRET: ${{ secrets.REDSYS_SECRET_KEY }}
           KEY_WHATSAPP: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
+          KEY_WHATSAPP_SECRET: ${{ secrets.WHATSAPP_APP_SECRET }}
           KEY_HUBSPOT: ${{ secrets.HUBSPOT_API_KEY }}
           KEY_CDN: ${{ secrets.CDN_BASE_URL }}
           KEY_CERT_PATH: ${{ secrets.ECOSISTEMA_JARABA_CERT_PATH }}
@@ -331,6 +332,7 @@ jobs:
             echo ""
             echo "// Integrations"
             [ -n "${KEY_WHATSAPP}" ] && echo "putenv('WHATSAPP_ACCESS_TOKEN=${KEY_WHATSAPP}');"
+            [ -n "${KEY_WHATSAPP_SECRET}" ] && echo "putenv('WHATSAPP_APP_SECRET=${KEY_WHATSAPP_SECRET}');"
             [ -n "${KEY_HUBSPOT}" ] && echo "putenv('HUBSPOT_API_KEY=${KEY_HUBSPOT}');"
             echo ""
             echo "// CDN"

@@ -131,7 +131,7 @@ PROMPT;
    * OPTIONAL-PARAM-ORDER-001: Opcionales al final.
    */
   public function __construct(
-    AiProviderPluginManager $aiProvider,
+    object $aiProvider,
     ConfigFactoryInterface $configFactory,
     LoggerInterface $logger,
     ?TenantBrandVoiceService $brandVoice = NULL,

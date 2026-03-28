@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_whatsapp\Unit;
 
 use Drupal\jaraba_whatsapp\Agent\WhatsAppConversationAgent;
-use Drupal\ai\AiProviderPluginManager;
+use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use PHPUnit\Framework\TestCase;
@@ -67,18 +68,55 @@ class WhatsAppConversationAgentTest extends TestCase {
    * Creates a test agent instance.
    */
   protected function createAgent(): WhatsAppConversationAgent {
-    $aiProvider = $this->createMock(AiProviderPluginManager::class);
+    $aiProvider = $this->createMock(WaMockAiProviderInterface::class);
     $configFactory = $this->createMock(ConfigFactoryInterface::class);
     $config = $this->createMock(ImmutableConfig::class);
     $config->method('get')->willReturn(NULL);
     $configFactory->method('get')->willReturn($config);
     $logger = $this->createMock(LoggerInterface::class);
+    $brandVoice = $this->createMock(TenantBrandVoiceService::class);
+    $observability = $this->createMock(AIObservabilityService::class);
 
     return new WhatsAppConversationAgent(
       $aiProvider,
       $configFactory,
       $logger,
+      $brandVoice,
+      $observability,
     );
   }
+
+}
+
+/**
+ * Mock interface for AiProviderPluginManager (final class, cannot be mocked).
+ *
+ * MOCK-METHOD-001: Same pattern as SmartBaseAgentTest.
+ */
+interface WaMockAiProviderInterface {
+
+  /**
+   * Gets the default provider for an operation type.
+   *
+   * @param string $operationType
+   *   The operation type.
+   *
+   * @return array<string, mixed>|null
+   *   The provider info or NULL.
+   */
+  public function getDefaultProviderForOperationType(string $operationType): ?array;
+
+  /**
+   * Creates a provider instance.
+   *
+   * @param string $pluginId
+   *   The plugin ID.
+   * @param array<string, mixed> $configuration
+   *   Plugin configuration.
+   *
+   * @return object
+   *   The plugin instance.
+   */
+  public function createInstance(string $pluginId, array $configuration = []): object;
 
 }
