@@ -2127,14 +2127,8 @@ jaraba_agroconecta_core.api.sales.recovery_stats:
     _permission: 'manage agro orders'
 
 # WhatsApp Business API Webhook
-
-jaraba_agroconecta_core.api.whatsapp.webhook:
-  path: '/api/v1/whatsapp/webhook'
-  defaults:
-    _controller: 'Drupal\jaraba_agroconecta_core\Controller\WhatsAppWebhookController::webhook'
-  methods: [GET, POST]
-  requirements:
-    _access: 'TRUE'
+# DEPRECATED: Migrated to jaraba_whatsapp module (unified WhatsApp handler).
+# Route /api/v1/whatsapp/webhook is now handled by jaraba_whatsapp.webhook.*
 
 # ============================================
 # QR DYNAMIC SYSTEM (Sprint AC6-1 — Doc 81)
