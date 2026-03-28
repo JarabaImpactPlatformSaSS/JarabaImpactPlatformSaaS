@@ -850,6 +850,9 @@ if [ "$MODE" = "full" ]; then
   warn_check "IMG-DIMENSIONS-001" "Image dimensions (width/height) in Twig templates" \
     php "$PROJECT_ROOT/scripts/validation/validate-img-dimensions.php"
 
+  warn_check "PUBLIC-FILES-SEED-001" "Entity file references vs physical files on disk" \
+    php "$PROJECT_ROOT/scripts/validation/validate-public-files-seed.php"
+
   run_check "SUPERVISOR-QUEUE-SYNC-001" "Supervisor workers vs Redis queue routing consistency" \
     php "$PROJECT_ROOT/scripts/validation/validate-supervisor-queue-consistency.php"
 

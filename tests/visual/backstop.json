@@ -47,6 +47,27 @@
       "misMatchThreshold": 0.1
     },
     {
+      "label": "Success Cases",
+      "url": "http://localhost:8080/es/casos-de-exito",
+      "delay": 1000,
+      "misMatchThreshold": 0.1,
+      "requireSameDimensions": false
+    },
+    {
+      "label": "Vertical Landing - Empleabilidad",
+      "url": "http://localhost:8080/es/empleabilidad",
+      "delay": 1500,
+      "misMatchThreshold": 0.2,
+      "requireSameDimensions": false
+    },
+    {
+      "label": "Metodo Jaraba",
+      "url": "http://localhost:8080/es/metodologia",
+      "delay": 1000,
+      "misMatchThreshold": 0.2,
+      "requireSameDimensions": false
+    },
+    {
       "label": "Dashboard - Admin",
       "url": "http://localhost:8080/admin/dashboard",
       "delay": 1500,

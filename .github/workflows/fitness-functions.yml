@@ -416,13 +416,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Lighthouse CI — Landing principal
+      - name: Lighthouse CI — Mobile audit (Core Web Vitals)
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
             ${{ secrets.STAGING_URL }}/es/agroconecta
             ${{ secrets.STAGING_URL }}/es/empleabilidad
             ${{ secrets.STAGING_URL }}/es/emprendimiento
+            ${{ secrets.STAGING_URL }}/es/casos-de-exito
+            ${{ secrets.STAGING_URL }}/es/planes
+            ${{ secrets.STAGING_URL }}/es/metodologia
           budgetPath: .github/lighthouse-budget.json
           runs: 3
         continue-on-error: true

@@ -189,6 +189,7 @@
 | VISUAL-REGRESSION-001 | Critical page structural smoke test | Requires Lando |
 | NOWRAP-OVERFLOW-001 | white-space: nowrap with overflow protection | 35 pre-existing |
 | IMG-DIMENSIONS-001 | Image dimensions (width/height) in Twig templates | 121 pre-existing |
+| PUBLIC-FILES-SEED-001 | Entity file references vs physical files on disk | Requires Lando |
 | CSS-VAR-ALL-COLORS-001 | SCSS custom property usage (--ej-* prefix) | 143 baseline |
 | TRANSLATABLE-FIELDDATA-001 | Translatable entity _field_data table usage | 10 baseline |
 | SCSS-ENTRY-CONSOLIDATION-001 | SCSS entry point conflicts (name + _name) | |
