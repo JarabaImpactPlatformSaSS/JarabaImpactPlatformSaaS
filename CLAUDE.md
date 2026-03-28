@@ -140,6 +140,10 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Compilacion: `npm run build` desde web/themes/custom/ecosistema_jaraba_theme/
 - Route SCSS: scss/routes/{name}.scss -> css/routes/{name}.css -> library route-{name} -> hook_page_attachments_alter()
 - Bundle SCSS: scss/bundles/{name}.scss -> css/bundles/{name}.css -> library bundle-{name}
+- VIEWPORT-DVH-001 (P0): TODA declaracion `100vh` DEBE tener linea `100dvh` inmediatamente despues. Progressive enhancement. Validacion: `validate-viewport-dvh.php`
+- NOWRAP-OVERFLOW-001: `white-space: nowrap` DEBE tener `overflow: hidden; text-overflow: ellipsis;` o `// NOWRAP-SAFE:` comentario. Validacion: `validate-nowrap-overflow.php`
+- FIXED-STACKING-MOBILE-001: FABs con `position: fixed` en zona inferior DEBEN sumar `calc(56px + env(safe-area-inset-bottom))` cuando `.has-bottom-nav` activo
+- IMG-SEED-001: Imagenes SuccessCase via `seed-success-case-images.php` (idempotente, deploy.yml)
 
 ### Iconos (ICON-CONVENTION-001)
 - Funcion: `{{ jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}`
