@@ -51,3 +51,12 @@ putenv('WHATSAPP_BUSINESS_ACCOUNT_ID=PLACEHOLDER_obtener_de_meta_getting_started
 putenv('WA_ENCRYPTION_KEY=sDC22lM5cGB+6TLO/wxRioCOtcZ+4Ta8SS3OZpYkc7I=');
 putenv('WA_JOSE_PHONE=+34623174304');
 putenv('WA_JOSE_EMAIL=contacto@plataformadeecosistemas.com');
+
+// =============================================================================
+// EMAIL — AWS SES SMTP Transport (EMAIL-DEDICATED-IP-001).
+// IAM user: jaraba-ses-smtp-prod-v2 (eu-central-1 Frankfurt).
+// =============================================================================
+putenv('SES_SMTP_HOST=email-smtp.eu-central-1.amazonaws.com');
+putenv('SES_SMTP_PORT=587');
+putenv('SES_SMTP_USER=AKIASHCS65ESZZRPLINF');
+putenv('SES_SMTP_PASS=BNARgFi1V5V5G22K2uFs6oh6tHxYgjRrOTMBKeh5ABpG');
