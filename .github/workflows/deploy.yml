@@ -448,6 +448,10 @@ jobs:
             echo "=== Populating metasite translations ==="
             drush scr scripts/i18n/populate-metasite-translations.php 2>&1 || echo "⚠️ Metasite translations had issues (non-blocking)"
 
+            # IMG-SEED-001: Assign theme images to SuccessCase entities (idempotent)
+            echo "=== Seeding SuccessCase images ==="
+            drush php:script scripts/migration/seed-success-case-images.php 2>&1 || echo "⚠️ SuccessCase image seed had issues (non-blocking)"
+
             # Validate content integrity post-import
             echo "=== Validating content sync integrity ==="
             drush php:script scripts/content-seed/validate-content-sync.php 2>&1 || echo "⚠️ Content validation had issues"
