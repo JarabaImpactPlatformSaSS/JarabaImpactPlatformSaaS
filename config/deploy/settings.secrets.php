@@ -72,6 +72,25 @@ if ($smtp_host = getenv('SMTP_HOST')) {
 }
 
 // ============================================================================
+// EMAIL — AWS SES SMTP Transport (EMAIL-DEDICATED-IP-001)
+// SMTP credentials from IAM user jaraba-ses-smtp-prod (eu-central-1).
+// STRIPE-ENV-UNIFY-001 pattern: secrets via getenv(), NEVER in config/sync/.
+// ============================================================================
+
+if ($ses_user = getenv('SES_SMTP_USER')) {
+  $config['symfony_mailer.mailer_transport.smtp_ses']['configuration']['user'] = $ses_user;
+}
+if ($ses_pass = getenv('SES_SMTP_PASS')) {
+  $config['symfony_mailer.mailer_transport.smtp_ses']['configuration']['pass'] = $ses_pass;
+}
+if ($ses_host = getenv('SES_SMTP_HOST')) {
+  $config['symfony_mailer.mailer_transport.smtp_ses']['configuration']['host'] = $ses_host;
+}
+if ($ses_port = getenv('SES_SMTP_PORT')) {
+  $config['symfony_mailer.mailer_transport.smtp_ses']['configuration']['port'] = (int) $ses_port;
+}
+
+// ============================================================================
 // RECAPTCHA v3
 // ============================================================================
 
